@@ -37,34 +37,122 @@ definitions:
       lng:
         type: number
     type: object
-  definition.PersonCertificationOcrRes:
+  definition.ActivityCreateReq:
     properties:
-      appId:
-        description: WBAppid
+      image:
+        description: 图片
         type: string
-      nonce:
-        description: 随机字符串
+      link:
+        description: 链接
         type: string
-      orderNo:
-        description: 订单号
+      name:
+        description: 名称
         type: string
-      sign:
-        description: 签名
+      remark:
+        description: 备注
         type: string
-      userId:
-        description: 用户唯一标识
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - image
+    - link
+    - name
+    - sort
+    type: object
+  definition.ActivityModifyReq:
+    properties:
+      image:
+        description: 图片
         type: string
-      version:
-        description: 版本号
+      link:
+        description: 链接
         type: string
+      name:
+        description: 名称
+        type: string
+      remark:
+        description: 备注
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - image
+    - link
+    - name
+    - sort
+    type: object
+  definition.GuideDetail:
+    properties:
+      answer:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      remark:
+        type: string
+      sort:
+        type: integer
+    type: object
+  definition.GuideListReq:
+    properties:
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+    type: object
+  definition.GuideModifyReq:
+    properties:
+      answer:
+        description: 答案
+        type: string
+      name:
+        description: 名称
+        type: string
+      remark:
+        description: 备注
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - answer
+    - name
+    - sort
+    type: object
+  definition.GuideSaveReq:
+    properties:
+      answer:
+        description: 答案
+        type: string
+      name:
+        description: 名称
+        type: string
+      remark:
+        description: 备注
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - answer
+    - name
+    - sort
     type: object
   model.AgentCreateReq:
     properties:
       enterpriseId:
+        description: 团签ID
         type: integer
       name:
+        description: 姓名
         type: string
       phone:
+        description: 电话
         type: string
     required:
     - enterpriseId
@@ -89,21 +177,6 @@ definitions:
         description: 电话
         type: string
     type: object
-  model.AliyunOssStsRes:
-    properties:
-      accessKeyId:
-        type: string
-      accessKeySecret:
-        type: string
-      bucket:
-        type: string
-      expiration:
-        type: string
-      region:
-        type: string
-      stsToken:
-        type: string
-    type: object
   model.AllocateCreateRes:
     properties:
       id:
@@ -114,8 +187,10 @@ definitions:
   model.AssistanceAllocateReq:
     properties:
       id:
+        description: 救援ID
         type: integer
       storeId:
+        description: 门店ID
         type: integer
     required:
     - id
@@ -208,8 +283,10 @@ definitions:
   model.AssistanceFreeReq:
     properties:
       id:
+        description: 救援ID
         type: integer
       reason:
+        description: 免费理由
         type: string
     required:
     - id
@@ -280,8 +357,10 @@ definitions:
   model.AssistanceRefuseReq:
     properties:
       id:
+        description: 救援ID
         type: integer
       reason:
+        description: 拒绝原因
         type: string
     required:
     - id
@@ -512,11 +591,13 @@ definitions:
   model.BatteryCreateReq:
     properties:
       cityId:
+        description: 城市
         type: integer
       enable:
         description: 是否启用, 需默认为`true`
         type: boolean
       sn:
+        description: 电池编号
         type: string
     required:
     - cityId
@@ -794,34 +875,48 @@ definitions:
   model.BranchContract:
     properties:
       area:
+        description: 网点面积
         type: number
       bankNumber:
+        description: 房东银行卡号
         type: string
       electricity:
+        description: 电费单价
         type: string
       electricityPledge:
+        description: 电费押金
         type: number
       endTime:
+        description: 租期结束时间
         type: string
       file:
+        description: 合同文件
         type: string
       idCardNumber:
+        description: 房东身份证
         type: string
       landlordName:
+        description: 房东姓名
         type: string
       lease:
+        description: 租期月数
         type: integer
       phone:
+        description: 房东手机号
         type: string
       pledge:
+        description: 押金
         type: number
       rent:
+        description: 租金
         type: number
       sheets:
+        description: 底单
         items:
           type: string
         type: array
       startTime:
+        description: 租期开始时间
         type: string
     required:
     - electricity
@@ -838,6 +933,7 @@ definitions:
   model.BranchContractSheetReq:
     properties:
       id:
+        description: 合同ID
         type: integer
       sheets:
         description: 底单, 需携带所有`未删除`的底单
@@ -850,20 +946,26 @@ definitions:
   model.BranchCreateReq:
     properties:
       address:
+        description: 详细地址
         type: string
       cityId:
+        description: 城市
         type: integer
       contracts:
         items:
           $ref: '#/definitions/model.BranchContract'
         type: array
       lat:
+        description: 纬度
         type: number
       lng:
+        description: 经度
         type: number
       name:
+        description: 网点名称
         type: string
       photos:
+        description: 网点照片
         items:
           type: string
         type: array
@@ -944,20 +1046,26 @@ definitions:
   model.BranchModifyReq:
     properties:
       address:
+        description: 详细地址
         type: string
       cityId:
+        description: 城市
         type: integer
       contracts:
         items:
           $ref: '#/definitions/model.BranchContract'
         type: array
       lat:
+        description: 纬度
         type: number
       lng:
+        description: 经度
         type: number
       name:
+        description: 网点名称
         type: string
       photos:
+        description: 网点照片
         items:
           type: string
         type: array
@@ -1001,6 +1109,7 @@ definitions:
         description: 筛选骑手姓名或电话
         type: string
       remark:
+        description: 备注
         type: string
       start:
         description: '筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
@@ -1126,10 +1235,13 @@ definitions:
         description: 代理商ID
         type: integer
       cabinetId:
+        description: 电柜ID
         type: integer
       id:
+        description: 订阅ID
         type: integer
       storeId:
+        description: 门店ID
         type: integer
     required:
     - id
@@ -1139,7 +1251,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)'
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
         enum:
         - KAIXIN
         - YUNDONG
@@ -1247,11 +1359,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
-        enum:
-        - KAIXIN
-        - YUNDONG
-        - TUOBANG
+        description: '品牌, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
       doors:
         description: 柜门数量
         type: integer
@@ -1262,14 +1370,18 @@ definitions:
         description: 是否智能柜
         type: boolean
       models:
+        description: 电池型号
         items:
           type: string
         type: array
       name:
+        description: 电柜名称
         type: string
       remark:
+        description: 备注
         type: string
       serial:
+        description: 电柜编码
         type: string
       simDate:
         description: 'SIM卡到期日期, 例: 2022-06-01'
@@ -1321,7 +1433,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: 品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
       emptyNum:
         description: 空仓数量
         type: integer
@@ -1370,11 +1482,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
-        enum:
-        - KAIXIN
-        - YUNDONG
-        - TUOBANG
+        description: '品牌, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -1412,8 +1520,10 @@ definitions:
           type: string
         type: array
       name:
+        description: 电柜名称
         type: string
       remark:
+        description: 备注
         type: string
       reserves:
         description: 当前预约
@@ -1421,6 +1531,7 @@ definitions:
           $ref: '#/definitions/model.ReserveCabinetItem'
         type: array
       serial:
+        description: 电柜编码
         type: string
       simDate:
         description: 'SIM卡到期日期, 例: 2022-06-01'
@@ -1513,9 +1624,10 @@ definitions:
   model.CabinetFaultDealReq:
     properties:
       remark:
+        description: 备注
         type: string
       status:
-        description: 0未处理 1已处理
+        description: 故障状态, 0未处理 1已处理
         enum:
         - 0
         - 1
@@ -1583,11 +1695,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
-        enum:
-        - KAIXIN
-        - YUNDONG
-        - TUOBANG
+        description: '品牌, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -1625,10 +1733,13 @@ definitions:
           type: string
         type: array
       name:
+        description: 电柜名称
         type: string
       remark:
+        description: 备注
         type: string
       serial:
+        description: 电柜编码
         type: string
       simDate:
         description: 'SIM卡到期日期, 例: 2022-06-01'
@@ -1666,7 +1777,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)'
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
         enum:
         - KAIXIN
         - YUNDONG
@@ -1701,15 +1812,19 @@ definitions:
   model.CabinetOpenBindReq:
     properties:
       batterySn:
+        description: 电池编码
         type: string
       id:
+        description: 电柜ID
         type: integer
       index:
+        description: 仓门序号
         type: integer
       phone:
+        description: 骑手电话
         type: string
       remark:
-        description: '可手动输入, 预留项: `吞电池` `柜门未关好` `仓位不足`'
+        description: '操作原因, 可手动输入, 预留项: `吞电池` `柜门未关好` `仓位不足`'
         type: string
     required:
     - batterySn
@@ -1735,10 +1850,13 @@ definitions:
   model.CabinetTransferReq:
     properties:
       cabinetId:
+        description: 电柜ID
         type: integer
       model:
+        description: 型号
         type: string
       num:
+        description: 数量
         type: integer
     required:
     - cabinetId
@@ -1808,6 +1926,7 @@ definitions:
   model.CityModifyReq:
     properties:
       open:
+        description: 状态
         type: boolean
     required:
     - open
@@ -1899,16 +2018,21 @@ definitions:
   model.CouponGenerateReq:
     properties:
       amount:
+        description: 金额
         type: number
       number:
+        description: 生成数量
         type: integer
       phones:
+        description: 骑手电话
         items:
           type: string
         type: array
       remark:
+        description: 备注
         type: string
       templateId:
+        description: 优惠券模板
         type: integer
     required:
     - amount
@@ -2033,41 +2157,42 @@ definitions:
   model.CouponTemplateCreateReq:
     properties:
       cityIds:
-        description: 和`plans`不能同时为空也不能同时存在
+        description: 可用城市, 和`plans`不能同时为空也不能同时存在
         items:
           type: integer
         type: array
       durationDays:
-        description: '`durationRule=2`必填'
+        description: 相对天数, `durationRule=2`必填
         type: integer
       durationRule:
         allOf:
         - $ref: '#/definitions/model.CouponDurationRule'
-        description: 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
+        description: 有效期规则, 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
         enum:
         - 1
         - 2
       durationTime:
-        description: '`durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25'
+        description: 过期时间, `durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25
         type: string
       multiple:
         description: 重复使用(该券是否可叠加使用)
         type: boolean
       name:
+        description: 名称
         type: string
       planIds:
-        description: 和`cities`不能同时为空也不能同时存在
+        description: 绑定骑士卡, 和`cities`不能同时为空也不能同时存在
         items:
           type: integer
         type: array
       remark:
-        description: 10字以内, 需要显示在优惠券列表中
+        description: 备注信息, 10字以内, 需要显示在优惠券列表中
         maxLength: 10
         type: string
       rule:
         allOf:
         - $ref: '#/definitions/model.CouponRule'
-        description: 1:互斥 2:可叠加
+        description: 使用规则, 1:互斥 2:可叠加
         enum:
         - 1
         - 2
@@ -2085,22 +2210,22 @@ definitions:
           $ref: '#/definitions/model.City'
         type: array
       cityIds:
-        description: 和`plans`不能同时为空也不能同时存在
+        description: 可用城市, 和`plans`不能同时为空也不能同时存在
         items:
           type: integer
         type: array
       durationDays:
-        description: '`durationRule=2`必填'
+        description: 相对天数, `durationRule=2`必填
         type: integer
       durationRule:
         allOf:
         - $ref: '#/definitions/model.CouponDurationRule'
-        description: 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
+        description: 有效期规则, 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
         enum:
         - 1
         - 2
       durationTime:
-        description: '`durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25'
+        description: 过期时间, `durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25
         type: string
       enable:
         type: boolean
@@ -2118,7 +2243,7 @@ definitions:
       name:
         type: string
       planIds:
-        description: 和`cities`不能同时为空也不能同时存在
+        description: 绑定骑士卡, 和`cities`不能同时为空也不能同时存在
         items:
           type: integer
         type: array
@@ -2132,7 +2257,7 @@ definitions:
       rule:
         allOf:
         - $ref: '#/definitions/model.CouponRule'
-        description: 1:互斥 2:可叠加
+        description: 使用规则, 1:互斥 2:可叠加
         enum:
         - 1
         - 2
@@ -2160,28 +2285,28 @@ definitions:
           $ref: '#/definitions/model.City'
         type: array
       cityIds:
-        description: 和`plans`不能同时为空也不能同时存在
+        description: 可用城市, 和`plans`不能同时为空也不能同时存在
         items:
           type: integer
         type: array
       durationDays:
-        description: '`durationRule=2`必填'
+        description: 相对天数, `durationRule=2`必填
         type: integer
       durationRule:
         allOf:
         - $ref: '#/definitions/model.CouponDurationRule'
-        description: 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
+        description: 有效期规则, 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
         enum:
         - 1
         - 2
       durationTime:
-        description: '`durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25'
+        description: 过期时间, `durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25
         type: string
       multiple:
         description: 重复使用(该券是否可叠加使用)
         type: boolean
       planIds:
-        description: 和`cities`不能同时为空也不能同时存在
+        description: 绑定骑士卡, 和`cities`不能同时为空也不能同时存在
         items:
           type: integer
         type: array
@@ -2193,7 +2318,7 @@ definitions:
       rule:
         allOf:
         - $ref: '#/definitions/model.CouponRule'
-        description: 1:互斥 2:可叠加
+        description: 使用规则, 1:互斥 2:可叠加
         enum:
         - 1
         - 2
@@ -2272,7 +2397,7 @@ definitions:
   model.EbikeCreateReq:
     properties:
       brandId:
-        description: '关联: `MB015 车辆型号列表`'
+        description: '型号, 关联: `MB015 车辆型号列表`'
         type: integer
       color:
         description: '颜色, 默认`橘黄`, 创建或编辑时用选择列表, 选项为: `橘黄` / `红` / `白` / `黑`'
@@ -2281,6 +2406,7 @@ definitions:
         description: 是否启用, 默认要启用
         type: boolean
       exFactory:
+        description: 生产批次
         type: string
       machine:
         description: 终端编号
@@ -2292,6 +2418,7 @@ definitions:
         description: SIM卡号
         type: string
       sn:
+        description: 车架号
         type: string
     required:
     - brandId
@@ -2422,6 +2549,7 @@ definitions:
         description: 查询店员电话或姓名
         type: string
       remark:
+        description: 备注
         type: string
       start:
         description: 业绩统计开始时间
@@ -2435,10 +2563,13 @@ definitions:
   model.EmployeeCreateReq:
     properties:
       cityId:
+        description: 城市ID
         type: integer
       name:
+        description: 姓名
         type: string
       phone:
+        description: 手机号
         type: string
     required:
     - cityId
@@ -2451,6 +2582,7 @@ definitions:
         description: 修改店员启用状态 true:启用 false:禁用
         type: boolean
       id:
+        description: 店员ID
         type: integer
     required:
     - id
@@ -2495,7 +2627,7 @@ definitions:
         description: 团签ID
         type: integer
       stationID:
-        description: 站点id
+        description: 站点ID
         type: integer
     required:
     - enterpriseID
@@ -2504,13 +2636,16 @@ definitions:
   model.EnterpriseContract:
     properties:
       end:
+        description: 合同结束日期
         type: string
       file:
+        description: 合同文件
         type: string
       id:
         description: 合同ID, 请求`M9018 编辑合同`时携带此字段为编辑, 不携带为新增
         type: integer
       start:
+        description: 合同开始日期
         type: string
     required:
     - end
@@ -2520,15 +2655,19 @@ definitions:
   model.EnterpriseContractModifyReq:
     properties:
       end:
+        description: 合同结束日期
         type: string
       enterpriseId:
+        description: 企业ID
         type: integer
       file:
+        description: 合同文件
         type: string
       id:
         description: 合同ID, 请求`M9018 编辑合同`时携带此字段为编辑, 不携带为新增
         type: integer
       start:
+        description: 合同开始日期
         type: string
     required:
     - end
@@ -2539,17 +2678,22 @@ definitions:
   model.EnterpriseDetail:
     properties:
       address:
+        description: 企业地址
         type: string
       agent:
         description: 代理商 `true`是 `false`否
         type: boolean
       cityId:
+        description: 所在城市
         type: integer
       companyName:
+        description: 企业全称
         type: string
       contactName:
+        description: 联系人
         type: string
       contactPhone:
+        description: 联系电话
         type: string
       days:
         description: 代理商时间选项
@@ -2557,16 +2701,19 @@ definitions:
           type: integer
         type: array
       deposit:
+        description: 押金
         type: number
       distance:
         description: 可控制电柜距离（米）
         type: number
       idcardNumber:
+        description: 身份证号
         type: string
       name:
+        description: 团签名称
         type: string
       payment:
-        description: 1:预付费 2:后付费
+        description: 付费方式, 1:预付费 2:后付费
         enum:
         - 1
         - 2
@@ -2583,7 +2730,7 @@ definitions:
         - $ref: '#/definitions/model.EnterpriseSignType'
         description: 签约类型 without:无需签约（默认） rider:骑手签约 tripartite:三方签约（前端选项暂时不显示）
       status:
-        description: 0:未合作 1:合作中 2:已暂停
+        description: 合作状态, 0:未合作 1:合作中 2:已暂停
         enum:
         - 0
         - 1
@@ -2609,17 +2756,22 @@ definitions:
   model.EnterpriseDetailWithID:
     properties:
       address:
+        description: 企业地址
         type: string
       agent:
         description: 代理商 `true`是 `false`否
         type: boolean
       cityId:
+        description: 所在城市
         type: integer
       companyName:
+        description: 企业全称
         type: string
       contactName:
+        description: 联系人
         type: string
       contactPhone:
+        description: 联系电话
         type: string
       days:
         description: 代理商时间选项
@@ -2627,16 +2779,19 @@ definitions:
           type: integer
         type: array
       deposit:
+        description: 押金
         type: number
       distance:
         description: 可控制电柜距离（米）
         type: number
       idcardNumber:
+        description: 身份证号
         type: string
       name:
+        description: 团签名称
         type: string
       payment:
-        description: 1:预付费 2:后付费
+        description: 付费方式, 1:预付费 2:后付费
         enum:
         - 1
         - 2
@@ -2653,7 +2808,7 @@ definitions:
         - $ref: '#/definitions/model.EnterpriseSignType'
         description: 签约类型 without:无需签约（默认） rider:骑手签约 tripartite:三方签约（前端选项暂时不显示）
       status:
-        description: 0:未合作 1:合作中 2:已暂停
+        description: 合作状态, 0:未合作 1:合作中 2:已暂停
         enum:
         - 0
         - 1
@@ -2679,8 +2834,10 @@ definitions:
   model.EnterprisePrepaymentReq:
     properties:
       amount:
+        description: 金额
         type: number
       remark:
+        description: 备注
         type: string
     required:
     - amount
@@ -2692,8 +2849,10 @@ definitions:
         description: 电车型号
         type: integer
       cityId:
+        description: 城市
         type: integer
       enterpriseId:
+        description: 企业ID
         type: integer
       id:
         description: 价格ID, 请求`M9016 编辑价格`时携带此字段为编辑, 不携带为新增
@@ -2702,8 +2861,10 @@ definitions:
         description: 是否智能电池
         type: boolean
       model:
+        description: 电池型号
         type: string
       price:
+        description: 单价(元/天)
         type: number
     required:
     - cityId
@@ -2859,15 +3020,19 @@ definitions:
         description: 天数, 仅代理商需要
         type: integer
       enterpriseId:
+        description: 企业ID
         type: integer
       name:
+        description: 姓名
         type: string
       phone:
+        description: 电话号
         type: string
       priceId:
         description: 价格ID, 仅代理商需要
         type: integer
       stationId:
+        description: 站点ID
         type: integer
     required:
     - enterpriseId
@@ -2901,10 +3066,13 @@ definitions:
   model.EnterpriseStationCreateReq:
     properties:
       cityId:
+        description: 城市ID
         type: integer
       enterpriseId:
+        description: 企业ID
         type: integer
       name:
+        description: 站点名称
         type: string
     required:
     - cityId
@@ -2927,8 +3095,10 @@ definitions:
   model.EnterpriseStationModifyReq:
     properties:
       cityId:
+        description: 城市ID
         type: integer
       name:
+        description: 站点名称
         type: string
     required:
     - cityId
@@ -2973,11 +3143,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: 电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
-        enum:
-        - KAIXIN
-        - YUNDONG
-        - TUOBANG
+        description: '电柜类型, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
       cabinetId:
         description: 选择电柜ID
         type: integer
@@ -3000,6 +3166,7 @@ definitions:
         description: 电池型号
         type: string
       remark:
+        description: 备注
         type: string
       serial:
         description: 电柜编号
@@ -3140,6 +3307,9 @@ definitions:
       id:
         description: 反馈ID
         type: integer
+      source:
+        description: 反馈来源
+        type: integer
       type:
         description: 反馈类型
         type: integer
@@ -3157,14 +3327,20 @@ definitions:
       end:
         description: 反馈结束时间
         type: string
+      enterprise:
+        description: 是否团签, 0:全部 1:团签 2:个签
+        type: integer
       enterpriseID:
-        description: 反馈用户团签id
+        description: 团签企业ID, `enterprise = 1`时才会生效
         type: integer
       keyword:
         description: 关键词
         type: string
       pageSize:
         description: 每页数据, 默认20
+        type: integer
+      source:
+        description: 反馈来源
         type: integer
       start:
         description: 反馈开始时间
@@ -3185,21 +3361,28 @@ definitions:
   model.ImportRiderCreateReq:
     properties:
       cityId:
+        description: 城市ID
         type: integer
       ebikeSn:
         description: 车架号
         type: string
       employeeId:
+        description: 店员ID
         type: integer
       end:
+        description: 结束日期
         type: string
       name:
+        description: 姓名
         type: string
       phone:
+        description: 电话
         type: string
       planId:
+        description: 骑行卡ID
         type: integer
       storeId:
+        description: 门店ID
         type: integer
     required:
     - cityId
@@ -3213,12 +3396,16 @@ definitions:
   model.Inventory:
     properties:
       count:
+        description: 是否需要盘点
         type: boolean
       name:
+        description: 物资名称
         type: string
       purchase:
+        description: 是否可采购
         type: boolean
       transfer:
+        description: 是否可调拨
         type: boolean
     required:
     - name
@@ -3226,7 +3413,7 @@ definitions:
   model.InventoryDelete:
     properties:
       name:
-        description: '*POST参数*'
+        description: 物资名称, *POST参数*
         type: string
     required:
     - name
@@ -3268,6 +3455,7 @@ definitions:
   model.LegalSaveReq:
     properties:
       content:
+        description: 政策内容
         type: string
     required:
     - content
@@ -3315,6 +3503,7 @@ definitions:
   model.MaintainerCreateReq:
     properties:
       cityIds:
+        description: 城市列表
         items:
           type: integer
         type: array
@@ -3322,10 +3511,13 @@ definitions:
         description: 是否启用，默认`true`
         type: boolean
       name:
+        description: 姓名
         type: string
       password:
+        description: 密码
         type: string
       phone:
+        description: 电话
         type: string
     required:
     - cityIds
@@ -3336,12 +3528,16 @@ definitions:
   model.ManagerCreateReq:
     properties:
       name:
+        description: 姓名
         type: string
       password:
+        description: 密码
         type: string
       phone:
+        description: 手机号
         type: string
       roleId:
+        description: 角色ID
         type: integer
     required:
     - name
@@ -3392,6 +3588,7 @@ definitions:
         description: 车架号或车牌号
         type: string
       id:
+        description: 订阅ID
         type: integer
       storeId:
         description: 门店ID
@@ -3402,11 +3599,13 @@ definitions:
   model.ManagerSubscribeChangeEbike:
     properties:
       ebikeKeyword:
+        description: 车架号或车牌号
         type: string
       id:
+        description: 订阅ID
         type: integer
       storeId:
-        description: 旧车入库至门店
+        description: 门店ID, 旧车入库至门店
         type: integer
     required:
     - ebikeKeyword
@@ -3415,9 +3614,10 @@ definitions:
   model.ManagerSubscribeUnbindEbike:
     properties:
       id:
+        description: 订阅ID
         type: integer
       storeId:
-        description: 旧车入库至门店
+        description: 门店ID, 旧车入库至门店
         type: integer
     required:
     - id
@@ -3557,6 +3757,7 @@ definitions:
         description: 退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)
         type: integer
       remark:
+        description: 备注
         type: string
       riderId:
         description: 骑手ID
@@ -3588,6 +3789,15 @@ definitions:
         description: 总条数
         type: integer
     type: object
+  model.PaginationReq:
+    properties:
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+    type: object
   model.PaginationRes:
     properties:
       items:
@@ -3613,16 +3823,16 @@ definitions:
     - PaywayAgentWxMiniprogram
   model.Person:
     properties:
-      auth_face:
+      authFace:
         description: 实名认证人脸照片
         type: string
-      id_card_national:
+      idCardNational:
         description: 证件国徽面
         type: string
-      id_card_number:
+      idCardNumber:
         description: 证件号码
         type: string
-      id_card_portrait:
+      idCardPortrait:
         description: 证件人像面
         type: string
     type: object
@@ -3682,6 +3892,7 @@ definitions:
         description: 佣金方案名称
         type: string
       days:
+        description: 有效天数
         minimum: 1
         type: integer
       desc:
@@ -3700,6 +3911,7 @@ definitions:
         description: 原价
         type: number
       price:
+        description: 价格
         type: number
     required:
     - days
@@ -3709,27 +3921,42 @@ definitions:
   model.PlanCreateReq:
     properties:
       brandId:
-        description: 车加电必填
+        description: 电车型号, 车加电必填
         type: integer
       cities:
+        description: 启用城市
         items:
           type: integer
         minItems: 1
         type: array
       complexes:
+        description: 骑士卡详细信息
         items:
           $ref: '#/definitions/model.PlanComplex'
         minItems: 1
+        type: array
+      deposit:
+        description: 是否开启押金
+        type: boolean
+      depositAmount:
+        description: 押金金额
+        type: number
+      depositPayway:
+        description: 押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金
+        items:
+          type: integer
         type: array
       enable:
         description: 是否启用
         type: boolean
       end:
+        description: 结束日期
         type: string
       intelligent:
         description: 是否智能柜套餐
         type: boolean
       name:
+        description: 骑士卡名称
         type: string
       notes:
         description: 购买须知
@@ -3737,12 +3964,15 @@ definitions:
           type: string
         type: array
       start:
+        description: 开始日期
         type: string
       type:
         $ref: '#/definitions/model.PlanType'
+        description: 骑士卡类别
     required:
     - cities
     - complexes
+    - deposit
     - end
     - intelligent
     - name
@@ -3815,6 +4045,17 @@ definitions:
             $ref: '#/definitions/model.PlanComplex'
           type: array
         type: array
+      deposit:
+        description: 是否开启押金 fales:未开启 true:开启
+        type: boolean
+      depositAmount:
+        description: 押金金额
+        type: number
+      depositPayway:
+        description: 押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金
+        items:
+          type: integer
+        type: array
       enable:
         description: 是否启用
         type: boolean
@@ -3853,11 +4094,13 @@ definitions:
   model.PlanModifyTimeReq:
     properties:
       end:
+        description: 结束日期
         type: string
       id:
-        description: 使用items[n].id
+        description: 骑士卡ID, 使用items[n].id
         type: integer
       start:
+        description: 开始日期
         type: string
     required:
     - end
@@ -3892,18 +4135,21 @@ definitions:
   model.PointBatchReq:
     properties:
       phones:
+        description: 电话
         items:
           type: string
         minItems: 1
         type: array
       points:
+        description: 积分
         type: integer
       reason:
+        description: 原因
         type: string
       type:
         allOf:
         - $ref: '#/definitions/model.PointLogType'
-        description: 1:消费 2:奖励
+        description: 类别, 1:消费 2:奖励
         enum:
         - 1
         - 2
@@ -3953,15 +4199,18 @@ definitions:
   model.PointModifyReq:
     properties:
       points:
+        description: 积分
         type: integer
       reason:
+        description: 原因
         type: string
       riderId:
+        description: 骑手
         type: integer
       type:
         allOf:
         - $ref: '#/definitions/model.PointLogType'
-        description: 1:消费 2:奖励
+        description: 类别, 1:消费 2:奖励
         enum:
         - 1
         - 2
@@ -4034,6 +4283,7 @@ definitions:
   model.RefundAuditReq:
     properties:
       outRefundNo:
+        description: 退款单号
         type: string
       remark:
         description: 操作备注
@@ -4147,10 +4397,13 @@ definitions:
   model.RiderContact:
     properties:
       name:
+        description: 联系人姓名
         type: string
       phone:
+        description: 联系人电话
         type: string
       relation:
+        description: 关系
         type: string
     required:
     - name
@@ -4182,8 +4435,10 @@ definitions:
   model.RiderFollowUpCreateReq:
     properties:
       remark:
+        description: 跟进信息
         type: string
       riderId:
+        description: 骑手ID
         type: integer
     required:
     - remark
@@ -4367,6 +4622,7 @@ definitions:
         description: 订阅剩余天数区间, 逗号分隔, 例如 `0,7`
         type: string
       remark:
+        description: 备注
         type: string
       start:
         description: '注册开始时间, 格式为: 2022-01-01'
@@ -4404,6 +4660,7 @@ definitions:
         description: 押金金额
         type: number
       id:
+        description: 骑手ID
         type: integer
     required:
     - id
@@ -4424,6 +4681,7 @@ definitions:
         - $ref: '#/definitions/model.RiderContact'
         description: 联系人
       id:
+        description: 骑手ID
         type: integer
       phone:
         description: 手机号
@@ -4465,6 +4723,7 @@ definitions:
   model.RoleCreateReq:
     properties:
       name:
+        description: 角色名称
         type: string
       permissions:
         description: 权限列表, 可以创建之后编辑再添加权限
@@ -4511,6 +4770,7 @@ definitions:
   model.SettingReq:
     properties:
       content:
+        description: 值
         type: string
     required:
     - content
@@ -4536,24 +4796,6 @@ definitions:
         items:
           $ref: '#/definitions/model.ShiguangjuIVRItem'
         type: array
-    type: object
-  model.SmsReq:
-    properties:
-      captchaCode:
-        description: captcha 验证码
-        type: string
-      phone:
-        description: 手机号
-        type: string
-    required:
-    - captchaCode
-    - phone
-    type: object
-  model.SmsRes:
-    properties:
-      id:
-        description: 任务ID
-        type: string
     type: object
   model.StatementBillData:
     properties:
@@ -4601,8 +4843,10 @@ definitions:
   model.StatementBillDetailExport:
     properties:
       id:
+        description: 账单ID
         type: integer
       remark:
+        description: 备注
         type: string
     required:
     - id
@@ -4682,8 +4926,10 @@ definitions:
   model.StatementClearBillReq:
     properties:
       remark:
+        description: 备注信息
         type: string
       uuid:
+        description: 账单编码
         type: string
     required:
     - remark
@@ -4728,8 +4974,10 @@ definitions:
         description: 结束时间
         type: string
       id:
+        description: 企业ID
         type: integer
       remark:
+        description: 备注
         type: string
       start:
         description: 开始时间
@@ -4904,6 +5152,7 @@ definitions:
         description: 是否正序(默认倒序)
         type: boolean
       remark:
+        description: 备注
         type: string
       serial:
         description: 电柜编号
@@ -5084,6 +5333,7 @@ definitions:
         - 2
         type: integer
       remark:
+        description: 备注
         type: string
     required:
     - remark
@@ -5111,6 +5361,7 @@ definitions:
   model.StoreCreateReq:
     properties:
       branchId:
+        description: 网点
         type: integer
       ebikeObtain:
         description: 是否可以领取车辆
@@ -5124,6 +5375,7 @@ definitions:
           $ref: '#/definitions/model.StockStoreMaterial'
         type: array
       name:
+        description: 门店名称
         type: string
       status:
         description: 门店状态 0维护 1营业 2休息 3隐藏
@@ -5174,6 +5426,7 @@ definitions:
   model.StoreModifyReq:
     properties:
       branchId:
+        description: 网点
         type: integer
       ebikeObtain:
         description: 是否可以领取车辆
@@ -5182,6 +5435,7 @@ definitions:
         description: 是否可以维修车辆
         type: boolean
       name:
+        description: 门店名称
         type: string
       status:
         description: 门店状态 0维护 1营业 2休息 3隐藏
@@ -5255,7 +5509,7 @@ definitions:
           type: integer
         type: array
       status:
-        description: 1:通过 2:拒绝
+        description: 审批状态, 1:通过 2:拒绝
         enum:
         - 1
         - 2
@@ -5308,8 +5562,10 @@ definitions:
   model.SuspendReq:
     properties:
       id:
+        description: 订阅ID
         type: integer
       remark:
+        description: 备注
         type: string
     required:
     - id
@@ -6376,70 +6632,6 @@ info:
   title: 极光出行API - 代理端api
   version: "1.0"
 paths:
-  /common/captcha:
-    get:
-      consumes:
-      - image/png
-      description: 生成的图片验证码有效时间为10分钟
-      operationId: CaptchaGenerate
-      produces:
-      - image/png
-      responses:
-        "200":
-          description: ok
-          headers:
-            X-Captcha-Id  true:
-              description: Captcha验证码ID
-              type: string
-          schema:
-            type: string
-      summary: C1 生成图片验证码
-      tags:
-      - Communal - 公共接口
-  /common/oss/token:
-    get:
-      consumes:
-      - application/json
-      description: 上传文件必须，单次获取有效时间为1个小时
-      operationId: AliyunOssToken
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.AliyunOssStsRes'
-      summary: C3 获取阿里云oss临时凭证
-      tags:
-      - Communal - 公共接口
-  /common/sms:
-    post:
-      consumes:
-      - application/json
-      description: 上传文件必须，单次获取有效时间为1个小时
-      operationId: SendSmsCode
-      parameters:
-      - description: 请求参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.SmsReq'
-      - description: Captcha验证码ID
-        in: header
-        name: X-Captcha-Id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.SmsRes'
-      summary: C2 发送短信验证码
-      tags:
-      - Communal - 公共接口
   /manager/v1/{id}/contract:
     post:
       consumes:
@@ -7696,7 +7888,7 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+      - description: '电柜型号 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
         enum:
         - UNKNOWN
         - KAIXIN
@@ -7934,7 +8126,7 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+      - description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
         enum:
         - UNKNOWN
         - KAIXIN
@@ -9562,11 +9754,13 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - in: query
+      - description: 账单截止日期
+        in: query
         name: end
         required: true
         type: string
-      - in: query
+      - description: 企业ID
+        in: query
         name: id
         required: true
         type: integer
@@ -9625,7 +9819,8 @@ paths:
         in: query
         name: end
         type: string
-      - in: query
+      - description: 企业ID
+        in: query
         name: enterpriseId
         type: integer
       - description: 每页数据, 默认20
@@ -9664,7 +9859,8 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - in: query
+      - description: 账单ID
+        in: query
         name: id
         required: true
         type: integer
@@ -9987,7 +10183,8 @@ paths:
         in: query
         name: end
         type: string
-      - in: query
+      - description: 企业ID
+        in: query
         name: enterpriseId
         required: true
         type: integer
@@ -10263,7 +10460,7 @@ paths:
         in: query
         name: batterySn
         type: string
-      - description: 电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+      - description: '电柜类型, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
         enum:
         - UNKNOWN
         - KAIXIN
@@ -11134,6 +11331,10 @@ paths:
         in: query
         name: current
         type: integer
+      - description: 是否开启押金 fales:未开启 true:开启
+        in: query
+        name: deposit
+        type: boolean
       - description: 启用状态
         in: query
         name: enable
@@ -12745,7 +12946,8 @@ paths:
         in: query
         name: pageSize
         type: integer
-      - in: query
+      - description: 骑手ID
+        in: query
         name: riderId
         required: true
         type: integer
@@ -12807,7 +13009,8 @@ paths:
         in: query
         name: current
         type: integer
-      - in: query
+      - description: 骑手ID
+        in: query
         name: id
         required: true
         type: integer
@@ -12884,7 +13087,8 @@ paths:
         in: query
         name: enterpriseId
         type: integer
-      - in: query
+      - description: 流水号
+        in: query
         minLength: 4
         name: serial
         required: true
@@ -12970,7 +13174,8 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - in: query
+      - description: 电柜ID
+        in: query
         name: cabinetId
         required: true
         type: integer
@@ -13198,7 +13403,8 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - in: query
+      - description: 骑行卡ID
+        in: query
         name: planId
         required: true
         type: integer
@@ -13366,6 +13572,265 @@ paths:
       summary: M1011 调整设置
       tags:
       - '[M]管理接口'
+  /manager/v1/setting/activity:
+    get:
+      consumes:
+      - application/json
+      operationId: SettingActivityList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.PaginationReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 获取活动列表
+      tags:
+      - Setting - 管理接口
+    post:
+      consumes:
+      - application/json
+      operationId: SettingActivityCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.ActivityCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 保存活动
+      tags:
+      - Setting -  管理接口
+    put:
+      consumes:
+      - application/json
+      operationId: SettingActivityModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.ActivityModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改活动
+      tags:
+      - Setting - 管理接口
+  /manager/v1/setting/activity/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: SettingActivityDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 活动ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      tags:
+      - Setting - 管理接口
+    get:
+      consumes:
+      - application/json
+      operationId: SettingActivityDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 活动ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 获取指定活动
+      tags:
+      - Setting - 管理接口
+  /manager/v1/setting/guide:
+    get:
+      consumes:
+      - application/json
+      operationId: SettingGuideList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.GuideListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.PaginationRes'
+      summary: 获取引导
+      tags:
+      - Setting - 管理接口
+    post:
+      consumes:
+      - application/json
+      operationId: SettingGuideSave
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.GuideSaveReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 保存引导
+      tags:
+      - Setting - 管理接口
+    put:
+      consumes:
+      - application/json
+      operationId: SettingGuideModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.GuideModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M1022 修改引导
+      tags:
+      - Setting - 管理接口
+  /manager/v1/setting/guide/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: SettingGuideDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 引导ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M1021 删除引导
+      tags:
+      - Setting - 管理接口
+    get:
+      consumes:
+      - application/json
+      operationId: SettingGuideGet
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 引导ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.GuideDetail'
+      summary: 获取指定引导
+      tags:
+      - Setting - 管理接口
   /manager/v1/setting/legal:
     post:
       consumes:
@@ -14427,40 +14892,4 @@ paths:
       summary: M1001 用户登录
       tags:
       - '[M]管理接口'
-  /v2/certification/face:
-    get:
-      consumes:
-      - application/json
-      operationId: CertificationFace
-      parameters:
-      - description: 订单编号
-        in: query
-        name: orderNo
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/definition.PersonCertificationOcrRes'
-      summary: 获取人脸核身参数
-      tags:
-      - Person - 实人
-  /v2/certification/ocr:
-    get:
-      consumes:
-      - application/json
-      operationId: CertificationOcr
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/definition.PersonCertificationOcrRes'
-      summary: 获取人脸核身OCR参数
-      tags:
-      - Person - 实人
 swagger: "2.0"

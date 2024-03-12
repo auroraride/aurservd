@@ -15,102 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/common/captcha": {
-            "get": {
-                "description": "生成的图片验证码有效时间为10分钟",
-                "consumes": [
-                    "image/png"
-                ],
-                "produces": [
-                    "image/png"
-                ],
-                "tags": [
-                    "Communal - 公共接口"
-                ],
-                "summary": "C1 生成图片验证码",
-                "operationId": "CaptchaGenerate",
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "headers": {
-                            "X-Captcha-Id  true": {
-                                "type": "string",
-                                "description": "Captcha验证码ID"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/common/oss/token": {
-            "get": {
-                "description": "上传文件必须，单次获取有效时间为1个小时",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Communal - 公共接口"
-                ],
-                "summary": "C3 获取阿里云oss临时凭证",
-                "operationId": "AliyunOssToken",
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.AliyunOssStsRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/common/sms": {
-            "post": {
-                "description": "上传文件必须，单次获取有效时间为1个小时",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Communal - 公共接口"
-                ],
-                "summary": "C2 发送短信验证码",
-                "operationId": "SendSmsCode",
-                "parameters": [
-                    {
-                        "description": "请求参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.SmsReq"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Captcha验证码ID",
-                        "name": "X-Captcha-Id",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.SmsRes"
-                        }
-                    }
-                }
-            }
-        },
         "/manager/v1/assistance": {
             "get": {
                 "consumes": [
@@ -1993,7 +1897,7 @@ const docTemplate = `{
                             "CabinetBrandTuobang",
                             "CabinetBrandXiliulouServer"
                         ],
-                        "description": "电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                        "description": "电柜型号 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                         "name": "brand",
                         "in": "query"
                     },
@@ -2233,7 +2137,7 @@ const docTemplate = `{
                             "CabinetBrandTuobang",
                             "CabinetBrandXiliulouServer"
                         ],
-                        "description": "品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                        "description": "品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                         "name": "brand",
                         "in": "query"
                     },
@@ -4694,12 +4598,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "账单截止日期",
                         "name": "end",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
+                        "description": "企业ID",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -4789,6 +4695,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "企业ID",
                         "name": "enterpriseId",
                         "in": "query"
                     },
@@ -4853,6 +4760,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "账单ID",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -5351,6 +5259,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "企业ID",
                         "name": "enterpriseId",
                         "in": "query",
                         "required": true
@@ -5911,7 +5820,7 @@ const docTemplate = `{
                             "CabinetBrandTuobang",
                             "CabinetBrandXiliulouServer"
                         ],
-                        "description": "电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                        "description": "电柜类型, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                         "name": "brand",
                         "in": "query"
                     },
@@ -7218,6 +7127,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否开启押金 fales:未开启 true:开启",
+                        "name": "deposit",
                         "in": "query"
                     },
                     {
@@ -9617,6 +9532,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "骑手ID",
                         "name": "riderId",
                         "in": "query",
                         "required": true
@@ -9715,6 +9631,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "骑手ID",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -9874,6 +9791,7 @@ const docTemplate = `{
                     {
                         "minLength": 4,
                         "type": "string",
+                        "description": "流水号",
                         "name": "serial",
                         "in": "query",
                         "required": true
@@ -10003,6 +9921,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "电柜ID",
                         "name": "cabinetId",
                         "in": "query",
                         "required": true
@@ -10346,6 +10265,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "骑行卡ID",
                         "name": "planId",
                         "in": "query",
                         "required": true
@@ -10541,6 +10461,395 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.SettingReq"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/setting/activity": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Setting - 管理接口"
+                ],
+                "summary": "获取活动列表",
+                "operationId": "SettingActivityList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.PaginationReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Setting - 管理接口"
+                ],
+                "summary": "修改活动",
+                "operationId": "SettingActivityModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.ActivityModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Setting -  管理接口"
+                ],
+                "summary": "保存活动",
+                "operationId": "SettingActivityCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.ActivityCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/setting/activity/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Setting - 管理接口"
+                ],
+                "summary": "获取指定活动",
+                "operationId": "SettingActivityDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "活动ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Setting - 管理接口"
+                ],
+                "operationId": "SettingActivityDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "活动ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/setting/guide": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Setting - 管理接口"
+                ],
+                "summary": "获取引导",
+                "operationId": "SettingGuideList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.GuideListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.PaginationRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Setting - 管理接口"
+                ],
+                "summary": "M1022 修改引导",
+                "operationId": "SettingGuideModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.GuideModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Setting - 管理接口"
+                ],
+                "summary": "保存引导",
+                "operationId": "SettingGuideSave",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.GuideSaveReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/setting/guide/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Setting - 管理接口"
+                ],
+                "summary": "获取指定引导",
+                "operationId": "SettingGuideGet",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "引导ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.GuideDetail"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Setting - 管理接口"
+                ],
+                "summary": "M1021 删除引导",
+                "operationId": "SettingGuideDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "引导ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -12257,61 +12566,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/v2/certification/face": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Person - 实人"
-                ],
-                "summary": "获取人脸核身参数",
-                "operationId": "CertificationFace",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "订单编号",
-                        "name": "orderNo",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/definition.PersonCertificationOcrClientRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/v2/certification/ocr": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Person - 实人"
-                ],
-                "summary": "获取人脸核身OCR参数",
-                "operationId": "CertificationOcr",
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/definition.PersonCertificationOcrClientRes"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -12364,32 +12618,150 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.PersonCertificationOcrClientRes": {
+        "definition.ActivityCreateReq": {
+            "type": "object",
+            "required": [
+                "image",
+                "link",
+                "name",
+                "sort"
+            ],
+            "properties": {
+                "image": {
+                    "description": "图片",
+                    "type": "string"
+                },
+                "link": {
+                    "description": "链接",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.ActivityModifyReq": {
+            "type": "object",
+            "required": [
+                "image",
+                "link",
+                "name",
+                "sort"
+            ],
+            "properties": {
+                "image": {
+                    "description": "图片",
+                    "type": "string"
+                },
+                "link": {
+                    "description": "链接",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.GuideDetail": {
             "type": "object",
             "properties": {
-                "appId": {
-                    "description": "WBAppid",
+                "answer": {
                     "type": "string"
                 },
-                "nonce": {
-                    "description": "随机字符串",
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
                     "type": "string"
                 },
-                "orderNo": {
-                    "description": "订单号",
+                "remark": {
                     "type": "string"
                 },
-                "sign": {
-                    "description": "签名",
+                "sort": {
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.GuideListReq": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.GuideModifyReq": {
+            "type": "object",
+            "required": [
+                "answer",
+                "name",
+                "sort"
+            ],
+            "properties": {
+                "answer": {
+                    "description": "答案",
                     "type": "string"
                 },
-                "userId": {
-                    "description": "用户唯一标识",
+                "name": {
+                    "description": "名称",
                     "type": "string"
                 },
-                "version": {
-                    "description": "版本号",
+                "remark": {
+                    "description": "备注",
                     "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.GuideSaveReq": {
+            "type": "object",
+            "required": [
+                "answer",
+                "name",
+                "sort"
+            ],
+            "properties": {
+                "answer": {
+                    "description": "答案",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
                 }
             }
         },
@@ -12402,12 +12774,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "enterpriseId": {
+                    "description": "团签ID",
                     "type": "integer"
                 },
                 "name": {
+                    "description": "姓名",
                     "type": "string"
                 },
                 "phone": {
+                    "description": "电话",
                     "type": "string"
                 }
             }
@@ -12439,29 +12814,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AliyunOssStsRes": {
-            "type": "object",
-            "properties": {
-                "accessKeyId": {
-                    "type": "string"
-                },
-                "accessKeySecret": {
-                    "type": "string"
-                },
-                "bucket": {
-                    "type": "string"
-                },
-                "expiration": {
-                    "type": "string"
-                },
-                "region": {
-                    "type": "string"
-                },
-                "stsToken": {
-                    "type": "string"
-                }
-            }
-        },
         "model.AllocateCreateRes": {
             "type": "object",
             "properties": {
@@ -12481,9 +12833,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "id": {
+                    "description": "救援ID",
                     "type": "integer"
                 },
                 "storeId": {
+                    "description": "门店ID",
                     "type": "integer"
                 }
             }
@@ -12619,9 +12973,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "id": {
+                    "description": "救援ID",
                     "type": "integer"
                 },
                 "reason": {
+                    "description": "免费理由",
                     "type": "string"
                 }
             }
@@ -12731,9 +13087,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "id": {
+                    "description": "救援ID",
                     "type": "integer"
                 },
                 "reason": {
+                    "description": "拒绝原因",
                     "type": "string"
                 }
             }
@@ -13059,6 +13417,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "cityId": {
+                    "description": "城市",
                     "type": "integer"
                 },
                 "enable": {
@@ -13066,6 +13425,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "sn": {
+                    "description": "电池编号",
                     "type": "string"
                 }
             }
@@ -13474,48 +13834,62 @@ const docTemplate = `{
             ],
             "properties": {
                 "area": {
+                    "description": "网点面积",
                     "type": "number"
                 },
                 "bankNumber": {
+                    "description": "房东银行卡号",
                     "type": "string"
                 },
                 "electricity": {
+                    "description": "电费单价",
                     "type": "string"
                 },
                 "electricityPledge": {
+                    "description": "电费押金",
                     "type": "number"
                 },
                 "endTime": {
+                    "description": "租期结束时间",
                     "type": "string"
                 },
                 "file": {
+                    "description": "合同文件",
                     "type": "string"
                 },
                 "idCardNumber": {
+                    "description": "房东身份证",
                     "type": "string"
                 },
                 "landlordName": {
+                    "description": "房东姓名",
                     "type": "string"
                 },
                 "lease": {
+                    "description": "租期月数",
                     "type": "integer"
                 },
                 "phone": {
+                    "description": "房东手机号",
                     "type": "string"
                 },
                 "pledge": {
+                    "description": "押金",
                     "type": "number"
                 },
                 "rent": {
+                    "description": "租金",
                     "type": "number"
                 },
                 "sheets": {
+                    "description": "底单",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "startTime": {
+                    "description": "租期开始时间",
                     "type": "string"
                 }
             }
@@ -13527,6 +13901,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "id": {
+                    "description": "合同ID",
                     "type": "integer"
                 },
                 "sheets": {
@@ -13550,9 +13925,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "address": {
+                    "description": "详细地址",
                     "type": "string"
                 },
                 "cityId": {
+                    "description": "城市",
                     "type": "integer"
                 },
                 "contracts": {
@@ -13562,15 +13939,19 @@ const docTemplate = `{
                     }
                 },
                 "lat": {
+                    "description": "纬度",
                     "type": "number"
                 },
                 "lng": {
+                    "description": "经度",
                     "type": "number"
                 },
                 "name": {
+                    "description": "网点名称",
                     "type": "string"
                 },
                 "photos": {
+                    "description": "网点照片",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -13677,9 +14058,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "address": {
+                    "description": "详细地址",
                     "type": "string"
                 },
                 "cityId": {
+                    "description": "城市",
                     "type": "integer"
                 },
                 "contracts": {
@@ -13689,15 +14072,19 @@ const docTemplate = `{
                     }
                 },
                 "lat": {
+                    "description": "纬度",
                     "type": "number"
                 },
                 "lng": {
+                    "description": "经度",
                     "type": "number"
                 },
                 "name": {
+                    "description": "网点名称",
                     "type": "string"
                 },
                 "photos": {
+                    "description": "网点照片",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -13764,6 +14151,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "start": {
@@ -13950,12 +14338,15 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "cabinetId": {
+                    "description": "电柜ID",
                     "type": "integer"
                 },
                 "id": {
+                    "description": "订阅ID",
                     "type": "integer"
                 },
                 "storeId": {
+                    "description": "门店ID",
                     "type": "integer"
                 }
             }
@@ -13964,7 +14355,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "brand": {
-                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                     "enum": [
                         "KAIXIN",
                         "YUNDONG",
@@ -14122,12 +14513,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
-                    "enum": [
-                        "KAIXIN",
-                        "YUNDONG",
-                        "TUOBANG"
-                    ],
+                    "description": "品牌, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                     "allOf": [
                         {
                             "$ref": "#/definitions/adapter.CabinetBrand"
@@ -14147,18 +14533,22 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "models": {
+                    "description": "电池型号",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "name": {
+                    "description": "电柜名称",
                     "type": "string"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "serial": {
+                    "description": "电柜编码",
                     "type": "string"
                 },
                 "simDate": {
@@ -14222,7 +14612,7 @@ const docTemplate = `{
                     }
                 },
                 "brand": {
-                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                     "allOf": [
                         {
                             "$ref": "#/definitions/adapter.CabinetBrand"
@@ -14297,12 +14687,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
-                    "enum": [
-                        "KAIXIN",
-                        "YUNDONG",
-                        "TUOBANG"
-                    ],
+                    "description": "品牌, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                     "allOf": [
                         {
                             "$ref": "#/definitions/adapter.CabinetBrand"
@@ -14361,9 +14746,11 @@ const docTemplate = `{
                     }
                 },
                 "name": {
+                    "description": "电柜名称",
                     "type": "string"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "reserves": {
@@ -14374,6 +14761,7 @@ const docTemplate = `{
                     }
                 },
                 "serial": {
+                    "description": "电柜编码",
                     "type": "string"
                 },
                 "simDate": {
@@ -14502,10 +14890,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "status": {
-                    "description": "0未处理 1已处理",
+                    "description": "故障状态, 0未处理 1已处理",
                     "type": "integer",
                     "maximum": 1,
                     "minimum": 0,
@@ -14606,12 +14995,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
-                    "enum": [
-                        "KAIXIN",
-                        "YUNDONG",
-                        "TUOBANG"
-                    ],
+                    "description": "品牌, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                     "allOf": [
                         {
                             "$ref": "#/definitions/adapter.CabinetBrand"
@@ -14670,12 +15054,15 @@ const docTemplate = `{
                     }
                 },
                 "name": {
+                    "description": "电柜名称",
                     "type": "string"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "serial": {
+                    "description": "电柜编码",
                     "type": "string"
                 },
                 "simDate": {
@@ -14721,7 +15108,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "brand": {
-                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                     "enum": [
                         "KAIXIN",
                         "YUNDONG",
@@ -14782,19 +15169,23 @@ const docTemplate = `{
             ],
             "properties": {
                 "batterySn": {
+                    "description": "电池编码",
                     "type": "string"
                 },
                 "id": {
+                    "description": "电柜ID",
                     "type": "integer"
                 },
                 "index": {
+                    "description": "仓门序号",
                     "type": "integer"
                 },
                 "phone": {
+                    "description": "骑手电话",
                     "type": "string"
                 },
                 "remark": {
-                    "description": "可手动输入, 预留项: ` + "`" + `吞电池` + "`" + ` ` + "`" + `柜门未关好` + "`" + ` ` + "`" + `仓位不足` + "`" + `",
+                    "description": "操作原因, 可手动输入, 预留项: ` + "`" + `吞电池` + "`" + ` ` + "`" + `柜门未关好` + "`" + ` ` + "`" + `仓位不足` + "`" + `",
                     "type": "string"
                 }
             }
@@ -14826,12 +15217,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "cabinetId": {
+                    "description": "电柜ID",
                     "type": "integer"
                 },
                 "model": {
+                    "description": "型号",
                     "type": "string"
                 },
                 "num": {
+                    "description": "数量",
                     "type": "integer"
                 }
             }
@@ -14928,6 +15322,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "open": {
+                    "description": "状态",
                     "type": "boolean"
                 }
             }
@@ -15062,21 +15457,26 @@ const docTemplate = `{
             ],
             "properties": {
                 "amount": {
+                    "description": "金额",
                     "type": "number"
                 },
                 "number": {
+                    "description": "生成数量",
                     "type": "integer"
                 },
                 "phones": {
+                    "description": "骑手电话",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "templateId": {
+                    "description": "优惠券模板",
                     "type": "integer"
                 }
             }
@@ -15249,18 +15649,18 @@ const docTemplate = `{
             ],
             "properties": {
                 "cityIds": {
-                    "description": "和` + "`" + `plans` + "`" + `不能同时为空也不能同时存在",
+                    "description": "可用城市, 和` + "`" + `plans` + "`" + `不能同时为空也不能同时存在",
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
                 },
                 "durationDays": {
-                    "description": "` + "`" + `durationRule=2` + "`" + `必填",
+                    "description": "相对天数, ` + "`" + `durationRule=2` + "`" + `必填",
                     "type": "integer"
                 },
                 "durationRule": {
-                    "description": "1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
+                    "description": "有效期规则, 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
                     "enum": [
                         1,
                         2
@@ -15272,7 +15672,7 @@ const docTemplate = `{
                     ]
                 },
                 "durationTime": {
-                    "description": "` + "`" + `durationRule=1` + "`" + `必填 yyyy-mm-dd, 如 2022-09-25",
+                    "description": "过期时间, ` + "`" + `durationRule=1` + "`" + `必填 yyyy-mm-dd, 如 2022-09-25",
                     "type": "string"
                 },
                 "multiple": {
@@ -15280,22 +15680,23 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "name": {
+                    "description": "名称",
                     "type": "string"
                 },
                 "planIds": {
-                    "description": "和` + "`" + `cities` + "`" + `不能同时为空也不能同时存在",
+                    "description": "绑定骑士卡, 和` + "`" + `cities` + "`" + `不能同时为空也不能同时存在",
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
                 },
                 "remark": {
-                    "description": "10字以内, 需要显示在优惠券列表中",
+                    "description": "备注信息, 10字以内, 需要显示在优惠券列表中",
                     "type": "string",
                     "maxLength": 10
                 },
                 "rule": {
-                    "description": "1:互斥 2:可叠加",
+                    "description": "使用规则, 1:互斥 2:可叠加",
                     "enum": [
                         1,
                         2
@@ -15323,18 +15724,18 @@ const docTemplate = `{
                     }
                 },
                 "cityIds": {
-                    "description": "和` + "`" + `plans` + "`" + `不能同时为空也不能同时存在",
+                    "description": "可用城市, 和` + "`" + `plans` + "`" + `不能同时为空也不能同时存在",
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
                 },
                 "durationDays": {
-                    "description": "` + "`" + `durationRule=2` + "`" + `必填",
+                    "description": "相对天数, ` + "`" + `durationRule=2` + "`" + `必填",
                     "type": "integer"
                 },
                 "durationRule": {
-                    "description": "1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
+                    "description": "有效期规则, 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
                     "enum": [
                         1,
                         2
@@ -15346,7 +15747,7 @@ const docTemplate = `{
                     ]
                 },
                 "durationTime": {
-                    "description": "` + "`" + `durationRule=1` + "`" + `必填 yyyy-mm-dd, 如 2022-09-25",
+                    "description": "过期时间, ` + "`" + `durationRule=1` + "`" + `必填 yyyy-mm-dd, 如 2022-09-25",
                     "type": "string"
                 },
                 "enable": {
@@ -15371,7 +15772,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "planIds": {
-                    "description": "和` + "`" + `cities` + "`" + `不能同时为空也不能同时存在",
+                    "description": "绑定骑士卡, 和` + "`" + `cities` + "`" + `不能同时为空也不能同时存在",
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -15388,7 +15789,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rule": {
-                    "description": "1:互斥 2:可叠加",
+                    "description": "使用规则, 1:互斥 2:可叠加",
                     "enum": [
                         1,
                         2
@@ -15432,18 +15833,18 @@ const docTemplate = `{
                     }
                 },
                 "cityIds": {
-                    "description": "和` + "`" + `plans` + "`" + `不能同时为空也不能同时存在",
+                    "description": "可用城市, 和` + "`" + `plans` + "`" + `不能同时为空也不能同时存在",
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
                 },
                 "durationDays": {
-                    "description": "` + "`" + `durationRule=2` + "`" + `必填",
+                    "description": "相对天数, ` + "`" + `durationRule=2` + "`" + `必填",
                     "type": "integer"
                 },
                 "durationRule": {
-                    "description": "1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
+                    "description": "有效期规则, 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
                     "enum": [
                         1,
                         2
@@ -15455,7 +15856,7 @@ const docTemplate = `{
                     ]
                 },
                 "durationTime": {
-                    "description": "` + "`" + `durationRule=1` + "`" + `必填 yyyy-mm-dd, 如 2022-09-25",
+                    "description": "过期时间, ` + "`" + `durationRule=1` + "`" + `必填 yyyy-mm-dd, 如 2022-09-25",
                     "type": "string"
                 },
                 "multiple": {
@@ -15463,7 +15864,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "planIds": {
-                    "description": "和` + "`" + `cities` + "`" + `不能同时为空也不能同时存在",
+                    "description": "绑定骑士卡, 和` + "`" + `cities` + "`" + `不能同时为空也不能同时存在",
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -15477,7 +15878,7 @@ const docTemplate = `{
                     }
                 },
                 "rule": {
-                    "description": "1:互斥 2:可叠加",
+                    "description": "使用规则, 1:互斥 2:可叠加",
                     "enum": [
                         1,
                         2
@@ -15599,7 +16000,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "brandId": {
-                    "description": "关联: ` + "`" + `MB015 车辆型号列表` + "`" + `",
+                    "description": "型号, 关联: ` + "`" + `MB015 车辆型号列表` + "`" + `",
                     "type": "integer"
                 },
                 "color": {
@@ -15611,6 +16012,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "exFactory": {
+                    "description": "生产批次",
                     "type": "string"
                 },
                 "machine": {
@@ -15626,6 +16028,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sn": {
+                    "description": "车架号",
                     "type": "string"
                 }
             }
@@ -15800,6 +16203,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "start": {
@@ -15821,12 +16225,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "cityId": {
+                    "description": "城市ID",
                     "type": "integer"
                 },
                 "name": {
+                    "description": "姓名",
                     "type": "string"
                 },
                 "phone": {
+                    "description": "手机号",
                     "type": "string"
                 }
             }
@@ -15842,6 +16249,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "id": {
+                    "description": "店员ID",
                     "type": "integer"
                 }
             }
@@ -15911,7 +16319,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "stationID": {
-                    "description": "站点id",
+                    "description": "站点ID",
                     "type": "integer"
                 }
             }
@@ -15925,9 +16333,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "end": {
+                    "description": "合同结束日期",
                     "type": "string"
                 },
                 "file": {
+                    "description": "合同文件",
                     "type": "string"
                 },
                 "id": {
@@ -15935,6 +16345,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "start": {
+                    "description": "合同开始日期",
                     "type": "string"
                 }
             }
@@ -15949,12 +16360,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "end": {
+                    "description": "合同结束日期",
                     "type": "string"
                 },
                 "enterpriseId": {
+                    "description": "企业ID",
                     "type": "integer"
                 },
                 "file": {
+                    "description": "合同文件",
                     "type": "string"
                 },
                 "id": {
@@ -15962,6 +16376,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "start": {
+                    "description": "合同开始日期",
                     "type": "string"
                 }
             }
@@ -15982,6 +16397,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "address": {
+                    "description": "企业地址",
                     "type": "string"
                 },
                 "agent": {
@@ -15989,15 +16405,19 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "cityId": {
+                    "description": "所在城市",
                     "type": "integer"
                 },
                 "companyName": {
+                    "description": "企业全称",
                     "type": "string"
                 },
                 "contactName": {
+                    "description": "联系人",
                     "type": "string"
                 },
                 "contactPhone": {
+                    "description": "联系电话",
                     "type": "string"
                 },
                 "days": {
@@ -16008,6 +16428,7 @@ const docTemplate = `{
                     }
                 },
                 "deposit": {
+                    "description": "押金",
                     "type": "number"
                 },
                 "distance": {
@@ -16015,13 +16436,15 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "idcardNumber": {
+                    "description": "身份证号",
                     "type": "string"
                 },
                 "name": {
+                    "description": "团签名称",
                     "type": "string"
                 },
                 "payment": {
-                    "description": "1:预付费 2:后付费",
+                    "description": "付费方式, 1:预付费 2:后付费",
                     "type": "integer",
                     "maximum": 2,
                     "minimum": 1,
@@ -16046,7 +16469,7 @@ const docTemplate = `{
                     ]
                 },
                 "status": {
-                    "description": "0:未合作 1:合作中 2:已暂停",
+                    "description": "合作状态, 0:未合作 1:合作中 2:已暂停",
                     "type": "integer",
                     "maximum": 2,
                     "minimum": 0,
@@ -16078,6 +16501,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "address": {
+                    "description": "企业地址",
                     "type": "string"
                 },
                 "agent": {
@@ -16085,15 +16509,19 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "cityId": {
+                    "description": "所在城市",
                     "type": "integer"
                 },
                 "companyName": {
+                    "description": "企业全称",
                     "type": "string"
                 },
                 "contactName": {
+                    "description": "联系人",
                     "type": "string"
                 },
                 "contactPhone": {
+                    "description": "联系电话",
                     "type": "string"
                 },
                 "days": {
@@ -16104,6 +16532,7 @@ const docTemplate = `{
                     }
                 },
                 "deposit": {
+                    "description": "押金",
                     "type": "number"
                 },
                 "distance": {
@@ -16111,13 +16540,15 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "idcardNumber": {
+                    "description": "身份证号",
                     "type": "string"
                 },
                 "name": {
+                    "description": "团签名称",
                     "type": "string"
                 },
                 "payment": {
-                    "description": "1:预付费 2:后付费",
+                    "description": "付费方式, 1:预付费 2:后付费",
                     "type": "integer",
                     "maximum": 2,
                     "minimum": 1,
@@ -16142,7 +16573,7 @@ const docTemplate = `{
                     ]
                 },
                 "status": {
-                    "description": "0:未合作 1:合作中 2:已暂停",
+                    "description": "合作状态, 0:未合作 1:合作中 2:已暂停",
                     "type": "integer",
                     "maximum": 2,
                     "minimum": 0,
@@ -16166,9 +16597,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "amount": {
+                    "description": "金额",
                     "type": "number"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 }
             }
@@ -16187,9 +16620,11 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "cityId": {
+                    "description": "城市",
                     "type": "integer"
                 },
                 "enterpriseId": {
+                    "description": "企业ID",
                     "type": "integer"
                 },
                 "id": {
@@ -16201,9 +16636,11 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "model": {
+                    "description": "电池型号",
                     "type": "string"
                 },
                 "price": {
+                    "description": "单价(元/天)",
                     "type": "number"
                 }
             }
@@ -16429,12 +16866,15 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "enterpriseId": {
+                    "description": "企业ID",
                     "type": "integer"
                 },
                 "name": {
+                    "description": "姓名",
                     "type": "string"
                 },
                 "phone": {
+                    "description": "电话号",
                     "type": "string"
                 },
                 "priceId": {
@@ -16442,6 +16882,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "stationId": {
+                    "description": "站点ID",
                     "type": "integer"
                 }
             }
@@ -16486,12 +16927,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "cityId": {
+                    "description": "城市ID",
                     "type": "integer"
                 },
                 "enterpriseId": {
+                    "description": "企业ID",
                     "type": "integer"
                 },
                 "name": {
+                    "description": "站点名称",
                     "type": "string"
                 }
             }
@@ -16525,9 +16969,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "cityId": {
+                    "description": "城市ID",
                     "type": "integer"
                 },
                 "name": {
+                    "description": "站点名称",
                     "type": "string"
                 }
             }
@@ -16586,12 +17032,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "brand": {
-                    "description": "电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
-                    "enum": [
-                        "KAIXIN",
-                        "YUNDONG",
-                        "TUOBANG"
-                    ],
+                    "description": "电柜类型, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                     "allOf": [
                         {
                             "$ref": "#/definitions/adapter.CabinetBrand"
@@ -16627,6 +17068,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "serial": {
@@ -16826,6 +17268,10 @@ const docTemplate = `{
                     "description": "反馈ID",
                     "type": "integer"
                 },
+                "source": {
+                    "description": "反馈来源",
+                    "type": "integer"
+                },
                 "type": {
                     "description": "反馈类型",
                     "type": "integer"
@@ -16850,8 +17296,12 @@ const docTemplate = `{
                     "description": "反馈结束时间",
                     "type": "string"
                 },
+                "enterprise": {
+                    "description": "是否团签, 0:全部 1:团签 2:个签",
+                    "type": "integer"
+                },
                 "enterpriseID": {
-                    "description": "反馈用户团签id",
+                    "description": "团签企业ID, ` + "`" + `enterprise = 1` + "`" + `时才会生效",
                     "type": "integer"
                 },
                 "keyword": {
@@ -16860,6 +17310,10 @@ const docTemplate = `{
                 },
                 "pageSize": {
                     "description": "每页数据, 默认20",
+                    "type": "integer"
+                },
+                "source": {
+                    "description": "反馈来源",
                     "type": "integer"
                 },
                 "start": {
@@ -16899,6 +17353,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "cityId": {
+                    "description": "城市ID",
                     "type": "integer"
                 },
                 "ebikeSn": {
@@ -16906,21 +17361,27 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "employeeId": {
+                    "description": "店员ID",
                     "type": "integer"
                 },
                 "end": {
+                    "description": "结束日期",
                     "type": "string"
                 },
                 "name": {
+                    "description": "姓名",
                     "type": "string"
                 },
                 "phone": {
+                    "description": "电话",
                     "type": "string"
                 },
                 "planId": {
+                    "description": "骑行卡ID",
                     "type": "integer"
                 },
                 "storeId": {
+                    "description": "门店ID",
                     "type": "integer"
                 }
             }
@@ -16932,15 +17393,19 @@ const docTemplate = `{
             ],
             "properties": {
                 "count": {
+                    "description": "是否需要盘点",
                     "type": "boolean"
                 },
                 "name": {
+                    "description": "物资名称",
                     "type": "string"
                 },
                 "purchase": {
+                    "description": "是否可采购",
                     "type": "boolean"
                 },
                 "transfer": {
+                    "description": "是否可调拨",
                     "type": "boolean"
                 }
             }
@@ -16952,7 +17417,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "name": {
-                    "description": "*POST参数*",
+                    "description": "物资名称, *POST参数*",
                     "type": "string"
                 }
             }
@@ -17013,6 +17478,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "content": {
+                    "description": "政策内容",
                     "type": "string"
                 }
             }
@@ -17083,6 +17549,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "cityIds": {
+                    "description": "城市列表",
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -17093,12 +17560,15 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "name": {
+                    "description": "姓名",
                     "type": "string"
                 },
                 "password": {
+                    "description": "密码",
                     "type": "string"
                 },
                 "phone": {
+                    "description": "电话",
                     "type": "string"
                 }
             }
@@ -17113,15 +17583,19 @@ const docTemplate = `{
             ],
             "properties": {
                 "name": {
+                    "description": "姓名",
                     "type": "string"
                 },
                 "password": {
+                    "description": "密码",
                     "type": "string"
                 },
                 "phone": {
+                    "description": "手机号",
                     "type": "string"
                 },
                 "roleId": {
+                    "description": "角色ID",
                     "type": "integer"
                 }
             }
@@ -17190,6 +17664,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "description": "订阅ID",
                     "type": "integer"
                 },
                 "storeId": {
@@ -17206,13 +17681,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "ebikeKeyword": {
+                    "description": "车架号或车牌号",
                     "type": "string"
                 },
                 "id": {
+                    "description": "订阅ID",
                     "type": "integer"
                 },
                 "storeId": {
-                    "description": "旧车入库至门店",
+                    "description": "门店ID, 旧车入库至门店",
                     "type": "integer"
                 }
             }
@@ -17225,10 +17702,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "id": {
+                    "description": "订阅ID",
                     "type": "integer"
                 },
                 "storeId": {
-                    "description": "旧车入库至门店",
+                    "description": "门店ID, 旧车入库至门店",
                     "type": "integer"
                 }
             }
@@ -17440,6 +17918,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "riderId": {
@@ -17481,6 +17960,19 @@ const docTemplate = `{
                 }
             }
         },
+        "model.PaginationReq": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                }
+            }
+        },
         "model.PaginationRes": {
             "type": "object",
             "properties": {
@@ -17518,19 +18010,19 @@ const docTemplate = `{
         "model.Person": {
             "type": "object",
             "properties": {
-                "auth_face": {
+                "authFace": {
                     "description": "实名认证人脸照片",
                     "type": "string"
                 },
-                "id_card_national": {
+                "idCardNational": {
                     "description": "证件国徽面",
                     "type": "string"
                 },
-                "id_card_number": {
+                "idCardNumber": {
                     "description": "证件号码",
                     "type": "string"
                 },
-                "id_card_portrait": {
+                "idCardPortrait": {
                     "description": "证件人像面",
                     "type": "string"
                 }
@@ -17616,6 +18108,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "days": {
+                    "description": "有效天数",
                     "type": "integer",
                     "minimum": 1
                 },
@@ -17640,6 +18133,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "price": {
+                    "description": "价格",
                     "type": "number"
                 }
             }
@@ -17649,6 +18143,7 @@ const docTemplate = `{
             "required": [
                 "cities",
                 "complexes",
+                "deposit",
                 "end",
                 "intelligent",
                 "name",
@@ -17657,10 +18152,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "brandId": {
-                    "description": "车加电必填",
+                    "description": "电车型号, 车加电必填",
                     "type": "integer"
                 },
                 "cities": {
+                    "description": "启用城市",
                     "type": "array",
                     "minItems": 1,
                     "items": {
@@ -17668,10 +18164,26 @@ const docTemplate = `{
                     }
                 },
                 "complexes": {
+                    "description": "骑士卡详细信息",
                     "type": "array",
                     "minItems": 1,
                     "items": {
                         "$ref": "#/definitions/model.PlanComplex"
+                    }
+                },
+                "deposit": {
+                    "description": "是否开启押金",
+                    "type": "boolean"
+                },
+                "depositAmount": {
+                    "description": "押金金额",
+                    "type": "number"
+                },
+                "depositPayway": {
+                    "description": "押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
                     }
                 },
                 "enable": {
@@ -17679,6 +18191,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "end": {
+                    "description": "结束日期",
                     "type": "string"
                 },
                 "intelligent": {
@@ -17686,6 +18199,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "name": {
+                    "description": "骑士卡名称",
                     "type": "string"
                 },
                 "notes": {
@@ -17696,9 +18210,11 @@ const docTemplate = `{
                     }
                 },
                 "start": {
+                    "description": "开始日期",
                     "type": "string"
                 },
                 "type": {
+                    "description": "骑士卡类别",
                     "$ref": "#/definitions/model.PlanType"
                 }
             }
@@ -17801,6 +18317,21 @@ const docTemplate = `{
                         }
                     }
                 },
+                "deposit": {
+                    "description": "是否开启押金 fales:未开启 true:开启",
+                    "type": "boolean"
+                },
+                "depositAmount": {
+                    "description": "押金金额",
+                    "type": "number"
+                },
+                "depositPayway": {
+                    "description": "押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "enable": {
                     "description": "是否启用",
                     "type": "boolean"
@@ -17861,13 +18392,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "end": {
+                    "description": "结束日期",
                     "type": "string"
                 },
                 "id": {
-                    "description": "使用items[n].id",
+                    "description": "骑士卡ID, 使用items[n].id",
                     "type": "integer"
                 },
                 "start": {
+                    "description": "开始日期",
                     "type": "string"
                 }
             }
@@ -17922,6 +18455,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "phones": {
+                    "description": "电话",
                     "type": "array",
                     "minItems": 1,
                     "items": {
@@ -17929,13 +18463,15 @@ const docTemplate = `{
                     }
                 },
                 "points": {
+                    "description": "积分",
                     "type": "integer"
                 },
                 "reason": {
+                    "description": "原因",
                     "type": "string"
                 },
                 "type": {
-                    "description": "1:消费 2:奖励",
+                    "description": "类别, 1:消费 2:奖励",
                     "enum": [
                         1,
                         2
@@ -18009,16 +18545,19 @@ const docTemplate = `{
             ],
             "properties": {
                 "points": {
+                    "description": "积分",
                     "type": "integer"
                 },
                 "reason": {
+                    "description": "原因",
                     "type": "string"
                 },
                 "riderId": {
+                    "description": "骑手",
                     "type": "integer"
                 },
                 "type": {
-                    "description": "1:消费 2:奖励",
+                    "description": "类别, 1:消费 2:奖励",
                     "enum": [
                         1,
                         2
@@ -18125,6 +18664,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "outRefundNo": {
+                    "description": "退款单号",
                     "type": "string"
                 },
                 "remark": {
@@ -18282,12 +18822,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "name": {
+                    "description": "联系人姓名",
                     "type": "string"
                 },
                 "phone": {
+                    "description": "联系人电话",
                     "type": "string"
                 },
                 "relation": {
+                    "description": "关系",
                     "type": "string"
                 }
             }
@@ -18334,9 +18877,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "remark": {
+                    "description": "跟进信息",
                     "type": "string"
                 },
                 "riderId": {
+                    "description": "骑手ID",
                     "type": "integer"
                 }
             }
@@ -18613,6 +19158,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "start": {
@@ -18661,6 +19207,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "id": {
+                    "description": "骑手ID",
                     "type": "integer"
                 }
             }
@@ -18694,6 +19241,7 @@ const docTemplate = `{
                     ]
                 },
                 "id": {
+                    "description": "骑手ID",
                     "type": "integer"
                 },
                 "phone": {
@@ -18753,6 +19301,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "name": {
+                    "description": "角色名称",
                     "type": "string"
                 },
                 "permissions": {
@@ -18820,6 +19369,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "content": {
+                    "description": "值",
                     "type": "string"
                 }
             }
@@ -18853,32 +19403,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.ShiguangjuIVRItem"
                     }
-                }
-            }
-        },
-        "model.SmsReq": {
-            "type": "object",
-            "required": [
-                "captchaCode",
-                "phone"
-            ],
-            "properties": {
-                "captchaCode": {
-                    "description": "captcha 验证码",
-                    "type": "string"
-                },
-                "phone": {
-                    "description": "手机号",
-                    "type": "string"
-                }
-            }
-        },
-        "model.SmsRes": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "description": "任务ID",
-                    "type": "string"
                 }
             }
         },
@@ -18951,9 +19475,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "id": {
+                    "description": "账单ID",
                     "type": "integer"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 }
             }
@@ -19069,9 +19595,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "remark": {
+                    "description": "备注信息",
                     "type": "string"
                 },
                 "uuid": {
+                    "description": "账单编码",
                     "type": "string"
                 }
             }
@@ -19141,9 +19669,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "description": "企业ID",
                     "type": "integer"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "start": {
@@ -19395,6 +19925,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "serial": {
@@ -19646,6 +20177,7 @@ const docTemplate = `{
                     ]
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 }
             }
@@ -19686,6 +20218,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "branchId": {
+                    "description": "网点",
                     "type": "integer"
                 },
                 "ebikeObtain": {
@@ -19704,6 +20237,7 @@ const docTemplate = `{
                     }
                 },
                 "name": {
+                    "description": "门店名称",
                     "type": "string"
                 },
                 "status": {
@@ -19773,6 +20307,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "branchId": {
+                    "description": "网点",
                     "type": "integer"
                 },
                 "ebikeObtain": {
@@ -19784,6 +20319,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "name": {
+                    "description": "门店名称",
                     "type": "string"
                 },
                 "status": {
@@ -19892,7 +20428,7 @@ const docTemplate = `{
                     }
                 },
                 "status": {
-                    "description": "1:通过 2:拒绝",
+                    "description": "审批状态, 1:通过 2:拒绝",
                     "type": "integer",
                     "enum": [
                         1,
@@ -19966,9 +20502,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "id": {
+                    "description": "订阅ID",
                     "type": "integer"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 }
             }
