@@ -74,7 +74,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	auth := middleware.RiderAuthMiddlewareV2
 
 	// 实人认证中间件（包含骑手登录认证）
-	// cert := middleware.RiderCertificationMiddlewareV2
+	cert := middleware.RiderCertificationMiddlewareV2
 
 	// 获取人身核验OCR参数
 	g.GET("/certification/ocr/client", rapi.Person.CertificationOcrClient, auth())
@@ -94,12 +94,12 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.GET("/deregister", v1.Rider.Deregister, auth()) // 注销账户
 
 	// 已开通城市
-	g.GET("/city", v1.City.List, auth())
+	g.GET("/city", v1.City.List)
 
 	// 合同
-	contract := g.Group("/contract")
-	contract.POST("/sign", v1.Contract.Sign, auth())
-	contract.GET("/:sn", v1.Contract.SignResult, auth())
+	contract := g.Group("/contract", auth(), cert())
+	contract.POST("/sign", v1.Contract.Sign)
+	contract.GET("/:sn", v1.Contract.SignResult)
 
 	// 获取网点
 	g.GET("/branch", v1.Branch.List, auth())
