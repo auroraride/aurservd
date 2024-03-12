@@ -16,6 +16,7 @@ import (
 const (
 	// pushUrl 推送请求URL
 	pushUrl = `http://api.push.mob.com/v3/push/createPush`
+	dropURl = `http://api.push.mob.com/push/drop`
 
 	source = "webapi"
 )
@@ -80,14 +81,48 @@ type Req struct {
 	Title       string
 	MessageData []MessageData
 	Channel     string
+	TaskCron    int
+	TaskTime    uint64
 }
 
-func (m *mobPush) SendMessage(req Req) {
+// DropMessage 丢弃消息
+func (m *mobPush) DropMessage(batchId string) (*Response, error) {
+	data := &DropMessage{
+		Appkey:  m.appKey,
+		BatchID: batchId,
+	}
+	// 排序并转换json字符串
+	b, _ := jsoniter.Marshal(data)
+	s := string(b)
+	// client.SetHeaders()
+	// 生成sign
+	sign := utils.Md5String(s + m.appSecret)
+
+	res, err := resty.New().R().
+		SetHeaders(map[string]string{
+			"Content-Type": "application/json",
+			"key":          m.appKey,
+			"sign":         sign,
+		}).
+		SetBody(s).
+		Post(dropURl)
+	if err != nil {
+		return nil, err
+	}
+	var response Response
+	err = jsoniter.Unmarshal(res.Body(), &response)
+	if err != nil {
+		return nil, err
+	}
+	return &response, nil
+}
+
+func (m *mobPush) SendMessage(req Req) (*Response, error) {
 	data := &Message{
 		Source: source,
 		Appkey: m.appKey,
 		PushTarget: &PushTarget{
-			Target: regid,
+			Target: broadcast,
 			Rids: []string{
 				req.RegId,
 			},
@@ -100,6 +135,8 @@ func (m *mobPush) SendMessage(req Req) {
 			Type:           typeNotify,
 			Policy:         1,
 			IOSProduction:  m.iosProduction,
+			TaskCron:       req.TaskCron,
+			TaskTime:       req.TaskTime,
 		},
 	}
 	switch req.Platform {
@@ -130,7 +167,7 @@ func (m *mobPush) SendMessage(req Req) {
 	// 生成sign
 	sign := utils.Md5String(s + m.appSecret)
 
-	_, _ = resty.New().R().
+	res, err := resty.New().R().
 		SetHeaders(map[string]string{
 			"Content-Type": "application/json",
 			"key":          m.appKey,
@@ -138,4 +175,13 @@ func (m *mobPush) SendMessage(req Req) {
 		}).
 		SetBody(s).
 		Post(pushUrl)
+	if err != nil {
+		return nil, err
+	}
+	var response Response
+	err = jsoniter.Unmarshal(res.Body(), &response)
+	if err != nil {
+		return nil, err
+	}
+	return &response, nil
 }

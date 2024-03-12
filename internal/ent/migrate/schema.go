@@ -4249,6 +4249,44 @@ var (
 			},
 		},
 	}
+	// PushmessageColumns holds the columns for the "pushmessage" table.
+	PushmessageColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "title", Type: field.TypeString, Comment: "标题"},
+		{Name: "image", Type: field.TypeString, Comment: "封面图片"},
+		{Name: "content", Type: field.TypeString, Size: 2147483647, Comment: "内容"},
+		{Name: "push_type", Type: field.TypeUint8, Comment: "推送类型"},
+		{Name: "push_time", Type: field.TypeTime, Nullable: true, Comment: "推送时间"},
+		{Name: "is_home", Type: field.TypeBool, Comment: "是否首页推送"},
+		{Name: "home_content", Type: field.TypeString, Comment: "首页推送内容"},
+		{Name: "message_status", Type: field.TypeUint8, Comment: "消息状态"},
+		{Name: "message_type", Type: field.TypeUint8, Comment: "消息类型"},
+		{Name: "third_party_id", Type: field.TypeString, Comment: "第三方推送平台消息ID"},
+	}
+	// PushmessageTable holds the schema information for the "pushmessage" table.
+	PushmessageTable = &schema.Table{
+		Name:       "pushmessage",
+		Columns:    PushmessageColumns,
+		PrimaryKey: []*schema.Column{PushmessageColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "pushmessage_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PushmessageColumns[1]},
+			},
+			{
+				Name:    "pushmessage_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{PushmessageColumns[3]},
+			},
+		},
+	}
 	// ReserveColumns holds the columns for the "reserve" table.
 	ReserveColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -5757,6 +5795,7 @@ var (
 		PromotionReferralsProgressTable,
 		PromotionSettingTable,
 		PromotionWithdrawalTable,
+		PushmessageTable,
 		ReserveTable,
 		RiderTable,
 		RiderFollowUpTable,
@@ -6111,6 +6150,9 @@ func init() {
 	PromotionWithdrawalTable.ForeignKeys[1].RefTable = PromotionMemberTable
 	PromotionWithdrawalTable.Annotation = &entsql.Annotation{
 		Table: "promotion_withdrawal",
+	}
+	PushmessageTable.Annotation = &entsql.Annotation{
+		Table: "pushmessage",
 	}
 	ReserveTable.ForeignKeys[0].RefTable = CabinetTable
 	ReserveTable.ForeignKeys[1].RefTable = RiderTable

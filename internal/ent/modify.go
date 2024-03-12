@@ -471,6 +471,13 @@ func (c *PromotionWithdrawalClient) ModifyOne(old *PromotionWithdrawal, data any
 	return EntitySetAttributes[PromotionWithdrawalUpdateOne, PromotionWithdrawal](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for Pushmessage.
+func (c *PushmessageClient) ModifyOne(old *Pushmessage, data any) *PushmessageUpdateOne {
+	mutation := newPushmessageMutation(c.config, OpUpdateOne, withPushmessage(old))
+	up := &PushmessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PushmessageUpdateOne, Pushmessage](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Reserve.
 func (c *ReserveClient) ModifyOne(old *Reserve, data any) *ReserveUpdateOne {
 	mutation := newReserveMutation(c.config, OpUpdateOne, withReserve(old))

@@ -16,7 +16,7 @@ type FeedbackReq struct {
 type FeedbackListReq struct {
 	PaginationReq
 	Type         *uint8  `json:"type" query:"type"`                       // 反馈类型
-	Source       *uint8  `json:"source" query:"source"`                   // 反馈来源
+	Source       *uint8  `json:"source" query:"source"`                   // 反馈来源 1:骑手 2:代理
 	Keyword      string  `json:"keyword" query:"keyword"`                 // 关键词
 	Start        *string `json:"start" query:"start"`                     // 反馈开始时间
 	End          *string `json:"end" query:"end"`                         // 反馈结束时间

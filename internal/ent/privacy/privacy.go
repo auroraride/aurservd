@@ -1551,6 +1551,30 @@ func (f PromotionWithdrawalMutationRuleFunc) EvalMutation(ctx context.Context, m
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionWithdrawalMutation", m)
 }
 
+// The PushmessageQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PushmessageQueryRuleFunc func(context.Context, *ent.PushmessageQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PushmessageQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PushmessageQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PushmessageQuery", q)
+}
+
+// The PushmessageMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PushmessageMutationRuleFunc func(context.Context, *ent.PushmessageMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PushmessageMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PushmessageMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PushmessageMutation", m)
+}
+
 // The ReserveQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type ReserveQueryRuleFunc func(context.Context, *ent.ReserveQuery) error
@@ -2042,6 +2066,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.PromotionWithdrawalQuery:
 		return q.Filter(), nil
+	case *ent.PushmessageQuery:
+		return q.Filter(), nil
 	case *ent.ReserveQuery:
 		return q.Filter(), nil
 	case *ent.RiderQuery:
@@ -2196,6 +2222,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.PromotionSettingMutation:
 		return m.Filter(), nil
 	case *ent.PromotionWithdrawalMutation:
+		return m.Filter(), nil
+	case *ent.PushmessageMutation:
 		return m.Filter(), nil
 	case *ent.ReserveMutation:
 		return m.Filter(), nil

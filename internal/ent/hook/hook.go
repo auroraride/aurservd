@@ -729,6 +729,18 @@ func (f PromotionWithdrawalFunc) Mutate(ctx context.Context, m ent.Mutation) (en
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionWithdrawalMutation", m)
 }
 
+// The PushmessageFunc type is an adapter to allow the use of ordinary
+// function as Pushmessage mutator.
+type PushmessageFunc func(context.Context, *ent.PushmessageMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PushmessageFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PushmessageMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PushmessageMutation", m)
+}
+
 // The ReserveFunc type is an adapter to allow the use of ordinary
 // function as Reserve mutator.
 type ReserveFunc func(context.Context, *ent.ReserveMutation) (ent.Value, error)

@@ -48,6 +48,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionmembercommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionprivilege"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/pushmessage"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -1730,6 +1731,46 @@ func (c *PromotionWithdrawalClient) GetNotDeleted(ctx context.Context, id uint64
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *PromotionWithdrawalClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionWithdrawal {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Pushmessage.
+func (c *PushmessageClient) SoftDelete() *PushmessageUpdate {
+	mutation := newPushmessageMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PushmessageUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PushmessageClient) SoftDeleteOne(pu *Pushmessage) *PushmessageUpdateOne {
+	mutation := newPushmessageMutation(c.config, OpUpdateOne, withPushmessage(pu))
+	mutation.SetDeletedAt(time.Now())
+	return &PushmessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PushmessageClient) SoftDeleteOneID(id uint64) *PushmessageUpdateOne {
+	mutation := newPushmessageMutation(c.config, OpUpdateOne, withPushmessageID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PushmessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Pushmessage.
+func (c *PushmessageClient) QueryNotDeleted() *PushmessageQuery {
+	return c.Query().Where(pushmessage.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Pushmessage not deleted entity by its id.
+func (c *PushmessageClient) GetNotDeleted(ctx context.Context, id uint64) (*Pushmessage, error) {
+	return c.Query().Where(pushmessage.ID(id), pushmessage.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PushmessageClient) GetNotDeletedX(ctx context.Context, id uint64) *Pushmessage {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

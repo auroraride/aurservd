@@ -9137,6 +9137,162 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/push/message": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pushmessage - tags"
+                ],
+                "summary": "更新推送消息",
+                "operationId": "PushmessageModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.PushmessageModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pushmessage - 推送消息"
+                ],
+                "summary": "保存推送消息",
+                "operationId": "PushmessageCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.PushmessageSaveReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/push/message/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pushmessage - tags"
+                ],
+                "summary": "获取推送消息",
+                "operationId": "PushmessageGet",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "消息ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.PushmessageDetail"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pushmessage - tags"
+                ],
+                "summary": "删除推送消息",
+                "operationId": "PushmessageDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "消息ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/rider": {
             "get": {
                 "consumes": [
@@ -12763,6 +12919,135 @@ const docTemplate = `{
                 "sort": {
                     "description": "排序",
                     "type": "integer"
+                }
+            }
+        },
+        "definition.PushmessageDetail": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "内容",
+                    "type": "string"
+                },
+                "home_content": {
+                    "description": "首页推送内容",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "image": {
+                    "description": "封面图片",
+                    "type": "string"
+                },
+                "is_home": {
+                    "description": "是否首页推送",
+                    "type": "boolean"
+                },
+                "message_status": {
+                    "description": "消息状态, PushStatusPushed:已推送, PushStatusUnPushed:未推送",
+                    "type": "integer"
+                },
+                "message_type": {
+                    "description": "消息类型",
+                    "type": "integer"
+                },
+                "push_time": {
+                    "description": "推送时间",
+                    "type": "string"
+                },
+                "push_type": {
+                    "description": "推送类型",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "标题",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.PushmessageModifyReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "push_type",
+                "title"
+            ],
+            "properties": {
+                "content": {
+                    "description": "内容",
+                    "type": "string"
+                },
+                "home_content": {
+                    "description": "首页推送内容",
+                    "type": "string"
+                },
+                "image": {
+                    "description": "封面图片",
+                    "type": "string"
+                },
+                "is_home": {
+                    "description": "是否首页推送",
+                    "type": "boolean"
+                },
+                "message_type": {
+                    "description": "消息类型, PushMessageTypeAll:全部类型, PushMessageTypeNotice:通知消息",
+                    "type": "integer"
+                },
+                "push_time": {
+                    "description": "推送时间，如果是定时推算，则必填",
+                    "type": "string"
+                },
+                "push_type": {
+                    "description": "推送类型, PushTypeNow:立即推送, PushTypeSchedule:定时推送",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "标题",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.PushmessageSaveReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "push_type",
+                "title"
+            ],
+            "properties": {
+                "content": {
+                    "description": "内容",
+                    "type": "string"
+                },
+                "home_content": {
+                    "description": "首页推送内容",
+                    "type": "string"
+                },
+                "image": {
+                    "description": "封面图片",
+                    "type": "string"
+                },
+                "is_home": {
+                    "description": "是否首页推送",
+                    "type": "boolean"
+                },
+                "message_type": {
+                    "description": "消息类型, PushMessageTypeAll:全部类型, PushMessageTypeNotice:通知消息",
+                    "type": "integer"
+                },
+                "push_time": {
+                    "description": "推送时间，如果是定时推算，则必填",
+                    "type": "string"
+                },
+                "push_type": {
+                    "description": "推送类型, PushTypeNow:立即推送, PushTypeSchedule:定时推送",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "标题",
+                    "type": "string"
                 }
             }
         },

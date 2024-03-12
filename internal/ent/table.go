@@ -710,6 +710,16 @@ func (pw *PromotionWithdrawal) GetID() uint64 {
 	return pw.ID
 }
 
+// GetTableName returns table name for Pushmessage.
+func (pu *Pushmessage) GetTableName() string {
+	return "pushmessage"
+}
+
+// GetID returns id for Pushmessage.
+func (pu *Pushmessage) GetID() uint64 {
+	return pu.ID
+}
+
 // GetTableName returns table name for Reserve.
 func (r *Reserve) GetTableName() string {
 	return "reserve"

@@ -186,6 +186,9 @@ type PromotionSetting func(*sql.Selector)
 // PromotionWithdrawal is the predicate function for promotionwithdrawal builders.
 type PromotionWithdrawal func(*sql.Selector)
 
+// Pushmessage is the predicate function for pushmessage builders.
+type Pushmessage func(*sql.Selector)
+
 // Reserve is the predicate function for reserve builders.
 type Reserve func(*sql.Selector)
 

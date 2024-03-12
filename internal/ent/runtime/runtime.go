@@ -66,6 +66,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/pushmessage"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -1503,6 +1504,23 @@ func init() {
 	promotionwithdrawalDescTex := promotionwithdrawalFields[4].Descriptor()
 	// promotionwithdrawal.DefaultTex holds the default value on creation for the tex field.
 	promotionwithdrawal.DefaultTex = promotionwithdrawalDescTex.Default.(float64)
+	pushmessageMixin := schema.Pushmessage{}.Mixin()
+	pushmessageMixinHooks2 := pushmessageMixin[2].Hooks()
+	pushmessage.Hooks[0] = pushmessageMixinHooks2[0]
+	pushmessageMixinFields0 := pushmessageMixin[0].Fields()
+	_ = pushmessageMixinFields0
+	pushmessageFields := schema.Pushmessage{}.Fields()
+	_ = pushmessageFields
+	// pushmessageDescCreatedAt is the schema descriptor for created_at field.
+	pushmessageDescCreatedAt := pushmessageMixinFields0[0].Descriptor()
+	// pushmessage.DefaultCreatedAt holds the default value on creation for the created_at field.
+	pushmessage.DefaultCreatedAt = pushmessageDescCreatedAt.Default.(func() time.Time)
+	// pushmessageDescUpdatedAt is the schema descriptor for updated_at field.
+	pushmessageDescUpdatedAt := pushmessageMixinFields0[1].Descriptor()
+	// pushmessage.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	pushmessage.DefaultUpdatedAt = pushmessageDescUpdatedAt.Default.(func() time.Time)
+	// pushmessage.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	pushmessage.UpdateDefaultUpdatedAt = pushmessageDescUpdatedAt.UpdateDefault.(func() time.Time)
 	reserveMixin := schema.Reserve{}.Mixin()
 	reserveMixinHooks2 := reserveMixin[2].Hooks()
 	reserve.Hooks[0] = reserveMixinHooks2[0]

@@ -134,6 +134,8 @@ type Tx struct {
 	PromotionSetting *PromotionSettingClient
 	// PromotionWithdrawal is the client for interacting with the PromotionWithdrawal builders.
 	PromotionWithdrawal *PromotionWithdrawalClient
+	// Pushmessage is the client for interacting with the Pushmessage builders.
+	Pushmessage *PushmessageClient
 	// Reserve is the client for interacting with the Reserve builders.
 	Reserve *ReserveClient
 	// Rider is the client for interacting with the Rider builders.
@@ -353,6 +355,7 @@ func (tx *Tx) init() {
 	tx.PromotionReferralsProgress = NewPromotionReferralsProgressClient(tx.config)
 	tx.PromotionSetting = NewPromotionSettingClient(tx.config)
 	tx.PromotionWithdrawal = NewPromotionWithdrawalClient(tx.config)
+	tx.Pushmessage = NewPushmessageClient(tx.config)
 	tx.Reserve = NewReserveClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)
 	tx.RiderFollowUp = NewRiderFollowUpClient(tx.config)

@@ -46,6 +46,11 @@ func loadManagerRoutes() {
 	g.PUT("/activity", mapi.Setting.ActivityModify)        // 编辑
 	g.DELETE("/activity/:id", mapi.Setting.ActivityDelete) // 删除
 
+	// 设置-推送
+	g.POST("/push/message", mapi.Pushmessage.Create)       // 新建推送消息
+	g.PUT("/push/message", mapi.Pushmessage.Modify)        // 修改推送消息
+	g.DELETE("/push/message/:id", mapi.Pushmessage.Delete) // 删除推送消息
+
 	// 城市
 	g.GET("/city", mapi.City.List)       // 城市列表
 	g.PUT("/city/:id", mapi.City.Modify) // 启用或关闭城市

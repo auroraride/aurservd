@@ -75,6 +75,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/pushmessage"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -161,6 +162,7 @@ const (
 	TypePromotionReferralsProgress = "PromotionReferralsProgress"
 	TypePromotionSetting           = "PromotionSetting"
 	TypePromotionWithdrawal        = "PromotionWithdrawal"
+	TypePushmessage                = "Pushmessage"
 	TypeReserve                    = "Reserve"
 	TypeRider                      = "Rider"
 	TypeRiderFollowUp              = "RiderFollowUp"
@@ -86922,6 +86924,1342 @@ func (m *PromotionWithdrawalMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown PromotionWithdrawal edge %s", name)
+}
+
+// PushmessageMutation represents an operation that mutates the Pushmessage nodes in the graph.
+type PushmessageMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *uint64
+	created_at        *time.Time
+	updated_at        *time.Time
+	deleted_at        *time.Time
+	creator           **model.Modifier
+	last_modifier     **model.Modifier
+	remark            *string
+	title             *string
+	image             *string
+	content           *string
+	push_type         *uint8
+	addpush_type      *int8
+	push_time         *time.Time
+	is_home           *bool
+	home_content      *string
+	message_status    *uint8
+	addmessage_status *int8
+	message_type      *uint8
+	addmessage_type   *int8
+	third_party_id    *string
+	clearedFields     map[string]struct{}
+	done              bool
+	oldValue          func(context.Context) (*Pushmessage, error)
+	predicates        []predicate.Pushmessage
+}
+
+var _ ent.Mutation = (*PushmessageMutation)(nil)
+
+// pushmessageOption allows management of the mutation configuration using functional options.
+type pushmessageOption func(*PushmessageMutation)
+
+// newPushmessageMutation creates new mutation for the Pushmessage entity.
+func newPushmessageMutation(c config, op Op, opts ...pushmessageOption) *PushmessageMutation {
+	m := &PushmessageMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePushmessage,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPushmessageID sets the ID field of the mutation.
+func withPushmessageID(id uint64) pushmessageOption {
+	return func(m *PushmessageMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Pushmessage
+		)
+		m.oldValue = func(ctx context.Context) (*Pushmessage, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Pushmessage.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPushmessage sets the old Pushmessage of the mutation.
+func withPushmessage(node *Pushmessage) pushmessageOption {
+	return func(m *PushmessageMutation) {
+		m.oldValue = func(context.Context) (*Pushmessage, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PushmessageMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PushmessageMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PushmessageMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PushmessageMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Pushmessage.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *PushmessageMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *PushmessageMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *PushmessageMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *PushmessageMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *PushmessageMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *PushmessageMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *PushmessageMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *PushmessageMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *PushmessageMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[pushmessage.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *PushmessageMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[pushmessage.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *PushmessageMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, pushmessage.FieldDeletedAt)
+}
+
+// SetCreator sets the "creator" field.
+func (m *PushmessageMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *PushmessageMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *PushmessageMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[pushmessage.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *PushmessageMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[pushmessage.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *PushmessageMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, pushmessage.FieldCreator)
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (m *PushmessageMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
+}
+
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *PushmessageMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastModifier returns the old "last_modifier" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
+	}
+	return oldValue.LastModifier, nil
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *PushmessageMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[pushmessage.FieldLastModifier] = struct{}{}
+}
+
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *PushmessageMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[pushmessage.FieldLastModifier]
+	return ok
+}
+
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *PushmessageMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, pushmessage.FieldLastModifier)
+}
+
+// SetRemark sets the "remark" field.
+func (m *PushmessageMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *PushmessageMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldRemark(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (m *PushmessageMutation) ClearRemark() {
+	m.remark = nil
+	m.clearedFields[pushmessage.FieldRemark] = struct{}{}
+}
+
+// RemarkCleared returns if the "remark" field was cleared in this mutation.
+func (m *PushmessageMutation) RemarkCleared() bool {
+	_, ok := m.clearedFields[pushmessage.FieldRemark]
+	return ok
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *PushmessageMutation) ResetRemark() {
+	m.remark = nil
+	delete(m.clearedFields, pushmessage.FieldRemark)
+}
+
+// SetTitle sets the "title" field.
+func (m *PushmessageMutation) SetTitle(s string) {
+	m.title = &s
+}
+
+// Title returns the value of the "title" field in the mutation.
+func (m *PushmessageMutation) Title() (r string, exists bool) {
+	v := m.title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitle returns the old "title" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+	}
+	return oldValue.Title, nil
+}
+
+// ResetTitle resets all changes to the "title" field.
+func (m *PushmessageMutation) ResetTitle() {
+	m.title = nil
+}
+
+// SetImage sets the "image" field.
+func (m *PushmessageMutation) SetImage(s string) {
+	m.image = &s
+}
+
+// Image returns the value of the "image" field in the mutation.
+func (m *PushmessageMutation) Image() (r string, exists bool) {
+	v := m.image
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImage returns the old "image" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldImage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImage: %w", err)
+	}
+	return oldValue.Image, nil
+}
+
+// ResetImage resets all changes to the "image" field.
+func (m *PushmessageMutation) ResetImage() {
+	m.image = nil
+}
+
+// SetContent sets the "content" field.
+func (m *PushmessageMutation) SetContent(s string) {
+	m.content = &s
+}
+
+// Content returns the value of the "content" field in the mutation.
+func (m *PushmessageMutation) Content() (r string, exists bool) {
+	v := m.content
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContent returns the old "content" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldContent(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldContent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldContent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContent: %w", err)
+	}
+	return oldValue.Content, nil
+}
+
+// ResetContent resets all changes to the "content" field.
+func (m *PushmessageMutation) ResetContent() {
+	m.content = nil
+}
+
+// SetPushType sets the "push_type" field.
+func (m *PushmessageMutation) SetPushType(u uint8) {
+	m.push_type = &u
+	m.addpush_type = nil
+}
+
+// PushType returns the value of the "push_type" field in the mutation.
+func (m *PushmessageMutation) PushType() (r uint8, exists bool) {
+	v := m.push_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPushType returns the old "push_type" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldPushType(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPushType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPushType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPushType: %w", err)
+	}
+	return oldValue.PushType, nil
+}
+
+// AddPushType adds u to the "push_type" field.
+func (m *PushmessageMutation) AddPushType(u int8) {
+	if m.addpush_type != nil {
+		*m.addpush_type += u
+	} else {
+		m.addpush_type = &u
+	}
+}
+
+// AddedPushType returns the value that was added to the "push_type" field in this mutation.
+func (m *PushmessageMutation) AddedPushType() (r int8, exists bool) {
+	v := m.addpush_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPushType resets all changes to the "push_type" field.
+func (m *PushmessageMutation) ResetPushType() {
+	m.push_type = nil
+	m.addpush_type = nil
+}
+
+// SetPushTime sets the "push_time" field.
+func (m *PushmessageMutation) SetPushTime(t time.Time) {
+	m.push_time = &t
+}
+
+// PushTime returns the value of the "push_time" field in the mutation.
+func (m *PushmessageMutation) PushTime() (r time.Time, exists bool) {
+	v := m.push_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPushTime returns the old "push_time" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldPushTime(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPushTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPushTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPushTime: %w", err)
+	}
+	return oldValue.PushTime, nil
+}
+
+// ClearPushTime clears the value of the "push_time" field.
+func (m *PushmessageMutation) ClearPushTime() {
+	m.push_time = nil
+	m.clearedFields[pushmessage.FieldPushTime] = struct{}{}
+}
+
+// PushTimeCleared returns if the "push_time" field was cleared in this mutation.
+func (m *PushmessageMutation) PushTimeCleared() bool {
+	_, ok := m.clearedFields[pushmessage.FieldPushTime]
+	return ok
+}
+
+// ResetPushTime resets all changes to the "push_time" field.
+func (m *PushmessageMutation) ResetPushTime() {
+	m.push_time = nil
+	delete(m.clearedFields, pushmessage.FieldPushTime)
+}
+
+// SetIsHome sets the "is_home" field.
+func (m *PushmessageMutation) SetIsHome(b bool) {
+	m.is_home = &b
+}
+
+// IsHome returns the value of the "is_home" field in the mutation.
+func (m *PushmessageMutation) IsHome() (r bool, exists bool) {
+	v := m.is_home
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsHome returns the old "is_home" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldIsHome(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsHome is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsHome requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsHome: %w", err)
+	}
+	return oldValue.IsHome, nil
+}
+
+// ResetIsHome resets all changes to the "is_home" field.
+func (m *PushmessageMutation) ResetIsHome() {
+	m.is_home = nil
+}
+
+// SetHomeContent sets the "home_content" field.
+func (m *PushmessageMutation) SetHomeContent(s string) {
+	m.home_content = &s
+}
+
+// HomeContent returns the value of the "home_content" field in the mutation.
+func (m *PushmessageMutation) HomeContent() (r string, exists bool) {
+	v := m.home_content
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHomeContent returns the old "home_content" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldHomeContent(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHomeContent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHomeContent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHomeContent: %w", err)
+	}
+	return oldValue.HomeContent, nil
+}
+
+// ResetHomeContent resets all changes to the "home_content" field.
+func (m *PushmessageMutation) ResetHomeContent() {
+	m.home_content = nil
+}
+
+// SetMessageStatus sets the "message_status" field.
+func (m *PushmessageMutation) SetMessageStatus(u uint8) {
+	m.message_status = &u
+	m.addmessage_status = nil
+}
+
+// MessageStatus returns the value of the "message_status" field in the mutation.
+func (m *PushmessageMutation) MessageStatus() (r uint8, exists bool) {
+	v := m.message_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMessageStatus returns the old "message_status" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldMessageStatus(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMessageStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMessageStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMessageStatus: %w", err)
+	}
+	return oldValue.MessageStatus, nil
+}
+
+// AddMessageStatus adds u to the "message_status" field.
+func (m *PushmessageMutation) AddMessageStatus(u int8) {
+	if m.addmessage_status != nil {
+		*m.addmessage_status += u
+	} else {
+		m.addmessage_status = &u
+	}
+}
+
+// AddedMessageStatus returns the value that was added to the "message_status" field in this mutation.
+func (m *PushmessageMutation) AddedMessageStatus() (r int8, exists bool) {
+	v := m.addmessage_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMessageStatus resets all changes to the "message_status" field.
+func (m *PushmessageMutation) ResetMessageStatus() {
+	m.message_status = nil
+	m.addmessage_status = nil
+}
+
+// SetMessageType sets the "message_type" field.
+func (m *PushmessageMutation) SetMessageType(u uint8) {
+	m.message_type = &u
+	m.addmessage_type = nil
+}
+
+// MessageType returns the value of the "message_type" field in the mutation.
+func (m *PushmessageMutation) MessageType() (r uint8, exists bool) {
+	v := m.message_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMessageType returns the old "message_type" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldMessageType(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMessageType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMessageType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMessageType: %w", err)
+	}
+	return oldValue.MessageType, nil
+}
+
+// AddMessageType adds u to the "message_type" field.
+func (m *PushmessageMutation) AddMessageType(u int8) {
+	if m.addmessage_type != nil {
+		*m.addmessage_type += u
+	} else {
+		m.addmessage_type = &u
+	}
+}
+
+// AddedMessageType returns the value that was added to the "message_type" field in this mutation.
+func (m *PushmessageMutation) AddedMessageType() (r int8, exists bool) {
+	v := m.addmessage_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMessageType resets all changes to the "message_type" field.
+func (m *PushmessageMutation) ResetMessageType() {
+	m.message_type = nil
+	m.addmessage_type = nil
+}
+
+// SetThirdPartyID sets the "third_party_id" field.
+func (m *PushmessageMutation) SetThirdPartyID(s string) {
+	m.third_party_id = &s
+}
+
+// ThirdPartyID returns the value of the "third_party_id" field in the mutation.
+func (m *PushmessageMutation) ThirdPartyID() (r string, exists bool) {
+	v := m.third_party_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldThirdPartyID returns the old "third_party_id" field's value of the Pushmessage entity.
+// If the Pushmessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PushmessageMutation) OldThirdPartyID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldThirdPartyID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldThirdPartyID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldThirdPartyID: %w", err)
+	}
+	return oldValue.ThirdPartyID, nil
+}
+
+// ResetThirdPartyID resets all changes to the "third_party_id" field.
+func (m *PushmessageMutation) ResetThirdPartyID() {
+	m.third_party_id = nil
+}
+
+// Where appends a list predicates to the PushmessageMutation builder.
+func (m *PushmessageMutation) Where(ps ...predicate.Pushmessage) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the PushmessageMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PushmessageMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Pushmessage, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *PushmessageMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PushmessageMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Pushmessage).
+func (m *PushmessageMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PushmessageMutation) Fields() []string {
+	fields := make([]string, 0, 16)
+	if m.created_at != nil {
+		fields = append(fields, pushmessage.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, pushmessage.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, pushmessage.FieldDeletedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, pushmessage.FieldCreator)
+	}
+	if m.last_modifier != nil {
+		fields = append(fields, pushmessage.FieldLastModifier)
+	}
+	if m.remark != nil {
+		fields = append(fields, pushmessage.FieldRemark)
+	}
+	if m.title != nil {
+		fields = append(fields, pushmessage.FieldTitle)
+	}
+	if m.image != nil {
+		fields = append(fields, pushmessage.FieldImage)
+	}
+	if m.content != nil {
+		fields = append(fields, pushmessage.FieldContent)
+	}
+	if m.push_type != nil {
+		fields = append(fields, pushmessage.FieldPushType)
+	}
+	if m.push_time != nil {
+		fields = append(fields, pushmessage.FieldPushTime)
+	}
+	if m.is_home != nil {
+		fields = append(fields, pushmessage.FieldIsHome)
+	}
+	if m.home_content != nil {
+		fields = append(fields, pushmessage.FieldHomeContent)
+	}
+	if m.message_status != nil {
+		fields = append(fields, pushmessage.FieldMessageStatus)
+	}
+	if m.message_type != nil {
+		fields = append(fields, pushmessage.FieldMessageType)
+	}
+	if m.third_party_id != nil {
+		fields = append(fields, pushmessage.FieldThirdPartyID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PushmessageMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case pushmessage.FieldCreatedAt:
+		return m.CreatedAt()
+	case pushmessage.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case pushmessage.FieldDeletedAt:
+		return m.DeletedAt()
+	case pushmessage.FieldCreator:
+		return m.Creator()
+	case pushmessage.FieldLastModifier:
+		return m.LastModifier()
+	case pushmessage.FieldRemark:
+		return m.Remark()
+	case pushmessage.FieldTitle:
+		return m.Title()
+	case pushmessage.FieldImage:
+		return m.Image()
+	case pushmessage.FieldContent:
+		return m.Content()
+	case pushmessage.FieldPushType:
+		return m.PushType()
+	case pushmessage.FieldPushTime:
+		return m.PushTime()
+	case pushmessage.FieldIsHome:
+		return m.IsHome()
+	case pushmessage.FieldHomeContent:
+		return m.HomeContent()
+	case pushmessage.FieldMessageStatus:
+		return m.MessageStatus()
+	case pushmessage.FieldMessageType:
+		return m.MessageType()
+	case pushmessage.FieldThirdPartyID:
+		return m.ThirdPartyID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PushmessageMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case pushmessage.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case pushmessage.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case pushmessage.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case pushmessage.FieldCreator:
+		return m.OldCreator(ctx)
+	case pushmessage.FieldLastModifier:
+		return m.OldLastModifier(ctx)
+	case pushmessage.FieldRemark:
+		return m.OldRemark(ctx)
+	case pushmessage.FieldTitle:
+		return m.OldTitle(ctx)
+	case pushmessage.FieldImage:
+		return m.OldImage(ctx)
+	case pushmessage.FieldContent:
+		return m.OldContent(ctx)
+	case pushmessage.FieldPushType:
+		return m.OldPushType(ctx)
+	case pushmessage.FieldPushTime:
+		return m.OldPushTime(ctx)
+	case pushmessage.FieldIsHome:
+		return m.OldIsHome(ctx)
+	case pushmessage.FieldHomeContent:
+		return m.OldHomeContent(ctx)
+	case pushmessage.FieldMessageStatus:
+		return m.OldMessageStatus(ctx)
+	case pushmessage.FieldMessageType:
+		return m.OldMessageType(ctx)
+	case pushmessage.FieldThirdPartyID:
+		return m.OldThirdPartyID(ctx)
+	}
+	return nil, fmt.Errorf("unknown Pushmessage field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PushmessageMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case pushmessage.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case pushmessage.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case pushmessage.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case pushmessage.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
+		return nil
+	case pushmessage.FieldLastModifier:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastModifier(v)
+		return nil
+	case pushmessage.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
+		return nil
+	case pushmessage.FieldTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitle(v)
+		return nil
+	case pushmessage.FieldImage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImage(v)
+		return nil
+	case pushmessage.FieldContent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContent(v)
+		return nil
+	case pushmessage.FieldPushType:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPushType(v)
+		return nil
+	case pushmessage.FieldPushTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPushTime(v)
+		return nil
+	case pushmessage.FieldIsHome:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsHome(v)
+		return nil
+	case pushmessage.FieldHomeContent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHomeContent(v)
+		return nil
+	case pushmessage.FieldMessageStatus:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMessageStatus(v)
+		return nil
+	case pushmessage.FieldMessageType:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMessageType(v)
+		return nil
+	case pushmessage.FieldThirdPartyID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetThirdPartyID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Pushmessage field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PushmessageMutation) AddedFields() []string {
+	var fields []string
+	if m.addpush_type != nil {
+		fields = append(fields, pushmessage.FieldPushType)
+	}
+	if m.addmessage_status != nil {
+		fields = append(fields, pushmessage.FieldMessageStatus)
+	}
+	if m.addmessage_type != nil {
+		fields = append(fields, pushmessage.FieldMessageType)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PushmessageMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case pushmessage.FieldPushType:
+		return m.AddedPushType()
+	case pushmessage.FieldMessageStatus:
+		return m.AddedMessageStatus()
+	case pushmessage.FieldMessageType:
+		return m.AddedMessageType()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PushmessageMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case pushmessage.FieldPushType:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPushType(v)
+		return nil
+	case pushmessage.FieldMessageStatus:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMessageStatus(v)
+		return nil
+	case pushmessage.FieldMessageType:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMessageType(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Pushmessage numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PushmessageMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(pushmessage.FieldDeletedAt) {
+		fields = append(fields, pushmessage.FieldDeletedAt)
+	}
+	if m.FieldCleared(pushmessage.FieldCreator) {
+		fields = append(fields, pushmessage.FieldCreator)
+	}
+	if m.FieldCleared(pushmessage.FieldLastModifier) {
+		fields = append(fields, pushmessage.FieldLastModifier)
+	}
+	if m.FieldCleared(pushmessage.FieldRemark) {
+		fields = append(fields, pushmessage.FieldRemark)
+	}
+	if m.FieldCleared(pushmessage.FieldPushTime) {
+		fields = append(fields, pushmessage.FieldPushTime)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PushmessageMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PushmessageMutation) ClearField(name string) error {
+	switch name {
+	case pushmessage.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case pushmessage.FieldCreator:
+		m.ClearCreator()
+		return nil
+	case pushmessage.FieldLastModifier:
+		m.ClearLastModifier()
+		return nil
+	case pushmessage.FieldRemark:
+		m.ClearRemark()
+		return nil
+	case pushmessage.FieldPushTime:
+		m.ClearPushTime()
+		return nil
+	}
+	return fmt.Errorf("unknown Pushmessage nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PushmessageMutation) ResetField(name string) error {
+	switch name {
+	case pushmessage.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case pushmessage.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case pushmessage.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case pushmessage.FieldCreator:
+		m.ResetCreator()
+		return nil
+	case pushmessage.FieldLastModifier:
+		m.ResetLastModifier()
+		return nil
+	case pushmessage.FieldRemark:
+		m.ResetRemark()
+		return nil
+	case pushmessage.FieldTitle:
+		m.ResetTitle()
+		return nil
+	case pushmessage.FieldImage:
+		m.ResetImage()
+		return nil
+	case pushmessage.FieldContent:
+		m.ResetContent()
+		return nil
+	case pushmessage.FieldPushType:
+		m.ResetPushType()
+		return nil
+	case pushmessage.FieldPushTime:
+		m.ResetPushTime()
+		return nil
+	case pushmessage.FieldIsHome:
+		m.ResetIsHome()
+		return nil
+	case pushmessage.FieldHomeContent:
+		m.ResetHomeContent()
+		return nil
+	case pushmessage.FieldMessageStatus:
+		m.ResetMessageStatus()
+		return nil
+	case pushmessage.FieldMessageType:
+		m.ResetMessageType()
+		return nil
+	case pushmessage.FieldThirdPartyID:
+		m.ResetThirdPartyID()
+		return nil
+	}
+	return fmt.Errorf("unknown Pushmessage field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PushmessageMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PushmessageMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PushmessageMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PushmessageMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PushmessageMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PushmessageMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PushmessageMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Pushmessage unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PushmessageMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Pushmessage edge %s", name)
 }
 
 // ReserveMutation represents an operation that mutates the Reserve nodes in the graph.

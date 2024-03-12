@@ -75,6 +75,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/pushmessage"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -218,6 +219,8 @@ type Client struct {
 	PromotionSetting *PromotionSettingClient
 	// PromotionWithdrawal is the client for interacting with the PromotionWithdrawal builders.
 	PromotionWithdrawal *PromotionWithdrawalClient
+	// Pushmessage is the client for interacting with the Pushmessage builders.
+	Pushmessage *PushmessageClient
 	// Reserve is the client for interacting with the Reserve builders.
 	Reserve *ReserveClient
 	// Rider is the client for interacting with the Rider builders.
@@ -317,6 +320,7 @@ func (c *Client) init() {
 	c.PromotionReferralsProgress = NewPromotionReferralsProgressClient(c.config)
 	c.PromotionSetting = NewPromotionSettingClient(c.config)
 	c.PromotionWithdrawal = NewPromotionWithdrawalClient(c.config)
+	c.Pushmessage = NewPushmessageClient(c.config)
 	c.Reserve = NewReserveClient(c.config)
 	c.Rider = NewRiderClient(c.config)
 	c.RiderFollowUp = NewRiderFollowUpClient(c.config)
@@ -483,6 +487,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		PromotionReferralsProgress: NewPromotionReferralsProgressClient(cfg),
 		PromotionSetting:           NewPromotionSettingClient(cfg),
 		PromotionWithdrawal:        NewPromotionWithdrawalClient(cfg),
+		Pushmessage:                NewPushmessageClient(cfg),
 		Reserve:                    NewReserveClient(cfg),
 		Rider:                      NewRiderClient(cfg),
 		RiderFollowUp:              NewRiderFollowUpClient(cfg),
@@ -576,6 +581,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		PromotionReferralsProgress: NewPromotionReferralsProgressClient(cfg),
 		PromotionSetting:           NewPromotionSettingClient(cfg),
 		PromotionWithdrawal:        NewPromotionWithdrawalClient(cfg),
+		Pushmessage:                NewPushmessageClient(cfg),
 		Reserve:                    NewReserveClient(cfg),
 		Rider:                      NewRiderClient(cfg),
 		RiderFollowUp:              NewRiderFollowUpClient(cfg),
@@ -632,9 +638,10 @@ func (c *Client) Use(hooks ...Hook) {
 		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
-		c.PromotionWithdrawal, c.Reserve, c.Rider, c.RiderFollowUp, c.Role, c.Setting,
-		c.Stock, c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter,
-		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend, c.Version,
+		c.PromotionWithdrawal, c.Pushmessage, c.Reserve, c.Rider, c.RiderFollowUp,
+		c.Role, c.Setting, c.Stock, c.StockSummary, c.Store, c.Subscribe,
+		c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
+		c.Version,
 	} {
 		n.Use(hooks...)
 	}
@@ -657,9 +664,10 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
-		c.PromotionWithdrawal, c.Reserve, c.Rider, c.RiderFollowUp, c.Role, c.Setting,
-		c.Stock, c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter,
-		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend, c.Version,
+		c.PromotionWithdrawal, c.Pushmessage, c.Reserve, c.Rider, c.RiderFollowUp,
+		c.Role, c.Setting, c.Stock, c.StockSummary, c.Store, c.Subscribe,
+		c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
+		c.Version,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -788,6 +796,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.PromotionSetting.mutate(ctx, m)
 	case *PromotionWithdrawalMutation:
 		return c.PromotionWithdrawal.mutate(ctx, m)
+	case *PushmessageMutation:
+		return c.Pushmessage.mutate(ctx, m)
 	case *ReserveMutation:
 		return c.Reserve.mutate(ctx, m)
 	case *RiderMutation:
@@ -12274,6 +12284,140 @@ func (c *PromotionWithdrawalClient) mutate(ctx context.Context, m *PromotionWith
 	}
 }
 
+// PushmessageClient is a client for the Pushmessage schema.
+type PushmessageClient struct {
+	config
+}
+
+// NewPushmessageClient returns a client for the Pushmessage from the given config.
+func NewPushmessageClient(c config) *PushmessageClient {
+	return &PushmessageClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `pushmessage.Hooks(f(g(h())))`.
+func (c *PushmessageClient) Use(hooks ...Hook) {
+	c.hooks.Pushmessage = append(c.hooks.Pushmessage, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `pushmessage.Intercept(f(g(h())))`.
+func (c *PushmessageClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Pushmessage = append(c.inters.Pushmessage, interceptors...)
+}
+
+// Create returns a builder for creating a Pushmessage entity.
+func (c *PushmessageClient) Create() *PushmessageCreate {
+	mutation := newPushmessageMutation(c.config, OpCreate)
+	return &PushmessageCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Pushmessage entities.
+func (c *PushmessageClient) CreateBulk(builders ...*PushmessageCreate) *PushmessageCreateBulk {
+	return &PushmessageCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PushmessageClient) MapCreateBulk(slice any, setFunc func(*PushmessageCreate, int)) *PushmessageCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PushmessageCreateBulk{err: fmt.Errorf("calling to PushmessageClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PushmessageCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PushmessageCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Pushmessage.
+func (c *PushmessageClient) Update() *PushmessageUpdate {
+	mutation := newPushmessageMutation(c.config, OpUpdate)
+	return &PushmessageUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PushmessageClient) UpdateOne(pu *Pushmessage) *PushmessageUpdateOne {
+	mutation := newPushmessageMutation(c.config, OpUpdateOne, withPushmessage(pu))
+	return &PushmessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PushmessageClient) UpdateOneID(id uint64) *PushmessageUpdateOne {
+	mutation := newPushmessageMutation(c.config, OpUpdateOne, withPushmessageID(id))
+	return &PushmessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Pushmessage.
+func (c *PushmessageClient) Delete() *PushmessageDelete {
+	mutation := newPushmessageMutation(c.config, OpDelete)
+	return &PushmessageDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PushmessageClient) DeleteOne(pu *Pushmessage) *PushmessageDeleteOne {
+	return c.DeleteOneID(pu.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PushmessageClient) DeleteOneID(id uint64) *PushmessageDeleteOne {
+	builder := c.Delete().Where(pushmessage.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PushmessageDeleteOne{builder}
+}
+
+// Query returns a query builder for Pushmessage.
+func (c *PushmessageClient) Query() *PushmessageQuery {
+	return &PushmessageQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePushmessage},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Pushmessage entity by its id.
+func (c *PushmessageClient) Get(ctx context.Context, id uint64) (*Pushmessage, error) {
+	return c.Query().Where(pushmessage.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PushmessageClient) GetX(ctx context.Context, id uint64) *Pushmessage {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *PushmessageClient) Hooks() []Hook {
+	hooks := c.hooks.Pushmessage
+	return append(hooks[:len(hooks):len(hooks)], pushmessage.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *PushmessageClient) Interceptors() []Interceptor {
+	return c.inters.Pushmessage
+}
+
+func (c *PushmessageClient) mutate(ctx context.Context, m *PushmessageMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PushmessageCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PushmessageUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PushmessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PushmessageDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Pushmessage mutation op: %q", m.Op())
+	}
+}
+
 // ReserveClient is a client for the Reserve schema.
 type ReserveClient struct {
 	config
@@ -15505,9 +15649,9 @@ type (
 		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
 		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
 		PromotionPerson, PromotionPrivilege, PromotionReferrals,
-		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Reserve,
-		Rider, RiderFollowUp, Role, Setting, Stock, StockSummary, Store, Subscribe,
-		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Pushmessage,
+		Reserve, Rider, RiderFollowUp, Role, Setting, Stock, StockSummary, Store,
+		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
 		Version []ent.Hook
 	}
 	inters struct {
@@ -15522,9 +15666,9 @@ type (
 		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
 		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
 		PromotionPerson, PromotionPrivilege, PromotionReferrals,
-		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Reserve,
-		Rider, RiderFollowUp, Role, Setting, Stock, StockSummary, Store, Subscribe,
-		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Pushmessage,
+		Reserve, Rider, RiderFollowUp, Role, Setting, Stock, StockSummary, Store,
+		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
 		Version []ent.Interceptor
 	}
 )

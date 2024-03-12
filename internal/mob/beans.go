@@ -93,3 +93,21 @@ type Message struct {
 	PushForward      *PushForward      `json:"pushForward,omitempty"`
 	PushFactoryExtra *PushFactoryExtra `json:"pushFactoryExtra,omitempty"`
 }
+
+// DropMessage 丢弃消息
+type DropMessage struct {
+	Appkey  string `json:"appkey,omitempty"`
+	BatchID string `json:"batchId,omitempty"`
+}
+
+// Response 推送消息响应结构体
+type Response struct {
+	Status int           `json:"status,omitempty"`
+	Rrror  string        `json:"error,omitempty"`
+	Res    *ResponseData `json:"res,omitempty"`
+}
+
+// ResponseData 推送消息响应数据结构体，目前只需要BatchId
+type ResponseData struct {
+	BatchId string `json:"batchId,omitempty"`
+}
