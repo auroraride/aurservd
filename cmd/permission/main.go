@@ -35,7 +35,7 @@ func main() {
 	files, _ := os.ReadDir(d)
 	m := make(map[string]*permission.Group)
 	for _, f := range files {
-		if f.IsDir() {
+		if f.IsDir() || f.Name() == "mapi.go" {
 			continue
 		}
 		name := strings.TrimSuffix(f.Name(), filepath.Ext(f.Name()))
