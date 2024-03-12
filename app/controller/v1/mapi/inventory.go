@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type inventory struct{}
@@ -19,8 +20,8 @@ var Inventory = new(inventory)
 // CreateOrModify
 // @ID		ManagerInventoryCreateOrModify
 // @Router	/manager/v1/inventory [POST]
-// @Summary	M1012 物资设定创建或更新
-// @Tags	[M]管理接口
+// @Summary	物资设定创建或更新
+// @Tags	物资
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -35,8 +36,8 @@ func (*inventory) CreateOrModify(c echo.Context) (err error) {
 // List
 // @ID		ManagerInventoryList
 // @Router	/manager/v1/inventory [GET]
-// @Summary	M1013 列举物资设定
-// @Tags	[M]管理接口
+// @Summary	列举物资设定
+// @Tags	物资
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string			true	"管理员校验token"
@@ -49,8 +50,8 @@ func (*inventory) List(c echo.Context) (err error) {
 // Delete
 // @ID		ManagerInventoryDelete
 // @Router	/manager/v1/inventory [DELETE]
-// @Summary	M1014 删除物资设定
-// @Tags	[M]管理接口
+// @Summary	删除物资设定
+// @Tags	物资
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -65,8 +66,8 @@ func (*inventory) Delete(c echo.Context) (err error) {
 // Transferable
 // @ID		ManagerInventoryTransferable
 // @Router	/manager/v1/inventory/transferable [GET]
-// @Summary	M1015 可调拨物资清单
-// @Tags	[M]管理接口
+// @Summary	可调拨物资清单
+// @Tags	物资
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"

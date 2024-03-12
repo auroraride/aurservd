@@ -20,8 +20,8 @@ var Stock = new(stock)
 // Create
 // @ID		ManagerStockCreate
 // @Router	/manager/v1/stock [POST]
-// @Summary	ME001 调拨物资
-// @Tags	[M]管理接口
+// @Summary	调拨物资
+// @Tags	库存
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -35,8 +35,8 @@ func (*stock) Create(c echo.Context) (err error) {
 // BatteryOverview
 // @ID		ManagerStockBatteryOverview
 // @Router	/manager/v1/stock/battery/overview [GET]
-// @Summary	ME002 电池概览
-// @Tags	[M]管理接口
+// @Summary	电池概览
+// @Tags	库存
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -50,8 +50,8 @@ func (*stock) BatteryOverview(c echo.Context) (err error) {
 // StoreList
 // @ID		ManagerStockStoreList
 // @Router	/manager/v1/stock/store [GET]
-// @Summary	ME003 门店物资列表
-// @Tags	[M]管理接口
+// @Summary	门店物资列表
+// @Tags	库存
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string											true	"管理员校验token"
@@ -65,8 +65,8 @@ func (*stock) StoreList(c echo.Context) (err error) {
 // CabinetList
 // @ID		ManagerStockCabinetList
 // @Router	/manager/v1/stock/cabinet [GET]
-// @Summary	ME004 电柜物资列表
-// @Tags	[M]管理接口
+// @Summary	电柜物资列表
+// @Tags	库存
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string													true	"管理员校验token"
@@ -80,8 +80,8 @@ func (*stock) CabinetList(c echo.Context) (err error) {
 // Detail
 // @ID		ManagerStockDetail
 // @Router	/manager/v1/stock/detail [GET]
-// @Summary	ME005 出入库明细
-// @Tags	[M]管理接口
+// @Summary	出入库明细
+// @Tags	库存
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"
@@ -95,8 +95,8 @@ func (*stock) Detail(c echo.Context) (err error) {
 // EnterpriseList 团签物资列表
 // @ID		ManagerStockEnterpriseList
 // @Router	/manager/v1/stock/enterprise/list [GET]
-// @Summary	ME006 团签物资列表
-// @Tags	[M]管理接口
+// @Summary	团签物资列表
+// @Tags	库存
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string											true	"管理员校验token"

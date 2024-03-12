@@ -20,8 +20,8 @@ var Enterprise = new(enterprise)
 // Create
 // @ID		ManagerEnterpriseCreate
 // @Router	/manager/v1/enterprise [POST]
-// @Summary	M9001 创建企业
-// @Tags	[M]管理接口
+// @Summary	创建企业
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -35,8 +35,8 @@ func (*enterprise) Create(c echo.Context) (err error) {
 // Modify
 // @ID		ManagerEnterpriseModify
 // @Router	/manager/v1/enterprise/{id} [PUT]
-// @Summary	M9002 修改企业
-// @Tags	[M]管理接口
+// @Summary	修改企业
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -51,8 +51,8 @@ func (*enterprise) Modify(c echo.Context) (err error) {
 // List
 // @ID		ManagerEnterpriseList
 // @Router	/manager/v1/enterprise [GET]
-// @Summary	M9003 列举企业
-// @Tags	[M]管理接口
+// @Summary	列举企业
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"
@@ -68,8 +68,8 @@ func (*enterprise) List(c echo.Context) (err error) {
 // Detail
 // @ID		ManagerEnterpriseDetail
 // @Router	/manager/v1/enterprise/{id} [GET]
-// @Summary	M9004 企业详情
-// @Tags	[M]管理接口
+// @Summary	企业详情
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string				true	"管理员校验token"
@@ -83,8 +83,8 @@ func (*enterprise) Detail(c echo.Context) (err error) {
 // Prepayment
 // @ID		ManagerEnterprisePrepayment
 // @Router	/manager/v1/enterprise/{id}/prepayment [POST]
-// @Summary	M9005 企业预付费
-// @Tags	[M]管理接口
+// @Summary	企业预付费
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -100,8 +100,8 @@ func (*enterprise) Prepayment(c echo.Context) (err error) {
 // CreateStation
 // @ID		ManagerEnterpriseCreateStation
 // @Router	/manager/v1/enterprise/station [POST]
-// @Summary	M9006 创建站点
-// @Tags	[M]管理接口
+// @Summary	创建站点
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string								true	"管理员校验token"
@@ -115,8 +115,8 @@ func (*enterprise) CreateStation(c echo.Context) (err error) {
 // ModifyStation
 // @ID		ManagerEnterpriseModifyStation
 // @Router	/manager/v1/enterprise/station/{id} [PUT]
-// @Summary	M9007 编辑站点
-// @Tags	[M]管理接口
+// @Summary	编辑站点
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string								true	"管理员校验token"
@@ -132,8 +132,8 @@ func (*enterprise) ModifyStation(c echo.Context) (err error) {
 // ListStation
 // @ID		ManagerEnterpriseListStation
 // @Router	/manager/v1/enterprise/station [GET]
-// @Summary	M9008 列举站点
-// @Tags	[M]管理接口
+// @Summary	列举站点
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string								true	"管理员校验token"
@@ -149,8 +149,8 @@ func (*enterprise) ListStation(c echo.Context) (err error) {
 // CreateRider
 // @ID		ManagerEnterpriseCreateRider
 // @Router	/manager/v1/enterprise/rider [POST]
-// @Summary	M9009 添加骑手
-// @Tags	[M]管理接口
+// @Summary	添加骑手
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -164,8 +164,8 @@ func (*enterprise) CreateRider(c echo.Context) (err error) {
 // ListRider
 // @ID		ManagerEnterpriseListRider
 // @Router	/manager/v1/enterprise/rider [GET]
-// @Summary	M9010 列举骑手
-// @Tags	[M]管理接口
+// @Summary	列举骑手
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"
@@ -179,8 +179,8 @@ func (*enterprise) ListRider(c echo.Context) (err error) {
 // Price
 // @ID		ManagerEnterprisePrice
 // @Router	/manager/v1/enterprise/price [POST]
-// @Summary	M9016 团签单价设定
-// @Tags	[M]管理接口
+// @Summary	团签单价设定
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -194,8 +194,8 @@ func (*enterprise) Price(c echo.Context) (err error) {
 // DeletePrice
 // @ID		ManagerEnterpriseDeletePrice
 // @Router	/manager/v1/enterprise/price/{id} [POST]
-// @Summary	M9017 删除价格
-// @Tags	[M]管理接口
+// @Summary	删除价格
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -210,8 +210,8 @@ func (*enterprise) DeletePrice(c echo.Context) (err error) {
 // ModifyContract
 // @ID		ManagerEnterpriseModifyContract
 // @Router	/manager/v1/enterprise/contract [POST]
-// @Summary	M9018 编辑合同
-// @Tags	[M]管理接口
+// @Summary	编辑合同
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string								true	"管理员校验token"
@@ -226,8 +226,8 @@ func (*enterprise) ModifyContract(c echo.Context) (err error) {
 // DeleteContract
 // @ID		ManagerEnterpriseDeleteContract
 // @Router	/manager/v1/enterprise/contract/{id} [DELETE]
-// @Summary	M9019 删除合同
-// @Tags	[M]管理接口
+// @Summary	删除合同
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -242,8 +242,8 @@ func (*enterprise) DeleteContract(c echo.Context) (err error) {
 // AgentList
 // @ID		ManagerEnterpriseAgentList
 // @Router	/manager/v1/enterprise/agent [GET]
-// @Summary	M9020 代理账号列表
-// @Tags	[M]管理接口
+// @Summary	代理账号列表
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string				true	"管理员校验token"
@@ -257,8 +257,8 @@ func (*enterprise) AgentList(c echo.Context) (err error) {
 // AgentCreate
 // @ID		ManagerEnterpriseAgentCreate
 // @Router	/manager/v1/enterprise/agent [POST]
-// @Summary	M9021 创建代理账号
-// @Tags	[M]管理接口
+// @Summary	创建代理账号
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -273,8 +273,8 @@ func (*enterprise) AgentCreate(c echo.Context) (err error) {
 // AgentModify
 // @ID		ManagerEnterpriseAgentModify
 // @Router	/manager/v1/enterprise/agent/{id} [PUT]
-// @Summary	M9022 修改代理账号
-// @Tags	[M]管理接口
+// @Summary	修改代理账号
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -290,8 +290,8 @@ func (*enterprise) AgentModify(c echo.Context) (err error) {
 // AgentDelete
 // @ID		ManagerEnterpriseAgentDelete
 // @Router	/manager/v1/enterprise/agent{id} [DELETE]
-// @Summary	M9023 删除代理账号
-// @Tags	[M]管理接口
+// @Summary	删除代理账号
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -306,8 +306,8 @@ func (*enterprise) AgentDelete(c echo.Context) (err error) {
 // BindCabinet
 // @ID		ManagerEnterpriseBindCabinet
 // @Router	/manager/v1/enterprise/bind/cabinet [POST]
-// @Summary	M9024 团签绑定电柜
-// @Tags	[M]管理接口
+// @Summary	团签绑定电柜
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	body	body		model.EnterpriseBindCabinetReq	true	"绑定电柜请求"
@@ -321,8 +321,8 @@ func (*enterprise) BindCabinet(c echo.Context) (err error) {
 // UnbindCabinet
 // @ID		ManagerEnterpriseUnbindCabinet
 // @Router	/manager/v1/enterprise/unbind/cabinet/{id} [GET]
-// @Summary	M9025 团签解绑电柜
-// @Tags	[M]管理接口
+// @Summary	团签解绑电柜
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	body	body		model.IDParamReq		true	"解绑电柜请求"
@@ -336,8 +336,8 @@ func (*enterprise) UnbindCabinet(c echo.Context) (err error) {
 // PrepaymentList
 // @ID		ManagerEnterprisePrepaymentList
 // @Router	/manager/v1/enterprise/prepayment [GET]
-// @Summary	M9026 充值记录
-// @Tags	[M]管理接口
+// @Summary	充值记录
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	query	query		model.PrepaymentListReq									true	"请求参数"
@@ -350,8 +350,8 @@ func (*enterprise) PrepaymentList(c echo.Context) (err error) {
 // SubscribeAlterList
 // @ID		ManagerEnterpriseSubscribeAlterList
 // @Router	/manager/v1/enterprise/subscribe/alter/{enterpriseId} [GET]
-// @Summary	M9027 加时申请列表
-// @Tags	[M]管理接口
+// @Summary	加时申请列表
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	query	query		model.SubscribeAlterListReq	false	"请求参数"
@@ -364,8 +364,8 @@ func (*enterprise) SubscribeAlterList(c echo.Context) (err error) {
 // SubscribeApply
 // @ID		ManagerEnterpriseSubscribeApply
 // @Router	/manager/v1/enterprise/subscribe/alter [POST]
-// @Summary	M9028 审批订阅申请
-// @Tags	[M]管理接口
+// @Summary	审批订阅申请
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	body	body		model.SubscribeAlterReviewReq	true	"审批请求"
@@ -379,8 +379,8 @@ func (*enterprise) SubscribeApply(c echo.Context) (err error) {
 // FeedbackList 反馈列表
 // @ID		ManagerEnterpriseFeedbackList
 // @Router	/manager/v1/enterprise/feedback [GET]
-// @Summary	M9030 反馈列表
-// @Tags	[M]管理接口
+// @Summary	反馈列表
+// @Tags	企业
 // @Accept	json
 // @Produce	json
 // @Param	body	body		model.FeedbackListReq	true	"反馈列表请求"

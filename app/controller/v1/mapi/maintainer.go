@@ -20,8 +20,8 @@ var Maintainer = new(maintainer)
 // List
 // @ID		ManagerMaintainerList
 // @Router	/manager/v1/maintainer [GET]
-// @Summary	MJ001 运维人员列表
-// @Tags	[M]管理接口
+// @Summary	运维人员列表
+// @Tags	运维
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string										true	"管理员校验token"
@@ -35,8 +35,8 @@ func (*maintainer) List(c echo.Context) (err error) {
 // Create
 // @ID		ManagerMaintainerCreate
 // @Router	/manager/v1/maintainer [POST]
-// @Summary	MJ002 创建运维人员
-// @Tags	[M]管理接口
+// @Summary	创建运维人员
+// @Tags	运维
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -51,8 +51,8 @@ func (*maintainer) Create(c echo.Context) (err error) {
 // Modify
 // @ID		ManagerMaintainerModify
 // @Router	/manager/v1/maintainer/{id} [PUT]
-// @Summary	MJ003 修改运维人员信息
-// @Tags	[M]管理接口
+// @Summary	修改运维人员信息
+// @Tags	运维
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"

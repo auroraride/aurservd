@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type employee struct{}
@@ -19,8 +20,8 @@ var Employee = new(employee)
 // Create
 // @ID		ManagerEmployeeCreate
 // @Router	/manager/v1/employee [POST]
-// @Summary	MA010 新增店员
-// @Tags	[M]管理接口
+// @Summary	新增店员
+// @Tags	店员
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -34,8 +35,8 @@ func (*employee) Create(c echo.Context) (err error) {
 // Modify
 // @ID		ManagerEmployeeModify
 // @Router	/manager/v1/employee/{id} [PUT]
-// @Summary	MA011 修改店员
-// @Tags	[M]管理接口
+// @Summary	修改店员
+// @Tags	店员
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -50,8 +51,8 @@ func (*employee) Modify(c echo.Context) (err error) {
 // List
 // @ID		ManagerEmployeeList
 // @Router	/manager/v1/employee [GET]
-// @Summary	MA012 列举店员
-// @Tags	[M]管理接口
+// @Summary	列举店员
+// @Tags	店员
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"
@@ -65,8 +66,8 @@ func (*employee) List(c echo.Context) (err error) {
 // Delete
 // @ID		ManagerEmployeeDelete
 // @Router	/manager/v1/employee/{id} [DELETE]
-// @Summary	MA013 删除店员
-// @Tags	[M]管理接口
+// @Summary	删除店员
+// @Tags	店员
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -81,8 +82,8 @@ func (*employee) Delete(c echo.Context) (err error) {
 // Activity
 // @ID		ManagerEmployeeActivity
 // @Router	/manager/v1/employee/activity [GET]
-// @Summary	MA014 店员业绩
-// @Tags	[M]管理接口
+// @Summary	店员业绩
+// @Tags	店员
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -96,8 +97,8 @@ func (*employee) Activity(c echo.Context) (err error) {
 // Enable
 // @ID		ManagerEmployeeEnable
 // @Router	/manager/v1/emoloyee/enable [POST]
-// @Summary	MA015 启用/禁用店员
-// @Tags	[M]管理接口
+// @Summary	启用/禁用店员
+// @Tags	店员
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -112,8 +113,8 @@ func (*employee) Enable(c echo.Context) (err error) {
 // OffWork
 // @ID		ManagerEmployeeOffWork
 // @Router	/manager/v1/employee/offwork [POST]
-// @Summary	MA017 强制下班
-// @Tags	[M]管理接口
+// @Summary	强制下班
+// @Tags	店员
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"

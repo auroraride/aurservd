@@ -20,8 +20,8 @@ var Subscribe = new(subscribe)
 // Alter
 // @ID		ManagerSubscribeAlter
 // @Router	/manager/v1/subscribe/alter [POST]
-// @Summary	M7004 修改订阅时间
-// @Tags	[M]管理接口
+// @Summary	修改订阅时间
+// @Tags	订阅
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -37,8 +37,8 @@ func (*subscribe) Alter(c echo.Context) (err error) {
 // Pause
 // @ID		ManagerRiderPause
 // @Router	/manager/v1/subscribe/pause [POST]
-// @Summary	M7006 暂停计费
-// @Tags	[M]管理接口
+// @Summary	暂停计费
+// @Tags	订阅
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -53,8 +53,8 @@ func (*subscribe) Pause(c echo.Context) (err error) {
 // Continue
 // @ID		ManagerRiderContinue
 // @Router	/manager/v1/subscribe/continue [POST]
-// @Summary	M7007 继续计费
-// @Tags	[M]管理接口
+// @Summary	继续计费
+// @Tags	订阅
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -69,8 +69,8 @@ func (*subscribe) Continue(c echo.Context) (err error) {
 // Halt
 // @ID		ManagerSubscribeHalt
 // @Router	/manager/v1/subscribe/halt [POST]
-// @Summary	M7008 强制退租
-// @Tags	[M]管理接口
+// @Summary	强制退租
+// @Tags	订阅
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -93,8 +93,8 @@ func (*subscribe) Halt(c echo.Context) (err error) {
 // Active
 // @ID		ManagerSubscribeActive
 // @Router	/manager/v1/subscribe/active [POST]
-// @Summary	M7009 激活订阅
-// @Tags	[M]管理接口
+// @Summary	激活订阅
+// @Tags	订阅
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -108,8 +108,8 @@ func (*subscribe) Active(c echo.Context) (err error) {
 // Suspend
 // @ID		ManagerSubscribeSuspend
 // @Router	/manager/v1/subscribe/suspend [POST]
-// @Summary	M7014 暂停扣费
-// @Tags	[M]管理接口
+// @Summary	暂停扣费
+// @Tags	订阅
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -124,8 +124,8 @@ func (*subscribe) Suspend(c echo.Context) (err error) {
 // UnSuspend
 // @ID		ManagerSubscribeUnSuspend
 // @Router	/manager/v1/subscribe/unsuspend [POST]
-// @Summary	M7015 继续扣费
-// @Tags	[M]管理接口
+// @Summary	继续扣费
+// @Tags	订阅
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -140,8 +140,8 @@ func (*subscribe) UnSuspend(c echo.Context) (err error) {
 // EbikeChange
 // @ID		ManagerSubscribeEbikeChange
 // @Router	/manager/v1/subscribe/ebike/change [POST]
-// @Summary	M7020 修改订阅车辆
-// @Tags	[M]管理接口
+// @Summary	修改订阅车辆
+// @Tags	订阅
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string								true	"管理员校验token"
@@ -156,8 +156,8 @@ func (*subscribe) EbikeChange(c echo.Context) (err error) {
 // Reminder
 // @ID		ManagerSubscribeReminder
 // @Router	/manager/v1/subscribe/reminder [GET]
-// @Summary	M7021 催费记录
-// @Tags	[M]管理接口
+// @Summary	催费记录
+// @Tags	订阅
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"
@@ -171,8 +171,8 @@ func (*subscribe) Reminder(c echo.Context) (err error) {
 // EbikeUnbind
 // @ID		ManagerSubscribeEbikeUnbind
 // @Router	/manager/v1/subscribe/ebike/unbind [POST]
-// @Summary	M7025 解绑骑手电车
-// @Tags	[M]管理接口
+// @Summary	解绑骑手电车
+// @Tags	订阅
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string								true	"管理员校验token"

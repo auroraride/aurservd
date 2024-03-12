@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type assistance struct{}
@@ -19,8 +20,8 @@ var Assistance = new(assistance)
 // List
 // @ID		ManagerAssistanceList
 // @Router	/manager/v1/assistance [GET]
-// @Summary	MC001 救援列表
-// @Tags	[M]管理接口
+// @Summary	救援列表
+// @Tags	救援
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string													true	"管理员校验token"
@@ -34,8 +35,8 @@ func (*assistance) List(c echo.Context) (err error) {
 // Detail
 // @ID		ManagerAssistanceDetail
 // @Router	/manager/v1/assistance/{id} [GET]
-// @Summary	MC002 救援详情
-// @Tags	[M]管理接口
+// @Summary	救援详情
+// @Tags	救援
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -49,8 +50,8 @@ func (*assistance) Detail(c echo.Context) (err error) {
 // Nearby
 // @ID		ManagerAssistanceNearby
 // @Router	/manager/v1/assistance/nearby [GET]
-// @Summary	MC003 附近门店
-// @Tags	[M]管理接口
+// @Summary	附近门店
+// @Tags	救援
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -64,8 +65,8 @@ func (*assistance) Nearby(c echo.Context) (err error) {
 // Allocate
 // @ID		ManagerAssistanceAllocate
 // @Router	/manager/v1/assistance/allocate [POST]
-// @Summary	MC004 分配救援任务
-// @Tags	[M]管理接口
+// @Summary	分配救援任务
+// @Tags	救援
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -80,8 +81,8 @@ func (*assistance) Allocate(c echo.Context) (err error) {
 // Free
 // @ID		ManagerAssistanceFree
 // @Router	/manager/v1/assistance/free [POST]
-// @Summary	MC005 救援免费
-// @Tags	[M]管理接口
+// @Summary	救援免费
+// @Tags	救援
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -96,8 +97,8 @@ func (*assistance) Free(c echo.Context) (err error) {
 // Refuse
 // @ID		ManagerAssistanceRefuse
 // @Router	/manager/v1/assistance/refuse [POST]
-// @Summary	MC006 拒绝救援
-// @Tags	[M]管理接口
+// @Summary	拒绝救援
+// @Tags	救援
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"

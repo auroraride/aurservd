@@ -16,7 +16,7 @@ var Member = new(member)
 // List
 // @ID		ManagerPromotionMemberList
 // @Router	/manager/v1/promotion/member [GET]
-// @Summary	PM1001 会员列表
+// @Summary	会员列表
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json
@@ -31,7 +31,7 @@ func (m member) List(c echo.Context) (err error) {
 // Detail
 // @ID		ManagerPromotionMemberDetail
 // @Router	/manager/v1/promotion/member/{id} [GET]
-// @Summary	PM1002 会员详情
+// @Summary	会员详情
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json
@@ -46,7 +46,7 @@ func (m member) Detail(c echo.Context) (err error) {
 // Update
 // @ID		ManagerPromotionMemberUpdate
 // @Router	/manager/v1/promotion/member/{id} [PUT]
-// @Summary	PM1003 更新会员信息
+// @Summary	更新会员信息
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json
@@ -62,7 +62,7 @@ func (m member) Update(c echo.Context) (err error) {
 // TeamList
 // @ID		ManagerPromotionMemberTeamList
 // @Router	/manager/v1/promotion/member/team/{id} [GET]
-// @Summary	PM1004 会员团队列表
+// @Summary	会员团队列表
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json
@@ -77,7 +77,7 @@ func (m *member) TeamList(c echo.Context) (err error) {
 // SetCommission
 // @ID		ManagerPromotionMemberSetCommission
 // @Router	/manager/v1/promotion/member/setcommission [POST]
-// @Summary	PM1005 设置会员佣金方案
+// @Summary	设置会员佣金方案
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json

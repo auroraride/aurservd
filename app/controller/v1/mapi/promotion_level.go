@@ -17,7 +17,7 @@ var PromotionLevel = new(promotionLevel)
 // List
 // @ID		ManagerPromotionLevelList
 // @Router	/manager/v1/promotion/level [GET]
-// @Summary	PM4001 会员等级配置列表
+// @Summary	会员等级配置列表
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json
@@ -31,7 +31,7 @@ func (l *promotionLevel) List(c echo.Context) (err error) {
 // Update
 // @ID		ManagerPromotionLevelUpdate
 // @Router	/manager/v1/promotion/level [PUT]
-// @Summary	PM4002 更新会员等级配置
+// @Summary	更新会员等级配置
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json
@@ -47,7 +47,7 @@ func (l *promotionLevel) Update(c echo.Context) (err error) {
 // Create
 // @ID		ManagerPromotionLevelCreate
 // @Router	/manager/v1/promotion/level [POST]
-// @Summary	PM4003 创建会员等级配置
+// @Summary	创建会员等级配置
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json
@@ -63,7 +63,7 @@ func (l *promotionLevel) Create(c echo.Context) (err error) {
 // Delete
 // @ID		ManagerPromotionLevelDelete
 // @Router	/manager/v1/promotion/level [DELETE]
-// @Summary	PM4004 删除会员等级配置
+// @Summary	删除会员等级配置
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json
@@ -79,7 +79,7 @@ func (l *promotionLevel) Delete(c echo.Context) (err error) {
 // Selection
 // @ID		ManagerPromotionLevelSelection
 // @Router	/manager/v1/promotion/level/selection [GET]
-// @Summary	PM4005 会员等级配置下拉选择列表
+// @Summary	会员等级配置下拉选择列表
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json

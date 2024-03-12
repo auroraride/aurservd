@@ -16,7 +16,7 @@ var PromotionEarnings = new(promotionEarnings)
 // List
 // @ID		ManagerPromotionEarningsList
 // @Router	/manager/v1/promotion/earnings/{id} [GET]
-// @Summary	PM2001 会员收益列表
+// @Summary	会员收益列表
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json
@@ -31,7 +31,7 @@ func (m *promotionEarnings) List(c echo.Context) (err error) {
 // Cancel
 // @ID		ManagerPromotionEarningsCancel
 // @Router	/manager/v1/promotion/earnings/cancel [POST]
-// @Summary	PM2002 取消会员收益
+// @Summary	取消会员收益
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json

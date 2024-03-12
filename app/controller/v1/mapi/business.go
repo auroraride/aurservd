@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type business struct{}
@@ -19,8 +20,8 @@ var Business = new(business)
 // List
 // @ID		ManagerBusinessList
 // @Router	/manager/v1/business [GET]
-// @Summary	MG001 骑手业务记录
-// @Tags	[M]管理接口
+// @Summary	骑手业务记录
+// @Tags	业务
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"
@@ -34,8 +35,8 @@ func (*business) List(c echo.Context) (err error) {
 // Pause
 // @ID		ManagerBusinessPause
 // @Router	/manager/v1/business/pause [GET]
-// @Summary	MG002 寄存记录
-// @Tags	[M]管理接口
+// @Summary	寄存记录
+// @Tags	业务
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string													true	"管理员校验token"
@@ -49,8 +50,8 @@ func (*business) Pause(c echo.Context) (err error) {
 // Reserve
 // @ID		ManagerBusinessReserve
 // @Router	/manager/v1/business/reserve [GET]
-// @Summary	MG004 预约记录
-// @Tags	[M]管理接口
+// @Summary	预约记录
+// @Tags	业务
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"
@@ -64,8 +65,8 @@ func (*business) Reserve(c echo.Context) (err error) {
 // Suspend
 // @ID		ManagerBusinessSuspend
 // @Router	/manager/v1/business/suspend [GET]
-// @Summary	MG005 暂停记录
-// @Tags	[M]管理接口
+// @Summary	暂停记录
+// @Tags	业务
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"

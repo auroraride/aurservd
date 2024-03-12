@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type plan struct{}
@@ -19,8 +20,8 @@ var Plan = new(plan)
 // Create
 // @ID		PlanCreate
 // @Router	/manager/v1/plan [POST]
-// @Summary	M6001 创建骑士卡
-// @Tags	[M]管理接口
+// @Summary	创建骑士卡
+// @Tags	骑士卡
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string				true	"管理员校验token"
@@ -34,8 +35,8 @@ func (*plan) Create(c echo.Context) (err error) {
 // UpdateEnable
 // @ID		PlanUpdateEnable
 // @Router	/manager/v1/plan/{id} [PUT]
-// @Summary	M6002 上下架骑士卡
-// @Tags	[M]管理接口
+// @Summary	上下架骑士卡
+// @Tags	骑士卡
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -51,8 +52,8 @@ func (*plan) UpdateEnable(c echo.Context) (err error) {
 // Delete
 // @ID		PlanDelete
 // @Router	/manager/v1/plan/{id} [DELETE]
-// @Summary	M6003 删除骑士卡
-// @Tags	[M]管理接口
+// @Summary	删除骑士卡
+// @Tags	骑士卡
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -67,8 +68,8 @@ func (*plan) Delete(c echo.Context) (err error) {
 // List
 // @ID		PlanList
 // @Router	/manager/v1/plan [GET]
-// @Summary	M6004 列举骑士卡
-// @Tags	[M]管理接口
+// @Summary	列举骑士卡
+// @Tags	骑士卡
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string											true	"管理员校验token"
@@ -89,7 +90,7 @@ func (*plan) List(c echo.Context) (err error) {
 // @Router		/manager/v1/plan/introduce/notset [GET]
 // @Summary		M6005 获取未设定介绍的车电型号
 // @Description	介绍分两种: 1.单电 2.车电. 但无论哪种, 电池型号必选
-// @Tags		[M]管理接口
+// @Tags		骑士卡
 // @Accept		json
 // @Produce		json
 // @Param		X-Manager-Token	header		string						true	"管理员校验token"
@@ -102,8 +103,8 @@ func (*plan) IntroduceNotset(c echo.Context) (err error) {
 // IntroduceList
 // @ID		ManagerPlanIntroduceList
 // @Router	/manager/v1/plan/introduce [GET]
-// @Summary	M6006 获取车电介绍
-// @Tags	[M]管理接口
+// @Summary	获取车电介绍
+// @Tags	骑士卡
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -116,8 +117,8 @@ func (*plan) IntroduceList(c echo.Context) (err error) {
 // IntroduceCreate
 // @ID		ManagerPlanIntroduceCreate
 // @Router	/manager/v1/plan/introduce [POST]
-// @Summary	M6007 创建车电介绍
-// @Tags	[M]管理接口
+// @Summary	创建车电介绍
+// @Tags	骑士卡
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -132,8 +133,8 @@ func (*plan) IntroduceCreate(c echo.Context) (err error) {
 // IntroduceModify
 // @ID		ManagerPlanIntroduceModify
 // @Router	/manager/v1/plan/introduce [PUT]
-// @Summary	M6008 修改车电介绍
-// @Tags	[M]管理接口
+// @Summary	修改车电介绍
+// @Tags	骑士卡
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -149,8 +150,8 @@ func (*plan) IntroduceModify(c echo.Context) (err error) {
 // Time
 // @ID		ManagerPlanTime
 // @Router	/manager/v1/plan/time [POST]
-// @Summary	M6009 修改骑士卡有效期
-// @Tags	[M]管理接口
+// @Summary	修改骑士卡有效期
+// @Tags	骑士卡
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"

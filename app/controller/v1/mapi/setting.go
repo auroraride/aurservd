@@ -22,7 +22,7 @@ var Setting = new(setting)
 // List
 // @ID		ManagerSettingList
 // @Router	/manager/v1/setting [GET]
-// @Summary	M1010 列举设置
+// @Summary	列举设置
 // @Tags	[M]管理接口
 // @Accept	json
 // @Produce	json
@@ -37,7 +37,7 @@ func (*setting) List(c echo.Context) (err error) {
 // Modify
 // @ID		ManagerSettingModify
 // @Router	/manager/v1/setting/{key} [PUT]
-// @Summary	M1011 调整设置
+// @Summary	调整设置
 // @Tags	[M]管理接口
 // @Accept	json
 // @Produce	json
@@ -54,7 +54,7 @@ func (*setting) Modify(c echo.Context) (err error) {
 // LegalRead
 // @ID		ManagerSettingLegalRead
 // @Router	/manager/v1/setting/legal/{name} [GET]
-// @Summary	M1016 获取法规
+// @Summary	获取法规
 // @Tags	[M]管理接口
 // @Accept	json
 // @Produce	json
@@ -69,7 +69,7 @@ func (*setting) LegalRead(c echo.Context) (err error) {
 // LegalSave
 // @ID		ManagerSettingLegalSave
 // @Router	/manager/v1/setting/legal [POST]
-// @Summary	M1017 保存法规
+// @Summary	保存法规
 // @Tags	[M]管理接口
 // @Accept	json
 // @Produce	json
@@ -86,7 +86,7 @@ func (*setting) LegalSave(c echo.Context) (err error) {
 // @ID		SettingGuideList
 // @Router	/manager/v1/setting/guide [GET]
 // @Summary	获取引导
-// @Tags	Setting - 管理接口
+// @Tags	设置
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -101,7 +101,7 @@ func (*setting) GuideList(c echo.Context) (err error) {
 // @ID		SettingGuideGet
 // @Router	/manager/v1/setting/guide/{id} [GET]
 // @Summary	获取指定引导
-// @Tags	Setting - 管理接口
+// @Tags	设置
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -116,7 +116,7 @@ func (*setting) GuideGet(c echo.Context) (err error) {
 // @ID		SettingGuideSave
 // @Router	/manager/v1/setting/guide [POST]
 // @Summary	保存引导
-// @Tags	Setting - 管理接口
+// @Tags	设置
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -131,8 +131,8 @@ func (*setting) GuideSave(c echo.Context) (err error) {
 // GuideDelete
 // @ID		SettingGuideDelete
 // @Router	/manager/v1/setting/guide/{id} [DELETE]
-// @Summary	M1021 删除引导
-// @Tags	Setting - 管理接口
+// @Summary	删除引导
+// @Tags	设置
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -147,8 +147,8 @@ func (*setting) GuideDelete(c echo.Context) (err error) {
 // GuideModify
 // @ID		SettingGuideModify
 // @Router	/manager/v1/setting/guide [PUT]
-// @Summary	M1022 修改引导
-// @Tags	Setting - 管理接口
+// @Summary	修改引导
+// @Tags	设置
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -164,7 +164,7 @@ func (*setting) GuideModify(c echo.Context) (err error) {
 // @ID		SettingActivityList
 // @Router	/manager/v1/setting/activity [GET]
 // @Summary	获取活动列表
-// @Tags	Setting - 管理接口
+// @Tags	设置
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -179,7 +179,7 @@ func (*setting) ActivityList(c echo.Context) (err error) {
 // @ID		SettingActivityDetail
 // @Router	/manager/v1/setting/activity/{id} [GET]
 // @Summary	获取指定活动
-// @Tags	Setting - 管理接口
+// @Tags	设置
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -194,7 +194,7 @@ func (*setting) ActivityDetail(c echo.Context) (err error) {
 // @ID		SettingActivityModify
 // @Router	/manager/v1/setting/activity [PUT]
 // @Summary	修改活动
-// @Tags	Setting - 管理接口
+// @Tags	设置
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -210,7 +210,7 @@ func (*setting) ActivityModify(c echo.Context) (err error) {
 // @ID		SettingActivityDelete
 // @Router	/manager/v1/setting/activity/{id} [DELETE]
 // @Summary
-// @Tags	Setting - 管理接口
+// @Tags	设置
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"

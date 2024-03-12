@@ -16,7 +16,7 @@ var PromotionReferrals = new(promotionReferrals)
 // ProgressList
 // @ID		ManagerProgressList
 // @Router	/manager/v1/promotion/progress/list [GET]
-// @Summary	PMA001  会员推荐进度列表
+// @Summary	会员推荐进度列表
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json

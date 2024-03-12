@@ -9,11 +9,12 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	perm "github.com/auroraride/aurservd/app/permission"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type permission struct{}
@@ -23,8 +24,8 @@ var Permission = new(permission)
 // List
 // @ID		ManagerPermissionList
 // @Router	/manager/v1/permission [GET]
-// @Summary	MD001 权限列表
-// @Tags	[M]管理接口
+// @Summary	权限列表
+// @Tags	权限
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string				true	"管理员校验token"
@@ -46,8 +47,8 @@ func (*permission) List(c echo.Context) (err error) {
 // ListRole
 // @ID		ManagerPermissionListRole
 // @Router	/manager/v1/permission/role [GET]
-// @Summary	MD002 角色列表
-// @Tags	[M]管理接口
+// @Summary	角色列表
+// @Tags	权限
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string			true	"管理员校验token"
@@ -60,8 +61,8 @@ func (*permission) ListRole(c echo.Context) (err error) {
 // CreateRole
 // @ID		ManagerPermissionCreateRole
 // @Router	/manager/v1/permission/role [POST]
-// @Summary	MD003 创建角色
-// @Tags	[M]管理接口
+// @Summary	创建角色
+// @Tags	权限
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string				true	"管理员校验token"
@@ -77,8 +78,8 @@ func (*permission) CreateRole(c echo.Context) (err error) {
 // ModifyRole
 // @ID		ManagerPermissionModifyRole
 // @Router	/manager/v1/permission/role/{id} [PUT]
-// @Summary	MD004 修改角色
-// @Tags	[M]管理接口
+// @Summary	修改角色
+// @Tags	权限
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string				true	"管理员校验token"
@@ -93,8 +94,8 @@ func (*permission) ModifyRole(c echo.Context) (err error) {
 // DeleteRole
 // @ID		ManagerPermissionDeleteRole
 // @Router	/manager/v1/permission/role/{id} [DELETE]
-// @Summary	MD005 删除角色
-// @Tags	[M]管理接口
+// @Summary	删除角色
+// @Tags	权限
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"

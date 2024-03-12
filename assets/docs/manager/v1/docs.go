@@ -24,9 +24,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "救援"
                 ],
-                "summary": "MC001 救援列表",
+                "summary": "救援列表",
                 "operationId": "ManagerAssistanceList",
                 "parameters": [
                     {
@@ -121,9 +121,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "救援"
                 ],
-                "summary": "MC004 分配救援任务",
+                "summary": "分配救援任务",
                 "operationId": "ManagerAssistanceAllocate",
                 "parameters": [
                     {
@@ -162,9 +162,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "救援"
                 ],
-                "summary": "MC005 救援免费",
+                "summary": "救援免费",
                 "operationId": "ManagerAssistanceFree",
                 "parameters": [
                     {
@@ -203,9 +203,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "救援"
                 ],
-                "summary": "MC003 附近门店",
+                "summary": "附近门店",
                 "operationId": "ManagerAssistanceNearby",
                 "parameters": [
                     {
@@ -245,9 +245,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "救援"
                 ],
-                "summary": "MC006 拒绝救援",
+                "summary": "拒绝救援",
                 "operationId": "ManagerAssistanceRefuse",
                 "parameters": [
                     {
@@ -286,9 +286,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "救援"
                 ],
-                "summary": "MC002 救援详情",
+                "summary": "救援详情",
                 "operationId": "ManagerAssistanceDetail",
                 "parameters": [
                     {
@@ -325,9 +325,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电池"
                 ],
-                "summary": "M4004 电池列表",
+                "summary": "电池列表",
                 "operationId": "ManagerBatteryList",
                 "parameters": [
                     {
@@ -470,9 +470,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电池"
                 ],
-                "summary": "M4005 添加电池",
+                "summary": "添加电池",
                 "operationId": "ManagerBatteryCreate",
                 "parameters": [
                     {
@@ -512,7 +512,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电池"
                 ],
                 "summary": "M4006 批量导入电池",
                 "operationId": "ManagerBatteryBatchCreate",
@@ -551,9 +551,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电池"
                 ],
-                "summary": "M4008 绑定骑手",
+                "summary": "绑定骑手",
                 "operationId": "ManagerBatteryBind",
                 "parameters": [
                     {
@@ -592,9 +592,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电池"
                 ],
-                "summary": "M4001 获取电池型号",
+                "summary": "获取电池型号",
                 "operationId": "BatteryModels",
                 "parameters": [
                     {
@@ -637,9 +637,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电池"
                 ],
-                "summary": "M4002 创建电池型号",
+                "summary": "创建电池型号",
                 "operationId": "BatteryCreateModel",
                 "parameters": [
                     {
@@ -688,9 +688,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电池"
                 ],
-                "summary": "M4003 删除电池型号",
+                "summary": "删除电池型号",
                 "operationId": "ManagerBatteryDeleteModel",
                 "parameters": [
                     {
@@ -729,9 +729,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电池"
                 ],
-                "summary": "M4009 解绑骑手",
+                "summary": "解绑骑手",
                 "operationId": "ManagerBatteryUnbind",
                 "parameters": [
                     {
@@ -770,9 +770,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电池"
                 ],
-                "summary": "M4013 电池故障列表",
+                "summary": "电池故障列表",
                 "operationId": "ManagerBatteryFault",
                 "parameters": [
                     {
@@ -898,9 +898,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电池"
                 ],
-                "summary": "M4012 电池位置",
+                "summary": "电池位置",
                 "operationId": "ManagerBatteryPosition",
                 "parameters": [
                     {
@@ -949,9 +949,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电池"
                 ],
-                "summary": "M4011 电池数据",
+                "summary": "电池数据",
                 "operationId": "ManagerBatteryStatistics",
                 "parameters": [
                     {
@@ -988,9 +988,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电池"
                 ],
-                "summary": "M4010 电池详情",
+                "summary": "电池详情",
                 "operationId": "ManagerBatteryDetail",
                 "parameters": [
                     {
@@ -1027,9 +1027,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电池"
                 ],
-                "summary": "M4007 修改电池",
+                "summary": "修改电池",
                 "operationId": "ManagerBatteryModify",
                 "parameters": [
                     {
@@ -1075,9 +1075,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "网点"
                 ],
-                "summary": "M3001 网点列表",
+                "summary": "网点列表",
                 "operationId": "BranchList",
                 "parameters": [
                     {
@@ -1144,9 +1144,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "网点"
                 ],
-                "summary": "M3002 新增网点",
+                "summary": "新增网点",
                 "operationId": "BranchCreate",
                 "parameters": [
                     {
@@ -1185,9 +1185,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "网点"
                 ],
-                "summary": "M3010 修改合同底单",
+                "summary": "修改合同底单",
                 "operationId": "ManagerBranchSheet",
                 "parameters": [
                     {
@@ -1226,9 +1226,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "网点"
                 ],
-                "summary": "M3011 查找附近的网点",
+                "summary": "查找附近的网点",
                 "operationId": "ManagerBranchNearby",
                 "parameters": [
                     {
@@ -1297,9 +1297,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "网点"
                 ],
-                "summary": "M3005 网点选择列表",
+                "summary": "网点选择列表",
                 "operationId": "BranchSelector",
                 "parameters": [
                     {
@@ -1344,9 +1344,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "网点"
                 ],
-                "summary": "M3003 编辑网点",
+                "summary": "编辑网点",
                 "operationId": "BranchModify",
                 "parameters": [
                     {
@@ -1392,9 +1392,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "业务"
                 ],
-                "summary": "MG001 骑手业务记录",
+                "summary": "骑手业务记录",
                 "operationId": "ManagerBusinessList",
                 "parameters": [
                     {
@@ -1535,9 +1535,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "业务"
                 ],
-                "summary": "MG002 寄存记录",
+                "summary": "寄存记录",
                 "operationId": "ManagerBusinessPause",
                 "parameters": [
                     {
@@ -1676,9 +1676,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "业务"
                 ],
-                "summary": "MG004 预约记录",
+                "summary": "预约记录",
                 "operationId": "ManagerBusinessReserve",
                 "parameters": [
                     {
@@ -1783,9 +1783,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "业务"
                 ],
-                "summary": "MG005 暂停记录",
+                "summary": "暂停记录",
                 "operationId": "ManagerBusinessSuspend",
                 "parameters": [
                     {
@@ -1866,9 +1866,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
-                "summary": "M5002 查询电柜",
+                "summary": "查询电柜",
                 "operationId": "CabinetList",
                 "parameters": [
                     {
@@ -2012,9 +2012,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
-                "summary": "M5001 创建电柜",
+                "summary": "创建电柜",
                 "operationId": "CabinetCreate",
                 "parameters": [
                     {
@@ -2065,9 +2065,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
-                "summary": "M5014 仓位逻辑禁用/启用",
+                "summary": "仓位逻辑禁用/启用",
                 "operationId": "CabinetDeactivate",
                 "parameters": [
                     {
@@ -2106,9 +2106,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
-                "summary": "M5010 电柜数据表",
+                "summary": "电柜数据表",
                 "operationId": "ManagerCabinetData",
                 "parameters": [
                     {
@@ -2224,9 +2224,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
-                "summary": "M5006 仓位操作",
+                "summary": "仓位操作",
                 "operationId": "CabinetDoorOperate",
                 "parameters": [
                     {
@@ -2265,9 +2265,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
-                "summary": "M5008 故障列表",
+                "summary": "故障列表",
                 "operationId": "CabinetFault",
                 "parameters": [
                     {
@@ -2354,9 +2354,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
-                "summary": "M5015 中断电柜业务",
+                "summary": "中断电柜业务",
                 "operationId": "ManagerCabinetInterrupt",
                 "parameters": [
                     {
@@ -2395,9 +2395,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
-                "summary": "M5012 电柜操作维护",
+                "summary": "电柜操作维护",
                 "operationId": "ManagerCabinetMaintain",
                 "parameters": [
                     {
@@ -2437,7 +2437,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
                 "summary": "M5013 开仓取电池并绑定骑手",
                 "operationId": "ManagerCabinetOpenBind",
@@ -2478,9 +2478,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
-                "summary": "M5007 重启电柜",
+                "summary": "重启电柜",
                 "operationId": "CabinetReboot",
                 "parameters": [
                     {
@@ -2519,9 +2519,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
-                "summary": "M5011 初始化电柜调拨",
+                "summary": "初始化电柜调拨",
                 "operationId": "ManagerCabinetTransfer",
                 "parameters": [
                     {
@@ -2560,9 +2560,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
-                "summary": "M5005 获取并更新电柜详细信息",
+                "summary": "获取并更新电柜详细信息",
                 "operationId": "CabinetDetail",
                 "parameters": [
                     {
@@ -2597,9 +2597,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
-                "summary": "M5003 编辑电柜",
+                "summary": "编辑电柜",
                 "operationId": "CabinetModify",
                 "parameters": [
                     {
@@ -2643,9 +2643,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
-                "summary": "M5004 删除电柜",
+                "summary": "删除电柜",
                 "operationId": "CabinetDelete",
                 "parameters": [
                     {
@@ -2682,9 +2682,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电柜"
                 ],
-                "summary": "M5009 处理故障",
+                "summary": "处理故障",
                 "operationId": "CabinetFaultDeal",
                 "parameters": [
                     {
@@ -2730,9 +2730,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "城市"
                 ],
-                "summary": "M2001 城市列表",
+                "summary": "城市列表",
                 "parameters": [
                     {
                         "type": "string",
@@ -2773,7 +2773,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "城市"
                 ],
                 "summary": "M2002 修改城市",
                 "operationId": "CityModify",
@@ -2821,9 +2821,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "合同"
                 ],
-                "summary": "M7022 合同列表",
+                "summary": "合同列表",
                 "operationId": "ManagerContractList",
                 "parameters": [
                     {
@@ -2919,9 +2919,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "优惠券"
                 ],
-                "summary": "MH006 优惠券列表",
+                "summary": "优惠券列表",
                 "operationId": "ManagerCouponList",
                 "parameters": [
                     {
@@ -3037,9 +3037,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "优惠券"
                 ],
-                "summary": "MH007 分配优惠券",
+                "summary": "分配优惠券",
                 "operationId": "ManagerCouponAllocate",
                 "parameters": [
                     {
@@ -3078,9 +3078,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "优惠券"
                 ],
-                "summary": "MH005 发券记录",
+                "summary": "发券记录",
                 "operationId": "ManagerCouponAssembly",
                 "parameters": [
                     {
@@ -3143,9 +3143,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "优惠券"
                 ],
-                "summary": "MH004 生成优惠券",
+                "summary": "生成优惠券",
                 "operationId": "ManagerCouponGenerate",
                 "parameters": [
                     {
@@ -3187,9 +3187,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "优惠券"
                 ],
-                "summary": "MH001 模板列表",
+                "summary": "模板列表",
                 "operationId": "ManagerCouponTemplateList",
                 "parameters": [
                     {
@@ -3250,9 +3250,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "优惠券"
                 ],
-                "summary": "MH002 创建模板",
+                "summary": "创建模板",
                 "operationId": "ManagerCouponTemplateCreate",
                 "parameters": [
                     {
@@ -3291,9 +3291,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "优惠券"
                 ],
-                "summary": "MH003 模板启用/禁用",
+                "summary": "模板启用/禁用",
                 "operationId": "ManagerCouponTemplateStatus",
                 "parameters": [
                     {
@@ -3332,9 +3332,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "催费"
                 ],
-                "summary": "MT1001 时光驹催费工具",
+                "summary": "时光驹催费工具",
                 "operationId": "CscBatchReminder",
                 "parameters": [
                     {
@@ -3371,9 +3371,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑手"
                 ],
-                "summary": "M7019 修改押金",
+                "summary": "修改押金",
                 "operationId": "ManagerSubscribeDeposit",
                 "parameters": [
                     {
@@ -3412,9 +3412,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电车"
                 ],
-                "summary": "MI004 电车列表",
+                "summary": "电车列表",
                 "operationId": "ManagerEbikeList",
                 "parameters": [
                     {
@@ -3567,9 +3567,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电车"
                 ],
-                "summary": "MI005 添加电车",
+                "summary": "添加电车",
                 "operationId": "ManagerEbikeCreate",
                 "parameters": [
                     {
@@ -3608,9 +3608,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电车"
                 ],
-                "summary": "MI006 修改电车",
+                "summary": "修改电车",
                 "operationId": "ManagerEbikeModify",
                 "parameters": [
                     {
@@ -3649,9 +3649,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电车"
                 ],
-                "summary": "MI007 批量导入电车",
+                "summary": "批量导入电车",
                 "operationId": "ManagerEbikeBatchCreate",
                 "parameters": [
                     {
@@ -3691,9 +3691,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电车"
                 ],
-                "summary": "MI001 品牌列表",
+                "summary": "品牌列表",
                 "operationId": "ManagerEbikeBrandList",
                 "parameters": [
                     {
@@ -3724,9 +3724,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电车"
                 ],
-                "summary": "MI002 创建品牌",
+                "summary": "创建品牌",
                 "operationId": "ManagerEbikeBrandCreate",
                 "parameters": [
                     {
@@ -3765,9 +3765,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "电车"
                 ],
-                "summary": "MI003 修改品牌",
+                "summary": "修改品牌",
                 "operationId": "ManagerEbikeBrandModify",
                 "parameters": [
                     {
@@ -3813,9 +3813,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "店员"
                 ],
-                "summary": "MA015 启用/禁用店员",
+                "summary": "启用/禁用店员",
                 "operationId": "ManagerEmployeeEnable",
                 "parameters": [
                     {
@@ -3854,9 +3854,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "店员"
                 ],
-                "summary": "MA012 列举店员",
+                "summary": "列举店员",
                 "operationId": "ManagerEmployeeList",
                 "parameters": [
                     {
@@ -3934,9 +3934,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "店员"
                 ],
-                "summary": "MA010 新增店员",
+                "summary": "新增店员",
                 "operationId": "ManagerEmployeeCreate",
                 "parameters": [
                     {
@@ -3975,9 +3975,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "店员"
                 ],
-                "summary": "MA014 店员业绩",
+                "summary": "店员业绩",
                 "operationId": "ManagerEmployeeActivity",
                 "parameters": [
                     {
@@ -4049,9 +4049,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "工作流"
                 ],
-                "summary": "MA016 工作流",
+                "summary": "工作流",
                 "operationId": "ManagerAttendanceList",
                 "parameters": [
                     {
@@ -4149,9 +4149,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "店员"
                 ],
-                "summary": "MA017 强制下班",
+                "summary": "强制下班",
                 "operationId": "ManagerEmployeeOffWork",
                 "parameters": [
                     {
@@ -4190,9 +4190,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "店员"
                 ],
-                "summary": "MA011 修改店员",
+                "summary": "修改店员",
                 "operationId": "ManagerEmployeeModify",
                 "parameters": [
                     {
@@ -4227,9 +4227,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "店员"
                 ],
-                "summary": "MA013 删除店员",
+                "summary": "删除店员",
                 "operationId": "ManagerEmployeeDelete",
                 "parameters": [
                     {
@@ -4266,9 +4266,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9003 列举企业",
+                "summary": "列举企业",
                 "operationId": "ManagerEnterpriseList",
                 "parameters": [
                     {
@@ -4375,9 +4375,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9001 创建企业",
+                "summary": "创建企业",
                 "operationId": "ManagerEnterpriseCreate",
                 "parameters": [
                     {
@@ -4416,9 +4416,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9020 代理账号列表",
+                "summary": "代理账号列表",
                 "operationId": "ManagerEnterpriseAgentList",
                 "parameters": [
                     {
@@ -4456,9 +4456,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9021 创建代理账号",
+                "summary": "创建代理账号",
                 "operationId": "ManagerEnterpriseAgentCreate",
                 "parameters": [
                     {
@@ -4497,9 +4497,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9022 修改代理账号",
+                "summary": "修改代理账号",
                 "operationId": "ManagerEnterpriseAgentModify",
                 "parameters": [
                     {
@@ -4545,9 +4545,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9023 删除代理账号",
+                "summary": "删除代理账号",
                 "operationId": "ManagerEnterpriseAgentDelete",
                 "parameters": [
                     {
@@ -4584,9 +4584,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "账单"
                 ],
-                "summary": "M9011 获取账单",
+                "summary": "获取账单",
                 "operationId": "ManagerStatementGetBill",
                 "parameters": [
                     {
@@ -4628,9 +4628,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "账单"
                 ],
-                "summary": "M9012 结账",
+                "summary": "结账",
                 "operationId": "ManagerStatementBill",
                 "parameters": [
                     {
@@ -4669,9 +4669,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "账单"
                 ],
-                "summary": "M9013 历史账单",
+                "summary": "历史账单",
                 "operationId": "ManagerStatementHistorical",
                 "parameters": [
                     {
@@ -4746,9 +4746,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "账单"
                 ],
-                "summary": "M9014 结账明细",
+                "summary": "结账明细",
                 "operationId": "ManagerStatementStatement",
                 "parameters": [
                     {
@@ -4785,9 +4785,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "账单"
                 ],
-                "summary": "M9015 使用明细",
+                "summary": "使用明细",
                 "operationId": "ManagerStatementUsage",
                 "parameters": [
                     {
@@ -4886,9 +4886,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9024 团签绑定电柜",
+                "summary": "团签绑定电柜",
                 "operationId": "ManagerEnterpriseBindCabinet",
                 "parameters": [
                     {
@@ -4920,9 +4920,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9018 编辑合同",
+                "summary": "编辑合同",
                 "operationId": "ManagerEnterpriseModifyContract",
                 "parameters": [
                     {
@@ -4961,9 +4961,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9019 删除合同",
+                "summary": "删除合同",
                 "operationId": "ManagerEnterpriseDeleteContract",
                 "parameters": [
                     {
@@ -5000,9 +5000,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9030 反馈列表",
+                "summary": "反馈列表",
                 "operationId": "ManagerEnterpriseFeedbackList",
                 "parameters": [
                     {
@@ -5049,9 +5049,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9026 充值记录",
+                "summary": "充值记录",
                 "operationId": "ManagerEnterprisePrepaymentList",
                 "parameters": [
                     {
@@ -5142,9 +5142,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9016 团签单价设定",
+                "summary": "团签单价设定",
                 "operationId": "ManagerEnterprisePrice",
                 "parameters": [
                     {
@@ -5183,9 +5183,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9017 删除价格",
+                "summary": "删除价格",
                 "operationId": "ManagerEnterpriseDeletePrice",
                 "parameters": [
                     {
@@ -5222,9 +5222,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9010 列举骑手",
+                "summary": "列举骑手",
                 "operationId": "ManagerEnterpriseListRider",
                 "parameters": [
                     {
@@ -5327,9 +5327,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9009 添加骑手",
+                "summary": "添加骑手",
                 "operationId": "ManagerEnterpriseCreateRider",
                 "parameters": [
                     {
@@ -5368,9 +5368,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9008 列举站点",
+                "summary": "列举站点",
                 "operationId": "ManagerEnterpriseListStation",
                 "parameters": [
                     {
@@ -5408,9 +5408,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9006 创建站点",
+                "summary": "创建站点",
                 "operationId": "ManagerEnterpriseCreateStation",
                 "parameters": [
                     {
@@ -5449,9 +5449,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9007 编辑站点",
+                "summary": "编辑站点",
                 "operationId": "ManagerEnterpriseModifyStation",
                 "parameters": [
                     {
@@ -5497,9 +5497,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9028 审批订阅申请",
+                "summary": "审批订阅申请",
                 "operationId": "ManagerEnterpriseSubscribeApply",
                 "parameters": [
                     {
@@ -5531,9 +5531,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9027 加时申请列表",
+                "summary": "加时申请列表",
                 "operationId": "ManagerEnterpriseSubscribeAlterList",
                 "parameters": [
                     {
@@ -5613,9 +5613,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9025 团签解绑电柜",
+                "summary": "团签解绑电柜",
                 "operationId": "ManagerEnterpriseUnbindCabinet",
                 "parameters": [
                     {
@@ -5647,9 +5647,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9004 企业详情",
+                "summary": "企业详情",
                 "operationId": "ManagerEnterpriseDetail",
                 "parameters": [
                     {
@@ -5684,9 +5684,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9002 修改企业",
+                "summary": "修改企业",
                 "operationId": "ManagerEnterpriseModify",
                 "parameters": [
                     {
@@ -5725,9 +5725,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "企业"
                 ],
-                "summary": "M9005 企业预付费",
+                "summary": "企业预付费",
                 "operationId": "ManagerEnterprisePrepayment",
                 "parameters": [
                     {
@@ -5766,9 +5766,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "换电"
                 ],
-                "summary": "MG003 换电记录",
+                "summary": "换电记录",
                 "operationId": "ManagerExchangeList",
                 "parameters": [
                     {
@@ -5954,9 +5954,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "导出"
                 ],
-                "summary": "MF001 导出列表",
+                "summary": "导出列表",
                 "operationId": "ManagerExportList",
                 "parameters": [
                     {
@@ -6019,9 +6019,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "导出"
                 ],
-                "summary": "MF008 导出业务记录",
+                "summary": "导出业务记录",
                 "operationId": "ManagerExportBusiness",
                 "parameters": [
                     {
@@ -6060,9 +6060,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "导出"
                 ],
-                "summary": "MF007 导出业绩",
+                "summary": "导出业绩",
                 "operationId": "ManagerExportCommission",
                 "parameters": [
                     {
@@ -6101,9 +6101,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "导出"
                 ],
-                "summary": "MF002 下载文件",
+                "summary": "下载文件",
                 "operationId": "ManagerExportDownload",
                 "parameters": [
                     {
@@ -6140,9 +6140,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "导出"
                 ],
-                "summary": "MF010 导出换电明细",
+                "summary": "导出换电明细",
                 "operationId": "ManagerExportExchange",
                 "parameters": [
                     {
@@ -6181,9 +6181,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "导出"
                 ],
-                "summary": "MF006 导出订单",
+                "summary": "导出订单",
                 "operationId": "ManagerExportOrder",
                 "parameters": [
                     {
@@ -6222,9 +6222,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "导出"
                 ],
-                "summary": "MF003 导出骑手",
+                "summary": "导出骑手",
                 "operationId": "ManagerExportRider",
                 "parameters": [
                     {
@@ -6262,9 +6262,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "导出"
                 ],
-                "summary": "MF004 导出企业账单",
+                "summary": "导出企业账单",
                 "operationId": "ManagerExportStatementDetail",
                 "parameters": [
                     {
@@ -6303,9 +6303,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "导出"
                 ],
-                "summary": "MF005 导出企业使用明细",
+                "summary": "导出企业使用明细",
                 "operationId": "ManagerExportStatementUsage",
                 "parameters": [
                     {
@@ -6344,9 +6344,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "导出"
                 ],
-                "summary": "MF009 导出出入库明细",
+                "summary": "导出出入库明细",
                 "operationId": "ManagerExportStockDetail",
                 "parameters": [
                     {
@@ -6385,9 +6385,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "导入"
                 ],
-                "summary": "ME001 单个导入骑手",
+                "summary": "导入单个骑手",
                 "operationId": "ManagerImportRider",
                 "parameters": [
                     {
@@ -6426,9 +6426,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "物资"
                 ],
-                "summary": "M1013 列举物资设定",
+                "summary": "列举物资设定",
                 "operationId": "ManagerInventoryList",
                 "parameters": [
                     {
@@ -6456,9 +6456,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "物资"
                 ],
-                "summary": "M1012 物资设定创建或更新",
+                "summary": "物资设定创建或更新",
                 "operationId": "ManagerInventoryCreateOrModify",
                 "parameters": [
                     {
@@ -6495,9 +6495,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "物资"
                 ],
-                "summary": "M1014 删除物资设定",
+                "summary": "删除物资设定",
                 "operationId": "ManagerInventoryDelete",
                 "parameters": [
                     {
@@ -6536,9 +6536,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "物资"
                 ],
-                "summary": "M1015 可调拨物资清单",
+                "summary": "可调拨物资清单",
                 "operationId": "ManagerInventoryTransferable",
                 "parameters": [
                     {
@@ -6571,9 +6571,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "运维"
                 ],
-                "summary": "MJ001 运维人员列表",
+                "summary": "运维人员列表",
                 "operationId": "ManagerMaintainerList",
                 "parameters": [
                     {
@@ -6640,9 +6640,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "运维"
                 ],
-                "summary": "MJ002 创建运维人员",
+                "summary": "创建运维人员",
                 "operationId": "ManagerMaintainerCreate",
                 "parameters": [
                     {
@@ -6681,9 +6681,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "运维"
                 ],
-                "summary": "MJ003 修改运维人员信息",
+                "summary": "修改运维人员信息",
                 "operationId": "ManagerMaintainerModify",
                 "parameters": [
                     {
@@ -6722,9 +6722,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "订单"
                 ],
-                "summary": "M8001 订单列表",
+                "summary": "订单列表",
                 "operationId": "ManagerOrderList",
                 "parameters": [
                     {
@@ -6864,9 +6864,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "订单"
                 ],
-                "summary": "M8002 退款审核",
+                "summary": "退款审核",
                 "operationId": "ManagerOrderRefundAudit",
                 "parameters": [
                     {
@@ -6905,9 +6905,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "权限"
                 ],
-                "summary": "MD001 权限列表",
+                "summary": "权限列表",
                 "operationId": "ManagerPermissionList",
                 "parameters": [
                     {
@@ -6940,9 +6940,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "权限"
                 ],
-                "summary": "MD002 角色列表",
+                "summary": "角色列表",
                 "operationId": "ManagerPermissionListRole",
                 "parameters": [
                     {
@@ -6973,9 +6973,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "权限"
                 ],
-                "summary": "MD003 创建角色",
+                "summary": "创建角色",
                 "operationId": "ManagerPermissionCreateRole",
                 "parameters": [
                     {
@@ -7014,9 +7014,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "权限"
                 ],
-                "summary": "MD004 修改角色",
+                "summary": "修改角色",
                 "operationId": "ManagerPermissionModifyRole",
                 "parameters": [
                     {
@@ -7060,9 +7060,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "权限"
                 ],
-                "summary": "MD005 删除角色",
+                "summary": "删除角色",
                 "operationId": "ManagerPermissionDeleteRole",
                 "parameters": [
                     {
@@ -7099,9 +7099,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑士卡"
                 ],
-                "summary": "M6004 列举骑士卡",
+                "summary": "列举骑士卡",
                 "operationId": "PlanList",
                 "parameters": [
                     {
@@ -7216,9 +7216,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑士卡"
                 ],
-                "summary": "M6001 创建骑士卡",
+                "summary": "创建骑士卡",
                 "operationId": "PlanCreate",
                 "parameters": [
                     {
@@ -7257,9 +7257,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑士卡"
                 ],
-                "summary": "M6006 获取车电介绍",
+                "summary": "获取车电介绍",
                 "operationId": "ManagerPlanIntroduceList",
                 "parameters": [
                     {
@@ -7290,9 +7290,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑士卡"
                 ],
-                "summary": "M6008 修改车电介绍",
+                "summary": "修改车电介绍",
                 "operationId": "ManagerPlanIntroduceModify",
                 "parameters": [
                     {
@@ -7336,9 +7336,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑士卡"
                 ],
-                "summary": "M6007 创建车电介绍",
+                "summary": "创建车电介绍",
                 "operationId": "ManagerPlanIntroduceCreate",
                 "parameters": [
                     {
@@ -7378,7 +7378,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑士卡"
                 ],
                 "summary": "M6005 获取未设定介绍的车电型号",
                 "operationId": "ManagerPlanIntroduceNotset",
@@ -7413,9 +7413,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑士卡"
                 ],
-                "summary": "M6009 修改骑士卡有效期",
+                "summary": "修改骑士卡有效期",
                 "operationId": "ManagerPlanTime",
                 "parameters": [
                     {
@@ -7454,9 +7454,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑士卡"
                 ],
-                "summary": "M6002 上下架骑士卡",
+                "summary": "上下架骑士卡",
                 "operationId": "PlanUpdateEnable",
                 "parameters": [
                     {
@@ -7500,9 +7500,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑士卡"
                 ],
-                "summary": "M6003 删除骑士卡",
+                "summary": "删除骑士卡",
                 "operationId": "PlanDelete",
                 "parameters": [
                     {
@@ -7539,9 +7539,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "积分"
                 ],
-                "summary": "M7018 批量变动积分",
+                "summary": "批量变动积分",
                 "operationId": "ManagerPointBatch",
                 "parameters": [
                     {
@@ -7583,9 +7583,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "积分"
                 ],
-                "summary": "M7017 积分变动日志",
+                "summary": "积分变动日志",
                 "operationId": "ManagerPointLog",
                 "parameters": [
                     {
@@ -7672,9 +7672,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "积分"
                 ],
-                "summary": "M7016 修改骑手积分",
+                "summary": "修改骑手积分",
                 "operationId": "ManagerPointModify",
                 "parameters": [
                     {
@@ -7715,7 +7715,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM7001 会员成就列表",
+                "summary": "会员成就列表",
                 "operationId": "ManagerPromotionAchievementList",
                 "parameters": [
                     {
@@ -7748,7 +7748,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM7003 更新会员成就",
+                "summary": "更新会员成就",
                 "operationId": "ManagerPromotionAchievementUpdate",
                 "parameters": [
                     {
@@ -7787,7 +7787,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM7002 创建会员成就",
+                "summary": "创建会员成就",
                 "operationId": "ManagerPromotionAchievementCreate",
                 "parameters": [
                     {
@@ -7826,7 +7826,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM7004 删除会员成就",
+                "summary": "删除会员成就",
                 "operationId": "ManagerPromotionAchievementDelete",
                 "parameters": [
                     {
@@ -7865,7 +7865,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM7005 上传会员成就图标",
+                "summary": "上传会员成就图标",
                 "operationId": "ManagerPromotionAchievementUploadIcon",
                 "parameters": [
                     {
@@ -7904,7 +7904,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM8001 推广返佣方案列表",
+                "summary": "推广返佣方案列表",
                 "operationId": "ManagerPromotionCommissionList",
                 "parameters": [
                     {
@@ -7937,7 +7937,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM8004 更新推广返佣方案",
+                "summary": "更新推广返佣方案",
                 "operationId": "ManagerPromotionCommissionUpdate",
                 "parameters": [
                     {
@@ -7976,7 +7976,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM8003 创建推广返佣方案",
+                "summary": "创建推广返佣方案",
                 "operationId": "ManagerPromotionCommissionCreate",
                 "parameters": [
                     {
@@ -8017,7 +8017,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM8006 更新推广返佣方案状态",
+                "summary": "更新推广返佣方案状态",
                 "operationId": "ManagerPromotionCommissionUpdateEnable",
                 "parameters": [
                     {
@@ -8058,7 +8058,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM8007 推广返佣方案历史列表",
+                "summary": "推广返佣方案历史列表",
                 "operationId": "ManagerPromotionCommissionHistoryList",
                 "parameters": [
                     {
@@ -8100,7 +8100,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM8010 返佣方案骑士卡列表",
+                "summary": "返佣方案骑士卡列表",
                 "operationId": "ManagerPromotionCommissionPlanList",
                 "parameters": [
                     {
@@ -8142,7 +8142,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM8008 推广返佣方案选择",
+                "summary": "推广返佣方案选择",
                 "operationId": "ManagerPromotionCommissionSelection",
                 "parameters": [
                     {
@@ -8177,7 +8177,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM8009 返佣方案任务选择",
+                "summary": "返佣方案任务选择",
                 "operationId": "ManagerPromotionCommissionTaskSelection",
                 "parameters": [
                     {
@@ -8212,7 +8212,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM8002 推广返佣方案详情",
+                "summary": "推广返佣方案详情",
                 "operationId": "ManagerPromotionCommissionDetail",
                 "parameters": [
                     {
@@ -8249,7 +8249,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM8005 删除推广返佣方案",
+                "summary": "删除推广返佣方案",
                 "operationId": "ManagerPromotionCommissionDelete",
                 "parameters": [
                     {
@@ -8288,7 +8288,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM2002 取消会员收益",
+                "summary": "取消会员收益",
                 "operationId": "ManagerPromotionEarningsCancel",
                 "parameters": [
                     {
@@ -8327,7 +8327,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM2001 会员收益列表",
+                "summary": "会员收益列表",
                 "operationId": "ManagerPromotionEarningsList",
                 "parameters": [
                     {
@@ -8371,7 +8371,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM5001 会员成长值列表",
+                "summary": "会员成长值列表",
                 "operationId": "ManagerPromotionGrowthList",
                 "parameters": [
                     {
@@ -8415,7 +8415,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM4001 会员等级配置列表",
+                "summary": "会员等级配置列表",
                 "operationId": "ManagerPromotionLevelList",
                 "parameters": [
                     {
@@ -8448,7 +8448,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM4002 更新会员等级配置",
+                "summary": "更新会员等级配置",
                 "operationId": "ManagerPromotionLevelUpdate",
                 "parameters": [
                     {
@@ -8487,7 +8487,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM4003 创建会员等级配置",
+                "summary": "创建会员等级配置",
                 "operationId": "ManagerPromotionLevelCreate",
                 "parameters": [
                     {
@@ -8526,7 +8526,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM4004 删除会员等级配置",
+                "summary": "删除会员等级配置",
                 "operationId": "ManagerPromotionLevelDelete",
                 "parameters": [
                     {
@@ -8565,7 +8565,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM4005 会员等级配置下拉选择列表",
+                "summary": "会员等级配置下拉选择列表",
                 "operationId": "ManagerPromotionLevelSelection",
                 "parameters": [
                     {
@@ -8600,7 +8600,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM1001 会员列表",
+                "summary": "会员列表",
                 "operationId": "ManagerPromotionMemberList",
                 "parameters": [
                     {
@@ -8644,7 +8644,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM1005 设置会员佣金方案",
+                "summary": "设置会员佣金方案",
                 "operationId": "ManagerPromotionMemberSetCommission",
                 "parameters": [
                     {
@@ -8685,7 +8685,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM1004 会员团队列表",
+                "summary": "会员团队列表",
                 "operationId": "ManagerPromotionMemberTeamList",
                 "parameters": [
                     {
@@ -8741,7 +8741,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM1002 会员详情",
+                "summary": "会员详情",
                 "operationId": "ManagerPromotionMemberDetail",
                 "parameters": [
                     {
@@ -8778,7 +8778,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM1003 更新会员信息",
+                "summary": "更新会员信息",
                 "operationId": "ManagerPromotionMemberUpdate",
                 "parameters": [
                     {
@@ -8819,7 +8819,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PMA001  会员推荐进度列表",
+                "summary": "会员推荐进度列表",
                 "operationId": "ManagerProgressList",
                 "parameters": [
                     {
@@ -8863,7 +8863,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM9001 获取推广配置",
+                "summary": "获取推广配置",
                 "operationId": "ManagerPromotionSetting",
                 "parameters": [
                     {
@@ -8905,7 +8905,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM9002 更新推广配置",
+                "summary": "更新推广配置",
                 "operationId": "ManagerPromotionSettingUpdate",
                 "parameters": [
                     {
@@ -8946,7 +8946,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM6001 会员任务列表",
+                "summary": "会员任务列表",
                 "operationId": "ManagerPromotionTaskList",
                 "parameters": [
                     {
@@ -8981,7 +8981,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM6002 更新会员任务",
+                "summary": "更新会员任务",
                 "operationId": "ManagerPromotionTaskUpdate",
                 "parameters": [
                     {
@@ -9022,7 +9022,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM3001 会员提现列表",
+                "summary": "会员提现列表",
                 "operationId": "ManagerPromotionWithdrawalList",
                 "parameters": [
                     {
@@ -9066,7 +9066,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM3002  审批提现",
+                "summary": "审批提现",
                 "operationId": "ManagerPromotionWithdrawalAlterReview",
                 "parameters": [
                     {
@@ -9107,7 +9107,7 @@ const docTemplate = `{
                 "tags": [
                     "[PM]推广管理接口"
                 ],
-                "summary": "PM3003  导出提现列表",
+                "summary": "导出提现列表",
                 "operationId": "ManagerPromotionWithdrawalExport",
                 "parameters": [
                     {
@@ -9146,9 +9146,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑手"
                 ],
-                "summary": "M7001 列举骑手",
+                "summary": "列举骑手",
                 "operationId": "RiderList",
                 "parameters": [
                     {
@@ -9342,9 +9342,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑手"
                 ],
-                "summary": "M7002 封禁/解除封禁身份",
+                "summary": "封禁/解除封禁身份",
                 "operationId": "RiderBan",
                 "parameters": [
                     {
@@ -9383,9 +9383,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑手"
                 ],
-                "summary": "M7003 封禁/解除封禁骑手账户",
+                "summary": "封禁/解除封禁骑手账户",
                 "operationId": "RiderBlock",
                 "parameters": [
                     {
@@ -9424,9 +9424,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑手"
                 ],
-                "summary": "M7024 设置骑手换电频次",
+                "summary": "设置骑手换电频次",
                 "operationId": "ManagerRiderExchangeFrequency",
                 "parameters": [
                     {
@@ -9465,9 +9465,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑手"
                 ],
-                "summary": "M7023 设置骑手换电限制",
+                "summary": "设置骑手换电限制",
                 "operationId": "ManagerRiderExchangeLimit",
                 "parameters": [
                     {
@@ -9506,9 +9506,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑手"
                 ],
-                "summary": "M7013 获取骑手跟进",
+                "summary": "获取骑手跟进",
                 "operationId": "ManagerRiderFollowUpList",
                 "parameters": [
                     {
@@ -9570,9 +9570,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑手"
                 ],
-                "summary": "M7012 创建骑手跟进",
+                "summary": "创建骑手跟进",
                 "operationId": "ManagerRiderFollowUpCreate",
                 "parameters": [
                     {
@@ -9611,9 +9611,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑手"
                 ],
-                "summary": "M7005 查看骑手操作日志",
+                "summary": "查看骑手操作日志",
                 "operationId": "ManagerRiderLog",
                 "parameters": [
                     {
@@ -9690,9 +9690,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑手"
                 ],
-                "summary": "M7010 修改骑手资料",
+                "summary": "修改骑手资料",
                 "operationId": "ManagerSubscribeModify",
                 "parameters": [
                     {
@@ -9731,9 +9731,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "骑手"
                 ],
-                "summary": "M7011 删除骑手",
+                "summary": "删除骑手",
                 "operationId": "ManagerRiderDelete",
                 "parameters": [
                     {
@@ -9770,9 +9770,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB016 按流水号搜索电池",
+                "summary": "按流水号搜索电池",
                 "operationId": "ManagerSelectionBatterySerial",
                 "parameters": [
                     {
@@ -9825,9 +9825,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB006 筛选网点",
+                "summary": "筛选网点",
                 "operationId": "ManagerSelectionBranch",
                 "parameters": [
                     {
@@ -9860,9 +9860,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB008 筛选电柜",
+                "summary": "筛选电柜",
                 "operationId": "ManagerSelectionCabinet",
                 "parameters": [
                     {
@@ -9907,9 +9907,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB012 筛选电柜电池",
+                "summary": "筛选电柜电池",
                 "operationId": "ManagerSelectionCabinetModel",
                 "parameters": [
                     {
@@ -9949,9 +9949,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB005 筛选启用的城市",
+                "summary": "筛选启用的城市",
                 "operationId": "ManagerSelectionCity",
                 "parameters": [
                     {
@@ -9984,9 +9984,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB017 返佣方案筛选骑士卡",
+                "summary": "返佣方案筛选骑士卡",
                 "operationId": "ManagerSelectionCommissionPlan",
                 "parameters": [
                     {
@@ -10019,7 +10019,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
                 "summary": "MB014 筛选优惠券模板",
                 "operationId": "ManagerSelectionCouponTemplate",
@@ -10054,9 +10054,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB015 车辆型号列表",
+                "summary": "车辆型号列表",
                 "operationId": "ManagerSelectionEbikeBrand",
                 "parameters": [
                     {
@@ -10089,9 +10089,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB004 筛选店员",
+                "summary": "筛选店员",
                 "operationId": "ManagerSelectionEmployee",
                 "parameters": [
                     {
@@ -10124,9 +10124,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB007 筛选企业",
+                "summary": "筛选企业",
                 "operationId": "ManagerSelectionEnterprise",
                 "parameters": [
                     {
@@ -10159,9 +10159,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB013 筛选电池型号",
+                "summary": "筛选电池型号",
                 "operationId": "ManagerSelectionModel",
                 "parameters": [
                     {
@@ -10194,9 +10194,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB001 筛选骑士卡",
+                "summary": "筛选骑士卡",
                 "operationId": "ManagerSelectionPlan",
                 "parameters": [
                     {
@@ -10251,9 +10251,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB011 筛选骑行卡电池",
+                "summary": "筛选骑行卡电池",
                 "operationId": "ManagerSelectionPlanModel",
                 "parameters": [
                     {
@@ -10293,9 +10293,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB002 筛选骑手",
+                "summary": "筛选骑手",
                 "operationId": "ManagerSelectionRider",
                 "parameters": [
                     {
@@ -10334,9 +10334,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB009 筛选角色",
+                "summary": "筛选角色",
                 "operationId": "ManagerSelectionRole",
                 "parameters": [
                     {
@@ -10369,9 +10369,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB003 筛选门店",
+                "summary": "筛选门店",
                 "operationId": "ManagerSelectionStore",
                 "parameters": [
                     {
@@ -10404,9 +10404,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "筛选"
                 ],
-                "summary": "MB010 筛选企业微信成员",
+                "summary": "筛选企业微信成员",
                 "operationId": "ManagerSelectionWxEmployee",
                 "parameters": [
                     {
@@ -10442,7 +10442,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1010 列举设置",
+                "summary": "列举设置",
                 "operationId": "ManagerSettingList",
                 "parameters": [
                     {
@@ -10475,7 +10475,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Setting - 管理接口"
+                    "设置"
                 ],
                 "summary": "获取活动列表",
                 "operationId": "SettingActivityList",
@@ -10514,7 +10514,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Setting - 管理接口"
+                    "设置"
                 ],
                 "summary": "修改活动",
                 "operationId": "SettingActivityModify",
@@ -10594,7 +10594,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Setting - 管理接口"
+                    "设置"
                 ],
                 "summary": "获取指定活动",
                 "operationId": "SettingActivityDetail",
@@ -10631,7 +10631,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Setting - 管理接口"
+                    "设置"
                 ],
                 "operationId": "SettingActivityDelete",
                 "parameters": [
@@ -10669,7 +10669,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Setting - 管理接口"
+                    "设置"
                 ],
                 "summary": "获取引导",
                 "operationId": "SettingGuideList",
@@ -10708,9 +10708,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Setting - 管理接口"
+                    "设置"
                 ],
-                "summary": "M1022 修改引导",
+                "summary": "修改引导",
                 "operationId": "SettingGuideModify",
                 "parameters": [
                     {
@@ -10747,7 +10747,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Setting - 管理接口"
+                    "设置"
                 ],
                 "summary": "保存引导",
                 "operationId": "SettingGuideSave",
@@ -10788,7 +10788,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Setting - 管理接口"
+                    "设置"
                 ],
                 "summary": "获取指定引导",
                 "operationId": "SettingGuideGet",
@@ -10825,9 +10825,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Setting - 管理接口"
+                    "设置"
                 ],
-                "summary": "M1021 删除引导",
+                "summary": "删除引导",
                 "operationId": "SettingGuideDelete",
                 "parameters": [
                     {
@@ -10866,7 +10866,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1017 保存法规",
+                "summary": "保存法规",
                 "operationId": "ManagerSettingLegalSave",
                 "parameters": [
                     {
@@ -10907,7 +10907,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1016 获取法规",
+                "summary": "获取法规",
                 "operationId": "ManagerSettingLegalRead",
                 "parameters": [
                     {
@@ -10946,7 +10946,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1011 调整设置",
+                "summary": "调整设置",
                 "operationId": "ManagerSettingModify",
                 "parameters": [
                     {
@@ -10992,9 +10992,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "库存"
                 ],
-                "summary": "ME001 调拨物资",
+                "summary": "调拨物资",
                 "operationId": "ManagerStockCreate",
                 "parameters": [
                     {
@@ -11036,9 +11036,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "库存"
                 ],
-                "summary": "ME002 电池概览",
+                "summary": "电池概览",
                 "operationId": "ManagerStockBatteryOverview",
                 "parameters": [
                     {
@@ -11116,9 +11116,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "库存"
                 ],
-                "summary": "ME004 电柜物资列表",
+                "summary": "电柜物资列表",
                 "operationId": "ManagerStockCabinetList",
                 "parameters": [
                     {
@@ -11205,9 +11205,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "库存"
                 ],
-                "summary": "ME005 出入库明细",
+                "summary": "出入库明细",
                 "operationId": "ManagerStockDetail",
                 "parameters": [
                     {
@@ -11379,9 +11379,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "库存"
                 ],
-                "summary": "ME006 团签物资列表",
+                "summary": "团签物资列表",
                 "operationId": "ManagerStockEnterpriseList",
                 "parameters": [
                     {
@@ -11498,9 +11498,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "库存"
                 ],
-                "summary": "ME003 门店物资列表",
+                "summary": "门店物资列表",
                 "operationId": "ManagerStockStoreList",
                 "parameters": [
                     {
@@ -11617,9 +11617,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "门店"
                 ],
-                "summary": "M3006 列举门店",
+                "summary": "列举门店",
                 "operationId": "StoreList",
                 "parameters": [
                     {
@@ -11704,9 +11704,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "门店"
                 ],
-                "summary": "M3007 创建门店",
+                "summary": "创建门店",
                 "operationId": "StoreCreate",
                 "parameters": [
                     {
@@ -11745,9 +11745,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "门店"
                 ],
-                "summary": "M3008 修改门店",
+                "summary": "修改门店",
                 "operationId": "StoreModify",
                 "parameters": [
                     {
@@ -11791,9 +11791,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "门店"
                 ],
-                "summary": "M3009 删除门店",
+                "summary": "删除门店",
                 "operationId": "StoreDelete",
                 "parameters": [
                     {
@@ -11830,9 +11830,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "订阅"
                 ],
-                "summary": "M7009 激活订阅",
+                "summary": "激活订阅",
                 "operationId": "ManagerSubscribeActive",
                 "parameters": [
                     {
@@ -11871,9 +11871,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "订阅"
                 ],
-                "summary": "M7004 修改订阅时间",
+                "summary": "修改订阅时间",
                 "operationId": "ManagerSubscribeAlter",
                 "parameters": [
                     {
@@ -11912,9 +11912,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "订阅"
                 ],
-                "summary": "M7007 继续计费",
+                "summary": "继续计费",
                 "operationId": "ManagerRiderContinue",
                 "parameters": [
                     {
@@ -11953,9 +11953,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "订阅"
                 ],
-                "summary": "M7020 修改订阅车辆",
+                "summary": "修改订阅车辆",
                 "operationId": "ManagerSubscribeEbikeChange",
                 "parameters": [
                     {
@@ -11994,9 +11994,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "订阅"
                 ],
-                "summary": "M7025 解绑骑手电车",
+                "summary": "解绑骑手电车",
                 "operationId": "ManagerSubscribeEbikeUnbind",
                 "parameters": [
                     {
@@ -12035,9 +12035,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "订阅"
                 ],
-                "summary": "M7008 强制退租",
+                "summary": "强制退租",
                 "operationId": "ManagerSubscribeHalt",
                 "parameters": [
                     {
@@ -12076,9 +12076,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "订阅"
                 ],
-                "summary": "M7006 暂停计费",
+                "summary": "暂停计费",
                 "operationId": "ManagerRiderPause",
                 "parameters": [
                     {
@@ -12117,9 +12117,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "订阅"
                 ],
-                "summary": "M7021 催费记录",
+                "summary": "催费记录",
                 "operationId": "ManagerSubscribeReminder",
                 "parameters": [
                     {
@@ -12216,9 +12216,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "订阅"
                 ],
-                "summary": "M7014 暂停扣费",
+                "summary": "暂停扣费",
                 "operationId": "ManagerSubscribeSuspend",
                 "parameters": [
                     {
@@ -12257,9 +12257,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "订阅"
                 ],
-                "summary": "M7015 继续扣费",
+                "summary": "继续扣费",
                 "operationId": "ManagerSubscribeUnSuspend",
                 "parameters": [
                     {
@@ -12298,9 +12298,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "管理"
                 ],
-                "summary": "M1003 列举管理员",
+                "summary": "列举管理员",
                 "operationId": "ManagerManagerList",
                 "parameters": [
                     {
@@ -12346,9 +12346,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "管理"
                 ],
-                "summary": "M1002 新增管理员",
+                "summary": "新增管理员",
                 "operationId": "ManagerCreate",
                 "parameters": [
                     {
@@ -12387,9 +12387,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "管理"
                 ],
-                "summary": "M1006 管理员信息",
+                "summary": "管理员信息",
                 "operationId": "ManagerProfile",
                 "parameters": [
                     {
@@ -12420,7 +12420,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "管理"
                 ],
                 "summary": "M1001 用户登录",
                 "operationId": "ManagerSignin",
@@ -12443,9 +12443,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "管理"
                 ],
-                "summary": "M1005 编辑管理员",
+                "summary": "编辑管理员",
                 "operationId": "ManagerModify",
                 "parameters": [
                     {
@@ -12489,9 +12489,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "管理"
                 ],
-                "summary": "M1004 删除管理员",
+                "summary": "删除管理员",
                 "operationId": "ManagerManagerDelete",
                 "parameters": [
                     {
@@ -12528,9 +12528,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "网点"
                 ],
-                "summary": "M3004 新增合同",
+                "summary": "新增合同",
                 "operationId": "BranchAddContract",
                 "parameters": [
                     {

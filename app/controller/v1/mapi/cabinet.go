@@ -21,8 +21,8 @@ var Cabinet = new(cabinet)
 // Create
 // @ID		CabinetCreate
 // @Router	/manager/v1/cabinet [POST]
-// @Summary	M5001 创建电柜
-// @Tags	[M]管理接口
+// @Summary	创建电柜
+// @Tags	电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string									true	"管理员校验token"
@@ -39,8 +39,8 @@ func (*cabinet) Create(c echo.Context) (err error) {
 // List
 // @ID		CabinetList
 // @Router	/manager/v1/cabinet [GET]
-// @Summary	M5002 查询电柜
-// @Tags	[M]管理接口
+// @Summary	查询电柜
+// @Tags	电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string											true	"管理员校验token"
@@ -54,8 +54,8 @@ func (*cabinet) List(c echo.Context) (err error) {
 // Modify
 // @ID		CabinetModify
 // @Router	/manager/v1/cabinet/{id} [PUT]
-// @Summary	M5003 编辑电柜
-// @Tags	[M]管理接口
+// @Summary	编辑电柜
+// @Tags	电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -71,8 +71,8 @@ func (*cabinet) Modify(c echo.Context) (err error) {
 // Delete
 // @ID		CabinetDelete
 // @Router	/manager/v1/cabinet/{id} [DELETE]
-// @Summary	M5004 删除电柜
-// @Tags	[M]管理接口
+// @Summary	删除电柜
+// @Tags	电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -88,8 +88,8 @@ func (*cabinet) Delete(c echo.Context) (err error) {
 // Detail
 // @ID		CabinetDetail
 // @Router	/manager/v1/cabinet/{id} [GET]
-// @Summary	M5005 获取并更新电柜详细信息
-// @Tags	[M]管理接口
+// @Summary	获取并更新电柜详细信息
+// @Tags	电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -103,8 +103,8 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 // DoorOperate
 // @ID		CabinetDoorOperate
 // @Router	/manager/v1/cabinet/door-operate [POST]
-// @Summary	M5006 仓位操作
-// @Tags	[M]管理接口
+// @Summary	仓位操作
+// @Tags	电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -120,8 +120,8 @@ func (*cabinet) DoorOperate(c echo.Context) (err error) {
 // Reboot
 // @ID		CabinetReboot
 // @Router	/manager/v1/cabinet/reboot [POST]
-// @Summary	M5007 重启电柜
-// @Tags	[M]管理接口
+// @Summary	重启电柜
+// @Tags	电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -138,8 +138,8 @@ func (*cabinet) Reboot(c echo.Context) (err error) {
 // Fault
 // @ID		CabinetFault
 // @Router	/manager/v1/cabinet/fault [GET]
-// @Summary	M5008 故障列表
-// @Tags	[M]管理接口
+// @Summary	故障列表
+// @Tags	电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"
@@ -155,8 +155,8 @@ func (*cabinet) Fault(c echo.Context) (err error) {
 // FaultDeal
 // @ID		CabinetFaultDeal
 // @Router	/manager/v1/cabint/fault/{id} [PUT]
-// @Summary	M5009 处理故障
-// @Tags	[M]管理接口
+// @Summary	处理故障
+// @Tags	电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -172,8 +172,8 @@ func (*cabinet) FaultDeal(c echo.Context) (err error) {
 // Data
 // @ID		ManagerCabinetData
 // @Router	/manager/v1/cabinet/data [GET]
-// @Summary	M5010 电柜数据表
-// @Tags	[M]管理接口
+// @Summary	电柜数据表
+// @Tags	电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"
@@ -187,8 +187,8 @@ func (*cabinet) Data(c echo.Context) (err error) {
 // Transfer
 // @ID		ManagerCabinetTransfer
 // @Router	/manager/v1/cabinet/transfer [POST]
-// @Summary	M5011 初始化电柜调拨
-// @Tags	[M]管理接口
+// @Summary	初始化电柜调拨
+// @Tags	电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -203,8 +203,8 @@ func (*cabinet) Transfer(c echo.Context) (err error) {
 // Maintain
 // @ID		ManagerCabinetMaintain
 // @Router	/manager/v1/cabinet/maintain [POST]
-// @Summary	M5012 电柜操作维护
-// @Tags	[M]管理接口
+// @Summary	电柜操作维护
+// @Tags	电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -220,7 +220,7 @@ func (*cabinet) Maintain(c echo.Context) (err error) {
 // @Router		/manager/v1/cabinet/openbind [POST]
 // @Summary		M5013 开仓取电池并绑定骑手
 // @Description	<仅智能电柜可用, 普通电柜无法请求, 判定标准: `intelligent = true`>
-// @Tags		[M]管理接口
+// @Tags		电柜
 // @Accept		json
 // @Produce		json
 // @Param		X-Manager-Token	header		string						true	"管理员校验token"
@@ -235,8 +235,8 @@ func (*cabinet) OpenBind(c echo.Context) (err error) {
 // Deactivate
 // @ID		CabinetDeactivate
 // @Router	/manager/v1/cabinet/bin/deactivate [POST]
-// @Summary	M5014 仓位逻辑禁用/启用
-// @Tags	[M]管理接口
+// @Summary	仓位逻辑禁用/启用
+// @Tags	电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -252,8 +252,8 @@ func (*cabinet) Deactivate(c echo.Context) (err error) {
 // Interrupt
 // @ID		ManagerCabinetInterrupt
 // @Router	/manager/v1/cabinet/interrupt [POST]
-// @Summary	M5015 中断电柜业务
-// @Tags	[M]管理接口
+// @Summary	中断电柜业务
+// @Tags	电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"

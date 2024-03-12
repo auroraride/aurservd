@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type battery struct{}
@@ -19,8 +20,8 @@ var Battery = new(battery)
 // ListModels
 // @ID		BatteryModels
 // @Router	/manager/v1/battery/model [GET]
-// @Summary	M4001 获取电池型号
-// @Tags	[M]管理接口
+// @Summary	获取电池型号
+// @Tags	电池
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string											true	"管理员校验token"
@@ -33,8 +34,8 @@ func (*battery) ListModels(c echo.Context) (err error) {
 // CreateModel
 // @ID		BatteryCreateModel
 // @Router	/manager/v1/battery/model [POST]
-// @Summary	M4002 创建电池型号
-// @Tags	[M]管理接口
+// @Summary	创建电池型号
+// @Tags	电池
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string									true	"管理员校验token"
@@ -48,8 +49,8 @@ func (*battery) CreateModel(c echo.Context) (err error) {
 // DeleteModel
 // @ID		ManagerBatteryDeleteModel
 // @Router	/manager/v1/battery/model [DELETE]
-// @Summary	M4003 删除电池型号
-// @Tags	[M]管理接口
+// @Summary	删除电池型号
+// @Tags	电池
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -64,8 +65,8 @@ func (*battery) DeleteModel(c echo.Context) (err error) {
 // List
 // @ID		ManagerBatteryList
 // @Router	/manager/v1/battery [GET]
-// @Summary	M4004 电池列表
-// @Tags	[M]管理接口
+// @Summary	电池列表
+// @Tags	电池
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"
@@ -79,8 +80,8 @@ func (*battery) List(c echo.Context) (err error) {
 // Create
 // @ID		ManagerBatteryCreate
 // @Router	/manager/v1/battery [POST]
-// @Summary	M4005 添加电池
-// @Tags	[M]管理接口
+// @Summary	添加电池
+// @Tags	电池
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -97,7 +98,7 @@ func (*battery) Create(c echo.Context) (err error) {
 // @Router		/manager/v1/battery/batch [POST]
 // @Summary		M4006 批量导入电池
 // @Description	参考 [MI007 批量导入电车]
-// @Tags		[M]管理接口
+// @Tags		电池
 // @Accept		json
 // @Produce		json
 // @Param		X-Manager-Token	header		string					true	"管理员校验token"
@@ -111,8 +112,8 @@ func (*battery) BatchCreate(c echo.Context) (err error) {
 // Modify
 // @ID		ManagerBatteryModify
 // @Router	/manager/v1/battery/{id} [PUT]
-// @Summary	M4007 修改电池
-// @Tags	[M]管理接口
+// @Summary	修改电池
+// @Tags	电池
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -128,8 +129,8 @@ func (*battery) Modify(c echo.Context) (err error) {
 // Bind
 // @ID		ManagerBatteryBind
 // @Router	/manager/v1/battery/bind [POST]
-// @Summary	M4008 绑定骑手
-// @Tags	[M]管理接口
+// @Summary	绑定骑手
+// @Tags	电池
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -144,8 +145,8 @@ func (*battery) Bind(c echo.Context) (err error) {
 // Unbind
 // @ID		ManagerBatteryUnbind
 // @Router	/manager/v1/battery/unbind [POST]
-// @Summary	M4009 解绑骑手
-// @Tags	[M]管理接口
+// @Summary	解绑骑手
+// @Tags	电池
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -160,8 +161,8 @@ func (*battery) Unbind(c echo.Context) (err error) {
 // Detail
 // @ID		ManagerBatteryDetail
 // @Router	/manager/v1/battery/xc/{sn} [GET]
-// @Summary	M4010 电池详情
-// @Tags	[M]管理接口
+// @Summary	电池详情
+// @Tags	电池
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -175,8 +176,8 @@ func (*battery) Detail(c echo.Context) (err error) {
 // Statistics
 // @ID		ManagerBatteryStatistics
 // @Router	/manager/v1/battery/xc/statistics/{sn} [GET]
-// @Summary	M4011 电池数据
-// @Tags	[M]管理接口
+// @Summary	电池数据
+// @Tags	电池
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -190,8 +191,8 @@ func (*battery) Statistics(c echo.Context) (err error) {
 // Position
 // @ID		ManagerBatteryPosition
 // @Router	/manager/v1/battery/xc/position/{sn} [GET]
-// @Summary	M4012 电池位置
-// @Tags	[M]管理接口
+// @Summary	电池位置
+// @Tags	电池
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -207,8 +208,8 @@ func (*battery) Position(c echo.Context) (err error) {
 // Fault
 // @ID		ManagerBatteryFault
 // @Router	/manager/v1/battery/xc/fault [GET]
-// @Summary	M4013 电池故障列表
-// @Tags	[M]管理接口
+// @Summary	电池故障列表
+// @Tags	电池
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"

@@ -8,9 +8,10 @@ package kit
 import (
 	"context"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/internal/ar"
-	"github.com/labstack/echo/v4"
 )
 
 type cabinet struct{}

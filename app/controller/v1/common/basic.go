@@ -6,8 +6,9 @@
 package common
 
 import (
-	"github.com/auroraride/aurservd/app"
 	"github.com/labstack/echo/v4"
+
+	"github.com/auroraride/aurservd/app"
 )
 
 type basic struct{}

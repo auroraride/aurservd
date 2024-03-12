@@ -21,8 +21,8 @@ var Selection = new(selection)
 // Plan
 // @ID		ManagerSelectionPlan
 // @Router	/manager/v1/selection/plan [GET]
-// @Summary	MB001 筛选骑士卡
-// @Tags	[M]管理接口
+// @Summary	筛选骑士卡
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -36,8 +36,8 @@ func (*selection) Plan(c echo.Context) (err error) {
 // Rider
 // @ID		ManagerSelectionRider
 // @Router	/manager/v1/selection/rider [GET]
-// @Summary	MB002 筛选骑手
-// @Tags	[M]管理接口
+// @Summary	筛选骑手
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -51,8 +51,8 @@ func (*selection) Rider(c echo.Context) (err error) {
 // Store
 // @ID		ManagerSelectionStore
 // @Router	/manager/v1/selection/store [GET]
-// @Summary	MB003 筛选门店
-// @Tags	[M]管理接口
+// @Summary	筛选门店
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -65,8 +65,8 @@ func (*selection) Store(c echo.Context) (err error) {
 // Employee
 // @ID		ManagerSelectionEmployee
 // @Router	/manager/v1/selection/employee [GET]
-// @Summary	MB004 筛选店员
-// @Tags	[M]管理接口
+// @Summary	筛选店员
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -79,8 +79,8 @@ func (*selection) Employee(c echo.Context) (err error) {
 // City
 // @ID		ManagerSelectionCity
 // @Router	/manager/v1/selection/city [GET]
-// @Summary	MB005 筛选启用的城市
-// @Tags	[M]管理接口
+// @Summary	筛选启用的城市
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -93,8 +93,8 @@ func (*selection) City(c echo.Context) (err error) {
 // Branch
 // @ID		ManagerSelectionBranch
 // @Router	/manager/v1/selection/branch [GET]
-// @Summary	MB006 筛选网点
-// @Tags	[M]管理接口
+// @Summary	筛选网点
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -107,8 +107,8 @@ func (*selection) Branch(c echo.Context) (err error) {
 // Enterprise
 // @ID		ManagerSelectionEnterprise
 // @Router	/manager/v1/selection/enterprise [GET]
-// @Summary	MB007 筛选企业
-// @Tags	[M]管理接口
+// @Summary	筛选企业
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -121,8 +121,8 @@ func (*selection) Enterprise(c echo.Context) (err error) {
 // Cabinet
 // @ID		ManagerSelectionCabinet
 // @Router	/manager/v1/selection/cabinet [GET]
-// @Summary	MB008 筛选电柜
-// @Tags	[M]管理接口
+// @Summary	筛选电柜
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -136,8 +136,8 @@ func (*selection) Cabinet(c echo.Context) (err error) {
 // Role
 // @ID		ManagerSelectionRole
 // @Router	/manager/v1/selection/role [GET]
-// @Summary	MB009 筛选角色
-// @Tags	[M]管理接口
+// @Summary	筛选角色
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -150,8 +150,8 @@ func (*selection) Role(c echo.Context) (err error) {
 // WxEmployee
 // @ID		ManagerSelectionWxEmployee
 // @Router	/manager/v1/selection/wxemployee [GET]
-// @Summary	MB010 筛选企业微信成员
-// @Tags	[M]管理接口
+// @Summary	筛选企业微信成员
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -164,8 +164,8 @@ func (*selection) WxEmployee(c echo.Context) (err error) {
 // PlanModel
 // @ID		ManagerSelectionPlanModel
 // @Router	/manager/v1/selection/planmodel [GET]
-// @Summary	MB011 筛选骑行卡电池
-// @Tags	[M]管理接口
+// @Summary	筛选骑行卡电池
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -179,8 +179,8 @@ func (*selection) PlanModel(c echo.Context) (err error) {
 // CabinetModel
 // @ID		ManagerSelectionCabinetModel
 // @Router	/manager/v1/selection/cabinetmodel [GET]
-// @Summary	MB012 筛选电柜电池
-// @Tags	[M]管理接口
+// @Summary	筛选电柜电池
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -194,8 +194,8 @@ func (*selection) CabinetModel(c echo.Context) (err error) {
 // Model
 // @ID		ManagerSelectionModel
 // @Router	/manager/v1/selection/model [GET]
-// @Summary	MB013 筛选电池型号
-// @Tags	[M]管理接口
+// @Summary	筛选电池型号
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string		true	"管理员校验token"
@@ -210,7 +210,7 @@ func (*selection) Model(c echo.Context) (err error) {
 // @Router		/manager/v1/selection/coupon/template [GET]
 // @Summary		MB014 筛选优惠券模板
 // @Description	筛选样式参考 <a target="_blank" href="https://element.eleme.cn/#/zh-CN/component/select#fen-zu">ElementUI-select-分组</a> <a target="_blank" href="https://element.eleme.cn/#/zh-CN/component/select#zi-ding-yi-mo-ban">ElementUI-select-自定义模板</a>
-// @Tags		[M]管理接口
+// @Tags		筛选
 // @Accept		json
 // @Produce		json
 // @Param		X-Manager-Token	header		string						true	"管理员校验token"
@@ -223,8 +223,8 @@ func (*selection) CouponTemplate(c echo.Context) (err error) {
 // EbikeBrand
 // @ID		ManagerSelectionEbikeBrand
 // @Router	/manager/v1/selection/ebike/brand [GET]
-// @Summary	MB015 车辆型号列表
-// @Tags	[M]管理接口
+// @Summary	车辆型号列表
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -237,8 +237,8 @@ func (*selection) EbikeBrand(c echo.Context) (err error) {
 // BatterySerial
 // @ID		ManagerSelectionBatterySerial
 // @Router	/manager/v1/selection/battery/serial [GET]
-// @Summary	MB016 按流水号搜索电池
-// @Tags	[M]管理接口
+// @Summary	按流水号搜索电池
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -252,8 +252,8 @@ func (*selection) BatterySerial(c echo.Context) (err error) {
 // CommissionPlan
 // @ID		ManagerSelectionCommissionPlan
 // @Router	/manager/v1/selection/commission/plan [GET]
-// @Summary	MB017 返佣方案筛选骑士卡
-// @Tags	[M]管理接口
+// @Summary	返佣方案筛选骑士卡
+// @Tags	筛选
 // @Accept	json
 // @Produce	json
 // @Param	query	query		model.CommissionPlanSelectionReq	true	"请求参数"

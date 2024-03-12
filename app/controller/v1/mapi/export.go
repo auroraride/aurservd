@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type export struct{}
@@ -19,8 +20,8 @@ var Export = new(export)
 // List
 // @ID		ManagerExportList
 // @Router	/manager/v1/export [GET]
-// @Summary	MF001 导出列表
-// @Tags	[M]管理接口
+// @Summary	导出列表
+// @Tags	导出
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"
@@ -34,8 +35,8 @@ func (*export) List(c echo.Context) (err error) {
 // Download
 // @ID		ManagerExportDownload
 // @Router	/manager/v1/export/download/{sn} [GET]
-// @Summary	MF002 下载文件
-// @Tags	[M]管理接口
+// @Summary	下载文件
+// @Tags	导出
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -49,8 +50,8 @@ func (*export) Download(c echo.Context) (err error) {
 // Rider
 // @ID		ManagerExportRider
 // @Router	/manager/v1/export/rider [POST]
-// @Summary	MF003 导出骑手
-// @Tags	[M]管理接口
+// @Summary	导出骑手
+// @Tags	导出
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -64,8 +65,8 @@ func (*export) Rider(c echo.Context) (err error) {
 // StatementDetail
 // @ID		ManagerExportStatementDetail
 // @Router	/manager/v1/export/statement/detail [POST]
-// @Summary	MF004 导出企业账单
-// @Tags	[M]管理接口
+// @Summary	导出企业账单
+// @Tags	导出
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -79,8 +80,8 @@ func (*export) StatementDetail(c echo.Context) (err error) {
 // StatementUsage
 // @ID		ManagerExportStatementUsage
 // @Router	/manager/v1/export/statement/usage [POST]
-// @Summary	MF005 导出企业使用明细
-// @Tags	[M]管理接口
+// @Summary	导出企业使用明细
+// @Tags	导出
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -94,8 +95,8 @@ func (*export) StatementUsage(c echo.Context) (err error) {
 // Order
 // @ID		ManagerExportOrder
 // @Router	/manager/v1/export/order [POST]
-// @Summary	MF006 导出订单
-// @Tags	[M]管理接口
+// @Summary	导出订单
+// @Tags	导出
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -109,8 +110,8 @@ func (*export) Order(c echo.Context) (err error) {
 // Commission
 // @ID		ManagerExportCommission
 // @Router	/manager/v1/export/commission [POST]
-// @Summary	MF007 导出业绩
-// @Tags	[M]管理接口
+// @Summary	导出业绩
+// @Tags	导出
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -124,8 +125,8 @@ func (*export) Commission(c echo.Context) (err error) {
 // Business
 // @ID		ManagerExportBusiness
 // @Router	/manager/v1/export/business [POST]
-// @Summary	MF008 导出业务记录
-// @Tags	[M]管理接口
+// @Summary	导出业务记录
+// @Tags	导出
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -139,8 +140,8 @@ func (*export) Business(c echo.Context) (err error) {
 // StockDetail
 // @ID		ManagerExportStockDetail
 // @Router	/manager/v1/export/stock-detail [POST]
-// @Summary	MF009 导出出入库明细
-// @Tags	[M]管理接口
+// @Summary	导出出入库明细
+// @Tags	导出
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -154,8 +155,8 @@ func (*export) StockDetail(c echo.Context) (err error) {
 // Exchange
 // @ID		ManagerExportExchange
 // @Router	/manager/v1/export/exchange [POST]
-// @Summary	MF010 导出换电明细
-// @Tags	[M]管理接口
+// @Summary	导出换电明细
+// @Tags	导出
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"

@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type store struct{}
@@ -19,8 +20,8 @@ var Store = new(store)
 // List
 // @ID		StoreList
 // @Router	/manager/v1/store [GET]
-// @Summary	M3006 列举门店
-// @Tags	[M]管理接口
+// @Summary	列举门店
+// @Tags	门店
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string											true	"管理员校验token"
@@ -34,8 +35,8 @@ func (*store) List(c echo.Context) (err error) {
 // Create
 // @ID		StoreCreate
 // @Router	/manager/v1/store [POST]
-// @Summary	M3007 创建门店
-// @Tags	[M]管理接口
+// @Summary	创建门店
+// @Tags	门店
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -49,8 +50,8 @@ func (*store) Create(c echo.Context) (err error) {
 // Modify
 // @ID		StoreModify
 // @Router	/manager/v1/store/{id} [PUT]
-// @Summary	M3008 修改门店
-// @Tags	[M]管理接口
+// @Summary	修改门店
+// @Tags	门店
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -65,8 +66,8 @@ func (*store) Modify(c echo.Context) (err error) {
 // Delete
 // @ID		StoreDelete
 // @Router	/manager/v1/store/{id} [DELETE]
-// @Summary	M3009 删除门店
-// @Tags	[M]管理接口
+// @Summary	删除门店
+// @Tags	门店
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"

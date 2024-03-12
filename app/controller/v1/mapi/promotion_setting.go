@@ -16,7 +16,7 @@ var PromotionSetting = new(promotionSetting)
 // Setting
 // @ID		ManagerPromotionSetting
 // @Router	/manager/v1/promotion/setting/{key} [GET]
-// @Summary	PM9001 获取推广配置
+// @Summary	获取推广配置
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json
@@ -31,7 +31,7 @@ func (p *promotionSetting) Setting(c echo.Context) (err error) {
 // Update
 // @ID		ManagerPromotionSettingUpdate
 // @Router	/manager/v1/promotion/setting/{key} [PUT]
-// @Summary	PM9002 更新推广配置
+// @Summary	更新推广配置
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json

@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type ebike struct{}
@@ -19,8 +20,8 @@ var Ebike = new(ebike)
 // BrandList
 // @ID		ManagerEbikeBrandList
 // @Router	/manager/v1/ebike/brand [GET]
-// @Summary	MI001 品牌列表
-// @Tags	[M]管理接口
+// @Summary	品牌列表
+// @Tags	电车
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string				true	"管理员校验token"
@@ -33,8 +34,8 @@ func (*ebike) BrandList(c echo.Context) (err error) {
 // BrandCreate
 // @ID		ManagerEbikeBrandCreate
 // @Router	/manager/v1/ebike/brand [POST]
-// @Summary	MI002 创建品牌
-// @Tags	[M]管理接口
+// @Summary	创建品牌
+// @Tags	电车
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -49,8 +50,8 @@ func (*ebike) BrandCreate(c echo.Context) (err error) {
 // BrandModify
 // @ID		ManagerEbikeBrandModify
 // @Router	/manager/v1/ebike/brand/:id [PUT]
-// @Summary	MI003 修改品牌
-// @Tags	[M]管理接口
+// @Summary	修改品牌
+// @Tags	电车
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -66,8 +67,8 @@ func (*ebike) BrandModify(c echo.Context) (err error) {
 // List
 // @ID		ManagerEbikeList
 // @Router	/manager/v1/ebike [GET]
-// @Summary	MI004 电车列表
-// @Tags	[M]管理接口
+// @Summary	电车列表
+// @Tags	电车
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string											true	"管理员校验token"
@@ -81,8 +82,8 @@ func (*ebike) List(c echo.Context) (err error) {
 // Create
 // @ID		ManagerEbikeCreate
 // @Router	/manager/v1/ebike [POST]
-// @Summary	MI005 添加电车
-// @Tags	[M]管理接口
+// @Summary	添加电车
+// @Tags	电车
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -97,8 +98,8 @@ func (*ebike) Create(c echo.Context) (err error) {
 // Modify
 // @ID		ManagerEbikeModify
 // @Router	/manager/v1/ebike/:id [PUT]
-// @Summary	MI006 修改电车
-// @Tags	[M]管理接口
+// @Summary	修改电车
+// @Tags	电车
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -113,8 +114,8 @@ func (*ebike) Modify(c echo.Context) (err error) {
 // BatchCreate
 // @ID		ManagerEbikeBatchCreate
 // @Router	/manager/v1/ebike/batch [POST]
-// @Summary	MI007 批量导入电车
-// @Tags	[M]管理接口
+// @Summary	批量导入电车
+// @Tags	电车
 // @Accept	mpfd
 // @Produce	json
 // @Param	X-Manager-Token	header		string		true	"管理员校验token"

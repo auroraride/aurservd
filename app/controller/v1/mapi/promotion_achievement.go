@@ -17,7 +17,7 @@ var PromotionAchievement = new(promotionAchievement)
 // List
 // @ID		ManagerPromotionAchievementList
 // @Router	/manager/v1/promotion/achievement [GET]
-// @Summary	PM7001 会员成就列表
+// @Summary	会员成就列表
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json
@@ -31,7 +31,7 @@ func (a *promotionAchievement) List(c echo.Context) (err error) {
 // Create
 // @ID		ManagerPromotionAchievementCreate
 // @Router	/manager/v1/promotion/achievement [POST]
-// @Summary	PM7002 创建会员成就
+// @Summary	创建会员成就
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json
@@ -47,7 +47,7 @@ func (a *promotionAchievement) Create(c echo.Context) (err error) {
 // Update
 // @ID		ManagerPromotionAchievementUpdate
 // @Router	/manager/v1/promotion/achievement [PUT]
-// @Summary	PM7003 更新会员成就
+// @Summary	更新会员成就
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json
@@ -63,7 +63,7 @@ func (a *promotionAchievement) Update(c echo.Context) (err error) {
 // Delete
 // @ID		ManagerPromotionAchievementDelete
 // @Router	/manager/v1/promotion/achievement [DELETE]
-// @Summary	PM7004 删除会员成就
+// @Summary	删除会员成就
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json
@@ -79,7 +79,7 @@ func (a *promotionAchievement) Delete(c echo.Context) (err error) {
 // UploadIcon
 // @ID		ManagerPromotionAchievementUploadIcon
 // @Router	/manager/v1/promotion/achievement/icon [POST]
-// @Summary	PM7005 上传会员成就图标
+// @Summary	上传会员成就图标
 // @Tags	[PM]推广管理接口
 // @Accept	multipart/form-data
 // @Produce	json

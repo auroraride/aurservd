@@ -16,7 +16,7 @@ var PromotionGrowth = new(promotionGrowth)
 // List
 // @ID		ManagerPromotionGrowthList
 // @Router	/manager/v1/promotion/growth/{id} [GET]
-// @Summary	PM5001 会员成长值列表
+// @Summary	会员成长值列表
 // @Tags	[PM]推广管理接口
 // @Accept	json
 // @Produce	json

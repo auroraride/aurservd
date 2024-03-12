@@ -6661,9 +6661,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M3004 新增合同
+      summary: 新增合同
       tags:
-      - '[M]管理接口'
+      - 网点
   /manager/v1/assistance:
     get:
       consumes:
@@ -6724,9 +6724,9 @@ paths:
                     $ref: '#/definitions/model.AssistanceListRes'
                   type: array
               type: object
-      summary: MC001 救援列表
+      summary: 救援列表
       tags:
-      - '[M]管理接口'
+      - 救援
   /manager/v1/assistance/{id}:
     get:
       consumes:
@@ -6750,9 +6750,9 @@ paths:
           description: 救援详情
           schema:
             $ref: '#/definitions/model.AssistanceDetail'
-      summary: MC002 救援详情
+      summary: 救援详情
       tags:
-      - '[M]管理接口'
+      - 救援
   /manager/v1/assistance/allocate:
     post:
       consumes:
@@ -6777,9 +6777,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MC004 分配救援任务
+      summary: 分配救援任务
       tags:
-      - '[M]管理接口'
+      - 救援
   /manager/v1/assistance/free:
     post:
       consumes:
@@ -6804,9 +6804,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MC005 救援免费
+      summary: 救援免费
       tags:
-      - '[M]管理接口'
+      - 救援
   /manager/v1/assistance/nearby:
     get:
       consumes:
@@ -6832,9 +6832,9 @@ paths:
             items:
               $ref: '#/definitions/model.AssistanceNearbyRes'
             type: array
-      summary: MC003 附近门店
+      summary: 附近门店
       tags:
-      - '[M]管理接口'
+      - 救援
   /manager/v1/assistance/refuse:
     post:
       consumes:
@@ -6859,9 +6859,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MC006 拒绝救援
+      summary: 拒绝救援
       tags:
-      - '[M]管理接口'
+      - 救援
   /manager/v1/battery:
     get:
       consumes:
@@ -6956,9 +6956,9 @@ paths:
                     $ref: '#/definitions/model.BatteryListRes'
                   type: array
               type: object
-      summary: M4004 电池列表
+      summary: 电池列表
       tags:
-      - '[M]管理接口'
+      - 电池
     post:
       consumes:
       - application/json
@@ -6982,9 +6982,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M4005 添加电池
+      summary: 添加电池
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/{id}:
     put:
       consumes:
@@ -7014,9 +7014,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M4007 修改电池
+      summary: 修改电池
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/batch:
     post:
       consumes:
@@ -7043,7 +7043,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: M4006 批量导入电池
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/bind:
     post:
       consumes:
@@ -7068,9 +7068,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M4008 绑定骑手
+      summary: 绑定骑手
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/model:
     delete:
       consumes:
@@ -7095,9 +7095,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M4003 删除电池型号
+      summary: 删除电池型号
       tags:
-      - '[M]管理接口'
+      - 电池
     get:
       consumes:
       - application/json
@@ -7122,9 +7122,9 @@ paths:
                     $ref: '#/definitions/model.BatteryModel'
                   type: array
               type: object
-      summary: M4001 获取电池型号
+      summary: 获取电池型号
       tags:
-      - '[M]管理接口'
+      - 电池
     post:
       consumes:
       - application/json
@@ -7153,9 +7153,9 @@ paths:
                 item:
                   $ref: '#/definitions/model.BatteryModel'
               type: object
-      summary: M4002 创建电池型号
+      summary: 创建电池型号
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/unbind:
     post:
       consumes:
@@ -7180,9 +7180,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M4009 解绑骑手
+      summary: 解绑骑手
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/xc/{sn}:
     get:
       consumes:
@@ -7206,9 +7206,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BatteryBmsDetail'
-      summary: M4010 电池详情
+      summary: 电池详情
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/xc/fault:
     get:
       consumes:
@@ -7301,9 +7301,9 @@ paths:
                     $ref: '#/definitions/model.BatteryFaultRes'
                   type: array
               type: object
-      summary: M4013 电池故障列表
+      summary: 电池故障列表
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/xc/position/{sn}:
     get:
       consumes:
@@ -7335,9 +7335,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BatteryPositionRes'
-      summary: M4012 电池位置
+      summary: 电池位置
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/xc/statistics/{sn}:
     get:
       consumes:
@@ -7361,9 +7361,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BatteryStatistics'
-      summary: M4011 电池数据
+      summary: 电池数据
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/branch:
     get:
       consumes:
@@ -7405,9 +7405,9 @@ paths:
                     $ref: '#/definitions/model.BranchItem'
                   type: array
               type: object
-      summary: M3001 网点列表
+      summary: 网点列表
       tags:
-      - '[M]管理接口'
+      - 网点
     post:
       consumes:
       - application/json
@@ -7431,9 +7431,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M3002 新增网点
+      summary: 新增网点
       tags:
-      - '[M]管理接口'
+      - 网点
   /manager/v1/branch/{id}:
     put:
       consumes:
@@ -7463,9 +7463,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M3003 编辑网点
+      summary: 编辑网点
       tags:
-      - '[M]管理接口'
+      - 网点
   /manager/v1/branch/contract/sheet:
     post:
       consumes:
@@ -7490,9 +7490,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M3010 修改合同底单
+      summary: 修改合同底单
       tags:
-      - '[M]管理接口'
+      - 网点
   /manager/v1/branch/nearby:
     get:
       consumes:
@@ -7538,9 +7538,9 @@ paths:
             items:
               $ref: '#/definitions/model.BranchDistanceListRes'
             type: array
-      summary: M3011 查找附近的网点
+      summary: 查找附近的网点
       tags:
-      - '[M]管理接口'
+      - 网点
   /manager/v1/branch/selector:
     get:
       consumes:
@@ -7566,9 +7566,9 @@ paths:
                     $ref: '#/definitions/model.BranchSampleItem'
                   type: array
               type: object
-      summary: M3005 网点选择列表
+      summary: 网点选择列表
       tags:
-      - '[M]管理接口'
+      - 网点
   /manager/v1/business:
     get:
       consumes:
@@ -7661,9 +7661,9 @@ paths:
                     $ref: '#/definitions/model.BusinessListRes'
                   type: array
               type: object
-      summary: MG001 骑手业务记录
+      summary: 骑手业务记录
       tags:
-      - '[M]管理接口'
+      - 业务
   /manager/v1/business/pause:
     get:
       consumes:
@@ -7753,9 +7753,9 @@ paths:
                     $ref: '#/definitions/model.BusinessPauseListRes'
                   type: array
               type: object
-      summary: MG002 寄存记录
+      summary: 寄存记录
       tags:
-      - '[M]管理接口'
+      - 业务
   /manager/v1/business/reserve:
     get:
       consumes:
@@ -7822,9 +7822,9 @@ paths:
                     $ref: '#/definitions/model.ReserveListRes'
                   type: array
               type: object
-      summary: MG004 预约记录
+      summary: 预约记录
       tags:
-      - '[M]管理接口'
+      - 业务
   /manager/v1/business/suspend:
     get:
       consumes:
@@ -7874,9 +7874,9 @@ paths:
                     $ref: '#/definitions/model.SuspendListRes'
                   type: array
               type: object
-      summary: MG005 暂停记录
+      summary: 暂停记录
       tags:
-      - '[M]管理接口'
+      - 业务
   /manager/v1/cabinet:
     get:
       consumes:
@@ -7972,9 +7972,9 @@ paths:
                     $ref: '#/definitions/model.CabinetItem'
                   type: array
               type: object
-      summary: M5002 查询电柜
+      summary: 查询电柜
       tags:
-      - '[M]管理接口'
+      - 电柜
     post:
       consumes:
       - application/json
@@ -8003,9 +8003,9 @@ paths:
                 item:
                   $ref: '#/definitions/model.CabinetItem'
               type: object
-      summary: M5001 创建电柜
+      summary: 创建电柜
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/{id}:
     delete:
       consumes:
@@ -8029,9 +8029,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5004 删除电柜
+      summary: 删除电柜
       tags:
-      - '[M]管理接口'
+      - 电柜
     get:
       consumes:
       - application/json
@@ -8054,9 +8054,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.CabinetDetailRes'
-      summary: M5005 获取并更新电柜详细信息
+      summary: 获取并更新电柜详细信息
       tags:
-      - '[M]管理接口'
+      - 电柜
     put:
       consumes:
       - application/json
@@ -8085,9 +8085,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5003 编辑电柜
+      summary: 编辑电柜
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/bin/deactivate:
     post:
       consumes:
@@ -8112,9 +8112,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5014 仓位逻辑禁用/启用
+      summary: 仓位逻辑禁用/启用
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/data:
     get:
       consumes:
@@ -8191,9 +8191,9 @@ paths:
                     $ref: '#/definitions/model.CabinetDataRes'
                   type: array
               type: object
-      summary: M5010 电柜数据表
+      summary: 电柜数据表
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/door-operate:
     post:
       consumes:
@@ -8218,9 +8218,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5006 仓位操作
+      summary: 仓位操作
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/fault:
     get:
       consumes:
@@ -8272,9 +8272,9 @@ paths:
                     $ref: '#/definitions/model.CabinetFaultItem'
                   type: array
               type: object
-      summary: M5008 故障列表
+      summary: 故障列表
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/interrupt:
     post:
       consumes:
@@ -8299,9 +8299,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/pb.CabinetBizResponse'
-      summary: M5015 中断电柜业务
+      summary: 中断电柜业务
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/maintain:
     post:
       consumes:
@@ -8326,9 +8326,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.CabinetDetailRes'
-      summary: M5012 电柜操作维护
+      summary: 电柜操作维护
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/openbind:
     post:
       consumes:
@@ -8356,7 +8356,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: M5013 开仓取电池并绑定骑手
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/reboot:
     post:
       consumes:
@@ -8381,9 +8381,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5007 重启电柜
+      summary: 重启电柜
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/transfer:
     post:
       consumes:
@@ -8408,9 +8408,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5011 初始化电柜调拨
+      summary: 初始化电柜调拨
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabint/fault/{id}:
     put:
       consumes:
@@ -8440,9 +8440,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5009 处理故障
+      summary: 处理故障
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/city:
     get:
       consumes:
@@ -8468,9 +8468,9 @@ paths:
             items:
               $ref: '#/definitions/model.CityItem'
             type: array
-      summary: M2001 城市列表
+      summary: 城市列表
       tags:
-      - '[M]管理接口'
+      - 城市
   /manager/v1/city/{id}:
     put:
       consumes:
@@ -8503,7 +8503,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: M2002 修改城市
       tags:
-      - '[M]管理接口'
+      - 城市
   /manager/v1/contract:
     get:
       consumes:
@@ -8565,9 +8565,9 @@ paths:
                     $ref: '#/definitions/model.ContractListRes'
                   type: array
               type: object
-      summary: M7022 合同列表
+      summary: 合同列表
       tags:
-      - '[M]管理接口'
+      - 合同
   /manager/v1/coupon:
     get:
       consumes:
@@ -8644,9 +8644,9 @@ paths:
                     $ref: '#/definitions/model.CouponListRes'
                   type: array
               type: object
-      summary: MH006 优惠券列表
+      summary: 优惠券列表
       tags:
-      - '[M]管理接口'
+      - 优惠券
   /manager/v1/coupon/allocate:
     post:
       consumes:
@@ -8671,9 +8671,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MH007 分配优惠券
+      summary: 分配优惠券
       tags:
-      - '[M]管理接口'
+      - 优惠券
   /manager/v1/coupon/assembly:
     get:
       consumes:
@@ -8711,9 +8711,9 @@ paths:
                     $ref: '#/definitions/model.CouponAssembly'
                   type: array
               type: object
-      summary: MH005 发券记录
+      summary: 发券记录
       tags:
-      - '[M]管理接口'
+      - 优惠券
   /manager/v1/coupon/generate:
     post:
       consumes:
@@ -8740,9 +8740,9 @@ paths:
             items:
               type: string
             type: array
-      summary: MH004 生成优惠券
+      summary: 生成优惠券
       tags:
-      - '[M]管理接口'
+      - 优惠券
   /manager/v1/coupon/template:
     get:
       consumes:
@@ -8780,9 +8780,9 @@ paths:
                     $ref: '#/definitions/model.CouponTemplateListRes'
                   type: array
               type: object
-      summary: MH001 模板列表
+      summary: 模板列表
       tags:
-      - '[M]管理接口'
+      - 优惠券
     post:
       consumes:
       - application/json
@@ -8806,9 +8806,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MH002 创建模板
+      summary: 创建模板
       tags:
-      - '[M]管理接口'
+      - 优惠券
   /manager/v1/coupon/template/status:
     post:
       consumes:
@@ -8833,9 +8833,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MH003 模板启用/禁用
+      summary: 模板启用/禁用
       tags:
-      - '[M]管理接口'
+      - 优惠券
   /manager/v1/csc/irv:
     post:
       consumes:
@@ -8859,9 +8859,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ShiguangjuIVRRes'
-      summary: MT1001 时光驹催费工具
+      summary: 时光驹催费工具
       tags:
-      - '[M]管理接口'
+      - 催费
   /manager/v1/deposit:
     post:
       consumes:
@@ -8886,9 +8886,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7019 修改押金
+      summary: 修改押金
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/ebike:
     get:
       consumes:
@@ -8992,9 +8992,9 @@ paths:
                     $ref: '#/definitions/model.EbikeListRes'
                   type: array
               type: object
-      summary: MI004 电车列表
+      summary: 电车列表
       tags:
-      - '[M]管理接口'
+      - 电车
     post:
       consumes:
       - application/json
@@ -9018,9 +9018,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MI005 添加电车
+      summary: 添加电车
       tags:
-      - '[M]管理接口'
+      - 电车
   /manager/v1/ebike/:id:
     put:
       consumes:
@@ -9045,9 +9045,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MI006 修改电车
+      summary: 修改电车
       tags:
-      - '[M]管理接口'
+      - 电车
   /manager/v1/ebike/batch:
     post:
       consumes:
@@ -9073,9 +9073,9 @@ paths:
             items:
               type: string
             type: array
-      summary: MI007 批量导入电车
+      summary: 批量导入电车
       tags:
-      - '[M]管理接口'
+      - 电车
   /manager/v1/ebike/brand:
     get:
       consumes:
@@ -9096,9 +9096,9 @@ paths:
             items:
               $ref: '#/definitions/model.EbikeBrand'
             type: array
-      summary: MI001 品牌列表
+      summary: 品牌列表
       tags:
-      - '[M]管理接口'
+      - 电车
     post:
       consumes:
       - application/json
@@ -9122,9 +9122,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MI002 创建品牌
+      summary: 创建品牌
       tags:
-      - '[M]管理接口'
+      - 电车
   /manager/v1/ebike/brand/:id:
     put:
       consumes:
@@ -9154,9 +9154,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MI003 修改品牌
+      summary: 修改品牌
       tags:
-      - '[M]管理接口'
+      - 电车
   /manager/v1/emoloyee/enable:
     post:
       consumes:
@@ -9181,9 +9181,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MA015 启用/禁用店员
+      summary: 启用/禁用店员
       tags:
-      - '[M]管理接口'
+      - 店员
   /manager/v1/employee:
     get:
       consumes:
@@ -9233,9 +9233,9 @@ paths:
                     $ref: '#/definitions/model.EmployeeListRes'
                   type: array
               type: object
-      summary: MA012 列举店员
+      summary: 列举店员
       tags:
-      - '[M]管理接口'
+      - 店员
     post:
       consumes:
       - application/json
@@ -9259,9 +9259,9 @@ paths:
           description: 请求成功
           schema:
             type: integer
-      summary: MA010 新增店员
+      summary: 新增店员
       tags:
-      - '[M]管理接口'
+      - 店员
   /manager/v1/employee/{id}:
     delete:
       consumes:
@@ -9285,9 +9285,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MA013 删除店员
+      summary: 删除店员
       tags:
-      - '[M]管理接口'
+      - 店员
     put:
       consumes:
       - application/json
@@ -9310,9 +9310,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MA011 修改店员
+      summary: 修改店员
       tags:
-      - '[M]管理接口'
+      - 店员
   /manager/v1/employee/activity:
     get:
       consumes:
@@ -9359,9 +9359,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MA014 店员业绩
+      summary: 店员业绩
       tags:
-      - '[M]管理接口'
+      - 店员
   /manager/v1/employee/attendance:
     get:
       consumes:
@@ -9423,9 +9423,9 @@ paths:
                     $ref: '#/definitions/model.AttendanceListRes'
                   type: array
               type: object
-      summary: MA016 工作流
+      summary: 工作流
       tags:
-      - '[M]管理接口'
+      - 工作流
   /manager/v1/employee/offwork:
     post:
       consumes:
@@ -9450,9 +9450,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MA017 强制下班
+      summary: 强制下班
       tags:
-      - '[M]管理接口'
+      - 店员
   /manager/v1/enterprise:
     get:
       consumes:
@@ -9523,9 +9523,9 @@ paths:
                     $ref: '#/definitions/model.EnterpriseRes'
                   type: array
               type: object
-      summary: M9003 列举企业
+      summary: 列举企业
       tags:
-      - '[M]管理接口'
+      - 企业
     post:
       consumes:
       - application/json
@@ -9549,9 +9549,9 @@ paths:
           description: 请求成功
           schema:
             type: integer
-      summary: M9001 创建企业
+      summary: 创建企业
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/{id}:
     get:
       consumes:
@@ -9575,9 +9575,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.EnterpriseRes'
-      summary: M9004 企业详情
+      summary: 企业详情
       tags:
-      - '[M]管理接口'
+      - 企业
     put:
       consumes:
       - application/json
@@ -9601,9 +9601,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9002 修改企业
+      summary: 修改企业
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/{id}/prepayment:
     post:
       consumes:
@@ -9628,9 +9628,9 @@ paths:
           description: 当前余额
           schema:
             type: number
-      summary: M9005 企业预付费
+      summary: 企业预付费
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/agent:
     get:
       consumes:
@@ -9656,9 +9656,9 @@ paths:
             items:
               $ref: '#/definitions/model.AgentMeta'
             type: array
-      summary: M9020 代理账号列表
+      summary: 代理账号列表
       tags:
-      - '[M]管理接口'
+      - 企业
     post:
       consumes:
       - application/json
@@ -9682,9 +9682,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9021 创建代理账号
+      summary: 创建代理账号
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/agent/{id}:
     put:
       consumes:
@@ -9714,9 +9714,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9022 修改代理账号
+      summary: 修改代理账号
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/agent{id}:
     delete:
       consumes:
@@ -9740,9 +9740,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9023 删除代理账号
+      summary: 删除代理账号
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/bill:
     get:
       consumes:
@@ -9771,9 +9771,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatementBillRes'
-      summary: M9011 获取账单
+      summary: 获取账单
       tags:
-      - '[M]管理接口'
+      - 账单
     post:
       consumes:
       - application/json
@@ -9797,9 +9797,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9012 结账
+      summary: 结账
       tags:
-      - '[M]管理接口'
+      - 账单
   /manager/v1/enterprise/bill/historical:
     get:
       consumes:
@@ -9845,9 +9845,9 @@ paths:
                     $ref: '#/definitions/model.StatementBillHistoricalListRes'
                   type: array
               type: object
-      summary: M9013 历史账单
+      summary: 历史账单
       tags:
-      - '[M]管理接口'
+      - 账单
   /manager/v1/enterprise/bill/statement:
     get:
       consumes:
@@ -9871,9 +9871,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatementDetail'
-      summary: M9014 结账明细
+      summary: 结账明细
       tags:
-      - '[M]管理接口'
+      - 账单
   /manager/v1/enterprise/bill/usage:
     get:
       consumes:
@@ -9935,9 +9935,9 @@ paths:
                     $ref: '#/definitions/model.StatementUsageRes'
                   type: array
               type: object
-      summary: M9015 使用明细
+      summary: 使用明细
       tags:
-      - '[M]管理接口'
+      - 账单
   /manager/v1/enterprise/bind/cabinet:
     post:
       consumes:
@@ -9957,9 +9957,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9024 团签绑定电柜
+      summary: 团签绑定电柜
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/contract:
     post:
       consumes:
@@ -9984,9 +9984,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9018 编辑合同
+      summary: 编辑合同
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/contract/{id}:
     delete:
       consumes:
@@ -10010,9 +10010,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9019 删除合同
+      summary: 删除合同
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/feedback:
     get:
       consumes:
@@ -10039,9 +10039,9 @@ paths:
                     $ref: '#/definitions/model.FeedbackDetail'
                   type: array
               type: object
-      summary: M9030 反馈列表
+      summary: 反馈列表
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/prepayment:
     get:
       consumes:
@@ -10100,9 +10100,9 @@ paths:
                     $ref: '#/definitions/model.PrepaymentListRes'
                   type: array
               type: object
-      summary: M9026 充值记录
+      summary: 充值记录
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/price:
     post:
       consumes:
@@ -10127,9 +10127,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.EnterprisePriceWithCity'
-      summary: M9016 团签单价设定
+      summary: 团签单价设定
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/price/{id}:
     post:
       consumes:
@@ -10153,9 +10153,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9017 删除价格
+      summary: 删除价格
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/rider:
     get:
       consumes:
@@ -10223,9 +10223,9 @@ paths:
                     $ref: '#/definitions/model.EnterpriseRider'
                   type: array
               type: object
-      summary: M9010 列举骑手
+      summary: 列举骑手
       tags:
-      - '[M]管理接口'
+      - 企业
     post:
       consumes:
       - application/json
@@ -10249,9 +10249,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.EnterpriseRider'
-      summary: M9009 添加骑手
+      summary: 添加骑手
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/station:
     get:
       consumes:
@@ -10277,9 +10277,9 @@ paths:
             items:
               $ref: '#/definitions/model.EnterpriseStationListRes'
             type: array
-      summary: M9008 列举站点
+      summary: 列举站点
       tags:
-      - '[M]管理接口'
+      - 企业
     post:
       consumes:
       - application/json
@@ -10303,9 +10303,9 @@ paths:
           description: 请求成功
           schema:
             type: integer
-      summary: M9006 创建站点
+      summary: 创建站点
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/station/{id}:
     put:
       consumes:
@@ -10335,9 +10335,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9007 编辑站点
+      summary: 编辑站点
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/subscribe/alter:
     post:
       consumes:
@@ -10357,9 +10357,9 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9028 审批订阅申请
+      summary: 审批订阅申请
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/subscribe/alter/{enterpriseId}:
     get:
       consumes:
@@ -10408,9 +10408,9 @@ paths:
                     $ref: '#/definitions/model.SubscribeAlterApplyListRes'
                   type: array
               type: object
-      summary: M9027 加时申请列表
+      summary: 加时申请列表
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/unbind/cabinet/{id}:
     get:
       consumes:
@@ -10430,9 +10430,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9025 团签解绑电柜
+      summary: 团签解绑电柜
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/exchange:
     get:
       consumes:
@@ -10556,9 +10556,9 @@ paths:
                     $ref: '#/definitions/model.ExchangeManagerListRes'
                   type: array
               type: object
-      summary: MG003 换电记录
+      summary: 换电记录
       tags:
-      - '[M]管理接口'
+      - 换电
   /manager/v1/export:
     get:
       consumes:
@@ -10596,9 +10596,9 @@ paths:
                     $ref: '#/definitions/model.ExportListRes'
                   type: array
               type: object
-      summary: MF001 导出列表
+      summary: 导出列表
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/business:
     post:
       consumes:
@@ -10623,9 +10623,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF008 导出业务记录
+      summary: 导出业务记录
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/commission:
     post:
       consumes:
@@ -10650,9 +10650,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF007 导出业绩
+      summary: 导出业绩
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/download/{sn}:
     get:
       consumes:
@@ -10676,9 +10676,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MF002 下载文件
+      summary: 下载文件
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/exchange:
     post:
       consumes:
@@ -10703,9 +10703,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF010 导出换电明细
+      summary: 导出换电明细
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/order:
     post:
       consumes:
@@ -10730,9 +10730,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF006 导出订单
+      summary: 导出订单
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/rider:
     post:
       consumes:
@@ -10756,9 +10756,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF003 导出骑手
+      summary: 导出骑手
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/statement/detail:
     post:
       consumes:
@@ -10783,9 +10783,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF004 导出企业账单
+      summary: 导出企业账单
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/statement/usage:
     post:
       consumes:
@@ -10810,9 +10810,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF005 导出企业使用明细
+      summary: 导出企业使用明细
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/stock-detail:
     post:
       consumes:
@@ -10837,9 +10837,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF009 导出出入库明细
+      summary: 导出出入库明细
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/import/rider:
     post:
       consumes:
@@ -10864,9 +10864,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: ME001 单个导入骑手
+      summary: 导入单个骑手
       tags:
-      - '[M]管理接口'
+      - 导入
   /manager/v1/inventory:
     delete:
       consumes:
@@ -10891,9 +10891,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1014 删除物资设定
+      summary: 删除物资设定
       tags:
-      - '[M]管理接口'
+      - 物资
     get:
       consumes:
       - application/json
@@ -10911,9 +10911,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.Inventory'
-      summary: M1013 列举物资设定
+      summary: 列举物资设定
       tags:
-      - '[M]管理接口'
+      - 物资
     post:
       consumes:
       - application/json
@@ -10937,9 +10937,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1012 物资设定创建或更新
+      summary: 物资设定创建或更新
       tags:
-      - '[M]管理接口'
+      - 物资
   /manager/v1/inventory/transferable:
     get:
       consumes:
@@ -10960,9 +10960,9 @@ paths:
             items:
               $ref: '#/definitions/model.InventoryItem'
             type: array
-      summary: M1015 可调拨物资清单
+      summary: 可调拨物资清单
       tags:
-      - '[M]管理接口'
+      - 物资
   /manager/v1/maintainer:
     get:
       consumes:
@@ -11004,9 +11004,9 @@ paths:
                     $ref: '#/definitions/model.Maintainer'
                   type: array
               type: object
-      summary: MJ001 运维人员列表
+      summary: 运维人员列表
       tags:
-      - '[M]管理接口'
+      - 运维
     post:
       consumes:
       - application/json
@@ -11030,9 +11030,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MJ002 创建运维人员
+      summary: 创建运维人员
       tags:
-      - '[M]管理接口'
+      - 运维
   /manager/v1/maintainer/{id}:
     put:
       consumes:
@@ -11057,9 +11057,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MJ003 修改运维人员信息
+      summary: 修改运维人员信息
       tags:
-      - '[M]管理接口'
+      - 运维
   /manager/v1/order:
     get:
       consumes:
@@ -11149,9 +11149,9 @@ paths:
                     $ref: '#/definitions/model.Order'
                   type: array
               type: object
-      summary: M8001 订单列表
+      summary: 订单列表
       tags:
-      - '[M]管理接口'
+      - 订单
   /manager/v1/order/refund:
     post:
       consumes:
@@ -11176,9 +11176,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M8002 退款审核
+      summary: 退款审核
       tags:
-      - '[M]管理接口'
+      - 订单
   /manager/v1/permission:
     get:
       consumes:
@@ -11199,9 +11199,9 @@ paths:
             items:
               $ref: '#/definitions/permission.Group'
             type: array
-      summary: MD001 权限列表
+      summary: 权限列表
       tags:
-      - '[M]管理接口'
+      - 权限
   /manager/v1/permission/role:
     get:
       consumes:
@@ -11222,9 +11222,9 @@ paths:
             items:
               $ref: '#/definitions/model.Role'
             type: array
-      summary: MD002 角色列表
+      summary: 角色列表
       tags:
-      - '[M]管理接口'
+      - 权限
     post:
       consumes:
       - application/json
@@ -11248,9 +11248,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.Role'
-      summary: MD003 创建角色
+      summary: 创建角色
       tags:
-      - '[M]管理接口'
+      - 权限
   /manager/v1/permission/role/{id}:
     delete:
       consumes:
@@ -11274,9 +11274,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MD005 删除角色
+      summary: 删除角色
       tags:
-      - '[M]管理接口'
+      - 权限
     put:
       consumes:
       - application/json
@@ -11305,9 +11305,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.Role'
-      summary: MD004 修改角色
+      summary: 修改角色
       tags:
-      - '[M]管理接口'
+      - 权限
   /manager/v1/plan:
     get:
       consumes:
@@ -11382,9 +11382,9 @@ paths:
                     $ref: '#/definitions/model.PlanListRes'
                   type: array
               type: object
-      summary: M6004 列举骑士卡
+      summary: 列举骑士卡
       tags:
-      - '[M]管理接口'
+      - 骑士卡
     post:
       consumes:
       - application/json
@@ -11408,9 +11408,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.PlanListRes'
-      summary: M6001 创建骑士卡
+      summary: 创建骑士卡
       tags:
-      - '[M]管理接口'
+      - 骑士卡
   /manager/v1/plan/{id}:
     delete:
       consumes:
@@ -11434,9 +11434,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M6003 删除骑士卡
+      summary: 删除骑士卡
       tags:
-      - '[M]管理接口'
+      - 骑士卡
     put:
       consumes:
       - application/json
@@ -11465,9 +11465,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M6002 上下架骑士卡
+      summary: 上下架骑士卡
       tags:
-      - '[M]管理接口'
+      - 骑士卡
   /manager/v1/plan/introduce:
     get:
       consumes:
@@ -11488,9 +11488,9 @@ paths:
             items:
               $ref: '#/definitions/model.PlanIntroduce'
             type: array
-      summary: M6006 获取车电介绍
+      summary: 获取车电介绍
       tags:
-      - '[M]管理接口'
+      - 骑士卡
     post:
       consumes:
       - application/json
@@ -11514,9 +11514,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M6007 创建车电介绍
+      summary: 创建车电介绍
       tags:
-      - '[M]管理接口'
+      - 骑士卡
     put:
       consumes:
       - application/json
@@ -11545,9 +11545,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M6008 修改车电介绍
+      summary: 修改车电介绍
       tags:
-      - '[M]管理接口'
+      - 骑士卡
   /manager/v1/plan/introduce/notset:
     get:
       consumes:
@@ -11571,7 +11571,7 @@ paths:
             type: array
       summary: M6005 获取未设定介绍的车电型号
       tags:
-      - '[M]管理接口'
+      - 骑士卡
   /manager/v1/plan/time:
     post:
       consumes:
@@ -11596,9 +11596,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M6009 修改骑士卡有效期
+      summary: 修改骑士卡有效期
       tags:
-      - '[M]管理接口'
+      - 骑士卡
   /manager/v1/point/batch:
     post:
       consumes:
@@ -11625,9 +11625,9 @@ paths:
             items:
               type: string
             type: array
-      summary: M7018 批量变动积分
+      summary: 批量变动积分
       tags:
-      - '[M]管理接口'
+      - 积分
   /manager/v1/point/log:
     get:
       consumes:
@@ -11682,9 +11682,9 @@ paths:
                     $ref: '#/definitions/model.PointLogListRes'
                   type: array
               type: object
-      summary: M7017 积分变动日志
+      summary: 积分变动日志
       tags:
-      - '[M]管理接口'
+      - 积分
   /manager/v1/point/modify:
     post:
       consumes:
@@ -11709,9 +11709,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7016 修改骑手积分
+      summary: 修改骑手积分
       tags:
-      - '[M]管理接口'
+      - 积分
   /manager/v1/promotion/achievement:
     delete:
       consumes:
@@ -11735,7 +11735,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM7004 删除会员成就
+      summary: 删除会员成就
       tags:
       - '[PM]推广管理接口'
     get:
@@ -11757,7 +11757,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.Achievement'
             type: array
-      summary: PM7001 会员成就列表
+      summary: 会员成就列表
       tags:
       - '[PM]推广管理接口'
     post:
@@ -11783,7 +11783,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM7002 创建会员成就
+      summary: 创建会员成就
       tags:
       - '[PM]推广管理接口'
     put:
@@ -11809,7 +11809,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM7003 更新会员成就
+      summary: 更新会员成就
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/achievement/icon:
@@ -11835,7 +11835,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/promotion.UploadIcon'
-      summary: PM7005 上传会员成就图标
+      summary: 上传会员成就图标
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission:
@@ -11858,7 +11858,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.CommissionDetail'
             type: array
-      summary: PM8001 推广返佣方案列表
+      summary: 推广返佣方案列表
       tags:
       - '[PM]推广管理接口'
     post:
@@ -11884,7 +11884,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM8003 创建推广返佣方案
+      summary: 创建推广返佣方案
       tags:
       - '[PM]推广管理接口'
     put:
@@ -11910,7 +11910,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM8004 更新推广返佣方案
+      summary: 更新推广返佣方案
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission/{id}:
@@ -11936,7 +11936,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM8005 删除推广返佣方案
+      summary: 删除推广返佣方案
       tags:
       - '[PM]推广管理接口'
     get:
@@ -11961,7 +11961,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/promotion.CommissionDetail'
-      summary: PM8002 推广返佣方案详情
+      summary: 推广返佣方案详情
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission/enable:
@@ -11988,7 +11988,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM8006 更新推广返佣方案状态
+      summary: 更新推广返佣方案状态
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission/history/{id}:
@@ -12016,7 +12016,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.CommissionDetail'
             type: array
-      summary: PM8007 推广返佣方案历史列表
+      summary: 推广返佣方案历史列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission/plan/list/{:id}:
@@ -12044,7 +12044,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.CommissionPlanListRes'
             type: array
-      summary: PM8010 返佣方案骑士卡列表
+      summary: 返佣方案骑士卡列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission/selection:
@@ -12067,7 +12067,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.CommissionSelection'
             type: array
-      summary: PM8008 推广返佣方案选择
+      summary: 推广返佣方案选择
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission/task/selection:
@@ -12090,7 +12090,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.CommissionTaskSelect'
             type: array
-      summary: PM8009 返佣方案任务选择
+      summary: 返佣方案任务选择
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/earnings/{id}:
@@ -12119,7 +12119,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.EarningsRes'
             type: array
-      summary: PM2001 会员收益列表
+      summary: 会员收益列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/earnings/cancel:
@@ -12145,7 +12145,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM2002 取消会员收益
+      summary: 取消会员收益
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/growth/{id}:
@@ -12174,7 +12174,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.GrowthRes'
             type: array
-      summary: PM5001 会员成长值列表
+      summary: 会员成长值列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/level:
@@ -12200,7 +12200,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM4004 删除会员等级配置
+      summary: 删除会员等级配置
       tags:
       - '[PM]推广管理接口'
     get:
@@ -12222,7 +12222,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.Level'
             type: array
-      summary: PM4001 会员等级配置列表
+      summary: 会员等级配置列表
       tags:
       - '[PM]推广管理接口'
     post:
@@ -12248,7 +12248,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM4003 创建会员等级配置
+      summary: 创建会员等级配置
       tags:
       - '[PM]推广管理接口'
     put:
@@ -12274,7 +12274,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM4002 更新会员等级配置
+      summary: 更新会员等级配置
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/level/selection:
@@ -12297,7 +12297,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.Level'
             type: array
-      summary: PM4005 会员等级配置下拉选择列表
+      summary: 会员等级配置下拉选择列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/member:
@@ -12326,7 +12326,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.MemberRes'
             type: array
-      summary: PM1001 会员列表
+      summary: 会员列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/member/{id}:
@@ -12352,7 +12352,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/promotion.MemberRes'
-      summary: PM1002 会员详情
+      summary: 会员详情
       tags:
       - '[PM]推广管理接口'
     put:
@@ -12378,7 +12378,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM1003 更新会员信息
+      summary: 更新会员信息
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/member/setcommission:
@@ -12405,7 +12405,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM1005 设置会员佣金方案
+      summary: 设置会员佣金方案
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/member/team/{id}:
@@ -12439,7 +12439,7 @@ paths:
                     $ref: '#/definitions/promotion.MemberTeamRes'
                   type: array
               type: object
-      summary: PM1004 会员团队列表
+      summary: 会员团队列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/progress/list:
@@ -12468,7 +12468,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.ReferralsProgressRes'
             type: array
-      summary: PMA001  会员推荐进度列表
+      summary: 会员推荐进度列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/setting/{key}:
@@ -12497,7 +12497,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.Setting'
             type: array
-      summary: PM9001 获取推广配置
+      summary: 获取推广配置
       tags:
       - '[PM]推广管理接口'
     put:
@@ -12523,7 +12523,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM9002 更新推广配置
+      summary: 更新推广配置
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/task:
@@ -12546,7 +12546,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.LevelTask'
             type: array
-      summary: PM6001 会员任务列表
+      summary: 会员任务列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/task/{id}:
@@ -12573,7 +12573,7 @@ paths:
           description: OK
           schema:
             type: string
-      summary: PM6002 更新会员任务
+      summary: 更新会员任务
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/withdrawal:
@@ -12602,7 +12602,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.WithdrawalListRes'
             type: array
-      summary: PM3001 会员提现列表
+      summary: 会员提现列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/withdrawal/alter/review:
@@ -12629,7 +12629,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM3002  审批提现
+      summary: 审批提现
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/withdrawal/export:
@@ -12656,7 +12656,7 @@ paths:
           description: OK
           schema:
             type: string
-      summary: PM3003  导出提现列表
+      summary: 导出提现列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/rider:
@@ -12790,9 +12790,9 @@ paths:
                     $ref: '#/definitions/model.RiderItem'
                   type: array
               type: object
-      summary: M7001 列举骑手
+      summary: 列举骑手
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/{id}:
     delete:
       consumes:
@@ -12816,9 +12816,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7011 删除骑手
+      summary: 删除骑手
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/ban:
     post:
       consumes:
@@ -12843,9 +12843,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7002 封禁/解除封禁身份
+      summary: 封禁/解除封禁身份
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/block:
     post:
       consumes:
@@ -12870,9 +12870,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7003 封禁/解除封禁骑手账户
+      summary: 封禁/解除封禁骑手账户
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/exchange-frequency:
     post:
       consumes:
@@ -12897,9 +12897,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7024 设置骑手换电频次
+      summary: 设置骑手换电频次
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/exchange-limit:
     post:
       consumes:
@@ -12924,9 +12924,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7023 设置骑手换电限制
+      summary: 设置骑手换电限制
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/followup:
     get:
       consumes:
@@ -12965,9 +12965,9 @@ paths:
                     $ref: '#/definitions/model.RiderFollowUpListRes'
                   type: array
               type: object
-      summary: M7013 获取骑手跟进
+      summary: 获取骑手跟进
       tags:
-      - '[M]管理接口'
+      - 骑手
     post:
       consumes:
       - application/json
@@ -12991,9 +12991,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7012 创建骑手跟进
+      summary: 创建骑手跟进
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/log:
     get:
       consumes:
@@ -13042,9 +13042,9 @@ paths:
                     $ref: '#/definitions/model.LogOperate'
                   type: array
               type: object
-      summary: M7005 查看骑手操作日志
+      summary: 查看骑手操作日志
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/modify:
     post:
       consumes:
@@ -13069,9 +13069,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7010 修改骑手资料
+      summary: 修改骑手资料
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/selection/battery/serial:
     get:
       consumes:
@@ -13106,9 +13106,9 @@ paths:
             items:
               $ref: '#/definitions/model.Battery'
             type: array
-      summary: MB016 按流水号搜索电池
+      summary: 按流水号搜索电池
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/branch:
     get:
       consumes:
@@ -13129,9 +13129,9 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: MB006 筛选网点
+      summary: 筛选网点
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/cabinet:
     get:
       consumes:
@@ -13160,9 +13160,9 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: MB008 筛选电柜
+      summary: 筛选电柜
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/cabinetmodel:
     get:
       consumes:
@@ -13188,9 +13188,9 @@ paths:
             items:
               type: string
             type: array
-      summary: MB012 筛选电柜电池
+      summary: 筛选电柜电池
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/city:
     get:
       consumes:
@@ -13211,9 +13211,9 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: MB005 筛选启用的城市
+      summary: 筛选启用的城市
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/commission/plan:
     get:
       consumes:
@@ -13233,9 +13233,9 @@ paths:
             items:
               $ref: '#/definitions/model.SelectOption'
             type: array
-      summary: MB017 返佣方案筛选骑士卡
+      summary: 返佣方案筛选骑士卡
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/coupon/template:
     get:
       consumes:
@@ -13260,7 +13260,7 @@ paths:
             type: array
       summary: MB014 筛选优惠券模板
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/ebike/brand:
     get:
       consumes:
@@ -13281,9 +13281,9 @@ paths:
             items:
               $ref: '#/definitions/model.SelectOption'
             type: array
-      summary: MB015 车辆型号列表
+      summary: 车辆型号列表
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/employee:
     get:
       consumes:
@@ -13304,9 +13304,9 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: MB004 筛选店员
+      summary: 筛选店员
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/enterprise:
     get:
       consumes:
@@ -13327,9 +13327,9 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: MB007 筛选企业
+      summary: 筛选企业
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/model:
     get:
       consumes:
@@ -13350,9 +13350,9 @@ paths:
             items:
               type: string
             type: array
-      summary: MB013 筛选电池型号
+      summary: 筛选电池型号
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/plan:
     get:
       consumes:
@@ -13389,9 +13389,9 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel3'
             type: array
-      summary: MB001 筛选骑士卡
+      summary: 筛选骑士卡
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/planmodel:
     get:
       consumes:
@@ -13417,9 +13417,9 @@ paths:
             items:
               type: string
             type: array
-      summary: MB011 筛选骑行卡电池
+      summary: 筛选骑行卡电池
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/rider:
     get:
       consumes:
@@ -13444,9 +13444,9 @@ paths:
             items:
               $ref: '#/definitions/model.SelectOption'
             type: array
-      summary: MB002 筛选骑手
+      summary: 筛选骑手
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/role:
     get:
       consumes:
@@ -13467,9 +13467,9 @@ paths:
             items:
               $ref: '#/definitions/model.SelectOption'
             type: array
-      summary: MB009 筛选角色
+      summary: 筛选角色
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/store:
     get:
       consumes:
@@ -13490,9 +13490,9 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: MB003 筛选门店
+      summary: 筛选门店
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/wxemployee:
     get:
       consumes:
@@ -13514,9 +13514,9 @@ paths:
               additionalProperties: true
               type: object
             type: array
-      summary: MB010 筛选企业微信成员
+      summary: 筛选企业微信成员
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/setting:
     get:
       consumes:
@@ -13537,7 +13537,7 @@ paths:
             items:
               $ref: '#/definitions/model.SettingReq'
             type: array
-      summary: M1010 列举设置
+      summary: 列举设置
       tags:
       - '[M]管理接口'
   /manager/v1/setting/{key}:
@@ -13569,7 +13569,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1011 调整设置
+      summary: 调整设置
       tags:
       - '[M]管理接口'
   /manager/v1/setting/activity:
@@ -13598,7 +13598,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 获取活动列表
       tags:
-      - Setting - 管理接口
+      - 设置
     post:
       consumes:
       - application/json
@@ -13650,7 +13650,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改活动
       tags:
-      - Setting - 管理接口
+      - 设置
   /manager/v1/setting/activity/{id}:
     delete:
       consumes:
@@ -13675,7 +13675,7 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       tags:
-      - Setting - 管理接口
+      - 设置
     get:
       consumes:
       - application/json
@@ -13700,7 +13700,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 获取指定活动
       tags:
-      - Setting - 管理接口
+      - 设置
   /manager/v1/setting/guide:
     get:
       consumes:
@@ -13727,7 +13727,7 @@ paths:
             $ref: '#/definitions/model.PaginationRes'
       summary: 获取引导
       tags:
-      - Setting - 管理接口
+      - 设置
     post:
       consumes:
       - application/json
@@ -13753,7 +13753,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 保存引导
       tags:
-      - Setting - 管理接口
+      - 设置
     put:
       consumes:
       - application/json
@@ -13777,9 +13777,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1022 修改引导
+      summary: 修改引导
       tags:
-      - Setting - 管理接口
+      - 设置
   /manager/v1/setting/guide/{id}:
     delete:
       consumes:
@@ -13803,9 +13803,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1021 删除引导
+      summary: 删除引导
       tags:
-      - Setting - 管理接口
+      - 设置
     get:
       consumes:
       - application/json
@@ -13830,7 +13830,7 @@ paths:
             $ref: '#/definitions/definition.GuideDetail'
       summary: 获取指定引导
       tags:
-      - Setting - 管理接口
+      - 设置
   /manager/v1/setting/legal:
     post:
       consumes:
@@ -13855,7 +13855,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1017 保存法规
+      summary: 保存法规
       tags:
       - '[M]管理接口'
   /manager/v1/setting/legal/{name}:
@@ -13883,7 +13883,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.LegalRes'
-      summary: M1016 获取法规
+      summary: 获取法规
       tags:
       - '[M]管理接口'
   /manager/v1/stock:
@@ -13912,9 +13912,9 @@ paths:
             items:
               type: string
             type: array
-      summary: ME001 调拨物资
+      summary: 调拨物资
       tags:
-      - '[M]管理接口'
+      - 库存
   /manager/v1/stock/battery/overview:
     get:
       consumes:
@@ -13967,9 +13967,9 @@ paths:
           description: 使用中数量 = 激活 + 结束寄存 - 寄存 - 退租
           schema:
             $ref: '#/definitions/model.StockBatteryOverviewRes'
-      summary: ME002 电池概览
+      summary: 电池概览
       tags:
-      - '[M]管理接口'
+      - 库存
   /manager/v1/stock/cabinet:
     get:
       consumes:
@@ -14023,9 +14023,9 @@ paths:
                     $ref: '#/definitions/model.StockCabinetListRes'
                   type: array
               type: object
-      summary: ME004 电柜物资列表
+      summary: 电柜物资列表
       tags:
-      - '[M]管理接口'
+      - 库存
   /manager/v1/stock/detail:
     get:
       consumes:
@@ -14139,9 +14139,9 @@ paths:
                     $ref: '#/definitions/model.StockDetailRes'
                   type: array
               type: object
-      summary: ME005 出入库明细
+      summary: 出入库明细
       tags:
-      - '[M]管理接口'
+      - 库存
   /manager/v1/stock/enterprise/list:
     get:
       consumes:
@@ -14215,9 +14215,9 @@ paths:
                     $ref: '#/definitions/model.StockListRes'
                   type: array
               type: object
-      summary: ME006 团签物资列表
+      summary: 团签物资列表
       tags:
-      - '[M]管理接口'
+      - 库存
   /manager/v1/stock/store:
     get:
       consumes:
@@ -14291,9 +14291,9 @@ paths:
                     $ref: '#/definitions/model.StockListRes'
                   type: array
               type: object
-      summary: ME003 门店物资列表
+      summary: 门店物资列表
       tags:
-      - '[M]管理接口'
+      - 库存
   /manager/v1/store:
     get:
       consumes:
@@ -14347,9 +14347,9 @@ paths:
                     $ref: '#/definitions/model.StoreItem'
                   type: array
               type: object
-      summary: M3006 列举门店
+      summary: 列举门店
       tags:
-      - '[M]管理接口'
+      - 门店
     post:
       consumes:
       - application/json
@@ -14373,9 +14373,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StoreItem'
-      summary: M3007 创建门店
+      summary: 创建门店
       tags:
-      - '[M]管理接口'
+      - 门店
   /manager/v1/store/{id}:
     delete:
       consumes:
@@ -14399,9 +14399,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M3009 删除门店
+      summary: 删除门店
       tags:
-      - '[M]管理接口'
+      - 门店
     put:
       consumes:
       - application/json
@@ -14430,9 +14430,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StoreItem'
-      summary: M3008 修改门店
+      summary: 修改门店
       tags:
-      - '[M]管理接口'
+      - 门店
   /manager/v1/subscribe/active:
     post:
       consumes:
@@ -14457,9 +14457,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.AllocateCreateRes'
-      summary: M7009 激活订阅
+      summary: 激活订阅
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/alter:
     post:
       consumes:
@@ -14484,9 +14484,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7004 修改订阅时间
+      summary: 修改订阅时间
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/continue:
     post:
       consumes:
@@ -14511,9 +14511,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7007 继续计费
+      summary: 继续计费
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/ebike/change:
     post:
       consumes:
@@ -14538,9 +14538,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7020 修改订阅车辆
+      summary: 修改订阅车辆
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/ebike/unbind:
     post:
       consumes:
@@ -14565,9 +14565,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7025 解绑骑手电车
+      summary: 解绑骑手电车
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/halt:
     post:
       consumes:
@@ -14592,9 +14592,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7008 强制退租
+      summary: 强制退租
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/pause:
     post:
       consumes:
@@ -14619,9 +14619,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7006 暂停计费
+      summary: 暂停计费
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/reminder:
     get:
       consumes:
@@ -14682,9 +14682,9 @@ paths:
                     $ref: '#/definitions/model.ReminderListRes'
                   type: array
               type: object
-      summary: M7021 催费记录
+      summary: 催费记录
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/suspend:
     post:
       consumes:
@@ -14709,9 +14709,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7014 暂停扣费
+      summary: 暂停扣费
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/unsuspend:
     post:
       consumes:
@@ -14736,9 +14736,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7015 继续扣费
+      summary: 继续扣费
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/user:
     get:
       consumes:
@@ -14769,9 +14769,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1003 列举管理员
+      summary: 列举管理员
       tags:
-      - '[M]管理接口'
+      - 管理
     post:
       consumes:
       - application/json
@@ -14795,9 +14795,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1002 新增管理员
+      summary: 新增管理员
       tags:
-      - '[M]管理接口'
+      - 管理
   /manager/v1/user/{id}:
     delete:
       consumes:
@@ -14821,9 +14821,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1004 删除管理员
+      summary: 删除管理员
       tags:
-      - '[M]管理接口'
+      - 管理
     put:
       consumes:
       - application/json
@@ -14852,9 +14852,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1005 编辑管理员
+      summary: 编辑管理员
       tags:
-      - '[M]管理接口'
+      - 管理
   /manager/v1/user/profile:
     get:
       consumes:
@@ -14873,9 +14873,9 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.ManagerSigninRes'
-      summary: M1006 管理员信息
+      summary: 管理员信息
       tags:
-      - '[M]管理接口'
+      - 管理
   /manager/v1/user/signin:
     post:
       consumes:
@@ -14891,5 +14891,5 @@ paths:
             $ref: '#/definitions/model.ManagerSigninRes'
       summary: M1001 用户登录
       tags:
-      - '[M]管理接口'
+      - 管理
 swagger: "2.0"

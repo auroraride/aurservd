@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type rider struct{}
@@ -19,8 +20,8 @@ var Rider = new(rider)
 // List
 // @ID		RiderList
 // @Router	/manager/v1/rider [GET]
-// @Summary	M7001 列举骑手
-// @Tags	[M]管理接口
+// @Summary	列举骑手
+// @Tags	骑手
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string											true	"管理员校验token"
@@ -34,8 +35,8 @@ func (*rider) List(c echo.Context) (err error) {
 // Ban
 // @ID		RiderBan
 // @Router	/manager/v1/rider/ban [POST]
-// @Summary	M7002 封禁/解除封禁身份
-// @Tags	[M]管理接口
+// @Summary	封禁/解除封禁身份
+// @Tags	骑手
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -50,8 +51,8 @@ func (*rider) Ban(c echo.Context) (err error) {
 // Block
 // @ID		RiderBlock
 // @Router	/manager/v1/rider/block [POST]
-// @Summary	M7003 封禁/解除封禁骑手账户
-// @Tags	[M]管理接口
+// @Summary	封禁/解除封禁骑手账户
+// @Tags	骑手
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -66,8 +67,8 @@ func (*rider) Block(c echo.Context) (err error) {
 // Log
 // @ID		ManagerRiderLog
 // @Router	/manager/v1/rider/log [GET]
-// @Summary	M7005 查看骑手操作日志
-// @Tags	[M]管理接口
+// @Summary	查看骑手操作日志
+// @Tags	骑手
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string											true	"管理员校验token"
@@ -81,8 +82,8 @@ func (*rider) Log(c echo.Context) (err error) {
 // Deposit
 // @ID		ManagerSubscribeDeposit
 // @Router	/manager/v1/deposit [POST]
-// @Summary	M7019 修改押金
-// @Tags	[M]管理接口
+// @Summary	修改押金
+// @Tags	骑手
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -97,8 +98,8 @@ func (*rider) Deposit(c echo.Context) (err error) {
 // Modify
 // @ID		ManagerSubscribeModify
 // @Router	/manager/v1/rider/modify [POST]
-// @Summary	M7010 修改骑手资料
-// @Tags	[M]管理接口
+// @Summary	修改骑手资料
+// @Tags	骑手
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -113,8 +114,8 @@ func (*rider) Modify(c echo.Context) (err error) {
 // Delete
 // @ID		ManagerRiderDelete
 // @Router	/manager/v1/rider/{id} [DELETE]
-// @Summary	M7011 删除骑手
-// @Tags	[M]管理接口
+// @Summary	删除骑手
+// @Tags	骑手
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -129,8 +130,8 @@ func (*rider) Delete(c echo.Context) (err error) {
 // FollowUpCreate
 // @ID		ManagerRiderFollowUpCreate
 // @Router	/manager/v1/rider/followup [POST]
-// @Summary	M7012 创建骑手跟进
-// @Tags	[M]管理接口
+// @Summary	创建骑手跟进
+// @Tags	骑手
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -145,8 +146,8 @@ func (*rider) FollowUpCreate(c echo.Context) (err error) {
 // FollowUpList
 // @ID		ManagerRiderFollowUpList
 // @Router	/manager/v1/rider/followup [GET]
-// @Summary	M7013 获取骑手跟进
-// @Tags	[M]管理接口
+// @Summary	获取骑手跟进
+// @Tags	骑手
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string													true	"管理员校验token"
@@ -160,8 +161,8 @@ func (*rider) FollowUpList(c echo.Context) (err error) {
 // ExchangeLimit
 // @ID		ManagerRiderExchangeLimit
 // @Router	/manager/v1/rider/exchange-limit [POST]
-// @Summary	M7023 设置骑手换电限制
-// @Tags	[M]管理接口
+// @Summary	设置骑手换电限制
+// @Tags	骑手
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -176,8 +177,8 @@ func (*rider) ExchangeLimit(c echo.Context) (err error) {
 // ExchangeFrequency
 // @ID		ManagerRiderExchangeFrequency
 // @Router	/manager/v1/rider/exchange-frequency [POST]
-// @Summary	M7024 设置骑手换电频次
-// @Tags	[M]管理接口
+// @Summary	设置骑手换电频次
+// @Tags	骑手
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"

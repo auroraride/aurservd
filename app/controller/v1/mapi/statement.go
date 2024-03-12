@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type statement struct{}
@@ -19,8 +20,8 @@ var Statement = new(statement)
 // GetBill
 // @ID		ManagerStatementGetBill
 // @Router	/manager/v1/enterprise/bill [GET]
-// @Summary	M9011 获取账单
-// @Tags	[M]管理接口
+// @Summary	获取账单
+// @Tags	账单
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -34,8 +35,8 @@ func (*statement) GetBill(c echo.Context) (err error) {
 // Bill
 // @ID		ManagerStatementBill
 // @Router	/manager/v1/enterprise/bill [POST]
-// @Summary	M9012 结账
-// @Tags	[M]管理接口
+// @Summary	结账
+// @Tags	账单
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -50,8 +51,8 @@ func (*statement) Bill(c echo.Context) (err error) {
 // Historical
 // @ID		ManagerStatementHistorical
 // @Router	/manager/v1/enterprise/bill/historical [GET]
-// @Summary	M9013 历史账单
-// @Tags	[M]管理接口
+// @Summary	历史账单
+// @Tags	账单
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string																true	"管理员校验token"
@@ -65,8 +66,8 @@ func (*statement) Historical(c echo.Context) (err error) {
 // Statement
 // @ID		ManagerStatementStatement
 // @Router	/manager/v1/enterprise/bill/statement [GET]
-// @Summary	M9014 结账明细
-// @Tags	[M]管理接口
+// @Summary	结账明细
+// @Tags	账单
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -80,8 +81,8 @@ func (*statement) Statement(c echo.Context) (err error) {
 // Usage
 // @ID		ManagerStatementUsage
 // @Router	/manager/v1/enterprise/bill/usage [GET]
-// @Summary	M9015 使用明细
-// @Tags	[M]管理接口
+// @Summary	使用明细
+// @Tags	账单
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"

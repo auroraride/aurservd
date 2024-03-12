@@ -6,11 +6,12 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/labstack/echo/v4"
 )
 
 type point struct{}
@@ -20,8 +21,8 @@ var Point = new(point)
 // Modify
 // @ID		ManagerPointModify
 // @Router	/manager/v1/point/modify [POST]
-// @Summary	M7016 修改骑手积分
-// @Tags	[M]管理接口
+// @Summary	修改骑手积分
+// @Tags	积分
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -39,8 +40,8 @@ func (*point) Modify(c echo.Context) (err error) {
 // Log
 // @ID		ManagerPointLog
 // @Router	/manager/v1/point/log [GET]
-// @Summary	M7017 积分变动日志
-// @Tags	[M]管理接口
+// @Summary	积分变动日志
+// @Tags	积分
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"
@@ -54,8 +55,8 @@ func (*point) Log(c echo.Context) (err error) {
 // Batch
 // @ID		ManagerPointBatch
 // @Router	/manager/v1/point/batch [POST]
-// @Summary	M7018 批量变动积分
-// @Tags	[M]管理接口
+// @Summary	批量变动积分
+// @Tags	积分
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string				true	"管理员校验token"

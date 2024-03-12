@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type exchange struct{}
@@ -19,8 +20,8 @@ var Exchange = new(exchange)
 // List
 // @ID		ManagerExchangeList
 // @Router	/manager/v1/exchange [GET]
-// @Summary	MG003 换电记录
-// @Tags	[M]管理接口
+// @Summary	换电记录
+// @Tags	换电
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string														true	"管理员校验token"
