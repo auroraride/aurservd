@@ -41,8 +41,8 @@ func loadManagerRoutes() {
 
 	// 设置-广告活动
 	g.GET("/activity", mapi.Setting.ActivityList)          // 列表
-	g.GET("/activity/:id", mapi.Setting.ActivityGet)       // 详情
-	g.POST("/activity", mapi.Setting.ActivitySave)         // 新增
+	g.GET("/activity/:id", mapi.Setting.ActivityDetail)    // 详情
+	g.POST("/activity", mapi.Setting.ActivityCreate)       // 新增
 	g.PUT("/activity", mapi.Setting.ActivityModify)        // 编辑
 	g.DELETE("/activity/:id", mapi.Setting.ActivityDelete) // 删除
 

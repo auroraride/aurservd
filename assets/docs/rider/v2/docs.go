@@ -2916,21 +2916,23 @@ const docTemplate = `{
         },
         "definition.ActivityDetail": {
             "type": "object",
+            "required": [
+                "image",
+                "link",
+                "name",
+                "sort"
+            ],
             "properties": {
                 "id": {
-                    "description": "ID",
                     "type": "integer"
                 },
                 "image": {
-                    "description": "图片",
                     "type": "string"
                 },
                 "link": {
-                    "description": "连接",
                     "type": "string"
                 },
                 "name": {
-                    "description": "名称",
                     "type": "string"
                 },
                 "remark": {
@@ -2938,7 +2940,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sort": {
-                    "description": "排序",
                     "type": "integer"
                 }
             }

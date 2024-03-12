@@ -167,16 +167,16 @@ func (*setting) GuideModify(c echo.Context) (err error) {
 // @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string						true	"管理员校验token"
-// @Param	body			body		definition.ActivityListReq	true	"请求参数"
-// @Success	200				{object}	model.StatusResponse		"请求成功"
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	body			body		model.PaginationReq		true	"请求参数"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*setting) ActivityList(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.ActivityListReq](c)
+	ctx, req := app.ManagerContextAndBinding[model.PaginationReq](c)
 	return ctx.SendResponse(biz.NewActivity().List(req))
 }
 
-// ActivityGet
-// @ID		SettingActivityGet
+// ActivityDetail
+// @ID		SettingActivityDetail
 // @Router	/manager/v1/setting/activity/{id} [GET]
 // @Summary	获取指定活动
 // @Tags	Setting - 管理接口
@@ -185,7 +185,7 @@ func (*setting) ActivityList(c echo.Context) (err error) {
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
 // @Param	id				path		string					true	"活动ID"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
-func (*setting) ActivityGet(c echo.Context) (err error) {
+func (*setting) ActivityDetail(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewActivity().Get(req.ID))
 }
@@ -222,18 +222,18 @@ func (*setting) ActivityDelete(c echo.Context) (err error) {
 	return ctx.SendResponse()
 }
 
-// ActivitySave
-// @ID		SettingActivitySave
+// ActivityCreate
+// @ID		SettingActivityCreate
 // @Router	/manager/v1/setting/activity [POST]
 // @Summary	保存活动
 // @Tags	Setting -  管理接口
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string						true	"管理员校验token"
-// @Param	body			body		definition.ActivitySaveReq	true	"请求参数"
-// @Success	200				{object}	model.StatusResponse		"请求成功"
-func (*setting) ActivitySave(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.ActivitySaveReq](c)
+// @Param	X-Manager-Token	header		string							true	"管理员校验token"
+// @Param	body			body		definition.ActivityCreateReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse			"请求成功"
+func (*setting) ActivityCreate(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[definition.ActivityCreateReq](c)
 	biz.NewActivity().Create(req)
 	return ctx.SendResponse()
 }

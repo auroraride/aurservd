@@ -33,7 +33,7 @@ func (a *activityBiz) Get(id uint64) *definition.ActivityDetail {
 	return toActivityDetail(item)
 }
 
-func (a *activityBiz) Create(req *definition.ActivitySaveReq) {
+func (a *activityBiz) Create(req *definition.ActivityCreateReq) {
 	ctx := context.Background()
 	_, err := a.orm.Create().
 		SetName(req.Name).
@@ -82,20 +82,22 @@ func (a *activityBiz) All() []*definition.ActivityDetail {
 	return res
 }
 
-func (a *activityBiz) List(req *definition.ActivityListReq) *model.PaginationRes {
+func (a *activityBiz) List(req *model.PaginationReq) *model.PaginationRes {
 	query := a.orm.Query().Order(ent.Desc(activity.FieldSort))
-	return model.ParsePaginationResponse(query, req.PaginationReq, func(item *ent.Activity) *definition.ActivityDetail {
+	return model.ParsePaginationResponse(query, *req, func(item *ent.Activity) *definition.ActivityDetail {
 		return toActivityDetail(item)
 	})
 }
 
 func toActivityDetail(item *ent.Activity) *definition.ActivityDetail {
 	return &definition.ActivityDetail{
-		ID:     item.ID,
-		Name:   item.Name,
-		Sort:   item.Sort,
-		Image:  item.Image,
-		Link:   item.Link,
-		Remark: item.Remark,
+		ID: item.ID,
+		ActivityReqCommon: definition.ActivityReqCommon{
+			Name:   item.Name,
+			Sort:   item.Sort,
+			Image:  item.Image,
+			Link:   item.Link,
+			Remark: item.Remark,
+		},
 	}
 }
