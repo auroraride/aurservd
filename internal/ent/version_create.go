@@ -92,15 +92,15 @@ func (vc *VersionCreate) SetNillableRemark(s *string) *VersionCreate {
 }
 
 // SetPlatform sets the "platform" field.
-func (vc *VersionCreate) SetPlatform(m model.AppPlatform) *VersionCreate {
-	vc.mutation.SetPlatform(m)
+func (vc *VersionCreate) SetPlatform(mp model.AppPlatform) *VersionCreate {
+	vc.mutation.SetPlatform(mp)
 	return vc
 }
 
 // SetNillablePlatform sets the "platform" field if the given value is not nil.
-func (vc *VersionCreate) SetNillablePlatform(m *model.AppPlatform) *VersionCreate {
-	if m != nil {
-		vc.SetPlatform(*m)
+func (vc *VersionCreate) SetNillablePlatform(mp *model.AppPlatform) *VersionCreate {
+	if mp != nil {
+		vc.SetPlatform(*mp)
 	}
 	return vc
 }

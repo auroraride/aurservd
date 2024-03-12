@@ -61,7 +61,7 @@ func (Activity) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").Comment("名称"),
 		field.String("image").Comment("图片"),
-		field.String("link").Comment("连接"),
+		field.String("link").Comment("链接"),
 		field.Int("sort").Default(0).Comment("排序"),
 	}
 }

@@ -35,7 +35,7 @@ type Activity struct {
 	Name string `json:"name,omitempty"`
 	// 图片
 	Image string `json:"image,omitempty"`
-	// 连接
+	// 链接
 	Link string `json:"link,omitempty"`
 	// 排序
 	Sort         int `json:"sort,omitempty"`

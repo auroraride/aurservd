@@ -20,7 +20,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
 		{Name: "image", Type: field.TypeString, Comment: "图片"},
-		{Name: "link", Type: field.TypeString, Comment: "连接"},
+		{Name: "link", Type: field.TypeString, Comment: "链接"},
 		{Name: "sort", Type: field.TypeInt, Comment: "排序", Default: 0},
 	}
 	// ActivityTable holds the schema information for the "activity" table.

@@ -110201,8 +110201,8 @@ func (m *VersionMutation) ResetRemark() {
 }
 
 // SetPlatform sets the "platform" field.
-func (m *VersionMutation) SetPlatform(value model.AppPlatform) {
-	m.platform = &value
+func (m *VersionMutation) SetPlatform(mp model.AppPlatform) {
+	m.platform = &mp
 }
 
 // Platform returns the value of the "platform" field in the mutation.
