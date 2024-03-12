@@ -7,7 +7,6 @@ import (
 	"github.com/auroraride/aurservd/app/biz"
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/app/service"
 )
 
 type order struct{}
@@ -26,11 +25,11 @@ var Order = new(order)
 // @Success	200				{object}	model.OrderCreateRes	"请求成功"
 func (*order) Create(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.OrderCreateReq](c)
-	return ctx.SendResponse(service.NewOrderWithRider(ctx.Rider).Create(req))
+	return ctx.SendResponse(biz.NewOrderBiz().Create(ctx.Rider, req))
 }
 
 // DepositCredit 信用免押
-// @ID		OrderDepositFree
+// @ID		OrderDepositCredit
 // @Router	/rider/v2/order/deposit/credit [POST]
 // @Summary	免押金支付
 // @Tags	Order - 订单

@@ -229,7 +229,7 @@ definitions:
         description: 内容
       key:
         description: 键  rent 租电买前必读 rentCar 租车买前必读 buyCar 买车买前必读 coupon 优惠券使用说明 point
-          积分使用说明
+          积分使用说明 deposit 押金规则说明
         type: string
       title:
         description: 标题
@@ -238,13 +238,11 @@ definitions:
   definition.OrderDepositCreditReq:
     properties:
       payway:
-        allOf:
-        - $ref: '#/definitions/definition.Payway'
-        description: 支付方式, 1支付宝 2微信 3支付宝预授权
+        description: 支付方式, 1:支付宝 2:微信 3:支付宝预授权支付 4:微信支付分支付
         enum:
-        - 1
-        - 2
         - 3
+        - 4
+        type: integer
       planId:
         description: 套餐ID, 套餐ID
         type: integer
@@ -254,6 +252,12 @@ definitions:
     type: object
   definition.OrderDepositCreditRes:
     properties:
+      outOrderNo:
+        description: 订单号
+        type: string
+      outTradeNo:
+        description: 平台订单号
+        type: string
       prepay:
         description: 预支付信息
         type: string
@@ -283,20 +287,6 @@ definitions:
         description: 起点名称
         type: string
     type: object
-  definition.Payway:
-    enum:
-    - 1
-    - 2
-    - 3
-    type: integer
-    x-enum-comments:
-      PaywayAlipay: 预支付
-      PaywayAlipayDeposit: 支付宝芝麻免押
-      PaywayWechatDeposit: 微信支付分支付
-    x-enum-varnames:
-    - PaywayAlipayDeposit
-    - PaywayWechatDeposit
-    - PaywayAlipay
   definition.PersonCertificationFaceReq:
     properties:
       identity:
@@ -1581,6 +1571,9 @@ definitions:
       model:
         description: 电池型号 (可为空)
         type: string
+      outOrderNo:
+        description: 预授权订单号
+        type: string
       outTradeNo:
         description: 订单编号
         type: string
@@ -1647,6 +1640,12 @@ definitions:
         items:
           type: integer
         type: array
+      depositAlipayAuthFreeze:
+        description: 以下字段仅限V2使用
+        type: boolean
+      needContract:
+        description: 是否需要签约
+        type: boolean
       orderType:
         description: 订单类型, 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
         enum:
@@ -1659,11 +1658,12 @@ definitions:
         - 7
         type: integer
       payway:
-        description: 支付方式, 1支付宝 2微信 3支付宝预授权
+        description: 支付方式, 1支付宝 2微信 3支付宝预授权(仅限V2使用) 4微信支付分(仅限V2使用)
         enum:
         - 1
         - 2
         - 3
+        - 4
         type: integer
       planId:
         description: 套餐ID
@@ -1678,6 +1678,9 @@ definitions:
     type: object
   model.OrderCreateRes:
     properties:
+      outOrderNo:
+        description: 预授权订单号
+        type: string
       outTradeNo:
         description: 交易编码
         type: string
@@ -1687,6 +1690,9 @@ definitions:
     type: object
   model.OrderStatusRes:
     properties:
+      outOrderNo:
+        description: 预授权订单号
+        type: string
       outTradeNo:
         description: 订单编号
         type: string
@@ -1755,6 +1761,24 @@ definitions:
       days:
         description: 天数
         type: integer
+      deposit:
+        description: 是否启用押金
+        type: boolean
+      depositAlipayAuthFreeze:
+        description: 是否支持预授权信用免押金
+        type: boolean
+      depositAmount:
+        description: 押金金额
+        type: number
+      depositContract:
+        description: 是否支持合同免押金
+        type: boolean
+      depositPay:
+        description: 是否支持支付押金
+        type: boolean
+      depositWechatPayscore:
+        description: 是否支持微信支付分免押金
+        type: boolean
       discountNewly:
         description: 新签优惠
         type: number
@@ -2193,6 +2217,9 @@ definitions:
       name:
         description: 姓名, 实名认证后才会有
         type: string
+      needDeposit:
+        description: 是否需要缴纳押金(v2使用)
+        type: boolean
       orderNotActived:
         description: 是否存在未激活订单
         type: boolean
@@ -4057,7 +4084,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: OrderDepositFree
+      operationId: OrderDepositCredit
       parameters:
       - description: 骑手校验token
         in: header

@@ -109,12 +109,10 @@ type RiderEdges struct {
 // StationOrErr returns the Station value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e RiderEdges) StationOrErr() (*EnterpriseStation, error) {
-	if e.loadedTypes[0] {
-		if e.Station == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprisestation.Label}
-		}
+	if e.Station != nil {
 		return e.Station, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: enterprisestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "station"}
 }
@@ -122,12 +120,10 @@ func (e RiderEdges) StationOrErr() (*EnterpriseStation, error) {
 // PersonOrErr returns the Person value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e RiderEdges) PersonOrErr() (*Person, error) {
-	if e.loadedTypes[1] {
-		if e.Person == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: person.Label}
-		}
+	if e.Person != nil {
 		return e.Person, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: person.Label}
 	}
 	return nil, &NotLoadedError{edge: "person"}
 }
@@ -135,12 +131,10 @@ func (e RiderEdges) PersonOrErr() (*Person, error) {
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e RiderEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[2] {
-		if e.Enterprise == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprise.Label}
-		}
+	if e.Enterprise != nil {
 		return e.Enterprise, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
 }
@@ -211,12 +205,10 @@ func (e RiderEdges) FollowupsOrErr() ([]*RiderFollowUp, error) {
 // BatteryOrErr returns the Battery value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e RiderEdges) BatteryOrErr() (*Battery, error) {
-	if e.loadedTypes[10] {
-		if e.Battery == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: battery.Label}
-		}
+	if e.Battery != nil {
 		return e.Battery, nil
+	} else if e.loadedTypes[10] {
+		return nil, &NotFoundError{label: battery.Label}
 	}
 	return nil, &NotLoadedError{edge: "battery"}
 }

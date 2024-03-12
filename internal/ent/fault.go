@@ -82,12 +82,10 @@ type FaultEdges struct {
 // CityOrErr returns the City value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e FaultEdges) CityOrErr() (*City, error) {
-	if e.loadedTypes[0] {
-		if e.City == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: city.Label}
-		}
+	if e.City != nil {
 		return e.City, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: city.Label}
 	}
 	return nil, &NotLoadedError{edge: "city"}
 }
@@ -95,12 +93,10 @@ func (e FaultEdges) CityOrErr() (*City, error) {
 // CabinetOrErr returns the Cabinet value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e FaultEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[1] {
-		if e.Cabinet == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: cabinet.Label}
-		}
+	if e.Cabinet != nil {
 		return e.Cabinet, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: cabinet.Label}
 	}
 	return nil, &NotLoadedError{edge: "cabinet"}
 }
@@ -108,12 +104,10 @@ func (e FaultEdges) CabinetOrErr() (*Cabinet, error) {
 // BatteryOrErr returns the Battery value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e FaultEdges) BatteryOrErr() (*Battery, error) {
-	if e.loadedTypes[2] {
-		if e.Battery == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: battery.Label}
-		}
+	if e.Battery != nil {
 		return e.Battery, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: battery.Label}
 	}
 	return nil, &NotLoadedError{edge: "battery"}
 }
@@ -121,12 +115,10 @@ func (e FaultEdges) BatteryOrErr() (*Battery, error) {
 // EbikeOrErr returns the Ebike value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e FaultEdges) EbikeOrErr() (*Ebike, error) {
-	if e.loadedTypes[3] {
-		if e.Ebike == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: ebike.Label}
-		}
+	if e.Ebike != nil {
 		return e.Ebike, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: ebike.Label}
 	}
 	return nil, &NotLoadedError{edge: "ebike"}
 }
@@ -134,12 +126,10 @@ func (e FaultEdges) EbikeOrErr() (*Ebike, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e FaultEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[4] {
-		if e.Rider == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: rider.Label}
-		}
+	if e.Rider != nil {
 		return e.Rider, nil
+	} else if e.loadedTypes[4] {
+		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
 }

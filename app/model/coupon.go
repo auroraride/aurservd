@@ -133,6 +133,8 @@ type CouponListRes struct {
 	Plan       string       `json:"plan,omitempty"`       // 使用骑士卡
 	TemplateID uint64       `json:"templateId"`           // 模板ID
 	AssemblyID uint64       `json:"assemblyId"`           // 发券记录ID
+
+	OuthOrderNo string `json:"outOrderNo,omitempty"` // 预授权订单号
 }
 
 type CouponAllocateReq struct {

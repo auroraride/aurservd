@@ -135,7 +135,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
 		snag.Panic("团签用户无法购买")
 	}
 
-	// 查询是否有退款中的押金
+	// 查询是否有退款中的订单
 	if exists, _ := ent.Database.Order.QueryNotDeleted().Where(
 		order.RiderID(s.rider.ID),
 		order.Status(model.OrderStatusRefundPending),
@@ -168,17 +168,9 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
 		snag.Panic("未知的支付请求")
 	}
 
-	// 判定用户是否需要缴纳押金（没有使用过) 现在使用骑士卡的押金
-	// deposit := NewRider().Deposit(s.rider.ID)
-
-	var deposit float64
-	if p.Deposit && p.DepositAmount > 0 {
-		// 如果
-		deposit = p.DepositAmount
-	}
-
+	// 判定用户是否需要缴纳押金
+	deposit := NewRider().Deposit(s.rider.ID)
 	no := tools.NewUnique().NewSN28()
-	result.OutTradeNo = no
 
 	// 计算需要支付金额
 	// 1. 计算新签优惠
@@ -393,6 +385,7 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
 			snag.Panic("支付宝支付请求失败")
 		}
 		result.Prepay = str
+		result.OutTradeNo = no
 	case model.OrderPaywayWechat:
 		// 使用微信支付
 		str, err = payment.NewWechat().AppPay(prepay)
@@ -400,6 +393,7 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
 			snag.Panic("微信支付请求失败")
 		}
 		result.Prepay = str
+		result.OutTradeNo = no
 	case model.OrderPaywayAlipayAuthFreeze:
 		// 使用支付宝预授权支付
 		str, err = payment.NewAlipay().FandAuthFreeze(prepay)
@@ -407,6 +401,7 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
 			snag.Panic("支付宝预授权支付请求失败")
 		}
 		result.Prepay = str
+		result.OutOrderNo = no
 	default:
 		snag.Panic("支付方式错误")
 	}
@@ -809,6 +804,10 @@ func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, a
 	if req.TradeNo != nil {
 		q.Where(order.TradeNo(*req.TradeNo))
 	}
+	if req.OutTradeNo != nil {
+		q.Where(order.OutTradeNo(*req.OutTradeNo))
+	}
+
 	return q, info
 }
 
@@ -837,6 +836,7 @@ func (s *orderService) Detail(item *ent.Order) model.Order {
 		DiscountNewly: item.DiscountNewly,
 		CouponAmount:  item.CouponAmount,
 		Ebike:         NewEbike().Detail(item.Edges.Ebike, item.Edges.Brand),
+		OutOrderNo:    item.OutOrderNo,
 	}
 	rc := item.Edges.City
 	if rc != nil {
@@ -942,6 +942,7 @@ func (s *orderService) Export(req *model.OrderListExport) model.ExportRes {
 			"支付状态",
 			"订单编号",
 			"支付编号",
+			"预支付编号",
 			"支付方式",
 			"支付金额",
 			"支付时间",
@@ -981,6 +982,7 @@ func (s *orderService) Export(req *model.OrderListExport) model.ExportRes {
 				model.OrderStatuses[detail.Status],
 				detail.OutTradeNo,
 				detail.TradeNo,
+				detail.OutOrderNo,
 				model.OrderPayways[detail.Payway],
 				fmt.Sprintf("%.2f", detail.Amount),
 				detail.PayAt,
@@ -997,12 +999,19 @@ func (s *orderService) Export(req *model.OrderListExport) model.ExportRes {
 func (s *orderService) QueryStatus(req *model.OrderStatusReq) (res model.OrderStatusRes) {
 	now := time.Now()
 	res = model.OrderStatusRes{
-		OutTradeNo: req.OutTradeNo,
-		Paid:       false,
+		OutTradeNo:  req.OutTradeNo,
+		OuthOrderNo: req.OuthOrderNo,
+		Paid:        false,
 	}
 	for {
-		o, _ := ent.Database.Order.QueryNotDeleted().Where(order.OutTradeNo(req.OutTradeNo)).First(s.ctx)
-
+		q := ent.Database.Order.QueryNotDeleted()
+		if req.OutTradeNo != "" {
+			q.Where(order.OutTradeNo(req.OutTradeNo))
+		}
+		if req.OuthOrderNo != "" {
+			q.Where(order.OutOrderNo(req.OuthOrderNo))
+		}
+		o, _ := q.First(s.ctx)
 		if o != nil && o.Status == model.OrderStatusPaid {
 			res.Paid = true
 			return
@@ -1025,7 +1034,7 @@ func (s *orderService) TradePay(o *ent.Order) {
 
 	// 调用资金冻结转支付
 	res, err := payment.NewAlipay().AlipayTradePay(&model.TradePay{
-		AuthNo:      o.TradeNo,
+		AuthNo:      o.AuthNo,
 		OutTradeNo:  o.OutTradeNo,
 		TotalAmount: o.Total,
 		Subject:     subject,

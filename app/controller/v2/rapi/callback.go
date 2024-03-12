@@ -23,10 +23,12 @@ func (*callback) AlipayFandAuthFreeze(c echo.Context) (err error) {
 	return c.String(http.StatusOK, "success")
 }
 
-// 扣款完成回调通知
-// func (*callback) AlipayFandAuthUnfreeze(c echo.Context) (err error) {
-// 	res := payment.NewAlipay().NotificationFandAuthUnfreeze(c.Request())
-// 	zap.L().Info("支付宝资金授权解冻缓存更新", log.JsonData(res))
-// 	service.NewOrder().DoPayment(res)
-// 	return c.String(http.StatusOK, "success")
-// }
+// AlipayTradePay 扣款完成回调通知
+func (*callback) AlipayTradePay(c echo.Context) (err error) {
+	res := payment.NewAlipay().NotificationTradePay(c.Request())
+	zap.L().Info("支付宝扣款完成回调通知", log.JsonData(res))
+	biz.NewOrderBiz().DoPaymentFreezeToPay(res)
+	return c.String(http.StatusOK, "success")
+}
+
+// 解冻

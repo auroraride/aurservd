@@ -17,12 +17,12 @@ const (
 )
 
 const (
-	OrderPaywayManual           uint8 = iota // 后台手动调整
-	OrderPaywayAlipay                        // 支付宝支付
-	OrderPaywayWechat                        // 微信支付
-	OrderPaywayAlipayAuthFreeze              // 支付宝预授权支付
-	OrderPaywayWechatDeposit                 // 微信支付分支付
-	OrderPaywayAlipayDeposit                 // 支付宝芝麻信用分支付
+	OrderPaywayManual uint8 = iota // 后台手动调整
+	OrderPaywayAlipay              // 支付宝支付
+	OrderPaywayWechat              // 微信支付
+
+	OrderPaywayAlipayAuthFreeze // 支付宝预授权信用分支付(仅限V2使用)
+	OrderPaywayWechatDeposit    // 微信支付分支付(仅限V2使用)
 )
 
 const (
@@ -31,6 +31,7 @@ const (
 	OrderStatusRefundPending              // 申请退款, 退款后业绩订单需要删除
 	OrderStatusRefundSuccess              // 已退款
 	OrderStatusRefundRefused              // 退款被拒绝
+	OrderStatusCanceled                   // 取消订单
 )
 
 var (
@@ -59,26 +60,32 @@ var (
 		OrderPaywayManual:           "后台手动调整",
 		OrderPaywayAlipay:           "支付宝支付",
 		OrderPaywayWechat:           "微信支付",
-		OrderPaywayAlipayAuthFreeze: "支付宝预授权支付",
+		OrderPaywayAlipayAuthFreeze: "支付宝预授权信用分支付",
+		OrderPaywayWechatDeposit:    "微信支付分支付",
 	}
 )
 
 // OrderCreateReq 订单创建请求
 type OrderCreateReq struct {
 	PlanID    uint64 `json:"planId" validate:"required" trans:"套餐ID"`
-	Payway    uint8  `json:"payway" validate:"required" trans:"支付方式" enums:"1,2,3"`            // 1支付宝 2微信 3支付宝预授权
+	Payway    uint8  `json:"payway" validate:"required" trans:"支付方式" enums:"1,2,3,4"`          // 1支付宝 2微信 3支付宝预授权(仅限V2使用) 4微信支付分(仅限V2使用)
 	OrderType uint   `json:"orderType" validate:"required" trans:"订单类型" enums:"1,2,3,4,5,6,7"` // 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
 
 	CityID uint64 `json:"cityId"` // 城市ID, 新签必填
 
 	Point   bool     `json:"point"`   // 是否使用积分
 	Coupons []uint64 `json:"coupons"` // 优惠券
+
+	// 以下字段仅限V2使用
+	DepositAlipayAuthFreeze bool  `json:"depositAlipayAuthFreeze"` // 是否使用支付宝预授权信用分支付押金
+	NeedContract            *bool `json:"needContract"`            // 是否需要签约
 }
 
 // OrderCreateRes 订单创建返回
 type OrderCreateRes struct {
-	Prepay     string `json:"prepay"`     // 预支付字符串
-	OutTradeNo string `json:"outTradeNo"` // 交易编码
+	Prepay     string `json:"prepay"`               // 预支付字符串
+	OutTradeNo string `json:"outTradeNo,omitempty"` // 交易编码
+	OutOrderNo string `json:"outOrderNo,omitempty"` // 预授权订单号
 }
 
 type OrderListFilter struct {
@@ -93,8 +100,9 @@ type OrderListFilter struct {
 	Days       *int    `json:"days,omitempty" query:"days"`                   // 骑士卡时长(搜索大于等于)
 	Refund     *uint8  `json:"refund,omitempty" query:"refund"`               // 退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)
 	EmployeeID *uint64 `json:"employeeId,omitempty" query:"employeeId"`       // 店员ID筛选
-	Payway     *uint8  `json:"payway,omitempty" query:"payway" enums:"0,1,2"` // 支付方式 0:手动 1:支付宝 2:微信, 不携带此参数为获取全部
+	Payway     *uint8  `json:"payway,omitempty" query:"payway" enums:"0,1,2"` // 支付方式 0:手动 1:支付宝 2:微信,3:支付宝预授权,4:微信支付分 不携带此参数为获取全部
 	TradeNo    *string `json:"tradeNo,omitempty" query:"tradeNo"`             // 平台单号
+	OutTradeNo *string `json:"outTradeNo,omitempty" query:"outTradeNo"`       // 预支付订单号
 }
 
 // OrderListReq 订单列表请求
@@ -119,12 +127,14 @@ type OrderEmployeeListReq struct {
 }
 
 type OrderStatusReq struct {
-	OutTradeNo string `json:"outTradeNo" query:"outTradeNo"` // 订单编号
+	OutTradeNo  string `json:"outTradeNo" query:"outTradeNo"` // 订单编号
+	OuthOrderNo string `json:"outOrderNo" query:"outTradeNo"` // 预授权订单号
 }
 
 type OrderStatusRes struct {
-	OutTradeNo string `json:"outTradeNo"` // 订单编号
-	Paid       bool   `json:"paid"`       // 是否支付
+	OutTradeNo  string `json:"outTradeNo,omitempty"` // 订单编号
+	OuthOrderNo string `json:"outOrderNo,omitempty"` // 预授权订单号
+	Paid        bool   `json:"paid"`                 // 是否支付
 }
 
 type OrderAgent struct {
@@ -158,4 +168,5 @@ type Order struct {
 	Coupons       []CouponRider `json:"coupons,omitempty"`  // 使用的优惠券
 	Ebike         *Ebike        `json:"ebike"`              // 车辆详情
 	Agent         *OrderAgent   `json:"agent"`              // 代理信息
+	OutOrderNo    string        `json:"outOrderNo"`         // 预授权订单号
 }

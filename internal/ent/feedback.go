@@ -65,12 +65,10 @@ type FeedbackEdges struct {
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e FeedbackEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[0] {
-		if e.Enterprise == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprise.Label}
-		}
+	if e.Enterprise != nil {
 		return e.Enterprise, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
 }
@@ -78,12 +76,10 @@ func (e FeedbackEdges) EnterpriseOrErr() (*Enterprise, error) {
 // AgentOrErr returns the Agent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e FeedbackEdges) AgentOrErr() (*Agent, error) {
-	if e.loadedTypes[1] {
-		if e.Agent == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: agent.Label}
-		}
+	if e.Agent != nil {
 		return e.Agent, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: agent.Label}
 	}
 	return nil, &NotLoadedError{edge: "agent"}
 }
@@ -91,12 +87,10 @@ func (e FeedbackEdges) AgentOrErr() (*Agent, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e FeedbackEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[2] {
-		if e.Rider == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: rider.Label}
-		}
+	if e.Rider != nil {
 		return e.Rider, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
 }

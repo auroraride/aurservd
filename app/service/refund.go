@@ -179,9 +179,6 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
 			payment.NewAlipay().Refund(prepay.Refund)
 		case model.OrderPaywayWechat:
 			payment.NewWechat().Refund(prepay.Refund)
-		case model.OrderPaywayAlipayAuthFreeze:
-			// 解除金额冻结
-			payment.NewAlipay().FandAuthUnfreeze(prepay.Refund)
 		}
 
 		// 原路退款请求是否成功

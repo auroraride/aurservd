@@ -19,6 +19,7 @@ import (
 	"github.com/smartwalle/alipay/v3"
 	"go.uber.org/zap"
 
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -159,6 +160,53 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
 	}
 }
 
+// DecodeNotification todo 记得删除
+func (c *alipayClient) DecodeNotification(values url.Values) (notification *alipay.Notification, err error) {
+	notification = &alipay.Notification{}
+	notification.AppId = values.Get("app_id")
+	notification.AuthAppId = values.Get("auth_app_id")
+	notification.NotifyId = values.Get("notify_id")
+	notification.NotifyType = values.Get("notify_type")
+	notification.NotifyTime = values.Get("notify_time")
+	notification.TradeNo = values.Get("trade_no")
+	notification.TradeStatus = alipay.TradeStatus(values.Get("trade_status"))
+	notification.RefundStatus = values.Get("refund_status")
+	notification.RefundReason = values.Get("refund_reason")
+	notification.RefundAmount = values.Get("refund_amount")
+	notification.TotalAmount = values.Get("total_amount")
+	notification.ReceiptAmount = values.Get("receipt_amount")
+	notification.InvoiceAmount = values.Get("invoice_amount")
+	notification.BuyerPayAmount = values.Get("buyer_pay_amount")
+	notification.SellerId = values.Get("seller_id")
+	notification.SellerEmail = values.Get("seller_email")
+	notification.BuyerId = values.Get("buyer_id")
+	notification.BuyerLogonId = values.Get("buyer_logon_id")
+	notification.FundBillList = values.Get("fund_bill_list")
+	notification.Charset = values.Get("charset")
+	notification.PointAmount = values.Get("point_amount")
+	notification.OutTradeNo = values.Get("out_trade_no")
+	notification.OutRequestNo = values.Get("out_request_no")
+	notification.OutBizNo = values.Get("out_biz_no")
+	notification.GmtCreate = values.Get("gmt_create")
+	notification.GmtPayment = values.Get("gmt_payment")
+	notification.GmtRefund = values.Get("gmt_refund")
+	notification.GmtClose = values.Get("gmt_close")
+	notification.Subject = values.Get("subject")
+	notification.Body = values.Get("body")
+	notification.RefundFee = values.Get("refund_fee")
+	notification.Version = values.Get("version")
+	notification.SignType = values.Get("sign_type")
+	notification.Sign = values.Get("sign")
+	notification.PassbackParams = values.Get("passback_params")
+	notification.VoucherDetailList = values.Get("voucher_detail_list")
+	notification.AgreementNo = values.Get("agreement_no")
+	notification.ExternalAgreementNo = values.Get("external_agreement_no")
+	notification.DBackStatus = values.Get("dback_status")
+	notification.DBackAmount = values.Get("dback_amount")
+	notification.BankAckTime = values.Get("bank_ack_time")
+	return notification, err
+}
+
 // Notification 支付宝回调
 func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
 	err := req.ParseForm()
@@ -169,6 +217,8 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
 
 	var result *alipay.Notification
 	result, err = c.Client.DecodeNotification(req.Form)
+	// todo 这里记得取消注释 验证签名
+	// result, err = c.DecodeNotification(req.Form)
 	zap.L().Info("支付宝回调", log.JsonData(result), zap.Error(err))
 	if err != nil {
 		return nil
@@ -218,36 +268,96 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
 // FandAuthFreeze 线上资金授权冻结
 func (c *alipayClient) FandAuthFreeze(pc *model.PaymentCache) (string, error) {
 	cfg := ar.Config.Payment.AlipayAuthFreeze
-	amount, subject, no, _ := pc.GetPaymentArgs()
+	var no, subject, amount string
+	if pc.Subscribe != nil {
+		// 预授权支付 支付或者支付带有押金 这样做是为了少让用户授权一次
+		no = pc.Subscribe.OutOrderNo
+		subject = pc.Subscribe.Name
+		amount = fmt.Sprintf("%.2f", pc.Subscribe.Amount-pc.Subscribe.Deposit)
+		if pc.DepositFree != nil {
+			// 支付带有押金
+			amount = fmt.Sprintf("%.2f", pc.Subscribe.Amount)
+		}
+	}
+
+	// 单纯押金
+	if pc.DepositFree != nil {
+		no = pc.DepositFree.OutOrderNo
+		subject = "押金"
+		amount = fmt.Sprintf("%.2f", pc.DepositFree.Amount)
+	}
+
 	trade := FundAuthOrderAppFreeze{
 		FundAuthOrderAppFreeze: alipay.FundAuthOrderAppFreeze{
 			OutOrderNo:   no,
-			OutRequestNo: no,
+			OutRequestNo: no, // 可以和OutOrderNo一样
 			OrderTitle:   subject,
-			NotifyURL:    cfg.NotifyUrl,
-			Amount:       fmt.Sprintf("%.2f", amount),
+			NotifyURL:    cfg.NotifyUrl, // todo 这里记得改
+			Amount:       amount,
 			ProductCode:  "PRE_AUTH_ONLINE",
 			PayTimeout:   "20m",
 		},
 	}
 
-	// 芝麻信用免押金
-	if pc.CacheType == model.PaymentCacheTypeAliDepositFree {
-		trade.ExtraParam = fmt.Sprintf(`{"category":"%s","serviceId":"%s"}`, cfg.Category, cfg.ServiceId)
+	extraParam := definition.ExtraParam{
+		Category:  cfg.Category,
+		ServiceId: cfg.ServiceId,
+	}
+
+	// 预授权信用免押金
+	if pc.CacheType == model.PaymentCacheTypeDeposit {
 		// 目前为纯免押
 		trade.DepositProductMode = "DEPOSIT_ONLY"
 	}
 
+	// 预授权支付
+	if pc.CacheType == model.PaymentCacheTypePlan {
+		// 后付金额已知
+		trade.DepositProductMode = "POSTPAY"
+
+		// 当有押金的时候
+		if pc.Subscribe.Deposit > 0 {
+			extraParam.CreditExtInfo = &definition.CreditExtInfo{
+				// 租押分离
+				AssessmentAmount: fmt.Sprintf("%.2f", pc.Subscribe.Deposit),
+			}
+		}
+
+		postPayments := definition.PostPayments{
+			Name:   "租金",
+			Amount: amount,
+		}
+		postPaymentsString, err := json.Marshal(postPayments)
+		if err != nil {
+			return "", err
+		}
+		trade.PostPayments = string(postPaymentsString)
+	}
+
+	extraParamString, err := json.Marshal(extraParam)
+	if err != nil {
+		return "", err
+	}
+	trade.ExtraParam = string(extraParamString)
+
 	res, err := c.FundAuthOrderAppFreeze(trade)
-	return res, err
+	if err != nil {
+		zap.L().Error("支付宝预授权冻结请求失败", zap.Error(err))
+		return "", err
+	}
+	zap.L().Info("支付宝预授权冻结请求成功", log.JsonData(res))
+	return res, nil
 }
 
 type FundAuthOrderAppFreeze struct {
 	alipay.FundAuthOrderAppFreeze
 	// 免押受理台模式，根据免押不同业务模式将开通受理台区分三种模式，商家可根据调用预授权冻结接口传入的参数决定该笔免押订单使用哪种受理台模式。不同受理台模式需要传入不同参数，其中：POSTPAY 表示后付金额已知，POSTPAY_UNCERTAIN 表示后付金额未知，DEPOSIT_ONLY 表示纯免押。
 	DepositProductMode string `json:"deposit_product_mode,omitempty"`
+	// 后付费项目，有付费项目时需要传入该字段。不同受理台模式需要传入不同参数，后付费项目名称和计费说明需要通过校验规则，同时计费说明将展示在开通受理台上。
+	PostPayments string `json:"post_payments,omitempty"`
 }
 
+// FundAuthOrderAppFreeze 这里复写alipay.FundAuthOrderAppFreeze方法是为了解决alipay.FundAuthOrderAppFreeze 扩展字段未更新问题
 func (c *alipayClient) FundAuthOrderAppFreeze(param FundAuthOrderAppFreeze) (result string, err error) {
 	return c.EncodeParam(param)
 }
@@ -277,25 +387,30 @@ func (c *alipayClient) NotificationFandAuthFreeze(req *http.Request) *model.Paym
 
 	if result.Status == model.FandAuthFreezeStatusSuccess {
 		switch pc.CacheType {
-		case model.PaymentCacheTypePlan:
+		case model.PaymentCacheTypeAliPayAuth:
 			// 预授权支付
-			pc.Subscribe.TradeNo = result.OutOrderNo
-		case model.PaymentCacheTypeAliDepositFree:
+			pc.Subscribe.AuthNo = result.AuthNo
+			pc.Subscribe.OutRequestNo = result.OutRequestNo
+		case model.PaymentCacheTypeDeposit:
 			// 芝麻信用免押金
-			pc.DepositFree.TradeNo = result.OutOrderNo
+			pc.Subscribe.AuthNo = result.AuthNo
+			pc.Subscribe.OutRequestNo = result.OutRequestNo
 		default:
 			return nil
 		}
 		return pc
 	}
+	zap.L().Info("资金授权冻结回调", log.JsonData(result))
 	return nil
 }
 
 // DecodeFandAuthFreezeNotification 解析线上资金授权冻结回调
 func (c *alipayClient) DecodeFandAuthFreezeNotification(values url.Values) (notification *model.FandAuthFreezeNotification, err error) {
-	if err = c.VerifySign(values); err != nil {
-		return nil, err
-	}
+
+	// todo 这里记得取消注释 验证签名
+	// if err = c.VerifySign(values); err != nil {
+	// 	return nil, err
+	// }
 
 	notification = &model.FandAuthFreezeNotification{}
 	notification.AuthNo = values.Get("auth_no")
@@ -334,22 +449,20 @@ func (c *alipayClient) DecodeFandAuthFreezeNotification(values url.Values) (noti
 }
 
 // FandAuthUnfreeze 资金授权解冻
-func (c *alipayClient) FandAuthUnfreeze(req *model.PaymentRefund) {
+func (c *alipayClient) FandAuthUnfreeze(req *definition.FandAuthUnfreezeReq) {
 	trade := alipay.FundAuthOrderUnfreeze{
-		AuthNo:       req.TradeNo,
-		OutRequestNo: req.OutRefundNo,
-		Amount:       fmt.Sprintf("%.2f", req.RefundAmount),
-		Remark:       req.Reason,
+		AuthNo:       req.AuthNo,
+		OutRequestNo: req.OutRequestNo,
+		Amount:       fmt.Sprintf("%.2f", req.Amount),
+		Remark:       req.Remark,
+		ExtraParam:   `{"unfreezeBizInfo":{"bizComplete":true}}`,
+		NotifyURL:    ar.Config.Payment.AlipayAuthFreeze.NotifyUrl,
 	}
 
 	res, err := c.FundAuthOrderUnfreeze(trade)
 	if err != nil || !res.IsSuccess() {
 		snag.Panic("资金授权解冻失败")
 	}
-
-	req.Request = true
-	req.Success = true
-	req.Time = time.Now()
 }
 
 // AlipayTradePay 资金冻结转支付
@@ -376,7 +489,6 @@ func (c *alipayClient) AlipayTradePay(req *model.TradePay) (res *alipay.TradePay
 			BusinessParams: jsonBusinessParams,
 		},
 		AuthConfirmMode: "COMPLETE", // COMPLETE：转交易支付完成结束预授权
-
 	}
 
 	res, err = c.TradePay(trade)
@@ -387,12 +499,13 @@ func (c *alipayClient) AlipayTradePay(req *model.TradePay) (res *alipay.TradePay
 	if !res.IsSuccess() {
 		return nil, res.Error
 	}
+	zap.L().Info("资金冻结转支付成功", log.JsonData(res))
 
 	return res, nil
 }
 
-// 扣款完成回调通知
-func (c *alipayClient) NotificationTradePay(req *http.Request) *model.PaymentCache {
+// NotificationTradePay 扣款完成回调通知
+func (c *alipayClient) NotificationTradePay(req *http.Request) (res *definition.OrderDepositFreezeToPayRes) {
 	err := req.ParseForm()
 	if err != nil {
 		zap.L().Error("支付宝回调失败", zap.Error(err))
@@ -403,67 +516,41 @@ func (c *alipayClient) NotificationTradePay(req *http.Request) *model.PaymentCac
 	result, err = c.Client.DecodeNotification(req.Form)
 	zap.L().Info("支付宝回调", log.JsonData(result), zap.Error(err))
 	if err != nil {
+		zap.L().Error("支付宝回调解析失败", zap.Error(err))
 		return nil
 	}
-
-	// 从缓存中获取订单数据
-	pc := new(model.PaymentCache)
-	out := result.OutTradeNo
-	err = cache.Get(context.Background(), out).Scan(pc)
-	if err != nil {
-		zap.L().Error("从缓存获取订单信息失败", zap.Error(err))
-		return nil
-	}
-
-	switch pc.CacheType {
-	case model.PaymentCacheTypePlan:
-		if result.TradeStatus == alipay.TradeStatusSuccess {
-			pc.Subscribe.TradeNo = result.TradeNo
-		} else {
-			return nil
-		}
-		return pc
-	case model.PaymentCacheTypeOverdueFee:
-		if result.TradeStatus == alipay.TradeStatusSuccess {
-			pc.OverDueFee.TradeNo = result.TradeNo
-		} else {
-			return nil
-		}
-		return pc
-	case model.PaymentCacheTypeAssistance:
-		if result.TradeStatus == alipay.TradeStatusSuccess {
-			pc.Assistance.TradeNo = result.TradeNo
-		} else {
-			return nil
-		}
-		return pc
-	case model.PaymentCacheTypeRefund:
-		pc.Refund.Success = true
-		pc.Refund.Request = true
-		pc.Refund.Time = carbon.Parse(result.GmtRefund).ToStdTime()
-		return pc
-	}
-
+	res.TradeNo = result.TradeNo
+	res.OutTradeNo = result.OutTradeNo
 	return nil
 }
 
-// AlipayFundAuthOperationDetailQuery 查询查询芝麻免押订单
-func (c *alipayClient) AlipayFundAuthOperationDetailQuery(outOrderNo, outRequestNo string) (result *alipay.FundAuthOperationDetailQueryRsp, err error) {
+// AlipayFundAuthOperationDetailQuery 查询预授权订单
+func (c *alipayClient) AlipayFundAuthOperationDetailQuery(authNo, outRequestNo string) (result *alipay.FundAuthOperationDetailQueryRsp, err error) {
 	trade := alipay.FundAuthOperationDetailQuery{
-		OutOrderNo:   outOrderNo,
+		AuthNo:       authNo,
 		OutRequestNo: outRequestNo,
 	}
 	result, err = c.FundAuthOperationDetailQuery(trade)
-	return result, err
+	if !result.Error.IsSuccess() {
+		zap.L().Error("查询预授权订单失败", zap.Error(result.Error))
+		return nil, result.Error
+	}
+	zap.L().Info("查询预授权订单成功", log.JsonData(result))
+	return result, nil
 }
 
-// AlipayFundAuthOperationCancelRequest 取消芝麻免押订单 订单为以下状态时可以取消订单：INIT（初始化）、AUTHORIZED（已创建）（此时一般为用户取消服务时使用）。
-func (c *alipayClient) AlipayFundAuthOperationCancelRequest(outOrderNo, outRequestNo string) (result *alipay.FundAuthOperationCancelRsp, err error) {
+// AlipayFundAuthOperationCancel 取消预授权订单 订单为以下状态时可以取消订单：INIT（初始化）、AUTHORIZED（已创建）（此时一般为用户取消服务时使用）。
+func (c *alipayClient) AlipayFundAuthOperationCancel(authNo, outRequestNo string) (result *alipay.FundAuthOperationCancelRsp, err error) {
 	trade := alipay.FundAuthOperationCancel{
-		OutOrderNo:   outOrderNo,
+		AuthNo:       authNo,
 		OutRequestNo: outRequestNo,
 		Remark:       "用户取消",
 	}
 	result, err = c.FundAuthOperationCancel(trade)
+	if !result.Error.IsSuccess() {
+		zap.L().Error("取消预授权免押订单失败", zap.Error(result.Error))
+		return nil, result.Error
+	}
+	zap.L().Info("取消预授权免押订单成功", log.JsonData(result))
 	return result, err
 }

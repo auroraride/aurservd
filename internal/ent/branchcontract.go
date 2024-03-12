@@ -80,12 +80,10 @@ type BranchContractEdges struct {
 // BranchOrErr returns the Branch value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BranchContractEdges) BranchOrErr() (*Branch, error) {
-	if e.loadedTypes[0] {
-		if e.Branch == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: branch.Label}
-		}
+	if e.Branch != nil {
 		return e.Branch, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: branch.Label}
 	}
 	return nil, &NotLoadedError{edge: "branch"}
 }

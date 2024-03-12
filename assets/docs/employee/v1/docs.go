@@ -2304,6 +2304,10 @@ const docTemplate = `{
         "model.OrderStatusRes": {
             "type": "object",
             "properties": {
+                "outOrderNo": {
+                    "description": "预授权订单号",
+                    "type": "string"
+                },
                 "outTradeNo": {
                     "description": "订单编号",
                     "type": "string"

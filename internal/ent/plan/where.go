@@ -160,6 +160,26 @@ func DepositAmount(v float64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldDepositAmount, v))
 }
 
+// DepositWechatPayscore applies equality check predicate on the "deposit_wechat_payscore" field. It's identical to DepositWechatPayscoreEQ.
+func DepositWechatPayscore(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDepositWechatPayscore, v))
+}
+
+// DepositAlipayAuthFreeze applies equality check predicate on the "deposit_alipay_auth_freeze" field. It's identical to DepositAlipayAuthFreezeEQ.
+func DepositAlipayAuthFreeze(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDepositAlipayAuthFreeze, v))
+}
+
+// DepositContract applies equality check predicate on the "deposit_contract" field. It's identical to DepositContractEQ.
+func DepositContract(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDepositContract, v))
+}
+
+// DepositPay applies equality check predicate on the "deposit_pay" field. It's identical to DepositPayEQ.
+func DepositPay(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDepositPay, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldCreatedAt, v))
@@ -1078,6 +1098,86 @@ func DepositAmountIsNil() predicate.Plan {
 // DepositAmountNotNil applies the NotNil predicate on the "deposit_amount" field.
 func DepositAmountNotNil() predicate.Plan {
 	return predicate.Plan(sql.FieldNotNull(FieldDepositAmount))
+}
+
+// DepositWechatPayscoreEQ applies the EQ predicate on the "deposit_wechat_payscore" field.
+func DepositWechatPayscoreEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDepositWechatPayscore, v))
+}
+
+// DepositWechatPayscoreNEQ applies the NEQ predicate on the "deposit_wechat_payscore" field.
+func DepositWechatPayscoreNEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldDepositWechatPayscore, v))
+}
+
+// DepositWechatPayscoreIsNil applies the IsNil predicate on the "deposit_wechat_payscore" field.
+func DepositWechatPayscoreIsNil() predicate.Plan {
+	return predicate.Plan(sql.FieldIsNull(FieldDepositWechatPayscore))
+}
+
+// DepositWechatPayscoreNotNil applies the NotNil predicate on the "deposit_wechat_payscore" field.
+func DepositWechatPayscoreNotNil() predicate.Plan {
+	return predicate.Plan(sql.FieldNotNull(FieldDepositWechatPayscore))
+}
+
+// DepositAlipayAuthFreezeEQ applies the EQ predicate on the "deposit_alipay_auth_freeze" field.
+func DepositAlipayAuthFreezeEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDepositAlipayAuthFreeze, v))
+}
+
+// DepositAlipayAuthFreezeNEQ applies the NEQ predicate on the "deposit_alipay_auth_freeze" field.
+func DepositAlipayAuthFreezeNEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldDepositAlipayAuthFreeze, v))
+}
+
+// DepositAlipayAuthFreezeIsNil applies the IsNil predicate on the "deposit_alipay_auth_freeze" field.
+func DepositAlipayAuthFreezeIsNil() predicate.Plan {
+	return predicate.Plan(sql.FieldIsNull(FieldDepositAlipayAuthFreeze))
+}
+
+// DepositAlipayAuthFreezeNotNil applies the NotNil predicate on the "deposit_alipay_auth_freeze" field.
+func DepositAlipayAuthFreezeNotNil() predicate.Plan {
+	return predicate.Plan(sql.FieldNotNull(FieldDepositAlipayAuthFreeze))
+}
+
+// DepositContractEQ applies the EQ predicate on the "deposit_contract" field.
+func DepositContractEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDepositContract, v))
+}
+
+// DepositContractNEQ applies the NEQ predicate on the "deposit_contract" field.
+func DepositContractNEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldDepositContract, v))
+}
+
+// DepositContractIsNil applies the IsNil predicate on the "deposit_contract" field.
+func DepositContractIsNil() predicate.Plan {
+	return predicate.Plan(sql.FieldIsNull(FieldDepositContract))
+}
+
+// DepositContractNotNil applies the NotNil predicate on the "deposit_contract" field.
+func DepositContractNotNil() predicate.Plan {
+	return predicate.Plan(sql.FieldNotNull(FieldDepositContract))
+}
+
+// DepositPayEQ applies the EQ predicate on the "deposit_pay" field.
+func DepositPayEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDepositPay, v))
+}
+
+// DepositPayNEQ applies the NEQ predicate on the "deposit_pay" field.
+func DepositPayNEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldDepositPay, v))
+}
+
+// DepositPayIsNil applies the IsNil predicate on the "deposit_pay" field.
+func DepositPayIsNil() predicate.Plan {
+	return predicate.Plan(sql.FieldIsNull(FieldDepositPay))
+}
+
+// DepositPayNotNil applies the NotNil predicate on the "deposit_pay" field.
+func DepositPayNotNil() predicate.Plan {
+	return predicate.Plan(sql.FieldNotNull(FieldDepositPay))
 }
 
 // DepositPaywayIsNil applies the IsNil predicate on the "deposit_payway" field.

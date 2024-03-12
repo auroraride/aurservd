@@ -56,12 +56,10 @@ type PromotionGrowthEdges struct {
 // MemberOrErr returns the Member value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionGrowthEdges) MemberOrErr() (*PromotionMember, error) {
-	if e.loadedTypes[0] {
-		if e.Member == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: promotionmember.Label}
-		}
+	if e.Member != nil {
 		return e.Member, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: promotionmember.Label}
 	}
 	return nil, &NotLoadedError{edge: "member"}
 }
@@ -69,12 +67,10 @@ func (e PromotionGrowthEdges) MemberOrErr() (*PromotionMember, error) {
 // TaskOrErr returns the Task value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionGrowthEdges) TaskOrErr() (*PromotionLevelTask, error) {
-	if e.loadedTypes[1] {
-		if e.Task == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: promotionleveltask.Label}
-		}
+	if e.Task != nil {
 		return e.Task, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: promotionleveltask.Label}
 	}
 	return nil, &NotLoadedError{edge: "task"}
 }
@@ -82,12 +78,10 @@ func (e PromotionGrowthEdges) TaskOrErr() (*PromotionLevelTask, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionGrowthEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[2] {
-		if e.Rider == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: rider.Label}
-		}
+	if e.Rider != nil {
 		return e.Rider, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
 }

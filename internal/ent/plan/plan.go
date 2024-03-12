@@ -63,6 +63,14 @@ const (
 	FieldDeposit = "deposit"
 	// FieldDepositAmount holds the string denoting the deposit_amount field in the database.
 	FieldDepositAmount = "deposit_amount"
+	// FieldDepositWechatPayscore holds the string denoting the deposit_wechat_payscore field in the database.
+	FieldDepositWechatPayscore = "deposit_wechat_payscore"
+	// FieldDepositAlipayAuthFreeze holds the string denoting the deposit_alipay_auth_freeze field in the database.
+	FieldDepositAlipayAuthFreeze = "deposit_alipay_auth_freeze"
+	// FieldDepositContract holds the string denoting the deposit_contract field in the database.
+	FieldDepositContract = "deposit_contract"
+	// FieldDepositPay holds the string denoting the deposit_pay field in the database.
+	FieldDepositPay = "deposit_pay"
 	// FieldDepositPayway holds the string denoting the deposit_payway field in the database.
 	FieldDepositPayway = "deposit_payway"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
@@ -133,6 +141,10 @@ var Columns = []string{
 	FieldIntelligent,
 	FieldDeposit,
 	FieldDepositAmount,
+	FieldDepositWechatPayscore,
+	FieldDepositAlipayAuthFreeze,
+	FieldDepositContract,
+	FieldDepositPay,
 	FieldDepositPayway,
 }
 
@@ -173,6 +185,14 @@ var (
 	DefaultIntelligent bool
 	// DefaultDeposit holds the default value on creation for the "deposit" field.
 	DefaultDeposit bool
+	// DefaultDepositWechatPayscore holds the default value on creation for the "deposit_wechat_payscore" field.
+	DefaultDepositWechatPayscore bool
+	// DefaultDepositAlipayAuthFreeze holds the default value on creation for the "deposit_alipay_auth_freeze" field.
+	DefaultDepositAlipayAuthFreeze bool
+	// DefaultDepositContract holds the default value on creation for the "deposit_contract" field.
+	DefaultDepositContract bool
+	// DefaultDepositPay holds the default value on creation for the "deposit_pay" field.
+	DefaultDepositPay bool
 )
 
 // OrderOption defines the ordering options for the Plan queries.
@@ -286,6 +306,26 @@ func ByDeposit(opts ...sql.OrderTermOption) OrderOption {
 // ByDepositAmount orders the results by the deposit_amount field.
 func ByDepositAmount(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDepositAmount, opts...).ToFunc()
+}
+
+// ByDepositWechatPayscore orders the results by the deposit_wechat_payscore field.
+func ByDepositWechatPayscore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepositWechatPayscore, opts...).ToFunc()
+}
+
+// ByDepositAlipayAuthFreeze orders the results by the deposit_alipay_auth_freeze field.
+func ByDepositAlipayAuthFreeze(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepositAlipayAuthFreeze, opts...).ToFunc()
+}
+
+// ByDepositContract orders the results by the deposit_contract field.
+func ByDepositContract(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepositContract, opts...).ToFunc()
+}
+
+// ByDepositPay orders the results by the deposit_pay field.
+func ByDepositPay(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepositPay, opts...).ToFunc()
 }
 
 // ByBrandField orders the results by brand field.

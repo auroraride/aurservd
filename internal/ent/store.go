@@ -84,12 +84,10 @@ type StoreEdges struct {
 // CityOrErr returns the City value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StoreEdges) CityOrErr() (*City, error) {
-	if e.loadedTypes[0] {
-		if e.City == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: city.Label}
-		}
+	if e.City != nil {
 		return e.City, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: city.Label}
 	}
 	return nil, &NotLoadedError{edge: "city"}
 }
@@ -97,12 +95,10 @@ func (e StoreEdges) CityOrErr() (*City, error) {
 // BranchOrErr returns the Branch value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StoreEdges) BranchOrErr() (*Branch, error) {
-	if e.loadedTypes[1] {
-		if e.Branch == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: branch.Label}
-		}
+	if e.Branch != nil {
 		return e.Branch, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: branch.Label}
 	}
 	return nil, &NotLoadedError{edge: "branch"}
 }
@@ -110,12 +106,10 @@ func (e StoreEdges) BranchOrErr() (*Branch, error) {
 // EmployeeOrErr returns the Employee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StoreEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[2] {
-		if e.Employee == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: employee.Label}
-		}
+	if e.Employee != nil {
 		return e.Employee, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: employee.Label}
 	}
 	return nil, &NotLoadedError{edge: "employee"}
 }

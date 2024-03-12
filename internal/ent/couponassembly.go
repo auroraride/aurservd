@@ -60,12 +60,10 @@ type CouponAssemblyEdges struct {
 // TemplateOrErr returns the Template value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CouponAssemblyEdges) TemplateOrErr() (*CouponTemplate, error) {
-	if e.loadedTypes[0] {
-		if e.Template == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: coupontemplate.Label}
-		}
+	if e.Template != nil {
 		return e.Template, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: coupontemplate.Label}
 	}
 	return nil, &NotLoadedError{edge: "template"}
 }

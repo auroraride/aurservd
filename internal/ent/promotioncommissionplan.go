@@ -54,12 +54,10 @@ type PromotionCommissionPlanEdges struct {
 // MemberOrErr returns the Member value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionCommissionPlanEdges) MemberOrErr() (*PromotionMember, error) {
-	if e.loadedTypes[0] {
-		if e.Member == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: promotionmember.Label}
-		}
+	if e.Member != nil {
 		return e.Member, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: promotionmember.Label}
 	}
 	return nil, &NotLoadedError{edge: "member"}
 }
@@ -67,12 +65,10 @@ func (e PromotionCommissionPlanEdges) MemberOrErr() (*PromotionMember, error) {
 // PromotionCommissionOrErr returns the PromotionCommission value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionCommissionPlanEdges) PromotionCommissionOrErr() (*PromotionCommission, error) {
-	if e.loadedTypes[1] {
-		if e.PromotionCommission == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: promotioncommission.Label}
-		}
+	if e.PromotionCommission != nil {
 		return e.PromotionCommission, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: promotioncommission.Label}
 	}
 	return nil, &NotLoadedError{edge: "promotion_commission"}
 }
@@ -80,12 +76,10 @@ func (e PromotionCommissionPlanEdges) PromotionCommissionOrErr() (*PromotionComm
 // PlanOrErr returns the Plan value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionCommissionPlanEdges) PlanOrErr() (*Plan, error) {
-	if e.loadedTypes[2] {
-		if e.Plan == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: plan.Label}
-		}
+	if e.Plan != nil {
 		return e.Plan, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: plan.Label}
 	}
 	return nil, &NotLoadedError{edge: "plan"}
 }

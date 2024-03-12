@@ -62,12 +62,10 @@ type OrderRefundEdges struct {
 // OrderOrErr returns the Order value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e OrderRefundEdges) OrderOrErr() (*Order, error) {
-	if e.loadedTypes[0] {
-		if e.Order == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: order.Label}
-		}
+	if e.Order != nil {
 		return e.Order, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: order.Label}
 	}
 	return nil, &NotLoadedError{edge: "order"}
 }

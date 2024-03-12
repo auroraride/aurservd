@@ -6850,6 +6850,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "预支付订单号",
+                        "name": "outTradeNo",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
@@ -6862,7 +6868,7 @@ const docTemplate = `{
                             2
                         ],
                         "type": "integer",
-                        "description": "支付方式 0:手动 1:支付宝 2:微信, 不携带此参数为获取全部",
+                        "description": "支付方式 0:手动 1:支付宝 2:微信,3:支付宝预授权,4:微信支付分 不携带此参数为获取全部",
                         "name": "payway",
                         "in": "query"
                     },
@@ -13634,7 +13640,7 @@ const docTemplate = `{
                     "description": "内容"
                 },
                 "key": {
-                    "description": "键  rent 租电买前必读 rentCar 租车买前必读 buyCar 买车买前必读 coupon 优惠券使用说明 point 积分使用说明",
+                    "description": "键  rent 租电买前必读 rentCar 租车买前必读 buyCar 买车买前必读 coupon 优惠券使用说明 point 积分使用说明 deposit 押金规则说明",
                     "type": "string"
                 },
                 "title": {
@@ -16555,6 +16561,10 @@ const docTemplate = `{
                     "description": "名称",
                     "type": "string"
                 },
+                "outOrderNo": {
+                    "description": "预授权订单号",
+                    "type": "string"
+                },
                 "outTradeNo": {
                     "description": "使用订单编号",
                     "type": "string"
@@ -18842,6 +18852,10 @@ const docTemplate = `{
                     "description": "电池型号 (可为空)",
                     "type": "string"
                 },
+                "outOrderNo": {
+                    "description": "预授权订单号",
+                    "type": "string"
+                },
                 "outTradeNo": {
                     "description": "订单编号",
                     "type": "string"
@@ -18959,8 +18973,12 @@ const docTemplate = `{
                     "description": "电池型号",
                     "type": "string"
                 },
+                "outTradeNo": {
+                    "description": "预支付订单号",
+                    "type": "string"
+                },
                 "payway": {
-                    "description": "支付方式 0:手动 1:支付宝 2:微信, 不携带此参数为获取全部",
+                    "description": "支付方式 0:手动 1:支付宝 2:微信,3:支付宝预授权,4:微信支付分 不携带此参数为获取全部",
                     "type": "integer",
                     "enum": [
                         0,
@@ -19217,16 +19235,25 @@ const docTemplate = `{
                     "description": "是否开启押金",
                     "type": "boolean"
                 },
+                "depositAlipayAuthFreeze": {
+                    "description": "是否支持预授权信用免押金 true:支持 false:不支持",
+                    "type": "boolean"
+                },
                 "depositAmount": {
                     "description": "押金金额",
                     "type": "number"
                 },
-                "depositPayway": {
-                    "description": "押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                "depositContract": {
+                    "description": "是否支持合同免押金 true:支持 false:不支持",
+                    "type": "boolean"
+                },
+                "depositPay": {
+                    "description": "是否支持支付押金 true:支持 false:不支持",
+                    "type": "boolean"
+                },
+                "depositWechatPayscore": {
+                    "description": "是否支持微信支付分免押金 true:支持 false:不支持",
+                    "type": "boolean"
                 },
                 "enable": {
                     "description": "是否启用",
@@ -19363,16 +19390,25 @@ const docTemplate = `{
                     "description": "是否开启押金 fales:未开启 true:开启",
                     "type": "boolean"
                 },
+                "depositAlipayAuthFreeze": {
+                    "description": "是否支持预授权信用免押金 true:支持 false:不支持",
+                    "type": "boolean"
+                },
                 "depositAmount": {
                     "description": "押金金额",
                     "type": "number"
                 },
-                "depositPayway": {
-                    "description": "押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                "depositContract": {
+                    "description": "是否支持合同免押金 true:支持 false:不支持",
+                    "type": "boolean"
+                },
+                "depositPay": {
+                    "description": "是否支持支付押金 true:支持 false:不支持",
+                    "type": "boolean"
+                },
+                "depositWechatPayscore": {
+                    "description": "是否支持微信支付分免押金 true:支持 false:不支持",
+                    "type": "boolean"
                 },
                 "enable": {
                     "description": "是否启用",

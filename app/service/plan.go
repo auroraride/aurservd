@@ -194,7 +194,10 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 			SetIntelligent(*req.Intelligent).
 			SetNillableDeposit(req.Deposit).
 			SetNillableDepositAmount(req.DepositAmount).
-			SetDepositPayway(req.DepositPayway)
+			SetNillableDepositWechatPayscore(req.DepositWechatPayscore).
+			SetNillableDepositAlipayAuthFreeze(req.DepositAlipayAuthFreeze).
+			SetNillableDepositContract(req.DepositContract).
+			SetNillableDepositPay(req.DepositPay)
 
 		for i, cl := range req.Complexes {
 			c := creator.Clone().
@@ -318,20 +321,23 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 	})
 
 	res = model.PlanListRes{
-		ID:            item.ID,
-		Type:          model.PlanType(item.Type),
-		Name:          item.Name,
-		Enable:        item.Enable,
-		Start:         item.Start.Format(carbon.DateLayout),
-		End:           item.End.Format(carbon.DateLayout),
-		Cities:        make([]model.City, len(item.Edges.Cities)),
-		Complexes:     make([]*model.PlanComplexes, 0),
-		Notes:         item.Notes,
-		Intelligent:   item.Intelligent,
-		Model:         item.Model,
-		DepositPayway: item.DepositPayway,
-		Deposit:       item.Deposit,
-		DepositAmount: item.DepositAmount,
+		ID:                      item.ID,
+		Type:                    model.PlanType(item.Type),
+		Name:                    item.Name,
+		Enable:                  item.Enable,
+		Start:                   item.Start.Format(carbon.DateLayout),
+		End:                     item.End.Format(carbon.DateLayout),
+		Cities:                  make([]model.City, len(item.Edges.Cities)),
+		Complexes:               make([]*model.PlanComplexes, 0),
+		Notes:                   item.Notes,
+		Intelligent:             item.Intelligent,
+		Model:                   item.Model,
+		DepositAlipayAuthFreeze: item.DepositAlipayAuthFreeze,
+		DepositWechatPayscore:   item.DepositWechatPayscore,
+		DepositPay:              item.DepositPay,
+		DepositContract:         item.DepositContract,
+		Deposit:                 item.Deposit,
+		DepositAmount:           item.DepositAmount,
 	}
 
 	// 电车型号
@@ -514,22 +520,29 @@ func (s *planService) Key(model string, brandID *uint64) string {
 
 // RiderListNewly 获取新购骑士卡列表
 func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewlyRes {
-	// 判断骑手是否个签
-	if s.rider.EnterpriseID != nil {
-		snag.Panic("仅个签骑手可购买")
+	// V2 当没有登录时候不做骑手校验
+	var state uint
+	var deposit float64
+	if s.rider != nil {
+		// 判断骑手是否个签
+		if s.rider.EnterpriseID != nil {
+			snag.Panic("仅个签骑手可购买")
+		}
+
+		// 判断骑手是否可以办理业务
+		NewRider().CheckForBusiness(s.rider)
+
+		// 判断是否有生效订阅
+		_, sub := NewSubscribe().RecentDetail(s.rider.ID)
+		if sub != nil && slices.Contains(model.SubscribeNotUnSubscribed(), sub.Status) {
+			snag.Panic("骑手当前有其他订阅, 无法新购")
+		}
+
+		state, _ = NewOrder().PreconditionNewly(sub)
+		// 需缴纳押金金额
+		deposit = NewRider().Deposit(s.rider.ID)
 	}
 
-	// 判断骑手是否可以办理业务
-	NewRider().CheckForBusiness(s.rider)
-
-	// 判断是否有生效订阅
-	_, sub := NewSubscribe().RecentDetail(s.rider.ID)
-	if sub != nil && slices.Contains(model.SubscribeNotUnSubscribed(), sub.Status) {
-		snag.Panic("骑手当前有其他订阅, 无法新购")
-	}
-
-	// 需缴纳押金金额
-	deposit := NewRider().Deposit(s.rider.ID)
 	today := carbon.Now().StartOfDay().ToStdTime()
 
 	items := s.orm.QueryNotDeleted().
@@ -553,8 +566,6 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 	serv := NewPlanIntroduce()
 	intro := serv.QueryMap()
 
-	t, _ := NewOrder().PreconditionNewly(sub)
-
 	for _, item := range items {
 		key := s.Key(item.Model, item.BrandID)
 		m, ok := mmap[key]
@@ -575,18 +586,25 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 		}
 
 		var ramount float64
-		if t == model.OrderTypeNewly && item.DiscountNewly > 0 {
-			ramount = item.DiscountNewly
+		if s.rider != nil {
+			if state == model.OrderTypeNewly && item.DiscountNewly > 0 {
+				ramount = item.DiscountNewly
+			}
 		}
 
 		*m.Children = append(*m.Children, model.PlanDaysPriceOption{
-			ID:            item.ID,
-			Name:          item.Name,
-			Price:         item.Price,
-			Days:          item.Days,
-			Original:      item.Original,
-			DiscountNewly: ramount,
-			HasEbike:      item.BrandID != nil,
+			ID:                      item.ID,
+			Name:                    item.Name,
+			Price:                   item.Price,
+			Days:                    item.Days,
+			Original:                item.Original,
+			DiscountNewly:           ramount,
+			HasEbike:                item.BrandID != nil,
+			Deposit:                 item.Deposit,
+			DepositAmount:           item.DepositAmount,
+			DepositWechatPayscore:   item.DepositWechatPayscore,
+			DepositAlipayAuthFreeze: item.DepositAlipayAuthFreeze,
+			DepositContract:         item.DepositContract,
 		})
 
 		if item.BrandID != nil {
@@ -616,8 +634,11 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 	}
 
 	res := model.PlanNewlyRes{
-		Deposit:   deposit,
-		Configure: NewPayment(s.rider).Configure(),
+		Deposit: deposit,
+	}
+
+	if s.rider != nil {
+		res.Configure = NewPayment(s.rider).Configure()
 	}
 
 	settings, _ := ent.Database.Setting.Query().Where(setting.KeyIn(model.SettingPlanBatteryDescriptionKey, model.SettingPlanEbikeDescriptionKey)).All(context.Background())

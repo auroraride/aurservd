@@ -60385,6 +60385,9 @@ type OrderMutation struct {
 	discount_newly    *float64
 	adddiscount_newly *float64
 	trade_pay_at      *time.Time
+	auth_no           *string
+	out_order_no      *string
+	out_request_no    *string
 	clearedFields     map[string]struct{}
 	plan              *uint64
 	clearedplan       bool
@@ -61376,9 +61379,22 @@ func (m *OrderMutation) OldOutTradeNo(ctx context.Context) (v string, err error)
 	return oldValue.OutTradeNo, nil
 }
 
+// ClearOutTradeNo clears the value of the "out_trade_no" field.
+func (m *OrderMutation) ClearOutTradeNo() {
+	m.out_trade_no = nil
+	m.clearedFields[order.FieldOutTradeNo] = struct{}{}
+}
+
+// OutTradeNoCleared returns if the "out_trade_no" field was cleared in this mutation.
+func (m *OrderMutation) OutTradeNoCleared() bool {
+	_, ok := m.clearedFields[order.FieldOutTradeNo]
+	return ok
+}
+
 // ResetOutTradeNo resets all changes to the "out_trade_no" field.
 func (m *OrderMutation) ResetOutTradeNo() {
 	m.out_trade_no = nil
+	delete(m.clearedFields, order.FieldOutTradeNo)
 }
 
 // SetTradeNo sets the "trade_no" field.
@@ -61412,9 +61428,22 @@ func (m *OrderMutation) OldTradeNo(ctx context.Context) (v string, err error) {
 	return oldValue.TradeNo, nil
 }
 
+// ClearTradeNo clears the value of the "trade_no" field.
+func (m *OrderMutation) ClearTradeNo() {
+	m.trade_no = nil
+	m.clearedFields[order.FieldTradeNo] = struct{}{}
+}
+
+// TradeNoCleared returns if the "trade_no" field was cleared in this mutation.
+func (m *OrderMutation) TradeNoCleared() bool {
+	_, ok := m.clearedFields[order.FieldTradeNo]
+	return ok
+}
+
 // ResetTradeNo resets all changes to the "trade_no" field.
 func (m *OrderMutation) ResetTradeNo() {
 	m.trade_no = nil
+	delete(m.clearedFields, order.FieldTradeNo)
 }
 
 // SetAmount sets the "amount" field.
@@ -61991,6 +62020,153 @@ func (m *OrderMutation) ResetTradePayAt() {
 	delete(m.clearedFields, order.FieldTradePayAt)
 }
 
+// SetAuthNo sets the "auth_no" field.
+func (m *OrderMutation) SetAuthNo(s string) {
+	m.auth_no = &s
+}
+
+// AuthNo returns the value of the "auth_no" field in the mutation.
+func (m *OrderMutation) AuthNo() (r string, exists bool) {
+	v := m.auth_no
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAuthNo returns the old "auth_no" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldAuthNo(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAuthNo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAuthNo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAuthNo: %w", err)
+	}
+	return oldValue.AuthNo, nil
+}
+
+// ClearAuthNo clears the value of the "auth_no" field.
+func (m *OrderMutation) ClearAuthNo() {
+	m.auth_no = nil
+	m.clearedFields[order.FieldAuthNo] = struct{}{}
+}
+
+// AuthNoCleared returns if the "auth_no" field was cleared in this mutation.
+func (m *OrderMutation) AuthNoCleared() bool {
+	_, ok := m.clearedFields[order.FieldAuthNo]
+	return ok
+}
+
+// ResetAuthNo resets all changes to the "auth_no" field.
+func (m *OrderMutation) ResetAuthNo() {
+	m.auth_no = nil
+	delete(m.clearedFields, order.FieldAuthNo)
+}
+
+// SetOutOrderNo sets the "out_order_no" field.
+func (m *OrderMutation) SetOutOrderNo(s string) {
+	m.out_order_no = &s
+}
+
+// OutOrderNo returns the value of the "out_order_no" field in the mutation.
+func (m *OrderMutation) OutOrderNo() (r string, exists bool) {
+	v := m.out_order_no
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOutOrderNo returns the old "out_order_no" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldOutOrderNo(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOutOrderNo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOutOrderNo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOutOrderNo: %w", err)
+	}
+	return oldValue.OutOrderNo, nil
+}
+
+// ClearOutOrderNo clears the value of the "out_order_no" field.
+func (m *OrderMutation) ClearOutOrderNo() {
+	m.out_order_no = nil
+	m.clearedFields[order.FieldOutOrderNo] = struct{}{}
+}
+
+// OutOrderNoCleared returns if the "out_order_no" field was cleared in this mutation.
+func (m *OrderMutation) OutOrderNoCleared() bool {
+	_, ok := m.clearedFields[order.FieldOutOrderNo]
+	return ok
+}
+
+// ResetOutOrderNo resets all changes to the "out_order_no" field.
+func (m *OrderMutation) ResetOutOrderNo() {
+	m.out_order_no = nil
+	delete(m.clearedFields, order.FieldOutOrderNo)
+}
+
+// SetOutRequestNo sets the "out_request_no" field.
+func (m *OrderMutation) SetOutRequestNo(s string) {
+	m.out_request_no = &s
+}
+
+// OutRequestNo returns the value of the "out_request_no" field in the mutation.
+func (m *OrderMutation) OutRequestNo() (r string, exists bool) {
+	v := m.out_request_no
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOutRequestNo returns the old "out_request_no" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldOutRequestNo(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOutRequestNo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOutRequestNo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOutRequestNo: %w", err)
+	}
+	return oldValue.OutRequestNo, nil
+}
+
+// ClearOutRequestNo clears the value of the "out_request_no" field.
+func (m *OrderMutation) ClearOutRequestNo() {
+	m.out_request_no = nil
+	m.clearedFields[order.FieldOutRequestNo] = struct{}{}
+}
+
+// OutRequestNoCleared returns if the "out_request_no" field was cleared in this mutation.
+func (m *OrderMutation) OutRequestNoCleared() bool {
+	_, ok := m.clearedFields[order.FieldOutRequestNo]
+	return ok
+}
+
+// ResetOutRequestNo resets all changes to the "out_request_no" field.
+func (m *OrderMutation) ResetOutRequestNo() {
+	m.out_request_no = nil
+	delete(m.clearedFields, order.FieldOutRequestNo)
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *OrderMutation) ClearPlan() {
 	m.clearedplan = true
@@ -62466,7 +62642,7 @@ func (m *OrderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OrderMutation) Fields() []string {
-	fields := make([]string, 0, 29)
+	fields := make([]string, 0, 32)
 	if m.created_at != nil {
 		fields = append(fields, order.FieldCreatedAt)
 	}
@@ -62554,6 +62730,15 @@ func (m *OrderMutation) Fields() []string {
 	if m.trade_pay_at != nil {
 		fields = append(fields, order.FieldTradePayAt)
 	}
+	if m.auth_no != nil {
+		fields = append(fields, order.FieldAuthNo)
+	}
+	if m.out_order_no != nil {
+		fields = append(fields, order.FieldOutOrderNo)
+	}
+	if m.out_request_no != nil {
+		fields = append(fields, order.FieldOutRequestNo)
+	}
 	return fields
 }
 
@@ -62620,6 +62805,12 @@ func (m *OrderMutation) Field(name string) (ent.Value, bool) {
 		return m.DiscountNewly()
 	case order.FieldTradePayAt:
 		return m.TradePayAt()
+	case order.FieldAuthNo:
+		return m.AuthNo()
+	case order.FieldOutOrderNo:
+		return m.OutOrderNo()
+	case order.FieldOutRequestNo:
+		return m.OutRequestNo()
 	}
 	return nil, false
 }
@@ -62687,6 +62878,12 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldDiscountNewly(ctx)
 	case order.FieldTradePayAt:
 		return m.OldTradePayAt(ctx)
+	case order.FieldAuthNo:
+		return m.OldAuthNo(ctx)
+	case order.FieldOutOrderNo:
+		return m.OldOutOrderNo(ctx)
+	case order.FieldOutRequestNo:
+		return m.OldOutRequestNo(ctx)
 	}
 	return nil, fmt.Errorf("unknown Order field %s", name)
 }
@@ -62899,6 +63096,27 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTradePayAt(v)
 		return nil
+	case order.FieldAuthNo:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAuthNo(v)
+		return nil
+	case order.FieldOutOrderNo:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOutOrderNo(v)
+		return nil
+	case order.FieldOutRequestNo:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOutRequestNo(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)
 }
@@ -63100,6 +63318,12 @@ func (m *OrderMutation) ClearedFields() []string {
 	if m.FieldCleared(order.FieldSubscribeID) {
 		fields = append(fields, order.FieldSubscribeID)
 	}
+	if m.FieldCleared(order.FieldOutTradeNo) {
+		fields = append(fields, order.FieldOutTradeNo)
+	}
+	if m.FieldCleared(order.FieldTradeNo) {
+		fields = append(fields, order.FieldTradeNo)
+	}
 	if m.FieldCleared(order.FieldRefundAt) {
 		fields = append(fields, order.FieldRefundAt)
 	}
@@ -63111,6 +63335,15 @@ func (m *OrderMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(order.FieldTradePayAt) {
 		fields = append(fields, order.FieldTradePayAt)
+	}
+	if m.FieldCleared(order.FieldAuthNo) {
+		fields = append(fields, order.FieldAuthNo)
+	}
+	if m.FieldCleared(order.FieldOutOrderNo) {
+		fields = append(fields, order.FieldOutOrderNo)
+	}
+	if m.FieldCleared(order.FieldOutRequestNo) {
+		fields = append(fields, order.FieldOutRequestNo)
 	}
 	return fields
 }
@@ -63162,6 +63395,12 @@ func (m *OrderMutation) ClearField(name string) error {
 	case order.FieldSubscribeID:
 		m.ClearSubscribeID()
 		return nil
+	case order.FieldOutTradeNo:
+		m.ClearOutTradeNo()
+		return nil
+	case order.FieldTradeNo:
+		m.ClearTradeNo()
+		return nil
 	case order.FieldRefundAt:
 		m.ClearRefundAt()
 		return nil
@@ -63173,6 +63412,15 @@ func (m *OrderMutation) ClearField(name string) error {
 		return nil
 	case order.FieldTradePayAt:
 		m.ClearTradePayAt()
+		return nil
+	case order.FieldAuthNo:
+		m.ClearAuthNo()
+		return nil
+	case order.FieldOutOrderNo:
+		m.ClearOutOrderNo()
+		return nil
+	case order.FieldOutRequestNo:
+		m.ClearOutRequestNo()
 		return nil
 	}
 	return fmt.Errorf("unknown Order nullable field %s", name)
@@ -63268,6 +63516,15 @@ func (m *OrderMutation) ResetField(name string) error {
 		return nil
 	case order.FieldTradePayAt:
 		m.ResetTradePayAt()
+		return nil
+	case order.FieldAuthNo:
+		m.ResetAuthNo()
+		return nil
+	case order.FieldOutOrderNo:
+		m.ResetOutOrderNo()
+		return nil
+	case order.FieldOutRequestNo:
+		m.ResetOutRequestNo()
 		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)
@@ -66508,58 +66765,62 @@ func (m *PersonMutation) ResetEdge(name string) error {
 // PlanMutation represents an operation that mutates the Plan nodes in the graph.
 type PlanMutation struct {
 	config
-	op                   Op
-	typ                  string
-	id                   *uint64
-	created_at           *time.Time
-	updated_at           *time.Time
-	deleted_at           *time.Time
-	creator              **model.Modifier
-	last_modifier        **model.Modifier
-	remark               *string
-	model                *string
-	enable               *bool
-	_type                *uint8
-	add_type             *int8
-	name                 *string
-	start                *time.Time
-	end                  *time.Time
-	price                *float64
-	addprice             *float64
-	days                 *uint
-	adddays              *int
-	commission           *float64
-	addcommission        *float64
-	original             *float64
-	addoriginal          *float64
-	desc                 *string
-	discount_newly       *float64
-	adddiscount_newly    *float64
-	notes                *[]string
-	appendnotes          []string
-	intelligent          *bool
-	deposit              *bool
-	deposit_amount       *float64
-	adddeposit_amount    *float64
-	deposit_payway       *[]uint8
-	appenddeposit_payway []uint8
-	clearedFields        map[string]struct{}
-	brand                *uint64
-	clearedbrand         bool
-	cities               map[uint64]struct{}
-	removedcities        map[uint64]struct{}
-	clearedcities        bool
-	parent               *uint64
-	clearedparent        bool
-	complexes            map[uint64]struct{}
-	removedcomplexes     map[uint64]struct{}
-	clearedcomplexes     bool
-	commissions          map[uint64]struct{}
-	removedcommissions   map[uint64]struct{}
-	clearedcommissions   bool
-	done                 bool
-	oldValue             func(context.Context) (*Plan, error)
-	predicates           []predicate.Plan
+	op                         Op
+	typ                        string
+	id                         *uint64
+	created_at                 *time.Time
+	updated_at                 *time.Time
+	deleted_at                 *time.Time
+	creator                    **model.Modifier
+	last_modifier              **model.Modifier
+	remark                     *string
+	model                      *string
+	enable                     *bool
+	_type                      *uint8
+	add_type                   *int8
+	name                       *string
+	start                      *time.Time
+	end                        *time.Time
+	price                      *float64
+	addprice                   *float64
+	days                       *uint
+	adddays                    *int
+	commission                 *float64
+	addcommission              *float64
+	original                   *float64
+	addoriginal                *float64
+	desc                       *string
+	discount_newly             *float64
+	adddiscount_newly          *float64
+	notes                      *[]string
+	appendnotes                []string
+	intelligent                *bool
+	deposit                    *bool
+	deposit_amount             *float64
+	adddeposit_amount          *float64
+	deposit_wechat_payscore    *bool
+	deposit_alipay_auth_freeze *bool
+	deposit_contract           *bool
+	deposit_pay                *bool
+	deposit_payway             *[]uint8
+	appenddeposit_payway       []uint8
+	clearedFields              map[string]struct{}
+	brand                      *uint64
+	clearedbrand               bool
+	cities                     map[uint64]struct{}
+	removedcities              map[uint64]struct{}
+	clearedcities              bool
+	parent                     *uint64
+	clearedparent              bool
+	complexes                  map[uint64]struct{}
+	removedcomplexes           map[uint64]struct{}
+	clearedcomplexes           bool
+	commissions                map[uint64]struct{}
+	removedcommissions         map[uint64]struct{}
+	clearedcommissions         bool
+	done                       bool
+	oldValue                   func(context.Context) (*Plan, error)
+	predicates                 []predicate.Plan
 }
 
 var _ ent.Mutation = (*PlanMutation)(nil)
@@ -67825,6 +68086,202 @@ func (m *PlanMutation) ResetDepositAmount() {
 	delete(m.clearedFields, plan.FieldDepositAmount)
 }
 
+// SetDepositWechatPayscore sets the "deposit_wechat_payscore" field.
+func (m *PlanMutation) SetDepositWechatPayscore(b bool) {
+	m.deposit_wechat_payscore = &b
+}
+
+// DepositWechatPayscore returns the value of the "deposit_wechat_payscore" field in the mutation.
+func (m *PlanMutation) DepositWechatPayscore() (r bool, exists bool) {
+	v := m.deposit_wechat_payscore
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDepositWechatPayscore returns the old "deposit_wechat_payscore" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldDepositWechatPayscore(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDepositWechatPayscore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDepositWechatPayscore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDepositWechatPayscore: %w", err)
+	}
+	return oldValue.DepositWechatPayscore, nil
+}
+
+// ClearDepositWechatPayscore clears the value of the "deposit_wechat_payscore" field.
+func (m *PlanMutation) ClearDepositWechatPayscore() {
+	m.deposit_wechat_payscore = nil
+	m.clearedFields[plan.FieldDepositWechatPayscore] = struct{}{}
+}
+
+// DepositWechatPayscoreCleared returns if the "deposit_wechat_payscore" field was cleared in this mutation.
+func (m *PlanMutation) DepositWechatPayscoreCleared() bool {
+	_, ok := m.clearedFields[plan.FieldDepositWechatPayscore]
+	return ok
+}
+
+// ResetDepositWechatPayscore resets all changes to the "deposit_wechat_payscore" field.
+func (m *PlanMutation) ResetDepositWechatPayscore() {
+	m.deposit_wechat_payscore = nil
+	delete(m.clearedFields, plan.FieldDepositWechatPayscore)
+}
+
+// SetDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field.
+func (m *PlanMutation) SetDepositAlipayAuthFreeze(b bool) {
+	m.deposit_alipay_auth_freeze = &b
+}
+
+// DepositAlipayAuthFreeze returns the value of the "deposit_alipay_auth_freeze" field in the mutation.
+func (m *PlanMutation) DepositAlipayAuthFreeze() (r bool, exists bool) {
+	v := m.deposit_alipay_auth_freeze
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDepositAlipayAuthFreeze returns the old "deposit_alipay_auth_freeze" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldDepositAlipayAuthFreeze(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDepositAlipayAuthFreeze is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDepositAlipayAuthFreeze requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDepositAlipayAuthFreeze: %w", err)
+	}
+	return oldValue.DepositAlipayAuthFreeze, nil
+}
+
+// ClearDepositAlipayAuthFreeze clears the value of the "deposit_alipay_auth_freeze" field.
+func (m *PlanMutation) ClearDepositAlipayAuthFreeze() {
+	m.deposit_alipay_auth_freeze = nil
+	m.clearedFields[plan.FieldDepositAlipayAuthFreeze] = struct{}{}
+}
+
+// DepositAlipayAuthFreezeCleared returns if the "deposit_alipay_auth_freeze" field was cleared in this mutation.
+func (m *PlanMutation) DepositAlipayAuthFreezeCleared() bool {
+	_, ok := m.clearedFields[plan.FieldDepositAlipayAuthFreeze]
+	return ok
+}
+
+// ResetDepositAlipayAuthFreeze resets all changes to the "deposit_alipay_auth_freeze" field.
+func (m *PlanMutation) ResetDepositAlipayAuthFreeze() {
+	m.deposit_alipay_auth_freeze = nil
+	delete(m.clearedFields, plan.FieldDepositAlipayAuthFreeze)
+}
+
+// SetDepositContract sets the "deposit_contract" field.
+func (m *PlanMutation) SetDepositContract(b bool) {
+	m.deposit_contract = &b
+}
+
+// DepositContract returns the value of the "deposit_contract" field in the mutation.
+func (m *PlanMutation) DepositContract() (r bool, exists bool) {
+	v := m.deposit_contract
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDepositContract returns the old "deposit_contract" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldDepositContract(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDepositContract is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDepositContract requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDepositContract: %w", err)
+	}
+	return oldValue.DepositContract, nil
+}
+
+// ClearDepositContract clears the value of the "deposit_contract" field.
+func (m *PlanMutation) ClearDepositContract() {
+	m.deposit_contract = nil
+	m.clearedFields[plan.FieldDepositContract] = struct{}{}
+}
+
+// DepositContractCleared returns if the "deposit_contract" field was cleared in this mutation.
+func (m *PlanMutation) DepositContractCleared() bool {
+	_, ok := m.clearedFields[plan.FieldDepositContract]
+	return ok
+}
+
+// ResetDepositContract resets all changes to the "deposit_contract" field.
+func (m *PlanMutation) ResetDepositContract() {
+	m.deposit_contract = nil
+	delete(m.clearedFields, plan.FieldDepositContract)
+}
+
+// SetDepositPay sets the "deposit_pay" field.
+func (m *PlanMutation) SetDepositPay(b bool) {
+	m.deposit_pay = &b
+}
+
+// DepositPay returns the value of the "deposit_pay" field in the mutation.
+func (m *PlanMutation) DepositPay() (r bool, exists bool) {
+	v := m.deposit_pay
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDepositPay returns the old "deposit_pay" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldDepositPay(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDepositPay is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDepositPay requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDepositPay: %w", err)
+	}
+	return oldValue.DepositPay, nil
+}
+
+// ClearDepositPay clears the value of the "deposit_pay" field.
+func (m *PlanMutation) ClearDepositPay() {
+	m.deposit_pay = nil
+	m.clearedFields[plan.FieldDepositPay] = struct{}{}
+}
+
+// DepositPayCleared returns if the "deposit_pay" field was cleared in this mutation.
+func (m *PlanMutation) DepositPayCleared() bool {
+	_, ok := m.clearedFields[plan.FieldDepositPay]
+	return ok
+}
+
+// ResetDepositPay resets all changes to the "deposit_pay" field.
+func (m *PlanMutation) ResetDepositPay() {
+	m.deposit_pay = nil
+	delete(m.clearedFields, plan.FieldDepositPay)
+}
+
 // SetDepositPayway sets the "deposit_payway" field.
 func (m *PlanMutation) SetDepositPayway(u []uint8) {
 	m.deposit_payway = &u
@@ -68140,7 +68597,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 25)
+	fields := make([]string, 0, 29)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -68213,6 +68670,18 @@ func (m *PlanMutation) Fields() []string {
 	if m.deposit_amount != nil {
 		fields = append(fields, plan.FieldDepositAmount)
 	}
+	if m.deposit_wechat_payscore != nil {
+		fields = append(fields, plan.FieldDepositWechatPayscore)
+	}
+	if m.deposit_alipay_auth_freeze != nil {
+		fields = append(fields, plan.FieldDepositAlipayAuthFreeze)
+	}
+	if m.deposit_contract != nil {
+		fields = append(fields, plan.FieldDepositContract)
+	}
+	if m.deposit_pay != nil {
+		fields = append(fields, plan.FieldDepositPay)
+	}
 	if m.deposit_payway != nil {
 		fields = append(fields, plan.FieldDepositPayway)
 	}
@@ -68272,6 +68741,14 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.Deposit()
 	case plan.FieldDepositAmount:
 		return m.DepositAmount()
+	case plan.FieldDepositWechatPayscore:
+		return m.DepositWechatPayscore()
+	case plan.FieldDepositAlipayAuthFreeze:
+		return m.DepositAlipayAuthFreeze()
+	case plan.FieldDepositContract:
+		return m.DepositContract()
+	case plan.FieldDepositPay:
+		return m.DepositPay()
 	case plan.FieldDepositPayway:
 		return m.DepositPayway()
 	}
@@ -68331,6 +68808,14 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldDeposit(ctx)
 	case plan.FieldDepositAmount:
 		return m.OldDepositAmount(ctx)
+	case plan.FieldDepositWechatPayscore:
+		return m.OldDepositWechatPayscore(ctx)
+	case plan.FieldDepositAlipayAuthFreeze:
+		return m.OldDepositAlipayAuthFreeze(ctx)
+	case plan.FieldDepositContract:
+		return m.OldDepositContract(ctx)
+	case plan.FieldDepositPay:
+		return m.OldDepositPay(ctx)
 	case plan.FieldDepositPayway:
 		return m.OldDepositPayway(ctx)
 	}
@@ -68510,6 +68995,34 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDepositAmount(v)
 		return nil
+	case plan.FieldDepositWechatPayscore:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDepositWechatPayscore(v)
+		return nil
+	case plan.FieldDepositAlipayAuthFreeze:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDepositAlipayAuthFreeze(v)
+		return nil
+	case plan.FieldDepositContract:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDepositContract(v)
+		return nil
+	case plan.FieldDepositPay:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDepositPay(v)
+		return nil
 	case plan.FieldDepositPayway:
 		v, ok := value.([]uint8)
 		if !ok {
@@ -68667,6 +69180,18 @@ func (m *PlanMutation) ClearedFields() []string {
 	if m.FieldCleared(plan.FieldDepositAmount) {
 		fields = append(fields, plan.FieldDepositAmount)
 	}
+	if m.FieldCleared(plan.FieldDepositWechatPayscore) {
+		fields = append(fields, plan.FieldDepositWechatPayscore)
+	}
+	if m.FieldCleared(plan.FieldDepositAlipayAuthFreeze) {
+		fields = append(fields, plan.FieldDepositAlipayAuthFreeze)
+	}
+	if m.FieldCleared(plan.FieldDepositContract) {
+		fields = append(fields, plan.FieldDepositContract)
+	}
+	if m.FieldCleared(plan.FieldDepositPay) {
+		fields = append(fields, plan.FieldDepositPay)
+	}
 	if m.FieldCleared(plan.FieldDepositPayway) {
 		fields = append(fields, plan.FieldDepositPayway)
 	}
@@ -68716,6 +69241,18 @@ func (m *PlanMutation) ClearField(name string) error {
 		return nil
 	case plan.FieldDepositAmount:
 		m.ClearDepositAmount()
+		return nil
+	case plan.FieldDepositWechatPayscore:
+		m.ClearDepositWechatPayscore()
+		return nil
+	case plan.FieldDepositAlipayAuthFreeze:
+		m.ClearDepositAlipayAuthFreeze()
+		return nil
+	case plan.FieldDepositContract:
+		m.ClearDepositContract()
+		return nil
+	case plan.FieldDepositPay:
+		m.ClearDepositPay()
 		return nil
 	case plan.FieldDepositPayway:
 		m.ClearDepositPayway()
@@ -68799,6 +69336,18 @@ func (m *PlanMutation) ResetField(name string) error {
 		return nil
 	case plan.FieldDepositAmount:
 		m.ResetDepositAmount()
+		return nil
+	case plan.FieldDepositWechatPayscore:
+		m.ResetDepositWechatPayscore()
+		return nil
+	case plan.FieldDepositAlipayAuthFreeze:
+		m.ResetDepositAlipayAuthFreeze()
+		return nil
+	case plan.FieldDepositContract:
+		m.ResetDepositContract()
+		return nil
+	case plan.FieldDepositPay:
+		m.ResetDepositPay()
 		return nil
 	case plan.FieldDepositPayway:
 		m.ResetDepositPayway()

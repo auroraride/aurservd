@@ -2387,7 +2387,7 @@ const docTemplate = `{
                     "Order - 订单"
                 ],
                 "summary": "免押金支付",
-                "operationId": "OrderDepositFree",
+                "operationId": "OrderDepositCredit",
                 "parameters": [
                     {
                         "type": "string",
@@ -3470,7 +3470,7 @@ const docTemplate = `{
                     "description": "内容"
                 },
                 "key": {
-                    "description": "键  rent 租电买前必读 rentCar 租车买前必读 buyCar 买车买前必读 coupon 优惠券使用说明 point 积分使用说明",
+                    "description": "键  rent 租电买前必读 rentCar 租车买前必读 buyCar 买车买前必读 coupon 优惠券使用说明 point 积分使用说明 deposit 押金规则说明",
                     "type": "string"
                 },
                 "title": {
@@ -3487,16 +3487,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "payway": {
-                    "description": "支付方式, 1支付宝 2微信 3支付宝预授权",
+                    "description": "支付方式, 1:支付宝 2:微信 3:支付宝预授权支付 4:微信支付分支付",
+                    "type": "integer",
                     "enum": [
-                        1,
-                        2,
-                        3
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/definition.Payway"
-                        }
+                        3,
+                        4
                     ]
                 },
                 "planId": {
@@ -3508,6 +3503,14 @@ const docTemplate = `{
         "definition.OrderDepositCreditRes": {
             "type": "object",
             "properties": {
+                "outOrderNo": {
+                    "description": "订单号",
+                    "type": "string"
+                },
+                "outTradeNo": {
+                    "description": "平台订单号",
+                    "type": "string"
+                },
                 "prepay": {
                     "description": "预支付信息",
                     "type": "string"
@@ -3548,24 +3551,6 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
-        },
-        "definition.Payway": {
-            "type": "integer",
-            "enum": [
-                1,
-                2,
-                3
-            ],
-            "x-enum-comments": {
-                "PaywayAlipay": "预支付",
-                "PaywayAlipayDeposit": "支付宝芝麻免押",
-                "PaywayWechatDeposit": "微信支付分支付"
-            },
-            "x-enum-varnames": [
-                "PaywayAlipayDeposit",
-                "PaywayWechatDeposit",
-                "PaywayAlipay"
-            ]
         },
         "definition.PersonCertificationFaceReq": {
             "type": "object",
@@ -5415,6 +5400,10 @@ const docTemplate = `{
                     "description": "电池型号 (可为空)",
                     "type": "string"
                 },
+                "outOrderNo": {
+                    "description": "预授权订单号",
+                    "type": "string"
+                },
                 "outTradeNo": {
                     "description": "订单编号",
                     "type": "string"
@@ -5521,6 +5510,14 @@ const docTemplate = `{
                         "type": "integer"
                     }
                 },
+                "depositAlipayAuthFreeze": {
+                    "description": "以下字段仅限V2使用",
+                    "type": "boolean"
+                },
+                "needContract": {
+                    "description": "是否需要签约",
+                    "type": "boolean"
+                },
                 "orderType": {
                     "description": "订单类型, 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
                     "type": "integer",
@@ -5535,12 +5532,13 @@ const docTemplate = `{
                     ]
                 },
                 "payway": {
-                    "description": "支付方式, 1支付宝 2微信 3支付宝预授权",
+                    "description": "支付方式, 1支付宝 2微信 3支付宝预授权(仅限V2使用) 4微信支付分(仅限V2使用)",
                     "type": "integer",
                     "enum": [
                         1,
                         2,
-                        3
+                        3,
+                        4
                     ]
                 },
                 "planId": {
@@ -5556,6 +5554,10 @@ const docTemplate = `{
         "model.OrderCreateRes": {
             "type": "object",
             "properties": {
+                "outOrderNo": {
+                    "description": "预授权订单号",
+                    "type": "string"
+                },
                 "outTradeNo": {
                     "description": "交易编码",
                     "type": "string"
@@ -5569,6 +5571,10 @@ const docTemplate = `{
         "model.OrderStatusRes": {
             "type": "object",
             "properties": {
+                "outOrderNo": {
+                    "description": "预授权订单号",
+                    "type": "string"
+                },
                 "outTradeNo": {
                     "description": "订单编号",
                     "type": "string"
@@ -5667,6 +5673,30 @@ const docTemplate = `{
                 "days": {
                     "description": "天数",
                     "type": "integer"
+                },
+                "deposit": {
+                    "description": "是否启用押金",
+                    "type": "boolean"
+                },
+                "depositAlipayAuthFreeze": {
+                    "description": "是否支持预授权信用免押金",
+                    "type": "boolean"
+                },
+                "depositAmount": {
+                    "description": "押金金额",
+                    "type": "number"
+                },
+                "depositContract": {
+                    "description": "是否支持合同免押金",
+                    "type": "boolean"
+                },
+                "depositPay": {
+                    "description": "是否支持支付押金",
+                    "type": "boolean"
+                },
+                "depositWechatPayscore": {
+                    "description": "是否支持微信支付分免押金",
+                    "type": "boolean"
                 },
                 "discountNewly": {
                     "description": "新签优惠",
@@ -6303,6 +6333,10 @@ const docTemplate = `{
                 "name": {
                     "description": "姓名, 实名认证后才会有",
                     "type": "string"
+                },
+                "needDeposit": {
+                    "description": "是否需要缴纳押金(v2使用)",
+                    "type": "boolean"
                 },
                 "orderNotActived": {
                     "description": "是否存在未激活订单",

@@ -1235,6 +1235,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			order.FieldCouponAmount:  {Type: field.TypeFloat64, Column: order.FieldCouponAmount},
 			order.FieldDiscountNewly: {Type: field.TypeFloat64, Column: order.FieldDiscountNewly},
 			order.FieldTradePayAt:    {Type: field.TypeTime, Column: order.FieldTradePayAt},
+			order.FieldAuthNo:        {Type: field.TypeString, Column: order.FieldAuthNo},
+			order.FieldOutOrderNo:    {Type: field.TypeString, Column: order.FieldOutOrderNo},
+			order.FieldOutRequestNo:  {Type: field.TypeString, Column: order.FieldOutRequestNo},
 		},
 	}
 	graph.Nodes[41] = &sqlgraph.Node{
@@ -1306,31 +1309,35 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Plan",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			plan.FieldCreatedAt:     {Type: field.TypeTime, Column: plan.FieldCreatedAt},
-			plan.FieldUpdatedAt:     {Type: field.TypeTime, Column: plan.FieldUpdatedAt},
-			plan.FieldDeletedAt:     {Type: field.TypeTime, Column: plan.FieldDeletedAt},
-			plan.FieldCreator:       {Type: field.TypeJSON, Column: plan.FieldCreator},
-			plan.FieldLastModifier:  {Type: field.TypeJSON, Column: plan.FieldLastModifier},
-			plan.FieldRemark:        {Type: field.TypeString, Column: plan.FieldRemark},
-			plan.FieldBrandID:       {Type: field.TypeUint64, Column: plan.FieldBrandID},
-			plan.FieldModel:         {Type: field.TypeString, Column: plan.FieldModel},
-			plan.FieldEnable:        {Type: field.TypeBool, Column: plan.FieldEnable},
-			plan.FieldType:          {Type: field.TypeUint8, Column: plan.FieldType},
-			plan.FieldName:          {Type: field.TypeString, Column: plan.FieldName},
-			plan.FieldStart:         {Type: field.TypeTime, Column: plan.FieldStart},
-			plan.FieldEnd:           {Type: field.TypeTime, Column: plan.FieldEnd},
-			plan.FieldPrice:         {Type: field.TypeFloat64, Column: plan.FieldPrice},
-			plan.FieldDays:          {Type: field.TypeUint, Column: plan.FieldDays},
-			plan.FieldCommission:    {Type: field.TypeFloat64, Column: plan.FieldCommission},
-			plan.FieldOriginal:      {Type: field.TypeFloat64, Column: plan.FieldOriginal},
-			plan.FieldDesc:          {Type: field.TypeString, Column: plan.FieldDesc},
-			plan.FieldParentID:      {Type: field.TypeUint64, Column: plan.FieldParentID},
-			plan.FieldDiscountNewly: {Type: field.TypeFloat64, Column: plan.FieldDiscountNewly},
-			plan.FieldNotes:         {Type: field.TypeJSON, Column: plan.FieldNotes},
-			plan.FieldIntelligent:   {Type: field.TypeBool, Column: plan.FieldIntelligent},
-			plan.FieldDeposit:       {Type: field.TypeBool, Column: plan.FieldDeposit},
-			plan.FieldDepositAmount: {Type: field.TypeFloat64, Column: plan.FieldDepositAmount},
-			plan.FieldDepositPayway: {Type: field.TypeJSON, Column: plan.FieldDepositPayway},
+			plan.FieldCreatedAt:               {Type: field.TypeTime, Column: plan.FieldCreatedAt},
+			plan.FieldUpdatedAt:               {Type: field.TypeTime, Column: plan.FieldUpdatedAt},
+			plan.FieldDeletedAt:               {Type: field.TypeTime, Column: plan.FieldDeletedAt},
+			plan.FieldCreator:                 {Type: field.TypeJSON, Column: plan.FieldCreator},
+			plan.FieldLastModifier:            {Type: field.TypeJSON, Column: plan.FieldLastModifier},
+			plan.FieldRemark:                  {Type: field.TypeString, Column: plan.FieldRemark},
+			plan.FieldBrandID:                 {Type: field.TypeUint64, Column: plan.FieldBrandID},
+			plan.FieldModel:                   {Type: field.TypeString, Column: plan.FieldModel},
+			plan.FieldEnable:                  {Type: field.TypeBool, Column: plan.FieldEnable},
+			plan.FieldType:                    {Type: field.TypeUint8, Column: plan.FieldType},
+			plan.FieldName:                    {Type: field.TypeString, Column: plan.FieldName},
+			plan.FieldStart:                   {Type: field.TypeTime, Column: plan.FieldStart},
+			plan.FieldEnd:                     {Type: field.TypeTime, Column: plan.FieldEnd},
+			plan.FieldPrice:                   {Type: field.TypeFloat64, Column: plan.FieldPrice},
+			plan.FieldDays:                    {Type: field.TypeUint, Column: plan.FieldDays},
+			plan.FieldCommission:              {Type: field.TypeFloat64, Column: plan.FieldCommission},
+			plan.FieldOriginal:                {Type: field.TypeFloat64, Column: plan.FieldOriginal},
+			plan.FieldDesc:                    {Type: field.TypeString, Column: plan.FieldDesc},
+			plan.FieldParentID:                {Type: field.TypeUint64, Column: plan.FieldParentID},
+			plan.FieldDiscountNewly:           {Type: field.TypeFloat64, Column: plan.FieldDiscountNewly},
+			plan.FieldNotes:                   {Type: field.TypeJSON, Column: plan.FieldNotes},
+			plan.FieldIntelligent:             {Type: field.TypeBool, Column: plan.FieldIntelligent},
+			plan.FieldDeposit:                 {Type: field.TypeBool, Column: plan.FieldDeposit},
+			plan.FieldDepositAmount:           {Type: field.TypeFloat64, Column: plan.FieldDepositAmount},
+			plan.FieldDepositWechatPayscore:   {Type: field.TypeBool, Column: plan.FieldDepositWechatPayscore},
+			plan.FieldDepositAlipayAuthFreeze: {Type: field.TypeBool, Column: plan.FieldDepositAlipayAuthFreeze},
+			plan.FieldDepositContract:         {Type: field.TypeBool, Column: plan.FieldDepositContract},
+			plan.FieldDepositPay:              {Type: field.TypeBool, Column: plan.FieldDepositPay},
+			plan.FieldDepositPayway:           {Type: field.TypeJSON, Column: plan.FieldDepositPayway},
 		},
 	}
 	graph.Nodes[44] = &sqlgraph.Node{
@@ -12884,6 +12891,21 @@ func (f *OrderFilter) WhereTradePayAt(p entql.TimeP) {
 	f.Where(p.Field(order.FieldTradePayAt))
 }
 
+// WhereAuthNo applies the entql string predicate on the auth_no field.
+func (f *OrderFilter) WhereAuthNo(p entql.StringP) {
+	f.Where(p.Field(order.FieldAuthNo))
+}
+
+// WhereOutOrderNo applies the entql string predicate on the out_order_no field.
+func (f *OrderFilter) WhereOutOrderNo(p entql.StringP) {
+	f.Where(p.Field(order.FieldOutOrderNo))
+}
+
+// WhereOutRequestNo applies the entql string predicate on the out_request_no field.
+func (f *OrderFilter) WhereOutRequestNo(p entql.StringP) {
+	f.Where(p.Field(order.FieldOutRequestNo))
+}
+
 // WhereHasPlan applies a predicate to check if query has an edge plan.
 func (f *OrderFilter) WhereHasPlan() {
 	f.Where(entql.HasEdge("plan"))
@@ -13492,6 +13514,26 @@ func (f *PlanFilter) WhereDeposit(p entql.BoolP) {
 // WhereDepositAmount applies the entql float64 predicate on the deposit_amount field.
 func (f *PlanFilter) WhereDepositAmount(p entql.Float64P) {
 	f.Where(p.Field(plan.FieldDepositAmount))
+}
+
+// WhereDepositWechatPayscore applies the entql bool predicate on the deposit_wechat_payscore field.
+func (f *PlanFilter) WhereDepositWechatPayscore(p entql.BoolP) {
+	f.Where(p.Field(plan.FieldDepositWechatPayscore))
+}
+
+// WhereDepositAlipayAuthFreeze applies the entql bool predicate on the deposit_alipay_auth_freeze field.
+func (f *PlanFilter) WhereDepositAlipayAuthFreeze(p entql.BoolP) {
+	f.Where(p.Field(plan.FieldDepositAlipayAuthFreeze))
+}
+
+// WhereDepositContract applies the entql bool predicate on the deposit_contract field.
+func (f *PlanFilter) WhereDepositContract(p entql.BoolP) {
+	f.Where(p.Field(plan.FieldDepositContract))
+}
+
+// WhereDepositPay applies the entql bool predicate on the deposit_pay field.
+func (f *PlanFilter) WhereDepositPay(p entql.BoolP) {
+	f.Where(p.Field(plan.FieldDepositPay))
 }
 
 // WhereDepositPayway applies the entql json.RawMessage predicate on the deposit_payway field.

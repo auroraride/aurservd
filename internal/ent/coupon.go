@@ -90,12 +90,10 @@ type CouponEdges struct {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CouponEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[0] {
-		if e.Rider == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: rider.Label}
-		}
+	if e.Rider != nil {
 		return e.Rider, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
 }
@@ -103,12 +101,10 @@ func (e CouponEdges) RiderOrErr() (*Rider, error) {
 // AssemblyOrErr returns the Assembly value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CouponEdges) AssemblyOrErr() (*CouponAssembly, error) {
-	if e.loadedTypes[1] {
-		if e.Assembly == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: couponassembly.Label}
-		}
+	if e.Assembly != nil {
 		return e.Assembly, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: couponassembly.Label}
 	}
 	return nil, &NotLoadedError{edge: "assembly"}
 }
@@ -116,12 +112,10 @@ func (e CouponEdges) AssemblyOrErr() (*CouponAssembly, error) {
 // PlanOrErr returns the Plan value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CouponEdges) PlanOrErr() (*Plan, error) {
-	if e.loadedTypes[2] {
-		if e.Plan == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: plan.Label}
-		}
+	if e.Plan != nil {
 		return e.Plan, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: plan.Label}
 	}
 	return nil, &NotLoadedError{edge: "plan"}
 }
@@ -129,12 +123,10 @@ func (e CouponEdges) PlanOrErr() (*Plan, error) {
 // TemplateOrErr returns the Template value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CouponEdges) TemplateOrErr() (*CouponTemplate, error) {
-	if e.loadedTypes[3] {
-		if e.Template == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: coupontemplate.Label}
-		}
+	if e.Template != nil {
 		return e.Template, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: coupontemplate.Label}
 	}
 	return nil, &NotLoadedError{edge: "template"}
 }
@@ -142,12 +134,10 @@ func (e CouponEdges) TemplateOrErr() (*CouponTemplate, error) {
 // OrderOrErr returns the Order value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CouponEdges) OrderOrErr() (*Order, error) {
-	if e.loadedTypes[4] {
-		if e.Order == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: order.Label}
-		}
+	if e.Order != nil {
 		return e.Order, nil
+	} else if e.loadedTypes[4] {
+		return nil, &NotFoundError{label: order.Label}
 	}
 	return nil, &NotLoadedError{edge: "order"}
 }

@@ -75,12 +75,10 @@ type CabinetFaultEdges struct {
 // CityOrErr returns the City value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CabinetFaultEdges) CityOrErr() (*City, error) {
-	if e.loadedTypes[0] {
-		if e.City == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: city.Label}
-		}
+	if e.City != nil {
 		return e.City, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: city.Label}
 	}
 	return nil, &NotLoadedError{edge: "city"}
 }
@@ -88,12 +86,10 @@ func (e CabinetFaultEdges) CityOrErr() (*City, error) {
 // BranchOrErr returns the Branch value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CabinetFaultEdges) BranchOrErr() (*Branch, error) {
-	if e.loadedTypes[1] {
-		if e.Branch == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: branch.Label}
-		}
+	if e.Branch != nil {
 		return e.Branch, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: branch.Label}
 	}
 	return nil, &NotLoadedError{edge: "branch"}
 }
@@ -101,12 +97,10 @@ func (e CabinetFaultEdges) BranchOrErr() (*Branch, error) {
 // CabinetOrErr returns the Cabinet value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CabinetFaultEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[2] {
-		if e.Cabinet == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: cabinet.Label}
-		}
+	if e.Cabinet != nil {
 		return e.Cabinet, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: cabinet.Label}
 	}
 	return nil, &NotLoadedError{edge: "cabinet"}
 }
@@ -114,12 +108,10 @@ func (e CabinetFaultEdges) CabinetOrErr() (*Cabinet, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CabinetFaultEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[3] {
-		if e.Rider == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: rider.Label}
-		}
+	if e.Rider != nil {
 		return e.Rider, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
 }

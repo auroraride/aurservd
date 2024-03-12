@@ -1115,6 +1115,12 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
 		profile.OrderNotActived = silk.Bool(subd != nil && subd.Status == model.SubscribeStatusInactive)
 		profile.Deposit = s.Deposit(u.ID)
 		profile.UseStore = true
+
+		// v2 用于判断是否需要缴纳押金
+		o := s.DepositOrder(u.ID)
+		if o == nil {
+			profile.NeedDeposit = true
+		}
 	}
 	return profile
 }

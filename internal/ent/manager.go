@@ -60,12 +60,10 @@ type ManagerEdges struct {
 // RoleOrErr returns the Role value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ManagerEdges) RoleOrErr() (*Role, error) {
-	if e.loadedTypes[0] {
-		if e.Role == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: role.Label}
-		}
+	if e.Role != nil {
 		return e.Role, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: role.Label}
 	}
 	return nil, &NotLoadedError{edge: "role"}
 }
