@@ -164,9 +164,123 @@ definitions:
         description: 排序
         type: integer
     required:
-    - answer
-    - name
-    - sort
+      - answer
+      - name
+      - sort
+    type: object
+  definition.QuestionCategoryCreateReq:
+    properties:
+      name:
+        type: string
+      remark:
+        type: string
+      sort:
+        type: integer
+    required:
+      - name
+      - sort
+    type: object
+  definition.QuestionCategoryDetail:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      remark:
+        type: string
+      sort:
+        type: integer
+    required:
+      - name
+      - sort
+    type: object
+  definition.QuestionCategoryListReq:
+    properties:
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+    type: object
+  definition.QuestionCategoryModifyReq:
+    properties:
+      name:
+        type: string
+      remark:
+        type: string
+      sort:
+        type: integer
+    required:
+      - name
+      - sort
+    type: object
+  definition.QuestionCreateReq:
+    properties:
+      answer:
+        type: string
+      category_id:
+        type: integer
+      category_name:
+        type: string
+      name:
+        type: string
+      sort:
+        type: integer
+    required:
+      - answer
+      - name
+      - sort
+    type: object
+  definition.QuestionDetail:
+    properties:
+      answer:
+        type: string
+      category_id:
+        type: integer
+      category_name:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      sort:
+        type: integer
+    required:
+      - answer
+      - name
+      - sort
+    type: object
+  definition.QuestionListReq:
+    properties:
+      category_id:
+        description: 分类ID,0表示其他，不传表示全部
+        type: integer
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      keywords:
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+    type: object
+  definition.QuestionModifyReq:
+    properties:
+      answer:
+        type: string
+      category_id:
+        type: integer
+      category_name:
+        type: string
+      name:
+        type: string
+      sort:
+        type: integer
+    required:
+      - answer
+      - name
+      - sort
     type: object
   model.AgentCreateReq:
     properties:
@@ -12684,6 +12798,270 @@ paths:
       summary: 导出提现列表
       tags:
       - '[PM]推广管理接口'
+  /manager/v1/question:
+    get:
+      consumes:
+        - application/json
+      operationId: QuestionList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.QuestionListReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.QuestionDetail'
+            type: array
+      summary: 常见问题分页列表
+      tags:
+        - 设置
+    post:
+      consumes:
+        - application/json
+      operationId: QuestionCreate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.QuestionCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建常见问题
+      tags:
+        - 设置
+    put:
+      consumes:
+        - application/json
+      operationId: QuestionModify
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.QuestionModifyReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改常见问题
+      tags:
+        - 设置
+  /manager/v1/question/{id}:
+    delete:
+      consumes:
+        - application/json
+      operationId: QuestionDelete
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 分类ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 删除常见问题
+      tags:
+        - 设置
+    get:
+      consumes:
+        - application/json
+      operationId: QuestionDetail
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 分类ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.QuestionDetail'
+      summary: 常见问题详情
+      tags:
+        - 设置
+  /manager/v1/question/category:
+    get:
+      consumes:
+        - application/json
+      operationId: Question_categoryList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.QuestionCategoryListReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.QuestionCategoryDetail'
+            type: array
+      summary: 问题分类分页列表
+      tags:
+        - 设置
+    post:
+      consumes:
+        - application/json
+      operationId: Question_categoryCreate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.QuestionCategoryCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建问题分类
+      tags:
+        - 设置
+    put:
+      consumes:
+        - application/json
+      operationId: Question_categoryModify
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.QuestionCategoryModifyReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改问题分类
+      tags:
+        - 设置
+  /manager/v1/question/category/{id}:
+    delete:
+      consumes:
+        - application/json
+      operationId: Question_categoryDelete
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 分类ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 删除问题分类
+      tags:
+        - 设置
+    get:
+      consumes:
+        - application/json
+      operationId: Question_categoryDetail
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 分类ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 问题分类详情
+      tags:
+        - 设置
   /manager/v1/rider:
     get:
       consumes:

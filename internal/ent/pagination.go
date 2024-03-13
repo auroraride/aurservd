@@ -1869,6 +1869,68 @@ func (pwq *PromotionWithdrawalQuery) PaginationResult(req model.PaginationReq) m
 	}
 }
 
+// Pagination returns pagination query builder for QuestionQuery.
+func (qq *QuestionQuery) Pagination(req model.PaginationReq) *QuestionQuery {
+	qq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return qq
+}
+
+// PaginationItems returns pagination query builder for QuestionQuery.
+func (qq *QuestionQuery) PaginationItemsX(req model.PaginationReq) any {
+	return qq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for QuestionQuery.
+func (qq *QuestionQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := qq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for QuestionCategoryQuery.
+func (qcq *QuestionCategoryQuery) Pagination(req model.PaginationReq) *QuestionCategoryQuery {
+	qcq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return qcq
+}
+
+// PaginationItems returns pagination query builder for QuestionCategoryQuery.
+func (qcq *QuestionCategoryQuery) PaginationItemsX(req model.PaginationReq) any {
+	return qcq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for QuestionCategoryQuery.
+func (qcq *QuestionCategoryQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := qcq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for ReserveQuery.
 func (rq *ReserveQuery) Pagination(req model.PaginationReq) *ReserveQuery {
 	rq.Offset(req.GetOffset()).Limit(req.GetLimit())

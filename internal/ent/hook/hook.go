@@ -729,6 +729,30 @@ func (f PromotionWithdrawalFunc) Mutate(ctx context.Context, m ent.Mutation) (en
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionWithdrawalMutation", m)
 }
 
+// The QuestionFunc type is an adapter to allow the use of ordinary
+// function as Question mutator.
+type QuestionFunc func(context.Context, *ent.QuestionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f QuestionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.QuestionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.QuestionMutation", m)
+}
+
+// The QuestionCategoryFunc type is an adapter to allow the use of ordinary
+// function as QuestionCategory mutator.
+type QuestionCategoryFunc func(context.Context, *ent.QuestionCategoryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f QuestionCategoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.QuestionCategoryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.QuestionCategoryMutation", m)
+}
+
 // The ReserveFunc type is an adapter to allow the use of ordinary
 // function as Reserve mutator.
 type ReserveFunc func(context.Context, *ent.ReserveMutation) (ent.Value, error)

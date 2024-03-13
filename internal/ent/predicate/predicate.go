@@ -186,6 +186,12 @@ type PromotionSetting func(*sql.Selector)
 // PromotionWithdrawal is the predicate function for promotionwithdrawal builders.
 type PromotionWithdrawal func(*sql.Selector)
 
+// Question is the predicate function for question builders.
+type Question func(*sql.Selector)
+
+// QuestionCategory is the predicate function for questioncategory builders.
+type QuestionCategory func(*sql.Selector)
+
 // Reserve is the predicate function for reserve builders.
 type Reserve func(*sql.Selector)
 

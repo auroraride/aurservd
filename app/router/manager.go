@@ -46,6 +46,20 @@ func loadManagerRoutes() {
 	g.PUT("/activity", mapi.Setting.ActivityModify)        // 编辑
 	g.DELETE("/activity/:id", mapi.Setting.ActivityDelete) // 删除
 
+	// 设置-问题分类
+	g.GET("/question/category", mapi.QuestionCategory.List) // 列表
+	g.POST("/question/category", mapi.QuestionCategory.Create)
+	g.PUT("/question/category", mapi.QuestionCategory.Modify)
+	g.GET("/question/category/:id", mapi.QuestionCategory.Detail)
+	g.DELETE("/question/category/:id", mapi.QuestionCategory.Delete)
+
+	// 设置-常见问题
+	g.GET("/question", mapi.Question.List)
+	g.POST("/question", mapi.Question.Create)
+	g.PUT("/question", mapi.Question.Modify)
+	g.GET("/question/:id", mapi.Question.Detail)
+	g.DELETE("/question/:id", mapi.Question.Delete)
+
 	// 城市
 	g.GET("/city", mapi.City.List)       // 城市列表
 	g.PUT("/city/:id", mapi.City.Modify) // 启用或关闭城市
