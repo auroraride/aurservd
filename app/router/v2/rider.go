@@ -102,9 +102,9 @@ func LoadRiderV2Routes(root *echo.Group) {
 	contract.GET("/:sn", v1.Contract.SignResult)
 
 	// 获取网点
-	g.GET("/branch", v1.Branch.List, auth())
-	g.GET("/branch/riding", v1.Branch.Riding, auth())
-	g.GET("/branch/facility/:fid", v1.Branch.Facility, auth())
+	g.GET("/branch", v1.Branch.List)
+	// g.GET("/branch/riding", v1.Branch.Riding, auth())
+	g.GET("/branch/facility/:fid", v1.Branch.Facility)
 
 	// 骑士卡
 	g.GET("/plan", v1.Plan.List, auth())
