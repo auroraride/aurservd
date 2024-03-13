@@ -1503,6 +1503,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/direction": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rider - 骑手"
+                ],
+                "summary": "路径规划",
+                "operationId": "RiderDirection",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "终点",
+                        "name": "destination",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "起点",
+                        "name": "origin",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.RiderDirectionRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/enterprise/battery": {
             "get": {
                 "consumes": [
@@ -3252,6 +3298,249 @@ const docTemplate = `{
                 },
                 "version": {
                     "type": "string"
+                }
+            }
+        },
+        "definition.RiderDirectionRes": {
+            "type": "object",
+            "properties": {
+                "destination": {
+                    "description": "终点信息",
+                    "type": "object",
+                    "properties": {
+                        "area_id": {
+                            "description": "终点区域ID",
+                            "type": "integer"
+                        },
+                        "cname": {
+                            "description": "终点城市名称",
+                            "type": "string"
+                        },
+                        "destinationPt": {
+                            "description": "终点坐标",
+                            "type": "object",
+                            "properties": {
+                                "lat": {
+                                    "description": "终点纬度",
+                                    "type": "number"
+                                },
+                                "lng": {
+                                    "description": "终点经度",
+                                    "type": "number"
+                                }
+                            }
+                        },
+                        "uid": {
+                            "description": "终点UID",
+                            "type": "string"
+                        },
+                        "wd": {
+                            "description": "终点名称",
+                            "type": "string"
+                        }
+                    }
+                },
+                "origin": {
+                    "description": "起点信息",
+                    "type": "object",
+                    "properties": {
+                        "area_id": {
+                            "description": "起点区域ID",
+                            "type": "integer"
+                        },
+                        "cname": {
+                            "description": "起点城市名称",
+                            "type": "string"
+                        },
+                        "originPt": {
+                            "description": "起点坐标",
+                            "type": "object",
+                            "properties": {
+                                "lat": {
+                                    "description": "起点纬度",
+                                    "type": "number"
+                                },
+                                "lng": {
+                                    "description": "起点经度",
+                                    "type": "number"
+                                }
+                            }
+                        },
+                        "uid": {
+                            "description": "起点UID",
+                            "type": "string"
+                        },
+                        "wd": {
+                            "description": "起点名称",
+                            "type": "string"
+                        }
+                    }
+                },
+                "routes": {
+                    "description": "方案列表",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "destinationLocation": {
+                                "description": "路线终点坐标",
+                                "type": "object",
+                                "properties": {
+                                    "lat": {
+                                        "description": "路线终点纬度",
+                                        "type": "number"
+                                    },
+                                    "lng": {
+                                        "description": "路线终点经度",
+                                        "type": "number"
+                                    }
+                                }
+                            },
+                            "distance": {
+                                "description": "方案距离 单位：米",
+                                "type": "integer"
+                            },
+                            "duration": {
+                                "description": "单位：秒",
+                                "type": "integer"
+                            },
+                            "originLocation": {
+                                "description": "路线起点坐标",
+                                "type": "object",
+                                "properties": {
+                                    "lat": {
+                                        "description": "路线终点纬度",
+                                        "type": "number"
+                                    },
+                                    "lng": {
+                                        "description": "路线终点经度",
+                                        "type": "number"
+                                    }
+                                }
+                            },
+                            "restrictions_info": {
+                                "description": "限行信息\t如 \"包含禁行路段|包含逆行路段\"",
+                                "type": "string"
+                            },
+                            "restrictions_status": {
+                                "description": "限行类型\t0x01表示禁行；0x02表示逆行",
+                                "type": "integer"
+                            },
+                            "steps": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "area": {
+                                            "description": "文档未标注",
+                                            "type": "integer"
+                                        },
+                                        "direction": {
+                                            "description": "当前道路方向角",
+                                            "type": "integer"
+                                        },
+                                        "distance": {
+                                            "description": "路段距离\t单位：米",
+                                            "type": "integer"
+                                        },
+                                        "duration": {
+                                            "description": "路段耗时\t单位：秒",
+                                            "type": "integer"
+                                        },
+                                        "instructions": {
+                                            "description": "路段描述\t如“骑行50米“",
+                                            "type": "string"
+                                        },
+                                        "leg_index": {
+                                            "type": "integer"
+                                        },
+                                        "links": {
+                                            "description": "link信息",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "attr": {
+                                                        "description": "link属性\t0x01表示禁行；0x02表示逆行",
+                                                        "type": "integer"
+                                                    },
+                                                    "length": {
+                                                        "description": "link长度\t单位：米",
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "name": {
+                                            "description": "该路段道路名称\t如“信息路“ 若道路未命名或百度地图未采集到该道路名称，则返回\"无名路\"",
+                                            "type": "string"
+                                        },
+                                        "path": {
+                                            "description": "路段位置坐标描述",
+                                            "type": "string"
+                                        },
+                                        "pois": {
+                                            "description": "文档未标注  该路段途径的POI列表？",
+                                            "type": "array",
+                                            "items": {}
+                                        },
+                                        "restrictions_info": {
+                                            "description": "限行信息\t如 \"包含禁行路段|包含逆行路段\"",
+                                            "type": "string"
+                                        },
+                                        "restrictions_status": {
+                                            "description": "限行类型\t0x01表示禁行；0x02表示逆行",
+                                            "type": "integer"
+                                        },
+                                        "stepDestinationInstruction": {
+                                            "description": "路段终点描述？",
+                                            "type": "string"
+                                        },
+                                        "stepDestinationLocation": {
+                                            "description": "路段终点坐标",
+                                            "type": "object",
+                                            "properties": {
+                                                "lat": {
+                                                    "description": "路段终点经度",
+                                                    "type": "number"
+                                                },
+                                                "lng": {
+                                                    "description": "路段终点经度",
+                                                    "type": "number"
+                                                }
+                                            }
+                                        },
+                                        "stepOriginInstruction": {
+                                            "description": "路段起点描述？",
+                                            "type": "string"
+                                        },
+                                        "stepOriginLocation": {
+                                            "description": "路段起点坐标",
+                                            "type": "object",
+                                            "properties": {
+                                                "lat": {
+                                                    "description": "路段起点纬度",
+                                                    "type": "number"
+                                                },
+                                                "lng": {
+                                                    "description": "路段起点经度",
+                                                    "type": "number"
+                                                }
+                                            }
+                                        },
+                                        "turn_type": {
+                                            "description": "行驶转向方向\t如“直行”、“左前方转弯”",
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "description": "文档未标注",
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },

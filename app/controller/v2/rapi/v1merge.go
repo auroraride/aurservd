@@ -553,8 +553,6 @@ func (*Reserve) Create() {}
 // @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*Reserve) Cancel() {}
 
-type Rider struct{}
-
 // Signin
 // @ID		Signin
 // @Router	/rider/v2/signin [POST]
@@ -564,7 +562,7 @@ type Rider struct{}
 // @Produce	json
 // @Param	body	body		model.RiderSignupReq	true	"desc"
 // @Success	200		{object}	model.RiderSigninRes	"请求成功"
-func (*Rider) Signin() {}
+func (*rider) Signin() {}
 
 // Contact
 // @ID		Contact
@@ -576,7 +574,7 @@ func (*Rider) Signin() {}
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"
 // @Param	body			body		model.RiderContact		true	"desc"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
-func (r *Rider) Contact() {}
+func (r *rider) Contact() {}
 
 // Authenticator
 // @ID		Authenticator
@@ -588,7 +586,7 @@ func (r *Rider) Contact() {}
 // @Param	X-Rider-Token	header		string						true	"骑手校验token"
 // @Param	body			body		model.RiderContact			true	"desc"
 // @Success	200				{object}	model.FaceAuthUrlResponse	"请求成功"
-func (*Rider) Authenticator() {}
+func (*rider) Authenticator() {}
 
 // AuthResult
 // @ID		AuthResult
@@ -600,7 +598,7 @@ func (*Rider) Authenticator() {}
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"
 // @Param	token			path		string					true	"实名认证token"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
-func (r *Rider) AuthResult() {}
+func (r *rider) AuthResult() {}
 
 // FaceResult
 // @ID		FaceResult
@@ -612,9 +610,9 @@ func (r *Rider) AuthResult() {}
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"
 // @Param	token			path		string					true	"人脸校验token"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
-func (r *Rider) FaceResult() {}
+func (r *rider) FaceResult() {}
 
-func (r *Rider) Demo() {}
+func (r *rider) Demo() {}
 
 // Profile
 // @ID		Profile
@@ -625,7 +623,7 @@ func (r *Rider) Demo() {}
 // @Produce	json
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"
 // @Success	200				{object}	model.RiderSigninRes	"请求成功"
-func (r *Rider) Profile() {}
+func (r *rider) Profile() {}
 
 // Deposit
 // @ID		Deposit
@@ -636,7 +634,7 @@ func (r *Rider) Profile() {}
 // @Produce	json
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"
 // @Success	200				{object}	model.RiderDepositRes	"请求成功"
-func (*Rider) Deposit() {}
+func (*rider) Deposit() {}
 
 // Deregister
 // @ID		Deregister
@@ -647,7 +645,7 @@ func (*Rider) Deposit() {}
 // @Produce	json
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
-func (*Rider) Deregister() {}
+func (*rider) Deregister() {}
 
 // App
 // @ID		SettingApp
