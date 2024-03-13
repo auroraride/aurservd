@@ -205,7 +205,12 @@ definitions:
           $ref: '#/definitions/model.BranchFacilityCabinetBin'
         type: array
       businesses:
-        description: 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        description: 骑手可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        items:
+          type: string
+        type: array
+      cabinetBusinesses:
+        description: 电柜可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
         items:
           type: string
         type: array
@@ -311,6 +316,11 @@ definitions:
       address:
         description: 网点地址
         type: string
+      businesses:
+        description: 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        items:
+          type: string
+        type: array
       distance:
         description: '距离(前端处理: 超过1000米显示nKM)'
         type: number

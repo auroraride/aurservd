@@ -499,22 +499,38 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 
 			s.facility(itemsMap[*c.BranchID].FacilityMap, fa)
 
-			if sub != nil && NewCabinet().ModelInclude(c, sub.Model) {
-				if branchBusinessesMap[*c.BranchID] == nil {
-					branchBusinessesMap[*c.BranchID] = make(map[uint64][]string)
-				}
-				// 获取可办理业务
-				switch sub.Status {
-				case model.SubscribeStatusInactive:
-					// 未激活时仅能办理激活业务
-					branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], business.TypeActive.String())
-				case model.SubscribeStatusPaused:
-					// 寄存中时仅能办理取消寄存业务
-					branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], business.TypeContinue.String())
-				case model.SubscribeStatusUsing:
-					// 使用中可办理寄存和退租业务
-					branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], business.TypePause.String(), business.TypeUnsubscribe.String())
-				}
+			// 电柜可办理业务
+			if branchBusinessesMap[*c.BranchID] == nil {
+				branchBusinessesMap[*c.BranchID] = make(map[uint64][]string)
+			}
+
+			// active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+			// 查询激活预约数
+			reserveActiveNum := NewReserve().CabinetCounts([]uint64{c.ID}, "active")
+			// 查询结束寄存
+			reserveContinueNum := NewReserve().CabinetCounts([]uint64{c.ID}, "continue")
+			// 查询寄存
+			reservePauseNum := NewReserve().CabinetCounts([]uint64{c.ID}, "pause")
+			// 查询退租
+			reserveUnsubscribeNum := NewReserve().CabinetCounts([]uint64{c.ID}, "unsubscribe")
+
+			var batteryFullNum, emptyBinNum int
+
+			// 可用电池数
+			batteryFullNum = c.BatteryFullNum - reserveActiveNum[c.ID] - reserveContinueNum[c.ID]
+			// 可用空仓数
+			emptyBinNum = c.EmptyBinNum - reservePauseNum[c.ID] - reserveUnsubscribeNum[c.ID]
+
+			// 电柜可办业务展示规则：
+			//  1）激活：电柜可用电池数 ≥ 2
+			//  2）退租：电柜空仓数 ≥ 2
+			//  3）寄存：电柜空仓数 ≥ 2
+			//  4）结束寄存：电柜可用电池数 ≥ 2
+			if batteryFullNum >= 2 {
+				branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], business.TypeActive.String(), business.TypeContinue.String())
+			}
+			if emptyBinNum >= 2 {
+				branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], business.TypePause.String(), business.TypeUnsubscribe.String())
 			}
 		}
 	}
@@ -704,12 +720,13 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 				Capacity: bm.Capacity,
 			}
 			c := model.BranchFacilityCabinet{
-				ID:         cab.ID,
-				Name:       cab.Name,
-				Serial:     cab.Serial,
-				Reserve:    nil,
-				Bins:       make([]model.BranchFacilityCabinetBin, len(cab.Bin)),
-				Businesses: make([]string, 0),
+				ID:                cab.ID,
+				Name:              cab.Name,
+				Serial:            cab.Serial,
+				Reserve:           nil,
+				Bins:              make([]model.BranchFacilityCabinetBin, len(cab.Bin)),
+				Businesses:        make([]string, 0),
+				CabinetBusinesses: make([]string, 0),
 			}
 
 			// 获取电柜状态
@@ -771,6 +788,29 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 					// 使用中可办理寄存和退租业务
 					c.Businesses = []string{business.TypePause.String(), business.TypeUnsubscribe.String()}
 				}
+			}
+
+			// 电柜可办理业务
+			reserveActiveNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "active")
+			// 查询结束寄存
+			reserveContinueNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "continue")
+			// 查询寄存
+			reservePauseNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "pause")
+			// 查询退租
+			reserveUnsubscribeNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "unsubscribe")
+
+			var batteryFullNum, emptyBinNum int
+
+			// 可用电池数
+			batteryFullNum = cab.BatteryFullNum - reserveActiveNum[c.ID] - reserveContinueNum[c.ID]
+			// 可用空仓数
+			emptyBinNum = cab.EmptyBinNum - reservePauseNum[c.ID] - reserveUnsubscribeNum[c.ID]
+
+			if batteryFullNum >= 2 {
+				c.CabinetBusinesses = append(c.CabinetBusinesses, business.TypeActive.String(), business.TypeContinue.String())
+			}
+			if emptyBinNum >= 2 {
+				c.CabinetBusinesses = append(c.CabinetBusinesses, business.TypePause.String(), business.TypeUnsubscribe.String())
 			}
 
 			data.Cabinet = append(data.Cabinet, c)

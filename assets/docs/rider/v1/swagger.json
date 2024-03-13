@@ -2750,7 +2750,14 @@
                     }
                 },
                 "businesses": {
-                    "description": "可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                  "description": "骑手可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+              "cabinetBusinesses": {
+                "description": "电柜可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -2903,6 +2910,13 @@
                 "address": {
                     "description": "网点地址",
                     "type": "string"
+                },
+              "businesses": {
+                "description": "可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
                 },
                 "distance": {
                     "description": "距离(前端处理: 超过1000米显示nKM)",
