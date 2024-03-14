@@ -104,23 +104,23 @@ func (qcu *QuestionCategoryUpdate) SetNillableName(s *string) *QuestionCategoryU
 }
 
 // SetSort sets the "sort" field.
-func (qcu *QuestionCategoryUpdate) SetSort(i int) *QuestionCategoryUpdate {
+func (qcu *QuestionCategoryUpdate) SetSort(u uint64) *QuestionCategoryUpdate {
 	qcu.mutation.ResetSort()
-	qcu.mutation.SetSort(i)
+	qcu.mutation.SetSort(u)
 	return qcu
 }
 
 // SetNillableSort sets the "sort" field if the given value is not nil.
-func (qcu *QuestionCategoryUpdate) SetNillableSort(i *int) *QuestionCategoryUpdate {
-	if i != nil {
-		qcu.SetSort(*i)
+func (qcu *QuestionCategoryUpdate) SetNillableSort(u *uint64) *QuestionCategoryUpdate {
+	if u != nil {
+		qcu.SetSort(*u)
 	}
 	return qcu
 }
 
-// AddSort adds i to the "sort" field.
-func (qcu *QuestionCategoryUpdate) AddSort(i int) *QuestionCategoryUpdate {
-	qcu.mutation.AddSort(i)
+// AddSort adds u to the "sort" field.
+func (qcu *QuestionCategoryUpdate) AddSort(u int64) *QuestionCategoryUpdate {
+	qcu.mutation.AddSort(u)
 	return qcu
 }
 
@@ -263,10 +263,10 @@ func (qcu *QuestionCategoryUpdate) sqlSave(ctx context.Context) (n int, err erro
 		_spec.SetField(questioncategory.FieldName, field.TypeString, value)
 	}
 	if value, ok := qcu.mutation.Sort(); ok {
-		_spec.SetField(questioncategory.FieldSort, field.TypeInt, value)
+		_spec.SetField(questioncategory.FieldSort, field.TypeUint64, value)
 	}
 	if value, ok := qcu.mutation.AddedSort(); ok {
-		_spec.AddField(questioncategory.FieldSort, field.TypeInt, value)
+		_spec.AddField(questioncategory.FieldSort, field.TypeUint64, value)
 	}
 	if qcu.mutation.QuestionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -408,23 +408,23 @@ func (qcuo *QuestionCategoryUpdateOne) SetNillableName(s *string) *QuestionCateg
 }
 
 // SetSort sets the "sort" field.
-func (qcuo *QuestionCategoryUpdateOne) SetSort(i int) *QuestionCategoryUpdateOne {
+func (qcuo *QuestionCategoryUpdateOne) SetSort(u uint64) *QuestionCategoryUpdateOne {
 	qcuo.mutation.ResetSort()
-	qcuo.mutation.SetSort(i)
+	qcuo.mutation.SetSort(u)
 	return qcuo
 }
 
 // SetNillableSort sets the "sort" field if the given value is not nil.
-func (qcuo *QuestionCategoryUpdateOne) SetNillableSort(i *int) *QuestionCategoryUpdateOne {
-	if i != nil {
-		qcuo.SetSort(*i)
+func (qcuo *QuestionCategoryUpdateOne) SetNillableSort(u *uint64) *QuestionCategoryUpdateOne {
+	if u != nil {
+		qcuo.SetSort(*u)
 	}
 	return qcuo
 }
 
-// AddSort adds i to the "sort" field.
-func (qcuo *QuestionCategoryUpdateOne) AddSort(i int) *QuestionCategoryUpdateOne {
-	qcuo.mutation.AddSort(i)
+// AddSort adds u to the "sort" field.
+func (qcuo *QuestionCategoryUpdateOne) AddSort(u int64) *QuestionCategoryUpdateOne {
+	qcuo.mutation.AddSort(u)
 	return qcuo
 }
 
@@ -597,10 +597,10 @@ func (qcuo *QuestionCategoryUpdateOne) sqlSave(ctx context.Context) (_node *Ques
 		_spec.SetField(questioncategory.FieldName, field.TypeString, value)
 	}
 	if value, ok := qcuo.mutation.Sort(); ok {
-		_spec.SetField(questioncategory.FieldSort, field.TypeInt, value)
+		_spec.SetField(questioncategory.FieldSort, field.TypeUint64, value)
 	}
 	if value, ok := qcuo.mutation.AddedSort(); ok {
-		_spec.AddField(questioncategory.FieldSort, field.TypeInt, value)
+		_spec.AddField(questioncategory.FieldSort, field.TypeUint64, value)
 	}
 	if qcuo.mutation.QuestionsCleared() {
 		edge := &sqlgraph.EdgeSpec{

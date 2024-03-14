@@ -34,7 +34,7 @@ type QuestionCategory struct {
 	// 名称
 	Name string `json:"name,omitempty"`
 	// 排序
-	Sort int `json:"sort,omitempty"`
+	Sort uint64 `json:"sort,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the QuestionCategoryQuery when eager-loading is set.
 	Edges        QuestionCategoryEdges `json:"edges"`
@@ -144,7 +144,7 @@ func (qc *QuestionCategory) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field sort", values[i])
 			} else if value.Valid {
-				qc.Sort = int(value.Int64)
+				qc.Sort = uint64(value.Int64)
 			}
 		default:
 			qc.selectValues.Set(columns[i], values[i])

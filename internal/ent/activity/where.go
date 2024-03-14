@@ -84,9 +84,9 @@ func Sort(v int) predicate.Activity {
 	return predicate.Activity(sql.FieldEQ(FieldSort, v))
 }
 
-// Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
-func Status(v bool) predicate.Activity {
-	return predicate.Activity(sql.FieldEQ(FieldStatus, v))
+// Enable applies equality check predicate on the "enable" field. It's identical to EnableEQ.
+func Enable(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldEQ(FieldEnable, v))
 }
 
 // Introduction applies equality check predicate on the "introduction" field. It's identical to IntroductionEQ.
@@ -409,14 +409,14 @@ func SortLTE(v int) predicate.Activity {
 	return predicate.Activity(sql.FieldLTE(FieldSort, v))
 }
 
-// StatusEQ applies the EQ predicate on the "status" field.
-func StatusEQ(v bool) predicate.Activity {
-	return predicate.Activity(sql.FieldEQ(FieldStatus, v))
+// EnableEQ applies the EQ predicate on the "enable" field.
+func EnableEQ(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldEQ(FieldEnable, v))
 }
 
-// StatusNEQ applies the NEQ predicate on the "status" field.
-func StatusNEQ(v bool) predicate.Activity {
-	return predicate.Activity(sql.FieldNEQ(FieldStatus, v))
+// EnableNEQ applies the NEQ predicate on the "enable" field.
+func EnableNEQ(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldNEQ(FieldEnable, v))
 }
 
 // IntroductionEQ applies the EQ predicate on the "introduction" field.

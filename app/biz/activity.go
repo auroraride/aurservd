@@ -7,10 +7,13 @@ package biz
 import (
 	"context"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/activity"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type activityBiz struct {
@@ -26,7 +29,7 @@ func NewActivity() *activityBiz {
 }
 
 func (a *activityBiz) Detail(id uint64) (*definition.ActivityDetail, error) {
-	item, err := a.orm.Get(a.ctx, id)
+	item, err := a.orm.QueryNotDeleted().Where(activity.ID(id)).First(a.ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -43,6 +46,7 @@ func (a *activityBiz) Create(req *definition.ActivityCreateReq) error {
 		SetNillablePopup(req.Popup).
 		SetNillableIndex(req.Index).
 		SetNillableRemark(req.Remark).
+		SetEnable(req.Enable).
 		Save(ctx)
 	if err != nil {
 		return err
@@ -59,6 +63,7 @@ func (a *activityBiz) Modify(req *definition.ActivityModifyReq) error {
 		SetNillablePopup(req.Popup).
 		SetNillableIndex(req.Index).
 		SetNillableRemark(req.Remark).
+		SetEnable(req.Enable).
 		Save(a.ctx)
 	if err != nil {
 		return err
@@ -75,7 +80,9 @@ func (a *activityBiz) Delete(id uint64) error {
 }
 
 func (a *activityBiz) All() ([]*definition.ActivityDetail, error) {
-	items, err := a.orm.Query().Order(ent.Desc(activity.FieldSort)).All(a.ctx)
+	items, err := a.orm.QueryNotDeleted().
+		Where(activity.EnableEQ(true)).
+		Order(ent.Desc(activity.FieldSort)).All(a.ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -86,9 +93,26 @@ func (a *activityBiz) All() ([]*definition.ActivityDetail, error) {
 	return res, nil
 }
 
-func (a *activityBiz) List(req *model.PaginationReq) *model.PaginationRes {
-	query := a.orm.Query().Order(ent.Desc(activity.FieldSort))
-	return model.ParsePaginationResponse(query, *req, func(item *ent.Activity) *definition.ActivityDetail {
+func (a *activityBiz) List(req *definition.ActivityListReq) *model.PaginationRes {
+	query := a.orm.QueryNotDeleted().Order(ent.Desc(activity.FieldSort))
+	if req.Keyword != nil {
+		query.Where(activity.NameContains(*req.Keyword))
+	}
+
+	if req.Enable != nil {
+		query.Where(activity.EnableEQ(*req.Enable))
+	}
+
+	if req.Start != nil && req.End != nil {
+		start := tools.NewTime().ParseDateStringX(*req.Start)
+		end := tools.NewTime().ParseNextDateStringX(*req.End)
+		query.Where(
+			activity.UpdatedAtGTE(start),
+			activity.UpdatedAtLTE(end),
+		)
+	}
+
+	return model.ParsePaginationResponse(query, req.PaginationReq, func(item *ent.Activity) *definition.ActivityDetail {
 		return toActivityDetail(item)
 	})
 }
@@ -97,13 +121,15 @@ func toActivityDetail(item *ent.Activity) *definition.ActivityDetail {
 	return &definition.ActivityDetail{
 		ID: item.ID,
 		ActivityReqCommon: definition.ActivityReqCommon{
-			Name:   item.Name,
-			Sort:   item.Sort,
-			Image:  item.Image,
-			Link:   item.Link,
-			Remark: &item.Remark,
-			Popup:  &item.Popup,
-			Index:  &item.Index,
+			Name:      item.Name,
+			Sort:      item.Sort,
+			Image:     item.Image,
+			Link:      item.Link,
+			Remark:    &item.Remark,
+			Popup:     &item.Popup,
+			Index:     &item.Index,
+			Enable:    item.Enable,
+			UpdatedAt: item.UpdatedAt.Format(carbon.DateTimeLayout),
 		},
 	}
 }

@@ -55,7 +55,7 @@ func (b *questionBiz) Modify(req *definition.QuestionModifyReq) error {
 
 // Delete 删除
 func (b *questionBiz) Delete(id uint64) error {
-	err := b.orm.DeleteOneID(id).Exec(b.ctx)
+	err := b.orm.SoftDeleteOneID(id).Exec(b.ctx)
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (b *questionBiz) Delete(id uint64) error {
 
 // Detail 详情
 func (b *questionBiz) Detail(id uint64) (*definition.QuestionDetail, error) {
-	qs, err := b.orm.Get(b.ctx, id)
+	qs, err := b.orm.QueryNotDeleted().Where(question.ID(id)).First(b.ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -81,31 +81,35 @@ func (b *questionBiz) Detail(id uint64) (*definition.QuestionDetail, error) {
 
 // List 列表
 func (b *questionBiz) List(req *definition.QuestionListReq) (*model.PaginationRes, error) {
-	query := b.orm.Query().WithCategory()
+	query := b.orm.QueryNotDeleted().WithCategory().Order(ent.Desc(question.FieldSort))
 	if req.Keyword != nil {
-		query = query.Where(question.NameContains(*req.Keyword))
+		query.Where(question.NameContains(*req.Keyword))
 	}
 	if req.CategoryID != nil {
-		query = query.Where(question.CategoryIDEQ(*req.CategoryID))
+		query.Where(question.CategoryIDEQ(*req.CategoryID))
 	}
 
 	return model.ParsePaginationResponse(query, req.PaginationReq, func(item *ent.Question) *definition.QuestionDetail {
+		questionCommon := definition.QuestionCommon{
+			Name:       item.Name,
+			Sort:       item.Sort,
+			CategoryID: item.CategoryID,
+			Answer:     item.Answer,
+		}
+		if item.Edges.Category != nil {
+			questionCommon.CategoryName = item.Edges.Category.Name
+		}
+
 		return &definition.QuestionDetail{
-			IDRes: model.IDRes{ID: item.ID},
-			QuestionCommon: definition.QuestionCommon{
-				Name:         item.Name,
-				Sort:         item.Sort,
-				CategoryID:   item.CategoryID,
-				CategoryName: item.Edges.Category.Name,
-				Answer:       item.Answer,
-			},
+			IDRes:          model.IDRes{ID: item.ID},
+			QuestionCommon: questionCommon,
 		}
 	}), nil
 }
 
 // All 全部
 func (b *questionBiz) All() ([]*definition.QuestionDetail, error) {
-	query := b.orm.Query().WithCategory()
+	query := b.orm.QueryNotDeleted().WithCategory().Order(ent.Desc(question.FieldSort))
 	items, err := query.All(b.ctx)
 	if err != nil {
 		return nil, err

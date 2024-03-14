@@ -4,11 +4,11 @@ import "github.com/auroraride/aurservd/app/model"
 
 // QuestionCommon 常见问题通用字段
 type QuestionCommon struct {
-	Name         string `json:"name" validate:"required"`
-	Sort         int    `json:"sort" validate:"required"`
-	CategoryID   uint64 `json:"category_id,omitempty"`
-	CategoryName string `json:"category_name,omitempty"`
-	Answer       string `json:"answer" validate:"required"`
+	Name         string `json:"name" validate:"required"`   // 问题名称
+	Sort         int    `json:"sort" validate:"required"`   // 排序
+	CategoryID   uint64 `json:"categoryId,omitempty"`       // 分类ID
+	CategoryName string `json:"categoryName,omitempty"`     // 分类名称
+	Answer       string `json:"answer" validate:"required"` // 答案
 }
 
 // QuestionDetail 问题详情
@@ -31,6 +31,6 @@ type QuestionModifyReq struct {
 // QuestionListReq 列表请求
 type QuestionListReq struct {
 	model.PaginationReq
-	Keyword    *string `json:"keywords,omitempty"`
-	CategoryID *uint64 `json:"category_id,omitempty" trans:"分类ID,0表示其他，不传表示全部"`
+	Keyword    *string `json:"keywords"`                             // 关键字
+	CategoryID *uint64 `json:"categoryId" trans:"分类ID,0表示其他，不传表示全部"` // 分类ID
 }

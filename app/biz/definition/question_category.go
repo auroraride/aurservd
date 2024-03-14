@@ -4,9 +4,9 @@ import "github.com/auroraride/aurservd/app/model"
 
 // QuestionCategoryCommon 通用
 type QuestionCategoryCommon struct {
-	Name   string `json:"name" validate:"required"`
-	Sort   int    `json:"sort" validate:"required"`
-	Remark string `json:"remark,omitempty"`
+	Name   string `json:"name" validate:"required"` // 分类名称
+	Sort   uint64 `json:"sort" validate:"required"` // 排序
+	Remark string `json:"remark,omitempty"`         //  备注
 }
 
 // QuestionCategoryDetail 详情

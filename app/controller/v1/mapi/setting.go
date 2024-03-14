@@ -164,10 +164,10 @@ func (*setting) GuideModify(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
-// @Param	body			body		model.PaginationReq			true	"请求参数"
+// @Param	query			query		definition.ActivityListReq	true	"请求参数"
 // @Success	200				{object}	[]definition.ActivityDetail	"请求成功"
 func (*setting) ActivityList(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.PaginationReq](c)
+	ctx, req := app.ManagerContextAndBinding[definition.ActivityListReq](c)
 	return ctx.SendResponse(biz.NewActivity().List(req))
 }
 

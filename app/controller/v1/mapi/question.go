@@ -72,7 +72,7 @@ func (a *question) Detail(c echo.Context) error {
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
-// @Param	body			body		definition.QuestionListReq	true	"请求参数"
+// @Param	query			query		definition.QuestionListReq	true	"请求参数"
 // @Success	200				{object}	[]definition.QuestionDetail	"请求成功"
 func (a *question) List(c echo.Context) error {
 	ctx, req := app.ManagerContextAndBinding[definition.QuestionListReq](c)

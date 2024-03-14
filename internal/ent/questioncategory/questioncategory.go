@@ -83,7 +83,7 @@ var (
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// DefaultSort holds the default value on creation for the "sort" field.
-	DefaultSort int
+	DefaultSort uint64
 )
 
 // OrderOption defines the ordering options for the QuestionCategory queries.

@@ -194,7 +194,7 @@ type ActivityMutation struct {
 	link          *string
 	sort          *int
 	addsort       *int
-	status        *bool
+	enable        *bool
 	introduction  *string
 	popup         *bool
 	index         *bool
@@ -553,40 +553,40 @@ func (m *ActivityMutation) ResetSort() {
 	m.addsort = nil
 }
 
-// SetStatus sets the "status" field.
-func (m *ActivityMutation) SetStatus(b bool) {
-	m.status = &b
+// SetEnable sets the "enable" field.
+func (m *ActivityMutation) SetEnable(b bool) {
+	m.enable = &b
 }
 
-// Status returns the value of the "status" field in the mutation.
-func (m *ActivityMutation) Status() (r bool, exists bool) {
-	v := m.status
+// Enable returns the value of the "enable" field in the mutation.
+func (m *ActivityMutation) Enable() (r bool, exists bool) {
+	v := m.enable
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldStatus returns the old "status" field's value of the Activity entity.
+// OldEnable returns the old "enable" field's value of the Activity entity.
 // If the Activity object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ActivityMutation) OldStatus(ctx context.Context) (v bool, err error) {
+func (m *ActivityMutation) OldEnable(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+		return v, errors.New("OldEnable is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldStatus requires an ID field in the mutation")
+		return v, errors.New("OldEnable requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+		return v, fmt.Errorf("querying old value for OldEnable: %w", err)
 	}
-	return oldValue.Status, nil
+	return oldValue.Enable, nil
 }
 
-// ResetStatus resets all changes to the "status" field.
-func (m *ActivityMutation) ResetStatus() {
-	m.status = nil
+// ResetEnable resets all changes to the "enable" field.
+func (m *ActivityMutation) ResetEnable() {
+	m.enable = nil
 }
 
 // SetIntroduction sets the "introduction" field.
@@ -835,8 +835,8 @@ func (m *ActivityMutation) Fields() []string {
 	if m.sort != nil {
 		fields = append(fields, activity.FieldSort)
 	}
-	if m.status != nil {
-		fields = append(fields, activity.FieldStatus)
+	if m.enable != nil {
+		fields = append(fields, activity.FieldEnable)
 	}
 	if m.introduction != nil {
 		fields = append(fields, activity.FieldIntroduction)
@@ -873,8 +873,8 @@ func (m *ActivityMutation) Field(name string) (ent.Value, bool) {
 		return m.Link()
 	case activity.FieldSort:
 		return m.Sort()
-	case activity.FieldStatus:
-		return m.Status()
+	case activity.FieldEnable:
+		return m.Enable()
 	case activity.FieldIntroduction:
 		return m.Introduction()
 	case activity.FieldPopup:
@@ -906,8 +906,8 @@ func (m *ActivityMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldLink(ctx)
 	case activity.FieldSort:
 		return m.OldSort(ctx)
-	case activity.FieldStatus:
-		return m.OldStatus(ctx)
+	case activity.FieldEnable:
+		return m.OldEnable(ctx)
 	case activity.FieldIntroduction:
 		return m.OldIntroduction(ctx)
 	case activity.FieldPopup:
@@ -969,12 +969,12 @@ func (m *ActivityMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetSort(v)
 		return nil
-	case activity.FieldStatus:
+	case activity.FieldEnable:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetStatus(v)
+		m.SetEnable(v)
 		return nil
 	case activity.FieldIntroduction:
 		v, ok := value.(string)
@@ -1108,8 +1108,8 @@ func (m *ActivityMutation) ResetField(name string) error {
 	case activity.FieldSort:
 		m.ResetSort()
 		return nil
-	case activity.FieldStatus:
-		m.ResetStatus()
+	case activity.FieldEnable:
+		m.ResetEnable()
 		return nil
 	case activity.FieldIntroduction:
 		m.ResetIntroduction()
@@ -88130,8 +88130,8 @@ type QuestionCategoryMutation struct {
 	last_modifier    **model.Modifier
 	remark           *string
 	name             *string
-	sort             *int
-	addsort          *int
+	sort             *uint64
+	addsort          *int64
 	clearedFields    map[string]struct{}
 	questions        map[uint64]struct{}
 	removedquestions map[uint64]struct{}
@@ -88544,13 +88544,13 @@ func (m *QuestionCategoryMutation) ResetName() {
 }
 
 // SetSort sets the "sort" field.
-func (m *QuestionCategoryMutation) SetSort(i int) {
-	m.sort = &i
+func (m *QuestionCategoryMutation) SetSort(u uint64) {
+	m.sort = &u
 	m.addsort = nil
 }
 
 // Sort returns the value of the "sort" field in the mutation.
-func (m *QuestionCategoryMutation) Sort() (r int, exists bool) {
+func (m *QuestionCategoryMutation) Sort() (r uint64, exists bool) {
 	v := m.sort
 	if v == nil {
 		return
@@ -88561,7 +88561,7 @@ func (m *QuestionCategoryMutation) Sort() (r int, exists bool) {
 // OldSort returns the old "sort" field's value of the QuestionCategory entity.
 // If the QuestionCategory object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *QuestionCategoryMutation) OldSort(ctx context.Context) (v int, err error) {
+func (m *QuestionCategoryMutation) OldSort(ctx context.Context) (v uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldSort is only allowed on UpdateOne operations")
 	}
@@ -88575,17 +88575,17 @@ func (m *QuestionCategoryMutation) OldSort(ctx context.Context) (v int, err erro
 	return oldValue.Sort, nil
 }
 
-// AddSort adds i to the "sort" field.
-func (m *QuestionCategoryMutation) AddSort(i int) {
+// AddSort adds u to the "sort" field.
+func (m *QuestionCategoryMutation) AddSort(u int64) {
 	if m.addsort != nil {
-		*m.addsort += i
+		*m.addsort += u
 	} else {
-		m.addsort = &i
+		m.addsort = &u
 	}
 }
 
 // AddedSort returns the value that was added to the "sort" field in this mutation.
-func (m *QuestionCategoryMutation) AddedSort() (r int, exists bool) {
+func (m *QuestionCategoryMutation) AddedSort() (r int64, exists bool) {
 	v := m.addsort
 	if v == nil {
 		return
@@ -88820,7 +88820,7 @@ func (m *QuestionCategoryMutation) SetField(name string, value ent.Value) error 
 		m.SetName(v)
 		return nil
 	case questioncategory.FieldSort:
-		v, ok := value.(int)
+		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -88857,7 +88857,7 @@ func (m *QuestionCategoryMutation) AddedField(name string) (ent.Value, bool) {
 func (m *QuestionCategoryMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	case questioncategory.FieldSort:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

@@ -39,6 +39,9 @@ definitions:
     type: object
   definition.ActivityCreateReq:
     properties:
+      enable:
+        description: 是否启用 true:是 false:否
+        type: boolean
       image:
         additionalProperties:
           type: string
@@ -62,7 +65,11 @@ definitions:
       sort:
         description: 排序, 排序
         type: integer
+      updatedAt:
+        description: 更新时间
+        type: string
     required:
+      - enable
       - image
       - link
       - name
@@ -70,6 +77,9 @@ definitions:
     type: object
   definition.ActivityDetail:
     properties:
+      enable:
+        description: 是否启用 true:是 false:否
+        type: boolean
       id:
         type: integer
       image:
@@ -95,7 +105,11 @@ definitions:
       sort:
         description: 排序, 排序
         type: integer
+      updatedAt:
+        description: 更新时间
+        type: string
     required:
+      - enable
     - image
     - link
     - name
@@ -103,6 +117,9 @@ definitions:
     type: object
   definition.ActivityModifyReq:
     properties:
+      enable:
+        description: 是否启用 true:是 false:否
+        type: boolean
       image:
         additionalProperties:
           type: string
@@ -126,7 +143,11 @@ definitions:
       sort:
         description: 排序, 排序
         type: integer
+      updatedAt:
+        description: 更新时间
+        type: string
     required:
+      - enable
     - image
     - link
     - name
@@ -186,10 +207,13 @@ definitions:
   definition.QuestionCategoryCreateReq:
     properties:
       name:
+        description: 分类名称
         type: string
       remark:
+        description: 备注
         type: string
       sort:
+        description: 排序
         type: integer
     required:
       - name
@@ -200,31 +224,28 @@ definitions:
       id:
         type: integer
       name:
+        description: 分类名称
         type: string
       remark:
+        description: 备注
         type: string
       sort:
+        description: 排序
         type: integer
     required:
       - name
       - sort
     type: object
-  definition.QuestionCategoryListReq:
-    properties:
-      current:
-        description: 当前页, 从1开始, 默认1
-        type: integer
-      pageSize:
-        description: 每页数据, 默认20
-        type: integer
-    type: object
   definition.QuestionCategoryModifyReq:
     properties:
       name:
+        description: 分类名称
         type: string
       remark:
+        description: 备注
         type: string
       sort:
+        description: 排序
         type: integer
     required:
       - name
@@ -233,14 +254,19 @@ definitions:
   definition.QuestionCreateReq:
     properties:
       answer:
+        description: 答案
         type: string
-      category_id:
+      categoryId:
+        description: 分类ID
         type: integer
-      category_name:
+      categoryName:
+        description: 分类名称
         type: string
       name:
+        description: 问题名称
         type: string
       sort:
+        description: 排序
         type: integer
     required:
       - answer
@@ -250,47 +276,43 @@ definitions:
   definition.QuestionDetail:
     properties:
       answer:
+        description: 答案
         type: string
-      category_id:
+      categoryId:
+        description: 分类ID
         type: integer
-      category_name:
+      categoryName:
+        description: 分类名称
         type: string
       id:
         type: integer
       name:
+        description: 问题名称
         type: string
       sort:
+        description: 排序
         type: integer
     required:
       - answer
       - name
       - sort
     type: object
-  definition.QuestionListReq:
-    properties:
-      category_id:
-        description: 分类ID,0表示其他，不传表示全部
-        type: integer
-      current:
-        description: 当前页, 从1开始, 默认1
-        type: integer
-      keywords:
-        type: string
-      pageSize:
-        description: 每页数据, 默认20
-        type: integer
-    type: object
   definition.QuestionModifyReq:
     properties:
       answer:
+        description: 答案
         type: string
-      category_id:
+      categoryId:
+        description: 分类ID
         type: integer
-      category_name:
+      categoryName:
+        description: 分类名称
         type: string
       name:
+        description: 问题名称
         type: string
       sort:
+        description: 排序
         type: integer
     required:
       - answer
@@ -3941,15 +3963,6 @@ definitions:
         type: integer
       total:
         description: 总条数
-        type: integer
-    type: object
-  model.PaginationReq:
-    properties:
-      current:
-        description: 当前页, 从1开始, 默认1
-        type: integer
-      pageSize:
-        description: 每页数据, 默认20
         type: integer
     type: object
   model.PaginationRes:
@@ -12824,12 +12837,22 @@ paths:
           name: X-Manager-Token
           required: true
           type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.QuestionListReq'
+        - description: 分类ID,0表示其他，不传表示全部, 分类ID
+          in: query
+          name: categoryId
+          type: integer
+        - description: 当前页, 从1开始, 默认1
+          in: query
+          name: current
+          type: integer
+        - description: 关键字
+          in: query
+          name: keywords
+          type: string
+        - description: 每页数据, 默认20
+          in: query
+          name: pageSize
+          type: integer
       produces:
         - application/json
       responses:
@@ -12956,12 +12979,14 @@ paths:
           name: X-Manager-Token
           required: true
           type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.QuestionCategoryListReq'
+        - description: 当前页, 从1开始, 默认1
+          in: query
+          name: current
+          type: integer
+        - description: 每页数据, 默认20
+          in: query
+          name: pageSize
+          type: integer
       produces:
         - application/json
       responses:
@@ -13037,10 +13062,29 @@ paths:
           name: X-Manager-Token
           required: true
           type: string
-        - description: 分类ID
+        - description: 当前页, 从1开始, 默认1
           in: path
-          name: id
-          required: true
+          name: current
+          type: integer
+        - description: 是否启用
+          in: path
+          name: enable
+          type: boolean
+        - description: 结束时间
+          in: path
+          name: end
+          type: string
+        - description: 关键字
+          in: path
+          name: keyword
+          type: string
+        - description: 每页数据, 默认20
+          in: path
+          name: pageSize
+          type: integer
+        - description: 开始时间
+          in: path
+          name: start
           type: string
       produces:
         - application/json
@@ -13838,6 +13882,29 @@ paths:
       summary: 筛选骑行卡电池
       tags:
       - 筛选
+  /manager/v1/selection/question/category:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerSelectionQuestionCategory
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: 问题分类
+      tags:
+        - 筛选
   /manager/v1/selection/rider:
     get:
       consumes:
@@ -14001,12 +14068,30 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 请求参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.PaginationReq'
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 是否启用
+        in: query
+        name: enable
+        type: boolean
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
       produces:
       - application/json
       responses:

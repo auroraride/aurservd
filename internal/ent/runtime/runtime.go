@@ -108,10 +108,10 @@ func init() {
 	activityDescSort := activityFields[2].Descriptor()
 	// activity.DefaultSort holds the default value on creation for the sort field.
 	activity.DefaultSort = activityDescSort.Default.(int)
-	// activityDescStatus is the schema descriptor for status field.
-	activityDescStatus := activityFields[3].Descriptor()
-	// activity.DefaultStatus holds the default value on creation for the status field.
-	activity.DefaultStatus = activityDescStatus.Default.(bool)
+	// activityDescEnable is the schema descriptor for enable field.
+	activityDescEnable := activityFields[3].Descriptor()
+	// activity.DefaultEnable holds the default value on creation for the enable field.
+	activity.DefaultEnable = activityDescEnable.Default.(bool)
 	// activityDescPopup is the schema descriptor for popup field.
 	activityDescPopup := activityFields[5].Descriptor()
 	// activity.DefaultPopup holds the default value on creation for the popup field.
@@ -1568,7 +1568,7 @@ func init() {
 	// questioncategoryDescSort is the schema descriptor for sort field.
 	questioncategoryDescSort := questioncategoryFields[1].Descriptor()
 	// questioncategory.DefaultSort holds the default value on creation for the sort field.
-	questioncategory.DefaultSort = questioncategoryDescSort.Default.(int)
+	questioncategory.DefaultSort = questioncategoryDescSort.Default.(uint64)
 	reserveMixin := schema.Reserve{}.Mixin()
 	reserveMixinHooks2 := reserveMixin[2].Hooks()
 	reserve.Hooks[0] = reserveMixinHooks2[0]

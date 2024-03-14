@@ -9159,13 +9159,28 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "请求参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/definition.QuestionListReq"
-                        }
+                        "type": "integer",
+                        "description": "分类ID,0表示其他，不传表示全部, 分类ID",
+                        "name": "categoryId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keywords",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -9281,13 +9296,16 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "请求参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/definition.QuestionCategoryListReq"
-                        }
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -9440,11 +9458,40 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "path"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否启用",
+                        "name": "enable",
+                        "in": "path"
+                    },
+                    {
                         "type": "string",
-                        "description": "分类ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
+                        "in": "path"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "path"
                     }
                 ],
                 "responses": {
@@ -10680,6 +10727,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/selection/question/category": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "筛选"
+                ],
+                "summary": "问题分类",
+                "operationId": "ManagerSelectionQuestionCategory",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/selection/rider": {
             "get": {
                 "consumes": [
@@ -10884,13 +10966,40 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "请求参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.PaginationReq"
-                        }
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否启用",
+                        "name": "enable",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -13027,12 +13136,17 @@ const docTemplate = `{
         "definition.ActivityCreateReq": {
             "type": "object",
             "required": [
+                "enable",
                 "image",
                 "link",
                 "name",
                 "sort"
             ],
             "properties": {
+                "enable": {
+                    "description": "是否启用 true:是 false:否",
+                    "type": "boolean"
+                },
                 "image": {
                     "description": "图片, 图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
                     "type": "object",
@@ -13063,18 +13177,27 @@ const docTemplate = `{
                 "sort": {
                     "description": "排序, 排序",
                     "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
                 }
             }
         },
         "definition.ActivityDetail": {
             "type": "object",
             "required": [
+                "enable",
                 "image",
                 "link",
                 "name",
                 "sort"
             ],
             "properties": {
+                "enable": {
+                    "description": "是否启用 true:是 false:否",
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -13108,18 +13231,27 @@ const docTemplate = `{
                 "sort": {
                     "description": "排序, 排序",
                     "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
                 }
             }
         },
         "definition.ActivityModifyReq": {
             "type": "object",
             "required": [
+                "enable",
                 "image",
                 "link",
                 "name",
                 "sort"
             ],
             "properties": {
+                "enable": {
+                    "description": "是否启用 true:是 false:否",
+                    "type": "boolean"
+                },
                 "image": {
                     "description": "图片, 图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
                     "type": "object",
@@ -13150,6 +13282,10 @@ const docTemplate = `{
                 "sort": {
                     "description": "排序, 排序",
                     "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
                 }
             }
         },
@@ -13233,12 +13369,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "name": {
+                    "description": "分类名称",
                     "type": "string"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "sort": {
+                    "description": "排序",
                     "type": "integer"
                 }
             }
@@ -13254,25 +13393,15 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "description": "分类名称",
                     "type": "string"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "sort": {
-                    "type": "integer"
-                }
-            }
-        },
-        "definition.QuestionCategoryListReq": {
-            "type": "object",
-            "properties": {
-                "current": {
-                    "description": "当前页, 从1开始, 默认1",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "每页数据, 默认20",
+                    "description": "排序",
                     "type": "integer"
                 }
             }
@@ -13285,12 +13414,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "name": {
+                    "description": "分类名称",
                     "type": "string"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "sort": {
+                    "description": "排序",
                     "type": "integer"
                 }
             }
@@ -13304,18 +13436,23 @@ const docTemplate = `{
             ],
             "properties": {
                 "answer": {
+                    "description": "答案",
                     "type": "string"
                 },
-                "category_id": {
+                "categoryId": {
+                    "description": "分类ID",
                     "type": "integer"
                 },
-                "category_name": {
+                "categoryName": {
+                    "description": "分类名称",
                     "type": "string"
                 },
                 "name": {
+                    "description": "问题名称",
                     "type": "string"
                 },
                 "sort": {
+                    "description": "排序",
                     "type": "integer"
                 }
             }
@@ -13329,41 +13466,26 @@ const docTemplate = `{
             ],
             "properties": {
                 "answer": {
+                    "description": "答案",
                     "type": "string"
                 },
-                "category_id": {
+                "categoryId": {
+                    "description": "分类ID",
                     "type": "integer"
                 },
-                "category_name": {
+                "categoryName": {
+                    "description": "分类名称",
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
                 "name": {
+                    "description": "问题名称",
                     "type": "string"
                 },
                 "sort": {
-                    "type": "integer"
-                }
-            }
-        },
-        "definition.QuestionListReq": {
-            "type": "object",
-            "properties": {
-                "category_id": {
-                    "description": "分类ID,0表示其他，不传表示全部",
-                    "type": "integer"
-                },
-                "current": {
-                    "description": "当前页, 从1开始, 默认1",
-                    "type": "integer"
-                },
-                "keywords": {
-                    "type": "string"
-                },
-                "pageSize": {
-                    "description": "每页数据, 默认20",
+                    "description": "排序",
                     "type": "integer"
                 }
             }
@@ -13377,18 +13499,23 @@ const docTemplate = `{
             ],
             "properties": {
                 "answer": {
+                    "description": "答案",
                     "type": "string"
                 },
-                "category_id": {
+                "categoryId": {
+                    "description": "分类ID",
                     "type": "integer"
                 },
-                "category_name": {
+                "categoryName": {
+                    "description": "分类名称",
                     "type": "string"
                 },
                 "name": {
+                    "description": "问题名称",
                     "type": "string"
                 },
                 "sort": {
+                    "description": "排序",
                     "type": "integer"
                 }
             }
@@ -18584,19 +18711,6 @@ const docTemplate = `{
                 },
                 "total": {
                     "description": "总条数",
-                    "type": "integer"
-                }
-            }
-        },
-        "model.PaginationReq": {
-            "type": "object",
-            "properties": {
-                "current": {
-                    "description": "当前页, 从1开始, 默认1",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "每页数据, 默认20",
                     "type": "integer"
                 }
             }

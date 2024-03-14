@@ -99,15 +99,15 @@ func (qcc *QuestionCategoryCreate) SetName(s string) *QuestionCategoryCreate {
 }
 
 // SetSort sets the "sort" field.
-func (qcc *QuestionCategoryCreate) SetSort(i int) *QuestionCategoryCreate {
-	qcc.mutation.SetSort(i)
+func (qcc *QuestionCategoryCreate) SetSort(u uint64) *QuestionCategoryCreate {
+	qcc.mutation.SetSort(u)
 	return qcc
 }
 
 // SetNillableSort sets the "sort" field if the given value is not nil.
-func (qcc *QuestionCategoryCreate) SetNillableSort(i *int) *QuestionCategoryCreate {
-	if i != nil {
-		qcc.SetSort(*i)
+func (qcc *QuestionCategoryCreate) SetNillableSort(u *uint64) *QuestionCategoryCreate {
+	if u != nil {
+		qcc.SetSort(*u)
 	}
 	return qcc
 }
@@ -260,7 +260,7 @@ func (qcc *QuestionCategoryCreate) createSpec() (*QuestionCategory, *sqlgraph.Cr
 		_node.Name = value
 	}
 	if value, ok := qcc.mutation.Sort(); ok {
-		_spec.SetField(questioncategory.FieldSort, field.TypeInt, value)
+		_spec.SetField(questioncategory.FieldSort, field.TypeUint64, value)
 		_node.Sort = value
 	}
 	if nodes := qcc.mutation.QuestionsIDs(); len(nodes) > 0 {
@@ -410,7 +410,7 @@ func (u *QuestionCategoryUpsert) UpdateName() *QuestionCategoryUpsert {
 }
 
 // SetSort sets the "sort" field.
-func (u *QuestionCategoryUpsert) SetSort(v int) *QuestionCategoryUpsert {
+func (u *QuestionCategoryUpsert) SetSort(v uint64) *QuestionCategoryUpsert {
 	u.Set(questioncategory.FieldSort, v)
 	return u
 }
@@ -422,7 +422,7 @@ func (u *QuestionCategoryUpsert) UpdateSort() *QuestionCategoryUpsert {
 }
 
 // AddSort adds v to the "sort" field.
-func (u *QuestionCategoryUpsert) AddSort(v int) *QuestionCategoryUpsert {
+func (u *QuestionCategoryUpsert) AddSort(v uint64) *QuestionCategoryUpsert {
 	u.Add(questioncategory.FieldSort, v)
 	return u
 }
@@ -567,14 +567,14 @@ func (u *QuestionCategoryUpsertOne) UpdateName() *QuestionCategoryUpsertOne {
 }
 
 // SetSort sets the "sort" field.
-func (u *QuestionCategoryUpsertOne) SetSort(v int) *QuestionCategoryUpsertOne {
+func (u *QuestionCategoryUpsertOne) SetSort(v uint64) *QuestionCategoryUpsertOne {
 	return u.Update(func(s *QuestionCategoryUpsert) {
 		s.SetSort(v)
 	})
 }
 
 // AddSort adds v to the "sort" field.
-func (u *QuestionCategoryUpsertOne) AddSort(v int) *QuestionCategoryUpsertOne {
+func (u *QuestionCategoryUpsertOne) AddSort(v uint64) *QuestionCategoryUpsertOne {
 	return u.Update(func(s *QuestionCategoryUpsert) {
 		s.AddSort(v)
 	})
@@ -893,14 +893,14 @@ func (u *QuestionCategoryUpsertBulk) UpdateName() *QuestionCategoryUpsertBulk {
 }
 
 // SetSort sets the "sort" field.
-func (u *QuestionCategoryUpsertBulk) SetSort(v int) *QuestionCategoryUpsertBulk {
+func (u *QuestionCategoryUpsertBulk) SetSort(v uint64) *QuestionCategoryUpsertBulk {
 	return u.Update(func(s *QuestionCategoryUpsert) {
 		s.SetSort(v)
 	})
 }
 
 // AddSort adds v to the "sort" field.
-func (u *QuestionCategoryUpsertBulk) AddSort(v int) *QuestionCategoryUpsertBulk {
+func (u *QuestionCategoryUpsertBulk) AddSort(v uint64) *QuestionCategoryUpsertBulk {
 	return u.Update(func(s *QuestionCategoryUpsert) {
 		s.AddSort(v)
 	})

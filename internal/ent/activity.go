@@ -31,7 +31,7 @@ type Activity struct {
 	// 排序
 	Sort int `json:"sort,omitempty"`
 	// 状态 true:启用 false:禁用
-	Status bool `json:"status,omitempty"`
+	Enable bool `json:"enable,omitempty"`
 	// 简介
 	Introduction string `json:"introduction,omitempty"`
 	// 活动入口:弹窗
@@ -52,7 +52,7 @@ func (*Activity) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case activity.FieldImage:
 			values[i] = new([]byte)
-		case activity.FieldStatus, activity.FieldPopup, activity.FieldIndex:
+		case activity.FieldEnable, activity.FieldPopup, activity.FieldIndex:
 			values[i] = new(sql.NullBool)
 		case activity.FieldID, activity.FieldSort:
 			values[i] = new(sql.NullInt64)
@@ -118,11 +118,11 @@ func (a *Activity) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.Sort = int(value.Int64)
 			}
-		case activity.FieldStatus:
+		case activity.FieldEnable:
 			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field status", values[i])
+				return fmt.Errorf("unexpected type %T for field enable", values[i])
 			} else if value.Valid {
-				a.Status = value.Bool
+				a.Enable = value.Bool
 			}
 		case activity.FieldIntroduction:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -212,8 +212,8 @@ func (a *Activity) String() string {
 	builder.WriteString("sort=")
 	builder.WriteString(fmt.Sprintf("%v", a.Sort))
 	builder.WriteString(", ")
-	builder.WriteString("status=")
-	builder.WriteString(fmt.Sprintf("%v", a.Status))
+	builder.WriteString("enable=")
+	builder.WriteString(fmt.Sprintf("%v", a.Enable))
 	builder.WriteString(", ")
 	builder.WriteString("introduction=")
 	builder.WriteString(a.Introduction)

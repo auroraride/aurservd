@@ -225,6 +225,7 @@ func loadManagerRoutes() {
 	g.GET("/selection/ebike/brand", mapi.Selection.EbikeBrand)
 	g.GET("/selection/battery/serial", mapi.Selection.BatterySerial)
 	g.GET("/selection/commission/plan", mapi.Selection.CommissionPlan)
+	g.GET("/selection/question/category", mapi.Selection.QuestionCategory)
 
 	// 救援
 	g.GET("/assistance", mapi.Assistance.List)

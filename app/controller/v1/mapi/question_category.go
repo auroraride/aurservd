@@ -72,7 +72,7 @@ func (*questionCategory) Detail(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string								true	"管理员校验token"
-// @Param	body			body		definition.QuestionCategoryListReq	true	"请求参数"
+// @Param	query			query		definition.QuestionCategoryListReq	true	"请求参数"
 // @Success	200				{object}	[]definition.QuestionCategoryDetail	"请求成功"
 func (*questionCategory) List(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.QuestionCategoryListReq](c)
@@ -86,9 +86,9 @@ func (*questionCategory) List(c echo.Context) (err error) {
 // @Tags	设置
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	id				path		string					true	"分类ID"
-// @Success	200				{object}	model.StatusResponse	"请求成功"
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	id				path		definition.ActivityListReq	true	"分类ID"
+// @Success	200				{object}	model.StatusResponse		"请求成功"
 func (*questionCategory) Delete(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewQuestionCategoryBiz().Delete(req.ID))

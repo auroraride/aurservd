@@ -90,16 +90,16 @@ func (ac *ActivityCreate) SetNillableSort(i *int) *ActivityCreate {
 	return ac
 }
 
-// SetStatus sets the "status" field.
-func (ac *ActivityCreate) SetStatus(b bool) *ActivityCreate {
-	ac.mutation.SetStatus(b)
+// SetEnable sets the "enable" field.
+func (ac *ActivityCreate) SetEnable(b bool) *ActivityCreate {
+	ac.mutation.SetEnable(b)
 	return ac
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (ac *ActivityCreate) SetNillableStatus(b *bool) *ActivityCreate {
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (ac *ActivityCreate) SetNillableEnable(b *bool) *ActivityCreate {
 	if b != nil {
-		ac.SetStatus(*b)
+		ac.SetEnable(*b)
 	}
 	return ac
 }
@@ -205,9 +205,9 @@ func (ac *ActivityCreate) defaults() {
 		v := activity.DefaultSort
 		ac.mutation.SetSort(v)
 	}
-	if _, ok := ac.mutation.Status(); !ok {
-		v := activity.DefaultStatus
-		ac.mutation.SetStatus(v)
+	if _, ok := ac.mutation.Enable(); !ok {
+		v := activity.DefaultEnable
+		ac.mutation.SetEnable(v)
 	}
 	if _, ok := ac.mutation.Popup(); !ok {
 		v := activity.DefaultPopup
@@ -236,8 +236,8 @@ func (ac *ActivityCreate) check() error {
 	if _, ok := ac.mutation.Sort(); !ok {
 		return &ValidationError{Name: "sort", err: errors.New(`ent: missing required field "Activity.sort"`)}
 	}
-	if _, ok := ac.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Activity.status"`)}
+	if _, ok := ac.mutation.Enable(); !ok {
+		return &ValidationError{Name: "enable", err: errors.New(`ent: missing required field "Activity.enable"`)}
 	}
 	if _, ok := ac.mutation.Introduction(); !ok {
 		return &ValidationError{Name: "introduction", err: errors.New(`ent: missing required field "Activity.introduction"`)}
@@ -302,9 +302,9 @@ func (ac *ActivityCreate) createSpec() (*Activity, *sqlgraph.CreateSpec) {
 		_spec.SetField(activity.FieldSort, field.TypeInt, value)
 		_node.Sort = value
 	}
-	if value, ok := ac.mutation.Status(); ok {
-		_spec.SetField(activity.FieldStatus, field.TypeBool, value)
-		_node.Status = value
+	if value, ok := ac.mutation.Enable(); ok {
+		_spec.SetField(activity.FieldEnable, field.TypeBool, value)
+		_node.Enable = value
 	}
 	if value, ok := ac.mutation.Introduction(); ok {
 		_spec.SetField(activity.FieldIntroduction, field.TypeString, value)
@@ -450,15 +450,15 @@ func (u *ActivityUpsert) AddSort(v int) *ActivityUpsert {
 	return u
 }
 
-// SetStatus sets the "status" field.
-func (u *ActivityUpsert) SetStatus(v bool) *ActivityUpsert {
-	u.Set(activity.FieldStatus, v)
+// SetEnable sets the "enable" field.
+func (u *ActivityUpsert) SetEnable(v bool) *ActivityUpsert {
+	u.Set(activity.FieldEnable, v)
 	return u
 }
 
-// UpdateStatus sets the "status" field to the value that was provided on create.
-func (u *ActivityUpsert) UpdateStatus() *ActivityUpsert {
-	u.SetExcluded(activity.FieldStatus)
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *ActivityUpsert) UpdateEnable() *ActivityUpsert {
+	u.SetExcluded(activity.FieldEnable)
 	return u
 }
 
@@ -657,17 +657,17 @@ func (u *ActivityUpsertOne) UpdateSort() *ActivityUpsertOne {
 	})
 }
 
-// SetStatus sets the "status" field.
-func (u *ActivityUpsertOne) SetStatus(v bool) *ActivityUpsertOne {
+// SetEnable sets the "enable" field.
+func (u *ActivityUpsertOne) SetEnable(v bool) *ActivityUpsertOne {
 	return u.Update(func(s *ActivityUpsert) {
-		s.SetStatus(v)
+		s.SetEnable(v)
 	})
 }
 
-// UpdateStatus sets the "status" field to the value that was provided on create.
-func (u *ActivityUpsertOne) UpdateStatus() *ActivityUpsertOne {
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *ActivityUpsertOne) UpdateEnable() *ActivityUpsertOne {
 	return u.Update(func(s *ActivityUpsert) {
-		s.UpdateStatus()
+		s.UpdateEnable()
 	})
 }
 
@@ -1043,17 +1043,17 @@ func (u *ActivityUpsertBulk) UpdateSort() *ActivityUpsertBulk {
 	})
 }
 
-// SetStatus sets the "status" field.
-func (u *ActivityUpsertBulk) SetStatus(v bool) *ActivityUpsertBulk {
+// SetEnable sets the "enable" field.
+func (u *ActivityUpsertBulk) SetEnable(v bool) *ActivityUpsertBulk {
 	return u.Update(func(s *ActivityUpsert) {
-		s.SetStatus(v)
+		s.SetEnable(v)
 	})
 }
 
-// UpdateStatus sets the "status" field to the value that was provided on create.
-func (u *ActivityUpsertBulk) UpdateStatus() *ActivityUpsertBulk {
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *ActivityUpsertBulk) UpdateEnable() *ActivityUpsertBulk {
 	return u.Update(func(s *ActivityUpsert) {
-		s.UpdateStatus()
+		s.UpdateEnable()
 	})
 }
 

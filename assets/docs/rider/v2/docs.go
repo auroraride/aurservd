@@ -3130,12 +3130,17 @@ const docTemplate = `{
         "definition.ActivityDetail": {
             "type": "object",
             "required": [
+                "enable",
                 "image",
                 "link",
                 "name",
                 "sort"
             ],
             "properties": {
+                "enable": {
+                    "description": "是否启用 true:是 false:否",
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -3169,6 +3174,10 @@ const docTemplate = `{
                 "sort": {
                     "description": "排序, 排序",
                     "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
                 }
             }
         },
@@ -3550,12 +3559,15 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "description": "分类名称",
                     "type": "string"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "sort": {
+                    "description": "排序",
                     "type": "integer"
                 }
             }
@@ -3569,21 +3581,26 @@ const docTemplate = `{
             ],
             "properties": {
                 "answer": {
+                    "description": "答案",
                     "type": "string"
                 },
-                "category_id": {
+                "categoryId": {
+                    "description": "分类ID",
                     "type": "integer"
                 },
-                "category_name": {
+                "categoryName": {
+                    "description": "分类名称",
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
                 "name": {
+                    "description": "问题名称",
                     "type": "string"
                 },
                 "sort": {
+                    "description": "排序",
                     "type": "integer"
                 }
             }
