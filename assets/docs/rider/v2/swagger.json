@@ -2499,6 +2499,76 @@
                 }
             }
         },
+      "/rider/v2/question": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "Question - 常见问题"
+          ],
+          "summary": "常见问题列表",
+          "operationId": "QuestionAll",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "骑手校验token",
+              "name": "X-Rider-Token",
+              "in": "header",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/definition.QuestionDetail"
+                }
+              }
+            }
+          }
+        }
+      },
+      "/rider/v2/question/category": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "QuestionCategory - 问题分类"
+          ],
+          "summary": "问题分类列表",
+          "operationId": "QuestionCategoryAll",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "骑手校验token",
+              "name": "X-Rider-Token",
+              "in": "header",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/definition.QuestionCategoryDetail"
+                }
+              }
+            }
+          }
+        }
+      },
         "/rider/v2/reserve": {
             "get": {
                 "consumes": [
@@ -2628,7 +2698,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.SelectOption"
+                              "type": "string"
                             }
                         }
                     }
@@ -3098,6 +3168,41 @@
                 }
             }
         },
+      "definition.Destination": {
+        "type": "object",
+        "properties": {
+          "area_id": {
+            "description": "终点区域ID",
+            "type": "integer"
+          },
+          "cname": {
+            "description": "终点城市名称",
+            "type": "string"
+          },
+          "destinationPt": {
+            "description": "终点坐标",
+            "type": "object",
+            "properties": {
+              "lat": {
+                "description": "终点纬度",
+                "type": "number"
+              },
+              "lng": {
+                "description": "终点经度",
+                "type": "number"
+              }
+            }
+          },
+          "uid": {
+            "description": "终点UID",
+            "type": "string"
+          },
+          "wd": {
+            "description": "终点名称",
+            "type": "string"
+                }
+            }
+        },
         "definition.GuideDetail": {
             "type": "object",
             "properties": {
@@ -3150,6 +3255,41 @@
                 "prepay": {
                     "description": "预支付信息",
                     "type": "string"
+                }
+            }
+        },
+      "definition.Origin": {
+        "type": "object",
+        "properties": {
+          "area_id": {
+            "description": "起点区域ID",
+            "type": "integer"
+          },
+          "cname": {
+            "description": "起点城市名称",
+            "type": "string"
+          },
+          "originPt": {
+            "description": "起点坐标",
+            "type": "object",
+            "properties": {
+              "lat": {
+                "description": "起点纬度",
+                "type": "number"
+              },
+              "lng": {
+                "description": "起点经度",
+                "type": "number"
+              }
+            }
+          },
+          "uid": {
+            "description": "起点UID",
+            "type": "string"
+          },
+          "wd": {
+            "description": "起点名称",
+            "type": "string"
                 }
             }
         },
@@ -3293,87 +3433,86 @@
                 }
             }
         },
+      "definition.QuestionCategoryDetail": {
+        "type": "object",
+        "required": [
+          "name",
+          "sort"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "remark": {
+            "type": "string"
+          },
+          "sort": {
+            "type": "integer"
+          }
+        }
+      },
+      "definition.QuestionDetail": {
+        "type": "object",
+        "required": [
+          "answer",
+          "name",
+          "sort"
+        ],
+        "properties": {
+          "answer": {
+            "type": "string"
+          },
+          "category_id": {
+            "type": "integer"
+          },
+          "category_name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sort": {
+            "type": "integer"
+          }
+        }
+      },
       "definition.RiderDirectionRes": {
         "type": "object",
         "properties": {
           "destination": {
             "description": "终点信息",
-            "type": "object",
-            "properties": {
-              "area_id": {
-                "description": "终点区域ID",
-                "type": "integer"
-              },
-              "cname": {
-                "description": "终点城市名称",
-                "type": "string"
-              },
-              "destinationPt": {
-                "description": "终点坐标",
-                "type": "object",
-                "properties": {
-                  "lat": {
-                    "description": "终点纬度",
-                    "type": "number"
-                  },
-                  "lng": {
-                    "description": "终点经度",
-                    "type": "number"
-                  }
-                }
-              },
-              "uid": {
-                "description": "终点UID",
-                "type": "string"
-              },
-              "wd": {
-                "description": "终点名称",
-                "type": "string"
+            "allOf": [
+              {
+                "$ref": "#/definitions/definition.Destination"
               }
-            }
+            ]
           },
           "origin": {
             "description": "起点信息",
-            "type": "object",
-            "properties": {
-              "area_id": {
-                "description": "起点区域ID",
-                "type": "integer"
-              },
-              "cname": {
-                "description": "起点城市名称",
-                "type": "string"
-              },
-              "originPt": {
-                "description": "起点坐标",
-                "type": "object",
-                "properties": {
-                  "lat": {
-                    "description": "起点纬度",
-                    "type": "number"
-                  },
-                  "lng": {
-                    "description": "起点经度",
-                    "type": "number"
-                  }
-                }
-              },
-              "uid": {
-                "description": "起点UID",
-                "type": "string"
-              },
-              "wd": {
-                "description": "起点名称",
-                "type": "string"
+            "allOf": [
+              {
+                "$ref": "#/definitions/definition.Origin"
               }
-            }
+            ]
           },
           "routes": {
             "description": "方案列表",
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
+              "$ref": "#/definitions/definition.Routes"
+            }
+          }
+        }
+      },
+      "definition.Routes": {
+        "type": "object",
+        "properties": {
                 "destinationLocation": {
                   "description": "路线终点坐标",
                   "type": "object",
@@ -3531,10 +3670,7 @@
                     }
                   }
                 }
-              }
-            }
-          }
-            }
+        }
       },
         "definition.VersionRes": {
             "type": "object",
@@ -3840,7 +3976,14 @@
                     }
                 },
                 "businesses": {
-                    "description": "可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                  "description": "骑手可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+              "cabinetBusinesses": {
+                "description": "电柜可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -3994,6 +4137,13 @@
                     "description": "网点地址",
                     "type": "string"
                 },
+              "businesses": {
+                "description": "可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
                 "distance": {
                     "description": "距离(前端处理: 超过1000米显示nKM)",
                     "type": "number"
@@ -5914,23 +6064,6 @@
                 "smsId": {
                     "description": "短信ID",
                     "type": "string"
-                }
-            }
-        },
-        "model.SelectOption": {
-            "type": "object",
-            "properties": {
-                "desc": {
-                    "description": "描述",
-                    "type": "string"
-                },
-                "label": {
-                    "description": "选择项名称",
-                    "type": "string"
-                },
-                "value": {
-                    "description": "选择项值 (ID)",
-                    "type": "integer"
                 }
             }
         },
