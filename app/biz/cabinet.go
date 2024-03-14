@@ -112,26 +112,35 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 				cdr.Reserve = rev
 			}
 
-			if sub != nil && service.NewCabinet().ModelInclude(c, sub.Model) {
-				// 获取可办理业务
-				switch sub.Status {
-				case model.SubscribeStatusInactive:
-					// 未激活时仅能办理激活业务
-					cdr.Businesses = []string{business.TypeActive.String()}
-				case model.SubscribeStatusPaused:
-					// 寄存中时仅能办理取消寄存业务
-					cdr.Businesses = []string{business.TypeContinue.String()}
-				case model.SubscribeStatusUsing:
-					// 使用中可办理寄存和退租业务
-					cdr.Businesses = []string{business.TypePause.String(), business.TypeUnsubscribe.String()}
-				}
+			// 电柜可办理业务
+			reserveActiveNum := service.NewReserve().CabinetCounts([]uint64{c.ID}, "active")
+			// 查询结束寄存
+			reserveContinueNum := service.NewReserve().CabinetCounts([]uint64{c.ID}, "continue")
+			// 查询寄存
+			reservePauseNum := service.NewReserve().CabinetCounts([]uint64{c.ID}, "pause")
+			// 查询退租
+			reserveUnsubscribeNum := service.NewReserve().CabinetCounts([]uint64{c.ID}, "unsubscribe")
+
+			var batteryFullNum, emptyBinNum int
+
+			// 可用电池数
+			batteryFullNum = c.BatteryFullNum - reserveActiveNum[c.ID] - reserveContinueNum[c.ID]
+			// 可用空仓数
+			emptyBinNum = c.EmptyBinNum - reservePauseNum[c.ID] - reserveUnsubscribeNum[c.ID]
+
+			if batteryFullNum >= 2 {
+				cdr.Businesses = append(cdr.Businesses, business.TypeActive.String(), business.TypeContinue.String())
+			}
+			if emptyBinNum >= 2 {
+				cdr.Businesses = append(cdr.Businesses, business.TypePause.String(), business.TypeUnsubscribe.String())
 			}
 
 			if c.Edges.Branch != nil {
 				cdr.BranchID = c.Edges.Branch.ID
 				cdr.Fid = service.NewBranch().EncodeFacility(nil, c)
 			}
-			distance, err := c.Value("distance")
+			var distance interface{}
+			distance, err = c.Value("distance")
 			if err != nil {
 				return nil, err
 			}

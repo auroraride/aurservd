@@ -10501,7 +10501,10 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.ActivityDetail"
+                            }
                         }
                     }
                 }
@@ -10618,7 +10621,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "$ref": "#/definitions/definition.ActivityDetail"
                         }
                     }
                 }
@@ -12628,6 +12631,40 @@ const docTemplate = `{
                 "sort"
             ],
             "properties": {
+                "image": {
+                    "description": "图片",
+                    "type": "string"
+                },
+                "link": {
+                    "description": "链接",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.ActivityDetail": {
+            "type": "object",
+            "required": [
+                "image",
+                "link",
+                "name",
+                "sort"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "image": {
                     "description": "图片",
                     "type": "string"

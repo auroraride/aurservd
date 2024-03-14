@@ -167,9 +167,9 @@ func (*setting) GuideModify(c echo.Context) (err error) {
 // @Tags	设置
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	body			body		model.PaginationReq		true	"请求参数"
-// @Success	200				{object}	model.StatusResponse	"请求成功"
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	body			body		model.PaginationReq			true	"请求参数"
+// @Success	200				{object}	[]definition.ActivityDetail	"请求成功"
 func (*setting) ActivityList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.PaginationReq](c)
 	return ctx.SendResponse(biz.NewActivity().List(req))
@@ -182,9 +182,9 @@ func (*setting) ActivityList(c echo.Context) (err error) {
 // @Tags	设置
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	id				path		string					true	"活动ID"
-// @Success	200				{object}	model.StatusResponse	"请求成功"
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	id				path		string						true	"活动ID"
+// @Success	200				{object}	definition.ActivityDetail	"请求成功"
 func (*setting) ActivityDetail(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewActivity().Get(req.ID))
@@ -209,7 +209,7 @@ func (*setting) ActivityModify(c echo.Context) (err error) {
 // ActivityDelete
 // @ID		SettingActivityDelete
 // @Router	/manager/v1/setting/activity/{id} [DELETE]
-// @Summary 删除活动
+// @Summary	删除活动
 // @Tags	设置
 // @Accept	json
 // @Produce	json

@@ -19,7 +19,7 @@ var Selection = new(selection)
 // @Tags	Selection - 筛选
 // @Accept	json
 // @Produce	json
-// @Success	200	{object}	[]model.SelectOption	"请求成功"
+// @Success	200	{object}	[]string	"请求成功"
 func (*selection) Model(c echo.Context) (err error) {
 	ctx := app.ContextX[app.RiderContext](c)
 	return ctx.SendResponse(service.NewSelection().Models())
