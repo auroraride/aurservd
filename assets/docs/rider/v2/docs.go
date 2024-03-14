@@ -3129,13 +3129,6 @@ const docTemplate = `{
         },
         "definition.ActivityDetail": {
             "type": "object",
-            "required": [
-                "enable",
-                "image",
-                "link",
-                "name",
-                "sort"
-            ],
             "properties": {
                 "enable": {
                     "description": "是否启用 true:是 false:否",
@@ -3145,7 +3138,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "image": {
-                    "description": "图片, 图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
+                    "description": "图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
@@ -3155,12 +3148,16 @@ const docTemplate = `{
                     "description": "首页icon true:是 false:否",
                     "type": "boolean"
                 },
+                "introduction": {
+                    "description": "活动简介",
+                    "type": "string"
+                },
                 "link": {
-                    "description": "链接, 链接",
+                    "description": "链接",
                     "type": "string"
                 },
                 "name": {
-                    "description": "名称, 名称",
+                    "description": "名称",
                     "type": "string"
                 },
                 "popup": {
@@ -3172,7 +3169,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sort": {
-                    "description": "排序, 排序",
+                    "description": "排序",
                     "type": "integer"
                 },
                 "updatedAt": {

@@ -121,15 +121,16 @@ func toActivityDetail(item *ent.Activity) *definition.ActivityDetail {
 	return &definition.ActivityDetail{
 		ID: item.ID,
 		ActivityReqCommon: definition.ActivityReqCommon{
-			Name:      item.Name,
-			Sort:      item.Sort,
-			Image:     item.Image,
-			Link:      item.Link,
-			Remark:    &item.Remark,
-			Popup:     &item.Popup,
-			Index:     &item.Index,
-			Enable:    item.Enable,
-			UpdatedAt: item.UpdatedAt.Format(carbon.DateTimeLayout),
+			Name:         item.Name,
+			Sort:         item.Sort,
+			Image:        item.Image,
+			Link:         item.Link,
+			Remark:       &item.Remark,
+			Popup:        &item.Popup,
+			Index:        &item.Index,
+			Enable:       item.Enable,
+			UpdatedAt:    item.UpdatedAt.Format(carbon.DateTimeLayout),
+			Introduction: item.Introduction,
 		},
 	}
 }

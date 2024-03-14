@@ -33,18 +33,18 @@ func loadManagerRoutes() {
 	g.POST("/setting/legal", mapi.Setting.LegalSave)
 
 	// 设置-新手引导
-	g.GET("/guide", mapi.Setting.GuideList)          // 列表
-	g.GET("/guide/:id", mapi.Setting.GuideGet)       // 详情
-	g.POST("/guide", mapi.Setting.GuideCreate)       // 新增
-	g.PUT("/guide", mapi.Setting.GuideModify)        // 编辑
-	g.DELETE("/guide/:id", mapi.Setting.GuideDelete) // 删除
+	g.GET("/setting/guide", mapi.Setting.GuideList)          // 列表
+	g.GET("/setting/guide/:id", mapi.Setting.GuideGet)       // 详情
+	g.POST("/setting/guide", mapi.Setting.GuideCreate)       // 新增
+	g.PUT("/setting/guide", mapi.Setting.GuideModify)        // 编辑
+	g.DELETE("/setting/guide/:id", mapi.Setting.GuideDelete) // 删除
 
 	// 设置-广告活动
-	g.GET("/activity", mapi.Setting.ActivityList)          // 列表
-	g.GET("/activity/:id", mapi.Setting.ActivityDetail)    // 详情
-	g.POST("/activity", mapi.Setting.ActivityCreate)       // 新增
-	g.PUT("/activity", mapi.Setting.ActivityModify)        // 编辑
-	g.DELETE("/activity/:id", mapi.Setting.ActivityDelete) // 删除
+	g.GET("/setting/activity", mapi.Setting.ActivityList)          // 列表
+	g.GET("/setting/activity/:id", mapi.Setting.ActivityDetail)    // 详情
+	g.POST("/setting/activity", mapi.Setting.ActivityCreate)       // 新增
+	g.PUT("/setting/activity", mapi.Setting.ActivityModify)        // 编辑
+	g.DELETE("/setting/activity/:id", mapi.Setting.ActivityDelete) // 删除
 
 	// 设置-问题分类
 	g.GET("/question/category", mapi.QuestionCategory.List) // 列表
