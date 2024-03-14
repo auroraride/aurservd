@@ -335,6 +335,12 @@ func (s *couponService) RiderDetail(item *ent.Coupon) (res model.CouponRider) {
 	if item.UsedAt != nil {
 		res.UsedAt = item.UsedAt.Format("2006.1.2 15:04:05")
 	}
+
+	isExclusive := item.Rule == model.CouponRuleExclusive.Value()
+	res.Exclusive = isExclusive
+	res.Plans = item.Plans
+	res.Cities = item.Cities
+
 	return
 }
 

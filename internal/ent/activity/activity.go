@@ -25,8 +25,8 @@ const (
 	FieldLink = "link"
 	// FieldSort holds the string denoting the sort field in the database.
 	FieldSort = "sort"
-	// FieldStatus holds the string denoting the status field in the database.
-	FieldStatus = "status"
+	// FieldEnable holds the string denoting the enable field in the database.
+	FieldEnable = "enable"
 	// FieldIntroduction holds the string denoting the introduction field in the database.
 	FieldIntroduction = "introduction"
 	// FieldPopup holds the string denoting the popup field in the database.
@@ -50,7 +50,7 @@ var Columns = []string{
 	FieldName,
 	FieldLink,
 	FieldSort,
-	FieldStatus,
+	FieldEnable,
 	FieldIntroduction,
 	FieldPopup,
 	FieldIndex,
@@ -77,8 +77,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultSort holds the default value on creation for the "sort" field.
 	DefaultSort int
-	// DefaultStatus holds the default value on creation for the "status" field.
-	DefaultStatus bool
+	// DefaultEnable holds the default value on creation for the "enable" field.
+	DefaultEnable bool
 	// DefaultPopup holds the default value on creation for the "popup" field.
 	DefaultPopup bool
 	// DefaultIndex holds the default value on creation for the "index" field.
@@ -123,9 +123,9 @@ func BySort(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSort, opts...).ToFunc()
 }
 
-// ByStatus orders the results by the status field.
-func ByStatus(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+// ByEnable orders the results by the enable field.
+func ByEnable(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEnable, opts...).ToFunc()
 }
 
 // ByIntroduction orders the results by the introduction field.

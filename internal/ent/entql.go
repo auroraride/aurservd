@@ -107,7 +107,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			activity.FieldName:         {Type: field.TypeString, Column: activity.FieldName},
 			activity.FieldLink:         {Type: field.TypeString, Column: activity.FieldLink},
 			activity.FieldSort:         {Type: field.TypeInt, Column: activity.FieldSort},
-			activity.FieldStatus:       {Type: field.TypeBool, Column: activity.FieldStatus},
+			activity.FieldEnable:       {Type: field.TypeBool, Column: activity.FieldEnable},
 			activity.FieldIntroduction: {Type: field.TypeString, Column: activity.FieldIntroduction},
 			activity.FieldPopup:        {Type: field.TypeBool, Column: activity.FieldPopup},
 			activity.FieldIndex:        {Type: field.TypeBool, Column: activity.FieldIndex},
@@ -1748,7 +1748,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			questioncategory.FieldLastModifier: {Type: field.TypeJSON, Column: questioncategory.FieldLastModifier},
 			questioncategory.FieldRemark:       {Type: field.TypeString, Column: questioncategory.FieldRemark},
 			questioncategory.FieldName:         {Type: field.TypeString, Column: questioncategory.FieldName},
-			questioncategory.FieldSort:         {Type: field.TypeInt, Column: questioncategory.FieldSort},
+			questioncategory.FieldSort:         {Type: field.TypeUint64, Column: questioncategory.FieldSort},
 		},
 	}
 	graph.Nodes[62] = &sqlgraph.Node{
@@ -5845,9 +5845,9 @@ func (f *ActivityFilter) WhereSort(p entql.IntP) {
 	f.Where(p.Field(activity.FieldSort))
 }
 
-// WhereStatus applies the entql bool predicate on the status field.
-func (f *ActivityFilter) WhereStatus(p entql.BoolP) {
-	f.Where(p.Field(activity.FieldStatus))
+// WhereEnable applies the entql bool predicate on the enable field.
+func (f *ActivityFilter) WhereEnable(p entql.BoolP) {
+	f.Where(p.Field(activity.FieldEnable))
 }
 
 // WhereIntroduction applies the entql string predicate on the introduction field.
@@ -15549,8 +15549,8 @@ func (f *QuestionCategoryFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(questioncategory.FieldName))
 }
 
-// WhereSort applies the entql int predicate on the sort field.
-func (f *QuestionCategoryFilter) WhereSort(p entql.IntP) {
+// WhereSort applies the entql uint64 predicate on the sort field.
+func (f *QuestionCategoryFilter) WhereSort(p entql.Uint64P) {
 	f.Where(p.Field(questioncategory.FieldSort))
 }
 

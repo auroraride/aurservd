@@ -3129,18 +3129,16 @@ const docTemplate = `{
         },
         "definition.ActivityDetail": {
             "type": "object",
-            "required": [
-                "image",
-                "link",
-                "name",
-                "sort"
-            ],
             "properties": {
+                "enable": {
+                    "description": "是否启用 true:是 false:否",
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "integer"
                 },
                 "image": {
-                    "description": "图片, 图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
+                    "description": "图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
@@ -3150,12 +3148,16 @@ const docTemplate = `{
                     "description": "首页icon true:是 false:否",
                     "type": "boolean"
                 },
+                "introduction": {
+                    "description": "活动简介",
+                    "type": "string"
+                },
                 "link": {
-                    "description": "链接, 链接",
+                    "description": "链接",
                     "type": "string"
                 },
                 "name": {
-                    "description": "名称, 名称",
+                    "description": "名称",
                     "type": "string"
                 },
                 "popup": {
@@ -3167,8 +3169,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sort": {
-                    "description": "排序, 排序",
+                    "description": "排序",
                     "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
                 }
             }
         },
@@ -3550,12 +3556,15 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "description": "分类名称",
                     "type": "string"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "sort": {
+                    "description": "排序",
                     "type": "integer"
                 }
             }
@@ -3569,21 +3578,26 @@ const docTemplate = `{
             ],
             "properties": {
                 "answer": {
+                    "description": "答案",
                     "type": "string"
                 },
-                "category_id": {
+                "categoryId": {
+                    "description": "分类ID",
                     "type": "integer"
                 },
-                "category_name": {
+                "categoryName": {
+                    "description": "分类名称",
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
                 "name": {
+                    "description": "问题名称",
                     "type": "string"
                 },
                 "sort": {
+                    "description": "排序",
                     "type": "integer"
                 }
             }
@@ -4761,9 +4775,20 @@ const docTemplate = `{
                     "description": "金额",
                     "type": "number"
                 },
+                "cities": {
+                    "description": "可用城市, 不存在此字段则不限制",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.City"
+                    }
+                },
                 "code": {
                     "description": "券码",
                     "type": "string"
+                },
+                "exclusive": {
+                    "description": "与其他类型券是否互斥",
+                    "type": "boolean"
                 },
                 "expiredAt": {
                     "description": "到期时间",
@@ -4772,6 +4797,13 @@ const docTemplate = `{
                 "name": {
                     "description": "名称",
                     "type": "string"
+                },
+                "plans": {
+                    "description": "可用骑士卡, 不存在此字段则不限制",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Plan"
+                    }
                 },
                 "usedAt": {
                     "description": "使用时间",

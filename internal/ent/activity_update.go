@@ -104,16 +104,16 @@ func (au *ActivityUpdate) AddSort(i int) *ActivityUpdate {
 	return au
 }
 
-// SetStatus sets the "status" field.
-func (au *ActivityUpdate) SetStatus(b bool) *ActivityUpdate {
-	au.mutation.SetStatus(b)
+// SetEnable sets the "enable" field.
+func (au *ActivityUpdate) SetEnable(b bool) *ActivityUpdate {
+	au.mutation.SetEnable(b)
 	return au
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (au *ActivityUpdate) SetNillableStatus(b *bool) *ActivityUpdate {
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (au *ActivityUpdate) SetNillableEnable(b *bool) *ActivityUpdate {
 	if b != nil {
-		au.SetStatus(*b)
+		au.SetEnable(*b)
 	}
 	return au
 }
@@ -263,8 +263,8 @@ func (au *ActivityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := au.mutation.AddedSort(); ok {
 		_spec.AddField(activity.FieldSort, field.TypeInt, value)
 	}
-	if value, ok := au.mutation.Status(); ok {
-		_spec.SetField(activity.FieldStatus, field.TypeBool, value)
+	if value, ok := au.mutation.Enable(); ok {
+		_spec.SetField(activity.FieldEnable, field.TypeBool, value)
 	}
 	if value, ok := au.mutation.Introduction(); ok {
 		_spec.SetField(activity.FieldIntroduction, field.TypeString, value)
@@ -381,16 +381,16 @@ func (auo *ActivityUpdateOne) AddSort(i int) *ActivityUpdateOne {
 	return auo
 }
 
-// SetStatus sets the "status" field.
-func (auo *ActivityUpdateOne) SetStatus(b bool) *ActivityUpdateOne {
-	auo.mutation.SetStatus(b)
+// SetEnable sets the "enable" field.
+func (auo *ActivityUpdateOne) SetEnable(b bool) *ActivityUpdateOne {
+	auo.mutation.SetEnable(b)
 	return auo
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (auo *ActivityUpdateOne) SetNillableStatus(b *bool) *ActivityUpdateOne {
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (auo *ActivityUpdateOne) SetNillableEnable(b *bool) *ActivityUpdateOne {
 	if b != nil {
-		auo.SetStatus(*b)
+		auo.SetEnable(*b)
 	}
 	return auo
 }
@@ -570,8 +570,8 @@ func (auo *ActivityUpdateOne) sqlSave(ctx context.Context) (_node *Activity, err
 	if value, ok := auo.mutation.AddedSort(); ok {
 		_spec.AddField(activity.FieldSort, field.TypeInt, value)
 	}
-	if value, ok := auo.mutation.Status(); ok {
-		_spec.SetField(activity.FieldStatus, field.TypeBool, value)
+	if value, ok := auo.mutation.Enable(); ok {
+		_spec.SetField(activity.FieldEnable, field.TypeBool, value)
 	}
 	if value, ok := auo.mutation.Introduction(); ok {
 		_spec.SetField(activity.FieldIntroduction, field.TypeString, value)

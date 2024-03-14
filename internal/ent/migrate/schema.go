@@ -18,7 +18,7 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
 		{Name: "link", Type: field.TypeString, Comment: "链接"},
 		{Name: "sort", Type: field.TypeInt, Comment: "排序", Default: 0},
-		{Name: "status", Type: field.TypeBool, Comment: "状态 true:启用 false:禁用", Default: true},
+		{Name: "enable", Type: field.TypeBool, Comment: "状态 true:启用 false:禁用", Default: true},
 		{Name: "introduction", Type: field.TypeString, Comment: "简介"},
 		{Name: "popup", Type: field.TypeBool, Comment: "活动入口:弹窗", Default: false},
 		{Name: "index", Type: field.TypeBool, Comment: "活动入口:首页icon", Default: false},
@@ -4318,7 +4318,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
-		{Name: "sort", Type: field.TypeInt, Comment: "排序", Default: 0},
+		{Name: "sort", Type: field.TypeUint64, Comment: "排序", Default: 0},
 	}
 	// QuestionCategoryTable holds the schema information for the "question_category" table.
 	QuestionCategoryTable = &schema.Table{

@@ -81,7 +81,7 @@ func Name(v string) predicate.QuestionCategory {
 }
 
 // Sort applies equality check predicate on the "sort" field. It's identical to SortEQ.
-func Sort(v int) predicate.QuestionCategory {
+func Sort(v uint64) predicate.QuestionCategory {
 	return predicate.QuestionCategory(sql.FieldEQ(FieldSort, v))
 }
 
@@ -376,42 +376,42 @@ func NameContainsFold(v string) predicate.QuestionCategory {
 }
 
 // SortEQ applies the EQ predicate on the "sort" field.
-func SortEQ(v int) predicate.QuestionCategory {
+func SortEQ(v uint64) predicate.QuestionCategory {
 	return predicate.QuestionCategory(sql.FieldEQ(FieldSort, v))
 }
 
 // SortNEQ applies the NEQ predicate on the "sort" field.
-func SortNEQ(v int) predicate.QuestionCategory {
+func SortNEQ(v uint64) predicate.QuestionCategory {
 	return predicate.QuestionCategory(sql.FieldNEQ(FieldSort, v))
 }
 
 // SortIn applies the In predicate on the "sort" field.
-func SortIn(vs ...int) predicate.QuestionCategory {
+func SortIn(vs ...uint64) predicate.QuestionCategory {
 	return predicate.QuestionCategory(sql.FieldIn(FieldSort, vs...))
 }
 
 // SortNotIn applies the NotIn predicate on the "sort" field.
-func SortNotIn(vs ...int) predicate.QuestionCategory {
+func SortNotIn(vs ...uint64) predicate.QuestionCategory {
 	return predicate.QuestionCategory(sql.FieldNotIn(FieldSort, vs...))
 }
 
 // SortGT applies the GT predicate on the "sort" field.
-func SortGT(v int) predicate.QuestionCategory {
+func SortGT(v uint64) predicate.QuestionCategory {
 	return predicate.QuestionCategory(sql.FieldGT(FieldSort, v))
 }
 
 // SortGTE applies the GTE predicate on the "sort" field.
-func SortGTE(v int) predicate.QuestionCategory {
+func SortGTE(v uint64) predicate.QuestionCategory {
 	return predicate.QuestionCategory(sql.FieldGTE(FieldSort, v))
 }
 
 // SortLT applies the LT predicate on the "sort" field.
-func SortLT(v int) predicate.QuestionCategory {
+func SortLT(v uint64) predicate.QuestionCategory {
 	return predicate.QuestionCategory(sql.FieldLT(FieldSort, v))
 }
 
 // SortLTE applies the LTE predicate on the "sort" field.
-func SortLTE(v int) predicate.QuestionCategory {
+func SortLTE(v uint64) predicate.QuestionCategory {
 	return predicate.QuestionCategory(sql.FieldLTE(FieldSort, v))
 }
 

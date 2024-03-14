@@ -262,3 +262,17 @@ func (*selection) CommissionPlan(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CommissionPlanSelectionReq](c)
 	return ctx.SendResponse(service.NewSelection().CommissionPlan(req))
 }
+
+// QuestionCategory 问题分类
+// @ID		ManagerSelectionQuestionCategory
+// @Router	/manager/v1/selection/question/category [GET]
+// @Summary	问题分类
+// @Tags	筛选
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Success	200				{object}	[]model.SelectOption	"请求成功"
+func (*selection) QuestionCategory(c echo.Context) (err error) {
+	ctx := app.Context(c)
+	return ctx.SendResponse(service.NewSelection().QuestionCategory())
+}
