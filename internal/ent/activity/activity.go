@@ -5,7 +5,6 @@ package activity
 import (
 	"time"
 
-	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 )
 
@@ -20,20 +19,24 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldCreator holds the string denoting the creator field in the database.
-	FieldCreator = "creator"
-	// FieldLastModifier holds the string denoting the last_modifier field in the database.
-	FieldLastModifier = "last_modifier"
-	// FieldRemark holds the string denoting the remark field in the database.
-	FieldRemark = "remark"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldImage holds the string denoting the image field in the database.
-	FieldImage = "image"
 	// FieldLink holds the string denoting the link field in the database.
 	FieldLink = "link"
 	// FieldSort holds the string denoting the sort field in the database.
 	FieldSort = "sort"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
+	// FieldIntroduction holds the string denoting the introduction field in the database.
+	FieldIntroduction = "introduction"
+	// FieldPopup holds the string denoting the popup field in the database.
+	FieldPopup = "popup"
+	// FieldIndex holds the string denoting the index field in the database.
+	FieldIndex = "index"
+	// FieldImage holds the string denoting the image field in the database.
+	FieldImage = "image"
+	// FieldRemark holds the string denoting the remark field in the database.
+	FieldRemark = "remark"
 	// Table holds the table name of the activity in the database.
 	Table = "activity"
 )
@@ -44,13 +47,15 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldCreator,
-	FieldLastModifier,
-	FieldRemark,
 	FieldName,
-	FieldImage,
 	FieldLink,
 	FieldSort,
+	FieldStatus,
+	FieldIntroduction,
+	FieldPopup,
+	FieldIndex,
+	FieldImage,
+	FieldRemark,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -63,13 +68,7 @@ func ValidColumn(column string) bool {
 	return false
 }
 
-// Note that the variables below are initialized by the runtime
-// package on the initialization of the application. Therefore,
-// it should be imported in the main as follows:
-//
-//	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
 var (
-	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -78,6 +77,12 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultSort holds the default value on creation for the "sort" field.
 	DefaultSort int
+	// DefaultStatus holds the default value on creation for the "status" field.
+	DefaultStatus bool
+	// DefaultPopup holds the default value on creation for the "popup" field.
+	DefaultPopup bool
+	// DefaultIndex holds the default value on creation for the "index" field.
+	DefaultIndex bool
 )
 
 // OrderOption defines the ordering options for the Activity queries.
@@ -103,19 +108,9 @@ func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
 }
 
-// ByRemark orders the results by the remark field.
-func ByRemark(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRemark, opts...).ToFunc()
-}
-
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
-}
-
-// ByImage orders the results by the image field.
-func ByImage(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldImage, opts...).ToFunc()
 }
 
 // ByLink orders the results by the link field.
@@ -126,4 +121,29 @@ func ByLink(opts ...sql.OrderTermOption) OrderOption {
 // BySort orders the results by the sort field.
 func BySort(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSort, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByIntroduction orders the results by the introduction field.
+func ByIntroduction(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIntroduction, opts...).ToFunc()
+}
+
+// ByPopup orders the results by the popup field.
+func ByPopup(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPopup, opts...).ToFunc()
+}
+
+// ByIndex orders the results by the index field.
+func ByIndex(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIndex, opts...).ToFunc()
+}
+
+// ByRemark orders the results by the remark field.
+func ByRemark(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRemark, opts...).ToFunc()
 }

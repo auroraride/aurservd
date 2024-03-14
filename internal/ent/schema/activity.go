@@ -60,9 +60,14 @@ func (Activity) Annotations() []schema.Annotation {
 func (Activity) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").Comment("名称"),
-		field.String("image").Comment("图片"),
 		field.String("link").Comment("链接"),
 		field.Int("sort").Default(0).Comment("排序"),
+		field.Bool("status").Default(true).Comment("状态 true:启用 false:禁用"),
+		field.String("introduction").Comment("简介"),
+		field.Bool("popup").Default(false).Comment("活动入口:弹窗"),
+		field.Bool("index").Default(false).Comment("活动入口:首页icon"),
+		field.JSON("image", map[string]string{}).Comment("图片"),
+		field.String("remark").Optional().Comment("备注"),
 	}
 }
 
@@ -75,7 +80,6 @@ func (Activity) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
 		internal.DeleteMixin{},
-		internal.Modifier{},
 	}
 }
 

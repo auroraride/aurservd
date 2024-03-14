@@ -15,13 +15,15 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
-		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
-		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
-		{Name: "image", Type: field.TypeString, Comment: "图片"},
 		{Name: "link", Type: field.TypeString, Comment: "链接"},
 		{Name: "sort", Type: field.TypeInt, Comment: "排序", Default: 0},
+		{Name: "status", Type: field.TypeBool, Comment: "状态 true:启用 false:禁用", Default: true},
+		{Name: "introduction", Type: field.TypeString, Comment: "简介"},
+		{Name: "popup", Type: field.TypeBool, Comment: "活动入口:弹窗", Default: false},
+		{Name: "index", Type: field.TypeBool, Comment: "活动入口:首页icon", Default: false},
+		{Name: "image", Type: field.TypeJSON, Comment: "图片"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
 	}
 	// ActivityTable holds the schema information for the "activity" table.
 	ActivityTable = &schema.Table{
@@ -2792,6 +2794,7 @@ var (
 		{Name: "phone", Type: field.TypeString, Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "agent_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// FeedbackTable holds the schema information for the "feedback" table.
 	FeedbackTable = &schema.Table{
@@ -2811,6 +2814,12 @@ var (
 				RefColumns: []*schema.Column{AgentColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
+			{
+				Symbol:     "feedback_rider_rider",
+				Columns:    []*schema.Column{FeedbackColumns[11]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
 		},
 		Indexes: []*schema.Index{
 			{
@@ -2827,6 +2836,11 @@ var (
 				Name:    "feedback_agent_id",
 				Unique:  false,
 				Columns: []*schema.Column{FeedbackColumns[10]},
+			},
+			{
+				Name:    "feedback_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{FeedbackColumns[11]},
 			},
 		},
 	}
@@ -6067,6 +6081,7 @@ func init() {
 	}
 	FeedbackTable.ForeignKeys[0].RefTable = EnterpriseTable
 	FeedbackTable.ForeignKeys[1].RefTable = AgentTable
+	FeedbackTable.ForeignKeys[2].RefTable = RiderTable
 	FeedbackTable.Annotation = &entsql.Annotation{
 		Table: "feedback",
 	}

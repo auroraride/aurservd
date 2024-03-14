@@ -69,19 +69,9 @@ func DeletedAt(v time.Time) predicate.Activity {
 	return predicate.Activity(sql.FieldEQ(FieldDeletedAt, v))
 }
 
-// Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
-func Remark(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldEQ(FieldRemark, v))
-}
-
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Activity {
 	return predicate.Activity(sql.FieldEQ(FieldName, v))
-}
-
-// Image applies equality check predicate on the "image" field. It's identical to ImageEQ.
-func Image(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldEQ(FieldImage, v))
 }
 
 // Link applies equality check predicate on the "link" field. It's identical to LinkEQ.
@@ -92,6 +82,31 @@ func Link(v string) predicate.Activity {
 // Sort applies equality check predicate on the "sort" field. It's identical to SortEQ.
 func Sort(v int) predicate.Activity {
 	return predicate.Activity(sql.FieldEQ(FieldSort, v))
+}
+
+// Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
+func Status(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldEQ(FieldStatus, v))
+}
+
+// Introduction applies equality check predicate on the "introduction" field. It's identical to IntroductionEQ.
+func Introduction(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldEQ(FieldIntroduction, v))
+}
+
+// Popup applies equality check predicate on the "popup" field. It's identical to PopupEQ.
+func Popup(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldEQ(FieldPopup, v))
+}
+
+// Index applies equality check predicate on the "index" field. It's identical to IndexEQ.
+func Index(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldEQ(FieldIndex, v))
+}
+
+// Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
+func Remark(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldEQ(FieldRemark, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -224,101 +239,6 @@ func DeletedAtNotNil() predicate.Activity {
 	return predicate.Activity(sql.FieldNotNull(FieldDeletedAt))
 }
 
-// CreatorIsNil applies the IsNil predicate on the "creator" field.
-func CreatorIsNil() predicate.Activity {
-	return predicate.Activity(sql.FieldIsNull(FieldCreator))
-}
-
-// CreatorNotNil applies the NotNil predicate on the "creator" field.
-func CreatorNotNil() predicate.Activity {
-	return predicate.Activity(sql.FieldNotNull(FieldCreator))
-}
-
-// LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
-func LastModifierIsNil() predicate.Activity {
-	return predicate.Activity(sql.FieldIsNull(FieldLastModifier))
-}
-
-// LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
-func LastModifierNotNil() predicate.Activity {
-	return predicate.Activity(sql.FieldNotNull(FieldLastModifier))
-}
-
-// RemarkEQ applies the EQ predicate on the "remark" field.
-func RemarkEQ(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldEQ(FieldRemark, v))
-}
-
-// RemarkNEQ applies the NEQ predicate on the "remark" field.
-func RemarkNEQ(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldNEQ(FieldRemark, v))
-}
-
-// RemarkIn applies the In predicate on the "remark" field.
-func RemarkIn(vs ...string) predicate.Activity {
-	return predicate.Activity(sql.FieldIn(FieldRemark, vs...))
-}
-
-// RemarkNotIn applies the NotIn predicate on the "remark" field.
-func RemarkNotIn(vs ...string) predicate.Activity {
-	return predicate.Activity(sql.FieldNotIn(FieldRemark, vs...))
-}
-
-// RemarkGT applies the GT predicate on the "remark" field.
-func RemarkGT(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldGT(FieldRemark, v))
-}
-
-// RemarkGTE applies the GTE predicate on the "remark" field.
-func RemarkGTE(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldGTE(FieldRemark, v))
-}
-
-// RemarkLT applies the LT predicate on the "remark" field.
-func RemarkLT(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldLT(FieldRemark, v))
-}
-
-// RemarkLTE applies the LTE predicate on the "remark" field.
-func RemarkLTE(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldLTE(FieldRemark, v))
-}
-
-// RemarkContains applies the Contains predicate on the "remark" field.
-func RemarkContains(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldContains(FieldRemark, v))
-}
-
-// RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
-func RemarkHasPrefix(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldHasPrefix(FieldRemark, v))
-}
-
-// RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
-func RemarkHasSuffix(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldHasSuffix(FieldRemark, v))
-}
-
-// RemarkIsNil applies the IsNil predicate on the "remark" field.
-func RemarkIsNil() predicate.Activity {
-	return predicate.Activity(sql.FieldIsNull(FieldRemark))
-}
-
-// RemarkNotNil applies the NotNil predicate on the "remark" field.
-func RemarkNotNil() predicate.Activity {
-	return predicate.Activity(sql.FieldNotNull(FieldRemark))
-}
-
-// RemarkEqualFold applies the EqualFold predicate on the "remark" field.
-func RemarkEqualFold(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldEqualFold(FieldRemark, v))
-}
-
-// RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
-func RemarkContainsFold(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldContainsFold(FieldRemark, v))
-}
-
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Activity {
 	return predicate.Activity(sql.FieldEQ(FieldName, v))
@@ -382,71 +302,6 @@ func NameEqualFold(v string) predicate.Activity {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Activity {
 	return predicate.Activity(sql.FieldContainsFold(FieldName, v))
-}
-
-// ImageEQ applies the EQ predicate on the "image" field.
-func ImageEQ(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldEQ(FieldImage, v))
-}
-
-// ImageNEQ applies the NEQ predicate on the "image" field.
-func ImageNEQ(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldNEQ(FieldImage, v))
-}
-
-// ImageIn applies the In predicate on the "image" field.
-func ImageIn(vs ...string) predicate.Activity {
-	return predicate.Activity(sql.FieldIn(FieldImage, vs...))
-}
-
-// ImageNotIn applies the NotIn predicate on the "image" field.
-func ImageNotIn(vs ...string) predicate.Activity {
-	return predicate.Activity(sql.FieldNotIn(FieldImage, vs...))
-}
-
-// ImageGT applies the GT predicate on the "image" field.
-func ImageGT(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldGT(FieldImage, v))
-}
-
-// ImageGTE applies the GTE predicate on the "image" field.
-func ImageGTE(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldGTE(FieldImage, v))
-}
-
-// ImageLT applies the LT predicate on the "image" field.
-func ImageLT(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldLT(FieldImage, v))
-}
-
-// ImageLTE applies the LTE predicate on the "image" field.
-func ImageLTE(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldLTE(FieldImage, v))
-}
-
-// ImageContains applies the Contains predicate on the "image" field.
-func ImageContains(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldContains(FieldImage, v))
-}
-
-// ImageHasPrefix applies the HasPrefix predicate on the "image" field.
-func ImageHasPrefix(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldHasPrefix(FieldImage, v))
-}
-
-// ImageHasSuffix applies the HasSuffix predicate on the "image" field.
-func ImageHasSuffix(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldHasSuffix(FieldImage, v))
-}
-
-// ImageEqualFold applies the EqualFold predicate on the "image" field.
-func ImageEqualFold(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldEqualFold(FieldImage, v))
-}
-
-// ImageContainsFold applies the ContainsFold predicate on the "image" field.
-func ImageContainsFold(v string) predicate.Activity {
-	return predicate.Activity(sql.FieldContainsFold(FieldImage, v))
 }
 
 // LinkEQ applies the EQ predicate on the "link" field.
@@ -552,6 +407,176 @@ func SortLT(v int) predicate.Activity {
 // SortLTE applies the LTE predicate on the "sort" field.
 func SortLTE(v int) predicate.Activity {
 	return predicate.Activity(sql.FieldLTE(FieldSort, v))
+}
+
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldEQ(FieldStatus, v))
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldNEQ(FieldStatus, v))
+}
+
+// IntroductionEQ applies the EQ predicate on the "introduction" field.
+func IntroductionEQ(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldEQ(FieldIntroduction, v))
+}
+
+// IntroductionNEQ applies the NEQ predicate on the "introduction" field.
+func IntroductionNEQ(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldNEQ(FieldIntroduction, v))
+}
+
+// IntroductionIn applies the In predicate on the "introduction" field.
+func IntroductionIn(vs ...string) predicate.Activity {
+	return predicate.Activity(sql.FieldIn(FieldIntroduction, vs...))
+}
+
+// IntroductionNotIn applies the NotIn predicate on the "introduction" field.
+func IntroductionNotIn(vs ...string) predicate.Activity {
+	return predicate.Activity(sql.FieldNotIn(FieldIntroduction, vs...))
+}
+
+// IntroductionGT applies the GT predicate on the "introduction" field.
+func IntroductionGT(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldGT(FieldIntroduction, v))
+}
+
+// IntroductionGTE applies the GTE predicate on the "introduction" field.
+func IntroductionGTE(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldGTE(FieldIntroduction, v))
+}
+
+// IntroductionLT applies the LT predicate on the "introduction" field.
+func IntroductionLT(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldLT(FieldIntroduction, v))
+}
+
+// IntroductionLTE applies the LTE predicate on the "introduction" field.
+func IntroductionLTE(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldLTE(FieldIntroduction, v))
+}
+
+// IntroductionContains applies the Contains predicate on the "introduction" field.
+func IntroductionContains(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldContains(FieldIntroduction, v))
+}
+
+// IntroductionHasPrefix applies the HasPrefix predicate on the "introduction" field.
+func IntroductionHasPrefix(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldHasPrefix(FieldIntroduction, v))
+}
+
+// IntroductionHasSuffix applies the HasSuffix predicate on the "introduction" field.
+func IntroductionHasSuffix(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldHasSuffix(FieldIntroduction, v))
+}
+
+// IntroductionEqualFold applies the EqualFold predicate on the "introduction" field.
+func IntroductionEqualFold(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldEqualFold(FieldIntroduction, v))
+}
+
+// IntroductionContainsFold applies the ContainsFold predicate on the "introduction" field.
+func IntroductionContainsFold(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldContainsFold(FieldIntroduction, v))
+}
+
+// PopupEQ applies the EQ predicate on the "popup" field.
+func PopupEQ(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldEQ(FieldPopup, v))
+}
+
+// PopupNEQ applies the NEQ predicate on the "popup" field.
+func PopupNEQ(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldNEQ(FieldPopup, v))
+}
+
+// IndexEQ applies the EQ predicate on the "index" field.
+func IndexEQ(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldEQ(FieldIndex, v))
+}
+
+// IndexNEQ applies the NEQ predicate on the "index" field.
+func IndexNEQ(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldNEQ(FieldIndex, v))
+}
+
+// RemarkEQ applies the EQ predicate on the "remark" field.
+func RemarkEQ(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldEQ(FieldRemark, v))
+}
+
+// RemarkNEQ applies the NEQ predicate on the "remark" field.
+func RemarkNEQ(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldNEQ(FieldRemark, v))
+}
+
+// RemarkIn applies the In predicate on the "remark" field.
+func RemarkIn(vs ...string) predicate.Activity {
+	return predicate.Activity(sql.FieldIn(FieldRemark, vs...))
+}
+
+// RemarkNotIn applies the NotIn predicate on the "remark" field.
+func RemarkNotIn(vs ...string) predicate.Activity {
+	return predicate.Activity(sql.FieldNotIn(FieldRemark, vs...))
+}
+
+// RemarkGT applies the GT predicate on the "remark" field.
+func RemarkGT(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldGT(FieldRemark, v))
+}
+
+// RemarkGTE applies the GTE predicate on the "remark" field.
+func RemarkGTE(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldGTE(FieldRemark, v))
+}
+
+// RemarkLT applies the LT predicate on the "remark" field.
+func RemarkLT(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldLT(FieldRemark, v))
+}
+
+// RemarkLTE applies the LTE predicate on the "remark" field.
+func RemarkLTE(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldLTE(FieldRemark, v))
+}
+
+// RemarkContains applies the Contains predicate on the "remark" field.
+func RemarkContains(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldContains(FieldRemark, v))
+}
+
+// RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
+func RemarkHasPrefix(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldHasPrefix(FieldRemark, v))
+}
+
+// RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
+func RemarkHasSuffix(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldHasSuffix(FieldRemark, v))
+}
+
+// RemarkIsNil applies the IsNil predicate on the "remark" field.
+func RemarkIsNil() predicate.Activity {
+	return predicate.Activity(sql.FieldIsNull(FieldRemark))
+}
+
+// RemarkNotNil applies the NotNil predicate on the "remark" field.
+func RemarkNotNil() predicate.Activity {
+	return predicate.Activity(sql.FieldNotNull(FieldRemark))
+}
+
+// RemarkEqualFold applies the EqualFold predicate on the "remark" field.
+func RemarkEqualFold(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldEqualFold(FieldRemark, v))
+}
+
+// RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
+func RemarkContainsFold(v string) predicate.Activity {
+	return predicate.Activity(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // And groups predicates with the AND operator between them.

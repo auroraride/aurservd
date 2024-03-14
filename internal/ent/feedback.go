@@ -13,6 +13,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
 // Feedback is the model entity for the Feedback schema.
@@ -28,11 +29,13 @@ type Feedback struct {
 	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
 	// AgentID holds the value of the "agent_id" field.
 	AgentID *uint64 `json:"agent_id,omitempty"`
+	// 骑手ID
+	RiderID *uint64 `json:"rider_id,omitempty"`
 	// 反馈内容
 	Content string `json:"content,omitempty"`
 	// 反馈类型
 	Type uint8 `json:"type,omitempty"`
-	// 反馈来源
+	// 反馈来源 1:骑手 2:代理
 	Source uint8 `json:"source,omitempty"`
 	// 反馈图片
 	URL []string `json:"url,omitempty"`
@@ -52,9 +55,11 @@ type FeedbackEdges struct {
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// Agent holds the value of the agent edge.
 	Agent *Agent `json:"agent,omitempty"`
+	// 骑手
+	Rider *Rider `json:"rider,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
@@ -83,6 +88,19 @@ func (e FeedbackEdges) AgentOrErr() (*Agent, error) {
 	return nil, &NotLoadedError{edge: "agent"}
 }
 
+// RiderOrErr returns the Rider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e FeedbackEdges) RiderOrErr() (*Rider, error) {
+	if e.loadedTypes[2] {
+		if e.Rider == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: rider.Label}
+		}
+		return e.Rider, nil
+	}
+	return nil, &NotLoadedError{edge: "rider"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Feedback) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -90,7 +108,7 @@ func (*Feedback) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case feedback.FieldURL:
 			values[i] = new([]byte)
-		case feedback.FieldID, feedback.FieldEnterpriseID, feedback.FieldAgentID, feedback.FieldType, feedback.FieldSource:
+		case feedback.FieldID, feedback.FieldEnterpriseID, feedback.FieldAgentID, feedback.FieldRiderID, feedback.FieldType, feedback.FieldSource:
 			values[i] = new(sql.NullInt64)
 		case feedback.FieldContent, feedback.FieldName, feedback.FieldPhone:
 			values[i] = new(sql.NullString)
@@ -142,6 +160,13 @@ func (f *Feedback) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				f.AgentID = new(uint64)
 				*f.AgentID = uint64(value.Int64)
+			}
+		case feedback.FieldRiderID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
+			} else if value.Valid {
+				f.RiderID = new(uint64)
+				*f.RiderID = uint64(value.Int64)
 			}
 		case feedback.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -204,6 +229,11 @@ func (f *Feedback) QueryAgent() *AgentQuery {
 	return NewFeedbackClient(f.config).QueryAgent(f)
 }
 
+// QueryRider queries the "rider" edge of the Feedback entity.
+func (f *Feedback) QueryRider() *RiderQuery {
+	return NewFeedbackClient(f.config).QueryRider(f)
+}
+
 // Update returns a builder for updating this Feedback.
 // Note that you need to call Feedback.Unwrap() before calling this method if this Feedback
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -240,6 +270,11 @@ func (f *Feedback) String() string {
 	builder.WriteString(", ")
 	if v := f.AgentID; v != nil {
 		builder.WriteString("agent_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := f.RiderID; v != nil {
+		builder.WriteString("rider_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

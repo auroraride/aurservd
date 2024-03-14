@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/activity"
 )
 
@@ -25,20 +24,24 @@ type Activity struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// 创建人
-	Creator *model.Modifier `json:"creator,omitempty"`
-	// 最后修改人
-	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
-	// 管理员改动原因/备注
-	Remark string `json:"remark,omitempty"`
 	// 名称
 	Name string `json:"name,omitempty"`
-	// 图片
-	Image string `json:"image,omitempty"`
 	// 链接
 	Link string `json:"link,omitempty"`
 	// 排序
-	Sort         int `json:"sort,omitempty"`
+	Sort int `json:"sort,omitempty"`
+	// 状态 true:启用 false:禁用
+	Status bool `json:"status,omitempty"`
+	// 简介
+	Introduction string `json:"introduction,omitempty"`
+	// 活动入口:弹窗
+	Popup bool `json:"popup,omitempty"`
+	// 活动入口:首页icon
+	Index bool `json:"index,omitempty"`
+	// 图片
+	Image map[string]string `json:"image,omitempty"`
+	// 备注
+	Remark       string `json:"remark,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -47,11 +50,13 @@ func (*Activity) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case activity.FieldCreator, activity.FieldLastModifier:
+		case activity.FieldImage:
 			values[i] = new([]byte)
+		case activity.FieldStatus, activity.FieldPopup, activity.FieldIndex:
+			values[i] = new(sql.NullBool)
 		case activity.FieldID, activity.FieldSort:
 			values[i] = new(sql.NullInt64)
-		case activity.FieldRemark, activity.FieldName, activity.FieldImage, activity.FieldLink:
+		case activity.FieldName, activity.FieldLink, activity.FieldIntroduction, activity.FieldRemark:
 			values[i] = new(sql.NullString)
 		case activity.FieldCreatedAt, activity.FieldUpdatedAt, activity.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -95,39 +100,11 @@ func (a *Activity) assignValues(columns []string, values []any) error {
 				a.DeletedAt = new(time.Time)
 				*a.DeletedAt = value.Time
 			}
-		case activity.FieldCreator:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field creator", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &a.Creator); err != nil {
-					return fmt.Errorf("unmarshal field creator: %w", err)
-				}
-			}
-		case activity.FieldLastModifier:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &a.LastModifier); err != nil {
-					return fmt.Errorf("unmarshal field last_modifier: %w", err)
-				}
-			}
-		case activity.FieldRemark:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field remark", values[i])
-			} else if value.Valid {
-				a.Remark = value.String
-			}
 		case activity.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				a.Name = value.String
-			}
-		case activity.FieldImage:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field image", values[i])
-			} else if value.Valid {
-				a.Image = value.String
 			}
 		case activity.FieldLink:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -140,6 +117,44 @@ func (a *Activity) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field sort", values[i])
 			} else if value.Valid {
 				a.Sort = int(value.Int64)
+			}
+		case activity.FieldStatus:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				a.Status = value.Bool
+			}
+		case activity.FieldIntroduction:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field introduction", values[i])
+			} else if value.Valid {
+				a.Introduction = value.String
+			}
+		case activity.FieldPopup:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field popup", values[i])
+			} else if value.Valid {
+				a.Popup = value.Bool
+			}
+		case activity.FieldIndex:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field index", values[i])
+			} else if value.Valid {
+				a.Index = value.Bool
+			}
+		case activity.FieldImage:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field image", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &a.Image); err != nil {
+					return fmt.Errorf("unmarshal field image: %w", err)
+				}
+			}
+		case activity.FieldRemark:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field remark", values[i])
+			} else if value.Valid {
+				a.Remark = value.String
 			}
 		default:
 			a.selectValues.Set(columns[i], values[i])
@@ -188,26 +203,32 @@ func (a *Activity) String() string {
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("creator=")
-	builder.WriteString(fmt.Sprintf("%v", a.Creator))
-	builder.WriteString(", ")
-	builder.WriteString("last_modifier=")
-	builder.WriteString(fmt.Sprintf("%v", a.LastModifier))
-	builder.WriteString(", ")
-	builder.WriteString("remark=")
-	builder.WriteString(a.Remark)
-	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(a.Name)
-	builder.WriteString(", ")
-	builder.WriteString("image=")
-	builder.WriteString(a.Image)
 	builder.WriteString(", ")
 	builder.WriteString("link=")
 	builder.WriteString(a.Link)
 	builder.WriteString(", ")
 	builder.WriteString("sort=")
 	builder.WriteString(fmt.Sprintf("%v", a.Sort))
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(fmt.Sprintf("%v", a.Status))
+	builder.WriteString(", ")
+	builder.WriteString("introduction=")
+	builder.WriteString(a.Introduction)
+	builder.WriteString(", ")
+	builder.WriteString("popup=")
+	builder.WriteString(fmt.Sprintf("%v", a.Popup))
+	builder.WriteString(", ")
+	builder.WriteString("index=")
+	builder.WriteString(fmt.Sprintf("%v", a.Index))
+	builder.WriteString(", ")
+	builder.WriteString("image=")
+	builder.WriteString(fmt.Sprintf("%v", a.Image))
+	builder.WriteString(", ")
+	builder.WriteString("remark=")
+	builder.WriteString(a.Remark)
 	builder.WriteByte(')')
 	return builder.String()
 }

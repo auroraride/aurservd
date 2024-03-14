@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -56,38 +55,6 @@ func (au *ActivityUpdate) ClearDeletedAt() *ActivityUpdate {
 	return au
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (au *ActivityUpdate) SetLastModifier(m *model.Modifier) *ActivityUpdate {
-	au.mutation.SetLastModifier(m)
-	return au
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (au *ActivityUpdate) ClearLastModifier() *ActivityUpdate {
-	au.mutation.ClearLastModifier()
-	return au
-}
-
-// SetRemark sets the "remark" field.
-func (au *ActivityUpdate) SetRemark(s string) *ActivityUpdate {
-	au.mutation.SetRemark(s)
-	return au
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (au *ActivityUpdate) SetNillableRemark(s *string) *ActivityUpdate {
-	if s != nil {
-		au.SetRemark(*s)
-	}
-	return au
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (au *ActivityUpdate) ClearRemark() *ActivityUpdate {
-	au.mutation.ClearRemark()
-	return au
-}
-
 // SetName sets the "name" field.
 func (au *ActivityUpdate) SetName(s string) *ActivityUpdate {
 	au.mutation.SetName(s)
@@ -98,20 +65,6 @@ func (au *ActivityUpdate) SetName(s string) *ActivityUpdate {
 func (au *ActivityUpdate) SetNillableName(s *string) *ActivityUpdate {
 	if s != nil {
 		au.SetName(*s)
-	}
-	return au
-}
-
-// SetImage sets the "image" field.
-func (au *ActivityUpdate) SetImage(s string) *ActivityUpdate {
-	au.mutation.SetImage(s)
-	return au
-}
-
-// SetNillableImage sets the "image" field if the given value is not nil.
-func (au *ActivityUpdate) SetNillableImage(s *string) *ActivityUpdate {
-	if s != nil {
-		au.SetImage(*s)
 	}
 	return au
 }
@@ -151,6 +104,88 @@ func (au *ActivityUpdate) AddSort(i int) *ActivityUpdate {
 	return au
 }
 
+// SetStatus sets the "status" field.
+func (au *ActivityUpdate) SetStatus(b bool) *ActivityUpdate {
+	au.mutation.SetStatus(b)
+	return au
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (au *ActivityUpdate) SetNillableStatus(b *bool) *ActivityUpdate {
+	if b != nil {
+		au.SetStatus(*b)
+	}
+	return au
+}
+
+// SetIntroduction sets the "introduction" field.
+func (au *ActivityUpdate) SetIntroduction(s string) *ActivityUpdate {
+	au.mutation.SetIntroduction(s)
+	return au
+}
+
+// SetNillableIntroduction sets the "introduction" field if the given value is not nil.
+func (au *ActivityUpdate) SetNillableIntroduction(s *string) *ActivityUpdate {
+	if s != nil {
+		au.SetIntroduction(*s)
+	}
+	return au
+}
+
+// SetPopup sets the "popup" field.
+func (au *ActivityUpdate) SetPopup(b bool) *ActivityUpdate {
+	au.mutation.SetPopup(b)
+	return au
+}
+
+// SetNillablePopup sets the "popup" field if the given value is not nil.
+func (au *ActivityUpdate) SetNillablePopup(b *bool) *ActivityUpdate {
+	if b != nil {
+		au.SetPopup(*b)
+	}
+	return au
+}
+
+// SetIndex sets the "index" field.
+func (au *ActivityUpdate) SetIndex(b bool) *ActivityUpdate {
+	au.mutation.SetIndex(b)
+	return au
+}
+
+// SetNillableIndex sets the "index" field if the given value is not nil.
+func (au *ActivityUpdate) SetNillableIndex(b *bool) *ActivityUpdate {
+	if b != nil {
+		au.SetIndex(*b)
+	}
+	return au
+}
+
+// SetImage sets the "image" field.
+func (au *ActivityUpdate) SetImage(m map[string]string) *ActivityUpdate {
+	au.mutation.SetImage(m)
+	return au
+}
+
+// SetRemark sets the "remark" field.
+func (au *ActivityUpdate) SetRemark(s string) *ActivityUpdate {
+	au.mutation.SetRemark(s)
+	return au
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (au *ActivityUpdate) SetNillableRemark(s *string) *ActivityUpdate {
+	if s != nil {
+		au.SetRemark(*s)
+	}
+	return au
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (au *ActivityUpdate) ClearRemark() *ActivityUpdate {
+	au.mutation.ClearRemark()
+	return au
+}
+
 // Mutation returns the ActivityMutation object of the builder.
 func (au *ActivityUpdate) Mutation() *ActivityMutation {
 	return au.mutation
@@ -158,9 +193,7 @@ func (au *ActivityUpdate) Mutation() *ActivityMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (au *ActivityUpdate) Save(ctx context.Context) (int, error) {
-	if err := au.defaults(); err != nil {
-		return 0, err
-	}
+	au.defaults()
 	return withHooks(ctx, au.sqlSave, au.mutation, au.hooks)
 }
 
@@ -187,15 +220,11 @@ func (au *ActivityUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (au *ActivityUpdate) defaults() error {
+func (au *ActivityUpdate) defaults() {
 	if _, ok := au.mutation.UpdatedAt(); !ok {
-		if activity.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized activity.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := activity.UpdateDefaultUpdatedAt()
 		au.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -222,26 +251,8 @@ func (au *ActivityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if au.mutation.DeletedAtCleared() {
 		_spec.ClearField(activity.FieldDeletedAt, field.TypeTime)
 	}
-	if au.mutation.CreatorCleared() {
-		_spec.ClearField(activity.FieldCreator, field.TypeJSON)
-	}
-	if value, ok := au.mutation.LastModifier(); ok {
-		_spec.SetField(activity.FieldLastModifier, field.TypeJSON, value)
-	}
-	if au.mutation.LastModifierCleared() {
-		_spec.ClearField(activity.FieldLastModifier, field.TypeJSON)
-	}
-	if value, ok := au.mutation.Remark(); ok {
-		_spec.SetField(activity.FieldRemark, field.TypeString, value)
-	}
-	if au.mutation.RemarkCleared() {
-		_spec.ClearField(activity.FieldRemark, field.TypeString)
-	}
 	if value, ok := au.mutation.Name(); ok {
 		_spec.SetField(activity.FieldName, field.TypeString, value)
-	}
-	if value, ok := au.mutation.Image(); ok {
-		_spec.SetField(activity.FieldImage, field.TypeString, value)
 	}
 	if value, ok := au.mutation.Link(); ok {
 		_spec.SetField(activity.FieldLink, field.TypeString, value)
@@ -251,6 +262,27 @@ func (au *ActivityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := au.mutation.AddedSort(); ok {
 		_spec.AddField(activity.FieldSort, field.TypeInt, value)
+	}
+	if value, ok := au.mutation.Status(); ok {
+		_spec.SetField(activity.FieldStatus, field.TypeBool, value)
+	}
+	if value, ok := au.mutation.Introduction(); ok {
+		_spec.SetField(activity.FieldIntroduction, field.TypeString, value)
+	}
+	if value, ok := au.mutation.Popup(); ok {
+		_spec.SetField(activity.FieldPopup, field.TypeBool, value)
+	}
+	if value, ok := au.mutation.Index(); ok {
+		_spec.SetField(activity.FieldIndex, field.TypeBool, value)
+	}
+	if value, ok := au.mutation.Image(); ok {
+		_spec.SetField(activity.FieldImage, field.TypeJSON, value)
+	}
+	if value, ok := au.mutation.Remark(); ok {
+		_spec.SetField(activity.FieldRemark, field.TypeString, value)
+	}
+	if au.mutation.RemarkCleared() {
+		_spec.ClearField(activity.FieldRemark, field.TypeString)
 	}
 	_spec.AddModifiers(au.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
@@ -300,38 +332,6 @@ func (auo *ActivityUpdateOne) ClearDeletedAt() *ActivityUpdateOne {
 	return auo
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (auo *ActivityUpdateOne) SetLastModifier(m *model.Modifier) *ActivityUpdateOne {
-	auo.mutation.SetLastModifier(m)
-	return auo
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (auo *ActivityUpdateOne) ClearLastModifier() *ActivityUpdateOne {
-	auo.mutation.ClearLastModifier()
-	return auo
-}
-
-// SetRemark sets the "remark" field.
-func (auo *ActivityUpdateOne) SetRemark(s string) *ActivityUpdateOne {
-	auo.mutation.SetRemark(s)
-	return auo
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (auo *ActivityUpdateOne) SetNillableRemark(s *string) *ActivityUpdateOne {
-	if s != nil {
-		auo.SetRemark(*s)
-	}
-	return auo
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (auo *ActivityUpdateOne) ClearRemark() *ActivityUpdateOne {
-	auo.mutation.ClearRemark()
-	return auo
-}
-
 // SetName sets the "name" field.
 func (auo *ActivityUpdateOne) SetName(s string) *ActivityUpdateOne {
 	auo.mutation.SetName(s)
@@ -342,20 +342,6 @@ func (auo *ActivityUpdateOne) SetName(s string) *ActivityUpdateOne {
 func (auo *ActivityUpdateOne) SetNillableName(s *string) *ActivityUpdateOne {
 	if s != nil {
 		auo.SetName(*s)
-	}
-	return auo
-}
-
-// SetImage sets the "image" field.
-func (auo *ActivityUpdateOne) SetImage(s string) *ActivityUpdateOne {
-	auo.mutation.SetImage(s)
-	return auo
-}
-
-// SetNillableImage sets the "image" field if the given value is not nil.
-func (auo *ActivityUpdateOne) SetNillableImage(s *string) *ActivityUpdateOne {
-	if s != nil {
-		auo.SetImage(*s)
 	}
 	return auo
 }
@@ -395,6 +381,88 @@ func (auo *ActivityUpdateOne) AddSort(i int) *ActivityUpdateOne {
 	return auo
 }
 
+// SetStatus sets the "status" field.
+func (auo *ActivityUpdateOne) SetStatus(b bool) *ActivityUpdateOne {
+	auo.mutation.SetStatus(b)
+	return auo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (auo *ActivityUpdateOne) SetNillableStatus(b *bool) *ActivityUpdateOne {
+	if b != nil {
+		auo.SetStatus(*b)
+	}
+	return auo
+}
+
+// SetIntroduction sets the "introduction" field.
+func (auo *ActivityUpdateOne) SetIntroduction(s string) *ActivityUpdateOne {
+	auo.mutation.SetIntroduction(s)
+	return auo
+}
+
+// SetNillableIntroduction sets the "introduction" field if the given value is not nil.
+func (auo *ActivityUpdateOne) SetNillableIntroduction(s *string) *ActivityUpdateOne {
+	if s != nil {
+		auo.SetIntroduction(*s)
+	}
+	return auo
+}
+
+// SetPopup sets the "popup" field.
+func (auo *ActivityUpdateOne) SetPopup(b bool) *ActivityUpdateOne {
+	auo.mutation.SetPopup(b)
+	return auo
+}
+
+// SetNillablePopup sets the "popup" field if the given value is not nil.
+func (auo *ActivityUpdateOne) SetNillablePopup(b *bool) *ActivityUpdateOne {
+	if b != nil {
+		auo.SetPopup(*b)
+	}
+	return auo
+}
+
+// SetIndex sets the "index" field.
+func (auo *ActivityUpdateOne) SetIndex(b bool) *ActivityUpdateOne {
+	auo.mutation.SetIndex(b)
+	return auo
+}
+
+// SetNillableIndex sets the "index" field if the given value is not nil.
+func (auo *ActivityUpdateOne) SetNillableIndex(b *bool) *ActivityUpdateOne {
+	if b != nil {
+		auo.SetIndex(*b)
+	}
+	return auo
+}
+
+// SetImage sets the "image" field.
+func (auo *ActivityUpdateOne) SetImage(m map[string]string) *ActivityUpdateOne {
+	auo.mutation.SetImage(m)
+	return auo
+}
+
+// SetRemark sets the "remark" field.
+func (auo *ActivityUpdateOne) SetRemark(s string) *ActivityUpdateOne {
+	auo.mutation.SetRemark(s)
+	return auo
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (auo *ActivityUpdateOne) SetNillableRemark(s *string) *ActivityUpdateOne {
+	if s != nil {
+		auo.SetRemark(*s)
+	}
+	return auo
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (auo *ActivityUpdateOne) ClearRemark() *ActivityUpdateOne {
+	auo.mutation.ClearRemark()
+	return auo
+}
+
 // Mutation returns the ActivityMutation object of the builder.
 func (auo *ActivityUpdateOne) Mutation() *ActivityMutation {
 	return auo.mutation
@@ -415,9 +483,7 @@ func (auo *ActivityUpdateOne) Select(field string, fields ...string) *ActivityUp
 
 // Save executes the query and returns the updated Activity entity.
 func (auo *ActivityUpdateOne) Save(ctx context.Context) (*Activity, error) {
-	if err := auo.defaults(); err != nil {
-		return nil, err
-	}
+	auo.defaults()
 	return withHooks(ctx, auo.sqlSave, auo.mutation, auo.hooks)
 }
 
@@ -444,15 +510,11 @@ func (auo *ActivityUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (auo *ActivityUpdateOne) defaults() error {
+func (auo *ActivityUpdateOne) defaults() {
 	if _, ok := auo.mutation.UpdatedAt(); !ok {
-		if activity.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized activity.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := activity.UpdateDefaultUpdatedAt()
 		auo.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -496,26 +558,8 @@ func (auo *ActivityUpdateOne) sqlSave(ctx context.Context) (_node *Activity, err
 	if auo.mutation.DeletedAtCleared() {
 		_spec.ClearField(activity.FieldDeletedAt, field.TypeTime)
 	}
-	if auo.mutation.CreatorCleared() {
-		_spec.ClearField(activity.FieldCreator, field.TypeJSON)
-	}
-	if value, ok := auo.mutation.LastModifier(); ok {
-		_spec.SetField(activity.FieldLastModifier, field.TypeJSON, value)
-	}
-	if auo.mutation.LastModifierCleared() {
-		_spec.ClearField(activity.FieldLastModifier, field.TypeJSON)
-	}
-	if value, ok := auo.mutation.Remark(); ok {
-		_spec.SetField(activity.FieldRemark, field.TypeString, value)
-	}
-	if auo.mutation.RemarkCleared() {
-		_spec.ClearField(activity.FieldRemark, field.TypeString)
-	}
 	if value, ok := auo.mutation.Name(); ok {
 		_spec.SetField(activity.FieldName, field.TypeString, value)
-	}
-	if value, ok := auo.mutation.Image(); ok {
-		_spec.SetField(activity.FieldImage, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.Link(); ok {
 		_spec.SetField(activity.FieldLink, field.TypeString, value)
@@ -525,6 +569,27 @@ func (auo *ActivityUpdateOne) sqlSave(ctx context.Context) (_node *Activity, err
 	}
 	if value, ok := auo.mutation.AddedSort(); ok {
 		_spec.AddField(activity.FieldSort, field.TypeInt, value)
+	}
+	if value, ok := auo.mutation.Status(); ok {
+		_spec.SetField(activity.FieldStatus, field.TypeBool, value)
+	}
+	if value, ok := auo.mutation.Introduction(); ok {
+		_spec.SetField(activity.FieldIntroduction, field.TypeString, value)
+	}
+	if value, ok := auo.mutation.Popup(); ok {
+		_spec.SetField(activity.FieldPopup, field.TypeBool, value)
+	}
+	if value, ok := auo.mutation.Index(); ok {
+		_spec.SetField(activity.FieldIndex, field.TypeBool, value)
+	}
+	if value, ok := auo.mutation.Image(); ok {
+		_spec.SetField(activity.FieldImage, field.TypeJSON, value)
+	}
+	if value, ok := auo.mutation.Remark(); ok {
+		_spec.SetField(activity.FieldRemark, field.TypeString, value)
+	}
+	if auo.mutation.RemarkCleared() {
+		_spec.ClearField(activity.FieldRemark, field.TypeString)
 	}
 	_spec.AddModifiers(auo.modifiers...)
 	_node = &Activity{config: auo.config}

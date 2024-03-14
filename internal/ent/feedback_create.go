@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
 // FeedbackCreate is the builder for creating a Feedback entity.
@@ -76,6 +77,20 @@ func (fc *FeedbackCreate) SetAgentID(u uint64) *FeedbackCreate {
 func (fc *FeedbackCreate) SetNillableAgentID(u *uint64) *FeedbackCreate {
 	if u != nil {
 		fc.SetAgentID(*u)
+	}
+	return fc
+}
+
+// SetRiderID sets the "rider_id" field.
+func (fc *FeedbackCreate) SetRiderID(u uint64) *FeedbackCreate {
+	fc.mutation.SetRiderID(u)
+	return fc
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (fc *FeedbackCreate) SetNillableRiderID(u *uint64) *FeedbackCreate {
+	if u != nil {
+		fc.SetRiderID(*u)
 	}
 	return fc
 }
@@ -156,6 +171,11 @@ func (fc *FeedbackCreate) SetEnterprise(e *Enterprise) *FeedbackCreate {
 // SetAgent sets the "agent" edge to the Agent entity.
 func (fc *FeedbackCreate) SetAgent(a *Agent) *FeedbackCreate {
 	return fc.SetAgentID(a.ID)
+}
+
+// SetRider sets the "rider" edge to the Rider entity.
+func (fc *FeedbackCreate) SetRider(r *Rider) *FeedbackCreate {
+	return fc.SetRiderID(r.ID)
 }
 
 // Mutation returns the FeedbackMutation object of the builder.
@@ -321,6 +341,23 @@ func (fc *FeedbackCreate) createSpec() (*Feedback, *sqlgraph.CreateSpec) {
 		_node.AgentID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := fc.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.RiderTable,
+			Columns: []string{feedback.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RiderID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -418,6 +455,24 @@ func (u *FeedbackUpsert) UpdateAgentID() *FeedbackUpsert {
 // ClearAgentID clears the value of the "agent_id" field.
 func (u *FeedbackUpsert) ClearAgentID() *FeedbackUpsert {
 	u.SetNull(feedback.FieldAgentID)
+	return u
+}
+
+// SetRiderID sets the "rider_id" field.
+func (u *FeedbackUpsert) SetRiderID(v uint64) *FeedbackUpsert {
+	u.Set(feedback.FieldRiderID, v)
+	return u
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *FeedbackUpsert) UpdateRiderID() *FeedbackUpsert {
+	u.SetExcluded(feedback.FieldRiderID)
+	return u
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *FeedbackUpsert) ClearRiderID() *FeedbackUpsert {
+	u.SetNull(feedback.FieldRiderID)
 	return u
 }
 
@@ -621,6 +676,27 @@ func (u *FeedbackUpsertOne) UpdateAgentID() *FeedbackUpsertOne {
 func (u *FeedbackUpsertOne) ClearAgentID() *FeedbackUpsertOne {
 	return u.Update(func(s *FeedbackUpsert) {
 		s.ClearAgentID()
+	})
+}
+
+// SetRiderID sets the "rider_id" field.
+func (u *FeedbackUpsertOne) SetRiderID(v uint64) *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.SetRiderID(v)
+	})
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *FeedbackUpsertOne) UpdateRiderID() *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.UpdateRiderID()
+	})
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *FeedbackUpsertOne) ClearRiderID() *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.ClearRiderID()
 	})
 }
 
@@ -1007,6 +1083,27 @@ func (u *FeedbackUpsertBulk) UpdateAgentID() *FeedbackUpsertBulk {
 func (u *FeedbackUpsertBulk) ClearAgentID() *FeedbackUpsertBulk {
 	return u.Update(func(s *FeedbackUpsert) {
 		s.ClearAgentID()
+	})
+}
+
+// SetRiderID sets the "rider_id" field.
+func (u *FeedbackUpsertBulk) SetRiderID(v uint64) *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.SetRiderID(v)
+	})
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *FeedbackUpsertBulk) UpdateRiderID() *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.UpdateRiderID()
+	})
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *FeedbackUpsertBulk) ClearRiderID() *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.ClearRiderID()
 	})
 }
 

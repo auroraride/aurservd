@@ -2071,6 +2071,93 @@ const docTemplate = `{
             }
         },
         "/rider/v2/feedback": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Feedback - 反馈"
+                ],
+                "summary": "反馈列表",
+                "operationId": "FeedbackList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "反馈结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "是否团签, 0:全部 1:团签 2:个签",
+                        "name": "enterprise",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签企业ID, ` + "`" + `enterprise = 1` + "`" + `时才会生效",
+                        "name": "enterpriseID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "反馈来源 1:骑手 2:代理",
+                        "name": "source",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "反馈开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "反馈类型",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.FeedbackDetail"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -3053,23 +3140,34 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "image": {
-                    "description": "图片",
-                    "type": "string"
+                    "description": "图片, 图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "index": {
+                    "description": "首页icon true:是 false:否",
+                    "type": "boolean"
                 },
                 "link": {
-                    "description": "链接",
+                    "description": "链接, 链接",
                     "type": "string"
                 },
                 "name": {
-                    "description": "名称",
+                    "description": "名称, 名称",
                     "type": "string"
+                },
+                "popup": {
+                    "description": "弹窗 true:是 false:否",
+                    "type": "boolean"
                 },
                 "remark": {
                     "description": "备注",
                     "type": "string"
                 },
                 "sort": {
-                    "description": "排序",
+                    "description": "排序, 排序",
                     "type": "integer"
                 }
             }
@@ -5007,6 +5105,54 @@ const docTemplate = `{
                 "url": {
                     "description": "实名认证跳转链接",
                     "type": "string"
+                }
+            }
+        },
+        "model.FeedbackDetail": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "反馈内容",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "反馈时间",
+                    "type": "string"
+                },
+                "enterpriseId": {
+                    "description": "反馈用户团签id",
+                    "type": "integer"
+                },
+                "enterpriseName": {
+                    "description": "反馈用户团签名称",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "反馈ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "反馈用户名称",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "反馈用户电话",
+                    "type": "string"
+                },
+                "source": {
+                    "description": "反馈来源",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "反馈类型",
+                    "type": "integer"
+                },
+                "url": {
+                    "description": "反馈图片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

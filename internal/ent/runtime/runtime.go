@@ -90,8 +90,6 @@ import (
 // to their package variables.
 func init() {
 	activityMixin := schema.Activity{}.Mixin()
-	activityMixinHooks2 := activityMixin[2].Hooks()
-	activity.Hooks[0] = activityMixinHooks2[0]
 	activityMixinFields0 := activityMixin[0].Fields()
 	_ = activityMixinFields0
 	activityFields := schema.Activity{}.Fields()
@@ -107,9 +105,21 @@ func init() {
 	// activity.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	activity.UpdateDefaultUpdatedAt = activityDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// activityDescSort is the schema descriptor for sort field.
-	activityDescSort := activityFields[3].Descriptor()
+	activityDescSort := activityFields[2].Descriptor()
 	// activity.DefaultSort holds the default value on creation for the sort field.
 	activity.DefaultSort = activityDescSort.Default.(int)
+	// activityDescStatus is the schema descriptor for status field.
+	activityDescStatus := activityFields[3].Descriptor()
+	// activity.DefaultStatus holds the default value on creation for the status field.
+	activity.DefaultStatus = activityDescStatus.Default.(bool)
+	// activityDescPopup is the schema descriptor for popup field.
+	activityDescPopup := activityFields[5].Descriptor()
+	// activity.DefaultPopup holds the default value on creation for the popup field.
+	activity.DefaultPopup = activityDescPopup.Default.(bool)
+	// activityDescIndex is the schema descriptor for index field.
+	activityDescIndex := activityFields[6].Descriptor()
+	// activity.DefaultIndex holds the default value on creation for the index field.
+	activity.DefaultIndex = activityDescIndex.Default.(bool)
 	agentMixin := schema.Agent{}.Mixin()
 	agentMixinHooks2 := agentMixin[2].Hooks()
 	agent.Hooks[0] = agentMixinHooks2[0]

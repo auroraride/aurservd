@@ -22,6 +22,5 @@ var Guide = new(guide)
 // @Success	200				{object}	[]definition.GuideDetail	"请求成功"
 func (g *guide) List(c echo.Context) error {
 	ctx := app.ContextX[app.RiderContext](c)
-	res := biz.NewGuide().All()
-	return ctx.SendResponse(res)
+	return ctx.SendResponse(biz.NewGuide().All())
 }

@@ -104,13 +104,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 			activity.FieldCreatedAt:    {Type: field.TypeTime, Column: activity.FieldCreatedAt},
 			activity.FieldUpdatedAt:    {Type: field.TypeTime, Column: activity.FieldUpdatedAt},
 			activity.FieldDeletedAt:    {Type: field.TypeTime, Column: activity.FieldDeletedAt},
-			activity.FieldCreator:      {Type: field.TypeJSON, Column: activity.FieldCreator},
-			activity.FieldLastModifier: {Type: field.TypeJSON, Column: activity.FieldLastModifier},
-			activity.FieldRemark:       {Type: field.TypeString, Column: activity.FieldRemark},
 			activity.FieldName:         {Type: field.TypeString, Column: activity.FieldName},
-			activity.FieldImage:        {Type: field.TypeString, Column: activity.FieldImage},
 			activity.FieldLink:         {Type: field.TypeString, Column: activity.FieldLink},
 			activity.FieldSort:         {Type: field.TypeInt, Column: activity.FieldSort},
+			activity.FieldStatus:       {Type: field.TypeBool, Column: activity.FieldStatus},
+			activity.FieldIntroduction: {Type: field.TypeString, Column: activity.FieldIntroduction},
+			activity.FieldPopup:        {Type: field.TypeBool, Column: activity.FieldPopup},
+			activity.FieldIndex:        {Type: field.TypeBool, Column: activity.FieldIndex},
+			activity.FieldImage:        {Type: field.TypeJSON, Column: activity.FieldImage},
+			activity.FieldRemark:       {Type: field.TypeString, Column: activity.FieldRemark},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -1045,6 +1047,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			feedback.FieldUpdatedAt:    {Type: field.TypeTime, Column: feedback.FieldUpdatedAt},
 			feedback.FieldEnterpriseID: {Type: field.TypeUint64, Column: feedback.FieldEnterpriseID},
 			feedback.FieldAgentID:      {Type: field.TypeUint64, Column: feedback.FieldAgentID},
+			feedback.FieldRiderID:      {Type: field.TypeUint64, Column: feedback.FieldRiderID},
 			feedback.FieldContent:      {Type: field.TypeString, Column: feedback.FieldContent},
 			feedback.FieldType:         {Type: field.TypeUint8, Column: feedback.FieldType},
 			feedback.FieldSource:       {Type: field.TypeUint8, Column: feedback.FieldSource},
@@ -4024,6 +4027,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Agent",
 	)
 	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.RiderTable,
+			Columns: []string{feedback.RiderColumn},
+			Bidi:    false,
+		},
+		"Feedback",
+		"Rider",
+	)
+	graph.MustAddE(
 		"cities",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -5815,29 +5830,9 @@ func (f *ActivityFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(activity.FieldDeletedAt))
 }
 
-// WhereCreator applies the entql json.RawMessage predicate on the creator field.
-func (f *ActivityFilter) WhereCreator(p entql.BytesP) {
-	f.Where(p.Field(activity.FieldCreator))
-}
-
-// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
-func (f *ActivityFilter) WhereLastModifier(p entql.BytesP) {
-	f.Where(p.Field(activity.FieldLastModifier))
-}
-
-// WhereRemark applies the entql string predicate on the remark field.
-func (f *ActivityFilter) WhereRemark(p entql.StringP) {
-	f.Where(p.Field(activity.FieldRemark))
-}
-
 // WhereName applies the entql string predicate on the name field.
 func (f *ActivityFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(activity.FieldName))
-}
-
-// WhereImage applies the entql string predicate on the image field.
-func (f *ActivityFilter) WhereImage(p entql.StringP) {
-	f.Where(p.Field(activity.FieldImage))
 }
 
 // WhereLink applies the entql string predicate on the link field.
@@ -5848,6 +5843,36 @@ func (f *ActivityFilter) WhereLink(p entql.StringP) {
 // WhereSort applies the entql int predicate on the sort field.
 func (f *ActivityFilter) WhereSort(p entql.IntP) {
 	f.Where(p.Field(activity.FieldSort))
+}
+
+// WhereStatus applies the entql bool predicate on the status field.
+func (f *ActivityFilter) WhereStatus(p entql.BoolP) {
+	f.Where(p.Field(activity.FieldStatus))
+}
+
+// WhereIntroduction applies the entql string predicate on the introduction field.
+func (f *ActivityFilter) WhereIntroduction(p entql.StringP) {
+	f.Where(p.Field(activity.FieldIntroduction))
+}
+
+// WherePopup applies the entql bool predicate on the popup field.
+func (f *ActivityFilter) WherePopup(p entql.BoolP) {
+	f.Where(p.Field(activity.FieldPopup))
+}
+
+// WhereIndex applies the entql bool predicate on the index field.
+func (f *ActivityFilter) WhereIndex(p entql.BoolP) {
+	f.Where(p.Field(activity.FieldIndex))
+}
+
+// WhereImage applies the entql json.RawMessage predicate on the image field.
+func (f *ActivityFilter) WhereImage(p entql.BytesP) {
+	f.Where(p.Field(activity.FieldImage))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *ActivityFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(activity.FieldRemark))
 }
 
 // addPredicate implements the predicateAdder interface.
@@ -11851,6 +11876,11 @@ func (f *FeedbackFilter) WhereAgentID(p entql.Uint64P) {
 	f.Where(p.Field(feedback.FieldAgentID))
 }
 
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *FeedbackFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(feedback.FieldRiderID))
+}
+
 // WhereContent applies the entql string predicate on the content field.
 func (f *FeedbackFilter) WhereContent(p entql.StringP) {
 	f.Where(p.Field(feedback.FieldContent))
@@ -11903,6 +11933,20 @@ func (f *FeedbackFilter) WhereHasAgent() {
 // WhereHasAgentWith applies a predicate to check if query has an edge agent with a given conditions (other predicates).
 func (f *FeedbackFilter) WhereHasAgentWith(preds ...predicate.Agent) {
 	f.Where(entql.HasEdgeWith("agent", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *FeedbackFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *FeedbackFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

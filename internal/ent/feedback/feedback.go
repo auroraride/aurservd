@@ -22,6 +22,8 @@ const (
 	FieldEnterpriseID = "enterprise_id"
 	// FieldAgentID holds the string denoting the agent_id field in the database.
 	FieldAgentID = "agent_id"
+	// FieldRiderID holds the string denoting the rider_id field in the database.
+	FieldRiderID = "rider_id"
 	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
 	// FieldType holds the string denoting the type field in the database.
@@ -38,6 +40,8 @@ const (
 	EdgeEnterprise = "enterprise"
 	// EdgeAgent holds the string denoting the agent edge name in mutations.
 	EdgeAgent = "agent"
+	// EdgeRider holds the string denoting the rider edge name in mutations.
+	EdgeRider = "rider"
 	// Table holds the table name of the feedback in the database.
 	Table = "feedback"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
@@ -54,6 +58,13 @@ const (
 	AgentInverseTable = "agent"
 	// AgentColumn is the table column denoting the agent relation/edge.
 	AgentColumn = "agent_id"
+	// RiderTable is the table that holds the rider relation/edge.
+	RiderTable = "feedback"
+	// RiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	RiderInverseTable = "rider"
+	// RiderColumn is the table column denoting the rider relation/edge.
+	RiderColumn = "rider_id"
 )
 
 // Columns holds all SQL columns for feedback fields.
@@ -63,6 +74,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldEnterpriseID,
 	FieldAgentID,
+	FieldRiderID,
 	FieldContent,
 	FieldType,
 	FieldSource,
@@ -122,6 +134,11 @@ func ByAgentID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAgentID, opts...).ToFunc()
 }
 
+// ByRiderID orders the results by the rider_id field.
+func ByRiderID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRiderID, opts...).ToFunc()
+}
+
 // ByContent orders the results by the content field.
 func ByContent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldContent, opts...).ToFunc()
@@ -160,6 +177,13 @@ func ByAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newAgentStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByRiderField orders the results by rider field.
+func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newEnterpriseStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -172,5 +196,12 @@ func newAgentStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AgentInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
+	)
+}
+func newRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 	)
 }

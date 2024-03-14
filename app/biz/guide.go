@@ -7,30 +7,31 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/guide"
-	"github.com/auroraride/aurservd/pkg/snag"
 )
 
 type guideBiz struct {
 	orm *ent.GuideClient
+	ctx context.Context
 }
 
 func NewGuide() *guideBiz {
 	return &guideBiz{
 		orm: ent.Database.Guide,
+		ctx: context.Background(),
 	}
 }
 
-func (s *guideBiz) All() []*definition.GuideDetail {
+func (s *guideBiz) All() ([]*definition.GuideDetail, error) {
 	// 按照sort字段降序排列
-	items, err := s.orm.Query().Order(ent.Desc(guide.FieldSort)).All(context.Background())
+	items, err := s.orm.Query().Order(ent.Desc(guide.FieldSort)).All(s.ctx)
 	if err != nil {
-		snag.Panic(err)
+		return nil, err
 	}
 	var res []*definition.GuideDetail
 	for _, item := range items {
 		res = append(res, toGuideDetail(item))
 	}
-	return res
+	return res, nil
 }
 
 func (s *guideBiz) List(req *definition.GuideListReq) *model.PaginationRes {
@@ -41,20 +42,20 @@ func (s *guideBiz) List(req *definition.GuideListReq) *model.PaginationRes {
 	})
 }
 
-func (s *guideBiz) Save(req *definition.GuideSaveReq) *definition.GuideDetail {
+func (s *guideBiz) Create(req *definition.GuideSaveReq) (*definition.GuideDetail, error) {
 	data, err := s.orm.Create().
 		SetName(req.Name).
 		SetSort(req.Sort).
 		SetAnswer(req.Answer).
 		SetRemark(req.Remark).
-		Save(context.Background())
+		Save(s.ctx)
 	if err != nil {
-		snag.Panic(err)
+		return nil, err
 	}
-	return toGuideDetail(data)
+	return toGuideDetail(data), nil
 }
 
-func (s *guideBiz) Modify(req *definition.GuideModifyReq) {
+func (s *guideBiz) Modify(req *definition.GuideModifyReq) error {
 	err := s.orm.UpdateOneID(req.ID).
 		SetName(req.Name).
 		SetSort(req.Sort).
@@ -62,24 +63,25 @@ func (s *guideBiz) Modify(req *definition.GuideModifyReq) {
 		SetRemark(req.Remark).
 		Exec(context.Background())
 	if err != nil {
-		snag.Panic(err)
+		return err
 	}
+	return nil
 }
 
-func (s *guideBiz) Get(id uint64) *definition.GuideDetail {
+func (s *guideBiz) Detail(id uint64) (*definition.GuideDetail, error) {
 	data, err := s.orm.Query().Where(guide.ID(id)).First(context.Background())
 	if err != nil {
-		snag.Panic(err)
+		return nil, err
 	}
-	return toGuideDetail(data)
+	return toGuideDetail(data), nil
 }
 
-func (s *guideBiz) Delete(id uint64) bool {
-	_, err := s.orm.Delete().Where(guide.ID(id)).Exec(context.Background())
+func (s *guideBiz) Delete(id uint64) error {
+	_, err := s.orm.SoftDeleteOneID(id).Save(s.ctx)
 	if err != nil {
-		snag.Panic(err)
+		return err
 	}
-	return true
+	return nil
 }
 
 func toGuideDetail(item *ent.Guide) *definition.GuideDetail {
