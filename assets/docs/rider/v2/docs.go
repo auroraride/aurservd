@@ -4775,9 +4775,20 @@ const docTemplate = `{
                     "description": "金额",
                     "type": "number"
                 },
+                "cities": {
+                    "description": "可用城市, 不存在此字段则不限制",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.City"
+                    }
+                },
                 "code": {
                     "description": "券码",
                     "type": "string"
+                },
+                "exclusive": {
+                    "description": "与其他类型券是否互斥",
+                    "type": "boolean"
                 },
                 "expiredAt": {
                     "description": "到期时间",
@@ -4786,6 +4797,13 @@ const docTemplate = `{
                 "name": {
                     "description": "名称",
                     "type": "string"
+                },
+                "plans": {
+                    "description": "可用骑士卡, 不存在此字段则不限制",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Plan"
+                    }
                 },
                 "usedAt": {
                     "description": "使用时间",
