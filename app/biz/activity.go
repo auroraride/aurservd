@@ -46,7 +46,8 @@ func (a *activityBiz) Create(req *definition.ActivityCreateReq) error {
 		SetNillablePopup(req.Popup).
 		SetNillableIndex(req.Index).
 		SetNillableRemark(req.Remark).
-		SetEnable(req.Enable).
+		SetNillableEnable(req.Enable).
+		SetIntroduction(req.Introduction).
 		Save(ctx)
 	if err != nil {
 		return err
@@ -63,7 +64,8 @@ func (a *activityBiz) Modify(req *definition.ActivityModifyReq) error {
 		SetNillablePopup(req.Popup).
 		SetNillableIndex(req.Index).
 		SetNillableRemark(req.Remark).
-		SetEnable(req.Enable).
+		SetNillableEnable(req.Enable).
+		SetIntroduction(req.Introduction).
 		Save(a.ctx)
 	if err != nil {
 		return err

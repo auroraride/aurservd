@@ -37,7 +37,7 @@ type ActivityCreateReq struct {
 	Sort         int               `json:"sort" validate:"required" trans:"排序"`  // 排序
 	Image        map[string]string `json:"image" validate:"required" trans:"图片"` // 图片  {"list":"图片地址","popup":"图片地址","index":"图片地址" }
 	Link         string            `json:"link" validate:"required" trans:"链接"`  // 链接
-	Enable       bool              `json:"enable" validate:"required"`           // 是否启用 true:是 false:否
+	Enable       *bool             `json:"enable" validate:"required"`           // 是否启用 true:是 false:否
 	Introduction string            `json:"introduction" validate:"required"`     // 活动简介
 	Popup        *bool             `json:"popup"`                                // 弹窗 true:是 false:否
 	Index        *bool             `json:"index"`                                // 首页icon true:是 false:否
