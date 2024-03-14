@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/activity"
 )
 
@@ -65,41 +64,9 @@ func (ac *ActivityCreate) SetNillableDeletedAt(t *time.Time) *ActivityCreate {
 	return ac
 }
 
-// SetCreator sets the "creator" field.
-func (ac *ActivityCreate) SetCreator(m *model.Modifier) *ActivityCreate {
-	ac.mutation.SetCreator(m)
-	return ac
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (ac *ActivityCreate) SetLastModifier(m *model.Modifier) *ActivityCreate {
-	ac.mutation.SetLastModifier(m)
-	return ac
-}
-
-// SetRemark sets the "remark" field.
-func (ac *ActivityCreate) SetRemark(s string) *ActivityCreate {
-	ac.mutation.SetRemark(s)
-	return ac
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (ac *ActivityCreate) SetNillableRemark(s *string) *ActivityCreate {
-	if s != nil {
-		ac.SetRemark(*s)
-	}
-	return ac
-}
-
 // SetName sets the "name" field.
 func (ac *ActivityCreate) SetName(s string) *ActivityCreate {
 	ac.mutation.SetName(s)
-	return ac
-}
-
-// SetImage sets the "image" field.
-func (ac *ActivityCreate) SetImage(s string) *ActivityCreate {
-	ac.mutation.SetImage(s)
 	return ac
 }
 
@@ -123,6 +90,74 @@ func (ac *ActivityCreate) SetNillableSort(i *int) *ActivityCreate {
 	return ac
 }
 
+// SetStatus sets the "status" field.
+func (ac *ActivityCreate) SetStatus(b bool) *ActivityCreate {
+	ac.mutation.SetStatus(b)
+	return ac
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (ac *ActivityCreate) SetNillableStatus(b *bool) *ActivityCreate {
+	if b != nil {
+		ac.SetStatus(*b)
+	}
+	return ac
+}
+
+// SetIntroduction sets the "introduction" field.
+func (ac *ActivityCreate) SetIntroduction(s string) *ActivityCreate {
+	ac.mutation.SetIntroduction(s)
+	return ac
+}
+
+// SetPopup sets the "popup" field.
+func (ac *ActivityCreate) SetPopup(b bool) *ActivityCreate {
+	ac.mutation.SetPopup(b)
+	return ac
+}
+
+// SetNillablePopup sets the "popup" field if the given value is not nil.
+func (ac *ActivityCreate) SetNillablePopup(b *bool) *ActivityCreate {
+	if b != nil {
+		ac.SetPopup(*b)
+	}
+	return ac
+}
+
+// SetIndex sets the "index" field.
+func (ac *ActivityCreate) SetIndex(b bool) *ActivityCreate {
+	ac.mutation.SetIndex(b)
+	return ac
+}
+
+// SetNillableIndex sets the "index" field if the given value is not nil.
+func (ac *ActivityCreate) SetNillableIndex(b *bool) *ActivityCreate {
+	if b != nil {
+		ac.SetIndex(*b)
+	}
+	return ac
+}
+
+// SetImage sets the "image" field.
+func (ac *ActivityCreate) SetImage(m map[string]string) *ActivityCreate {
+	ac.mutation.SetImage(m)
+	return ac
+}
+
+// SetRemark sets the "remark" field.
+func (ac *ActivityCreate) SetRemark(s string) *ActivityCreate {
+	ac.mutation.SetRemark(s)
+	return ac
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (ac *ActivityCreate) SetNillableRemark(s *string) *ActivityCreate {
+	if s != nil {
+		ac.SetRemark(*s)
+	}
+	return ac
+}
+
 // Mutation returns the ActivityMutation object of the builder.
 func (ac *ActivityCreate) Mutation() *ActivityMutation {
 	return ac.mutation
@@ -130,9 +165,7 @@ func (ac *ActivityCreate) Mutation() *ActivityMutation {
 
 // Save creates the Activity in the database.
 func (ac *ActivityCreate) Save(ctx context.Context) (*Activity, error) {
-	if err := ac.defaults(); err != nil {
-		return nil, err
-	}
+	ac.defaults()
 	return withHooks(ctx, ac.sqlSave, ac.mutation, ac.hooks)
 }
 
@@ -159,18 +192,12 @@ func (ac *ActivityCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ac *ActivityCreate) defaults() error {
+func (ac *ActivityCreate) defaults() {
 	if _, ok := ac.mutation.CreatedAt(); !ok {
-		if activity.DefaultCreatedAt == nil {
-			return fmt.Errorf("ent: uninitialized activity.DefaultCreatedAt (forgotten import ent/runtime?)")
-		}
 		v := activity.DefaultCreatedAt()
 		ac.mutation.SetCreatedAt(v)
 	}
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
-		if activity.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized activity.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := activity.DefaultUpdatedAt()
 		ac.mutation.SetUpdatedAt(v)
 	}
@@ -178,7 +205,18 @@ func (ac *ActivityCreate) defaults() error {
 		v := activity.DefaultSort
 		ac.mutation.SetSort(v)
 	}
-	return nil
+	if _, ok := ac.mutation.Status(); !ok {
+		v := activity.DefaultStatus
+		ac.mutation.SetStatus(v)
+	}
+	if _, ok := ac.mutation.Popup(); !ok {
+		v := activity.DefaultPopup
+		ac.mutation.SetPopup(v)
+	}
+	if _, ok := ac.mutation.Index(); !ok {
+		v := activity.DefaultIndex
+		ac.mutation.SetIndex(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -192,14 +230,26 @@ func (ac *ActivityCreate) check() error {
 	if _, ok := ac.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Activity.name"`)}
 	}
-	if _, ok := ac.mutation.Image(); !ok {
-		return &ValidationError{Name: "image", err: errors.New(`ent: missing required field "Activity.image"`)}
-	}
 	if _, ok := ac.mutation.Link(); !ok {
 		return &ValidationError{Name: "link", err: errors.New(`ent: missing required field "Activity.link"`)}
 	}
 	if _, ok := ac.mutation.Sort(); !ok {
 		return &ValidationError{Name: "sort", err: errors.New(`ent: missing required field "Activity.sort"`)}
+	}
+	if _, ok := ac.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Activity.status"`)}
+	}
+	if _, ok := ac.mutation.Introduction(); !ok {
+		return &ValidationError{Name: "introduction", err: errors.New(`ent: missing required field "Activity.introduction"`)}
+	}
+	if _, ok := ac.mutation.Popup(); !ok {
+		return &ValidationError{Name: "popup", err: errors.New(`ent: missing required field "Activity.popup"`)}
+	}
+	if _, ok := ac.mutation.Index(); !ok {
+		return &ValidationError{Name: "index", err: errors.New(`ent: missing required field "Activity.index"`)}
+	}
+	if _, ok := ac.mutation.Image(); !ok {
+		return &ValidationError{Name: "image", err: errors.New(`ent: missing required field "Activity.image"`)}
 	}
 	return nil
 }
@@ -240,25 +290,9 @@ func (ac *ActivityCreate) createSpec() (*Activity, *sqlgraph.CreateSpec) {
 		_spec.SetField(activity.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
-	if value, ok := ac.mutation.Creator(); ok {
-		_spec.SetField(activity.FieldCreator, field.TypeJSON, value)
-		_node.Creator = value
-	}
-	if value, ok := ac.mutation.LastModifier(); ok {
-		_spec.SetField(activity.FieldLastModifier, field.TypeJSON, value)
-		_node.LastModifier = value
-	}
-	if value, ok := ac.mutation.Remark(); ok {
-		_spec.SetField(activity.FieldRemark, field.TypeString, value)
-		_node.Remark = value
-	}
 	if value, ok := ac.mutation.Name(); ok {
 		_spec.SetField(activity.FieldName, field.TypeString, value)
 		_node.Name = value
-	}
-	if value, ok := ac.mutation.Image(); ok {
-		_spec.SetField(activity.FieldImage, field.TypeString, value)
-		_node.Image = value
 	}
 	if value, ok := ac.mutation.Link(); ok {
 		_spec.SetField(activity.FieldLink, field.TypeString, value)
@@ -267,6 +301,30 @@ func (ac *ActivityCreate) createSpec() (*Activity, *sqlgraph.CreateSpec) {
 	if value, ok := ac.mutation.Sort(); ok {
 		_spec.SetField(activity.FieldSort, field.TypeInt, value)
 		_node.Sort = value
+	}
+	if value, ok := ac.mutation.Status(); ok {
+		_spec.SetField(activity.FieldStatus, field.TypeBool, value)
+		_node.Status = value
+	}
+	if value, ok := ac.mutation.Introduction(); ok {
+		_spec.SetField(activity.FieldIntroduction, field.TypeString, value)
+		_node.Introduction = value
+	}
+	if value, ok := ac.mutation.Popup(); ok {
+		_spec.SetField(activity.FieldPopup, field.TypeBool, value)
+		_node.Popup = value
+	}
+	if value, ok := ac.mutation.Index(); ok {
+		_spec.SetField(activity.FieldIndex, field.TypeBool, value)
+		_node.Index = value
+	}
+	if value, ok := ac.mutation.Image(); ok {
+		_spec.SetField(activity.FieldImage, field.TypeJSON, value)
+		_node.Image = value
+	}
+	if value, ok := ac.mutation.Remark(); ok {
+		_spec.SetField(activity.FieldRemark, field.TypeString, value)
+		_node.Remark = value
 	}
 	return _node, _spec
 }
@@ -350,42 +408,6 @@ func (u *ActivityUpsert) ClearDeletedAt() *ActivityUpsert {
 	return u
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (u *ActivityUpsert) SetLastModifier(v *model.Modifier) *ActivityUpsert {
-	u.Set(activity.FieldLastModifier, v)
-	return u
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *ActivityUpsert) UpdateLastModifier() *ActivityUpsert {
-	u.SetExcluded(activity.FieldLastModifier)
-	return u
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *ActivityUpsert) ClearLastModifier() *ActivityUpsert {
-	u.SetNull(activity.FieldLastModifier)
-	return u
-}
-
-// SetRemark sets the "remark" field.
-func (u *ActivityUpsert) SetRemark(v string) *ActivityUpsert {
-	u.Set(activity.FieldRemark, v)
-	return u
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *ActivityUpsert) UpdateRemark() *ActivityUpsert {
-	u.SetExcluded(activity.FieldRemark)
-	return u
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *ActivityUpsert) ClearRemark() *ActivityUpsert {
-	u.SetNull(activity.FieldRemark)
-	return u
-}
-
 // SetName sets the "name" field.
 func (u *ActivityUpsert) SetName(v string) *ActivityUpsert {
 	u.Set(activity.FieldName, v)
@@ -395,18 +417,6 @@ func (u *ActivityUpsert) SetName(v string) *ActivityUpsert {
 // UpdateName sets the "name" field to the value that was provided on create.
 func (u *ActivityUpsert) UpdateName() *ActivityUpsert {
 	u.SetExcluded(activity.FieldName)
-	return u
-}
-
-// SetImage sets the "image" field.
-func (u *ActivityUpsert) SetImage(v string) *ActivityUpsert {
-	u.Set(activity.FieldImage, v)
-	return u
-}
-
-// UpdateImage sets the "image" field to the value that was provided on create.
-func (u *ActivityUpsert) UpdateImage() *ActivityUpsert {
-	u.SetExcluded(activity.FieldImage)
 	return u
 }
 
@@ -440,6 +450,84 @@ func (u *ActivityUpsert) AddSort(v int) *ActivityUpsert {
 	return u
 }
 
+// SetStatus sets the "status" field.
+func (u *ActivityUpsert) SetStatus(v bool) *ActivityUpsert {
+	u.Set(activity.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *ActivityUpsert) UpdateStatus() *ActivityUpsert {
+	u.SetExcluded(activity.FieldStatus)
+	return u
+}
+
+// SetIntroduction sets the "introduction" field.
+func (u *ActivityUpsert) SetIntroduction(v string) *ActivityUpsert {
+	u.Set(activity.FieldIntroduction, v)
+	return u
+}
+
+// UpdateIntroduction sets the "introduction" field to the value that was provided on create.
+func (u *ActivityUpsert) UpdateIntroduction() *ActivityUpsert {
+	u.SetExcluded(activity.FieldIntroduction)
+	return u
+}
+
+// SetPopup sets the "popup" field.
+func (u *ActivityUpsert) SetPopup(v bool) *ActivityUpsert {
+	u.Set(activity.FieldPopup, v)
+	return u
+}
+
+// UpdatePopup sets the "popup" field to the value that was provided on create.
+func (u *ActivityUpsert) UpdatePopup() *ActivityUpsert {
+	u.SetExcluded(activity.FieldPopup)
+	return u
+}
+
+// SetIndex sets the "index" field.
+func (u *ActivityUpsert) SetIndex(v bool) *ActivityUpsert {
+	u.Set(activity.FieldIndex, v)
+	return u
+}
+
+// UpdateIndex sets the "index" field to the value that was provided on create.
+func (u *ActivityUpsert) UpdateIndex() *ActivityUpsert {
+	u.SetExcluded(activity.FieldIndex)
+	return u
+}
+
+// SetImage sets the "image" field.
+func (u *ActivityUpsert) SetImage(v map[string]string) *ActivityUpsert {
+	u.Set(activity.FieldImage, v)
+	return u
+}
+
+// UpdateImage sets the "image" field to the value that was provided on create.
+func (u *ActivityUpsert) UpdateImage() *ActivityUpsert {
+	u.SetExcluded(activity.FieldImage)
+	return u
+}
+
+// SetRemark sets the "remark" field.
+func (u *ActivityUpsert) SetRemark(v string) *ActivityUpsert {
+	u.Set(activity.FieldRemark, v)
+	return u
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *ActivityUpsert) UpdateRemark() *ActivityUpsert {
+	u.SetExcluded(activity.FieldRemark)
+	return u
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *ActivityUpsert) ClearRemark() *ActivityUpsert {
+	u.SetNull(activity.FieldRemark)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -453,9 +541,6 @@ func (u *ActivityUpsertOne) UpdateNewValues() *ActivityUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(activity.FieldCreatedAt)
-		}
-		if _, exists := u.create.mutation.Creator(); exists {
-			s.SetIgnore(activity.FieldCreator)
 		}
 	}))
 	return u
@@ -523,48 +608,6 @@ func (u *ActivityUpsertOne) ClearDeletedAt() *ActivityUpsertOne {
 	})
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (u *ActivityUpsertOne) SetLastModifier(v *model.Modifier) *ActivityUpsertOne {
-	return u.Update(func(s *ActivityUpsert) {
-		s.SetLastModifier(v)
-	})
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *ActivityUpsertOne) UpdateLastModifier() *ActivityUpsertOne {
-	return u.Update(func(s *ActivityUpsert) {
-		s.UpdateLastModifier()
-	})
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *ActivityUpsertOne) ClearLastModifier() *ActivityUpsertOne {
-	return u.Update(func(s *ActivityUpsert) {
-		s.ClearLastModifier()
-	})
-}
-
-// SetRemark sets the "remark" field.
-func (u *ActivityUpsertOne) SetRemark(v string) *ActivityUpsertOne {
-	return u.Update(func(s *ActivityUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *ActivityUpsertOne) UpdateRemark() *ActivityUpsertOne {
-	return u.Update(func(s *ActivityUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *ActivityUpsertOne) ClearRemark() *ActivityUpsertOne {
-	return u.Update(func(s *ActivityUpsert) {
-		s.ClearRemark()
-	})
-}
-
 // SetName sets the "name" field.
 func (u *ActivityUpsertOne) SetName(v string) *ActivityUpsertOne {
 	return u.Update(func(s *ActivityUpsert) {
@@ -576,20 +619,6 @@ func (u *ActivityUpsertOne) SetName(v string) *ActivityUpsertOne {
 func (u *ActivityUpsertOne) UpdateName() *ActivityUpsertOne {
 	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateName()
-	})
-}
-
-// SetImage sets the "image" field.
-func (u *ActivityUpsertOne) SetImage(v string) *ActivityUpsertOne {
-	return u.Update(func(s *ActivityUpsert) {
-		s.SetImage(v)
-	})
-}
-
-// UpdateImage sets the "image" field to the value that was provided on create.
-func (u *ActivityUpsertOne) UpdateImage() *ActivityUpsertOne {
-	return u.Update(func(s *ActivityUpsert) {
-		s.UpdateImage()
 	})
 }
 
@@ -625,6 +654,97 @@ func (u *ActivityUpsertOne) AddSort(v int) *ActivityUpsertOne {
 func (u *ActivityUpsertOne) UpdateSort() *ActivityUpsertOne {
 	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateSort()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *ActivityUpsertOne) SetStatus(v bool) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *ActivityUpsertOne) UpdateStatus() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetIntroduction sets the "introduction" field.
+func (u *ActivityUpsertOne) SetIntroduction(v string) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
+		s.SetIntroduction(v)
+	})
+}
+
+// UpdateIntroduction sets the "introduction" field to the value that was provided on create.
+func (u *ActivityUpsertOne) UpdateIntroduction() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
+		s.UpdateIntroduction()
+	})
+}
+
+// SetPopup sets the "popup" field.
+func (u *ActivityUpsertOne) SetPopup(v bool) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
+		s.SetPopup(v)
+	})
+}
+
+// UpdatePopup sets the "popup" field to the value that was provided on create.
+func (u *ActivityUpsertOne) UpdatePopup() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
+		s.UpdatePopup()
+	})
+}
+
+// SetIndex sets the "index" field.
+func (u *ActivityUpsertOne) SetIndex(v bool) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
+		s.SetIndex(v)
+	})
+}
+
+// UpdateIndex sets the "index" field to the value that was provided on create.
+func (u *ActivityUpsertOne) UpdateIndex() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
+		s.UpdateIndex()
+	})
+}
+
+// SetImage sets the "image" field.
+func (u *ActivityUpsertOne) SetImage(v map[string]string) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
+		s.SetImage(v)
+	})
+}
+
+// UpdateImage sets the "image" field to the value that was provided on create.
+func (u *ActivityUpsertOne) UpdateImage() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
+		s.UpdateImage()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *ActivityUpsertOne) SetRemark(v string) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *ActivityUpsertOne) UpdateRemark() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
+		s.UpdateRemark()
+	})
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *ActivityUpsertOne) ClearRemark() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
+		s.ClearRemark()
 	})
 }
 
@@ -807,9 +927,6 @@ func (u *ActivityUpsertBulk) UpdateNewValues() *ActivityUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(activity.FieldCreatedAt)
 			}
-			if _, exists := b.mutation.Creator(); exists {
-				s.SetIgnore(activity.FieldCreator)
-			}
 		}
 	}))
 	return u
@@ -877,48 +994,6 @@ func (u *ActivityUpsertBulk) ClearDeletedAt() *ActivityUpsertBulk {
 	})
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (u *ActivityUpsertBulk) SetLastModifier(v *model.Modifier) *ActivityUpsertBulk {
-	return u.Update(func(s *ActivityUpsert) {
-		s.SetLastModifier(v)
-	})
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *ActivityUpsertBulk) UpdateLastModifier() *ActivityUpsertBulk {
-	return u.Update(func(s *ActivityUpsert) {
-		s.UpdateLastModifier()
-	})
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *ActivityUpsertBulk) ClearLastModifier() *ActivityUpsertBulk {
-	return u.Update(func(s *ActivityUpsert) {
-		s.ClearLastModifier()
-	})
-}
-
-// SetRemark sets the "remark" field.
-func (u *ActivityUpsertBulk) SetRemark(v string) *ActivityUpsertBulk {
-	return u.Update(func(s *ActivityUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *ActivityUpsertBulk) UpdateRemark() *ActivityUpsertBulk {
-	return u.Update(func(s *ActivityUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *ActivityUpsertBulk) ClearRemark() *ActivityUpsertBulk {
-	return u.Update(func(s *ActivityUpsert) {
-		s.ClearRemark()
-	})
-}
-
 // SetName sets the "name" field.
 func (u *ActivityUpsertBulk) SetName(v string) *ActivityUpsertBulk {
 	return u.Update(func(s *ActivityUpsert) {
@@ -930,20 +1005,6 @@ func (u *ActivityUpsertBulk) SetName(v string) *ActivityUpsertBulk {
 func (u *ActivityUpsertBulk) UpdateName() *ActivityUpsertBulk {
 	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateName()
-	})
-}
-
-// SetImage sets the "image" field.
-func (u *ActivityUpsertBulk) SetImage(v string) *ActivityUpsertBulk {
-	return u.Update(func(s *ActivityUpsert) {
-		s.SetImage(v)
-	})
-}
-
-// UpdateImage sets the "image" field to the value that was provided on create.
-func (u *ActivityUpsertBulk) UpdateImage() *ActivityUpsertBulk {
-	return u.Update(func(s *ActivityUpsert) {
-		s.UpdateImage()
 	})
 }
 
@@ -979,6 +1040,97 @@ func (u *ActivityUpsertBulk) AddSort(v int) *ActivityUpsertBulk {
 func (u *ActivityUpsertBulk) UpdateSort() *ActivityUpsertBulk {
 	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateSort()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *ActivityUpsertBulk) SetStatus(v bool) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *ActivityUpsertBulk) UpdateStatus() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetIntroduction sets the "introduction" field.
+func (u *ActivityUpsertBulk) SetIntroduction(v string) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
+		s.SetIntroduction(v)
+	})
+}
+
+// UpdateIntroduction sets the "introduction" field to the value that was provided on create.
+func (u *ActivityUpsertBulk) UpdateIntroduction() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
+		s.UpdateIntroduction()
+	})
+}
+
+// SetPopup sets the "popup" field.
+func (u *ActivityUpsertBulk) SetPopup(v bool) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
+		s.SetPopup(v)
+	})
+}
+
+// UpdatePopup sets the "popup" field to the value that was provided on create.
+func (u *ActivityUpsertBulk) UpdatePopup() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
+		s.UpdatePopup()
+	})
+}
+
+// SetIndex sets the "index" field.
+func (u *ActivityUpsertBulk) SetIndex(v bool) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
+		s.SetIndex(v)
+	})
+}
+
+// UpdateIndex sets the "index" field to the value that was provided on create.
+func (u *ActivityUpsertBulk) UpdateIndex() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
+		s.UpdateIndex()
+	})
+}
+
+// SetImage sets the "image" field.
+func (u *ActivityUpsertBulk) SetImage(v map[string]string) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
+		s.SetImage(v)
+	})
+}
+
+// UpdateImage sets the "image" field to the value that was provided on create.
+func (u *ActivityUpsertBulk) UpdateImage() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
+		s.UpdateImage()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *ActivityUpsertBulk) SetRemark(v string) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *ActivityUpsertBulk) UpdateRemark() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
+		s.UpdateRemark()
+	})
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *ActivityUpsertBulk) ClearRemark() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
+		s.ClearRemark()
 	})
 }
 

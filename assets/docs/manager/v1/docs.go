@@ -11082,20 +11082,26 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "请求参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/definition.GuideListReq"
-                        }
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.PaginationRes"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.GuideDetail"
+                            }
                         }
                     }
                 }
@@ -11150,7 +11156,7 @@ const docTemplate = `{
                     "设置"
                 ],
                 "summary": "保存引导",
-                "operationId": "SettingGuideSave",
+                "operationId": "SettingGuideCreate",
                 "parameters": [
                     {
                         "type": "string",
@@ -13028,23 +13034,34 @@ const docTemplate = `{
             ],
             "properties": {
                 "image": {
-                    "description": "图片",
-                    "type": "string"
+                    "description": "图片, 图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "index": {
+                    "description": "首页icon true:是 false:否",
+                    "type": "boolean"
                 },
                 "link": {
-                    "description": "链接",
+                    "description": "链接, 链接",
                     "type": "string"
                 },
                 "name": {
-                    "description": "名称",
+                    "description": "名称, 名称",
                     "type": "string"
+                },
+                "popup": {
+                    "description": "弹窗 true:是 false:否",
+                    "type": "boolean"
                 },
                 "remark": {
                     "description": "备注",
                     "type": "string"
                 },
                 "sort": {
-                    "description": "排序",
+                    "description": "排序, 排序",
                     "type": "integer"
                 }
             }
@@ -13062,23 +13079,34 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "image": {
-                    "description": "图片",
-                    "type": "string"
+                    "description": "图片, 图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "index": {
+                    "description": "首页icon true:是 false:否",
+                    "type": "boolean"
                 },
                 "link": {
-                    "description": "链接",
+                    "description": "链接, 链接",
                     "type": "string"
                 },
                 "name": {
-                    "description": "名称",
+                    "description": "名称, 名称",
                     "type": "string"
+                },
+                "popup": {
+                    "description": "弹窗 true:是 false:否",
+                    "type": "boolean"
                 },
                 "remark": {
                     "description": "备注",
                     "type": "string"
                 },
                 "sort": {
-                    "description": "排序",
+                    "description": "排序, 排序",
                     "type": "integer"
                 }
             }
@@ -13093,23 +13121,34 @@ const docTemplate = `{
             ],
             "properties": {
                 "image": {
-                    "description": "图片",
-                    "type": "string"
+                    "description": "图片, 图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "index": {
+                    "description": "首页icon true:是 false:否",
+                    "type": "boolean"
                 },
                 "link": {
-                    "description": "链接",
+                    "description": "链接, 链接",
                     "type": "string"
                 },
                 "name": {
-                    "description": "名称",
+                    "description": "名称, 名称",
                     "type": "string"
+                },
+                "popup": {
+                    "description": "弹窗 true:是 false:否",
+                    "type": "boolean"
                 },
                 "remark": {
                     "description": "备注",
                     "type": "string"
                 },
                 "sort": {
-                    "description": "排序",
+                    "description": "排序, 排序",
                     "type": "integer"
                 }
             }
@@ -13130,19 +13169,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sort": {
-                    "type": "integer"
-                }
-            }
-        },
-        "definition.GuideListReq": {
-            "type": "object",
-            "properties": {
-                "current": {
-                    "description": "当前页, 从1开始, 默认1",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "每页数据, 默认20",
                     "type": "integer"
                 }
             }
@@ -17850,15 +17876,7 @@ const docTemplate = `{
                     "description": "反馈时间",
                     "type": "string"
                 },
-                "enterpriseContactName": {
-                    "description": "反馈用户团签联系人",
-                    "type": "string"
-                },
-                "enterpriseContactPhone": {
-                    "description": "反馈用户团签联系电话",
-                    "type": "string"
-                },
-                "enterpriseID": {
+                "enterpriseId": {
                     "description": "反馈用户团签id",
                     "type": "integer"
                 },
@@ -17869,6 +17887,14 @@ const docTemplate = `{
                 "id": {
                     "description": "反馈ID",
                     "type": "integer"
+                },
+                "name": {
+                    "description": "反馈用户名称",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "反馈用户电话",
+                    "type": "string"
                 },
                 "source": {
                     "description": "反馈来源",
@@ -17915,7 +17941,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "source": {
-                    "description": "反馈来源",
+                    "description": "反馈来源 1:骑手 2:代理",
                     "type": "integer"
                 },
                 "start": {

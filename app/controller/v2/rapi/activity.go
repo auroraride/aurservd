@@ -26,6 +26,5 @@ var Activity = new(activity)
 // @Success	200				{object}	[]definition.ActivityDetail	"请求成功"
 func (a *activity) List(c echo.Context) error {
 	ctx := app.ContextX[app.RiderContext](c)
-	res := biz.NewActivity().All()
-	return ctx.SendResponse(res)
+	return ctx.SendResponse(biz.NewActivity().All())
 }

@@ -61,7 +61,7 @@ func (s *feedbackService) Create(req *model.FeedbackReq, ag *ent.Agent) bool {
 
 // FeedbackList List 反馈列表
 func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.PaginationRes {
-	q := s.orm.Query().WithEnterprise().Order(ent.Desc(feedback.FieldCreatedAt))
+	q := s.orm.Query().WithEnterprise().WithRider().Order(ent.Desc(feedback.FieldCreatedAt))
 	// 筛选条件
 	if req.Keyword != "" {
 		q.Where(
@@ -91,7 +91,7 @@ func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.Pagina
 		}
 	}
 
-	// 发聩来源，1:骑手 2:代理
+	// 反馈来源，1:骑手 2:代理
 	if req.Source != nil {
 		q.Where(feedback.SourceEQ(*req.Source))
 	}
@@ -104,19 +104,21 @@ func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.Pagina
 	}
 
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Feedback) model.FeedbackDetail {
-		rsp := model.FeedbackDetail{
-			ID:                     item.ID,
-			Content:                item.Content,
-			Url:                    item.URL,
-			Type:                   item.Type,
-			Source:                 item.Source,
-			EnterpriseID:           &item.Edges.Enterprise.ID,
-			EnterpriseName:         item.Edges.Enterprise.Name,
-			EnterpriseContactName:  item.Name,
-			EnterpriseContactPhone: item.Phone,
-			CreatedAt:              item.CreatedAt.Format(carbon.DateTimeLayout),
+		res := model.FeedbackDetail{
+			ID:        item.ID,
+			Content:   item.Content,
+			Url:       item.URL,
+			Type:      item.Type,
+			Source:    item.Source,
+			CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
 		}
-		return rsp
+		if item.Edges.Enterprise != nil {
+			res.EnterpriseID = item.Edges.Enterprise.ID
+			res.EnterpriseName = item.Edges.Enterprise.Name
+		}
+		res.Name = item.Name
+		res.Phone = item.Phone
+		return res
 	})
 
 }

@@ -190,14 +190,16 @@ type ActivityMutation struct {
 	created_at    *time.Time
 	updated_at    *time.Time
 	deleted_at    *time.Time
-	creator       **model.Modifier
-	last_modifier **model.Modifier
-	remark        *string
 	name          *string
-	image         *string
 	link          *string
 	sort          *int
 	addsort       *int
+	status        *bool
+	introduction  *string
+	popup         *bool
+	index         *bool
+	image         *map[string]string
+	remark        *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Activity, error)
@@ -423,153 +425,6 @@ func (m *ActivityMutation) ResetDeletedAt() {
 	delete(m.clearedFields, activity.FieldDeletedAt)
 }
 
-// SetCreator sets the "creator" field.
-func (m *ActivityMutation) SetCreator(value *model.Modifier) {
-	m.creator = &value
-}
-
-// Creator returns the value of the "creator" field in the mutation.
-func (m *ActivityMutation) Creator() (r *model.Modifier, exists bool) {
-	v := m.creator
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreator returns the old "creator" field's value of the Activity entity.
-// If the Activity object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ActivityMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreator requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
-	}
-	return oldValue.Creator, nil
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (m *ActivityMutation) ClearCreator() {
-	m.creator = nil
-	m.clearedFields[activity.FieldCreator] = struct{}{}
-}
-
-// CreatorCleared returns if the "creator" field was cleared in this mutation.
-func (m *ActivityMutation) CreatorCleared() bool {
-	_, ok := m.clearedFields[activity.FieldCreator]
-	return ok
-}
-
-// ResetCreator resets all changes to the "creator" field.
-func (m *ActivityMutation) ResetCreator() {
-	m.creator = nil
-	delete(m.clearedFields, activity.FieldCreator)
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (m *ActivityMutation) SetLastModifier(value *model.Modifier) {
-	m.last_modifier = &value
-}
-
-// LastModifier returns the value of the "last_modifier" field in the mutation.
-func (m *ActivityMutation) LastModifier() (r *model.Modifier, exists bool) {
-	v := m.last_modifier
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLastModifier returns the old "last_modifier" field's value of the Activity entity.
-// If the Activity object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ActivityMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastModifier requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
-	}
-	return oldValue.LastModifier, nil
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (m *ActivityMutation) ClearLastModifier() {
-	m.last_modifier = nil
-	m.clearedFields[activity.FieldLastModifier] = struct{}{}
-}
-
-// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
-func (m *ActivityMutation) LastModifierCleared() bool {
-	_, ok := m.clearedFields[activity.FieldLastModifier]
-	return ok
-}
-
-// ResetLastModifier resets all changes to the "last_modifier" field.
-func (m *ActivityMutation) ResetLastModifier() {
-	m.last_modifier = nil
-	delete(m.clearedFields, activity.FieldLastModifier)
-}
-
-// SetRemark sets the "remark" field.
-func (m *ActivityMutation) SetRemark(s string) {
-	m.remark = &s
-}
-
-// Remark returns the value of the "remark" field in the mutation.
-func (m *ActivityMutation) Remark() (r string, exists bool) {
-	v := m.remark
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRemark returns the old "remark" field's value of the Activity entity.
-// If the Activity object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ActivityMutation) OldRemark(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRemark requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
-	}
-	return oldValue.Remark, nil
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (m *ActivityMutation) ClearRemark() {
-	m.remark = nil
-	m.clearedFields[activity.FieldRemark] = struct{}{}
-}
-
-// RemarkCleared returns if the "remark" field was cleared in this mutation.
-func (m *ActivityMutation) RemarkCleared() bool {
-	_, ok := m.clearedFields[activity.FieldRemark]
-	return ok
-}
-
-// ResetRemark resets all changes to the "remark" field.
-func (m *ActivityMutation) ResetRemark() {
-	m.remark = nil
-	delete(m.clearedFields, activity.FieldRemark)
-}
-
 // SetName sets the "name" field.
 func (m *ActivityMutation) SetName(s string) {
 	m.name = &s
@@ -604,42 +459,6 @@ func (m *ActivityMutation) OldName(ctx context.Context) (v string, err error) {
 // ResetName resets all changes to the "name" field.
 func (m *ActivityMutation) ResetName() {
 	m.name = nil
-}
-
-// SetImage sets the "image" field.
-func (m *ActivityMutation) SetImage(s string) {
-	m.image = &s
-}
-
-// Image returns the value of the "image" field in the mutation.
-func (m *ActivityMutation) Image() (r string, exists bool) {
-	v := m.image
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldImage returns the old "image" field's value of the Activity entity.
-// If the Activity object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ActivityMutation) OldImage(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldImage is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldImage requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldImage: %w", err)
-	}
-	return oldValue.Image, nil
-}
-
-// ResetImage resets all changes to the "image" field.
-func (m *ActivityMutation) ResetImage() {
-	m.image = nil
 }
 
 // SetLink sets the "link" field.
@@ -734,6 +553,235 @@ func (m *ActivityMutation) ResetSort() {
 	m.addsort = nil
 }
 
+// SetStatus sets the "status" field.
+func (m *ActivityMutation) SetStatus(b bool) {
+	m.status = &b
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *ActivityMutation) Status() (r bool, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ActivityMutation) OldStatus(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *ActivityMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetIntroduction sets the "introduction" field.
+func (m *ActivityMutation) SetIntroduction(s string) {
+	m.introduction = &s
+}
+
+// Introduction returns the value of the "introduction" field in the mutation.
+func (m *ActivityMutation) Introduction() (r string, exists bool) {
+	v := m.introduction
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIntroduction returns the old "introduction" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ActivityMutation) OldIntroduction(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIntroduction is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIntroduction requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIntroduction: %w", err)
+	}
+	return oldValue.Introduction, nil
+}
+
+// ResetIntroduction resets all changes to the "introduction" field.
+func (m *ActivityMutation) ResetIntroduction() {
+	m.introduction = nil
+}
+
+// SetPopup sets the "popup" field.
+func (m *ActivityMutation) SetPopup(b bool) {
+	m.popup = &b
+}
+
+// Popup returns the value of the "popup" field in the mutation.
+func (m *ActivityMutation) Popup() (r bool, exists bool) {
+	v := m.popup
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPopup returns the old "popup" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ActivityMutation) OldPopup(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPopup is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPopup requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPopup: %w", err)
+	}
+	return oldValue.Popup, nil
+}
+
+// ResetPopup resets all changes to the "popup" field.
+func (m *ActivityMutation) ResetPopup() {
+	m.popup = nil
+}
+
+// SetIndex sets the "index" field.
+func (m *ActivityMutation) SetIndex(b bool) {
+	m.index = &b
+}
+
+// Index returns the value of the "index" field in the mutation.
+func (m *ActivityMutation) Index() (r bool, exists bool) {
+	v := m.index
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIndex returns the old "index" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ActivityMutation) OldIndex(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIndex is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIndex requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIndex: %w", err)
+	}
+	return oldValue.Index, nil
+}
+
+// ResetIndex resets all changes to the "index" field.
+func (m *ActivityMutation) ResetIndex() {
+	m.index = nil
+}
+
+// SetImage sets the "image" field.
+func (m *ActivityMutation) SetImage(value map[string]string) {
+	m.image = &value
+}
+
+// Image returns the value of the "image" field in the mutation.
+func (m *ActivityMutation) Image() (r map[string]string, exists bool) {
+	v := m.image
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImage returns the old "image" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ActivityMutation) OldImage(ctx context.Context) (v map[string]string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImage: %w", err)
+	}
+	return oldValue.Image, nil
+}
+
+// ResetImage resets all changes to the "image" field.
+func (m *ActivityMutation) ResetImage() {
+	m.image = nil
+}
+
+// SetRemark sets the "remark" field.
+func (m *ActivityMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *ActivityMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ActivityMutation) OldRemark(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (m *ActivityMutation) ClearRemark() {
+	m.remark = nil
+	m.clearedFields[activity.FieldRemark] = struct{}{}
+}
+
+// RemarkCleared returns if the "remark" field was cleared in this mutation.
+func (m *ActivityMutation) RemarkCleared() bool {
+	_, ok := m.clearedFields[activity.FieldRemark]
+	return ok
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *ActivityMutation) ResetRemark() {
+	m.remark = nil
+	delete(m.clearedFields, activity.FieldRemark)
+}
+
 // Where appends a list predicates to the ActivityMutation builder.
 func (m *ActivityMutation) Where(ps ...predicate.Activity) {
 	m.predicates = append(m.predicates, ps...)
@@ -768,7 +816,7 @@ func (m *ActivityMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ActivityMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, activity.FieldCreatedAt)
 	}
@@ -778,26 +826,32 @@ func (m *ActivityMutation) Fields() []string {
 	if m.deleted_at != nil {
 		fields = append(fields, activity.FieldDeletedAt)
 	}
-	if m.creator != nil {
-		fields = append(fields, activity.FieldCreator)
-	}
-	if m.last_modifier != nil {
-		fields = append(fields, activity.FieldLastModifier)
-	}
-	if m.remark != nil {
-		fields = append(fields, activity.FieldRemark)
-	}
 	if m.name != nil {
 		fields = append(fields, activity.FieldName)
-	}
-	if m.image != nil {
-		fields = append(fields, activity.FieldImage)
 	}
 	if m.link != nil {
 		fields = append(fields, activity.FieldLink)
 	}
 	if m.sort != nil {
 		fields = append(fields, activity.FieldSort)
+	}
+	if m.status != nil {
+		fields = append(fields, activity.FieldStatus)
+	}
+	if m.introduction != nil {
+		fields = append(fields, activity.FieldIntroduction)
+	}
+	if m.popup != nil {
+		fields = append(fields, activity.FieldPopup)
+	}
+	if m.index != nil {
+		fields = append(fields, activity.FieldIndex)
+	}
+	if m.image != nil {
+		fields = append(fields, activity.FieldImage)
+	}
+	if m.remark != nil {
+		fields = append(fields, activity.FieldRemark)
 	}
 	return fields
 }
@@ -813,20 +867,24 @@ func (m *ActivityMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case activity.FieldDeletedAt:
 		return m.DeletedAt()
-	case activity.FieldCreator:
-		return m.Creator()
-	case activity.FieldLastModifier:
-		return m.LastModifier()
-	case activity.FieldRemark:
-		return m.Remark()
 	case activity.FieldName:
 		return m.Name()
-	case activity.FieldImage:
-		return m.Image()
 	case activity.FieldLink:
 		return m.Link()
 	case activity.FieldSort:
 		return m.Sort()
+	case activity.FieldStatus:
+		return m.Status()
+	case activity.FieldIntroduction:
+		return m.Introduction()
+	case activity.FieldPopup:
+		return m.Popup()
+	case activity.FieldIndex:
+		return m.Index()
+	case activity.FieldImage:
+		return m.Image()
+	case activity.FieldRemark:
+		return m.Remark()
 	}
 	return nil, false
 }
@@ -842,20 +900,24 @@ func (m *ActivityMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldUpdatedAt(ctx)
 	case activity.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case activity.FieldCreator:
-		return m.OldCreator(ctx)
-	case activity.FieldLastModifier:
-		return m.OldLastModifier(ctx)
-	case activity.FieldRemark:
-		return m.OldRemark(ctx)
 	case activity.FieldName:
 		return m.OldName(ctx)
-	case activity.FieldImage:
-		return m.OldImage(ctx)
 	case activity.FieldLink:
 		return m.OldLink(ctx)
 	case activity.FieldSort:
 		return m.OldSort(ctx)
+	case activity.FieldStatus:
+		return m.OldStatus(ctx)
+	case activity.FieldIntroduction:
+		return m.OldIntroduction(ctx)
+	case activity.FieldPopup:
+		return m.OldPopup(ctx)
+	case activity.FieldIndex:
+		return m.OldIndex(ctx)
+	case activity.FieldImage:
+		return m.OldImage(ctx)
+	case activity.FieldRemark:
+		return m.OldRemark(ctx)
 	}
 	return nil, fmt.Errorf("unknown Activity field %s", name)
 }
@@ -886,40 +948,12 @@ func (m *ActivityMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case activity.FieldCreator:
-		v, ok := value.(*model.Modifier)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreator(v)
-		return nil
-	case activity.FieldLastModifier:
-		v, ok := value.(*model.Modifier)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLastModifier(v)
-		return nil
-	case activity.FieldRemark:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRemark(v)
-		return nil
 	case activity.FieldName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
-		return nil
-	case activity.FieldImage:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetImage(v)
 		return nil
 	case activity.FieldLink:
 		v, ok := value.(string)
@@ -934,6 +968,48 @@ func (m *ActivityMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSort(v)
+		return nil
+	case activity.FieldStatus:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case activity.FieldIntroduction:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIntroduction(v)
+		return nil
+	case activity.FieldPopup:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPopup(v)
+		return nil
+	case activity.FieldIndex:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIndex(v)
+		return nil
+	case activity.FieldImage:
+		v, ok := value.(map[string]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImage(v)
+		return nil
+	case activity.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Activity field %s", name)
@@ -983,12 +1059,6 @@ func (m *ActivityMutation) ClearedFields() []string {
 	if m.FieldCleared(activity.FieldDeletedAt) {
 		fields = append(fields, activity.FieldDeletedAt)
 	}
-	if m.FieldCleared(activity.FieldCreator) {
-		fields = append(fields, activity.FieldCreator)
-	}
-	if m.FieldCleared(activity.FieldLastModifier) {
-		fields = append(fields, activity.FieldLastModifier)
-	}
 	if m.FieldCleared(activity.FieldRemark) {
 		fields = append(fields, activity.FieldRemark)
 	}
@@ -1008,12 +1078,6 @@ func (m *ActivityMutation) ClearField(name string) error {
 	switch name {
 	case activity.FieldDeletedAt:
 		m.ClearDeletedAt()
-		return nil
-	case activity.FieldCreator:
-		m.ClearCreator()
-		return nil
-	case activity.FieldLastModifier:
-		m.ClearLastModifier()
 		return nil
 	case activity.FieldRemark:
 		m.ClearRemark()
@@ -1035,26 +1099,32 @@ func (m *ActivityMutation) ResetField(name string) error {
 	case activity.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case activity.FieldCreator:
-		m.ResetCreator()
-		return nil
-	case activity.FieldLastModifier:
-		m.ResetLastModifier()
-		return nil
-	case activity.FieldRemark:
-		m.ResetRemark()
-		return nil
 	case activity.FieldName:
 		m.ResetName()
-		return nil
-	case activity.FieldImage:
-		m.ResetImage()
 		return nil
 	case activity.FieldLink:
 		m.ResetLink()
 		return nil
 	case activity.FieldSort:
 		m.ResetSort()
+		return nil
+	case activity.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case activity.FieldIntroduction:
+		m.ResetIntroduction()
+		return nil
+	case activity.FieldPopup:
+		m.ResetPopup()
+		return nil
+	case activity.FieldIndex:
+		m.ResetIndex()
+		return nil
+	case activity.FieldImage:
+		m.ResetImage()
+		return nil
+	case activity.FieldRemark:
+		m.ResetRemark()
 		return nil
 	}
 	return fmt.Errorf("unknown Activity field %s", name)
@@ -53169,6 +53239,8 @@ type FeedbackMutation struct {
 	clearedenterprise bool
 	agent             *uint64
 	clearedagent      bool
+	rider             *uint64
+	clearedrider      bool
 	done              bool
 	oldValue          func(context.Context) (*Feedback, error)
 	predicates        []predicate.Feedback
@@ -53440,6 +53512,55 @@ func (m *FeedbackMutation) AgentIDCleared() bool {
 func (m *FeedbackMutation) ResetAgentID() {
 	m.agent = nil
 	delete(m.clearedFields, feedback.FieldAgentID)
+}
+
+// SetRiderID sets the "rider_id" field.
+func (m *FeedbackMutation) SetRiderID(u uint64) {
+	m.rider = &u
+}
+
+// RiderID returns the value of the "rider_id" field in the mutation.
+func (m *FeedbackMutation) RiderID() (r uint64, exists bool) {
+	v := m.rider
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRiderID returns the old "rider_id" field's value of the Feedback entity.
+// If the Feedback object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FeedbackMutation) OldRiderID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRiderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
+	}
+	return oldValue.RiderID, nil
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (m *FeedbackMutation) ClearRiderID() {
+	m.rider = nil
+	m.clearedFields[feedback.FieldRiderID] = struct{}{}
+}
+
+// RiderIDCleared returns if the "rider_id" field was cleared in this mutation.
+func (m *FeedbackMutation) RiderIDCleared() bool {
+	_, ok := m.clearedFields[feedback.FieldRiderID]
+	return ok
+}
+
+// ResetRiderID resets all changes to the "rider_id" field.
+func (m *FeedbackMutation) ResetRiderID() {
+	m.rider = nil
+	delete(m.clearedFields, feedback.FieldRiderID)
 }
 
 // SetContent sets the "content" field.
@@ -53807,6 +53928,33 @@ func (m *FeedbackMutation) ResetAgent() {
 	m.clearedagent = false
 }
 
+// ClearRider clears the "rider" edge to the Rider entity.
+func (m *FeedbackMutation) ClearRider() {
+	m.clearedrider = true
+	m.clearedFields[feedback.FieldRiderID] = struct{}{}
+}
+
+// RiderCleared reports if the "rider" edge to the Rider entity was cleared.
+func (m *FeedbackMutation) RiderCleared() bool {
+	return m.RiderIDCleared() || m.clearedrider
+}
+
+// RiderIDs returns the "rider" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RiderID instead. It exists only for internal usage by the builders.
+func (m *FeedbackMutation) RiderIDs() (ids []uint64) {
+	if id := m.rider; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRider resets all changes to the "rider" edge.
+func (m *FeedbackMutation) ResetRider() {
+	m.rider = nil
+	m.clearedrider = false
+}
+
 // Where appends a list predicates to the FeedbackMutation builder.
 func (m *FeedbackMutation) Where(ps ...predicate.Feedback) {
 	m.predicates = append(m.predicates, ps...)
@@ -53841,7 +53989,7 @@ func (m *FeedbackMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FeedbackMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, feedback.FieldCreatedAt)
 	}
@@ -53853,6 +54001,9 @@ func (m *FeedbackMutation) Fields() []string {
 	}
 	if m.agent != nil {
 		fields = append(fields, feedback.FieldAgentID)
+	}
+	if m.rider != nil {
+		fields = append(fields, feedback.FieldRiderID)
 	}
 	if m.content != nil {
 		fields = append(fields, feedback.FieldContent)
@@ -53888,6 +54039,8 @@ func (m *FeedbackMutation) Field(name string) (ent.Value, bool) {
 		return m.EnterpriseID()
 	case feedback.FieldAgentID:
 		return m.AgentID()
+	case feedback.FieldRiderID:
+		return m.RiderID()
 	case feedback.FieldContent:
 		return m.Content()
 	case feedback.FieldType:
@@ -53917,6 +54070,8 @@ func (m *FeedbackMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldEnterpriseID(ctx)
 	case feedback.FieldAgentID:
 		return m.OldAgentID(ctx)
+	case feedback.FieldRiderID:
+		return m.OldRiderID(ctx)
 	case feedback.FieldContent:
 		return m.OldContent(ctx)
 	case feedback.FieldType:
@@ -53965,6 +54120,13 @@ func (m *FeedbackMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAgentID(v)
+		return nil
+	case feedback.FieldRiderID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRiderID(v)
 		return nil
 	case feedback.FieldContent:
 		v, ok := value.(string)
@@ -54071,6 +54233,9 @@ func (m *FeedbackMutation) ClearedFields() []string {
 	if m.FieldCleared(feedback.FieldAgentID) {
 		fields = append(fields, feedback.FieldAgentID)
 	}
+	if m.FieldCleared(feedback.FieldRiderID) {
+		fields = append(fields, feedback.FieldRiderID)
+	}
 	if m.FieldCleared(feedback.FieldURL) {
 		fields = append(fields, feedback.FieldURL)
 	}
@@ -54099,6 +54264,9 @@ func (m *FeedbackMutation) ClearField(name string) error {
 		return nil
 	case feedback.FieldAgentID:
 		m.ClearAgentID()
+		return nil
+	case feedback.FieldRiderID:
+		m.ClearRiderID()
 		return nil
 	case feedback.FieldURL:
 		m.ClearURL()
@@ -54129,6 +54297,9 @@ func (m *FeedbackMutation) ResetField(name string) error {
 	case feedback.FieldAgentID:
 		m.ResetAgentID()
 		return nil
+	case feedback.FieldRiderID:
+		m.ResetRiderID()
+		return nil
 	case feedback.FieldContent:
 		m.ResetContent()
 		return nil
@@ -54153,12 +54324,15 @@ func (m *FeedbackMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *FeedbackMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.enterprise != nil {
 		edges = append(edges, feedback.EdgeEnterprise)
 	}
 	if m.agent != nil {
 		edges = append(edges, feedback.EdgeAgent)
+	}
+	if m.rider != nil {
+		edges = append(edges, feedback.EdgeRider)
 	}
 	return edges
 }
@@ -54175,13 +54349,17 @@ func (m *FeedbackMutation) AddedIDs(name string) []ent.Value {
 		if id := m.agent; id != nil {
 			return []ent.Value{*id}
 		}
+	case feedback.EdgeRider:
+		if id := m.rider; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *FeedbackMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	return edges
 }
 
@@ -54193,12 +54371,15 @@ func (m *FeedbackMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *FeedbackMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedenterprise {
 		edges = append(edges, feedback.EdgeEnterprise)
 	}
 	if m.clearedagent {
 		edges = append(edges, feedback.EdgeAgent)
+	}
+	if m.clearedrider {
+		edges = append(edges, feedback.EdgeRider)
 	}
 	return edges
 }
@@ -54211,6 +54392,8 @@ func (m *FeedbackMutation) EdgeCleared(name string) bool {
 		return m.clearedenterprise
 	case feedback.EdgeAgent:
 		return m.clearedagent
+	case feedback.EdgeRider:
+		return m.clearedrider
 	}
 	return false
 }
@@ -54225,6 +54408,9 @@ func (m *FeedbackMutation) ClearEdge(name string) error {
 	case feedback.EdgeAgent:
 		m.ClearAgent()
 		return nil
+	case feedback.EdgeRider:
+		m.ClearRider()
+		return nil
 	}
 	return fmt.Errorf("unknown Feedback unique edge %s", name)
 }
@@ -54238,6 +54424,9 @@ func (m *FeedbackMutation) ResetEdge(name string) error {
 		return nil
 	case feedback.EdgeAgent:
 		m.ResetAgent()
+		return nil
+	case feedback.EdgeRider:
+		m.ResetRider()
 		return nil
 	}
 	return fmt.Errorf("unknown Feedback edge %s", name)

@@ -5,12 +5,17 @@ import "path/filepath"
 type Legal string
 
 const (
-	LegalAppPolicy        Legal = "policy"            // APP隐私政策
-	LegalAppAgreement     Legal = "agreement"         // APP服务协议
-	LegalAgentPolicy      Legal = "agent-policy"      // 代理端小程序隐私政策
-	LegalAgentAgreement   Legal = "agent-agreement"   // 代理端小程序服务协议
-	LegalPromotePolicy    Legal = "promote-policy"    // 推广端小程序隐私政策
-	LegalPromoteAgreement Legal = "promote-agreement" // 推广端小程序服务协议
+	LegalAppPolicy                        Legal = "policy"                              // APP隐私政策
+	LegalAppAgreement                     Legal = "agreement"                           // APP服务协议
+	LegalAgentPolicy                      Legal = "agent-policy"                        // 代理端小程序隐私政策
+	LegalAgentAgreement                   Legal = "agent-agreement"                     // 代理端小程序服务协议
+	LegalPromotePolicy                    Legal = "promote-policy"                      // 推广端小程序隐私政策
+	LegalPromoteAgreement                 Legal = "promote-agreement"                   // 推广端小程序服务协议
+	LegalBatteryRentalAgreement           Legal = "battery-rental-agreement"            // 个签-电池租赁协议
+	LegalEbikeRentalAgreement             Legal = "ebike-rental-agreement"              // 个签-电车及电池租赁协议
+	LegalEnterpriseBatteryRentalAgreement Legal = "enterprise-battery-rental-agreement" // 团签-电池租赁协议
+	LegalEnterpriseEbikeRentalAgreement   Legal = "enterprise-ebike-rental-agreement"   // 团签-电车及电池租赁协议
+
 )
 
 func (l Legal) Filepath() string {
@@ -35,6 +40,14 @@ func (l Legal) Title() string {
 		return "极光出行推广小程序隐私政策"
 	case LegalPromoteAgreement:
 		return "极光出行推广小程序服务协议"
+	case LegalBatteryRentalAgreement:
+		return "个签-电池租赁协议"
+	case LegalEbikeRentalAgreement:
+		return "个签-电车及电池租赁协议"
+	case LegalEnterpriseBatteryRentalAgreement:
+		return "团签-电池租赁协议"
+	case LegalEnterpriseEbikeRentalAgreement:
+		return "团签-电车及电池租赁协议"
 	}
 	return " - "
 }
@@ -47,11 +60,16 @@ var (
 		LegalAgentAgreement,
 		LegalPromotePolicy,
 		LegalPromoteAgreement,
+		LegalBatteryRentalAgreement,
+		LegalEbikeRentalAgreement,
+		LegalEnterpriseBatteryRentalAgreement,
+		LegalEnterpriseEbikeRentalAgreement,
 	}
 )
 
 type LegalName struct {
 	// policy: APP隐私政策; agreement: APP服务协议; agent-policy: 代理端小程序隐私政策; agent-agreement: 代理端小程序服务协议; promote-policy: 推广端小程序隐私政策; promote-agreement: 推广端小程序服务协议
+	// battery-rental-agreement:个签-电池租赁协议; ebike-rental-agreement:个签-电车及电池租赁协议; enterprise-battery-rental-agreement:团签-电池租赁协议; enterprise-ebike-rental-agreement:团签-电车及电池租赁协议
 	Name Legal `json:"name" param:"name" query:"name" validate:"required" enums:"policy,agreement,agent-policy,agent-agreement,promote-policy,promote-agreement" trans:"名称"`
 }
 

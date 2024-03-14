@@ -11,75 +11,79 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/activity"
-	"github.com/auroraride/aurservd/pkg/snag"
 )
 
 type activityBiz struct {
 	orm *ent.ActivityClient
+	ctx context.Context
 }
 
 func NewActivity() *activityBiz {
 	return &activityBiz{
 		orm: ent.Database.Activity,
+		ctx: context.Background(),
 	}
 }
 
-func (a *activityBiz) Get(id uint64) *definition.ActivityDetail {
-	ctx := context.Background()
-	item, err := a.orm.Get(ctx, id)
+func (a *activityBiz) Detail(id uint64) (*definition.ActivityDetail, error) {
+	item, err := a.orm.Get(a.ctx, id)
 	if err != nil {
-		snag.Panic(err)
+		return nil, err
 	}
-	return toActivityDetail(item)
+	return toActivityDetail(item), nil
 }
 
-func (a *activityBiz) Create(req *definition.ActivityCreateReq) {
+func (a *activityBiz) Create(req *definition.ActivityCreateReq) error {
 	ctx := context.Background()
 	_, err := a.orm.Create().
 		SetName(req.Name).
 		SetSort(req.Sort).
 		SetImage(req.Image).
 		SetLink(req.Link).
-		SetRemark(req.Remark).
+		SetNillablePopup(req.Popup).
+		SetNillableIndex(req.Index).
+		SetNillableRemark(req.Remark).
 		Save(ctx)
 	if err != nil {
-		snag.Panic(err)
+		return err
 	}
+	return nil
 }
 
-func (a *activityBiz) Modify(req *definition.ActivityModifyReq) {
-	ctx := context.Background()
+func (a *activityBiz) Modify(req *definition.ActivityModifyReq) error {
 	_, err := a.orm.UpdateOneID(req.ID).
 		SetName(req.Name).
 		SetSort(req.Sort).
 		SetImage(req.Image).
 		SetLink(req.Link).
-		SetRemark(req.Remark).
-		Save(ctx)
+		SetNillablePopup(req.Popup).
+		SetNillableIndex(req.Index).
+		SetNillableRemark(req.Remark).
+		Save(a.ctx)
 	if err != nil {
-		snag.Panic(err)
+		return err
 	}
+	return nil
 }
 
-func (a *activityBiz) Delete(id uint64) {
-	ctx := context.Background()
-	err := a.orm.DeleteOneID(id).Exec(ctx)
+func (a *activityBiz) Delete(id uint64) error {
+	err := a.orm.SoftDeleteOneID(id).Exec(a.ctx)
 	if err != nil {
-		snag.Panic(err)
+		return err
 	}
+	return nil
 }
 
-func (a *activityBiz) All() []*definition.ActivityDetail {
-	ctx := context.Background()
-	items, err := a.orm.Query().Order(ent.Desc(activity.FieldSort)).All(ctx)
+func (a *activityBiz) All() ([]*definition.ActivityDetail, error) {
+	items, err := a.orm.Query().Order(ent.Desc(activity.FieldSort)).All(a.ctx)
 	if err != nil {
-		snag.Panic(err)
+		return nil, err
 	}
 	var res []*definition.ActivityDetail
 	for _, item := range items {
 		res = append(res, toActivityDetail(item))
 	}
-	return res
+	return res, nil
 }
 
 func (a *activityBiz) List(req *model.PaginationReq) *model.PaginationRes {
@@ -97,7 +101,9 @@ func toActivityDetail(item *ent.Activity) *definition.ActivityDetail {
 			Sort:   item.Sort,
 			Image:  item.Image,
 			Link:   item.Link,
-			Remark: item.Remark,
+			Remark: &item.Remark,
+			Popup:  &item.Popup,
+			Index:  &item.Index,
 		},
 	}
 }

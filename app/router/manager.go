@@ -35,7 +35,7 @@ func loadManagerRoutes() {
 	// 设置-新手引导
 	g.GET("/guide", mapi.Setting.GuideList)          // 列表
 	g.GET("/guide/:id", mapi.Setting.GuideGet)       // 详情
-	g.POST("/guide", mapi.Setting.GuideSave)         // 新增
+	g.POST("/guide", mapi.Setting.GuideCreate)       // 新增
 	g.PUT("/guide", mapi.Setting.GuideModify)        // 编辑
 	g.DELETE("/guide/:id", mapi.Setting.GuideDelete) // 删除
 

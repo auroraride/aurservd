@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
 // FeedbackUpdate is the builder for updating Feedback entities.
@@ -75,6 +76,26 @@ func (fu *FeedbackUpdate) SetNillableAgentID(u *uint64) *FeedbackUpdate {
 // ClearAgentID clears the value of the "agent_id" field.
 func (fu *FeedbackUpdate) ClearAgentID() *FeedbackUpdate {
 	fu.mutation.ClearAgentID()
+	return fu
+}
+
+// SetRiderID sets the "rider_id" field.
+func (fu *FeedbackUpdate) SetRiderID(u uint64) *FeedbackUpdate {
+	fu.mutation.SetRiderID(u)
+	return fu
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (fu *FeedbackUpdate) SetNillableRiderID(u *uint64) *FeedbackUpdate {
+	if u != nil {
+		fu.SetRiderID(*u)
+	}
+	return fu
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (fu *FeedbackUpdate) ClearRiderID() *FeedbackUpdate {
+	fu.mutation.ClearRiderID()
 	return fu
 }
 
@@ -202,6 +223,11 @@ func (fu *FeedbackUpdate) SetAgent(a *Agent) *FeedbackUpdate {
 	return fu.SetAgentID(a.ID)
 }
 
+// SetRider sets the "rider" edge to the Rider entity.
+func (fu *FeedbackUpdate) SetRider(r *Rider) *FeedbackUpdate {
+	return fu.SetRiderID(r.ID)
+}
+
 // Mutation returns the FeedbackMutation object of the builder.
 func (fu *FeedbackUpdate) Mutation() *FeedbackMutation {
 	return fu.mutation
@@ -216,6 +242,12 @@ func (fu *FeedbackUpdate) ClearEnterprise() *FeedbackUpdate {
 // ClearAgent clears the "agent" edge to the Agent entity.
 func (fu *FeedbackUpdate) ClearAgent() *FeedbackUpdate {
 	fu.mutation.ClearAgent()
+	return fu
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (fu *FeedbackUpdate) ClearRider() *FeedbackUpdate {
+	fu.mutation.ClearRider()
 	return fu
 }
 
@@ -369,6 +401,35 @@ func (fu *FeedbackUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if fu.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.RiderTable,
+			Columns: []string{feedback.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fu.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.RiderTable,
+			Columns: []string{feedback.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(fu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, fu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -434,6 +495,26 @@ func (fuo *FeedbackUpdateOne) SetNillableAgentID(u *uint64) *FeedbackUpdateOne {
 // ClearAgentID clears the value of the "agent_id" field.
 func (fuo *FeedbackUpdateOne) ClearAgentID() *FeedbackUpdateOne {
 	fuo.mutation.ClearAgentID()
+	return fuo
+}
+
+// SetRiderID sets the "rider_id" field.
+func (fuo *FeedbackUpdateOne) SetRiderID(u uint64) *FeedbackUpdateOne {
+	fuo.mutation.SetRiderID(u)
+	return fuo
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (fuo *FeedbackUpdateOne) SetNillableRiderID(u *uint64) *FeedbackUpdateOne {
+	if u != nil {
+		fuo.SetRiderID(*u)
+	}
+	return fuo
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (fuo *FeedbackUpdateOne) ClearRiderID() *FeedbackUpdateOne {
+	fuo.mutation.ClearRiderID()
 	return fuo
 }
 
@@ -561,6 +642,11 @@ func (fuo *FeedbackUpdateOne) SetAgent(a *Agent) *FeedbackUpdateOne {
 	return fuo.SetAgentID(a.ID)
 }
 
+// SetRider sets the "rider" edge to the Rider entity.
+func (fuo *FeedbackUpdateOne) SetRider(r *Rider) *FeedbackUpdateOne {
+	return fuo.SetRiderID(r.ID)
+}
+
 // Mutation returns the FeedbackMutation object of the builder.
 func (fuo *FeedbackUpdateOne) Mutation() *FeedbackMutation {
 	return fuo.mutation
@@ -575,6 +661,12 @@ func (fuo *FeedbackUpdateOne) ClearEnterprise() *FeedbackUpdateOne {
 // ClearAgent clears the "agent" edge to the Agent entity.
 func (fuo *FeedbackUpdateOne) ClearAgent() *FeedbackUpdateOne {
 	fuo.mutation.ClearAgent()
+	return fuo
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (fuo *FeedbackUpdateOne) ClearRider() *FeedbackUpdateOne {
+	fuo.mutation.ClearRider()
 	return fuo
 }
 
@@ -751,6 +843,35 @@ func (fuo *FeedbackUpdateOne) sqlSave(ctx context.Context) (_node *Feedback, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if fuo.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.RiderTable,
+			Columns: []string{feedback.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fuo.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.RiderTable,
+			Columns: []string{feedback.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

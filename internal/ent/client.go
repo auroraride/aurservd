@@ -949,8 +949,7 @@ func (c *ActivityClient) GetX(ctx context.Context, id uint64) *Activity {
 
 // Hooks returns the client hooks.
 func (c *ActivityClient) Hooks() []Hook {
-	hooks := c.hooks.Activity
-	return append(hooks[:len(hooks):len(hooks)], activity.Hooks[:]...)
+	return c.hooks.Activity
 }
 
 // Interceptors returns the client interceptors.
@@ -7854,6 +7853,22 @@ func (c *FeedbackClient) QueryAgent(f *Feedback) *AgentQuery {
 			sqlgraph.From(feedback.Table, feedback.FieldID, id),
 			sqlgraph.To(agent.Table, agent.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, feedback.AgentTable, feedback.AgentColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a Feedback.
+func (c *FeedbackClient) QueryRider(f *Feedback) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(feedback.Table, feedback.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, feedback.RiderTable, feedback.RiderColumn),
 		)
 		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
 		return fromV, nil
