@@ -710,6 +710,34 @@ func (pw *PromotionWithdrawal) GetID() uint64 {
 	return pw.ID
 }
 
+// GetTableName returns table name for Question.
+func (q *Question) GetTableName() string {
+	return "question"
+}
+
+// GetID returns id for Question.
+func (q *Question) GetID() uint64 {
+	return q.ID
+}
+
+func (q *Question) GetName() string {
+	return q.Name
+}
+
+// GetTableName returns table name for QuestionCategory.
+func (qc *QuestionCategory) GetTableName() string {
+	return "question_category"
+}
+
+// GetID returns id for QuestionCategory.
+func (qc *QuestionCategory) GetID() uint64 {
+	return qc.ID
+}
+
+func (qc *QuestionCategory) GetName() string {
+	return qc.Name
+}
+
 // GetTableName returns table name for Reserve.
 func (r *Reserve) GetTableName() string {
 	return "reserve"

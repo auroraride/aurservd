@@ -72,6 +72,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/question"
+	"github.com/auroraride/aurservd/internal/ent/questioncategory"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -206,6 +208,8 @@ func checkColumn(table, column string) error {
 			promotionreferralsprogress.Table: promotionreferralsprogress.ValidColumn,
 			promotionsetting.Table:           promotionsetting.ValidColumn,
 			promotionwithdrawal.Table:        promotionwithdrawal.ValidColumn,
+			question.Table:                   question.ValidColumn,
+			questioncategory.Table:           questioncategory.ValidColumn,
 			reserve.Table:                    reserve.ValidColumn,
 			rider.Table:                      rider.ValidColumn,
 			riderfollowup.Table:              riderfollowup.ValidColumn,

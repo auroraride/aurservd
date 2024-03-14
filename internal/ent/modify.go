@@ -471,6 +471,20 @@ func (c *PromotionWithdrawalClient) ModifyOne(old *PromotionWithdrawal, data any
 	return EntitySetAttributes[PromotionWithdrawalUpdateOne, PromotionWithdrawal](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for Question.
+func (c *QuestionClient) ModifyOne(old *Question, data any) *QuestionUpdateOne {
+	mutation := newQuestionMutation(c.config, OpUpdateOne, withQuestion(old))
+	up := &QuestionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[QuestionUpdateOne, Question](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for QuestionCategory.
+func (c *QuestionCategoryClient) ModifyOne(old *QuestionCategory, data any) *QuestionCategoryUpdateOne {
+	mutation := newQuestionCategoryMutation(c.config, OpUpdateOne, withQuestionCategory(old))
+	up := &QuestionCategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[QuestionCategoryUpdateOne, QuestionCategory](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Reserve.
 func (c *ReserveClient) ModifyOne(old *Reserve, data any) *ReserveUpdateOne {
 	mutation := newReserveMutation(c.config, OpUpdateOne, withReserve(old))

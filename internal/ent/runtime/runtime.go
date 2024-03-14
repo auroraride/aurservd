@@ -66,6 +66,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/question"
+	"github.com/auroraride/aurservd/internal/ent/questioncategory"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -1503,6 +1505,60 @@ func init() {
 	promotionwithdrawalDescTex := promotionwithdrawalFields[4].Descriptor()
 	// promotionwithdrawal.DefaultTex holds the default value on creation for the tex field.
 	promotionwithdrawal.DefaultTex = promotionwithdrawalDescTex.Default.(float64)
+	questionMixin := schema.Question{}.Mixin()
+	questionMixinHooks2 := questionMixin[2].Hooks()
+	question.Hooks[0] = questionMixinHooks2[0]
+	questionMixinFields0 := questionMixin[0].Fields()
+	_ = questionMixinFields0
+	questionFields := schema.Question{}.Fields()
+	_ = questionFields
+	// questionDescCreatedAt is the schema descriptor for created_at field.
+	questionDescCreatedAt := questionMixinFields0[0].Descriptor()
+	// question.DefaultCreatedAt holds the default value on creation for the created_at field.
+	question.DefaultCreatedAt = questionDescCreatedAt.Default.(func() time.Time)
+	// questionDescUpdatedAt is the schema descriptor for updated_at field.
+	questionDescUpdatedAt := questionMixinFields0[1].Descriptor()
+	// question.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	question.DefaultUpdatedAt = questionDescUpdatedAt.Default.(func() time.Time)
+	// question.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	question.UpdateDefaultUpdatedAt = questionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// questionDescName is the schema descriptor for name field.
+	questionDescName := questionFields[0].Descriptor()
+	// question.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	question.NameValidator = questionDescName.Validators[0].(func(string) error)
+	// questionDescSort is the schema descriptor for sort field.
+	questionDescSort := questionFields[1].Descriptor()
+	// question.DefaultSort holds the default value on creation for the sort field.
+	question.DefaultSort = questionDescSort.Default.(int)
+	// questionDescAnswer is the schema descriptor for answer field.
+	questionDescAnswer := questionFields[2].Descriptor()
+	// question.AnswerValidator is a validator for the "answer" field. It is called by the builders before save.
+	question.AnswerValidator = questionDescAnswer.Validators[0].(func(string) error)
+	questioncategoryMixin := schema.QuestionCategory{}.Mixin()
+	questioncategoryMixinHooks2 := questioncategoryMixin[2].Hooks()
+	questioncategory.Hooks[0] = questioncategoryMixinHooks2[0]
+	questioncategoryMixinFields0 := questioncategoryMixin[0].Fields()
+	_ = questioncategoryMixinFields0
+	questioncategoryFields := schema.QuestionCategory{}.Fields()
+	_ = questioncategoryFields
+	// questioncategoryDescCreatedAt is the schema descriptor for created_at field.
+	questioncategoryDescCreatedAt := questioncategoryMixinFields0[0].Descriptor()
+	// questioncategory.DefaultCreatedAt holds the default value on creation for the created_at field.
+	questioncategory.DefaultCreatedAt = questioncategoryDescCreatedAt.Default.(func() time.Time)
+	// questioncategoryDescUpdatedAt is the schema descriptor for updated_at field.
+	questioncategoryDescUpdatedAt := questioncategoryMixinFields0[1].Descriptor()
+	// questioncategory.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	questioncategory.DefaultUpdatedAt = questioncategoryDescUpdatedAt.Default.(func() time.Time)
+	// questioncategory.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	questioncategory.UpdateDefaultUpdatedAt = questioncategoryDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// questioncategoryDescName is the schema descriptor for name field.
+	questioncategoryDescName := questioncategoryFields[0].Descriptor()
+	// questioncategory.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	questioncategory.NameValidator = questioncategoryDescName.Validators[0].(func(string) error)
+	// questioncategoryDescSort is the schema descriptor for sort field.
+	questioncategoryDescSort := questioncategoryFields[1].Descriptor()
+	// questioncategory.DefaultSort holds the default value on creation for the sort field.
+	questioncategory.DefaultSort = questioncategoryDescSort.Default.(int)
 	reserveMixin := schema.Reserve{}.Mixin()
 	reserveMixinHooks2 := reserveMixin[2].Hooks()
 	reserve.Hooks[0] = reserveMixinHooks2[0]

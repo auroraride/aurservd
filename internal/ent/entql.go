@@ -64,6 +64,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/question"
+	"github.com/auroraride/aurservd/internal/ent/questioncategory"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -87,7 +89,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 74)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 76)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   activity.Table,
@@ -1704,6 +1706,50 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[60] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   question.Table,
+			Columns: question.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: question.FieldID,
+			},
+		},
+		Type: "Question",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			question.FieldCreatedAt:    {Type: field.TypeTime, Column: question.FieldCreatedAt},
+			question.FieldUpdatedAt:    {Type: field.TypeTime, Column: question.FieldUpdatedAt},
+			question.FieldDeletedAt:    {Type: field.TypeTime, Column: question.FieldDeletedAt},
+			question.FieldCreator:      {Type: field.TypeJSON, Column: question.FieldCreator},
+			question.FieldLastModifier: {Type: field.TypeJSON, Column: question.FieldLastModifier},
+			question.FieldRemark:       {Type: field.TypeString, Column: question.FieldRemark},
+			question.FieldName:         {Type: field.TypeString, Column: question.FieldName},
+			question.FieldSort:         {Type: field.TypeInt, Column: question.FieldSort},
+			question.FieldAnswer:       {Type: field.TypeString, Column: question.FieldAnswer},
+			question.FieldCategoryID:   {Type: field.TypeUint64, Column: question.FieldCategoryID},
+		},
+	}
+	graph.Nodes[61] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   questioncategory.Table,
+			Columns: questioncategory.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: questioncategory.FieldID,
+			},
+		},
+		Type: "QuestionCategory",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			questioncategory.FieldCreatedAt:    {Type: field.TypeTime, Column: questioncategory.FieldCreatedAt},
+			questioncategory.FieldUpdatedAt:    {Type: field.TypeTime, Column: questioncategory.FieldUpdatedAt},
+			questioncategory.FieldDeletedAt:    {Type: field.TypeTime, Column: questioncategory.FieldDeletedAt},
+			questioncategory.FieldCreator:      {Type: field.TypeJSON, Column: questioncategory.FieldCreator},
+			questioncategory.FieldLastModifier: {Type: field.TypeJSON, Column: questioncategory.FieldLastModifier},
+			questioncategory.FieldRemark:       {Type: field.TypeString, Column: questioncategory.FieldRemark},
+			questioncategory.FieldName:         {Type: field.TypeString, Column: questioncategory.FieldName},
+			questioncategory.FieldSort:         {Type: field.TypeInt, Column: questioncategory.FieldSort},
+		},
+	}
+	graph.Nodes[62] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   reserve.Table,
 			Columns: reserve.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -1727,7 +1773,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			reserve.FieldType:         {Type: field.TypeString, Column: reserve.FieldType},
 		},
 	}
-	graph.Nodes[61] = &sqlgraph.Node{
+	graph.Nodes[63] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rider.Table,
 			Columns: rider.Columns,
@@ -1763,7 +1809,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldJoinEnterpriseAt:  {Type: field.TypeTime, Column: rider.FieldJoinEnterpriseAt},
 		},
 	}
-	graph.Nodes[62] = &sqlgraph.Node{
+	graph.Nodes[64] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   riderfollowup.Table,
 			Columns: riderfollowup.Columns,
@@ -1784,7 +1830,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			riderfollowup.FieldRiderID:      {Type: field.TypeUint64, Column: riderfollowup.FieldRiderID},
 		},
 	}
-	graph.Nodes[63] = &sqlgraph.Node{
+	graph.Nodes[65] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   role.Table,
 			Columns: role.Columns,
@@ -1802,7 +1848,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			role.FieldCreatedAt:   {Type: field.TypeTime, Column: role.FieldCreatedAt},
 		},
 	}
-	graph.Nodes[64] = &sqlgraph.Node{
+	graph.Nodes[66] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   setting.Table,
 			Columns: setting.Columns,
@@ -1823,7 +1869,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			setting.FieldContent:      {Type: field.TypeString, Column: setting.FieldContent},
 		},
 	}
-	graph.Nodes[65] = &sqlgraph.Node{
+	graph.Nodes[67] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   stock.Table,
 			Columns: stock.Columns,
@@ -1860,7 +1906,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stock.FieldMaterial:     {Type: field.TypeEnum, Column: stock.FieldMaterial},
 		},
 	}
-	graph.Nodes[66] = &sqlgraph.Node{
+	graph.Nodes[68] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   stocksummary.Table,
 			Columns: stocksummary.Columns,
@@ -1886,7 +1932,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stocksummary.FieldMaterial:     {Type: field.TypeEnum, Column: stocksummary.FieldMaterial},
 		},
 	}
-	graph.Nodes[67] = &sqlgraph.Node{
+	graph.Nodes[69] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   store.Table,
 			Columns: store.Columns,
@@ -1916,7 +1962,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldEbikeRepair:  {Type: field.TypeBool, Column: store.FieldEbikeRepair},
 		},
 	}
-	graph.Nodes[68] = &sqlgraph.Node{
+	graph.Nodes[70] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribe.Table,
 			Columns: subscribe.Columns,
@@ -1968,7 +2014,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldIntelligent:       {Type: field.TypeBool, Column: subscribe.FieldIntelligent},
 		},
 	}
-	graph.Nodes[69] = &sqlgraph.Node{
+	graph.Nodes[71] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribealter.Table,
 			Columns: subscribealter.Columns,
@@ -1995,7 +2041,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribealter.FieldSubscribeEndAt: {Type: field.TypeTime, Column: subscribealter.FieldSubscribeEndAt},
 		},
 	}
-	graph.Nodes[70] = &sqlgraph.Node{
+	graph.Nodes[72] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribepause.Table,
 			Columns: subscribepause.Columns,
@@ -2030,7 +2076,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribepause.FieldSuspendDays:   {Type: field.TypeInt, Column: subscribepause.FieldSuspendDays},
 		},
 	}
-	graph.Nodes[71] = &sqlgraph.Node{
+	graph.Nodes[73] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribereminder.Table,
 			Columns: subscribereminder.Columns,
@@ -2057,7 +2103,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribereminder.FieldFeeFormula:  {Type: field.TypeString, Column: subscribereminder.FieldFeeFormula},
 		},
 	}
-	graph.Nodes[72] = &sqlgraph.Node{
+	graph.Nodes[74] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribesuspend.Table,
 			Columns: subscribesuspend.Columns,
@@ -2082,7 +2128,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribesuspend.FieldEndModifier:  {Type: field.TypeJSON, Column: subscribesuspend.FieldEndModifier},
 		},
 	}
-	graph.Nodes[73] = &sqlgraph.Node{
+	graph.Nodes[75] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   version.Table,
 			Columns: version.Columns,
@@ -4672,6 +4718,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"PromotionWithdrawal",
 		"PromotionBankCard",
+	)
+	graph.MustAddE(
+		"category",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   question.CategoryTable,
+			Columns: []string{question.CategoryColumn},
+			Bidi:    false,
+		},
+		"Question",
+		"QuestionCategory",
+	)
+	graph.MustAddE(
+		"questions",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   questioncategory.QuestionsTable,
+			Columns: []string{questioncategory.QuestionsColumn},
+			Bidi:    false,
+		},
+		"QuestionCategory",
+		"Question",
 	)
 	graph.MustAddE(
 		"cabinet",
@@ -15257,6 +15327,204 @@ func (f *PromotionWithdrawalFilter) WhereHasCardsWith(preds ...predicate.Promoti
 }
 
 // addPredicate implements the predicateAdder interface.
+func (qq *QuestionQuery) addPredicate(pred func(s *sql.Selector)) {
+	qq.predicates = append(qq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the QuestionQuery builder.
+func (qq *QuestionQuery) Filter() *QuestionFilter {
+	return &QuestionFilter{config: qq.config, predicateAdder: qq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *QuestionMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the QuestionMutation builder.
+func (m *QuestionMutation) Filter() *QuestionFilter {
+	return &QuestionFilter{config: m.config, predicateAdder: m}
+}
+
+// QuestionFilter provides a generic filtering capability at runtime for QuestionQuery.
+type QuestionFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *QuestionFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[60].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *QuestionFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(question.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *QuestionFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(question.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *QuestionFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(question.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *QuestionFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(question.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *QuestionFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(question.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *QuestionFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(question.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *QuestionFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(question.FieldRemark))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *QuestionFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(question.FieldName))
+}
+
+// WhereSort applies the entql int predicate on the sort field.
+func (f *QuestionFilter) WhereSort(p entql.IntP) {
+	f.Where(p.Field(question.FieldSort))
+}
+
+// WhereAnswer applies the entql string predicate on the answer field.
+func (f *QuestionFilter) WhereAnswer(p entql.StringP) {
+	f.Where(p.Field(question.FieldAnswer))
+}
+
+// WhereCategoryID applies the entql uint64 predicate on the category_id field.
+func (f *QuestionFilter) WhereCategoryID(p entql.Uint64P) {
+	f.Where(p.Field(question.FieldCategoryID))
+}
+
+// WhereHasCategory applies a predicate to check if query has an edge category.
+func (f *QuestionFilter) WhereHasCategory() {
+	f.Where(entql.HasEdge("category"))
+}
+
+// WhereHasCategoryWith applies a predicate to check if query has an edge category with a given conditions (other predicates).
+func (f *QuestionFilter) WhereHasCategoryWith(preds ...predicate.QuestionCategory) {
+	f.Where(entql.HasEdgeWith("category", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (qcq *QuestionCategoryQuery) addPredicate(pred func(s *sql.Selector)) {
+	qcq.predicates = append(qcq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the QuestionCategoryQuery builder.
+func (qcq *QuestionCategoryQuery) Filter() *QuestionCategoryFilter {
+	return &QuestionCategoryFilter{config: qcq.config, predicateAdder: qcq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *QuestionCategoryMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the QuestionCategoryMutation builder.
+func (m *QuestionCategoryMutation) Filter() *QuestionCategoryFilter {
+	return &QuestionCategoryFilter{config: m.config, predicateAdder: m}
+}
+
+// QuestionCategoryFilter provides a generic filtering capability at runtime for QuestionCategoryQuery.
+type QuestionCategoryFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *QuestionCategoryFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[61].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *QuestionCategoryFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(questioncategory.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *QuestionCategoryFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(questioncategory.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *QuestionCategoryFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(questioncategory.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *QuestionCategoryFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(questioncategory.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *QuestionCategoryFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(questioncategory.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *QuestionCategoryFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(questioncategory.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *QuestionCategoryFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(questioncategory.FieldRemark))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *QuestionCategoryFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(questioncategory.FieldName))
+}
+
+// WhereSort applies the entql int predicate on the sort field.
+func (f *QuestionCategoryFilter) WhereSort(p entql.IntP) {
+	f.Where(p.Field(questioncategory.FieldSort))
+}
+
+// WhereHasQuestions applies a predicate to check if query has an edge questions.
+func (f *QuestionCategoryFilter) WhereHasQuestions() {
+	f.Where(entql.HasEdge("questions"))
+}
+
+// WhereHasQuestionsWith applies a predicate to check if query has an edge questions with a given conditions (other predicates).
+func (f *QuestionCategoryFilter) WhereHasQuestionsWith(preds ...predicate.Question) {
+	f.Where(entql.HasEdgeWith("questions", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (rq *ReserveQuery) addPredicate(pred func(s *sql.Selector)) {
 	rq.predicates = append(rq.predicates, pred)
 }
@@ -15285,7 +15553,7 @@ type ReserveFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ReserveFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[60].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[62].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -15441,7 +15709,7 @@ type RiderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[61].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[63].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -15764,7 +16032,7 @@ type RiderFollowUpFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFollowUpFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[62].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[64].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -15872,7 +16140,7 @@ type RoleFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RoleFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[63].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[65].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -15951,7 +16219,7 @@ type SettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[64].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[66].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -16031,7 +16299,7 @@ type StockFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StockFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[65].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[67].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -16401,7 +16669,7 @@ type StockSummaryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StockSummaryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[66].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[68].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -16576,7 +16844,7 @@ type StoreFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StoreFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[67].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[69].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -16785,7 +17053,7 @@ type SubscribeFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[68].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[70].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -17258,7 +17526,7 @@ type SubscribeAlterFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeAlterFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[69].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[71].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -17438,7 +17706,7 @@ type SubscribePauseFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribePauseFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[70].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[72].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -17728,7 +17996,7 @@ type SubscribeReminderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeReminderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[71].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[73].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -17880,7 +18148,7 @@ type SubscribeSuspendFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeSuspendFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[72].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[74].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -18036,7 +18304,7 @@ type VersionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *VersionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[73].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[75].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

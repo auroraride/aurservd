@@ -183,7 +183,13 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	g.GET("/activity", rapi.Activity.List, auth()) // 活动
 
-	g.POST("/feedback", rapi.Feedback.Create, auth()) // 骑手端意见反馈
+	g.POST("/feedback", rapi.Feedback.Create, auth())
+
+	// 问题分类
+	g.GET("/question/category", rapi.QuestionCategory.All, auth())
+
+	// 常见问题
+	g.GET("/question", rapi.Question.All, auth())
 
 	// 地图
 	g.GET("/direction", rapi.Rider.Direction, auth()) // 获取地图路径规划

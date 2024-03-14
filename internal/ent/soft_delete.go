@@ -48,6 +48,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionmembercommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionprivilege"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/question"
+	"github.com/auroraride/aurservd/internal/ent/questioncategory"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -1730,6 +1732,86 @@ func (c *PromotionWithdrawalClient) GetNotDeleted(ctx context.Context, id uint64
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *PromotionWithdrawalClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionWithdrawal {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Question.
+func (c *QuestionClient) SoftDelete() *QuestionUpdate {
+	mutation := newQuestionMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &QuestionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *QuestionClient) SoftDeleteOne(q *Question) *QuestionUpdateOne {
+	mutation := newQuestionMutation(c.config, OpUpdateOne, withQuestion(q))
+	mutation.SetDeletedAt(time.Now())
+	return &QuestionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *QuestionClient) SoftDeleteOneID(id uint64) *QuestionUpdateOne {
+	mutation := newQuestionMutation(c.config, OpUpdateOne, withQuestionID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &QuestionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Question.
+func (c *QuestionClient) QueryNotDeleted() *QuestionQuery {
+	return c.Query().Where(question.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Question not deleted entity by its id.
+func (c *QuestionClient) GetNotDeleted(ctx context.Context, id uint64) (*Question, error) {
+	return c.Query().Where(question.ID(id), question.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *QuestionClient) GetNotDeletedX(ctx context.Context, id uint64) *Question {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for QuestionCategory.
+func (c *QuestionCategoryClient) SoftDelete() *QuestionCategoryUpdate {
+	mutation := newQuestionCategoryMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &QuestionCategoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *QuestionCategoryClient) SoftDeleteOne(qc *QuestionCategory) *QuestionCategoryUpdateOne {
+	mutation := newQuestionCategoryMutation(c.config, OpUpdateOne, withQuestionCategory(qc))
+	mutation.SetDeletedAt(time.Now())
+	return &QuestionCategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *QuestionCategoryClient) SoftDeleteOneID(id uint64) *QuestionCategoryUpdateOne {
+	mutation := newQuestionCategoryMutation(c.config, OpUpdateOne, withQuestionCategoryID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &QuestionCategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for QuestionCategory.
+func (c *QuestionCategoryClient) QueryNotDeleted() *QuestionCategoryQuery {
+	return c.Query().Where(questioncategory.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a QuestionCategory not deleted entity by its id.
+func (c *QuestionCategoryClient) GetNotDeleted(ctx context.Context, id uint64) (*QuestionCategory, error) {
+	return c.Query().Where(questioncategory.ID(id), questioncategory.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *QuestionCategoryClient) GetNotDeletedX(ctx context.Context, id uint64) *QuestionCategory {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

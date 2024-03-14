@@ -75,6 +75,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/question"
+	"github.com/auroraride/aurservd/internal/ent/questioncategory"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -218,6 +220,10 @@ type Client struct {
 	PromotionSetting *PromotionSettingClient
 	// PromotionWithdrawal is the client for interacting with the PromotionWithdrawal builders.
 	PromotionWithdrawal *PromotionWithdrawalClient
+	// Question is the client for interacting with the Question builders.
+	Question *QuestionClient
+	// QuestionCategory is the client for interacting with the QuestionCategory builders.
+	QuestionCategory *QuestionCategoryClient
 	// Reserve is the client for interacting with the Reserve builders.
 	Reserve *ReserveClient
 	// Rider is the client for interacting with the Rider builders.
@@ -317,6 +323,8 @@ func (c *Client) init() {
 	c.PromotionReferralsProgress = NewPromotionReferralsProgressClient(c.config)
 	c.PromotionSetting = NewPromotionSettingClient(c.config)
 	c.PromotionWithdrawal = NewPromotionWithdrawalClient(c.config)
+	c.Question = NewQuestionClient(c.config)
+	c.QuestionCategory = NewQuestionCategoryClient(c.config)
 	c.Reserve = NewReserveClient(c.config)
 	c.Rider = NewRiderClient(c.config)
 	c.RiderFollowUp = NewRiderFollowUpClient(c.config)
@@ -483,6 +491,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		PromotionReferralsProgress: NewPromotionReferralsProgressClient(cfg),
 		PromotionSetting:           NewPromotionSettingClient(cfg),
 		PromotionWithdrawal:        NewPromotionWithdrawalClient(cfg),
+		Question:                   NewQuestionClient(cfg),
+		QuestionCategory:           NewQuestionCategoryClient(cfg),
 		Reserve:                    NewReserveClient(cfg),
 		Rider:                      NewRiderClient(cfg),
 		RiderFollowUp:              NewRiderFollowUpClient(cfg),
@@ -576,6 +586,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		PromotionReferralsProgress: NewPromotionReferralsProgressClient(cfg),
 		PromotionSetting:           NewPromotionSettingClient(cfg),
 		PromotionWithdrawal:        NewPromotionWithdrawalClient(cfg),
+		Question:                   NewQuestionClient(cfg),
+		QuestionCategory:           NewQuestionCategoryClient(cfg),
 		Reserve:                    NewReserveClient(cfg),
 		Rider:                      NewRiderClient(cfg),
 		RiderFollowUp:              NewRiderFollowUpClient(cfg),
@@ -632,9 +644,10 @@ func (c *Client) Use(hooks ...Hook) {
 		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
-		c.PromotionWithdrawal, c.Reserve, c.Rider, c.RiderFollowUp, c.Role, c.Setting,
-		c.Stock, c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter,
-		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend, c.Version,
+		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
+		c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
+		c.Subscribe, c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder,
+		c.SubscribeSuspend, c.Version,
 	} {
 		n.Use(hooks...)
 	}
@@ -657,9 +670,10 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
-		c.PromotionWithdrawal, c.Reserve, c.Rider, c.RiderFollowUp, c.Role, c.Setting,
-		c.Stock, c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter,
-		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend, c.Version,
+		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
+		c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
+		c.Subscribe, c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder,
+		c.SubscribeSuspend, c.Version,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -788,6 +802,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.PromotionSetting.mutate(ctx, m)
 	case *PromotionWithdrawalMutation:
 		return c.PromotionWithdrawal.mutate(ctx, m)
+	case *QuestionMutation:
+		return c.Question.mutate(ctx, m)
+	case *QuestionCategoryMutation:
+		return c.QuestionCategory.mutate(ctx, m)
 	case *ReserveMutation:
 		return c.Reserve.mutate(ctx, m)
 	case *RiderMutation:
@@ -12274,6 +12292,306 @@ func (c *PromotionWithdrawalClient) mutate(ctx context.Context, m *PromotionWith
 	}
 }
 
+// QuestionClient is a client for the Question schema.
+type QuestionClient struct {
+	config
+}
+
+// NewQuestionClient returns a client for the Question from the given config.
+func NewQuestionClient(c config) *QuestionClient {
+	return &QuestionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `question.Hooks(f(g(h())))`.
+func (c *QuestionClient) Use(hooks ...Hook) {
+	c.hooks.Question = append(c.hooks.Question, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `question.Intercept(f(g(h())))`.
+func (c *QuestionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Question = append(c.inters.Question, interceptors...)
+}
+
+// Create returns a builder for creating a Question entity.
+func (c *QuestionClient) Create() *QuestionCreate {
+	mutation := newQuestionMutation(c.config, OpCreate)
+	return &QuestionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Question entities.
+func (c *QuestionClient) CreateBulk(builders ...*QuestionCreate) *QuestionCreateBulk {
+	return &QuestionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *QuestionClient) MapCreateBulk(slice any, setFunc func(*QuestionCreate, int)) *QuestionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &QuestionCreateBulk{err: fmt.Errorf("calling to QuestionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*QuestionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &QuestionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Question.
+func (c *QuestionClient) Update() *QuestionUpdate {
+	mutation := newQuestionMutation(c.config, OpUpdate)
+	return &QuestionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *QuestionClient) UpdateOne(q *Question) *QuestionUpdateOne {
+	mutation := newQuestionMutation(c.config, OpUpdateOne, withQuestion(q))
+	return &QuestionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *QuestionClient) UpdateOneID(id uint64) *QuestionUpdateOne {
+	mutation := newQuestionMutation(c.config, OpUpdateOne, withQuestionID(id))
+	return &QuestionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Question.
+func (c *QuestionClient) Delete() *QuestionDelete {
+	mutation := newQuestionMutation(c.config, OpDelete)
+	return &QuestionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *QuestionClient) DeleteOne(q *Question) *QuestionDeleteOne {
+	return c.DeleteOneID(q.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *QuestionClient) DeleteOneID(id uint64) *QuestionDeleteOne {
+	builder := c.Delete().Where(question.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &QuestionDeleteOne{builder}
+}
+
+// Query returns a query builder for Question.
+func (c *QuestionClient) Query() *QuestionQuery {
+	return &QuestionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeQuestion},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Question entity by its id.
+func (c *QuestionClient) Get(ctx context.Context, id uint64) (*Question, error) {
+	return c.Query().Where(question.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *QuestionClient) GetX(ctx context.Context, id uint64) *Question {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCategory queries the category edge of a Question.
+func (c *QuestionClient) QueryCategory(q *Question) *QuestionCategoryQuery {
+	query := (&QuestionCategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := q.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(question.Table, question.FieldID, id),
+			sqlgraph.To(questioncategory.Table, questioncategory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, question.CategoryTable, question.CategoryColumn),
+		)
+		fromV = sqlgraph.Neighbors(q.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *QuestionClient) Hooks() []Hook {
+	hooks := c.hooks.Question
+	return append(hooks[:len(hooks):len(hooks)], question.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *QuestionClient) Interceptors() []Interceptor {
+	return c.inters.Question
+}
+
+func (c *QuestionClient) mutate(ctx context.Context, m *QuestionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&QuestionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&QuestionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&QuestionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&QuestionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Question mutation op: %q", m.Op())
+	}
+}
+
+// QuestionCategoryClient is a client for the QuestionCategory schema.
+type QuestionCategoryClient struct {
+	config
+}
+
+// NewQuestionCategoryClient returns a client for the QuestionCategory from the given config.
+func NewQuestionCategoryClient(c config) *QuestionCategoryClient {
+	return &QuestionCategoryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `questioncategory.Hooks(f(g(h())))`.
+func (c *QuestionCategoryClient) Use(hooks ...Hook) {
+	c.hooks.QuestionCategory = append(c.hooks.QuestionCategory, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `questioncategory.Intercept(f(g(h())))`.
+func (c *QuestionCategoryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.QuestionCategory = append(c.inters.QuestionCategory, interceptors...)
+}
+
+// Create returns a builder for creating a QuestionCategory entity.
+func (c *QuestionCategoryClient) Create() *QuestionCategoryCreate {
+	mutation := newQuestionCategoryMutation(c.config, OpCreate)
+	return &QuestionCategoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of QuestionCategory entities.
+func (c *QuestionCategoryClient) CreateBulk(builders ...*QuestionCategoryCreate) *QuestionCategoryCreateBulk {
+	return &QuestionCategoryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *QuestionCategoryClient) MapCreateBulk(slice any, setFunc func(*QuestionCategoryCreate, int)) *QuestionCategoryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &QuestionCategoryCreateBulk{err: fmt.Errorf("calling to QuestionCategoryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*QuestionCategoryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &QuestionCategoryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for QuestionCategory.
+func (c *QuestionCategoryClient) Update() *QuestionCategoryUpdate {
+	mutation := newQuestionCategoryMutation(c.config, OpUpdate)
+	return &QuestionCategoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *QuestionCategoryClient) UpdateOne(qc *QuestionCategory) *QuestionCategoryUpdateOne {
+	mutation := newQuestionCategoryMutation(c.config, OpUpdateOne, withQuestionCategory(qc))
+	return &QuestionCategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *QuestionCategoryClient) UpdateOneID(id uint64) *QuestionCategoryUpdateOne {
+	mutation := newQuestionCategoryMutation(c.config, OpUpdateOne, withQuestionCategoryID(id))
+	return &QuestionCategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for QuestionCategory.
+func (c *QuestionCategoryClient) Delete() *QuestionCategoryDelete {
+	mutation := newQuestionCategoryMutation(c.config, OpDelete)
+	return &QuestionCategoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *QuestionCategoryClient) DeleteOne(qc *QuestionCategory) *QuestionCategoryDeleteOne {
+	return c.DeleteOneID(qc.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *QuestionCategoryClient) DeleteOneID(id uint64) *QuestionCategoryDeleteOne {
+	builder := c.Delete().Where(questioncategory.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &QuestionCategoryDeleteOne{builder}
+}
+
+// Query returns a query builder for QuestionCategory.
+func (c *QuestionCategoryClient) Query() *QuestionCategoryQuery {
+	return &QuestionCategoryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeQuestionCategory},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a QuestionCategory entity by its id.
+func (c *QuestionCategoryClient) Get(ctx context.Context, id uint64) (*QuestionCategory, error) {
+	return c.Query().Where(questioncategory.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *QuestionCategoryClient) GetX(ctx context.Context, id uint64) *QuestionCategory {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryQuestions queries the questions edge of a QuestionCategory.
+func (c *QuestionCategoryClient) QueryQuestions(qc *QuestionCategory) *QuestionQuery {
+	query := (&QuestionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := qc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(questioncategory.Table, questioncategory.FieldID, id),
+			sqlgraph.To(question.Table, question.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, questioncategory.QuestionsTable, questioncategory.QuestionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(qc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *QuestionCategoryClient) Hooks() []Hook {
+	hooks := c.hooks.QuestionCategory
+	return append(hooks[:len(hooks):len(hooks)], questioncategory.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *QuestionCategoryClient) Interceptors() []Interceptor {
+	return c.inters.QuestionCategory
+}
+
+func (c *QuestionCategoryClient) mutate(ctx context.Context, m *QuestionCategoryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&QuestionCategoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&QuestionCategoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&QuestionCategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&QuestionCategoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown QuestionCategory mutation op: %q", m.Op())
+	}
+}
+
 // ReserveClient is a client for the Reserve schema.
 type ReserveClient struct {
 	config
@@ -15505,10 +15823,10 @@ type (
 		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
 		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
 		PromotionPerson, PromotionPrivilege, PromotionReferrals,
-		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Reserve,
-		Rider, RiderFollowUp, Role, Setting, Stock, StockSummary, Store, Subscribe,
-		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
-		Version []ent.Hook
+		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
+		QuestionCategory, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
+		StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
+		SubscribeReminder, SubscribeSuspend, Version []ent.Hook
 	}
 	inters struct {
 		Activity, Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow,
@@ -15522,10 +15840,10 @@ type (
 		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
 		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
 		PromotionPerson, PromotionPrivilege, PromotionReferrals,
-		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Reserve,
-		Rider, RiderFollowUp, Role, Setting, Stock, StockSummary, Store, Subscribe,
-		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
-		Version []ent.Interceptor
+		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
+		QuestionCategory, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
+		StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
+		SubscribeReminder, SubscribeSuspend, Version []ent.Interceptor
 	}
 )
 
