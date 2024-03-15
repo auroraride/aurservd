@@ -72,7 +72,7 @@ type FaultModifyStatusReq struct {
 	Remark string `json:"remark"` // 备注
 }
 
-// FaultCauseReq 故障原因请求
-type FaultCauseReq struct {
-	Key string `json:"key" param:"key"` // 键 EBIKE_FAULT: 车辆故障 BATTERY_FAULT: 电池故障 OTHER_FAULT: 其他故障 CABINET_FAULT: 电柜故障
+type FaultCauseRes struct {
+	Key   string   `json:"key"`   // 键
+	Value []string `json:"value"` // 值
 }
