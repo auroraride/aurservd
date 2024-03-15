@@ -105,6 +105,9 @@ type Exchange func(*sql.Selector)
 // Export is the predicate function for export builders.
 type Export func(*sql.Selector)
 
+// Fault is the predicate function for fault builders.
+type Fault func(*sql.Selector)
+
 // Feedback is the predicate function for feedback builders.
 type Feedback func(*sql.Selector)
 

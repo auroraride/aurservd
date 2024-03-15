@@ -24,8 +24,9 @@ func NewInstructions() *instructionsBiz {
 func (s *instructionsBiz) InitInstructions() {
 	for k, v := range definition.InstructionsColumns {
 		if !s.orm.QueryNotDeleted().Where(instructions.Key(k)).ExistX(s.ctx) {
+			var content interface{} = ""
 			s.orm.Create().
-				SetContent(new(interface{})).
+				SetContent(&content).
 				SetTitle(v).
 				SetKey(k).
 				SaveX(s.ctx)

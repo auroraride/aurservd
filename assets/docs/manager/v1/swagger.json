@@ -13074,6 +13074,155 @@
                     }
                 }
             }
+        },
+      "/mapi/v1/fault": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "故障上报"
+          ],
+          "summary": "故障列表",
+          "operationId": "FaultList",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "骑手校验token",
+              "name": "X-Rider-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "string",
+              "description": "城市",
+              "name": "city",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "当前页, 从1开始, 默认1",
+              "name": "current",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "设备编号",
+              "name": "deviceNo",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "结束时间",
+              "name": "end",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "关键字 用户姓名、手机号",
+              "name": "keyword",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "每页数据, 默认20",
+              "name": "pageSize",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "开始时间",
+              "name": "start",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "故障状态 0未处理 1已处理",
+              "name": "status",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他",
+              "name": "type",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/model.PaginationRes"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/definition.Fault"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "/mapi/v1/fault/:id": {
+        "put": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "故障上报"
+          ],
+          "summary": "故障更改状态",
+          "operationId": "FaultModify",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "骑手校验token",
+              "name": "X-Rider-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "integer",
+              "description": "故障ID",
+              "name": "id",
+              "in": "path",
+              "required": true
+            },
+            {
+              "description": "故障修改请求",
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/definition.FaultModifyStatusReq"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/model.StatusResponse"
+              }
+            }
+          }
+        }
         }
     },
     "definitions": {
@@ -13281,6 +13430,103 @@
                 }
             }
         },
+      "definition.Fault": {
+        "type": "object",
+        "properties": {
+          "attachments": {
+            "description": "附件",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "city": {
+            "description": "城市",
+            "type": "string"
+          },
+          "createdAt": {
+            "description": "创建时间",
+            "type": "string"
+          },
+          "description": {
+            "description": "故障描述",
+            "type": "string"
+          },
+          "deviceNo": {
+            "description": "设备编号",
+            "type": "string"
+          },
+          "faultCause": {
+            "description": "故障原因",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "id": {
+            "description": "故障ID",
+            "type": "integer"
+          },
+          "remark": {
+            "description": "备注",
+            "type": "string"
+          },
+          "rider": {
+            "description": "骑手",
+            "allOf": [
+              {
+                "$ref": "#/definitions/model.Rider"
+              }
+            ]
+          },
+          "status": {
+            "description": "故障状态 0未处理 1已处理",
+            "type": "integer"
+          },
+          "type": {
+            "description": "故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他",
+            "allOf": [
+              {
+                "$ref": "#/definitions/definition.FaultType"
+              }
+            ]
+          }
+        }
+      },
+      "definition.FaultModifyStatusReq": {
+        "type": "object",
+        "properties": {
+          "remark": {
+            "description": "备注",
+            "type": "string"
+          },
+          "status": {
+            "description": "故障状态 0未处理 1已处理",
+            "type": "integer"
+          }
+        }
+      },
+      "definition.FaultType": {
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "x-enum-comments": {
+          "FaultTypeBattery": "电池故障",
+          "FaultTypeCabinet": "电柜故障",
+          "FaultTypeEbike": "车辆故障",
+          "FaultTypeOther": "其他"
+        },
+        "x-enum-varnames": [
+          "FaultTypeCabinet",
+          "FaultTypeBattery",
+          "FaultTypeEbike",
+          "FaultTypeOther"
+        ]
+      },
         "definition.GuideDetail": {
             "type": "object",
             "properties": {

@@ -405,6 +405,18 @@ func (f ExportFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ExportMutation", m)
 }
 
+// The FaultFunc type is an adapter to allow the use of ordinary
+// function as Fault mutator.
+type FaultFunc func(context.Context, *ent.FaultMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FaultFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.FaultMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FaultMutation", m)
+}
+
 // The FeedbackFunc type is an adapter to allow the use of ordinary
 // function as Feedback mutator.
 type FeedbackFunc func(context.Context, *ent.FeedbackMutation) (ent.Value, error)

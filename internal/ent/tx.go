@@ -80,6 +80,8 @@ type Tx struct {
 	Exchange *ExchangeClient
 	// Export is the client for interacting with the Export builders.
 	Export *ExportClient
+	// Fault is the client for interacting with the Fault builders.
+	Fault *FaultClient
 	// Feedback is the client for interacting with the Feedback builders.
 	Feedback *FeedbackClient
 	// Guide is the client for interacting with the Guide builders.
@@ -332,6 +334,7 @@ func (tx *Tx) init() {
 	tx.Exception = NewExceptionClient(tx.config)
 	tx.Exchange = NewExchangeClient(tx.config)
 	tx.Export = NewExportClient(tx.config)
+	tx.Fault = NewFaultClient(tx.config)
 	tx.Feedback = NewFeedbackClient(tx.config)
 	tx.Guide = NewGuideClient(tx.config)
 	tx.Instructions = NewInstructionsClient(tx.config)

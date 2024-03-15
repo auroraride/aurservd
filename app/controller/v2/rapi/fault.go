@@ -1,0 +1,28 @@
+package rapi
+
+import (
+	"github.com/labstack/echo/v4"
+
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/biz"
+	"github.com/auroraride/aurservd/app/biz/definition"
+)
+
+type fault struct{}
+
+var Fault = new(fault)
+
+// Create
+// @ID		FaultCreate
+// @Router	/rider/v2/fault [POST]
+// @Summary	故障上报
+// @Tags	客服中心
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string						true	"骑手校验token"
+// @Param	body			body		definition.FaultCreateReq	true	" 故障上报请求"
+// @Success	200				{object}	model.StatusResponse		"请求成功"
+func (*fault) Create(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.FaultCreateReq](c)
+	return ctx.SendResponse(biz.NewFaultBiz().Create(ctx.Rider, req))
+}

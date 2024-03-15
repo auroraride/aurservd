@@ -384,6 +384,16 @@ func (e *Export) GetID() uint64 {
 	return e.ID
 }
 
+// GetTableName returns table name for Fault.
+func (f *Fault) GetTableName() string {
+	return "fault"
+}
+
+// GetID returns id for Fault.
+func (f *Fault) GetID() uint64 {
+	return f.ID
+}
+
 // GetTableName returns table name for Feedback.
 func (f *Feedback) GetTableName() string {
 	return "feedback"

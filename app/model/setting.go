@@ -34,6 +34,9 @@ const (
 	SettingAppVersionKey             = "APP_VERSION"              // App版本
 	SettingConsumePointKey           = "CONSUME_POINTS"           // 消费赠送积分
 	SettingDailyRent                 = "DAILY_RENT"               // 日租金, 格式为 key(cityid + batterymodal + bikebrandid): amount
+	SettingBatteryFaultKey           = "BATTERY_FAULT"            // 电池故障原因
+	SettingEbikeFaultKey             = "EBIKE_FAULT"              // 电车故障原因
+	SetttingOtherFaultKey            = "OTHER_FAULT"              // 其他故障原因
 )
 
 type SettingValueConvert func(content string) any
@@ -100,6 +103,18 @@ var Settings = map[string]SettingItem{
 	},
 	SettingCabinetFaultKey: {
 		Desc:    "电柜故障",
+		Default: []string{},
+	},
+	SettingBatteryFaultKey: {
+		Desc:    "电池故障",
+		Default: []string{},
+	},
+	SettingEbikeFaultKey: {
+		Desc:    "电车故障",
+		Default: []string{},
+	},
+	SetttingOtherFaultKey: {
+		Desc:    "其他故障",
 		Default: []string{},
 	},
 	SettingExceptionKey: {

@@ -48,6 +48,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/export"
+	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/guide"
 	"github.com/auroraride/aurservd/internal/ent/instructions"
@@ -167,6 +168,8 @@ type Client struct {
 	Exchange *ExchangeClient
 	// Export is the client for interacting with the Export builders.
 	Export *ExportClient
+	// Fault is the client for interacting with the Fault builders.
+	Fault *FaultClient
 	// Feedback is the client for interacting with the Feedback builders.
 	Feedback *FeedbackClient
 	// Guide is the client for interacting with the Guide builders.
@@ -299,6 +302,7 @@ func (c *Client) init() {
 	c.Exception = NewExceptionClient(c.config)
 	c.Exchange = NewExchangeClient(c.config)
 	c.Export = NewExportClient(c.config)
+	c.Fault = NewFaultClient(c.config)
 	c.Feedback = NewFeedbackClient(c.config)
 	c.Guide = NewGuideClient(c.config)
 	c.Instructions = NewInstructionsClient(c.config)
@@ -468,6 +472,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Exception:                  NewExceptionClient(cfg),
 		Exchange:                   NewExchangeClient(cfg),
 		Export:                     NewExportClient(cfg),
+		Fault:                      NewFaultClient(cfg),
 		Feedback:                   NewFeedbackClient(cfg),
 		Guide:                      NewGuideClient(cfg),
 		Instructions:               NewInstructionsClient(cfg),
@@ -564,6 +569,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Exception:                  NewExceptionClient(cfg),
 		Exchange:                   NewExchangeClient(cfg),
 		Export:                     NewExportClient(cfg),
+		Fault:                      NewFaultClient(cfg),
 		Feedback:                   NewFeedbackClient(cfg),
 		Guide:                      NewGuideClient(cfg),
 		Instructions:               NewInstructionsClient(cfg),
@@ -643,17 +649,18 @@ func (c *Client) Use(hooks ...Hook) {
 		c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand, c.Employee,
 		c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
 		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
-		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Feedback, c.Guide,
-		c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund,
-		c.Person, c.Plan, c.PlanIntroduce, c.PointLog, c.PromotionAchievement,
-		c.PromotionBankCard, c.PromotionCommission, c.PromotionCommissionPlan,
-		c.PromotionEarnings, c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask,
-		c.PromotionMember, c.PromotionMemberCommission, c.PromotionPerson,
-		c.PromotionPrivilege, c.PromotionReferrals, c.PromotionReferralsProgress,
-		c.PromotionSetting, c.PromotionWithdrawal, c.Question, c.QuestionCategory,
-		c.Reserve, c.Rider, c.RiderFollowUp, c.Role, c.Setting, c.Stock,
-		c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
-		c.SubscribeReminder, c.SubscribeSuspend, c.Version,
+		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
+		c.Guide, c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Order,
+		c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog,
+		c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
+		c.PromotionCommissionPlan, c.PromotionEarnings, c.PromotionGrowth,
+		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
+		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
+		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
+		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
+		c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
+		c.Subscribe, c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder,
+		c.SubscribeSuspend, c.Version,
 	} {
 		n.Use(hooks...)
 	}
@@ -669,17 +676,18 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand, c.Employee,
 		c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
 		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
-		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Feedback, c.Guide,
-		c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund,
-		c.Person, c.Plan, c.PlanIntroduce, c.PointLog, c.PromotionAchievement,
-		c.PromotionBankCard, c.PromotionCommission, c.PromotionCommissionPlan,
-		c.PromotionEarnings, c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask,
-		c.PromotionMember, c.PromotionMemberCommission, c.PromotionPerson,
-		c.PromotionPrivilege, c.PromotionReferrals, c.PromotionReferralsProgress,
-		c.PromotionSetting, c.PromotionWithdrawal, c.Question, c.QuestionCategory,
-		c.Reserve, c.Rider, c.RiderFollowUp, c.Role, c.Setting, c.Stock,
-		c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
-		c.SubscribeReminder, c.SubscribeSuspend, c.Version,
+		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
+		c.Guide, c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Order,
+		c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog,
+		c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
+		c.PromotionCommissionPlan, c.PromotionEarnings, c.PromotionGrowth,
+		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
+		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
+		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
+		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
+		c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
+		c.Subscribe, c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder,
+		c.SubscribeSuspend, c.Version,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -754,6 +762,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Exchange.mutate(ctx, m)
 	case *ExportMutation:
 		return c.Export.mutate(ctx, m)
+	case *FaultMutation:
+		return c.Fault.mutate(ctx, m)
 	case *FeedbackMutation:
 		return c.Feedback.mutate(ctx, m)
 	case *GuideMutation:
@@ -7725,6 +7735,220 @@ func (c *ExportClient) mutate(ctx context.Context, m *ExportMutation) (Value, er
 		return (&ExportDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Export mutation op: %q", m.Op())
+	}
+}
+
+// FaultClient is a client for the Fault schema.
+type FaultClient struct {
+	config
+}
+
+// NewFaultClient returns a client for the Fault from the given config.
+func NewFaultClient(c config) *FaultClient {
+	return &FaultClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `fault.Hooks(f(g(h())))`.
+func (c *FaultClient) Use(hooks ...Hook) {
+	c.hooks.Fault = append(c.hooks.Fault, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `fault.Intercept(f(g(h())))`.
+func (c *FaultClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Fault = append(c.inters.Fault, interceptors...)
+}
+
+// Create returns a builder for creating a Fault entity.
+func (c *FaultClient) Create() *FaultCreate {
+	mutation := newFaultMutation(c.config, OpCreate)
+	return &FaultCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Fault entities.
+func (c *FaultClient) CreateBulk(builders ...*FaultCreate) *FaultCreateBulk {
+	return &FaultCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *FaultClient) MapCreateBulk(slice any, setFunc func(*FaultCreate, int)) *FaultCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &FaultCreateBulk{err: fmt.Errorf("calling to FaultClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*FaultCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &FaultCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Fault.
+func (c *FaultClient) Update() *FaultUpdate {
+	mutation := newFaultMutation(c.config, OpUpdate)
+	return &FaultUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FaultClient) UpdateOne(f *Fault) *FaultUpdateOne {
+	mutation := newFaultMutation(c.config, OpUpdateOne, withFault(f))
+	return &FaultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FaultClient) UpdateOneID(id uint64) *FaultUpdateOne {
+	mutation := newFaultMutation(c.config, OpUpdateOne, withFaultID(id))
+	return &FaultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Fault.
+func (c *FaultClient) Delete() *FaultDelete {
+	mutation := newFaultMutation(c.config, OpDelete)
+	return &FaultDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *FaultClient) DeleteOne(f *Fault) *FaultDeleteOne {
+	return c.DeleteOneID(f.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *FaultClient) DeleteOneID(id uint64) *FaultDeleteOne {
+	builder := c.Delete().Where(fault.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FaultDeleteOne{builder}
+}
+
+// Query returns a query builder for Fault.
+func (c *FaultClient) Query() *FaultQuery {
+	return &FaultQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeFault},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Fault entity by its id.
+func (c *FaultClient) Get(ctx context.Context, id uint64) (*Fault, error) {
+	return c.Query().Where(fault.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FaultClient) GetX(ctx context.Context, id uint64) *Fault {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCity queries the city edge of a Fault.
+func (c *FaultClient) QueryCity(f *Fault) *CityQuery {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(fault.Table, fault.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, fault.CityTable, fault.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinet queries the cabinet edge of a Fault.
+func (c *FaultClient) QueryCabinet(f *Fault) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(fault.Table, fault.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, fault.CabinetTable, fault.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBattery queries the battery edge of a Fault.
+func (c *FaultClient) QueryBattery(f *Fault) *BatteryQuery {
+	query := (&BatteryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(fault.Table, fault.FieldID, id),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, fault.BatteryTable, fault.BatteryColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEbike queries the ebike edge of a Fault.
+func (c *FaultClient) QueryEbike(f *Fault) *EbikeQuery {
+	query := (&EbikeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(fault.Table, fault.FieldID, id),
+			sqlgraph.To(ebike.Table, ebike.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, fault.EbikeTable, fault.EbikeColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a Fault.
+func (c *FaultClient) QueryRider(f *Fault) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(fault.Table, fault.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, fault.RiderTable, fault.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *FaultClient) Hooks() []Hook {
+	hooks := c.hooks.Fault
+	return append(hooks[:len(hooks):len(hooks)], fault.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *FaultClient) Interceptors() []Interceptor {
+	return c.inters.Fault
+}
+
+func (c *FaultClient) mutate(ctx context.Context, m *FaultMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&FaultCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&FaultUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&FaultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&FaultDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Fault mutation op: %q", m.Op())
 	}
 }
 
@@ -15974,8 +16198,8 @@ type (
 		Commission, Contract, Coupon, CouponAssembly, CouponTemplate, Ebike,
 		EbikeBrand, Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
 		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
-		EnterpriseStation, Exception, Exchange, Export, Feedback, Guide, Instructions,
-		Inventory, Maintainer, Manager, Order, OrderRefund, Person, Plan,
+		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Guide,
+		Instructions, Inventory, Maintainer, Manager, Order, OrderRefund, Person, Plan,
 		PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
 		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
 		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
@@ -15991,8 +16215,8 @@ type (
 		Commission, Contract, Coupon, CouponAssembly, CouponTemplate, Ebike,
 		EbikeBrand, Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
 		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
-		EnterpriseStation, Exception, Exchange, Export, Feedback, Guide, Instructions,
-		Inventory, Maintainer, Manager, Order, OrderRefund, Person, Plan,
+		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Guide,
+		Instructions, Inventory, Maintainer, Manager, Order, OrderRefund, Person, Plan,
 		PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
 		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
 		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,

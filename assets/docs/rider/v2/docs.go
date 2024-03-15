@@ -2070,6 +2070,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/fault": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "客服中心"
+                ],
+                "summary": "故障上报",
+                "operationId": "FaultCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": " 故障上报请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.FaultCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/feedback": {
             "get": {
                 "consumes": [
@@ -2150,10 +2191,22 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.FeedbackDetail"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.FeedbackDetail"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -2806,6 +2859,32 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/selection/faultcause/:key": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "筛选"
+                ],
+                "summary": "获取故障原因选择",
+                "operationId": "SelectionFaultCause",
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/selection/model": {
             "get": {
                 "consumes": [
@@ -2815,7 +2894,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Selection - 筛选"
+                    "筛选"
                 ],
                 "summary": "获取电池型号选择",
                 "operationId": "SelectionModel",
@@ -3346,6 +3425,74 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "definition.FaultCreateReq": {
+            "type": "object",
+            "required": [
+                "cityId",
+                "description",
+                "deviceNo",
+                "faultCause",
+                "type"
+            ],
+            "properties": {
+                "attachments": {
+                    "description": "附件",
+                    "type": "array",
+                    "maxItems": 3,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "description": {
+                    "description": "故障描述, 故障描述",
+                    "type": "string"
+                },
+                "deviceNo": {
+                    "description": "设备编号",
+                    "type": "string"
+                },
+                "faultCause": {
+                    "description": "故障, 故障内容",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "description": "故障类型, 故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.FaultType"
+                        }
+                    ]
+                }
+            }
+        },
+        "definition.FaultType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "x-enum-comments": {
+                "FaultTypeBattery": "电池故障",
+                "FaultTypeCabinet": "电柜故障",
+                "FaultTypeEbike": "车辆故障",
+                "FaultTypeOther": "其他"
+            },
+            "x-enum-varnames": [
+                "FaultTypeCabinet",
+                "FaultTypeBattery",
+                "FaultTypeEbike",
+                "FaultTypeOther"
+            ]
         },
         "definition.GuideDetail": {
             "type": "object",

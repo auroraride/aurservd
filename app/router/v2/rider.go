@@ -103,7 +103,6 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 获取网点
 	g.GET("/branch", v1.Branch.List)
-	// g.GET("/branch/riding", v1.Branch.Riding, auth())
 	g.GET("/branch/facility/:fid", v1.Branch.Facility)
 
 	// 骑士卡
@@ -146,7 +145,6 @@ func LoadRiderV2Routes(root *echo.Group) {
 	cabinet.POST("/process", v1.Cabinet.Process, auth())
 	cabinet.GET("/process/status", v1.Cabinet.ProcessStatus, auth())
 	cabinet.POST("/report", v1.Cabinet.Report, auth())
-	cabinet.GET("/fault", v1.Cabinet.Fault, auth())
 
 	g.POST("/exchange/store", v1.Exchange.Store, auth())
 	g.GET("/exchange/overview", v1.Exchange.Overview, auth())
@@ -177,7 +175,6 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 电池
 	g.GET("/battery", v1.Battery.Detail, auth())
-	g.GET("/selection/model", rapi.Selection.Model) // 电池型号选择
 
 	g.GET("/guide", rapi.Guide.List, auth()) // 新手引导
 
@@ -198,4 +195,11 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 说明
 	g.GET("/instructions/:key", rapi.Instructions.Detail, auth()) // 说明详情
+
+	// 故障上报
+	g.POST("/fault", rapi.Fault.Create, auth())
+
+	// 选择
+	g.GET("/selection/model", rapi.Selection.Model)                // 电池型号选择
+	g.GET("/selection/faultcause/:key", rapi.Selection.FaultCause) // 故障原因选择
 }

@@ -34,9 +34,9 @@ func (*feedback) Create(c echo.Context) (err error) {
 // @Tags	Feedback - 反馈
 // @Accept	json
 // @Produce	json
-// @Param	X-Rider-Token	header		string					true	"骑手校验token"
-// @Param	query			query		model.FeedbackListReq	true	"反馈列表请求"
-// @Success	200				{object}	[]model.FeedbackDetail	"请求成功"
+// @Param	X-Rider-Token	header		string												true	"骑手校验token"
+// @Param	query			query		model.FeedbackListReq								true	"反馈列表请求"
+// @Success	200				{object}	model.PaginationRes{items=[]model.FeedbackDetail}	"请求成功"
 func (*feedback) List(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.FeedbackListReq](c)
 	return ctx.SendResponse(biz.NewFeedback().List(ctx.Rider, req))

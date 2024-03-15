@@ -282,6 +282,13 @@ func (c *ExportClient) ModifyOne(old *Export, data any) *ExportUpdateOne {
 	return EntitySetAttributes[ExportUpdateOne, Export](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for Fault.
+func (c *FaultClient) ModifyOne(old *Fault, data any) *FaultUpdateOne {
+	mutation := newFaultMutation(c.config, OpUpdateOne, withFault(old))
+	up := &FaultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[FaultUpdateOne, Fault](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Feedback.
 func (c *FeedbackClient) ModifyOne(old *Feedback, data any) *FeedbackUpdateOne {
 	mutation := newFeedbackMutation(c.config, OpUpdateOne, withFeedback(old))

@@ -152,6 +152,74 @@ definitions:
     - name
     - sort
     type: object
+  definition.Fault:
+    properties:
+      attachments:
+        description: 附件
+        items:
+          type: string
+        type: array
+      city:
+        description: 城市
+        type: string
+      createdAt:
+        description: 创建时间
+        type: string
+      description:
+        description: 故障描述
+        type: string
+      deviceNo:
+        description: 设备编号
+        type: string
+      faultCause:
+        description: 故障原因
+        items:
+          type: string
+        type: array
+      id:
+        description: 故障ID
+        type: integer
+      remark:
+        description: 备注
+        type: string
+      rider:
+        allOf:
+          - $ref: '#/definitions/model.Rider'
+        description: 骑手
+      status:
+        description: 故障状态 0未处理 1已处理
+        type: integer
+      type:
+        allOf:
+          - $ref: '#/definitions/definition.FaultType'
+        description: 故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他
+    type: object
+  definition.FaultModifyStatusReq:
+    properties:
+      remark:
+        description: 备注
+        type: string
+      status:
+        description: 故障状态 0未处理 1已处理
+        type: integer
+    type: object
+  definition.FaultType:
+    enum:
+      - 1
+      - 2
+      - 3
+      - 4
+    type: integer
+    x-enum-comments:
+      FaultTypeBattery: 电池故障
+      FaultTypeCabinet: 电柜故障
+      FaultTypeEbike: 车辆故障
+      FaultTypeOther: 其他
+    x-enum-varnames:
+      - FaultTypeCabinet
+      - FaultTypeBattery
+      - FaultTypeEbike
+      - FaultTypeOther
   definition.GuideDetail:
     properties:
       answer:
@@ -15440,4 +15508,100 @@ paths:
       summary: M1001 用户登录
       tags:
       - 管理
+  /mapi/v1/fault:
+    get:
+      consumes:
+        - application/json
+      operationId: FaultList
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: 城市
+          in: query
+          name: city
+          type: string
+        - description: 当前页, 从1开始, 默认1
+          in: query
+          name: current
+          type: integer
+        - description: 设备编号
+          in: query
+          name: deviceNo
+          type: string
+        - description: 结束时间
+          in: query
+          name: end
+          type: string
+        - description: 关键字 用户姓名、手机号
+          in: query
+          name: keyword
+          type: string
+        - description: 每页数据, 默认20
+          in: query
+          name: pageSize
+          type: integer
+        - description: 开始时间
+          in: query
+          name: start
+          type: string
+        - description: 故障状态 0未处理 1已处理
+          in: query
+          name: status
+          type: integer
+        - description: 故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他
+          in: query
+          name: type
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+              - $ref: '#/definitions/model.PaginationRes'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/definition.Fault'
+                    type: array
+                type: object
+      summary: 故障列表
+      tags:
+        - 故障上报
+  /mapi/v1/fault/:id:
+    put:
+      consumes:
+        - application/json
+      operationId: FaultModify
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: 故障ID
+          in: path
+          name: id
+          required: true
+          type: integer
+        - description: 故障修改请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.FaultModifyStatusReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 故障更改状态
+      tags:
+        - 故障上报
 swagger: "2.0"
