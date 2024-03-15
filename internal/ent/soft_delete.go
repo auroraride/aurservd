@@ -30,6 +30,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/export"
+	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/guide"
 	"github.com/auroraride/aurservd/internal/ent/instructions"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
@@ -1013,6 +1014,46 @@ func (c *ExportClient) GetNotDeleted(ctx context.Context, id uint64) (*Export, e
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *ExportClient) GetNotDeletedX(ctx context.Context, id uint64) *Export {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Fault.
+func (c *FaultClient) SoftDelete() *FaultUpdate {
+	mutation := newFaultMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &FaultUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *FaultClient) SoftDeleteOne(f *Fault) *FaultUpdateOne {
+	mutation := newFaultMutation(c.config, OpUpdateOne, withFault(f))
+	mutation.SetDeletedAt(time.Now())
+	return &FaultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *FaultClient) SoftDeleteOneID(id uint64) *FaultUpdateOne {
+	mutation := newFaultMutation(c.config, OpUpdateOne, withFaultID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &FaultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Fault.
+func (c *FaultClient) QueryNotDeleted() *FaultQuery {
+	return c.Query().Where(fault.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Fault not deleted entity by its id.
+func (c *FaultClient) GetNotDeleted(ctx context.Context, id uint64) (*Fault, error) {
+	return c.Query().Where(fault.ID(id), fault.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *FaultClient) GetNotDeletedX(ctx context.Context, id uint64) *Fault {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

@@ -40,6 +40,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/export"
+	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/guide"
 	"github.com/auroraride/aurservd/internal/ent/instructions"
@@ -862,6 +863,31 @@ func init() {
 	exportDescStatus := exportFields[2].Descriptor()
 	// export.DefaultStatus holds the default value on creation for the status field.
 	export.DefaultStatus = exportDescStatus.Default.(uint8)
+	faultMixin := schema.Fault{}.Mixin()
+	faultMixinHooks2 := faultMixin[2].Hooks()
+	fault.Hooks[0] = faultMixinHooks2[0]
+	faultMixinFields0 := faultMixin[0].Fields()
+	_ = faultMixinFields0
+	faultFields := schema.Fault{}.Fields()
+	_ = faultFields
+	// faultDescCreatedAt is the schema descriptor for created_at field.
+	faultDescCreatedAt := faultMixinFields0[0].Descriptor()
+	// fault.DefaultCreatedAt holds the default value on creation for the created_at field.
+	fault.DefaultCreatedAt = faultDescCreatedAt.Default.(func() time.Time)
+	// faultDescUpdatedAt is the schema descriptor for updated_at field.
+	faultDescUpdatedAt := faultMixinFields0[1].Descriptor()
+	// fault.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	fault.DefaultUpdatedAt = faultDescUpdatedAt.Default.(func() time.Time)
+	// fault.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	fault.UpdateDefaultUpdatedAt = faultDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// faultDescStatus is the schema descriptor for status field.
+	faultDescStatus := faultFields[0].Descriptor()
+	// fault.DefaultStatus holds the default value on creation for the status field.
+	fault.DefaultStatus = faultDescStatus.Default.(uint8)
+	// faultDescType is the schema descriptor for type field.
+	faultDescType := faultFields[3].Descriptor()
+	// fault.DefaultType holds the default value on creation for the type field.
+	fault.DefaultType = faultDescType.Default.(uint8)
 	feedbackMixin := schema.Feedback{}.Mixin()
 	feedbackMixinFields0 := feedbackMixin[0].Fields()
 	_ = feedbackMixinFields0

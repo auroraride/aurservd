@@ -903,6 +903,30 @@ func (f ExportMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ExportMutation", m)
 }
 
+// The FaultQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type FaultQueryRuleFunc func(context.Context, *ent.FaultQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f FaultQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.FaultQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.FaultQuery", q)
+}
+
+// The FaultMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type FaultMutationRuleFunc func(context.Context, *ent.FaultMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f FaultMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.FaultMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.FaultMutation", m)
+}
+
 // The FeedbackQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type FeedbackQueryRuleFunc func(context.Context, *ent.FeedbackQuery) error
@@ -2060,6 +2084,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.ExportQuery:
 		return q.Filter(), nil
+	case *ent.FaultQuery:
+		return q.Filter(), nil
 	case *ent.FeedbackQuery:
 		return q.Filter(), nil
 	case *ent.GuideQuery:
@@ -2220,6 +2246,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.ExchangeMutation:
 		return m.Filter(), nil
 	case *ent.ExportMutation:
+		return m.Filter(), nil
+	case *ent.FaultMutation:
 		return m.Filter(), nil
 	case *ent.FeedbackMutation:
 		return m.Filter(), nil

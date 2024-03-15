@@ -149,6 +149,56 @@ definitions:
         description: 终点名称
         type: string
     type: object
+  definition.FaultCreateReq:
+    properties:
+      attachments:
+        description: 附件
+        items:
+          type: string
+        maxItems: 3
+        type: array
+      cityId:
+        description: 城市ID
+        type: integer
+      description:
+        description: 故障描述, 故障描述
+        type: string
+      deviceNo:
+        description: 设备编号
+        type: string
+      faultCause:
+        description: 故障, 故障内容
+        items:
+          type: string
+        type: array
+      type:
+        allOf:
+          - $ref: '#/definitions/definition.FaultType'
+        description: 故障类型, 故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他
+    required:
+      - cityId
+      - description
+      - deviceNo
+      - faultCause
+      - type
+    type: object
+  definition.FaultType:
+    enum:
+      - 1
+      - 2
+      - 3
+      - 4
+    type: integer
+    x-enum-comments:
+      FaultTypeBattery: 电池故障
+      FaultTypeCabinet: 电柜故障
+      FaultTypeEbike: 车辆故障
+      FaultTypeOther: 其他
+    x-enum-varnames:
+      - FaultTypeCabinet
+      - FaultTypeBattery
+      - FaultTypeEbike
+      - FaultTypeOther
   definition.GuideDetail:
     properties:
       answer:
@@ -3792,6 +3842,33 @@ paths:
       summary: 获取人脸校验结果
       tags:
       - Rider - 骑手
+  /rider/v2/fault:
+    post:
+      consumes:
+        - application/json
+      operationId: FaultCreate
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: ' 故障上报请求'
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.FaultCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 故障上报
+      tags:
+        - 客服中心
   /rider/v2/feedback:
     get:
       consumes:
@@ -3845,9 +3922,14 @@ paths:
         "200":
           description: 请求成功
           schema:
-            items:
-              $ref: '#/definitions/model.FeedbackDetail'
-            type: array
+            allOf:
+              - $ref: '#/definitions/model.PaginationRes'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/model.FeedbackDetail'
+                    type: array
+                type: object
       summary: 反馈列表
       tags:
         - Feedback - 反馈

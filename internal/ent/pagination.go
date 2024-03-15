@@ -1032,6 +1032,37 @@ func (eq *ExportQuery) PaginationResult(req model.PaginationReq) model.Paginatio
 	}
 }
 
+// Pagination returns pagination query builder for FaultQuery.
+func (fq *FaultQuery) Pagination(req model.PaginationReq) *FaultQuery {
+	fq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return fq
+}
+
+// PaginationItems returns pagination query builder for FaultQuery.
+func (fq *FaultQuery) PaginationItemsX(req model.PaginationReq) any {
+	return fq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for FaultQuery.
+func (fq *FaultQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := fq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for FeedbackQuery.
 func (fq *FeedbackQuery) Pagination(req model.PaginationReq) *FeedbackQuery {
 	fq.Offset(req.GetOffset()).Limit(req.GetLimit())

@@ -292,8 +292,12 @@ func loadManagerRoutes() {
 	g.PUT("/maintainer/:id", mapi.Maintainer.Modify)
 
 	// 说明
-	g.POST("/instructions", mapi.Instructions.Modify)
-	g.GET("/instructions/:key", mapi.Instructions.Detail)
+	g.POST("/instructions", mapi.Instructions.Modify)     // 修改说明
+	g.GET("/instructions/:key", mapi.Instructions.Detail) // 说明详情
+
+	// 故障上报
+	g.GET("/fault", mapi.Fault.List)       // 故障列表
+	g.PUT("/fault/:id", mapi.Fault.Modify) // 故障更改状态
 
 	// 营销
 	// PM1 推广会员

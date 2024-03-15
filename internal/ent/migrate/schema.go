@@ -2781,6 +2781,101 @@ var (
 			},
 		},
 	}
+	// FaultColumns holds the columns for the "fault" table.
+	FaultColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "status", Type: field.TypeUint8, Comment: "故障状态 0未处理 1已处理", Default: 0},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "故障留言"},
+		{Name: "attachments", Type: field.TypeJSON, Nullable: true, Comment: "附件"},
+		{Name: "type", Type: field.TypeUint8, Comment: "故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他", Default: 1},
+		{Name: "fault", Type: field.TypeJSON, Nullable: true, Comment: "故障内容"},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
+		{Name: "battery_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
+	}
+	// FaultTable holds the schema information for the "fault" table.
+	FaultTable = &schema.Table{
+		Name:       "fault",
+		Columns:    FaultColumns,
+		PrimaryKey: []*schema.Column{FaultColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "fault_city_city",
+				Columns:    []*schema.Column{FaultColumns[12]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "fault_cabinet_cabinet",
+				Columns:    []*schema.Column{FaultColumns[13]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "fault_battery_battery",
+				Columns:    []*schema.Column{FaultColumns[14]},
+				RefColumns: []*schema.Column{BatteryColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "fault_ebike_ebike",
+				Columns:    []*schema.Column{FaultColumns[15]},
+				RefColumns: []*schema.Column{EbikeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "fault_rider_rider",
+				Columns:    []*schema.Column{FaultColumns[16]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "fault_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{FaultColumns[1]},
+			},
+			{
+				Name:    "fault_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{FaultColumns[3]},
+			},
+			{
+				Name:    "fault_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{FaultColumns[12]},
+			},
+			{
+				Name:    "fault_cabinet_id",
+				Unique:  false,
+				Columns: []*schema.Column{FaultColumns[13]},
+			},
+			{
+				Name:    "fault_battery_id",
+				Unique:  false,
+				Columns: []*schema.Column{FaultColumns[14]},
+			},
+			{
+				Name:    "fault_ebike_id",
+				Unique:  false,
+				Columns: []*schema.Column{FaultColumns[15]},
+			},
+			{
+				Name:    "fault_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{FaultColumns[16]},
+			},
+		},
+	}
 	// FeedbackColumns holds the columns for the "feedback" table.
 	FeedbackColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -5850,6 +5945,7 @@ var (
 		ExceptionTable,
 		ExchangeTable,
 		ExportTable,
+		FaultTable,
 		FeedbackTable,
 		GuideTable,
 		InstructionsTable,
@@ -6110,6 +6206,14 @@ func init() {
 	ExportTable.ForeignKeys[0].RefTable = ManagerTable
 	ExportTable.Annotation = &entsql.Annotation{
 		Table: "export",
+	}
+	FaultTable.ForeignKeys[0].RefTable = CityTable
+	FaultTable.ForeignKeys[1].RefTable = CabinetTable
+	FaultTable.ForeignKeys[2].RefTable = BatteryTable
+	FaultTable.ForeignKeys[3].RefTable = EbikeTable
+	FaultTable.ForeignKeys[4].RefTable = RiderTable
+	FaultTable.Annotation = &entsql.Annotation{
+		Table: "fault",
 	}
 	FeedbackTable.ForeignKeys[0].RefTable = EnterpriseTable
 	FeedbackTable.ForeignKeys[1].RefTable = AgentTable
