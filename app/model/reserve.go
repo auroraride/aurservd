@@ -77,6 +77,7 @@ type ReserveListRes struct {
 	Status      string `json:"status"`      // 状态
 	CabinetName string `json:"cabinetName"` // 电柜名称
 	Serial      string `json:"serial"`      // 电柜编号
+	CreatedAt   string `json:"createdAt"`   // 创建时间
 }
 
 type ReserveCabinetItem struct {

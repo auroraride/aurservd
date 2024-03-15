@@ -16,7 +16,7 @@ var Instructions = new(instructions)
 // @ID		RiderInstructionsDetail
 // @Router	/rider/v2/instructions/:key [GET]
 // @Summary	说明详情
-// @Tags	说明
+// @Tags	Instructions - 说明
 // @Accept	json
 // @Produce	json
 // @Param	X-Rider-Token	header		string								true	"骑手校验token"

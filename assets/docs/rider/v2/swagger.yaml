@@ -3879,7 +3879,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 故障上报
       tags:
-        - 客服中心
+        - Fault - 故障
   /rider/v2/fault/cause:
     get:
       consumes:
@@ -3902,7 +3902,7 @@ paths:
             type: array
       summary: 故障原因
       tags:
-        - 客服中心
+        - Fault - 故障
   /rider/v2/feedback:
     get:
       consumes:
@@ -4036,7 +4036,7 @@ paths:
             $ref: '#/definitions/definition.InstructionsRes'
       summary: 说明详情
       tags:
-        - 说明
+        - Instructions - 说明
   /rider/v2/order:
     get:
       consumes:
@@ -4408,7 +4408,7 @@ paths:
             type: array
       summary: 获取电池型号选择
       tags:
-        - 筛选
+        - Selection - 筛选
   /rider/v2/setting/app:
     get:
       consumes:

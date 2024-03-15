@@ -16,7 +16,7 @@ var Fault = new(fault)
 // @ID		FaultCreate
 // @Router	/rider/v2/fault [POST]
 // @Summary	故障上报
-// @Tags	客服中心
+// @Tags	Fault - 故障
 // @Accept	json
 // @Produce	json
 // @Param	X-Rider-Token	header		string						true	"骑手校验token"
@@ -31,7 +31,7 @@ func (*fault) Create(c echo.Context) (err error) {
 // @ID		FaultCause
 // @Router	/rider/v2/fault/cause [GET]
 // @Summary	故障原因
-// @Tags	客服中心
+// @Tags	Fault - 故障
 // @Accept	json
 // @Produce	json
 // @Param	X-Rider-Token	header		string						true	"骑手校验token"
