@@ -2233,6 +2233,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/instructions/:key": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "说明"
+                ],
+                "summary": "说明详情",
+                "operationId": "RiderInstructionsDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.InstructionsRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/order": {
             "get": {
                 "consumes": [
@@ -3332,6 +3364,22 @@ const docTemplate = `{
                 },
                 "sort": {
                     "type": "integer"
+                }
+            }
+        },
+        "definition.InstructionsRes": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "内容"
+                },
+                "key": {
+                    "description": "键  rent 租电买前必读 rentCar 租车买前必读 buyCar 买车买前必读 coupon 优惠券使用说明 point 积分使用说明",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "标题",
+                    "type": "string"
                 }
             }
         },

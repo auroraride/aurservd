@@ -429,6 +429,18 @@ func (f GuideFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GuideMutation", m)
 }
 
+// The InstructionsFunc type is an adapter to allow the use of ordinary
+// function as Instructions mutator.
+type InstructionsFunc func(context.Context, *ent.InstructionsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f InstructionsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.InstructionsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.InstructionsMutation", m)
+}
+
 // The InventoryFunc type is an adapter to allow the use of ordinary
 // function as Inventory mutator.
 type InventoryFunc func(context.Context, *ent.InventoryMutation) (ent.Value, error)

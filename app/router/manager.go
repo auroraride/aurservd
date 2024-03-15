@@ -40,11 +40,10 @@ func loadManagerRoutes() {
 	g.DELETE("/setting/guide/:id", mapi.Setting.GuideDelete) // 删除
 
 	// 设置-广告活动
-	g.GET("/setting/activity", mapi.Setting.ActivityList)          // 列表
-	g.GET("/setting/activity/:id", mapi.Setting.ActivityDetail)    // 详情
-	g.POST("/setting/activity", mapi.Setting.ActivityCreate)       // 新增
-	g.PUT("/setting/activity/:id", mapi.Setting.ActivityModify)    // 编辑
-	g.DELETE("/setting/activity/:id", mapi.Setting.ActivityDelete) // 删除
+	g.GET("/setting/activity", mapi.Setting.ActivityList)       // 列表
+	g.GET("/setting/activity/:id", mapi.Setting.ActivityDetail) // 详情
+	g.POST("/setting/activity", mapi.Setting.ActivityCreate)    // 新增
+	g.PUT("/setting/activity/:id", mapi.Setting.ActivityModify) // 编辑
 
 	// 设置-问题分类
 	g.GET("/question/category", mapi.QuestionCategory.List) // 列表
@@ -291,6 +290,10 @@ func loadManagerRoutes() {
 	g.GET("/maintainer", mapi.Maintainer.List)
 	g.POST("/maintainer", mapi.Maintainer.Create)
 	g.PUT("/maintainer/:id", mapi.Maintainer.Modify)
+
+	// 说明
+	g.POST("/instructions", mapi.Instructions.Modify)
+	g.GET("/instructions/:key", mapi.Instructions.Detail)
 
 	// 营销
 	// PM1 推广会员

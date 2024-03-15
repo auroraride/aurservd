@@ -412,6 +412,16 @@ func (gu *Guide) GetName() string {
 	return gu.Name
 }
 
+// GetTableName returns table name for Instructions.
+func (i *Instructions) GetTableName() string {
+	return "instructions"
+}
+
+// GetID returns id for Instructions.
+func (i *Instructions) GetID() uint64 {
+	return i.ID
+}
+
 // GetTableName returns table name for Inventory.
 func (i *Inventory) GetTableName() string {
 	return "inventory"

@@ -58,7 +58,7 @@ func (*setting) Modify(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string			true	"管理员校验token"
-// @Param	name			path		string			true	"法规名称, policy: APP隐私政策; agreement: APP服务协议; agent-policy: 代理端小程序隐私政策; agent-agreement: 代理端小程序服务协议; promote-policy: 推广端小程序隐私政策; promote-agreement: 推广端小程序服务协议"battery-rental-agreement:个签-电池租赁协议;	ebike-rental-agreement:个签-电车及电池租赁协议;	enterprise-battery-rental-agreement:团签-电池租赁协议;	enterprise-ebike-rental-agreement:团签-电车及电池租赁协议
+// @Param	name			path		string			true	"法规名称, policy: APP隐私政策; agreement: APP服务协议; agent-policy: 代理端小程序隐私政策; agent-agreement: 代理端小程序服务协议; promote-policy: 推广端小程序隐私政策; promote-agreement: 推广端小程序服务协议 battery-rental-agreement:个签-电池租赁协议;	ebike-rental-agreement:个签-电车及电池租赁协议;	enterprise-battery-rental-agreement:团签-电池租赁协议;	enterprise-ebike-rental-agreement:团签-电车及电池租赁协议"
 // @Success	200				{object}	model.LegalRes	"请求成功"
 func (*setting) LegalRead(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.LegalName](c)
@@ -199,21 +199,6 @@ func (*setting) ActivityDetail(c echo.Context) (err error) {
 func (*setting) ActivityModify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.ActivityModifyReq](c)
 	return ctx.SendResponse(biz.NewActivity().Modify(req))
-}
-
-// ActivityDelete
-// @ID		SettingActivityDelete
-// @Router	/manager/v1/setting/activity/{id} [DELETE]
-// @Summary	删除活动
-// @Tags	设置
-// @Accept	json
-// @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	id				path		string					true	"活动ID"
-// @Success	200				{object}	model.StatusResponse	"请求成功"
-func (*setting) ActivityDelete(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-	return ctx.SendResponse(biz.NewActivity().Delete(req.ID))
 }
 
 // ActivityCreate

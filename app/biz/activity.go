@@ -73,14 +73,6 @@ func (a *activityBiz) Modify(req *definition.ActivityModifyReq) error {
 	return nil
 }
 
-func (a *activityBiz) Delete(id uint64) error {
-	err := a.orm.SoftDeleteOneID(id).Exec(a.ctx)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func (a *activityBiz) All() ([]*definition.ActivityDetail, error) {
 	items, err := a.orm.QueryNotDeleted().
 		Where(activity.EnableEQ(true)).
@@ -96,7 +88,7 @@ func (a *activityBiz) All() ([]*definition.ActivityDetail, error) {
 }
 
 func (a *activityBiz) List(req *definition.ActivityListReq) *model.PaginationRes {
-	query := a.orm.QueryNotDeleted().Order(ent.Desc(activity.FieldSort))
+	query := a.orm.QueryNotDeleted().Order(ent.Desc(activity.FieldCreatedAt))
 	if req.Keyword != nil {
 		query.Where(activity.NameContains(*req.Keyword))
 	}

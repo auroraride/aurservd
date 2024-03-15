@@ -951,6 +951,30 @@ func (f GuideMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation)
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.GuideMutation", m)
 }
 
+// The InstructionsQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type InstructionsQueryRuleFunc func(context.Context, *ent.InstructionsQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f InstructionsQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.InstructionsQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.InstructionsQuery", q)
+}
+
+// The InstructionsMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type InstructionsMutationRuleFunc func(context.Context, *ent.InstructionsMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f InstructionsMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.InstructionsMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.InstructionsMutation", m)
+}
+
 // The InventoryQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type InventoryQueryRuleFunc func(context.Context, *ent.InventoryQuery) error
@@ -2040,6 +2064,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.GuideQuery:
 		return q.Filter(), nil
+	case *ent.InstructionsQuery:
+		return q.Filter(), nil
 	case *ent.InventoryQuery:
 		return q.Filter(), nil
 	case *ent.MaintainerQuery:
@@ -2198,6 +2224,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.FeedbackMutation:
 		return m.Filter(), nil
 	case *ent.GuideMutation:
+		return m.Filter(), nil
+	case *ent.InstructionsMutation:
 		return m.Filter(), nil
 	case *ent.InventoryMutation:
 		return m.Filter(), nil

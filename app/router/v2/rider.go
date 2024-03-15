@@ -107,7 +107,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.GET("/branch/facility/:fid", v1.Branch.Facility)
 
 	// 骑士卡
-	g.GET("/plan", v1.Plan.List, auth())
+	g.GET("/plan", v1.Plan.List, auth(), cert())
 	g.GET("/plan/renewly", v1.Plan.Renewly, auth())
 
 	// 业务
@@ -195,4 +195,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 地图
 	g.GET("/direction", rapi.Rider.Direction, auth()) // 获取地图路径规划
+
+	// 说明
+	g.GET("/instructions/:key", rapi.Instructions.Detail, auth()) // 说明详情
 }
