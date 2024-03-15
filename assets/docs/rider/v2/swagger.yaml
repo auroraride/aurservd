@@ -4358,6 +4358,23 @@ paths:
       summary: 取消预约
       tags:
       - Reserve - 预约
+  /rider/v2/selection/faultcause/:key:
+    get:
+      consumes:
+        - application/json
+      operationId: SelectionFaultCause
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              type: string
+            type: array
+      summary: 获取故障原因选择
+      tags:
+        - 筛选
   /rider/v2/selection/model:
     get:
       consumes:
@@ -4374,7 +4391,7 @@ paths:
             type: array
       summary: 获取电池型号选择
       tags:
-      - Selection - 筛选
+        - 筛选
   /rider/v2/setting/app:
     get:
       consumes:

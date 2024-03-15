@@ -2859,6 +2859,32 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/selection/faultcause/:key": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "筛选"
+                ],
+                "summary": "获取故障原因选择",
+                "operationId": "SelectionFaultCause",
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/selection/model": {
             "get": {
                 "consumes": [
@@ -2868,7 +2894,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Selection - 筛选"
+                    "筛选"
                 ],
                 "summary": "获取电池型号选择",
                 "operationId": "SelectionModel",

@@ -175,7 +175,6 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 电池
 	g.GET("/battery", v1.Battery.Detail, auth())
-	g.GET("/selection/model", rapi.Selection.Model) // 电池型号选择
 
 	g.GET("/guide", rapi.Guide.List, auth()) // 新手引导
 
@@ -199,4 +198,8 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 故障上报
 	g.POST("/fault", rapi.Fault.Create, auth())
+
+	// 选择
+	g.GET("/selection/model", rapi.Selection.Model)                // 电池型号选择
+	g.GET("/selection/faultcause/:key", rapi.Selection.FaultCause) // 故障原因选择
 }

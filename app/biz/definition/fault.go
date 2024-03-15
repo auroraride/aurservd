@@ -40,6 +40,7 @@ type Fault struct {
 	Attachments []string    `json:"attachments"` // 附件
 	Rider       model.Rider `json:"rider"`       // 骑手
 	CreatedAt   string      `json:"createdAt"`   // 创建时间
+	Remark      string      `json:"remark"`      // 备注
 }
 
 // FaultListReq 故障列表请求
@@ -67,5 +68,11 @@ type FaultCreateReq struct {
 // FaultModifyStatusReq 修改状态
 type FaultModifyStatusReq struct {
 	model.IDParamReq
-	Status uint8 `json:"status"` // 故障状态 0未处理 1已处理
+	Status uint8  `json:"status"` // 故障状态 0未处理 1已处理
+	Remark string `json:"remark"` // 备注
+}
+
+// FaultCauseReq 故障原因请求
+type FaultCauseReq struct {
+	Key string `json:"key" param:"key"` // 键 EBIKE_FAULT: 车辆故障 BATTERY_FAULT: 电池故障 OTHER_FAULT: 其他故障 CABINET_FAULT: 电柜故障
 }

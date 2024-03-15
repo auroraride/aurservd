@@ -81,6 +81,7 @@ func (s *faultBiz) List(req *definition.FaultListReq) (res *model.PaginationRes)
 			Description: item.Description,
 			Attachments: item.Attachments,
 			CreatedAt:   item.CreatedAt.Format(carbon.DateTimeLayout),
+			Remark:      item.Remark,
 		}
 		if item.Edges.City != nil {
 			res.City = item.Edges.City.Name
@@ -149,7 +150,10 @@ func (s *faultBiz) Create(r *ent.Rider, req *definition.FaultCreateReq) error {
 
 // ModifyStatus 修改故障状态
 func (s *faultBiz) ModifyStatus(req *definition.FaultModifyStatusReq) (err error) {
-	_, err = s.orm.UpdateOneID(req.ID).SetStatus(req.Status).Save(s.ctx)
+	_, err = s.orm.UpdateOneID(req.ID).
+		SetStatus(req.Status).
+		SetRemark(req.Remark).
+		Save(s.ctx)
 	if err != nil {
 		return err
 	}

@@ -7,10 +7,12 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"sort"
 	"time"
 
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/workwx"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -22,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/questioncategory"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
@@ -564,4 +567,22 @@ func (s *selectionService) QuestionCategory() (items []model.SelectOption) {
 		}
 	}
 	return
+}
+
+// FaultCause 故障原因
+func (s *selectionService) FaultCause(req *definition.FaultCauseReq) (items []string, err error) {
+	res, _ := ent.Database.Setting.Query().Where(setting.Key(req.Key)).First(s.ctx)
+	if res == nil {
+		return make([]string, 0), nil
+	}
+	var content []string
+	err = json.Unmarshal([]byte(res.Content), &content)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, v := range content {
+		items = append(items, v)
+	}
+	return items, nil
 }

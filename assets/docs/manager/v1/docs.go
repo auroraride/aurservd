@@ -13152,25 +13152,7 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "enum": [
-                            1,
-                            2,
-                            3,
-                            4
-                        ],
                         "type": "integer",
-                        "x-enum-comments": {
-                            "FaultTypeBattery": "电池故障",
-                            "FaultTypeCabinet": "电柜故障",
-                            "FaultTypeEbike": "车辆故障",
-                            "FaultTypeOther": "其他"
-                        },
-                        "x-enum-varnames": [
-                            "FaultTypeCabinet",
-                            "FaultTypeBattery",
-                            "FaultTypeEbike",
-                            "FaultTypeOther"
-                        ],
                         "description": "故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他",
                         "name": "type",
                         "in": "query"
@@ -13492,6 +13474,10 @@ const docTemplate = `{
                     "description": "故障ID",
                     "type": "integer"
                 },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
                 "rider": {
                     "description": "骑手",
                     "allOf": [
@@ -13517,6 +13503,10 @@ const docTemplate = `{
         "definition.FaultModifyStatusReq": {
             "type": "object",
             "properties": {
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
                 "status": {
                     "description": "故障状态 0未处理 1已处理",
                     "type": "integer"
