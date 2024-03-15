@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 
 	"github.com/golang-module/carbon/v2"
@@ -15,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
@@ -158,4 +160,31 @@ func (s *faultBiz) ModifyStatus(req *definition.FaultModifyStatusReq) (err error
 		return err
 	}
 	return nil
+}
+
+// FaultCause 故障原因
+func (s *faultBiz) FaultCause() (items []definition.FaultCauseRes, err error) {
+	res, _ := ent.Database.Setting.Query().Where(setting.KeyIn(
+		"EBIKE_FAULT",
+		"BATTERY_FAULT",
+		"OTHER_FAULT",
+		"CABINET_FAULT",
+	)).All(s.ctx)
+	if res == nil {
+		return items, nil
+	}
+
+	for _, v := range res {
+		var content []string
+		err = json.Unmarshal([]byte(v.Content), &content)
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, definition.FaultCauseRes{
+			Key:   v.Key,
+			Value: content,
+		})
+	}
+
+	return items, nil
 }

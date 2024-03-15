@@ -198,8 +198,9 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 故障上报
 	g.POST("/fault", rapi.Fault.Create, auth())
+	g.GET("/fault/cause", rapi.Fault.FaultCause, auth())
 
 	// 选择
-	g.GET("/selection/model", rapi.Selection.Model)                // 电池型号选择
-	g.GET("/selection/faultcause/:key", rapi.Selection.FaultCause) // 故障原因选择
+	g.GET("/selection/model", rapi.Selection.Model) // 电池型号选择
+
 }

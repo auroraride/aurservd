@@ -2111,6 +2111,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/fault/cause": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "客服中心"
+                ],
+                "summary": "故障原因",
+                "operationId": "FaultCause",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.FaultCauseRes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/feedback": {
             "get": {
                 "consumes": [
@@ -2859,32 +2894,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v2/selection/faultcause/:key": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "筛选"
-                ],
-                "summary": "获取故障原因选择",
-                "operationId": "SelectionFaultCause",
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v2/selection/model": {
             "get": {
                 "consumes": [
@@ -3423,6 +3432,22 @@ const docTemplate = `{
                 "wd": {
                     "description": "终点名称",
                     "type": "string"
+                }
+            }
+        },
+        "definition.FaultCauseRes": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "description": "键",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "值",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
