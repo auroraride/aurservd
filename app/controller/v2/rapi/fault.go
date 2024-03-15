@@ -34,7 +34,7 @@ func (*fault) Create(c echo.Context) (err error) {
 // @Tags	客服中心
 // @Accept	json
 // @Produce	json
-// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Param	X-Rider-Token	header		string						true	"骑手校验token"
 // @Success	200				{object}	[]definition.FaultCauseRes	"请求成功"
 func (*fault) FaultCause(c echo.Context) (err error) {
 	ctx := app.ContextX[app.RiderContext](c)
