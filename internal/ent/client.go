@@ -50,6 +50,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/guide"
+	"github.com/auroraride/aurservd/internal/ent/instructions"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -170,6 +171,8 @@ type Client struct {
 	Feedback *FeedbackClient
 	// Guide is the client for interacting with the Guide builders.
 	Guide *GuideClient
+	// Instructions is the client for interacting with the Instructions builders.
+	Instructions *InstructionsClient
 	// Inventory is the client for interacting with the Inventory builders.
 	Inventory *InventoryClient
 	// Maintainer is the client for interacting with the Maintainer builders.
@@ -298,6 +301,7 @@ func (c *Client) init() {
 	c.Export = NewExportClient(c.config)
 	c.Feedback = NewFeedbackClient(c.config)
 	c.Guide = NewGuideClient(c.config)
+	c.Instructions = NewInstructionsClient(c.config)
 	c.Inventory = NewInventoryClient(c.config)
 	c.Maintainer = NewMaintainerClient(c.config)
 	c.Manager = NewManagerClient(c.config)
@@ -466,6 +470,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Export:                     NewExportClient(cfg),
 		Feedback:                   NewFeedbackClient(cfg),
 		Guide:                      NewGuideClient(cfg),
+		Instructions:               NewInstructionsClient(cfg),
 		Inventory:                  NewInventoryClient(cfg),
 		Maintainer:                 NewMaintainerClient(cfg),
 		Manager:                    NewManagerClient(cfg),
@@ -561,6 +566,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Export:                     NewExportClient(cfg),
 		Feedback:                   NewFeedbackClient(cfg),
 		Guide:                      NewGuideClient(cfg),
+		Instructions:               NewInstructionsClient(cfg),
 		Inventory:                  NewInventoryClient(cfg),
 		Maintainer:                 NewMaintainerClient(cfg),
 		Manager:                    NewManagerClient(cfg),
@@ -638,16 +644,16 @@ func (c *Client) Use(hooks ...Hook) {
 		c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
 		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
 		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Feedback, c.Guide,
-		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
-		c.PlanIntroduce, c.PointLog, c.PromotionAchievement, c.PromotionBankCard,
-		c.PromotionCommission, c.PromotionCommissionPlan, c.PromotionEarnings,
-		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
-		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
-		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
-		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
-		c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
-		c.Subscribe, c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder,
-		c.SubscribeSuspend, c.Version,
+		c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund,
+		c.Person, c.Plan, c.PlanIntroduce, c.PointLog, c.PromotionAchievement,
+		c.PromotionBankCard, c.PromotionCommission, c.PromotionCommissionPlan,
+		c.PromotionEarnings, c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask,
+		c.PromotionMember, c.PromotionMemberCommission, c.PromotionPerson,
+		c.PromotionPrivilege, c.PromotionReferrals, c.PromotionReferralsProgress,
+		c.PromotionSetting, c.PromotionWithdrawal, c.Question, c.QuestionCategory,
+		c.Reserve, c.Rider, c.RiderFollowUp, c.Role, c.Setting, c.Stock,
+		c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
+		c.SubscribeReminder, c.SubscribeSuspend, c.Version,
 	} {
 		n.Use(hooks...)
 	}
@@ -664,16 +670,16 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
 		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
 		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Feedback, c.Guide,
-		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
-		c.PlanIntroduce, c.PointLog, c.PromotionAchievement, c.PromotionBankCard,
-		c.PromotionCommission, c.PromotionCommissionPlan, c.PromotionEarnings,
-		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
-		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
-		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
-		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
-		c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
-		c.Subscribe, c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder,
-		c.SubscribeSuspend, c.Version,
+		c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund,
+		c.Person, c.Plan, c.PlanIntroduce, c.PointLog, c.PromotionAchievement,
+		c.PromotionBankCard, c.PromotionCommission, c.PromotionCommissionPlan,
+		c.PromotionEarnings, c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask,
+		c.PromotionMember, c.PromotionMemberCommission, c.PromotionPerson,
+		c.PromotionPrivilege, c.PromotionReferrals, c.PromotionReferralsProgress,
+		c.PromotionSetting, c.PromotionWithdrawal, c.Question, c.QuestionCategory,
+		c.Reserve, c.Rider, c.RiderFollowUp, c.Role, c.Setting, c.Stock,
+		c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
+		c.SubscribeReminder, c.SubscribeSuspend, c.Version,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -752,6 +758,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Feedback.mutate(ctx, m)
 	case *GuideMutation:
 		return c.Guide.mutate(ctx, m)
+	case *InstructionsMutation:
+		return c.Instructions.mutate(ctx, m)
 	case *InventoryMutation:
 		return c.Inventory.mutate(ctx, m)
 	case *MaintainerMutation:
@@ -8032,6 +8040,140 @@ func (c *GuideClient) mutate(ctx context.Context, m *GuideMutation) (Value, erro
 		return (&GuideDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Guide mutation op: %q", m.Op())
+	}
+}
+
+// InstructionsClient is a client for the Instructions schema.
+type InstructionsClient struct {
+	config
+}
+
+// NewInstructionsClient returns a client for the Instructions from the given config.
+func NewInstructionsClient(c config) *InstructionsClient {
+	return &InstructionsClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `instructions.Hooks(f(g(h())))`.
+func (c *InstructionsClient) Use(hooks ...Hook) {
+	c.hooks.Instructions = append(c.hooks.Instructions, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `instructions.Intercept(f(g(h())))`.
+func (c *InstructionsClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Instructions = append(c.inters.Instructions, interceptors...)
+}
+
+// Create returns a builder for creating a Instructions entity.
+func (c *InstructionsClient) Create() *InstructionsCreate {
+	mutation := newInstructionsMutation(c.config, OpCreate)
+	return &InstructionsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Instructions entities.
+func (c *InstructionsClient) CreateBulk(builders ...*InstructionsCreate) *InstructionsCreateBulk {
+	return &InstructionsCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *InstructionsClient) MapCreateBulk(slice any, setFunc func(*InstructionsCreate, int)) *InstructionsCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &InstructionsCreateBulk{err: fmt.Errorf("calling to InstructionsClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*InstructionsCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &InstructionsCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Instructions.
+func (c *InstructionsClient) Update() *InstructionsUpdate {
+	mutation := newInstructionsMutation(c.config, OpUpdate)
+	return &InstructionsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *InstructionsClient) UpdateOne(i *Instructions) *InstructionsUpdateOne {
+	mutation := newInstructionsMutation(c.config, OpUpdateOne, withInstructions(i))
+	return &InstructionsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *InstructionsClient) UpdateOneID(id uint64) *InstructionsUpdateOne {
+	mutation := newInstructionsMutation(c.config, OpUpdateOne, withInstructionsID(id))
+	return &InstructionsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Instructions.
+func (c *InstructionsClient) Delete() *InstructionsDelete {
+	mutation := newInstructionsMutation(c.config, OpDelete)
+	return &InstructionsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *InstructionsClient) DeleteOne(i *Instructions) *InstructionsDeleteOne {
+	return c.DeleteOneID(i.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *InstructionsClient) DeleteOneID(id uint64) *InstructionsDeleteOne {
+	builder := c.Delete().Where(instructions.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &InstructionsDeleteOne{builder}
+}
+
+// Query returns a query builder for Instructions.
+func (c *InstructionsClient) Query() *InstructionsQuery {
+	return &InstructionsQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeInstructions},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Instructions entity by its id.
+func (c *InstructionsClient) Get(ctx context.Context, id uint64) (*Instructions, error) {
+	return c.Query().Where(instructions.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *InstructionsClient) GetX(ctx context.Context, id uint64) *Instructions {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *InstructionsClient) Hooks() []Hook {
+	hooks := c.hooks.Instructions
+	return append(hooks[:len(hooks):len(hooks)], instructions.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *InstructionsClient) Interceptors() []Interceptor {
+	return c.inters.Instructions
+}
+
+func (c *InstructionsClient) mutate(ctx context.Context, m *InstructionsMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&InstructionsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&InstructionsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&InstructionsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&InstructionsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Instructions mutation op: %q", m.Op())
 	}
 }
 
@@ -15832,16 +15974,16 @@ type (
 		Commission, Contract, Coupon, CouponAssembly, CouponTemplate, Ebike,
 		EbikeBrand, Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
 		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
-		EnterpriseStation, Exception, Exchange, Export, Feedback, Guide, Inventory,
-		Maintainer, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce, PointLog,
-		PromotionAchievement, PromotionBankCard, PromotionCommission,
-		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
-		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
-		PromotionPerson, PromotionPrivilege, PromotionReferrals,
-		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
-		QuestionCategory, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
-		StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
-		SubscribeReminder, SubscribeSuspend, Version []ent.Hook
+		EnterpriseStation, Exception, Exchange, Export, Feedback, Guide, Instructions,
+		Inventory, Maintainer, Manager, Order, OrderRefund, Person, Plan,
+		PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
+		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
+		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
+		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
+		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
+		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
+		Role, Setting, Stock, StockSummary, Store, Subscribe, SubscribeAlter,
+		SubscribePause, SubscribeReminder, SubscribeSuspend, Version []ent.Hook
 	}
 	inters struct {
 		Activity, Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow,
@@ -15849,16 +15991,16 @@ type (
 		Commission, Contract, Coupon, CouponAssembly, CouponTemplate, Ebike,
 		EbikeBrand, Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
 		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
-		EnterpriseStation, Exception, Exchange, Export, Feedback, Guide, Inventory,
-		Maintainer, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce, PointLog,
-		PromotionAchievement, PromotionBankCard, PromotionCommission,
-		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
-		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
-		PromotionPerson, PromotionPrivilege, PromotionReferrals,
-		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
-		QuestionCategory, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
-		StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
-		SubscribeReminder, SubscribeSuspend, Version []ent.Interceptor
+		EnterpriseStation, Exception, Exchange, Export, Feedback, Guide, Instructions,
+		Inventory, Maintainer, Manager, Order, OrderRefund, Person, Plan,
+		PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
+		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
+		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
+		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
+		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
+		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
+		Role, Setting, Stock, StockSummary, Store, Subscribe, SubscribeAlter,
+		SubscribePause, SubscribeReminder, SubscribeSuspend, Version []ent.Interceptor
 	}
 )
 

@@ -6417,6 +6417,79 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/instructions": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "说明"
+                ],
+                "summary": "修改说明",
+                "operationId": "ManagerInstructionsModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.InstructionsCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/instructions/:key": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "说明"
+                ],
+                "summary": "说明详情",
+                "operationId": "ManagerInstructionsDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.InstructionsRes"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/inventory": {
             "get": {
                 "consumes": [
@@ -9456,42 +9529,6 @@ const docTemplate = `{
                         "name": "X-Manager-Token",
                         "in": "header",
                         "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "当前页, 从1开始, 默认1",
-                        "name": "current",
-                        "in": "path"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "是否启用",
-                        "name": "enable",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
-                        "description": "结束时间",
-                        "name": "end",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
-                        "description": "关键字",
-                        "name": "keyword",
-                        "in": "path"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数据, 默认20",
-                        "name": "pageSize",
-                        "in": "path"
-                    },
-                    {
-                        "type": "string",
-                        "description": "开始时间",
-                        "name": "start",
-                        "in": "path"
                     }
                 ],
                 "responses": {
@@ -11130,43 +11167,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "delete": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "设置"
-                ],
-                "summary": "删除活动",
-                "operationId": "SettingActivityDelete",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "活动ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
             }
         },
         "/manager/v1/setting/guide": {
@@ -11434,7 +11434,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "法规名称, policy: APP隐私政策; agreement: APP服务协议; agent-policy: 代理端小程序隐私政策; agent-agreement: 代理端小程序服务协议; promote-policy: 推广端小程序隐私政策; promote-agreement: 推广端小程序服务协议",
+                        "description": "法规名称, policy: APP隐私政策; agreement: APP服务协议; agent-policy: 代理端小程序隐私政策; agent-agreement: 代理端小程序服务协议; promote-policy: 推广端小程序隐私政策; promote-agreement: 推广端小程序服务协议 battery-rental-agreement:个签-电池租赁协议;\tebike-rental-agreement:个签-电车及电池租赁协议;\tenterprise-battery-rental-agreement:团签-电池租赁协议;\tenterprise-ebike-rental-agreement:团签-电车及电池租赁协议",
                         "name": "name",
                         "in": "path",
                         "required": true
@@ -13357,6 +13357,43 @@ const docTemplate = `{
                 "sort": {
                     "description": "排序",
                     "type": "integer"
+                }
+            }
+        },
+        "definition.InstructionsCreateReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "key",
+                "title"
+            ],
+            "properties": {
+                "content": {
+                    "description": "内容"
+                },
+                "key": {
+                    "description": "键",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "标题",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.InstructionsRes": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "内容"
+                },
+                "key": {
+                    "description": "键  rent 租电买前必读 rentCar 租车买前必读 buyCar 买车买前必读 coupon 优惠券使用说明 point 积分使用说明",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "标题",
+                    "type": "string"
                 }
             }
         },

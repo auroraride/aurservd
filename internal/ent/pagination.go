@@ -1094,6 +1094,37 @@ func (gq *GuideQuery) PaginationResult(req model.PaginationReq) model.Pagination
 	}
 }
 
+// Pagination returns pagination query builder for InstructionsQuery.
+func (iq *InstructionsQuery) Pagination(req model.PaginationReq) *InstructionsQuery {
+	iq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return iq
+}
+
+// PaginationItems returns pagination query builder for InstructionsQuery.
+func (iq *InstructionsQuery) PaginationItemsX(req model.PaginationReq) any {
+	return iq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for InstructionsQuery.
+func (iq *InstructionsQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := iq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for InventoryQuery.
 func (iq *InventoryQuery) Pagination(req model.PaginationReq) *InventoryQuery {
 	iq.Offset(req.GetOffset()).Limit(req.GetLimit())

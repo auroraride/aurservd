@@ -42,6 +42,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/guide"
+	"github.com/auroraride/aurservd/internal/ent/instructions"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -905,6 +906,23 @@ func init() {
 	guideDescSort := guideFields[1].Descriptor()
 	// guide.DefaultSort holds the default value on creation for the sort field.
 	guide.DefaultSort = guideDescSort.Default.(uint8)
+	instructionsMixin := schema.Instructions{}.Mixin()
+	instructionsMixinHooks2 := instructionsMixin[2].Hooks()
+	instructions.Hooks[0] = instructionsMixinHooks2[0]
+	instructionsMixinFields0 := instructionsMixin[0].Fields()
+	_ = instructionsMixinFields0
+	instructionsFields := schema.Instructions{}.Fields()
+	_ = instructionsFields
+	// instructionsDescCreatedAt is the schema descriptor for created_at field.
+	instructionsDescCreatedAt := instructionsMixinFields0[0].Descriptor()
+	// instructions.DefaultCreatedAt holds the default value on creation for the created_at field.
+	instructions.DefaultCreatedAt = instructionsDescCreatedAt.Default.(func() time.Time)
+	// instructionsDescUpdatedAt is the schema descriptor for updated_at field.
+	instructionsDescUpdatedAt := instructionsMixinFields0[1].Descriptor()
+	// instructions.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	instructions.DefaultUpdatedAt = instructionsDescUpdatedAt.Default.(func() time.Time)
+	// instructions.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	instructions.UpdateDefaultUpdatedAt = instructionsDescUpdatedAt.UpdateDefault.(func() time.Time)
 	inventoryMixin := schema.Inventory{}.Mixin()
 	inventoryMixinHooks2 := inventoryMixin[2].Hooks()
 	inventory.Hooks[0] = inventoryMixinHooks2[0]

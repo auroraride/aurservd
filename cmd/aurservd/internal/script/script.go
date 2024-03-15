@@ -8,6 +8,7 @@ package script
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/auroraride/aurservd/app/biz"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/boot"
@@ -36,6 +37,9 @@ func Execute() {
 
 			// 初始化营销设置
 			service.NewPromotionSettingService().Initialize()
+
+			// 初始化 买前必读 优惠券 积分 阅读相关配置
+			biz.NewInstructions().InitInstructions()
 		},
 	}
 

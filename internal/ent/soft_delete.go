@@ -31,6 +31,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/guide"
+	"github.com/auroraride/aurservd/internal/ent/instructions"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -1052,6 +1053,46 @@ func (c *GuideClient) GetNotDeleted(ctx context.Context, id uint64) (*Guide, err
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *GuideClient) GetNotDeletedX(ctx context.Context, id uint64) *Guide {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Instructions.
+func (c *InstructionsClient) SoftDelete() *InstructionsUpdate {
+	mutation := newInstructionsMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &InstructionsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *InstructionsClient) SoftDeleteOne(i *Instructions) *InstructionsUpdateOne {
+	mutation := newInstructionsMutation(c.config, OpUpdateOne, withInstructions(i))
+	mutation.SetDeletedAt(time.Now())
+	return &InstructionsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *InstructionsClient) SoftDeleteOneID(id uint64) *InstructionsUpdateOne {
+	mutation := newInstructionsMutation(c.config, OpUpdateOne, withInstructionsID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &InstructionsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Instructions.
+func (c *InstructionsClient) QueryNotDeleted() *InstructionsQuery {
+	return c.Query().Where(instructions.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Instructions not deleted entity by its id.
+func (c *InstructionsClient) GetNotDeleted(ctx context.Context, id uint64) (*Instructions, error) {
+	return c.Query().Where(instructions.ID(id), instructions.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *InstructionsClient) GetNotDeletedX(ctx context.Context, id uint64) *Instructions {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)
