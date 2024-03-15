@@ -243,11 +243,12 @@ func (s *reserveService) List(req *model.ReserveListReq) *model.PaginationRes {
 
 func (s *reserveService) listDetail(item *ent.Reserve) (res model.ReserveListRes) {
 	res = model.ReserveListRes{
-		City:     item.Edges.City.Name,
-		Name:     item.Edges.Rider.Name,
-		Phone:    item.Edges.Rider.Phone,
-		Business: model.BusinessTypeText(item.Type),
-		Status:   model.ReserveStatus(item.Status).String(),
+		City:      item.Edges.City.Name,
+		Name:      item.Edges.Rider.Name,
+		Phone:     item.Edges.Rider.Phone,
+		Business:  model.BusinessTypeText(item.Type),
+		Status:    model.ReserveStatus(item.Status).String(),
+		CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
 	}
 	cab := item.Edges.Cabinet
 	if cab != nil {
