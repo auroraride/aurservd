@@ -19808,6 +19808,10 @@ const docTemplate = `{
                     "description": "城市",
                     "type": "string"
                 },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
                 "name": {
                     "description": "姓名",
                     "type": "string"

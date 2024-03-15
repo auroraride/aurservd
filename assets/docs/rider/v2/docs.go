@@ -2079,7 +2079,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "客服中心"
+                    "Fault - 故障"
                 ],
                 "summary": "故障上报",
                 "operationId": "FaultCreate",
@@ -2120,7 +2120,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "客服中心"
+                    "Fault - 故障"
                 ],
                 "summary": "故障原因",
                 "operationId": "FaultCause",
@@ -2330,7 +2330,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "说明"
+                    "Instructions - 说明"
                 ],
                 "summary": "说明详情",
                 "operationId": "RiderInstructionsDetail",
@@ -2903,7 +2903,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "筛选"
+                    "Selection - 筛选"
                 ],
                 "summary": "获取电池型号选择",
                 "operationId": "SelectionModel",
