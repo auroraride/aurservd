@@ -15,7 +15,7 @@ var Instructions = new(instructions)
 // Detail
 // @ID		RiderInstructionsDetail
 // @Router	/rider/v2/instructions/:key [GET]
-// @Summary	说明详情
+// @Summary	买前必读 积分 优惠券使用说明
 // @Tags	Instructions - 说明
 // @Accept	json
 // @Produce	json

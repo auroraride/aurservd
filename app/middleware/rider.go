@@ -212,3 +212,16 @@ func RiderAuthMiddlewareV2() echo.MiddlewareFunc {
 func RiderCertificationMiddlewareV2() echo.MiddlewareFunc {
 	return RiderAuthMiddlewareV2WithConfig(RiderAuthConfig{Certification: true})
 }
+
+// 紧急联系人认证中间件
+func RiderRequireAuthAndContactV2() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			ctx := c.(*app.RiderContext)
+			if ctx.Rider.Contact == nil {
+				snag.Panic(snag.StatusRequireContact)
+			}
+			return next(ctx)
+		}
+	}
+}

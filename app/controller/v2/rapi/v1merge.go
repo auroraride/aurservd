@@ -247,29 +247,6 @@ func (*cabinet) Process() {}
 // @Success	200				{object}	model.RiderExchangeProcessRes		"请求成功"
 func (*cabinet) ProcessStatus() {}
 
-// Report
-// @ID		CabinetReport
-// @Router	/rider/v2/cabinet/report [POST]
-// @Summary	电柜故障上报
-// @Tags	Cabinet - 电柜
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string						true	"骑手校验token"
-// @Param	body			body		model.CabinetFaultReportReq	true	"desc"
-// @Success	200				{object}	model.StatusResponse		"请求成功"
-func (*cabinet) Report() {}
-
-// Fault
-// @ID		CabinetFault
-// @Router	/rider/v2/cabinet/fault [GET]
-// @Summary	电柜故障列表
-// @Tags	Cabinet - 电柜
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string		true	"骑手校验token"
-// @Success	200				{object}	[]string	"请求成功"
-func (*cabinet) Fault() {}
-
 type City struct{}
 
 // List

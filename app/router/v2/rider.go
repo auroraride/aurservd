@@ -70,137 +70,121 @@ func LoadRiderV2Routes(root *echo.Group) {
 		dump,
 	)
 
+	// 不需要登录的接口
+	g.POST("/signin", v1.Rider.Signin) // 登录
+	g.GET("/city", v1.City.List)       // 已开通城市
+
+	g.GET("/branch", v1.Branch.List)                   // 网点列表
+	g.GET("/branch/facility/:fid", v1.Branch.Facility) // 网点设施
+
+	g.GET("/setting/version", rapi.Setting.LatestVersion) // App最新版本
+	g.GET("/selection/model", rapi.Selection.Model)       // 电池型号选择
+
+	g.GET("/guide", rapi.Guide.List)       // 新手引导
+	g.GET("/activity", rapi.Activity.List) // 活动
+
+	g.GET("/question/category", rapi.QuestionCategory.All) // 问题分类
+	g.GET("/question", rapi.Question.All)                  // 问题列表
+
+	g.GET("/instructions/:key", rapi.Instructions.Detail) // 买前必读 积分 优惠券使用说明
+
 	// 骑手登录认证中间件
-	auth := middleware.RiderAuthMiddlewareV2
+	auth := g.Group("", middleware.RiderAuthMiddlewareV2())
 
-	// 实人认证中间件（包含骑手登录认证）
-	cert := middleware.RiderCertificationMiddlewareV2
+	auth.GET("/certification/ocr/client", rapi.Person.CertificationOcrClient)   // 获取人身核验OCR参数
+	auth.GET("/certification/ocr/cloud", rapi.Person.CertificationOcrCloud)     // 获取阿里云OCR签名
+	auth.POST("/certification/face", rapi.Person.CertificationFace)             // 提交身份信息并获取人脸核身参数
+	auth.GET("/certification/face/result", rapi.Person.CertificationFaceResult) // 获取人脸核身结果
 
-	// 获取人身核验OCR参数
-	g.GET("/certification/ocr/client", rapi.Person.CertificationOcrClient, auth())
-
-	// 获取阿里云OCR签名
-	g.GET("/certification/ocr/cloud", rapi.Person.CertificationOcrCloud, auth())
-
-	// 提交身份信息并获取人脸核身参数
-	g.POST("/certification/face", rapi.Person.CertificationFace, auth())
-
-	// 获取人脸核身结果
-	g.GET("/certification/face/result", rapi.Person.CertificationFaceResult, auth())
-
-	g.POST("/signin", v1.Rider.Signin)          // 登录
-	g.GET("/profile", v1.Rider.Profile, auth()) // 获取用户信息
-	g.GET("/deposit", v1.Rider.Deposit, auth())
-	g.GET("/deregister", v1.Rider.Deregister, auth()) // 注销账户
-
-	// 已开通城市
-	g.GET("/city", v1.City.List)
-
-	// 合同
-	contract := g.Group("/contract", auth(), cert())
-	contract.POST("/sign", v1.Contract.Sign)
-	contract.GET("/:sn", v1.Contract.SignResult)
-
-	// 获取网点
-	g.GET("/branch", v1.Branch.List)
-	g.GET("/branch/facility/:fid", v1.Branch.Facility)
+	auth.GET("/profile", v1.Rider.Profile)       // 获取用户信息
+	auth.GET("/deposit", v1.Rider.Deposit)       // 获取押金信息
+	auth.GET("/deregister", v1.Rider.Deregister) // 注销账户
 
 	// 骑士卡
-	g.GET("/plan", v1.Plan.List, auth(), cert())
-	g.GET("/plan/renewly", v1.Plan.Renewly, auth())
+	auth.GET("/plan", v1.Plan.List)            // 套餐列表
+	auth.GET("/plan/renewly", v1.Plan.Renewly) // 续费列表
 
-	// 业务
-	g.POST("/business/active", v1.Business.Active, auth())
-	g.POST("/business/unsubscribe", v1.Business.Unsubscribe, auth())
-	g.POST("/business/pause", v1.Business.Pause, auth())
-	g.POST("/business/continue", v1.Business.Continue, auth())
-	g.GET("/business/status", v1.Business.Status, auth())
-	g.GET("/business/pause/info", v1.Business.PauseInfo, auth())
-	g.GET("/business/allocated/:id", v1.Business.Allocated, auth())
-	g.GET("/business/subscribe/signed/:id", v1.Business.SubscribeSigned, auth())
+	auth.GET("/cabinet", rapi.Cabinet.List)           // 电柜列表
+	auth.GET("/cabinet/:serial", rapi.Cabinet.Detail) // 详情
 
-	// 订单
-	g.POST("/order", rapi.Order.Create, auth())
-	g.POST("/order/refund", v1.Order.Refund, auth()) // 申请退款
-	g.GET("/order", v1.Order.List, auth())
-	g.GET("/order/:id", v1.Order.Detail, auth())
-	g.GET("/order/status", v1.Order.Status, auth())
-	g.POST("/deposit/credit", rapi.Order.DepositCredit, auth()) // 押金
-
-	// 代理、团签
-	g.GET("/enterprise/battery", v1.Enterprise.Battery, auth())
-	g.POST("/enterprise/subscribe", v1.Enterprise.Subscribe, auth())
-	g.GET("/enterprise/subscribe", v1.Enterprise.SubscribeStatus, auth())
-	g.POST("/enterprise/join", v1.Enterprise.JoinEnterprise, auth())                    // 加入团签
-	g.GET("/enterprise/info", v1.Enterprise.RiderEnterpriseInfo, auth())                // 小程序加入团签信息
-	g.POST("/enterprise/exit", v1.Enterprise.ExitEnterprise, auth())                    // 退出团签
-	g.POST("/enterprise/subscribe/alter", v1.Enterprise.SubscribeAlter, auth())         // 申请加时
-	g.GET("/enterprise/subscribe/alter/list", v1.Enterprise.SubscribeAlterList, auth()) // 申请列表
-
-	// 电柜
-	cabinet := g.Group("/cabinet")
-	cabinet.GET("", rapi.Cabinet.List, auth())           // 电柜列表
-	cabinet.GET("/:serial", rapi.Cabinet.Detail, auth()) // 详情
-	cabinet.GET("/process/:serial", v1.Cabinet.GetProcess, auth())
-	cabinet.POST("/process", v1.Cabinet.Process, auth())
-	cabinet.GET("/process/status", v1.Cabinet.ProcessStatus, auth())
-	cabinet.POST("/report", v1.Cabinet.Report, auth())
-
-	g.POST("/exchange/store", v1.Exchange.Store, auth())
-	g.GET("/exchange/overview", v1.Exchange.Overview, auth())
-	g.GET("/exchange/log", v1.Exchange.Log, auth())
+	auth.GET("/battery", v1.Battery.Detail) // 电池详情
 
 	// 救援
-	g.GET("/assistance/breakdown", v1.Assistance.Breakdown, auth())
-	g.POST("/assistance", v1.Assistance.Create, auth())
-	g.POST("/assistance/cancel", v1.Assistance.Cancel, auth())
-	g.GET("/assistance/current", v1.Assistance.Current, auth())
-	g.GET("/assistance", v1.Assistance.List, auth())
+	auth.GET("/assistance/breakdown", v1.Assistance.Breakdown) // 获取救援原因
+	auth.POST("/assistance", v1.Assistance.Create)             // 创建救援
+	auth.POST("/assistance/cancel", v1.Assistance.Cancel)      // 取消救援
+	auth.GET("/assistance/current", v1.Assistance.Current)     // 当前救援
+	auth.GET("/assistance", v1.Assistance.List)                // 救援列表
+
+	// 代理、团签
+	auth.GET("/enterprise/battery", v1.Enterprise.Battery)
+	auth.POST("/enterprise/subscribe", v1.Enterprise.Subscribe)
+	auth.GET("/enterprise/subscribe", v1.Enterprise.SubscribeStatus)
+	auth.POST("/enterprise/join", v1.Enterprise.JoinEnterprise)                    // 加入团签
+	auth.GET("/enterprise/info", v1.Enterprise.RiderEnterpriseInfo)                // 小程序加入团签信息
+	auth.POST("/enterprise/exit", v1.Enterprise.ExitEnterprise)                    // 退出团签
+	auth.POST("/enterprise/subscribe/alter", v1.Enterprise.SubscribeAlter)         // 申请加时
+	auth.GET("/enterprise/subscribe/alter/list", v1.Enterprise.SubscribeAlterList) // 申请列表
+
+	auth.GET("/order", v1.Order.List)          // 订单列表
+	auth.GET("/order/:id", v1.Order.Detail)    // 订单详情
+	auth.GET("/order/status", v1.Order.Status) // 订单状态
+
+	auth.GET("/exchange/overview", v1.Exchange.Overview) // 换电概览
+	auth.GET("/exchange/log", v1.Exchange.Log)           // 换电记录
 
 	// 设置
-	g.GET("/setting/app", v1.Setting.App, auth())
-	g.GET("/setting/question", v1.Setting.Question, auth())
-	g.GET("/setting/version", rapi.Setting.LatestVersion) // App最新版本
-
-	// 预约
-	g.GET("/reserve", v1.Reserve.Unfinished, auth())
-	g.POST("/reserve", v1.Reserve.Create, auth())
-	g.DELETE("/reserve/:id", v1.Reserve.Cancel, auth())
+	auth.GET("/setting/app", v1.Setting.App)           // App设置
+	auth.GET("/setting/question", v1.Setting.Question) // 问题分类
 
 	// 钱包
-	g.GET("/wallet/overview", v1.Wallet.Overview, auth())
-	g.GET("/wallet/pointlog", v1.Wallet.PointLog, auth())
-	g.GET("/wallet/points", v1.Wallet.Points, auth())
-	g.GET("/wallet/coupons", v1.Wallet.Coupons, auth())
-
-	// 电池
-	g.GET("/battery", v1.Battery.Detail, auth())
-
-	g.GET("/guide", rapi.Guide.List, auth()) // 新手引导
-
-	g.GET("/activity", rapi.Activity.List, auth()) // 活动
+	auth.GET("/wallet/overview", v1.Wallet.Overview) // 钱包概览
+	auth.GET("/wallet/pointlog", v1.Wallet.PointLog) // 积分明细
+	auth.GET("/wallet/points", v1.Wallet.Points)     // 积分详情
+	auth.GET("/wallet/coupons", v1.Wallet.Coupons)   // 优惠券列表
 
 	// 意见反馈
-	g.POST("/feedback", rapi.Feedback.Create, auth())
-	g.GET("/feedback", rapi.Feedback.List, auth())
-
-	// 问题分类
-	g.GET("/question/category", rapi.QuestionCategory.All, auth())
-
-	// 常见问题
-	g.GET("/question", rapi.Question.All, auth())
+	auth.POST("/feedback", rapi.Feedback.Create) // 创建反馈
+	auth.GET("/feedback", rapi.Feedback.List)    // 反馈列表
 
 	// 地图
-	g.GET("/direction", rapi.Rider.Direction, auth()) // 获取地图路径规划
-
-	// 说明
-	g.GET("/instructions/:key", rapi.Instructions.Detail, auth()) // 说明详情
+	auth.GET("/direction", rapi.Rider.Direction) // 获取地图路径规划
 
 	// 故障上报
-	g.POST("/fault", rapi.Fault.Create, auth())
-	g.GET("/fault/cause", rapi.Fault.FaultCause, auth())
+	auth.POST("/fault", rapi.Fault.Create)          // 故障上报
+	auth.GET("/fault/cause", rapi.Fault.FaultCause) // 故障原因
 
-	// 选择
-	g.GET("/selection/model", rapi.Selection.Model) // 电池型号选择
+	// 实人认证中间件（包含骑手登录认证）和联系方式认证
+	cert := g.Group("", middleware.RiderCertificationMiddlewareV2(), middleware.RiderRequireAuthAndContactV2())
+	// 合同
+	contract := cert.Group("/contract")
+	contract.POST("/sign", v1.Contract.Sign)     // 签署合同
+	contract.GET("/:sn", v1.Contract.SignResult) // 合同签署结果
 
+	// 业务
+	cert.POST("/business/active", v1.Business.Active)                       // 激活骑士卡
+	cert.POST("/business/unsubscribe", v1.Business.Unsubscribe)             // 退租
+	cert.POST("/business/pause", v1.Business.Pause)                         // 寄存
+	cert.POST("/business/continue", v1.Business.Continue)                   // 取消寄存
+	cert.GET("/business/status", v1.Business.Status)                        // 业务状态
+	cert.GET("/business/pause/info", v1.Business.PauseInfo)                 // 寄存信息
+	cert.GET("/business/allocated/:id", v1.Business.Allocated)              // 长连接轮询是否已分配
+	cert.GET("/business/subscribe/signed/:id", v1.Business.SubscribeSigned) // 连接轮询是否已签约
+
+	// 订单
+	cert.POST("/order", rapi.Order.Create)                 // 创建订单
+	cert.POST("/order/refund", v1.Order.Refund)            // 申请退款
+	cert.POST("/deposit/credit", rapi.Order.DepositCredit) // 押金订单
+
+	// 电柜
+	cabinet := cert.Group("/cabinet")
+	cabinet.GET("/process/:serial", v1.Cabinet.GetProcess)   // 获取换电信息
+	cabinet.POST("/process", v1.Cabinet.Process)             // 换电
+	cabinet.GET("/process/status", v1.Cabinet.ProcessStatus) // 换电状态
+	cabinet.POST("/exchange/store", v1.Exchange.Store)       // 门店换电
+
+	// 预约
+	cert.GET("/reserve", v1.Reserve.Unfinished)    // 未完成预约
+	cert.POST("/reserve", v1.Reserve.Create)       // 创建预约
+	cert.DELETE("/reserve/:id", v1.Reserve.Cancel) // 取消预约
 }
