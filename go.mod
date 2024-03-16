@@ -1,36 +1,38 @@
 module github.com/auroraride/aurservd
 
-go 1.21
+go 1.22
+
+toolchain go1.22.0
 
 require (
-	ariga.io/atlas v0.19.1-0.20240203083654-5948b60a8e43
-	entgo.io/ent v0.13.0
+	ariga.io/atlas v0.19.2
+	entgo.io/ent v0.13.1
 	github.com/LucaTheHacker/go-haversine v0.0.0-20220213075817-0d811fb84a1a
-	github.com/PuerkitoBio/goquery v1.8.1
-	github.com/alibabacloud-go/cloudauth-20190307/v3 v3.2.2
+	github.com/PuerkitoBio/goquery v1.9.1
+	github.com/alibabacloud-go/cloudauth-20190307/v3 v3.4.0
 	github.com/alibabacloud-go/darabonba-openapi v0.2.1
-	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.5
+	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.6
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
 	github.com/alibabacloud-go/openapi-util v0.1.0
 	github.com/alibabacloud-go/tea v1.2.2
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.680
-	github.com/aliyun/aliyun-log-go-sdk v0.1.70
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.695
+	github.com/aliyun/aliyun-log-go-sdk v0.1.71
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
 	github.com/aliyun/credentials-go v1.3.2
-	github.com/auroraride/adapter v0.0.0-20240118093640-1878b62fb31e
+	github.com/auroraride/adapter v0.0.0-20240316012925-35958596d0e7
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/getkin/kin-openapi v0.123.0
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
-	github.com/go-playground/validator/v10 v10.18.0
+	github.com/go-playground/validator/v10 v10.19.0
 	github.com/go-resty/resty/v2 v2.11.0
-	github.com/golang-module/carbon/v2 v2.3.9
+	github.com/golang-module/carbon/v2 v2.3.10
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/h2non/filetype v1.1.3
 	github.com/iancoleman/strcase v0.3.0
-	github.com/jackc/pgx/v4 v4.18.1
+	github.com/jackc/pgx/v4 v4.18.3
 	github.com/jinzhu/copier v0.4.0
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12
 	github.com/labstack/echo/v4 v4.11.4
@@ -54,16 +56,16 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/echo-swagger v1.4.1
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.862
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/faceid v1.0.862
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.878
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/faceid v1.0.878
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.18
-	github.com/xuri/excelize/v2 v2.8.0
+	github.com/xuri/excelize/v2 v2.8.1
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.21.0
-	golang.org/x/exp v0.0.0-20240213143201-ec583247a57a
+	golang.org/x/exp v0.0.0-20240314144324-c7f7c6466f7f
 	golang.org/x/time v0.5.0
 	golang.org/x/tools v0.19.0
-	google.golang.org/protobuf v1.32.0
+	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -78,7 +80,7 @@ require (
 	github.com/alibabacloud-go/tea-oss-sdk v1.1.3 // indirect
 	github.com/alibabacloud-go/tea-oss-utils v1.1.0 // indirect
 	github.com/alibabacloud-go/tea-utils v1.4.5 // indirect
-	github.com/alibabacloud-go/tea-utils/v2 v2.0.4 // indirect
+	github.com/alibabacloud-go/tea-utils/v2 v2.0.5 // indirect
 	github.com/alibabacloud-go/tea-xml v1.1.3 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
@@ -96,29 +98,29 @@ require (
 	github.com/go-kit/kit v0.13.0 // indirect
 	github.com/go-kit/log v0.2.1 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
-	github.com/go-openapi/inflect v0.19.0 // indirect
-	github.com/go-openapi/jsonpointer v0.20.3 // indirect
-	github.com/go-openapi/jsonreference v0.20.5 // indirect
-	github.com/go-openapi/spec v0.20.15 // indirect
-	github.com/go-openapi/swag v0.22.10 // indirect
+	github.com/go-openapi/inflect v0.21.0 // indirect
+	github.com/go-openapi/jsonpointer v0.21.0 // indirect
+	github.com/go-openapi/jsonreference v0.21.0 // indirect
+	github.com/go-openapi/spec v0.21.0 // indirect
+	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/hashicorp/hcl/v2 v2.19.1 // indirect
+	github.com/hashicorp/hcl/v2 v2.20.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/invopop/yaml v0.2.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
-	github.com/jackc/pgconn v1.14.1 // indirect
+	github.com/jackc/pgconn v1.14.3 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgproto3/v2 v2.3.2 // indirect
+	github.com/jackc/pgproto3/v2 v2.3.3 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
 	github.com/jackc/pgtype v1.14.2 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
@@ -182,7 +184,7 @@ require (
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xuri/efp v0.0.0-20231025114914-d1ff6096ae53 // indirect
 	github.com/xuri/nfp v0.0.0-20230919160717-d98342af3f05 // indirect
-	github.com/zclconf/go-cty v1.14.2 // indirect
+	github.com/zclconf/go-cty v1.14.3 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/image v0.15.0 // indirect
@@ -190,8 +192,8 @@ require (
 	golang.org/x/net v0.22.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240221002015-b0ce06bbee7c // indirect
-	google.golang.org/grpc v1.62.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240314234333-6e1732d8331c // indirect
+	google.golang.org/grpc v1.62.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
