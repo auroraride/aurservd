@@ -1126,28 +1126,6 @@ definitions:
     - name
     - serial
     type: object
-  model.CabinetFaultReportReq:
-    properties:
-      attachments:
-        description: 附件
-        items:
-          type: string
-        maxItems: 3
-        type: array
-      cabinetId:
-        description: 电柜ID
-        type: integer
-      description:
-        description: 故障描述
-        type: string
-      fault:
-        description: 故障
-        type: string
-    required:
-    - cabinetId
-    - description
-    - fault
-    type: object
   model.CabinetStatus:
     enum:
     - 0
@@ -3131,29 +3109,6 @@ paths:
       summary: 电柜详情
       tags:
       - Cabinet - 电柜
-  /rider/v2/cabinet/fault:
-    get:
-      consumes:
-      - application/json
-      operationId: CabinetFault
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            items:
-              type: string
-            type: array
-      summary: 电柜故障列表
-      tags:
-      - Cabinet - 电柜
   /rider/v2/cabinet/process:
     post:
       consumes:
@@ -3230,33 +3185,6 @@ paths:
           schema:
             $ref: '#/definitions/model.RiderExchangeProcessRes'
       summary: 换电状态
-      tags:
-      - Cabinet - 电柜
-  /rider/v2/cabinet/report:
-    post:
-      consumes:
-      - application/json
-      operationId: CabinetReport
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: desc
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.CabinetFaultReportReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 电柜故障上报
       tags:
       - Cabinet - 电柜
   /rider/v2/certification/face:
@@ -4034,7 +3962,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/definition.InstructionsRes'
-      summary: 说明详情
+      summary: 买前必读 积分 优惠券使用说明
       tags:
         - Instructions - 说明
   /rider/v2/order:

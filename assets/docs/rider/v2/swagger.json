@@ -928,41 +928,6 @@
                 }
             }
         },
-        "/rider/v2/cabinet/fault": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Cabinet - 电柜"
-                ],
-                "summary": "电柜故障列表",
-                "operationId": "CabinetFault",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v2/cabinet/process": {
             "post": {
                 "consumes": [
@@ -1076,47 +1041,6 @@
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.RiderExchangeInfo"
-                        }
-                    }
-                }
-            }
-        },
-        "/rider/v2/cabinet/report": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Cabinet - 电柜"
-                ],
-                "summary": "电柜故障上报",
-                "operationId": "CabinetReport",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "desc",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.CabinetFaultReportReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -2324,7 +2248,7 @@
           "tags": [
             "Instructions - 说明"
           ],
-          "summary": "说明详情",
+          "summary": "买前必读 积分 优惠券使用说明",
           "operationId": "RiderInstructionsDetail",
           "parameters": [
             {
@@ -4816,36 +4740,6 @@
                 "transferred": {
                     "description": "是否初始化过调拨",
                     "type": "boolean"
-                }
-            }
-        },
-        "model.CabinetFaultReportReq": {
-            "type": "object",
-            "required": [
-                "cabinetId",
-                "description",
-                "fault"
-            ],
-            "properties": {
-                "attachments": {
-                    "description": "附件",
-                    "type": "array",
-                    "maxItems": 3,
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "cabinetId": {
-                    "description": "电柜ID",
-                    "type": "integer"
-                },
-                "description": {
-                    "description": "故障描述",
-                    "type": "string"
-                },
-                "fault": {
-                    "description": "故障",
-                    "type": "string"
                 }
             }
         },
