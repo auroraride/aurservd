@@ -6410,74 +6410,74 @@
                 }
             }
         },
-      "/manager/v1/instructions": {
-        "post": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "说明"
-          ],
-          "summary": "修改说明",
-          "operationId": "ManagerInstructionsModify",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "description": "desc",
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/definition.InstructionsCreateReq"
-              }
+        "/manager/v1/instructions": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "说明"
+                ],
+                "summary": "修改说明",
+                "operationId": "ManagerInstructionsModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.InstructionsCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
             }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
-              }
-            }
-          }
-        }
-      },
-      "/manager/v1/instructions/:key": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "说明"
-          ],
-          "summary": "说明详情",
-          "operationId": "ManagerInstructionsDetail",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/definition.InstructionsRes"
+        },
+        "/manager/v1/instructions/:key": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "说明"
+                ],
+                "summary": "说明详情",
+                "operationId": "ManagerInstructionsDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.InstructionsRes"
                         }
                     }
                 }
@@ -9203,408 +9203,408 @@
                 }
             }
         },
-      "/manager/v1/question": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "设置"
-          ],
-          "summary": "常见问题分页列表",
-          "operationId": "QuestionList",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "integer",
-              "description": "分类ID,0表示其他，不传表示全部, 分类ID",
-              "name": "categoryId",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "当前页, 从1开始, 默认1",
-              "name": "current",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "关键字",
-              "name": "keywords",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "每页数据, 默认20",
-              "name": "pageSize",
-              "in": "query"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/definition.QuestionDetail"
+        "/manager/v1/question": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "常见问题分页列表",
+                "operationId": "QuestionList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分类ID,0表示其他，不传表示全部, 分类ID",
+                        "name": "categoryId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keywords",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.QuestionDetail"
+                            }
+                        }
+                    }
                 }
-              }
-            }
-          }
-        },
-        "put": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "设置"
-          ],
-          "summary": "修改常见问题",
-          "operationId": "QuestionModify",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
             },
-            {
-              "description": "请求参数",
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/definition.QuestionModifyReq"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
-              }
-            }
-          }
-        },
-        "post": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "设置"
-          ],
-          "summary": "创建常见问题",
-          "operationId": "QuestionCreate",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "description": "请求参数",
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/definition.QuestionCreateReq"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
-              }
-            }
-          }
-        }
-      },
-      "/manager/v1/question/category": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "设置"
-          ],
-          "summary": "问题分类分页列表",
-          "operationId": "Question_categoryList",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "integer",
-              "description": "当前页, 从1开始, 默认1",
-              "name": "current",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "每页数据, 默认20",
-              "name": "pageSize",
-              "in": "query"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/definition.QuestionCategoryDetail"
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "修改常见问题",
+                "operationId": "QuestionModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.QuestionModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
                 }
-              }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "创建常见问题",
+                "operationId": "QuestionCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.QuestionCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
             }
-          }
         },
-        "put": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "设置"
-          ],
-          "summary": "修改问题分类",
-          "operationId": "Question_categoryModify",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
+        "/manager/v1/question/category": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "问题分类分页列表",
+                "operationId": "Question_categoryList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.QuestionCategoryDetail"
+                            }
+                        }
+                    }
+                }
             },
-            {
-              "description": "请求参数",
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/definition.QuestionCategoryModifyReq"
-              }
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "修改问题分类",
+                "operationId": "Question_categoryModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.QuestionCategoryModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "创建问题分类",
+                "operationId": "Question_categoryCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.QuestionCategoryCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
             }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
-              }
-            }
-          }
         },
-        "post": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "设置"
-          ],
-          "summary": "创建问题分类",
-          "operationId": "Question_categoryCreate",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
+        "/manager/v1/question/category/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "问题分类详情",
+                "operationId": "Question_categoryDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "分类ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
             },
-            {
-              "description": "请求参数",
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/definition.QuestionCategoryCreateReq"
-              }
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "删除问题分类",
+                "operationId": "Question_categoryDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
             }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
-              }
-            }
-          }
-        }
-      },
-      "/manager/v1/question/category/{id}": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "设置"
-          ],
-          "summary": "问题分类详情",
-          "operationId": "Question_categoryDetail",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "string",
-              "description": "分类ID",
-              "name": "id",
-              "in": "path",
-              "required": true
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
-              }
-            }
-          }
         },
-        "delete": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "设置"
-          ],
-          "summary": "删除问题分类",
-          "operationId": "Question_categoryDelete",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
-              }
-            }
-          }
-        }
-      },
-      "/manager/v1/question/{id}": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "设置"
-          ],
-          "summary": "常见问题详情",
-          "operationId": "QuestionDetail",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
+        "/manager/v1/question/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "常见问题详情",
+                "operationId": "QuestionDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "分类ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.QuestionDetail"
+                        }
+                    }
+                }
             },
-            {
-              "type": "string",
-              "description": "分类ID",
-              "name": "id",
-              "in": "path",
-              "required": true
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/definition.QuestionDetail"
-              }
-            }
-          }
-        },
-        "delete": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "设置"
-          ],
-          "summary": "删除常见问题",
-          "operationId": "QuestionDelete",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "string",
-              "description": "分类ID",
-              "name": "id",
-              "in": "path",
-              "required": true
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "删除常见问题",
+                "operationId": "QuestionDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "分类ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -10757,41 +10757,41 @@
                 }
             }
         },
-      "/manager/v1/selection/question/category": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "筛选"
-          ],
-          "summary": "问题分类",
-          "operationId": "ManagerSelectionQuestionCategory",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/model.SelectOption"
+        "/manager/v1/selection/question/category": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "筛选"
+                ],
+                "summary": "问题分类",
+                "operationId": "ManagerSelectionQuestionCategory",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
-        }
-      },
+        },
         "/manager/v1/selection/rider": {
             "get": {
                 "consumes": [
@@ -10996,50 +10996,50 @@
                         "required": true
                     },
                     {
-                      "type": "integer",
-                      "description": "当前页, 从1开始, 默认1",
-                      "name": "current",
-                      "in": "query"
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
                     },
-                  {
-                    "type": "boolean",
-                    "description": "是否启用",
-                    "name": "enable",
-                    "in": "query"
-                  },
-                  {
-                    "type": "string",
-                    "description": "结束时间",
-                    "name": "end",
-                    "in": "query"
-                  },
-                  {
-                    "type": "string",
-                    "description": "关键字",
-                    "name": "keyword",
-                    "in": "query"
-                  },
-                  {
-                    "type": "integer",
-                    "description": "每页数据, 默认20",
-                    "name": "pageSize",
-                    "in": "query"
-                  },
-                  {
-                    "type": "string",
-                    "description": "开始时间",
-                    "name": "start",
-                    "in": "query"
+                    {
+                        "type": "boolean",
+                        "description": "是否启用",
+                        "name": "enable",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/definitions/definition.ActivityDetail"
-                          }
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.ActivityDetail"
+                            }
                         }
                     }
                 }
@@ -11156,7 +11156,7 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                          "$ref": "#/definitions/definition.ActivityDetail"
+                            "$ref": "#/definitions/definition.ActivityDetail"
                         }
                     }
                 }
@@ -11184,26 +11184,26 @@
                         "required": true
                     },
                     {
-                      "type": "integer",
-                      "description": "当前页, 从1开始, 默认1",
-                      "name": "current",
-                      "in": "query"
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
                     },
-                  {
-                    "type": "integer",
-                    "description": "每页数据, 默认20",
-                    "name": "pageSize",
-                    "in": "query"
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/definitions/definition.GuideDetail"
-                          }
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.GuideDetail"
+                            }
                         }
                     }
                 }
@@ -11258,7 +11258,7 @@
                     "设置"
                 ],
                 "summary": "保存引导",
-              "operationId": "SettingGuideCreate",
+                "operationId": "SettingGuideCreate",
                 "parameters": [
                     {
                         "type": "string",
@@ -11427,7 +11427,7 @@
                     },
                     {
                         "type": "string",
-                      "description": "法规名称, policy: APP隐私政策; agreement: APP服务协议; agent-policy: 代理端小程序隐私政策; agent-agreement: 代理端小程序服务协议; promote-policy: 推广端小程序隐私政策; promote-agreement: 推广端小程序服务协议 battery-rental-agreement:个签-电池租赁协议;\tebike-rental-agreement:个签-电车及电池租赁协议;\tenterprise-battery-rental-agreement:团签-电池租赁协议;\tenterprise-ebike-rental-agreement:团签-电车及电池租赁协议",
+                        "description": "法规名称, policy: APP隐私政策; agreement: APP服务协议; agent-policy: 代理端小程序隐私政策; agent-agreement: 代理端小程序服务协议; promote-policy: 推广端小程序隐私政策; promote-agreement: 推广端小程序服务协议 battery-rental-agreement:个签-电池租赁协议;\tebike-rental-agreement:个签-电车及电池租赁协议;\tenterprise-battery-rental-agreement:团签-电池租赁协议;\tenterprise-ebike-rental-agreement:团签-电车及电池租赁协议",
                         "name": "name",
                         "in": "path",
                         "required": true
@@ -13075,154 +13075,154 @@
                 }
             }
         },
-      "/mapi/v1/fault": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "故障上报"
-          ],
-          "summary": "故障列表",
-          "operationId": "FaultList",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "骑手校验token",
-              "name": "X-Rider-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "string",
-              "description": "城市",
-              "name": "city",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "当前页, 从1开始, 默认1",
-              "name": "current",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "设备编号",
-              "name": "deviceNo",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "结束时间",
-              "name": "end",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "关键字 用户姓名、手机号",
-              "name": "keyword",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "每页数据, 默认20",
-              "name": "pageSize",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "开始时间",
-              "name": "start",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "故障状态 0未处理 1已处理",
-              "name": "status",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他",
-              "name": "type",
-              "in": "query"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/model.PaginationRes"
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "items": {
-                        "type": "array",
-                        "items": {
-                          "$ref": "#/definitions/definition.Fault"
-                        }
-                      }
+        "/mapi/v1/fault": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "故障上报"
+                ],
+                "summary": "故障列表",
+                "operationId": "FaultList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "城市",
+                        "name": "city",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "设备编号",
+                        "name": "deviceNo",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字 用户姓名、手机号",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "故障状态 0未处理 1已处理",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他",
+                        "name": "type",
+                        "in": "query"
                     }
-                  }
-                ]
-              }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/definition.Fault"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
             }
-          }
-        }
-      },
-      "/mapi/v1/fault/:id": {
-        "put": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "故障上报"
-          ],
-          "summary": "故障更改状态",
-          "operationId": "FaultModify",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "骑手校验token",
-              "name": "X-Rider-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "integer",
-              "description": "故障ID",
-              "name": "id",
-              "in": "path",
-              "required": true
-            },
-            {
-              "description": "故障修改请求",
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/definition.FaultModifyStatusReq"
-              }
+        },
+        "/mapi/v1/fault/:id": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "故障上报"
+                ],
+                "summary": "故障更改状态",
+                "operationId": "FaultModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "故障ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "故障修改请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.FaultModifyStatusReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
             }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
-              }
-            }
-          }
-        }
         }
     },
     "definitions": {
@@ -13278,255 +13278,255 @@
         "definition.ActivityCreateReq": {
             "type": "object",
             "required": [
-              "enable",
+                "enable",
                 "image",
-              "introduction",
+                "introduction",
                 "link",
                 "name",
                 "sort"
             ],
             "properties": {
-              "enable": {
-                "description": "是否启用 true:是 false:否",
-                "type": "boolean"
-              },
+                "enable": {
+                    "description": "是否启用 true:是 false:否",
+                    "type": "boolean"
+                },
                 "image": {
-                  "description": "图片, 图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
-                  "type": "object",
-                  "additionalProperties": {
+                    "description": "图片, 图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "index": {
+                    "description": "首页icon true:是 false:否",
+                    "type": "boolean"
+                },
+                "introduction": {
+                    "description": "活动简介",
                     "type": "string"
-                  }
                 },
-              "index": {
-                "description": "首页icon true:是 false:否",
-                "type": "boolean"
-                },
-              "introduction": {
-                "description": "活动简介",
-                "type": "string"
-              },
                 "link": {
-                  "description": "链接, 链接",
-                  "type": "string"
-                },
-              "name": {
-                "description": "名称, 名称",
-                "type": "string"
-              },
-              "popup": {
-                "description": "弹窗 true:是 false:否",
-                "type": "boolean"
-              },
-              "remark": {
-                "description": "备注",
-                "type": "string"
-              },
-              "sort": {
-                "description": "排序, 排序",
-                "type": "integer"
-              }
-            }
-        },
-      "definition.ActivityDetail": {
-        "type": "object",
-        "properties": {
-          "enable": {
-            "description": "是否启用 true:是 false:否",
-            "type": "boolean"
-          },
-          "id": {
-            "type": "integer"
-          },
-          "image": {
-            "description": "图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          },
-          "index": {
-            "description": "首页icon true:是 false:否",
-            "type": "boolean"
-          },
-          "introduction": {
-            "description": "活动简介",
-            "type": "string"
-          },
-          "link": {
-            "description": "链接",
+                    "description": "链接, 链接",
                     "type": "string"
                 },
                 "name": {
-                  "description": "名称",
+                    "description": "名称, 名称",
                     "type": "string"
                 },
-          "popup": {
-            "description": "弹窗 true:是 false:否",
-            "type": "boolean"
-          },
+                "popup": {
+                    "description": "弹窗 true:是 false:否",
+                    "type": "boolean"
+                },
                 "remark": {
                     "description": "备注",
                     "type": "string"
                 },
                 "sort": {
-                  "description": "排序",
+                    "description": "排序, 排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.ActivityDetail": {
+            "type": "object",
+            "properties": {
+                "enable": {
+                    "description": "是否启用 true:是 false:否",
+                    "type": "boolean"
+                },
+                "id": {
                     "type": "integer"
                 },
-          "updatedAt": {
-            "description": "更新时间",
-            "type": "string"
+                "image": {
+                    "description": "图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "index": {
+                    "description": "首页icon true:是 false:否",
+                    "type": "boolean"
+                },
+                "introduction": {
+                    "description": "活动简介",
+                    "type": "string"
+                },
+                "link": {
+                    "description": "链接",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "popup": {
+                    "description": "弹窗 true:是 false:否",
+                    "type": "boolean"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
                 }
             }
         },
         "definition.ActivityModifyReq": {
             "type": "object",
             "required": [
-              "enable",
+                "enable",
                 "image",
-              "introduction",
+                "introduction",
                 "link",
                 "name",
                 "sort"
             ],
             "properties": {
-              "enable": {
-                "description": "是否启用 true:是 false:否",
-                "type": "boolean"
-              },
+                "enable": {
+                    "description": "是否启用 true:是 false:否",
+                    "type": "boolean"
+                },
                 "image": {
-                  "description": "图片, 图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
-                  "type": "object",
-                  "additionalProperties": {
+                    "description": "图片, 图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "index": {
+                    "description": "首页icon true:是 false:否",
+                    "type": "boolean"
+                },
+                "introduction": {
+                    "description": "活动简介",
                     "type": "string"
-                  }
                 },
-              "index": {
-                "description": "首页icon true:是 false:否",
-                "type": "boolean"
-                },
-              "introduction": {
-                "description": "活动简介",
-                "type": "string"
-              },
                 "link": {
-                  "description": "链接, 链接",
+                    "description": "链接, 链接",
                     "type": "string"
                 },
                 "name": {
-                  "description": "名称, 名称",
+                    "description": "名称, 名称",
                     "type": "string"
                 },
-              "popup": {
-                "description": "弹窗 true:是 false:否",
-                "type": "boolean"
-              },
+                "popup": {
+                    "description": "弹窗 true:是 false:否",
+                    "type": "boolean"
+                },
                 "remark": {
                     "description": "备注",
                     "type": "string"
                 },
                 "sort": {
-                  "description": "排序, 排序",
+                    "description": "排序, 排序",
                     "type": "integer"
                 }
             }
         },
-      "definition.Fault": {
-        "type": "object",
-        "properties": {
-          "attachments": {
-            "description": "附件",
-            "type": "array",
-            "items": {
-              "type": "string"
+        "definition.Fault": {
+            "type": "object",
+            "properties": {
+                "attachments": {
+                    "description": "附件",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "city": {
+                    "description": "城市",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "故障描述",
+                    "type": "string"
+                },
+                "deviceNo": {
+                    "description": "设备编号",
+                    "type": "string"
+                },
+                "faultCause": {
+                    "description": "故障原因",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "description": "故障ID",
+                    "type": "integer"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "rider": {
+                    "description": "骑手",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Rider"
+                        }
+                    ]
+                },
+                "status": {
+                    "description": "故障状态 0未处理 1已处理",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.FaultType"
+                        }
+                    ]
+                }
             }
-          },
-          "city": {
-            "description": "城市",
-            "type": "string"
-          },
-          "createdAt": {
-            "description": "创建时间",
-            "type": "string"
-          },
-          "description": {
-            "description": "故障描述",
-            "type": "string"
-          },
-          "deviceNo": {
-            "description": "设备编号",
-            "type": "string"
-          },
-          "faultCause": {
-            "description": "故障原因",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "id": {
-            "description": "故障ID",
-            "type": "integer"
-          },
-          "remark": {
-            "description": "备注",
-            "type": "string"
-          },
-          "rider": {
-            "description": "骑手",
-            "allOf": [
-              {
-                "$ref": "#/definitions/model.Rider"
-              }
-            ]
-          },
-          "status": {
-            "description": "故障状态 0未处理 1已处理",
-            "type": "integer"
-          },
-          "type": {
-            "description": "故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他",
-            "allOf": [
-              {
-                "$ref": "#/definitions/definition.FaultType"
-              }
-            ]
-          }
-        }
-      },
-      "definition.FaultModifyStatusReq": {
-        "type": "object",
-        "properties": {
-          "remark": {
-            "description": "备注",
-            "type": "string"
-          },
-          "status": {
-            "description": "故障状态 0未处理 1已处理",
-            "type": "integer"
-          }
-        }
-      },
-      "definition.FaultType": {
-        "type": "integer",
-        "enum": [
-          1,
-          2,
-          3,
-          4
-        ],
-        "x-enum-comments": {
-          "FaultTypeBattery": "电池故障",
-          "FaultTypeCabinet": "电柜故障",
-          "FaultTypeEbike": "车辆故障",
-          "FaultTypeOther": "其他"
         },
-        "x-enum-varnames": [
-          "FaultTypeCabinet",
-          "FaultTypeBattery",
-          "FaultTypeEbike",
-          "FaultTypeOther"
-        ]
-      },
+        "definition.FaultModifyStatusReq": {
+            "type": "object",
+            "properties": {
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "故障状态 0未处理 1已处理",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.FaultType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "x-enum-comments": {
+                "FaultTypeBattery": "电池故障",
+                "FaultTypeCabinet": "电柜故障",
+                "FaultTypeEbike": "车辆故障",
+                "FaultTypeOther": "其他"
+            },
+            "x-enum-varnames": [
+                "FaultTypeCabinet",
+                "FaultTypeBattery",
+                "FaultTypeEbike",
+                "FaultTypeOther"
+            ]
+        },
         "definition.GuideDetail": {
             "type": "object",
             "properties": {
@@ -13599,199 +13599,199 @@
                 }
             }
         },
-      "definition.InstructionsCreateReq": {
-        "type": "object",
-        "required": [
-          "content",
-          "key",
-          "title"
-        ],
-        "properties": {
-          "content": {
-            "description": "内容"
-          },
-          "key": {
-            "description": "键",
-            "type": "string"
-          },
-          "title": {
-            "description": "标题",
-            "type": "string"
-          }
-        }
-      },
-      "definition.InstructionsRes": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "description": "内容"
-          },
-          "key": {
-            "description": "键  rent 租电买前必读 rentCar 租车买前必读 buyCar 买车买前必读 coupon 优惠券使用说明 point 积分使用说明",
-            "type": "string"
-          },
-          "title": {
-            "description": "标题",
-            "type": "string"
-          }
-        }
-      },
-      "definition.QuestionCategoryCreateReq": {
-        "type": "object",
-        "required": [
-          "name",
-          "sort"
-        ],
-        "properties": {
-          "name": {
-            "description": "分类名称",
-            "type": "string"
-          },
-          "remark": {
-            "description": "备注",
-            "type": "string"
-          },
-          "sort": {
-            "description": "排序",
-            "type": "integer"
-          }
-        }
-      },
-      "definition.QuestionCategoryDetail": {
-        "type": "object",
-        "required": [
-          "name",
-          "sort"
-        ],
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "description": "分类名称",
-            "type": "string"
-          },
-          "remark": {
-            "description": "备注",
-            "type": "string"
-          },
-          "sort": {
-            "description": "排序",
-            "type": "integer"
-          }
-        }
-      },
-      "definition.QuestionCategoryModifyReq": {
-        "type": "object",
-        "required": [
-          "name",
-          "sort"
-        ],
-        "properties": {
-          "name": {
-            "description": "分类名称",
-            "type": "string"
-          },
-          "remark": {
-            "description": "备注",
-            "type": "string"
-          },
-          "sort": {
-            "description": "排序",
-            "type": "integer"
-          }
-        }
-      },
-      "definition.QuestionCreateReq": {
-        "type": "object",
-        "required": [
-          "answer",
-          "name",
-          "sort"
-        ],
-        "properties": {
-          "answer": {
-            "description": "答案",
-            "type": "string"
-          },
-          "categoryId": {
-            "description": "分类ID",
-            "type": "integer"
-          },
-          "categoryName": {
-            "description": "分类名称",
-            "type": "string"
-          },
-          "name": {
-            "description": "问题名称",
-            "type": "string"
-          },
-          "sort": {
-            "description": "排序",
-            "type": "integer"
-          }
-        }
-      },
-      "definition.QuestionDetail": {
-        "type": "object",
-        "required": [
-          "answer",
-          "name",
-          "sort"
-        ],
-        "properties": {
-          "answer": {
-            "description": "答案",
-            "type": "string"
-          },
-          "categoryId": {
-            "description": "分类ID",
-            "type": "integer"
-          },
-          "categoryName": {
-            "description": "分类名称",
-            "type": "string"
-          },
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "description": "问题名称",
-            "type": "string"
-          },
-          "sort": {
-            "description": "排序",
-            "type": "integer"
-          }
-        }
-      },
-      "definition.QuestionModifyReq": {
-        "type": "object",
-        "required": [
-          "answer",
-          "name",
-          "sort"
-        ],
-        "properties": {
-          "answer": {
-            "description": "答案",
-            "type": "string"
-          },
-          "categoryId": {
-            "description": "分类ID",
-            "type": "integer"
-          },
-          "categoryName": {
-            "description": "分类名称",
-            "type": "string"
-          },
-          "name": {
-            "description": "问题名称",
-            "type": "string"
-          },
-          "sort": {
-            "description": "排序",
-            "type": "integer"
+        "definition.InstructionsCreateReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "key",
+                "title"
+            ],
+            "properties": {
+                "content": {
+                    "description": "内容"
+                },
+                "key": {
+                    "description": "键",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "标题",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.InstructionsRes": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "内容"
+                },
+                "key": {
+                    "description": "键  rent 租电买前必读 rentCar 租车买前必读 buyCar 买车买前必读 coupon 优惠券使用说明 point 积分使用说明",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "标题",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.QuestionCategoryCreateReq": {
+            "type": "object",
+            "required": [
+                "name",
+                "sort"
+            ],
+            "properties": {
+                "name": {
+                    "description": "分类名称",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.QuestionCategoryDetail": {
+            "type": "object",
+            "required": [
+                "name",
+                "sort"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "分类名称",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.QuestionCategoryModifyReq": {
+            "type": "object",
+            "required": [
+                "name",
+                "sort"
+            ],
+            "properties": {
+                "name": {
+                    "description": "分类名称",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.QuestionCreateReq": {
+            "type": "object",
+            "required": [
+                "answer",
+                "name",
+                "sort"
+            ],
+            "properties": {
+                "answer": {
+                    "description": "答案",
+                    "type": "string"
+                },
+                "categoryId": {
+                    "description": "分类ID",
+                    "type": "integer"
+                },
+                "categoryName": {
+                    "description": "分类名称",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "问题名称",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.QuestionDetail": {
+            "type": "object",
+            "required": [
+                "answer",
+                "name",
+                "sort"
+            ],
+            "properties": {
+                "answer": {
+                    "description": "答案",
+                    "type": "string"
+                },
+                "categoryId": {
+                    "description": "分类ID",
+                    "type": "integer"
+                },
+                "categoryName": {
+                    "description": "分类名称",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "问题名称",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.QuestionModifyReq": {
+            "type": "object",
+            "required": [
+                "answer",
+                "name",
+                "sort"
+            ],
+            "properties": {
+                "answer": {
+                    "description": "答案",
+                    "type": "string"
+                },
+                "categoryId": {
+                    "description": "分类ID",
+                    "type": "integer"
+                },
+                "categoryName": {
+                    "description": "分类名称",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "问题名称",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
                 }
             }
         },
@@ -16600,21 +16600,21 @@
                     "description": "金额",
                     "type": "number"
                 },
-              "cities": {
-                "description": "可用城市, 不存在此字段则不限制",
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/model.City"
-                }
-              },
+                "cities": {
+                    "description": "可用城市, 不存在此字段则不限制",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.City"
+                    }
+                },
                 "code": {
                     "description": "券码",
                     "type": "string"
                 },
-              "exclusive": {
-                "description": "与其他类型券是否互斥",
-                "type": "boolean"
-              },
+                "exclusive": {
+                    "description": "与其他类型券是否互斥",
+                    "type": "boolean"
+                },
                 "expiredAt": {
                     "description": "到期时间",
                     "type": "string"
@@ -16623,13 +16623,13 @@
                     "description": "名称",
                     "type": "string"
                 },
-              "plans": {
-                "description": "可用骑士卡, 不存在此字段则不限制",
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/model.Plan"
-                }
-              },
+                "plans": {
+                    "description": "可用骑士卡, 不存在此字段则不限制",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Plan"
+                    }
+                },
                 "usedAt": {
                     "description": "使用时间",
                     "type": "string"
@@ -18296,7 +18296,7 @@
                     "description": "反馈时间",
                     "type": "string"
                 },
-              "enterpriseId": {
+                "enterpriseId": {
                     "description": "反馈用户团签id",
                     "type": "integer"
                 },
@@ -18308,14 +18308,14 @@
                     "description": "反馈ID",
                     "type": "integer"
                 },
-              "name": {
-                "description": "反馈用户名称",
-                "type": "string"
-              },
-              "phone": {
-                "description": "反馈用户电话",
-                "type": "string"
-              },
+                "name": {
+                    "description": "反馈用户名称",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "反馈用户电话",
+                    "type": "string"
+                },
                 "source": {
                     "description": "反馈来源",
                     "type": "integer"
@@ -18361,7 +18361,7 @@
                     "type": "integer"
                 },
                 "source": {
-                  "description": "反馈来源 1:骑手 2:代理",
+                    "description": "反馈来源 1:骑手 2:代理",
                     "type": "integer"
                 },
                 "start": {
@@ -19801,10 +19801,10 @@
                     "description": "城市",
                     "type": "string"
                 },
-              "createdAt": {
-                "description": "创建时间",
-                "type": "string"
-              },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
                 "name": {
                     "description": "姓名",
                     "type": "string"

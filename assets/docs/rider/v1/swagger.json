@@ -2750,14 +2750,14 @@
                     }
                 },
                 "businesses": {
-                  "description": "骑手可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                    "description": "骑手可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
-              "cabinetBusinesses": {
-                "description": "电柜可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                "cabinetBusinesses": {
+                    "description": "电柜可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -2911,12 +2911,12 @@
                     "description": "网点地址",
                     "type": "string"
                 },
-              "businesses": {
-                "description": "可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+                "businesses": {
+                    "description": "可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "distance": {
                     "description": "距离(前端处理: 超过1000米显示nKM)",
@@ -3173,21 +3173,21 @@
                     "description": "金额",
                     "type": "number"
                 },
-              "cities": {
-                "description": "可用城市, 不存在此字段则不限制",
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/model.City"
-                }
-              },
+                "cities": {
+                    "description": "可用城市, 不存在此字段则不限制",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.City"
+                    }
+                },
                 "code": {
                     "description": "券码",
                     "type": "string"
                 },
-              "exclusive": {
-                "description": "与其他类型券是否互斥",
-                "type": "boolean"
-              },
+                "exclusive": {
+                    "description": "与其他类型券是否互斥",
+                    "type": "boolean"
+                },
                 "expiredAt": {
                     "description": "到期时间",
                     "type": "string"
@@ -3196,13 +3196,13 @@
                     "description": "名称",
                     "type": "string"
                 },
-              "plans": {
-                "description": "可用骑士卡, 不存在此字段则不限制",
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/model.Plan"
-                }
-              },
+                "plans": {
+                    "description": "可用骑士卡, 不存在此字段则不限制",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Plan"
+                    }
+                },
                 "usedAt": {
                     "description": "使用时间",
                     "type": "string"

@@ -184,21 +184,21 @@ definitions:
         type: array
       type:
         allOf:
-          - $ref: '#/definitions/definition.FaultType'
+        - $ref: '#/definitions/definition.FaultType'
         description: 故障类型, 故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他
     required:
-      - cityId
-      - description
-      - deviceNo
-      - faultCause
-      - type
+    - cityId
+    - description
+    - deviceNo
+    - faultCause
+    - type
     type: object
   definition.FaultType:
     enum:
-      - 1
-      - 2
-      - 3
-      - 4
+    - 1
+    - 2
+    - 3
+    - 4
     type: integer
     x-enum-comments:
       FaultTypeBattery: 电池故障
@@ -206,10 +206,10 @@ definitions:
       FaultTypeEbike: 车辆故障
       FaultTypeOther: 其他
     x-enum-varnames:
-      - FaultTypeCabinet
-      - FaultTypeBattery
-      - FaultTypeEbike
-      - FaultTypeOther
+    - FaultTypeCabinet
+    - FaultTypeBattery
+    - FaultTypeEbike
+    - FaultTypeOther
   definition.GuideDetail:
     properties:
       answer:
@@ -396,8 +396,8 @@ definitions:
         description: 排序
         type: integer
     required:
-      - name
-      - sort
+    - name
+    - sort
     type: object
   definition.QuestionDetail:
     properties:
@@ -419,19 +419,19 @@ definitions:
         description: 排序
         type: integer
     required:
-      - answer
-      - name
-      - sort
+    - answer
+    - name
+    - sort
     type: object
   definition.RiderDirectionRes:
     properties:
       destination:
         allOf:
-          - $ref: '#/definitions/definition.Destination'
+        - $ref: '#/definitions/definition.Destination'
         description: 终点信息
       origin:
         allOf:
-          - $ref: '#/definitions/definition.Origin'
+        - $ref: '#/definitions/definition.Origin'
         description: 起点信息
       routes:
         description: 方案列表
@@ -513,7 +513,7 @@ definitions:
               type: string
             pois:
               description: 文档未标注  该路段途径的POI列表？
-              items: { }
+              items: {}
               type: array
             restrictions_info:
               description: "限行信息\t如 \"包含禁行路段|包含逆行路段\""
@@ -3410,30 +3410,30 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 注销账户
       tags:
-        - Rider - 骑手
+      - Rider - 骑手
   /rider/v2/direction:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: RiderDirection
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 终点
-          in: query
-          name: destination
-          required: true
-          type: string
-        - description: 起点
-          in: query
-          name: origin
-          required: true
-          type: string
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 终点
+        in: query
+        name: destination
+        required: true
+        type: string
+      - description: 起点
+        in: query
+        name: origin
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -3784,22 +3784,22 @@ paths:
   /rider/v2/fault:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: FaultCreate
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: ' 故障上报请求'
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.FaultCreateReq'
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: ' 故障上报请求'
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.FaultCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -3807,20 +3807,20 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 故障上报
       tags:
-        - Fault - 故障
+      - Fault - 故障
   /rider/v2/fault/cause:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: FaultCause
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -3830,71 +3830,71 @@ paths:
             type: array
       summary: 故障原因
       tags:
-        - Fault - 故障
+      - Fault - 故障
   /rider/v2/feedback:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: FeedbackList
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 反馈结束时间
-          in: query
-          name: end
-          type: string
-        - description: 是否团签, 0:全部 1:团签 2:个签
-          in: query
-          name: enterprise
-          type: integer
-        - description: 团签企业ID, `enterprise = 1`时才会生效
-          in: query
-          name: enterpriseID
-          type: integer
-        - description: 关键词
-          in: query
-          name: keyword
-          type: string
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
-        - description: 反馈来源 1:骑手 2:代理
-          in: query
-          name: source
-          type: integer
-        - description: 反馈开始时间
-          in: query
-          name: start
-          type: string
-        - description: 反馈类型
-          in: query
-          name: type
-          type: integer
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 反馈结束时间
+        in: query
+        name: end
+        type: string
+      - description: 是否团签, 0:全部 1:团签 2:个签
+        in: query
+        name: enterprise
+        type: integer
+      - description: 团签企业ID, `enterprise = 1`时才会生效
+        in: query
+        name: enterpriseID
+        type: integer
+      - description: 关键词
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 反馈来源 1:骑手 2:代理
+        in: query
+        name: source
+        type: integer
+      - description: 反馈开始时间
+        in: query
+        name: start
+        type: string
+      - description: 反馈类型
+        in: query
+        name: type
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/model.FeedbackDetail'
-                    type: array
-                type: object
+                    $ref: '#/definitions/model.FeedbackDetail'
+                  type: array
+              type: object
       summary: 反馈列表
       tags:
-        - Feedback - 反馈
+      - Feedback - 反馈
     post:
       consumes:
       - application/json
@@ -3947,16 +3947,16 @@ paths:
   /rider/v2/instructions/:key:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: RiderInstructionsDetail
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -3964,7 +3964,7 @@ paths:
             $ref: '#/definitions/definition.InstructionsRes'
       summary: 买前必读 积分 优惠券使用说明
       tags:
-        - Instructions - 说明
+      - Instructions - 说明
   /rider/v2/order:
     get:
       consumes:
@@ -4204,16 +4204,16 @@ paths:
   /rider/v2/question:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: QuestionAll
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4223,20 +4223,20 @@ paths:
             type: array
       summary: 常见问题列表
       tags:
-        - Question - 常见问题
+      - Question - 常见问题
   /rider/v2/question/category:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: QuestionCategoryAll
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4246,7 +4246,7 @@ paths:
             type: array
       summary: 问题分类列表
       tags:
-        - QuestionCategory - 问题分类
+      - QuestionCategory - 问题分类
   /rider/v2/reserve:
     get:
       consumes:
@@ -4336,7 +4336,7 @@ paths:
             type: array
       summary: 获取电池型号选择
       tags:
-        - Selection - 筛选
+      - Selection - 筛选
   /rider/v2/setting/app:
     get:
       consumes:

@@ -69,12 +69,12 @@ definitions:
         description: 排序, 排序
         type: integer
     required:
-      - enable
-      - image
-      - introduction
-      - link
-      - name
-      - sort
+    - enable
+    - image
+    - introduction
+    - link
+    - name
+    - sort
     type: object
   definition.ActivityDetail:
     properties:
@@ -145,9 +145,9 @@ definitions:
         description: 排序, 排序
         type: integer
     required:
-      - enable
+    - enable
     - image
-      - introduction
+    - introduction
     - link
     - name
     - sort
@@ -184,14 +184,14 @@ definitions:
         type: string
       rider:
         allOf:
-          - $ref: '#/definitions/model.Rider'
+        - $ref: '#/definitions/model.Rider'
         description: 骑手
       status:
         description: 故障状态 0未处理 1已处理
         type: integer
       type:
         allOf:
-          - $ref: '#/definitions/definition.FaultType'
+        - $ref: '#/definitions/definition.FaultType'
         description: 故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他
     type: object
   definition.FaultModifyStatusReq:
@@ -205,10 +205,10 @@ definitions:
     type: object
   definition.FaultType:
     enum:
-      - 1
-      - 2
-      - 3
-      - 4
+    - 1
+    - 2
+    - 3
+    - 4
     type: integer
     x-enum-comments:
       FaultTypeBattery: 电池故障
@@ -216,10 +216,10 @@ definitions:
       FaultTypeEbike: 车辆故障
       FaultTypeOther: 其他
     x-enum-varnames:
-      - FaultTypeCabinet
-      - FaultTypeBattery
-      - FaultTypeEbike
-      - FaultTypeOther
+    - FaultTypeCabinet
+    - FaultTypeBattery
+    - FaultTypeEbike
+    - FaultTypeOther
   definition.GuideDetail:
     properties:
       answer:
@@ -267,9 +267,9 @@ definitions:
         description: 排序
         type: integer
     required:
-      - answer
-      - name
-      - sort
+    - answer
+    - name
+    - sort
     type: object
   definition.InstructionsCreateReq:
     properties:
@@ -282,9 +282,9 @@ definitions:
         description: 标题
         type: string
     required:
-      - content
-      - key
-      - title
+    - content
+    - key
+    - title
     type: object
   definition.InstructionsRes:
     properties:
@@ -310,8 +310,8 @@ definitions:
         description: 排序
         type: integer
     required:
-      - name
-      - sort
+    - name
+    - sort
     type: object
   definition.QuestionCategoryDetail:
     properties:
@@ -327,8 +327,8 @@ definitions:
         description: 排序
         type: integer
     required:
-      - name
-      - sort
+    - name
+    - sort
     type: object
   definition.QuestionCategoryModifyReq:
     properties:
@@ -342,8 +342,8 @@ definitions:
         description: 排序
         type: integer
     required:
-      - name
-      - sort
+    - name
+    - sort
     type: object
   definition.QuestionCreateReq:
     properties:
@@ -363,9 +363,9 @@ definitions:
         description: 排序
         type: integer
     required:
-      - answer
-      - name
-      - sort
+    - answer
+    - name
+    - sort
     type: object
   definition.QuestionDetail:
     properties:
@@ -387,9 +387,9 @@ definitions:
         description: 排序
         type: integer
     required:
-      - answer
-      - name
-      - sort
+    - answer
+    - name
+    - sort
     type: object
   definition.QuestionModifyReq:
     properties:
@@ -409,9 +409,9 @@ definitions:
         description: 排序
         type: integer
     required:
-      - answer
-      - name
-      - sort
+    - answer
+    - name
+    - sort
     type: object
   model.AgentCreateReq:
     properties:
@@ -11147,22 +11147,22 @@ paths:
   /manager/v1/instructions:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerInstructionsModify
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.InstructionsCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.InstructionsCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -11170,20 +11170,20 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改说明
       tags:
-        - 说明
+      - 说明
   /manager/v1/instructions/:key:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerInstructionsDetail
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -11191,7 +11191,7 @@ paths:
             $ref: '#/definitions/definition.InstructionsRes'
       summary: 说明详情
       tags:
-        - 说明
+      - 说明
   /manager/v1/inventory:
     delete:
       consumes:
@@ -12987,32 +12987,32 @@ paths:
   /manager/v1/question:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: QuestionList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 分类ID,0表示其他，不传表示全部, 分类ID
-          in: query
-          name: categoryId
-          type: integer
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 关键字
-          in: query
-          name: keywords
-          type: string
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 分类ID,0表示其他，不传表示全部, 分类ID
+        in: query
+        name: categoryId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 关键字
+        in: query
+        name: keywords
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -13022,25 +13022,25 @@ paths:
             type: array
       summary: 常见问题分页列表
       tags:
-        - 设置
+      - 设置
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: QuestionCreate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.QuestionCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.QuestionCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -13048,25 +13048,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建常见问题
       tags:
-        - 设置
+      - 设置
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: QuestionModify
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.QuestionModifyReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.QuestionModifyReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -13074,25 +13074,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改常见问题
       tags:
-        - 设置
+      - 设置
   /manager/v1/question/{id}:
     delete:
       consumes:
-        - application/json
+      - application/json
       operationId: QuestionDelete
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 分类ID
-          in: path
-          name: id
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 分类ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -13100,24 +13100,24 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除常见问题
       tags:
-        - 设置
+      - 设置
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: QuestionDetail
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 分类ID
-          in: path
-          name: id
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 分类ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -13125,28 +13125,28 @@ paths:
             $ref: '#/definitions/definition.QuestionDetail'
       summary: 常见问题详情
       tags:
-        - 设置
+      - 设置
   /manager/v1/question/category:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: Question_categoryList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -13156,25 +13156,25 @@ paths:
             type: array
       summary: 问题分类分页列表
       tags:
-        - 设置
+      - 设置
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: Question_categoryCreate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.QuestionCategoryCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.QuestionCategoryCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -13182,25 +13182,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建问题分类
       tags:
-        - 设置
+      - 设置
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: Question_categoryModify
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.QuestionCategoryModifyReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.QuestionCategoryModifyReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -13208,20 +13208,20 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改问题分类
       tags:
-        - 设置
+      - 设置
   /manager/v1/question/category/{id}:
     delete:
       consumes:
-        - application/json
+      - application/json
       operationId: Question_categoryDelete
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -13229,24 +13229,24 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除问题分类
       tags:
-        - 设置
+      - 设置
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: Question_categoryDetail
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 分类ID
-          in: path
-          name: id
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 分类ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -13254,7 +13254,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 问题分类详情
       tags:
-        - 设置
+      - 设置
   /manager/v1/rider:
     get:
       consumes:
@@ -14019,16 +14019,16 @@ paths:
   /manager/v1/selection/question/category:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerSelectionQuestionCategory
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -14038,7 +14038,7 @@ paths:
             type: array
       summary: 问题分类
       tags:
-        - 筛选
+      - 筛选
   /manager/v1/selection/rider:
     get:
       consumes:
@@ -15514,91 +15514,91 @@ paths:
   /mapi/v1/fault:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: FaultList
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 城市
-          in: query
-          name: city
-          type: string
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 设备编号
-          in: query
-          name: deviceNo
-          type: string
-        - description: 结束时间
-          in: query
-          name: end
-          type: string
-        - description: 关键字 用户姓名、手机号
-          in: query
-          name: keyword
-          type: string
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
-        - description: 开始时间
-          in: query
-          name: start
-          type: string
-        - description: 故障状态 0未处理 1已处理
-          in: query
-          name: status
-          type: integer
-        - description: 故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他
-          in: query
-          name: type
-          type: integer
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 城市
+        in: query
+        name: city
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 设备编号
+        in: query
+        name: deviceNo
+        type: string
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 关键字 用户姓名、手机号
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 故障状态 0未处理 1已处理
+        in: query
+        name: status
+        type: integer
+      - description: 故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他
+        in: query
+        name: type
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/definition.Fault'
-                    type: array
-                type: object
+                    $ref: '#/definitions/definition.Fault'
+                  type: array
+              type: object
       summary: 故障列表
       tags:
-        - 故障上报
+      - 故障上报
   /mapi/v1/fault/:id:
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: FaultModify
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 故障ID
-          in: path
-          name: id
-          required: true
-          type: integer
-        - description: 故障修改请求
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.FaultModifyStatusReq'
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 故障ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 故障修改请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.FaultModifyStatusReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -15606,5 +15606,5 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 故障更改状态
       tags:
-        - 故障上报
+      - 故障上报
 swagger: "2.0"

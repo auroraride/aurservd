@@ -176,12 +176,12 @@ func LoadRiderV2Routes(root *echo.Group) {
 	cert.POST("/order/refund", v1.Order.Refund)            // 申请退款
 	cert.POST("/deposit/credit", rapi.Order.DepositCredit) // 押金订单
 
-	// 电柜
-	cabinet := cert.Group("/cabinet")
-	cabinet.GET("/process/:serial", v1.Cabinet.GetProcess)   // 获取换电信息
-	cabinet.POST("/process", v1.Cabinet.Process)             // 换电
-	cabinet.GET("/process/status", v1.Cabinet.ProcessStatus) // 换电状态
-	cabinet.POST("/exchange/store", v1.Exchange.Store)       // 门店换电
+	// 换电
+	exchange := cert.Group("/exchange")
+	exchange.GET("/cabinet/process/:serial", v1.Cabinet.GetProcess)   // 电柜获取换电信息
+	exchange.POST("/cabinet/process", v1.Cabinet.Process)             // 电柜换电
+	exchange.GET("/cabinet/process/status", v1.Cabinet.ProcessStatus) // 电柜换电状态
+	exchange.POST("/store", v1.Exchange.Store)                        // 门店换电
 
 	// 预约
 	cert.GET("/reserve", v1.Reserve.Unfinished)    // 未完成预约
