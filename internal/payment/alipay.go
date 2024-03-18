@@ -294,6 +294,10 @@ func (c *alipayClient) FandAuthFreeze(pc *model.PaymentCache) (string, error) {
 		amount = fmt.Sprintf("%.2f", pc.DepositCredit.Amount)
 	}
 
+	if ar.Config.Environment.IsDevelopment() {
+		amount = fmt.Sprintf("%.2f", 0.01)
+	}
+
 	trade := FundAuthOrderAppFreeze{
 		FundAuthOrderAppFreeze: alipay.FundAuthOrderAppFreeze{
 			OutOrderNo:   no,
