@@ -2361,7 +2361,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.OrderCreateReq"
+                            "$ref": "#/definitions/definition.OrderCreateReq"
                         }
                     }
                 ],
@@ -3479,6 +3479,69 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.OrderCreateReq": {
+            "type": "object",
+            "required": [
+                "orderType",
+                "payway",
+                "planId"
+            ],
+            "properties": {
+                "cityId": {
+                    "description": "城市ID, 新签必填",
+                    "type": "integer"
+                },
+                "coupons": {
+                    "description": "优惠券",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "depositAlipayAuthFreeze": {
+                    "description": "以下字段仅限V2使用",
+                    "type": "boolean"
+                },
+                "depositOrderNo": {
+                    "description": "押金订单编号 (如果分开支付的押金此参必填 例如 选择了信用免押,支付为支付宝支付,则此参数必填)",
+                    "type": "string"
+                },
+                "needContract": {
+                    "description": "是否需要签约",
+                    "type": "boolean"
+                },
+                "orderType": {
+                    "description": "订单类型, 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7
+                    ]
+                },
+                "payway": {
+                    "description": "支付方式, 1支付宝 2微信 3支付宝预授权(仅限V2使用)",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                "planId": {
+                    "description": "套餐ID",
+                    "type": "integer"
+                },
+                "point": {
+                    "description": "是否使用积分",
+                    "type": "boolean"
+                }
+            }
+        },
         "definition.OrderDepositCreditReq": {
             "type": "object",
             "required": [
@@ -3487,7 +3550,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "payway": {
-                    "description": "支付方式, 1:支付宝 2:微信 3:支付宝预授权支付 4:微信支付分支付",
+                    "description": "支付方式, 3:支付宝预授权支付 4:微信支付分支付",
                     "type": "integer",
                     "enum": [
                         3,
@@ -3504,7 +3567,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "outOrderNo": {
-                    "description": "订单号",
+                    "description": "预授权订单号",
                     "type": "string"
                 },
                 "outTradeNo": {
@@ -3512,7 +3575,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "prepay": {
-                    "description": "预支付信息",
+                    "description": "支付信息",
                     "type": "string"
                 }
             }
@@ -5488,66 +5551,6 @@ const docTemplate = `{
                 "phone": {
                     "description": "代理电话",
                     "type": "string"
-                }
-            }
-        },
-        "model.OrderCreateReq": {
-            "type": "object",
-            "required": [
-                "orderType",
-                "payway",
-                "planId"
-            ],
-            "properties": {
-                "cityId": {
-                    "description": "城市ID, 新签必填",
-                    "type": "integer"
-                },
-                "coupons": {
-                    "description": "优惠券",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "depositAlipayAuthFreeze": {
-                    "description": "以下字段仅限V2使用",
-                    "type": "boolean"
-                },
-                "needContract": {
-                    "description": "是否需要签约",
-                    "type": "boolean"
-                },
-                "orderType": {
-                    "description": "订单类型, 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2,
-                        3,
-                        4,
-                        5,
-                        6,
-                        7
-                    ]
-                },
-                "payway": {
-                    "description": "支付方式, 1支付宝 2微信 3支付宝预授权(仅限V2使用) 4微信支付分(仅限V2使用)",
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2,
-                        3,
-                        4
-                    ]
-                },
-                "planId": {
-                    "description": "套餐ID",
-                    "type": "integer"
-                },
-                "point": {
-                    "description": "是否使用积分",
-                    "type": "boolean"
                 }
             }
         },

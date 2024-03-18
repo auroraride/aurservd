@@ -876,12 +876,6 @@ definitions:
         items:
           type: integer
         type: array
-      depositAlipayAuthFreeze:
-        description: 以下字段仅限V2使用
-        type: boolean
-      needContract:
-        description: 是否需要签约
-        type: boolean
       orderType:
         description: 订单类型, 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
         enum:
@@ -894,12 +888,10 @@ definitions:
         - 7
         type: integer
       payway:
-        description: 支付方式, 1支付宝 2微信 3支付宝预授权(仅限V2使用) 4微信支付分(仅限V2使用)
+        description: 支付方式, 1支付宝 2微信
         enum:
         - 1
         - 2
-        - 3
-        - 4
         type: integer
       planId:
         description: 套餐ID

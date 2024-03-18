@@ -255,6 +255,8 @@ func (c *wechatClient) Notification(req *http.Request) *model.PaymentCache {
 		pc.Assistance.TradeNo = tranID
 	case model.PaymentCacheTypeAgentPrepay:
 		pc.AgentPrepay.TradeNo = tranID
+	case model.PaymentCacheTypeDeposit:
+		pc.DepositCredit.TradeNo = tranID
 	default:
 		return nil
 	}

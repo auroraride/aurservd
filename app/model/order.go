@@ -68,17 +68,13 @@ var (
 // OrderCreateReq 订单创建请求
 type OrderCreateReq struct {
 	PlanID    uint64 `json:"planId" validate:"required" trans:"套餐ID"`
-	Payway    uint8  `json:"payway" validate:"required" trans:"支付方式" enums:"1,2,3,4"`          // 1支付宝 2微信 3支付宝预授权(仅限V2使用) 4微信支付分(仅限V2使用)
+	Payway    uint8  `json:"payway" validate:"required" trans:"支付方式" enums:"1,2"`              // 1支付宝 2微信
 	OrderType uint   `json:"orderType" validate:"required" trans:"订单类型" enums:"1,2,3,4,5,6,7"` // 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
 
 	CityID uint64 `json:"cityId"` // 城市ID, 新签必填
 
 	Point   bool     `json:"point"`   // 是否使用积分
 	Coupons []uint64 `json:"coupons"` // 优惠券
-
-	// 以下字段仅限V2使用
-	DepositAlipayAuthFreeze bool  `json:"depositAlipayAuthFreeze"` // 是否使用支付宝预授权信用分支付押金
-	NeedContract            *bool `json:"needContract"`            // 是否需要签约
 }
 
 // OrderCreateRes 订单创建返回
@@ -150,7 +146,7 @@ type Order struct {
 	ID            uint64        `json:"id"`                 // 订单ID
 	Type          uint          `json:"type"`               // 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
 	Status        uint8         `json:"status"`             // 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝
-	Payway        uint8         `json:"payway"`             // 支付方式 1支付宝 2微信
+	Payway        uint8         `json:"payway"`             // 支付方式 1支付宝 2微信 3支付宝预授权
 	PayAt         string        `json:"payAt"`              // 支付时间
 	Amount        float64       `json:"amount"`             // 支付金额
 	OutTradeNo    string        `json:"outTradeNo"`         // 订单编号

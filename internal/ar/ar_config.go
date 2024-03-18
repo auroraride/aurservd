@@ -260,7 +260,12 @@ type config struct {
 			NotifyUrl     string
 		}
 		AlipayAuthFreeze struct {
-			NotifyUrl string
+			// 冻结回调通知
+			FreezeNotifyUrl string `koanf:"freezeNotifyUrl"`
+			// 解冻回调通知
+			UnfreezeNotifyUrl string `koanf:"unfreezeNotifyUrl"`
+			// 冻结转支付回调通知
+			TradePayNotifyUrl string `koanf:"tradePayNotifyUrl"`
 
 			// 芝麻信用免押金
 			Category  string // 芝麻免押的类目

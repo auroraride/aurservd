@@ -15,6 +15,7 @@ import (
 	"github.com/golang-module/carbon/v2"
 	"go.uber.org/zap"
 
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -423,6 +424,8 @@ func (s *orderService) DoPayment(pc *model.PaymentCache) {
 		s.FeePaid(pc.OverDueFee)
 	case model.PaymentCacheTypeAgentPrepay:
 		_, _ = NewPrepayment().UpdateBalance(pc.AgentPrepay.Payway, pc.AgentPrepay.AgentPrepay, pc.AgentPrepay)
+	case model.PaymentCacheTypeDeposit:
+		s.DepositPay(pc.DepositCredit)
 	}
 }
 
@@ -583,6 +586,25 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 				Save(s.ctx)
 			if err != nil {
 				zap.L().Error("订单已支付, 但押金订单创建失败: "+trade.OutTradeNo, zap.Error(err))
+				return
+			}
+		}
+
+		// 如果有押金订单编号, 更新订单关联
+		if trade.DepositOrderNo != nil {
+			do, err = tx.Order.QueryNotDeleted().Where(order.Status(model.OrderStatusPaid), order.Type(model.OrderTypeDeposit)).
+				Where(
+					order.Or(
+						order.OutOrderNo(*trade.DepositOrderNo),
+						order.OutTradeNo(*trade.DepositOrderNo),
+					)).First(s.ctx)
+			if err != nil {
+				zap.L().Error("订单已支付, 但押金订单查询失败: "+trade.OutTradeNo, zap.Error(err))
+				return
+			}
+			_, err = do.Update().SetParentID(o.ID).Save(s.ctx)
+			if err != nil {
+				zap.L().Error("订单已支付, 但押金订单更新失败: "+trade.OutTradeNo, zap.Error(err))
 				return
 			}
 		}
@@ -1025,6 +1047,7 @@ func (s *orderService) QueryStatus(req *model.OrderStatusReq) (res model.OrderSt
 	}
 }
 
+// TradePay 资金冻结转支付
 func (s *orderService) TradePay(o *ent.Order) {
 
 	subject := "订阅骑士卡"
@@ -1033,7 +1056,7 @@ func (s *orderService) TradePay(o *ent.Order) {
 	}
 
 	// 调用资金冻结转支付
-	res, err := payment.NewAlipay().AlipayTradePay(&model.TradePay{
+	res, err := payment.NewAlipay().AlipayTradePay(&definition.TradePay{
 		AuthNo:      o.AuthNo,
 		OutTradeNo:  o.OutTradeNo,
 		TotalAmount: o.Total,
@@ -1050,6 +1073,7 @@ func (s *orderService) TradePay(o *ent.Order) {
 		zap.L().Error("资金冻结转支付失败", zap.Error(err))
 		return
 	}
+
 	// 创建支付创建订单
 	ent.Database.Order.Create().
 		SetPayway(model.OrderPaywayAlipay).
@@ -1072,5 +1096,51 @@ func (s *orderService) TradePay(o *ent.Order) {
 		SetDiscountNewly(o.DiscountNewly).
 		SetNillableBrandID(o.BrandID).
 		SaveX(s.ctx)
+}
 
+// DepositPay 押金订单
+func (s *orderService) DepositPay(d *model.DepositCredit) {
+	// 判定是否已有押金订单
+	if exists, _ := ent.Database.Order.QueryNotDeleted().Where(
+		order.RiderID(d.RiderID),
+		order.Status(model.OrderStatusPaid),
+		order.Type(model.OrderTypeDeposit),
+	).Exist(s.ctx); exists {
+		return
+	}
+
+	// 查询订单是否存在
+	o := ent.Database.Order.QueryNotDeleted()
+	if d.OutTradeNo != "" {
+		o.Where(order.OutTradeNo(d.OutTradeNo))
+	}
+	if d.OutOrderNo != "" {
+		o.Where(order.OutOrderNo(d.OutOrderNo))
+	}
+	if exists, _ := o.Exist(s.ctx); exists {
+		return
+	}
+
+	// 创建押金订单
+	cr := ent.Database.Order.Create().
+		SetPayway(d.Payway).
+		SetPlanID(d.PlanID).
+		SetRiderID(d.RiderID).
+		SetAmount(d.Amount).
+		SetTotal(d.Amount).
+		SetStatus(model.OrderStatusPaid).
+		SetType(model.OrderTypeDeposit)
+	// 押金正常支付创建的订单
+	if d.OutTradeNo != "" {
+		cr.SetOutTradeNo(d.OutTradeNo)
+		cr.SetTradeNo(d.TradeNo)
+	}
+
+	// 信用付创建的订单
+	if d.OutOrderNo != "" {
+		cr.SetOutOrderNo(d.OutOrderNo)
+		cr.SetAuthNo(d.AuthNo)
+		cr.SetOutRequestNo(d.OutRequestNo)
+	}
+	cr.SaveX(s.ctx)
 }

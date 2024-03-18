@@ -1,4 +1,4 @@
-package model
+package definition
 
 type FandAuthFreezeStatus string
 
@@ -8,14 +8,20 @@ const (
 	FandAuthFreezeStatusClosed  FandAuthFreezeStatus = "CLOSED"  // 关闭
 )
 
+const (
+	FandAuthNotifyType   = "fund_auth_freeze"           // 资金预授权冻结成功
+	FandAuthUnfreezeType = "fund_auth_unfreeze"         // 资金授权订单解冻
+	FandAuthPayType      = "fund_auth_operation_cancel" // 资金预授权明细撤销
+)
+
 type FandAuthFreezeNotification struct {
 	AuthNo                    string               `json:"auth_no"`                                // 支付宝资金授权订单号
-	NotifyType                string               `json:"notify_type"`                            // 通知类型
+	NotifyType                string               `json:"notify_type"`                            // 通知类型  fund_auth_freeze 资金预授权冻结成功 fund_auth_unfreeze 资金授权订单解冻 fund_auth_operation_cancel 资金预授权明细撤销
 	FundAuthFreeze            string               `json:"fund_auth_freeze"`                       // 资金操作类型
 	OutOrderNo                string               `json:"out_order_no"`                           // 商家的资金授权订单号
 	OperationID               string               `json:"operation_id"`                           // 支付宝的资金操作流水号
 	OutRequestNo              string               `json:"out_request_no"`                         // 商家资金操作流水号
-	OperationType             string               `json:"operation_type"`                         // 资金操作类型
+	OperationType             string               `json:"operation_type"`                         // 资金操作类型 freeze 冻结 unfreeze 解冻
 	Amount                    string               `json:"amount"`                                 // 本次操作冻结的金额
 	Status                    FandAuthFreezeStatus `json:"status"`                                 // 资金预授权明细的状态
 	GmtCreate                 string               `json:"gmt_create"`                             // 明细创建时间
@@ -38,7 +44,7 @@ type FandAuthFreezeNotification struct {
 	TotalPayFundAmount        string               `json:"total_pay_fund_amount,omitempty"`        // 累计支付自有资金金额
 	RestCreditAmount          string               `json:"rest_credit_amount,omitempty"`           // 剩余冻结信用金额
 	RestFundAmount            string               `json:"rest_fund_amount,omitempty"`             // 剩余冻结自有资金金额
-	PreAuthType               string               `json:"pre_auth_type,omitempty"`                // 预授权类型
+	PreAuthType               string               `json:"pre_auth_type,omitempty"`                // 预授权类型 预授权类型，目前支持 CREDIT_AUTH(信用预授权); 商家可根据该标识来判断该笔预授权的类型，当返回值为"CREDIT_AUTH"表明该笔预授权为信用预授权，没有真实冻结资金；当返回值为空或者不为"CREDIT_AUTH"则表明该笔预授权为普通资金预授权，会冻结用户资金
 	CreditMerchantExt         string               `json:"credit_merchant_ext,omitempty"`          // 芝麻透出给商家的信息
 }
 

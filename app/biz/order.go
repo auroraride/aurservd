@@ -46,7 +46,7 @@ func (s *orderBiz) DepositCredit(r *ent.Rider, req *definition.OrderDepositCredi
 	// 查询套餐是否存在
 	p := service.NewPlan().QueryEffectiveWithID(req.PlanID)
 
-	// 判定套餐是否支持免押金
+	// 判定套餐开启押金
 	if !p.Deposit {
 		return nil, errors.New("套餐不支持免押金")
 	}
@@ -58,9 +58,12 @@ func (s *orderBiz) DepositCredit(r *ent.Rider, req *definition.OrderDepositCredi
 		if req.Payway == model.OrderPaywayWechatDeposit && !p.DepositWechatPayscore {
 			return nil, errors.New("套餐不支持微信免押金")
 		}
+		// if (req.Payway == model.OrderPaywayWechat || req.Payway == model.OrderPaywayAlipay) && !p.DepositPay {
+		// 	return nil, errors.New("套餐不支持支付宝或微信免押金")
+		// }
 	}
 
-	depositFree := &model.DepositFree{
+	depositFree := &model.DepositCredit{
 		RiderID: r.ID,
 		Amount:  p.DepositAmount,
 		Plan:    p.BasicInfo(),
@@ -68,18 +71,18 @@ func (s *orderBiz) DepositCredit(r *ent.Rider, req *definition.OrderDepositCredi
 		Payway:  req.Payway,
 	}
 
-	if req.Payway == model.OrderPaywayAlipay || req.Payway == model.OrderPaywayWechat {
-		depositFree.OutTradeNo = no
-		result.OutTradeNo = no
-	} else {
-		depositFree.OutOrderNo = no
-		result.OutOrderNo = no
-	}
+	// if req.Payway == model.OrderPaywayAlipay || req.Payway == model.OrderPaywayWechat {
+	// 	depositFree.OutTradeNo = no
+	// 	result.OutTradeNo = no
+	// } else {
+	depositFree.OutOrderNo = no
+	result.OutOrderNo = no
+	// }
 
 	// 订单字段
 	prepay := &model.PaymentCache{
-		CacheType:   model.PaymentCacheTypeDeposit,
-		DepositFree: depositFree,
+		CacheType:     model.PaymentCacheTypeDeposit,
+		DepositCredit: depositFree,
 	}
 
 	// 订单缓存
@@ -92,18 +95,18 @@ func (s *orderBiz) DepositCredit(r *ent.Rider, req *definition.OrderDepositCredi
 	// 发起请求
 	var str string
 	switch req.Payway {
-	case model.OrderPaywayAlipay:
-		// 使用支付宝支付
-		str, err = payment.NewAlipay().AppPay(prepay)
-		if err != nil {
-			return nil, err
-		}
-	case model.OrderPaywayWechat:
-		// 使用微信支付
-		str, err = payment.NewWechat().AppPay(prepay)
-		if err != nil {
-			return nil, err
-		}
+	// case model.OrderPaywayAlipay:
+	// 	// 使用支付宝支付
+	// 	str, err = payment.NewAlipay().AppPay(prepay)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// case model.OrderPaywayWechat:
+	// 	// 使用微信支付
+	// 	str, err = payment.NewWechat().AppPay(prepay)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
 	case model.OrderPaywayAlipayAuthFreeze:
 		// 使用支付宝预授权支付
 		str, err = payment.NewAlipay().FandAuthFreeze(prepay)
@@ -120,46 +123,20 @@ func (s *orderBiz) DepositCredit(r *ent.Rider, req *definition.OrderDepositCredi
 	return
 }
 
-// DoPayment 处理支付
+// DoPayment 处理预支付或者预支付转支付
 func (s *orderBiz) DoPayment(pc *model.PaymentCache) {
 	if pc == nil {
 		return
 	}
 	switch pc.CacheType {
-	case model.PaymentCacheTypeAliPayAuth:
+	case model.PaymentCacheTypeAlipayAuthFreeze:
 		// 预支付
 		s.OrderPaid(pc.Subscribe)
-	case model.PaymentCacheTypeDeposit:
-		// 押金
-		s.Deposit(pc.DepositFree)
-	}
-}
-
-// Deposit 押金创建订单
-func (s *orderBiz) Deposit(trade *model.DepositFree) {
-	// 查询押金订单是否存在
-	if exists, err := ent.Database.Order.Query().Where(order.OutOrderNo(trade.OutOrderNo)).Exist(s.ctx); err == nil && exists {
+	// case model.PaymentCacheTypeDeposit:
+	// 	service.NewOrder().DepositPay(pc.DepositCredit)
+	default:
 		return
 	}
-	zap.L().Info("押金订单: "+trade.OutOrderNo, log.JsonData(trade))
-
-	// 创建押金订单
-	_, err := s.orm.Create().
-		SetStatus(model.OrderStatusPaid).
-		SetPayway(trade.Payway).
-		SetType(model.OrderTypeDeposit).
-		SetAuthNo(trade.AuthNo).
-		SetOutRequestNo(trade.OutRequestNo).
-		SetAmount(trade.Amount).
-		SetTotal(trade.Amount).
-		SetRiderID(trade.RiderID).
-		SetOutOrderNo(trade.OutOrderNo).
-		Save(s.ctx)
-	if err != nil {
-		zap.L().Error("订单已支付, 但押金订单创建失败: "+trade.OutOrderNo, zap.Error(err))
-		return
-	}
-
 }
 
 // CancelDeposit 取消押金订单 订单为以下状态时可以取消订单：INIT（初始化）、AUTHORIZED（已创建）（此时一般为用户取消服务时使用）
@@ -172,7 +149,12 @@ func (s *orderBiz) CancelDeposit(req *definition.OrderDepositCancelReq) error {
 	}
 	// 查询在支付宝的订单状态
 	var detailQuery *alipay.FundAuthOperationDetailQueryRsp
-	detailQuery, err = payment.NewAlipay().AlipayFundAuthOperationDetailQuery(o.AuthNo, o.OutRequestNo)
+	detailQuery, err = payment.NewAlipay().AlipayFundAuthOperationDetailQuery(
+		definition.FundAuthOperationDetailReq{
+			AuthNo:       o.AuthNo,
+			OutRequestNo: o.OutRequestNo,
+		},
+	)
 	if err != nil {
 		zap.L().Error("查询支付宝订单状态失败", zap.Error(err))
 		return err
@@ -212,16 +194,23 @@ func (s *orderBiz) FandAuthUnfreeze(req *definition.OrderDepositUnfreezeReq) err
 	if err != nil {
 		return err
 	}
-	payment.NewAlipay().FandAuthUnfreeze(&definition.FandAuthUnfreezeReq{AuthNo: o.AuthNo, OutRequestNo: o.OutRequestNo})
-	_, err = o.Update().SetStatus(model.OrderStatusRefundSuccess).Save(s.ctx)
+	return payment.NewAlipay().FandAuthUnfreeze(&definition.FandAuthUnfreezeReq{AuthNo: o.AuthNo, OutRequestNo: o.OutRequestNo})
+}
 
+// DoFandAuthUnfreeze 处理解冻
+func (s *orderBiz) DoFandAuthUnfreeze(req *definition.FandAuthUnfreezeRes) error {
+	// 查询订单是否存在
+	o, err := s.orm.Query().Where(order.OutOrderNo(req.OutOrderNo)).First(s.ctx)
 	if err != nil {
 		return err
 	}
-	return nil
+	// 更新订单状态
+	_, err = o.Update().SetStatus(model.OrderStatusRefundSuccess).Save(s.ctx)
+	return err
 }
 
-func (s *orderBiz) Create(r *ent.Rider, req *model.OrderCreateReq) (result *model.OrderCreateRes) {
+// Create 订单创建
+func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result *model.OrderCreateRes) {
 	if req.OrderType == model.OrderTypeFee {
 		return service.NewOrder().CreateFee(r.ID, req.Payway)
 	}
@@ -277,7 +266,7 @@ func (s *orderBiz) Create(r *ent.Rider, req *model.OrderCreateReq) (result *mode
 	var deposit float64
 	// 选择微信支付和支付宝支付有押金 或者选择支付宝预授权支付有押金
 	if req.Payway == model.OrderPaywayAlipay || req.Payway == model.OrderPaywayWechat ||
-		req.Payway == model.OrderPaywayAlipayAuthFreeze && req.DepositAlipayAuthFreeze && p.DepositAlipayAuthFreeze {
+		req.Payway == model.OrderPaywayAlipayAuthFreeze && req.DepositAlipayAuthFreeze {
 		if p.Deposit && p.DepositAmount > 0 {
 			deposit = p.DepositAmount
 		}
@@ -404,7 +393,6 @@ func (s *orderBiz) Create(r *ent.Rider, req *model.OrderCreateReq) (result *mode
 	paySubscribe := &model.PaymentSubscribe{
 		CityID:        req.CityID,
 		OrderType:     t,
-		OutTradeNo:    no,
 		RiderID:       r.ID,
 		Name:          "购买" + p.Name,
 		Amount:        total,
@@ -432,15 +420,25 @@ func (s *orderBiz) Create(r *ent.Rider, req *model.OrderCreateReq) (result *mode
 		paySubscribe.OutTradeNo = no
 	}
 
-	// 新增是否签约
+	// 新增是否需要签约
 	if req.NeedContract != nil {
 		paySubscribe.NeedContract = req.NeedContract
 	}
 
-	// 订单字段
+	// 如果分开支付的押金需要
+	if req.DepositOrderNo != nil {
+		paySubscribe.DepositOrderNo = req.DepositOrderNo
+	}
+
 	prepay := &model.PaymentCache{
-		CacheType: model.PaymentCacheTypeAliPayAuth,
 		Subscribe: paySubscribe,
+	}
+
+	// 订单缓存
+	if req.Payway == model.OrderPaywayAlipayAuthFreeze {
+		prepay.CacheType = model.PaymentCacheTypeAlipayAuthFreeze
+	} else {
+		prepay.CacheType = model.PaymentCacheTypePlan
 	}
 
 	service.NewOrder().Prepay(req.Payway, no, prepay, result)
@@ -567,6 +565,25 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 			do, err = depositOrder.Save(s.ctx)
 			if err != nil {
 				zap.L().Error("订单已支付, 但押金订单创建失败: "+no, zap.Error(err))
+				return
+			}
+		}
+
+		// 如果有押金订单编号, 更新订单关联
+		if trade.DepositOrderNo != nil {
+			do, err = tx.Order.QueryNotDeleted().Where(order.Status(model.OrderStatusPaid), order.Type(model.OrderTypeDeposit)).
+				Where(
+					order.Or(
+						order.OutOrderNo(*trade.DepositOrderNo),
+						order.OutTradeNo(*trade.DepositOrderNo),
+					)).First(s.ctx)
+			if err != nil {
+				zap.L().Error("订单已支付, 但押金订单查询失败: "+trade.OutTradeNo, zap.Error(err))
+				return
+			}
+			_, err = do.Update().SetParentID(o.ID).Save(s.ctx)
+			if err != nil {
+				zap.L().Error("订单已支付, 但押金订单更新失败: "+trade.OutTradeNo, zap.Error(err))
 				return
 			}
 		}
