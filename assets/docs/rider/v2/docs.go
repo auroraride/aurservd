@@ -2416,6 +2416,88 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/order/deposit/unfreeze": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order - 订单"
+                ],
+                "summary": "解冻押金",
+                "operationId": "OrderDepositUnfreeze",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "解冻押金请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.OrderDepositUnfreezeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/order/payment/freezetopay": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order - 订单"
+                ],
+                "summary": "冻结转支付",
+                "operationId": "OrderPaymentFreezeToPay",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "冻结转支付请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.FreezeToPay"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/order/refund": {
             "post": {
                 "consumes": [
@@ -3443,6 +3525,18 @@ const docTemplate = `{
                 "FaultTypeOther"
             ]
         },
+        "definition.FreezeToPay": {
+            "type": "object",
+            "required": [
+                "outOrderNo"
+            ],
+            "properties": {
+                "outOrderNo": {
+                    "description": "授权资金订单号",
+                    "type": "string"
+                }
+            }
+        },
         "definition.GuideDetail": {
             "type": "object",
             "properties": {
@@ -3550,9 +3644,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "payway": {
-                    "description": "支付方式, 3:支付宝预授权支付 4:微信支付分支付",
+                    "description": "支付方式, 1支付宝 2微信 3支付宝信用免押 4 微信支付分",
                     "type": "integer",
                     "enum": [
+                        1,
+                        2,
                         3,
                         4
                     ]
@@ -3567,7 +3663,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "outOrderNo": {
-                    "description": "预授权订单号",
+                    "description": "支付宝授权资金订单号",
                     "type": "string"
                 },
                 "outTradeNo": {
@@ -3576,6 +3672,18 @@ const docTemplate = `{
                 },
                 "prepay": {
                     "description": "支付信息",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.OrderDepositUnfreezeReq": {
+            "type": "object",
+            "required": [
+                "outOrderNo"
+            ],
+            "properties": {
+                "outOrderNo": {
+                    "description": "支付宝授权资金订单号",
                     "type": "string"
                 }
             }
@@ -5476,7 +5584,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "payway": {
-                    "description": "支付方式 1支付宝 2微信",
+                    "description": "支付方式 1支付宝 2微信 3支付宝预授权",
                     "type": "integer"
                 },
                 "plan": {

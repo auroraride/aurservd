@@ -56,8 +56,6 @@ func (t *orderTask) Do() {
 		),
 		order.TradePayAtIsNil(),
 		order.PaywayIn(model.OrderPaywayAlipayAuthFreeze, model.OrderPaywayWechatDeposit),
-		// 查询订单和关联订单金额
-		// order.Type()
 	).
 		WithSubscribe().
 		WithPlan().

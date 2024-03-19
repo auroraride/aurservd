@@ -58,9 +58,9 @@ func (s *orderBiz) DepositCredit(r *ent.Rider, req *definition.OrderDepositCredi
 		if req.Payway == model.OrderPaywayWechatDeposit && !p.DepositWechatPayscore {
 			return nil, errors.New("套餐不支持微信免押金")
 		}
-		// if (req.Payway == model.OrderPaywayWechat || req.Payway == model.OrderPaywayAlipay) && !p.DepositPay {
-		// 	return nil, errors.New("套餐不支持支付宝或微信免押金")
-		// }
+		if (req.Payway == model.OrderPaywayWechat || req.Payway == model.OrderPaywayAlipay) && !p.DepositPay {
+			return nil, errors.New("套餐不支持支付宝或微信免押金")
+		}
 	}
 
 	depositFree := &model.DepositCredit{
@@ -70,14 +70,13 @@ func (s *orderBiz) DepositCredit(r *ent.Rider, req *definition.OrderDepositCredi
 		PlanID:  req.PlanID,
 		Payway:  req.Payway,
 	}
-
-	// if req.Payway == model.OrderPaywayAlipay || req.Payway == model.OrderPaywayWechat {
-	// 	depositFree.OutTradeNo = no
-	// 	result.OutTradeNo = no
-	// } else {
-	depositFree.OutOrderNo = no
-	result.OutOrderNo = no
-	// }
+	if req.Payway == model.OrderPaywayAlipay || req.Payway == model.OrderPaywayWechat {
+		depositFree.OutTradeNo = no
+		result.OutTradeNo = no
+	} else {
+		depositFree.OutOrderNo = no
+		result.OutOrderNo = no
+	}
 
 	// 订单字段
 	prepay := &model.PaymentCache{
@@ -95,18 +94,18 @@ func (s *orderBiz) DepositCredit(r *ent.Rider, req *definition.OrderDepositCredi
 	// 发起请求
 	var str string
 	switch req.Payway {
-	// case model.OrderPaywayAlipay:
-	// 	// 使用支付宝支付
-	// 	str, err = payment.NewAlipay().AppPay(prepay)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// case model.OrderPaywayWechat:
-	// 	// 使用微信支付
-	// 	str, err = payment.NewWechat().AppPay(prepay)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
+	case model.OrderPaywayAlipay:
+		// 使用支付宝支付
+		str, err = payment.NewAlipay().AppPay(prepay)
+		if err != nil {
+			return nil, err
+		}
+	case model.OrderPaywayWechat:
+		// 使用微信支付
+		str, err = payment.NewWechat().AppPay(prepay)
+		if err != nil {
+			return nil, err
+		}
 	case model.OrderPaywayAlipayAuthFreeze:
 		// 使用支付宝预授权支付
 		str, err = payment.NewAlipay().FandAuthFreeze(prepay)
@@ -132,8 +131,6 @@ func (s *orderBiz) DoPayment(pc *model.PaymentCache) {
 	case model.PaymentCacheTypeAlipayAuthFreeze:
 		// 预支付
 		s.OrderPaid(pc.Subscribe)
-	// case model.PaymentCacheTypeDeposit:
-	// 	service.NewOrder().DepositPay(pc.DepositCredit)
 	default:
 		return
 	}
@@ -142,16 +139,15 @@ func (s *orderBiz) DoPayment(pc *model.PaymentCache) {
 // CancelDeposit 取消押金订单 订单为以下状态时可以取消订单：INIT（初始化）、AUTHORIZED（已创建）（此时一般为用户取消服务时使用）
 func (s *orderBiz) CancelDeposit(req *definition.OrderDepositCancelReq) error {
 	// 查询订单是否存在
-	o, err := s.orm.Query().Where(order.OutOrderNo(req.OutOrderNo)).First(s.ctx)
-	if err != nil {
-		zap.L().Error("查询订单失败", zap.Error(err))
-		return err
+	o, _ := s.orm.Query().Where(order.OutOrderNo(req.OutOrderNo)).First(s.ctx)
+	if o == nil {
+		return errors.New("订单不存在")
 	}
 	// 查询在支付宝的订单状态
 	var detailQuery *alipay.FundAuthOperationDetailQueryRsp
-	detailQuery, err = payment.NewAlipay().AlipayFundAuthOperationDetailQuery(
+	detailQuery, err := payment.NewAlipay().AlipayFundAuthOperationDetailQuery(
 		definition.FundAuthOperationDetailReq{
-			AuthNo:       o.AuthNo,
+			OutOrderNo:   o.OutOrderNo,
 			OutRequestNo: o.OutRequestNo,
 		},
 	)
@@ -176,13 +172,18 @@ func (s *orderBiz) CancelDeposit(req *definition.OrderDepositCancelReq) error {
 // DoPaymentFreezeToPay 处理冻结资金转支付
 func (s *orderBiz) DoPaymentFreezeToPay(req *definition.OrderDepositFreezeToPayRes) error {
 	// 查询订单是否存在
-	o, err := s.orm.Query().Where(order.OutTradeNo(req.OutTradeNo)).First(s.ctx)
-	if err != nil {
-		return err
+	o, _ := s.orm.Query().Where(order.OutTradeNo(req.OutTradeNo)).First(s.ctx)
+	if o == nil {
+		return errors.New("订单不存在")
 	}
 	// 更新订单状态
-	_, err = o.Update().SetTradeNo(req.TradeNo).
+	_, err := o.Update().SetTradeNo(req.TradeNo).
+		SetOutTradeNo(req.OutTradeNo).
 		SetTradePayAt(time.Now()).Save(s.ctx)
+	if err != nil {
+		zap.L().Error("订单支付失败", zap.Error(err))
+		return err
+	}
 
 	return nil
 }
@@ -190,29 +191,66 @@ func (s *orderBiz) DoPaymentFreezeToPay(req *definition.OrderDepositFreezeToPayR
 // FandAuthUnfreeze 解冻资金
 func (s *orderBiz) FandAuthUnfreeze(req *definition.OrderDepositUnfreezeReq) error {
 	// 查询订单是否存在
-	o, err := s.orm.Query().Where(order.OutOrderNo(req.OutOrderNo)).First(s.ctx)
-	if err != nil {
-		return err
+	o, _ := s.orm.Query().Where(order.OutOrderNo(req.OutOrderNo)).First(s.ctx)
+	if o == nil {
+		return errors.New("订单不存在")
 	}
-	return payment.NewAlipay().FandAuthUnfreeze(&definition.FandAuthUnfreezeReq{AuthNo: o.AuthNo, OutRequestNo: o.OutRequestNo})
+
+	fandAuthUnfreezeReq := &definition.FandAuthUnfreezeReq{
+		AuthNo:       o.AuthNo,
+		OutRequestNo: o.OutRequestNo,
+		Amount:       o.Amount,
+		Remark:       "冻结资金解冻",
+	}
+
+	if o.Type == model.OrderTypeDeposit {
+		fandAuthUnfreezeReq.IsDeposit = true
+		fandAuthUnfreezeReq.Remark = "押金解冻"
+	}
+
+	// 查询授权订单状态
+	fundAuthOperationDetailQueryRsp, err := payment.NewAlipay().AlipayFundAuthOperationDetailQuery(definition.FundAuthOperationDetailReq{
+		OutOrderNo:   o.OutOrderNo,
+		OutRequestNo: o.OutRequestNo,
+	})
+	if err != nil {
+		return errors.New("查询支付宝订单状态失败")
+	}
+
+	// 授权订单状态 已授权状态：授权成功，可以进行转支付或解冻操作
+	if fundAuthOperationDetailQueryRsp.OrderStatus != alipay.OrderStatusAuthorized {
+		return errors.New("支付宝订单状态错误")
+	}
+
+	// 判定解冻金额
+	totalAmountString := strconv.FormatFloat(o.Amount, 'f', -1, 64)
+	if totalAmountString > fundAuthOperationDetailQueryRsp.RestAmount {
+		return errors.New("解冻金额大于剩余金额")
+	}
+
+	return payment.NewAlipay().FandAuthUnfreeze(fandAuthUnfreezeReq)
 }
 
 // DoFandAuthUnfreeze 处理解冻
 func (s *orderBiz) DoFandAuthUnfreeze(req *definition.FandAuthUnfreezeRes) error {
 	// 查询订单是否存在
-	o, err := s.orm.Query().Where(order.OutOrderNo(req.OutOrderNo)).First(s.ctx)
-	if err != nil {
-		return err
+	o, _ := s.orm.Query().Where(order.OutOrderNo(req.OutOrderNo)).First(s.ctx)
+	if o == nil {
+		return errors.New("订单不存在")
 	}
 	// 更新订单状态
-	_, err = o.Update().SetStatus(model.OrderStatusRefundSuccess).Save(s.ctx)
-	return err
+	_, err := o.Update().SetStatus(model.OrderStatusRefundSuccess).Save(s.ctx)
+	if err != nil {
+		zap.L().Error("订单解冻失败", zap.Error(err))
+		return err
+	}
+	return nil
 }
 
 // Create 订单创建
-func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result *model.OrderCreateRes) {
+func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result *model.OrderCreateRes, err error) {
 	if req.OrderType == model.OrderTypeFee {
-		return service.NewOrder().CreateFee(r.ID, req.Payway)
+		return service.NewOrder().CreateFee(r.ID, req.Payway), nil
 	}
 
 	result = new(model.OrderCreateRes)
@@ -221,12 +259,12 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 	p := service.NewPlan().QueryEffectiveWithID(req.PlanID)
 
 	if p.BrandID != nil && p.Edges.Brand == nil {
-		snag.Panic("骑士卡错误")
+		return nil, errors.New("骑士卡错误")
 	}
 
 	// 查询是否企业骑手
 	if r.EnterpriseID != nil {
-		snag.Panic("团签用户无法购买")
+		return nil, errors.New("企业骑手无法购买骑士卡")
 	}
 
 	// 查询是否有退款中的订单
@@ -234,7 +272,7 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 		order.RiderID(r.ID),
 		order.Status(model.OrderStatusRefundPending),
 	).Exist(s.ctx); exists {
-		snag.Panic("当前有退款中的订单")
+		return nil, errors.New("存在退款中的订单")
 	}
 
 	var past *int
@@ -246,20 +284,20 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 	case model.OrderTypeNewly, model.OrderTypeAgain:
 		// 新签/重签判定
 		if req.CityID == 0 {
-			snag.Panic("请求参数错误")
+			return nil, errors.New("城市ID不能为空")
 		}
 		t, past = service.NewOrder().PreconditionNewly(sub)
 	case model.OrderTypeRenewal:
 		// 续签判定
 		service.NewOrder().PreconditionRenewal(sub)
 		if sub.Remaining < 0 && int(p.Days)+sub.Remaining < 0 {
-			snag.Panic("无法继续, 逾期天数大于套餐天数")
+			return nil, errors.New("无法继续, 逾期天数大于骑士卡天数")
 		}
 		subID = silk.UInt64(sub.ID)
 		orderID = silk.UInt64(sub.InitialOrderID)
 		req.CityID = sub.CityID
 	default:
-		snag.Panic("未知的支付请求")
+		return nil, errors.New("订单类型错误")
 	}
 
 	// 判定押金是否需要支付
@@ -289,14 +327,14 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 	if len(req.Coupons) > 0 {
 		coupons := service.NewCoupon().QueryIDs(req.Coupons)
 		if len(req.Coupons) != len(coupons) {
-			snag.Panic("优惠券选择错误")
+			return nil, errors.New("优惠券不存在")
 		}
 		var isExclusive bool
 		cm := make(map[uint64]uint64)
 		for _, c := range coupons {
 			// 校验有效期
 			if c.ExpiresAt.Before(now) {
-				snag.Panic("优惠券已失效")
+				return nil, errors.New("优惠券已过期")
 			}
 
 			// 是否互斥
@@ -306,7 +344,7 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 
 			// 是否叠加
 			if _, ok := cm[c.TemplateID]; ok {
-				snag.Panic("优惠券无法叠加")
+				return nil, errors.New("优惠券不可叠加")
 			}
 
 			// 是否限制城市
@@ -318,7 +356,7 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 					}
 				}
 				if !cityUseable {
-					snag.Panic("当前城市无法使用")
+					return nil, errors.New("当前城市无法使用优惠券")
 				}
 			}
 
@@ -331,7 +369,7 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 					}
 				}
 				if !planUsable {
-					snag.Panic("当前骑士卡无法使用")
+					return nil, errors.New("当前骑士卡无法使用优惠券")
 				}
 			}
 
@@ -341,7 +379,7 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 			camount += c.Amount
 		}
 		if isExclusive && len(req.Coupons) > 1 {
-			snag.Panic("所选优惠券互斥")
+			return nil, errors.New("所选优惠券互斥")
 		}
 		price = tools.NewDecimal().Sub(price, camount)
 		// 暂时处理成支付一分钱
@@ -365,9 +403,9 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 				points = cents
 			}
 			price = tools.NewDecimal().Sub(price, float64(points)*model.PointRatio)
-			_, err := pointServ.PreConsume(r, points)
+			_, err = pointServ.PreConsume(r, points)
 			if err != nil {
-				snag.Panic("订单创建失败: %v", err)
+				return nil, err
 			}
 		}
 		if price <= 0 {
@@ -376,7 +414,7 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 	}
 
 	if price < 0 {
-		snag.Panic("支付金额错误")
+		return nil, errors.New("订单金额错误")
 	}
 
 	// Development模式支付一分钱
@@ -692,4 +730,16 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 			_ = service.NewSubscribe().UpdateStatus(sub, false)
 		}()
 	}
+}
+
+// PaymentFreezeToPay 转支付
+func (s *orderBiz) PaymentFreezeToPay(req *definition.FreezeToPay) (*alipay.TradePayRsp, error) {
+	// 查询订单
+	o, _ := s.orm.Query().Where(order.OutOrderNo(req.OutOrderNo)).WithSubscribe().
+		WithPlan().First(s.ctx)
+	if o == nil {
+		return nil, errors.New("订单不存在")
+	}
+
+	return service.NewOrder().TradePay(o), nil
 }

@@ -3966,7 +3966,7 @@ definitions:
         description: 支付时间
         type: string
       payway:
-        description: 支付方式 1支付宝 2微信
+        description: 支付方式 1支付宝 2微信 3支付宝预授权
         type: integer
       plan:
         allOf:
@@ -15549,10 +15549,10 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
-      - description: 城市
+      - description: 城市ID
         in: query
-        name: city
-        type: string
+        name: cityId
+        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current

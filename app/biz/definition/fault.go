@@ -46,7 +46,7 @@ type Fault struct {
 // FaultListReq 故障列表请求
 type FaultListReq struct {
 	model.PaginationReq
-	City     *string `json:"city" query:"city"`         // 城市
+	CityID   *uint64 `json:"cityId" query:"city"`       // 城市ID
 	DeviceNo *string `json:"deviceNo" query:"deviceNo"` // 设备编号
 	Status   *uint8  `json:"status" query:"status"`     // 故障状态 0未处理 1已处理
 	Type     *uint8  `json:"type" query:"type"`         // 故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他

@@ -3647,7 +3647,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "payway": {
-                    "description": "支付方式 1支付宝 2微信",
+                    "description": "支付方式 1支付宝 2微信 3支付宝预授权",
                     "type": "integer"
                 },
                 "plan": {

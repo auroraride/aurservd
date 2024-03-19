@@ -13,6 +13,7 @@ import (
 
 	"github.com/auroraride/adapter/log"
 	"github.com/golang-module/carbon/v2"
+	"github.com/smartwalle/alipay/v3"
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
@@ -1048,54 +1049,67 @@ func (s *orderService) QueryStatus(req *model.OrderStatusReq) (res model.OrderSt
 }
 
 // TradePay 资金冻结转支付
-func (s *orderService) TradePay(o *ent.Order) {
+func (s *orderService) TradePay(o *ent.Order) *alipay.TradePayRsp {
 
 	subject := "订阅骑士卡"
 	if o.Edges.Plan != nil {
 		subject = o.Edges.Plan.Name
 	}
 
+	var totalAmount float64
+	totalAmount = o.Amount
+
+	// 判定押金是否是预支付
+	od, _ := s.orm.QueryNotDeleted().
+		Where(
+			order.AuthNo(o.AuthNo),
+			order.Type(model.OrderTypeDeposit),
+			order.TradePayAtIsNil(),
+		).First(s.ctx)
+	if od != nil {
+		totalAmount = tools.NewDecimal().Sum(totalAmount, od.Amount)
+	}
+
+	// 查询授权订单状态
+	fundAuthOperationDetailQueryRsp, err := payment.NewAlipay().AlipayFundAuthOperationDetailQuery(definition.FundAuthOperationDetailReq{
+		OutOrderNo:   o.OutOrderNo,
+		OutRequestNo: o.OutRequestNo,
+	})
+	if err != nil {
+		zap.L().Error("资金冻结转支付失败", zap.Error(err))
+		return nil
+	}
+
+	// 授权订单状态 已授权状态：授权成功，可以进行转支付或解冻操作
+	if fundAuthOperationDetailQueryRsp.OrderStatus != alipay.OrderStatusAuthorized {
+		zap.L().Error("资金冻结转支付失败", zap.String("授权订单状态", string(fundAuthOperationDetailQueryRsp.OrderStatus)))
+		return nil
+	}
+
+	// 判定解冻金额
+	totalAmountString := strconv.FormatFloat(totalAmount, 'f', -1, 64)
+	if totalAmountString > fundAuthOperationDetailQueryRsp.RestAmount {
+		zap.L().Error("资金冻结转支付失败", zap.String("解冻金额", fundAuthOperationDetailQueryRsp.RestAmount))
+		return nil
+	}
+
+	no := tools.NewUnique().NewSN28()
+
+	// 更新订单OutTradeNo
+	o.Update().SetOutTradeNo(no).SaveX(s.ctx)
+
 	// 调用资金冻结转支付
-	res, err := payment.NewAlipay().AlipayTradePay(&definition.TradePay{
+	rsp, err := payment.NewAlipay().AlipayTradePay(&definition.TradePay{
 		AuthNo:      o.AuthNo,
-		OutTradeNo:  o.OutTradeNo,
-		TotalAmount: o.Total,
+		OutTradeNo:  no,
+		TotalAmount: totalAmount,
 		Subject:     subject,
 	})
 	if err != nil {
 		zap.L().Error("资金冻结转支付失败", zap.Error(err))
-		return
+		return nil
 	}
-	no := tools.NewUnique().NewSN28()
-	var amount float64
-	amount, err = strconv.ParseFloat(res.TotalAmount, 64)
-	if err != nil {
-		zap.L().Error("资金冻结转支付失败", zap.Error(err))
-		return
-	}
-
-	// 创建支付创建订单
-	ent.Database.Order.Create().
-		SetPayway(model.OrderPaywayAlipay).
-		SetNillablePlanID(o.PlanID).
-		SetRiderID(o.RiderID).
-		SetAmount(amount).
-		SetTotal(amount).
-		SetOutTradeNo(no).
-		SetTradeNo(res.TradeNo).
-		SetStatus(model.OrderStatusPaid).
-		SetType(o.Type).
-		SetNillableCityID(o.CityID).
-		SetInitialDays(o.InitialDays).
-		SetParentID(o.ParentID).
-		SetSubscribeID(o.SubscribeID).
-		SetPastDays(o.PastDays).
-		SetPoints(o.Points).
-		SetPointRatio(o.PointRatio).
-		SetCouponAmount(o.CouponAmount).
-		SetDiscountNewly(o.DiscountNewly).
-		SetNillableBrandID(o.BrandID).
-		SaveX(s.ctx)
+	return rsp
 }
 
 // DepositPay 押金订单

@@ -276,19 +276,13 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
 func (c *alipayClient) FandAuthFreeze(pc *model.PaymentCache) (string, error) {
 	cfg := ar.Config.Payment.AlipayAuthFreeze
 	var no, subject, amount string
-	if pc.Subscribe != nil {
-		// 预授权支付 支付或者支付带有押金 这样做是为了少让用户授权一次
+
+	switch {
+	case pc.Subscribe != nil:
 		no = pc.Subscribe.OutOrderNo
 		subject = pc.Subscribe.Name
-		amount = fmt.Sprintf("%.2f", pc.Subscribe.Amount-pc.Subscribe.Deposit)
-		if pc.DepositCredit != nil {
-			// 支付带有押金
-			amount = fmt.Sprintf("%.2f", pc.Subscribe.Amount)
-		}
-	}
-
-	// 单纯押金
-	if pc.DepositCredit != nil {
+		amount = fmt.Sprintf("%.2f", pc.Subscribe.Amount)
+	case pc.DepositCredit != nil:
 		no = pc.DepositCredit.OutOrderNo
 		subject = "押金"
 		amount = fmt.Sprintf("%.2f", pc.DepositCredit.Amount)
@@ -301,7 +295,7 @@ func (c *alipayClient) FandAuthFreeze(pc *model.PaymentCache) (string, error) {
 	trade := FundAuthOrderAppFreeze{
 		FundAuthOrderAppFreeze: alipay.FundAuthOrderAppFreeze{
 			OutOrderNo:   no,
-			OutRequestNo: no, // 可以和OutOrderNo一样
+			OutRequestNo: no,
 			OrderTitle:   subject,
 			NotifyURL:    cfg.FreezeNotifyUrl,
 			Amount:       amount,
@@ -310,46 +304,41 @@ func (c *alipayClient) FandAuthFreeze(pc *model.PaymentCache) (string, error) {
 		},
 	}
 
-	extraParam := definition.ExtraParam{
-		Category:  cfg.Category,
-		ServiceId: cfg.ServiceId,
-	}
+	extraParam := definition.ExtraParam{}
 
 	// 预授权信用免押金
 	if pc.CacheType == model.PaymentCacheTypeDeposit {
 		// 目前为纯免押
 		trade.DepositProductMode = "DEPOSIT_ONLY"
-	}
-
-	// 预授权支付
-	if pc.CacheType == model.PaymentCacheTypePlan {
-		// 后付金额已知
-		trade.DepositProductMode = "POSTPAY"
-
+	} else if pc.CacheType == model.PaymentCacheTypeAlipayAuthFreeze {
 		// 当有押金的时候
 		if pc.Subscribe.Deposit > 0 {
+			trade.DepositProductMode = "POSTPAY"
 			extraParam.CreditExtInfo = &definition.CreditExtInfo{
 				// 租押分离
 				AssessmentAmount: fmt.Sprintf("%.2f", pc.Subscribe.Deposit),
 			}
+			postPayments := definition.PostPayments{
+				Name:   "租金",
+				Amount: fmt.Sprintf("%.2f", pc.Subscribe.Amount-pc.Subscribe.Deposit),
+			}
+			postPaymentsString, err := json.Marshal(postPayments)
+			if err != nil {
+				return "", err
+			}
+			trade.PostPayments = string(postPaymentsString)
 		}
+	}
 
-		postPayments := definition.PostPayments{
-			Name:   "租金",
-			Amount: amount,
-		}
-		postPaymentsString, err := json.Marshal(postPayments)
+	if pc.DepositCredit != nil || pc.Subscribe.Deposit > 0 {
+		extraParam.Category = cfg.Category
+		extraParam.ServiceId = cfg.ServiceId
+		extraParamString, err := json.Marshal(extraParam)
 		if err != nil {
 			return "", err
 		}
-		trade.PostPayments = string(postPaymentsString)
+		trade.ExtraParam = string(extraParamString)
 	}
-
-	extraParamString, err := json.Marshal(extraParam)
-	if err != nil {
-		return "", err
-	}
-	trade.ExtraParam = string(extraParamString)
 
 	res, err := c.FundAuthOrderAppFreeze(trade)
 	if err != nil {
@@ -408,9 +397,6 @@ func (c *alipayClient) NotificationFandAuthFreeze(req *http.Request) *model.Paym
 				return nil
 			}
 			return pc
-		case definition.FandAuthUnfreezeType:
-			// 解冻
-
 		}
 
 	}
@@ -467,11 +453,14 @@ func (c *alipayClient) DecodeFandAuthFreezeNotification(values url.Values) (noti
 func (c *alipayClient) FandAuthUnfreeze(req *definition.FandAuthUnfreezeReq) error {
 	trade := alipay.FundAuthOrderUnfreeze{
 		AuthNo:       req.AuthNo,
-		OutRequestNo: req.OutRequestNo,
+		OutRequestNo: tools.NewUnique().NewSN28(),
 		Amount:       fmt.Sprintf("%.2f", req.Amount),
 		Remark:       req.Remark,
-		ExtraParam:   `{"unfreezeBizInfo":{"bizComplete":true}}`,
 		NotifyURL:    ar.Config.Payment.AlipayAuthFreeze.UnfreezeNotifyUrl,
+	}
+
+	if req.IsDeposit {
+		trade.ExtraParam = `{"unfreezeBizInfo":{"bizComplete":true}}`
 	}
 
 	res, err := c.FundAuthOrderUnfreeze(trade)
@@ -483,23 +472,21 @@ func (c *alipayClient) FandAuthUnfreeze(req *definition.FandAuthUnfreezeReq) err
 }
 
 // NotificationFandAuthUnfreeze 解冻回调
-func (c *alipayClient) NotificationFandAuthUnfreeze(req *http.Request) *definition.FandAuthUnfreezeRes {
+func (c *alipayClient) NotificationFandAuthUnfreeze(req *http.Request) (res *definition.FandAuthUnfreezeRes) {
+	res = new(definition.FandAuthUnfreezeRes)
 	err := req.ParseForm()
 	if err != nil {
 		zap.L().Error("资金授权解冻回调失败", zap.Error(err))
 		return nil
 	}
 
-	var res *definition.FandAuthUnfreezeRes
 	result, err := c.DecodeFandAuthFreezeNotification(req.Form)
 	if err != nil {
 		zap.L().Error("资金授权解冻回调解析失败", zap.Error(err))
 		return nil
 	}
-
 	res.OutOrderNo = result.OutOrderNo
-	return res
-
+	return
 }
 
 // AlipayTradePay 资金冻结转支付
@@ -515,6 +502,10 @@ func (c *alipayClient) AlipayTradePay(req *definition.TradePay) (res *alipay.Tra
 		return nil, err
 	}
 
+	if req.AuthConfirmMode == "" {
+		req.AuthConfirmMode = "NOT_COMPLETE"
+	}
+
 	trade := alipay.TradePay{
 		AuthNo: req.AuthNo,
 		Trade: alipay.Trade{
@@ -525,7 +516,7 @@ func (c *alipayClient) AlipayTradePay(req *definition.TradePay) (res *alipay.Tra
 			NotifyURL:      cfg.TradePayNotifyUrl,
 			BusinessParams: jsonBusinessParams,
 		},
-		AuthConfirmMode: "COMPLETE", // COMPLETE：转交易支付完成结束预授权
+		AuthConfirmMode: req.AuthConfirmMode,
 	}
 
 	res, err = c.TradePay(trade)
@@ -543,6 +534,7 @@ func (c *alipayClient) AlipayTradePay(req *definition.TradePay) (res *alipay.Tra
 
 // NotificationTradePay 扣款完成回调通知
 func (c *alipayClient) NotificationTradePay(req *http.Request) (res *definition.OrderDepositFreezeToPayRes) {
+	res = new(definition.OrderDepositFreezeToPayRes)
 	err := req.ParseForm()
 	if err != nil {
 		zap.L().Error("支付宝回调失败", zap.Error(err))
@@ -551,20 +543,20 @@ func (c *alipayClient) NotificationTradePay(req *http.Request) (res *definition.
 
 	var result *alipay.Notification
 	result, err = c.Client.DecodeNotification(req.Form)
-	zap.L().Info("支付宝回调", log.JsonData(result), zap.Error(err))
+	zap.L().Info("支付宝回调", log.JsonData(result))
 	if err != nil {
 		zap.L().Error("支付宝回调解析失败", zap.Error(err))
 		return nil
 	}
 	res.TradeNo = result.TradeNo
 	res.OutTradeNo = result.OutTradeNo
-	return nil
+	return res
 }
 
 // AlipayFundAuthOperationDetailQuery 查询预授权订单
 func (c *alipayClient) AlipayFundAuthOperationDetailQuery(req definition.FundAuthOperationDetailReq) (result *alipay.FundAuthOperationDetailQueryRsp, err error) {
 	trade := alipay.FundAuthOperationDetailQuery{
-		AuthNo:       req.AuthNo,
+		OutOrderNo:   req.OutOrderNo,
 		OutRequestNo: req.OutRequestNo,
 	}
 	result, err = c.FundAuthOperationDetailQuery(trade)

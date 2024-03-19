@@ -58,8 +58,9 @@ type FandAuthUnfreeze struct {
 
 // TradePay 冻结转支付
 type TradePay struct {
-	AuthNo      string  `json:"auth_no"`      // 支付宝资金授权订单号
-	OutTradeNo  string  `json:"out_trade_no"` // 商户订单号
-	TotalAmount float64 `json:"total_amount"` // 支付金额
-	Subject     string  `json:"subject"`      // 订单标题
+	AuthNo          string  `json:"auth_no"`           // 支付宝资金授权订单号
+	OutTradeNo      string  `json:"out_trade_no"`      // 商户订单号
+	TotalAmount     float64 `json:"total_amount"`      // 支付金额
+	Subject         string  `json:"subject"`           // 订单标题
+	AuthConfirmMode string  `json:"auth_confirm_mode"` // 预授权确认模式 COMPLETE：转交易完成后解冻剩余冻结金额； NOT_COMPLETE：转交易完成后不解冻剩余冻结金额； 默认值为NOT_COMPLETE。
 }

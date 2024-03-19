@@ -41,3 +41,33 @@ func (*order) DepositCredit(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.OrderDepositCreditReq](c)
 	return ctx.SendResponse(biz.NewOrderBiz().DepositCredit(ctx.Rider, req))
 }
+
+// Unfreeze
+// @ID		OrderUnfreeze
+// @Router	/rider/v2/order/unfreeze [POST]
+// @Summary	解冻资金
+// @Tags	Order - 订单
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string								true	"骑手校验token"
+// @Param	body			body		definition.OrderDepositUnfreezeReq	true	"解冻押金请求"
+// @Success	200				{object}	model.StatusResponse				"请求成功"
+func (*order) Unfreeze(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.OrderDepositUnfreezeReq](c)
+	return ctx.SendResponse(biz.NewOrderBiz().FandAuthUnfreeze(req))
+}
+
+// PaymentFreezeToPay
+// @ID		OrderPaymentFreezeToPay
+// @Router	/rider/v2/order/payment/freezetopay [POST]
+// @Summary	冻结转支付
+// @Tags	Order - 订单
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Param	body			body		definition.FreezeToPay	true	"冻结转支付请求"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
+func (*order) PaymentFreezeToPay(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.FreezeToPay](c)
+	return ctx.SendResponse(biz.NewOrderBiz().PaymentFreezeToPay(req))
+}

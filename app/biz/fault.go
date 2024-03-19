@@ -55,8 +55,8 @@ func (s *faultBiz) List(req *definition.FaultListReq) (res *model.PaginationRes)
 		)
 	}
 
-	if req.City != nil {
-		q.Where(fault.HasCityWith(city.NameEQ(*req.City)))
+	if req.CityID != nil {
+		q.Where(fault.HasCityWith(city.ID(*req.CityID)))
 	}
 
 	if req.Start != nil && req.End != nil {

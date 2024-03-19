@@ -210,6 +210,14 @@ definitions:
     - FaultTypeBattery
     - FaultTypeEbike
     - FaultTypeOther
+  definition.FreezeToPay:
+    properties:
+      outOrderNo:
+        description: 授权资金订单号
+        type: string
+    required:
+      - outOrderNo
+    type: object
   definition.GuideDetail:
     properties:
       answer:
@@ -286,8 +294,10 @@ definitions:
   definition.OrderDepositCreditReq:
     properties:
       payway:
-        description: 支付方式, 3:支付宝预授权支付 4:微信支付分支付
+        description: 支付方式, 1支付宝 2微信 3支付宝信用免押 4 微信支付分
         enum:
+          - 1
+          - 2
         - 3
         - 4
         type: integer
@@ -301,7 +311,7 @@ definitions:
   definition.OrderDepositCreditRes:
     properties:
       outOrderNo:
-        description: 预授权订单号
+        description: 支付宝授权资金订单号
         type: string
       outTradeNo:
         description: 平台订单号
@@ -309,6 +319,14 @@ definitions:
       prepay:
         description: 支付信息
         type: string
+    type: object
+  definition.OrderDepositUnfreezeReq:
+    properties:
+      outOrderNo:
+        description: 支付宝授权资金订单号
+        type: string
+    required:
+      - outOrderNo
     type: object
   definition.Origin:
     properties:
@@ -1629,7 +1647,7 @@ definitions:
         description: 支付时间
         type: string
       payway:
-        description: 支付方式 1支付宝 2微信
+        description: 支付方式 1支付宝 2微信 3支付宝预授权
         type: integer
       plan:
         allOf:
@@ -4107,6 +4125,60 @@ paths:
           schema:
             $ref: '#/definitions/definition.OrderDepositCreditRes'
       summary: 免押金支付
+      tags:
+        - Order - 订单
+  /rider/v2/order/deposit/unfreeze:
+    post:
+      consumes:
+        - application/json
+      operationId: OrderDepositUnfreeze
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: 解冻押金请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.OrderDepositUnfreezeReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 解冻押金
+      tags:
+        - Order - 订单
+  /rider/v2/order/payment/freezetopay:
+    post:
+      consumes:
+        - application/json
+      operationId: OrderPaymentFreezeToPay
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: 冻结转支付请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.FreezeToPay'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 冻结转支付
       tags:
       - Order - 订单
   /rider/v2/order/refund:
