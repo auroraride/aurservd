@@ -288,10 +288,6 @@ func (c *alipayClient) FandAuthFreeze(pc *model.PaymentCache) (string, error) {
 		amount = fmt.Sprintf("%.2f", pc.DepositCredit.Amount)
 	}
 
-	if ar.Config.Environment.IsDevelopment() {
-		amount = fmt.Sprintf("%.2f", 0.01)
-	}
-
 	trade := FundAuthOrderAppFreeze{
 		FundAuthOrderAppFreeze: alipay.FundAuthOrderAppFreeze{
 			OutOrderNo:   no,
@@ -311,6 +307,9 @@ func (c *alipayClient) FandAuthFreeze(pc *model.PaymentCache) (string, error) {
 		// 目前为纯免押
 		trade.DepositProductMode = "DEPOSIT_ONLY"
 	} else if pc.CacheType == model.PaymentCacheTypeAlipayAuthFreeze {
+
+		// todo 这块没自测完
+
 		// 当有押金的时候
 		if pc.Subscribe.Deposit > 0 {
 			trade.DepositProductMode = "POSTPAY"
@@ -472,8 +471,7 @@ func (c *alipayClient) FandAuthUnfreeze(req *definition.FandAuthUnfreezeReq) err
 }
 
 // NotificationFandAuthUnfreeze 解冻回调
-func (c *alipayClient) NotificationFandAuthUnfreeze(req *http.Request) (res *definition.FandAuthUnfreezeRes) {
-	res = new(definition.FandAuthUnfreezeRes)
+func (c *alipayClient) NotificationFandAuthUnfreeze(req *http.Request) (res *model.PaymentCache) {
 	err := req.ParseForm()
 	if err != nil {
 		zap.L().Error("资金授权解冻回调失败", zap.Error(err))
@@ -485,8 +483,21 @@ func (c *alipayClient) NotificationFandAuthUnfreeze(req *http.Request) (res *def
 		zap.L().Error("资金授权解冻回调解析失败", zap.Error(err))
 		return nil
 	}
-	res.OutOrderNo = result.OutOrderNo
-	return
+
+	// 从缓存中获取订单数据
+	pc := new(model.PaymentCache)
+	out := result.OutOrderNo
+	err = cache.Get(context.Background(), out).Scan(pc)
+	if err != nil {
+		zap.L().Error("从缓存获取订单信息失败", zap.Error(err))
+		return nil
+	}
+
+	if result.Status == definition.FandAuthFreezeStatusSuccess {
+		pc.Refund.Success = true
+		pc.Refund.Time = time.Now()
+	}
+	return pc
 }
 
 // AlipayTradePay 资金冻结转支付

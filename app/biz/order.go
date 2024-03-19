@@ -231,22 +231,6 @@ func (s *orderBiz) FandAuthUnfreeze(req *definition.OrderDepositUnfreezeReq) err
 	return payment.NewAlipay().FandAuthUnfreeze(fandAuthUnfreezeReq)
 }
 
-// DoFandAuthUnfreeze 处理解冻
-func (s *orderBiz) DoFandAuthUnfreeze(req *definition.FandAuthUnfreezeRes) error {
-	// 查询订单是否存在
-	o, _ := s.orm.Query().Where(order.OutOrderNo(req.OutOrderNo)).First(s.ctx)
-	if o == nil {
-		return errors.New("订单不存在")
-	}
-	// 更新订单状态
-	_, err := o.Update().SetStatus(model.OrderStatusRefundSuccess).Save(s.ctx)
-	if err != nil {
-		zap.L().Error("订单解冻失败", zap.Error(err))
-		return err
-	}
-	return nil
-}
-
 // Create 订单创建
 func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result *model.OrderCreateRes, err error) {
 	if req.OrderType == model.OrderTypeFee {

@@ -88,7 +88,7 @@ func (*plan) List(c echo.Context) (err error) {
 // IntroduceNotset
 // @ID			ManagerPlanIntroduceNotset
 // @Router		/manager/v1/plan/introduce/notset [GET]
-// @Summary		M6005 获取未设定介绍的车电型号
+// @Summary		获取未设定介绍的车电型号
 // @Description	介绍分两种: 1.单电 2.车电. 但无论哪种, 电池型号必选
 // @Tags		骑士卡
 // @Accept		json

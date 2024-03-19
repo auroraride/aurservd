@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/biz"
+	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/payment"
 )
 
@@ -27,10 +28,7 @@ func (*callback) AlipayFandAuthFreeze(c echo.Context) (err error) {
 func (*callback) AlipayFandAuthUnfreeze(c echo.Context) (err error) {
 	res := payment.NewAlipay().NotificationFandAuthUnfreeze(c.Request())
 	zap.L().Info("支付宝资金授权解冻回调", log.JsonData(res))
-	err = biz.NewOrderBiz().DoFandAuthUnfreeze(res)
-	if err != nil {
-		zap.L().Error("支付宝资金授权解冻回调失败", zap.Error(err))
-	}
+	service.NewOrder().RefundSuccess(res.Refund)
 	return c.String(http.StatusOK, "success")
 }
 

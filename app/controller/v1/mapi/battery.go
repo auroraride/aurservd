@@ -96,7 +96,7 @@ func (*battery) Create(c echo.Context) (err error) {
 // BatchCreate
 // @ID			ManagerBatteryBatchCreate
 // @Router		/manager/v1/battery/batch [POST]
-// @Summary		M4006 批量导入电池
+// @Summary		批量导入电池
 // @Description	参考 [MI007 批量导入电车]
 // @Tags		电池
 // @Accept		json

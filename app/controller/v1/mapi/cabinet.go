@@ -218,7 +218,7 @@ func (*cabinet) Maintain(c echo.Context) (err error) {
 // OpenBind
 // @ID			ManagerCabinetOpenBind
 // @Router		/manager/v1/cabinet/openbind [POST]
-// @Summary		M5013 开仓取电池并绑定骑手
+// @Summary		开仓取电池并绑定骑手
 // @Description	<仅智能电柜可用, 普通电柜无法请求, 判定标准: `intelligent = true`>
 // @Tags		电柜
 // @Accept		json

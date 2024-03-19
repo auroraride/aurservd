@@ -9,6 +9,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -145,13 +146,13 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
 
 	// 原始订单
 	o := or.Edges.Order
-	if o == nil || o.TradeNo == "" {
+	if o == nil || o.TradeNo == "" && o.AuthNo == "" {
 		snag.Panic("原始订单查询失败")
 	}
 
 	status := req.Status
 	var os uint8
-	after := "同意退款"
+	after := "订阅已退订，系统自动退押"
 
 	prepay := &model.PaymentCache{
 		CacheType: model.PaymentCacheTypeRefund,
@@ -168,7 +169,15 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
 	if req.Status == 1 {
 
 		// 订单缓存 (原始订单号key)
-		err := cache.Set(s.ctx, o.OutTradeNo, prepay, 20*time.Minute).Err()
+		var no string
+		no = o.OutTradeNo
+
+		// 预支付订单号
+		if o.TradePayAt == nil && o.OutOrderNo != "" {
+			no = o.OutOrderNo
+		}
+
+		err := cache.Set(s.ctx, no, prepay, 20*time.Minute).Err()
 		if err != nil {
 			snag.Panic("退款处理失败")
 		}
@@ -179,6 +188,21 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
 			payment.NewAlipay().Refund(prepay.Refund)
 		case model.OrderPaywayWechat:
 			payment.NewWechat().Refund(prepay.Refund)
+		case model.OrderPaywayAlipayAuthFreeze:
+			var isDeposit bool
+			if o.Type == model.OrderTypeDeposit {
+				isDeposit = true
+			}
+			err = payment.NewAlipay().FandAuthUnfreeze(&definition.FandAuthUnfreezeReq{
+				AuthNo:       o.AuthNo,
+				Amount:       or.Amount,
+				OutRequestNo: or.OutRefundNo,
+				Remark:       req.Remark,
+				IsDeposit:    isDeposit,
+			})
+		}
+		if err != nil {
+			snag.Panic("退款处理失败")
 		}
 
 		// 原路退款请求是否成功
