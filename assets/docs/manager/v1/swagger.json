@@ -507,7 +507,7 @@
                 "tags": [
                     "电池"
                 ],
-                "summary": "M4006 批量导入电池",
+              "summary": "批量导入电池",
                 "operationId": "ManagerBatteryBatchCreate",
                 "parameters": [
                     {
@@ -2432,7 +2432,7 @@
                 "tags": [
                     "电柜"
                 ],
-                "summary": "M5013 开仓取电池并绑定骑手",
+              "summary": "开仓取电池并绑定骑手",
                 "operationId": "ManagerCabinetOpenBind",
                 "parameters": [
                     {
@@ -2768,7 +2768,7 @@
                 "tags": [
                     "城市"
                 ],
-                "summary": "M2002 修改城市",
+              "summary": "修改城市",
                 "operationId": "CityModify",
                 "parameters": [
                     {
@@ -7452,7 +7452,7 @@
                 "tags": [
                     "骑士卡"
                 ],
-                "summary": "M6005 获取未设定介绍的车电型号",
+              "summary": "获取未设定介绍的车电型号",
                 "operationId": "ManagerPlanIntroduceNotset",
                 "parameters": [
                     {
@@ -9267,7 +9267,7 @@
                     }
                 }
             },
-            "put": {
+          "post": {
                 "consumes": [
                     "application/json"
                 ],
@@ -9277,8 +9277,8 @@
                 "tags": [
                     "设置"
                 ],
-                "summary": "修改常见问题",
-                "operationId": "QuestionModify",
+            "summary": "创建常见问题",
+            "operationId": "QuestionCreate",
                 "parameters": [
                     {
                         "type": "string",
@@ -9293,7 +9293,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/definition.QuestionModifyReq"
+                          "$ref": "#/definitions/definition.QuestionCreateReq"
                         }
                     }
                 ],
@@ -9305,8 +9305,10 @@
                         }
                     }
                 }
-            },
-            "post": {
+          }
+        },
+      "/manager/v1/question/:id": {
+        "put": {
                 "consumes": [
                     "application/json"
                 ],
@@ -9316,8 +9318,8 @@
                 "tags": [
                     "设置"
                 ],
-                "summary": "创建常见问题",
-                "operationId": "QuestionCreate",
+          "summary": "修改常见问题",
+          "operationId": "QuestionModify",
                 "parameters": [
                     {
                         "type": "string",
@@ -9332,7 +9334,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/definition.QuestionCreateReq"
+                          "$ref": "#/definitions/definition.QuestionModifyReq"
                         }
                     }
                 ],

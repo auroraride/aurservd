@@ -257,7 +257,7 @@ definitions:
         description: 以下字段仅限V2使用
         type: boolean
       depositOrderNo:
-        description: 押金订单编号 (如果分开支付的押金此参必填 例如 选择了信用免押,支付为支付宝支付,则此参数必填)
+        description: 押金订单编号 (如果分开支付的押金此参必填 例如 选择了信用免押,支付为支付宝,则此参数必填)
         type: string
       needContract:
         description: 是否需要签约
@@ -478,6 +478,12 @@ definitions:
     - answer
     - name
     - sort
+    type: object
+  definition.RefundReq:
+    properties:
+      subscribeId:
+        description: 骑士卡ID
+        type: integer
     type: object
   definition.RiderDirectionRes:
     properties:
@@ -769,18 +775,6 @@ definitions:
       model:
         description: 电池型号
         type: string
-    type: object
-  model.BinInfo:
-    properties:
-      electricity:
-        description: 电量
-        type: number
-      index:
-        description: 仓位index
-        type: integer
-      voltage:
-        description: 电压(V)
-        type: number
     type: object
   model.BranchFacility:
     properties:
@@ -1946,21 +1940,6 @@ definitions:
         - 3
         type: integer
     type: object
-  model.RefundReq:
-    properties:
-      deposit:
-        description: '是否退押金, 押金退款条件: 1. 无最近订单; 2. 存在订单且状态为已退款或已退租'
-        type: boolean
-      subscribeId:
-        description: 骑士卡ID, 和deposit不能同时存在, 也不能同时为空
-        type: integer
-    type: object
-  model.RefundRes:
-    properties:
-      outRefundNo:
-        description: 退款单号
-        type: string
-    type: object
   model.ReserveCabinetItem:
     properties:
       business:
@@ -2075,84 +2054,6 @@ definitions:
       deposit:
         type: number
     type: object
-  model.RiderExchangeInfo:
-    properties:
-      alternative:
-        allOf:
-        - $ref: '#/definitions/model.BinInfo'
-        description: 备选方案
-      batteryFullNum:
-        description: 总满电电池数
-        type: integer
-      batteryNum:
-        description: 总电池数
-        type: integer
-      brand:
-        allOf:
-        - $ref: '#/definitions/adapter.CabinetBrand'
-        description: 电柜型号
-      cityId:
-        description: 城市ID
-        type: integer
-      doors:
-        description: 总仓位
-        type: integer
-      emptyBin:
-        allOf:
-        - $ref: '#/definitions/model.BinInfo'
-        description: 空仓位
-      full:
-        description: 是否有满电电池
-        type: boolean
-      fullBin:
-        allOf:
-        - $ref: '#/definitions/model.BinInfo'
-        description: 满电仓位
-      health:
-        description: 电柜健康状态 0离线 1正常 2故障
-        type: integer
-      id:
-        description: 电柜ID
-        type: integer
-      model:
-        description: 电池型号
-        type: string
-      name:
-        description: 电柜名称
-        type: string
-      serial:
-        description: 电柜编码
-        type: string
-      uuid:
-        description: 操作ID
-        type: string
-    type: object
-  model.RiderExchangeProcessReq:
-    properties:
-      alternative:
-        description: 是否使用备选方案
-        type: boolean
-      uuid:
-        description: 操作ID
-        type: string
-    required:
-    - uuid
-    type: object
-  model.RiderExchangeProcessRes:
-    properties:
-      message:
-        description: 消息
-        type: string
-      status:
-        description: 状态 1:处理中 2:成功 3:失败
-        type: integer
-      step:
-        description: 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
-        type: integer
-      stop:
-        description: 步骤是否终止
-        type: boolean
-    type: object
   model.RiderPlanItem:
     properties:
       days:
@@ -2237,9 +2138,6 @@ definitions:
       name:
         description: 姓名, 实名认证后才会有
         type: string
-      needDeposit:
-        description: 是否需要缴纳押金(v2使用)
-        type: boolean
       orderNotActived:
         description: 是否存在未激活订单
         type: boolean
@@ -3156,84 +3054,6 @@ paths:
       summary: 电柜详情
       tags:
       - Cabinet - 电柜
-  /rider/v2/cabinet/process:
-    post:
-      consumes:
-      - application/json
-      operationId: CabinetProcess
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: desc
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.RiderExchangeProcessReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 操作换电
-      tags:
-      - Cabinet - 电柜
-  /rider/v2/cabinet/process/{serial}:
-    get:
-      consumes:
-      - application/json
-      operationId: CabinetGetProcess
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: 电柜二维码
-        in: path
-        name: serial
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.RiderExchangeInfo'
-      summary: 获取换电信息
-      tags:
-      - Cabinet - 电柜
-  /rider/v2/cabinet/process/status:
-    get:
-      consumes:
-      - application/json
-      operationId: CabinetProcessStatus
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: 操作ID
-        in: query
-        name: uuid
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.RiderExchangeProcessRes'
-      summary: 换电状态
-      tags:
-      - Cabinet - 电柜
   /rider/v2/certification/face:
     post:
       consumes:
@@ -4127,33 +3947,6 @@ paths:
       summary: 免押金支付
       tags:
         - Order - 订单
-  /rider/v2/order/deposit/unfreeze:
-    post:
-      consumes:
-        - application/json
-      operationId: OrderDepositUnfreeze
-      parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 解冻押金请求
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.OrderDepositUnfreezeReq'
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 解冻押金
-      tags:
-        - Order - 订单
   /rider/v2/order/payment/freezetopay:
     post:
       consumes:
@@ -4192,22 +3985,22 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
-      - description: desc
+      - description: 请求参数
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.RefundReq'
+          $ref: '#/definitions/definition.RefundReq'
       produces:
       - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.RefundRes'
+            $ref: '#/definitions/model.StatusResponse'
       summary: 申请退款
       tags:
-      - Order - 订单
+        - Order - 骑手
   /rider/v2/order/status:
     get:
       consumes:
@@ -4232,6 +4025,33 @@ paths:
           schema:
             $ref: '#/definitions/model.OrderStatusRes'
       summary: 订单支付状态
+      tags:
+        - Order - 订单
+  /rider/v2/order/unfreeze:
+    post:
+      consumes:
+        - application/json
+      operationId: OrderUnfreeze
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: 解冻押金请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.OrderDepositUnfreezeReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 解冻资金
       tags:
       - Order - 订单
   /rider/v2/plan:

@@ -1337,7 +1337,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldDepositAlipayAuthFreeze: {Type: field.TypeBool, Column: plan.FieldDepositAlipayAuthFreeze},
 			plan.FieldDepositContract:         {Type: field.TypeBool, Column: plan.FieldDepositContract},
 			plan.FieldDepositPay:              {Type: field.TypeBool, Column: plan.FieldDepositPay},
-			plan.FieldDepositPayway:           {Type: field.TypeJSON, Column: plan.FieldDepositPayway},
 		},
 	}
 	graph.Nodes[44] = &sqlgraph.Node{
@@ -13534,11 +13533,6 @@ func (f *PlanFilter) WhereDepositContract(p entql.BoolP) {
 // WhereDepositPay applies the entql bool predicate on the deposit_pay field.
 func (f *PlanFilter) WhereDepositPay(p entql.BoolP) {
 	f.Where(p.Field(plan.FieldDepositPay))
-}
-
-// WhereDepositPayway applies the entql json.RawMessage predicate on the deposit_payway field.
-func (f *PlanFilter) WhereDepositPayway(p entql.BytesP) {
-	f.Where(p.Field(plan.FieldDepositPayway))
 }
 
 // WhereHasBrand applies a predicate to check if query has an edge brand.

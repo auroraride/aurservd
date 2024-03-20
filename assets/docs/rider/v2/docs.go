@@ -936,124 +936,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v2/cabinet/process": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Cabinet - 电柜"
-                ],
-                "summary": "操作换电",
-                "operationId": "CabinetProcess",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "desc",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.RiderExchangeProcessReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/rider/v2/cabinet/process/status": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Cabinet - 电柜"
-                ],
-                "summary": "换电状态",
-                "operationId": "CabinetProcessStatus",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "操作ID",
-                        "name": "uuid",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.RiderExchangeProcessRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/rider/v2/cabinet/process/{serial}": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Cabinet - 电柜"
-                ],
-                "summary": "获取换电信息",
-                "operationId": "CabinetGetProcess",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "电柜二维码",
-                        "name": "serial",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.RiderExchangeInfo"
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v2/cabinet/{serial}": {
             "get": {
                 "consumes": [
@@ -2416,47 +2298,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v2/order/deposit/unfreeze": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Order - 订单"
-                ],
-                "summary": "解冻押金",
-                "operationId": "OrderDepositUnfreeze",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "解冻押金请求",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/definition.OrderDepositUnfreezeReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v2/order/payment/freezetopay": {
             "post": {
                 "consumes": [
@@ -2507,7 +2348,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Order - 订单"
+                    "Order - 骑手"
                 ],
                 "summary": "申请退款",
                 "operationId": "OrderRefund",
@@ -2520,12 +2361,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "desc",
+                        "description": "请求参数",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.RefundReq"
+                            "$ref": "#/definitions/definition.RefundReq"
                         }
                     }
                 ],
@@ -2533,7 +2374,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.RefundRes"
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -2573,6 +2414,47 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.OrderStatusRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/order/unfreeze": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order - 订单"
+                ],
+                "summary": "解冻资金",
+                "operationId": "OrderUnfreeze",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "解冻押金请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.OrderDepositUnfreezeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -3597,7 +3479,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "depositOrderNo": {
-                    "description": "押金订单编号 (如果分开支付的押金此参必填 例如 选择了信用免押,支付为支付宝支付,则此参数必填)",
+                    "description": "押金订单编号 (如果分开支付的押金此参必填 例如 选择了信用免押,支付为支付宝,则此参数必填)",
                     "type": "string"
                 },
                 "needContract": {
@@ -3898,6 +3780,15 @@ const docTemplate = `{
                 },
                 "sort": {
                     "description": "排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.RefundReq": {
+            "type": "object",
+            "properties": {
+                "subscribeId": {
+                    "description": "骑士卡ID",
                     "type": "integer"
                 }
             }
@@ -4322,23 +4213,6 @@ const docTemplate = `{
                 "model": {
                     "description": "电池型号",
                     "type": "string"
-                }
-            }
-        },
-        "model.BinInfo": {
-            "type": "object",
-            "properties": {
-                "electricity": {
-                    "description": "电量",
-                    "type": "number"
-                },
-                "index": {
-                    "description": "仓位index",
-                    "type": "integer"
-                },
-                "voltage": {
-                    "description": "电压(V)",
-                    "type": "number"
                 }
             }
         },
@@ -6024,28 +5898,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.RefundReq": {
-            "type": "object",
-            "properties": {
-                "deposit": {
-                    "description": "是否退押金, 押金退款条件: 1. 无最近订单; 2. 存在订单且状态为已退款或已退租",
-                    "type": "boolean"
-                },
-                "subscribeId": {
-                    "description": "骑士卡ID, 和deposit不能同时存在, 也不能同时为空",
-                    "type": "integer"
-                }
-            }
-        },
-        "model.RefundRes": {
-            "type": "object",
-            "properties": {
-                "outRefundNo": {
-                    "description": "退款单号",
-                    "type": "string"
-                }
-            }
-        },
         "model.ReserveCabinetItem": {
             "type": "object",
             "properties": {
@@ -6201,124 +6053,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.RiderExchangeInfo": {
-            "type": "object",
-            "properties": {
-                "alternative": {
-                    "description": "备选方案",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.BinInfo"
-                        }
-                    ]
-                },
-                "batteryFullNum": {
-                    "description": "总满电电池数",
-                    "type": "integer"
-                },
-                "batteryNum": {
-                    "description": "总电池数",
-                    "type": "integer"
-                },
-                "brand": {
-                    "description": "电柜型号",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/adapter.CabinetBrand"
-                        }
-                    ]
-                },
-                "cityId": {
-                    "description": "城市ID",
-                    "type": "integer"
-                },
-                "doors": {
-                    "description": "总仓位",
-                    "type": "integer"
-                },
-                "emptyBin": {
-                    "description": "空仓位",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.BinInfo"
-                        }
-                    ]
-                },
-                "full": {
-                    "description": "是否有满电电池",
-                    "type": "boolean"
-                },
-                "fullBin": {
-                    "description": "满电仓位",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.BinInfo"
-                        }
-                    ]
-                },
-                "health": {
-                    "description": "电柜健康状态 0离线 1正常 2故障",
-                    "type": "integer"
-                },
-                "id": {
-                    "description": "电柜ID",
-                    "type": "integer"
-                },
-                "model": {
-                    "description": "电池型号",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "电柜名称",
-                    "type": "string"
-                },
-                "serial": {
-                    "description": "电柜编码",
-                    "type": "string"
-                },
-                "uuid": {
-                    "description": "操作ID",
-                    "type": "string"
-                }
-            }
-        },
-        "model.RiderExchangeProcessReq": {
-            "type": "object",
-            "required": [
-                "uuid"
-            ],
-            "properties": {
-                "alternative": {
-                    "description": "是否使用备选方案",
-                    "type": "boolean"
-                },
-                "uuid": {
-                    "description": "操作ID",
-                    "type": "string"
-                }
-            }
-        },
-        "model.RiderExchangeProcessRes": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "description": "消息",
-                    "type": "string"
-                },
-                "status": {
-                    "description": "状态 1:处理中 2:成功 3:失败",
-                    "type": "integer"
-                },
-                "step": {
-                    "description": "操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池",
-                    "type": "integer"
-                },
-                "stop": {
-                    "description": "步骤是否终止",
-                    "type": "boolean"
-                }
-            }
-        },
         "model.RiderPlanItem": {
             "type": "object",
             "properties": {
@@ -6444,10 +6178,6 @@ const docTemplate = `{
                 "name": {
                     "description": "姓名, 实名认证后才会有",
                     "type": "string"
-                },
-                "needDeposit": {
-                    "description": "是否需要缴纳押金(v2使用)",
-                    "type": "boolean"
                 },
                 "orderNotActived": {
                     "description": "是否存在未激活订单",

@@ -286,8 +286,9 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 
 	// 判定押金是否需要支付
 	var deposit float64
-	// 选择微信支付和支付宝支付有押金 或者选择支付宝预授权支付有押金
-	if req.Payway == model.OrderPaywayAlipay || req.Payway == model.OrderPaywayWechat ||
+	// 当支付方式为支付宝或微信,并且套餐支持押金支付时 并且不是分开支付的押金订单
+	if (req.Payway == model.OrderPaywayAlipay || req.Payway == model.OrderPaywayWechat) && p.DepositPay && req.DepositOrderNo == nil ||
+		// 当选择支付宝预授权支付时, 且套餐支持押金支付时
 		req.Payway == model.OrderPaywayAlipayAuthFreeze && req.DepositAlipayAuthFreeze {
 		if p.Deposit && p.DepositAmount > 0 {
 			deposit = p.DepositAmount

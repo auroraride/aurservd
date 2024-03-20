@@ -71,8 +71,6 @@ const (
 	FieldDepositContract = "deposit_contract"
 	// FieldDepositPay holds the string denoting the deposit_pay field in the database.
 	FieldDepositPay = "deposit_pay"
-	// FieldDepositPayway holds the string denoting the deposit_payway field in the database.
-	FieldDepositPayway = "deposit_payway"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
@@ -145,7 +143,6 @@ var Columns = []string{
 	FieldDepositAlipayAuthFreeze,
 	FieldDepositContract,
 	FieldDepositPay,
-	FieldDepositPayway,
 }
 
 var (

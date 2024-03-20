@@ -81,8 +81,6 @@ func (Plan) Fields() []ent.Field {
 		field.Bool("deposit_alipay_auth_freeze").Optional().Default(false).Comment("预授权信用免押金"),
 		field.Bool("deposit_contract").Optional().Default(false).Comment("合同免押金"),
 		field.Bool("deposit_pay").Optional().Default(false).Comment("支付押金"),
-
-		field.JSON("deposit_payway", []uint8{}).Optional().Comment("押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金"),
 	}
 }
 

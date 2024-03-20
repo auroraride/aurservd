@@ -76,8 +76,6 @@ type Plan struct {
 	DepositContract bool `json:"deposit_contract,omitempty"`
 	// 支付押金
 	DepositPay bool `json:"deposit_pay,omitempty"`
-	// 押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金
-	DepositPayway []uint8 `json:"deposit_payway,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlanQuery when eager-loading is set.
 	Edges        PlanEdges `json:"edges"`
@@ -155,7 +153,7 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case plan.FieldCreator, plan.FieldLastModifier, plan.FieldNotes, plan.FieldDepositPayway:
+		case plan.FieldCreator, plan.FieldLastModifier, plan.FieldNotes:
 			values[i] = new([]byte)
 		case plan.FieldEnable, plan.FieldIntelligent, plan.FieldDeposit, plan.FieldDepositWechatPayscore, plan.FieldDepositAlipayAuthFreeze, plan.FieldDepositContract, plan.FieldDepositPay:
 			values[i] = new(sql.NullBool)
@@ -365,14 +363,6 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.DepositPay = value.Bool
 			}
-		case plan.FieldDepositPayway:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field deposit_payway", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &pl.DepositPayway); err != nil {
-					return fmt.Errorf("unmarshal field deposit_payway: %w", err)
-				}
-			}
 		default:
 			pl.selectValues.Set(columns[i], values[i])
 		}
@@ -523,9 +513,6 @@ func (pl *Plan) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("deposit_pay=")
 	builder.WriteString(fmt.Sprintf("%v", pl.DepositPay))
-	builder.WriteString(", ")
-	builder.WriteString("deposit_payway=")
-	builder.WriteString(fmt.Sprintf("%v", pl.DepositPayway))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -1180,16 +1180,6 @@ func DepositPayNotNil() predicate.Plan {
 	return predicate.Plan(sql.FieldNotNull(FieldDepositPay))
 }
 
-// DepositPaywayIsNil applies the IsNil predicate on the "deposit_payway" field.
-func DepositPaywayIsNil() predicate.Plan {
-	return predicate.Plan(sql.FieldIsNull(FieldDepositPayway))
-}
-
-// DepositPaywayNotNil applies the NotNil predicate on the "deposit_payway" field.
-func DepositPaywayNotNil() predicate.Plan {
-	return predicate.Plan(sql.FieldNotNull(FieldDepositPayway))
-}
-
 // HasBrand applies the HasEdge predicate on the "brand" edge.
 func HasBrand() predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {

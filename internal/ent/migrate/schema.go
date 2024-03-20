@@ -3163,7 +3163,7 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
-		{Name: "status", Type: field.TypeUint8, Comment: "订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝 5取消订单 6冻结 7解冻", Default: 1},
+		{Name: "status", Type: field.TypeUint8, Comment: "订单状态 0未支付 1已支付 2申请退款 3已退款", Default: 1},
 		{Name: "payway", Type: field.TypeUint8, Comment: "支付方式 0手动 1支付宝 2微信 3支付宝预授权 4微信支付分"},
 		{Name: "type", Type: field.TypeUint, Comment: "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金 8代理充值"},
 		{Name: "out_trade_no", Type: field.TypeString, Nullable: true, Comment: "交易订单号"},
@@ -3457,7 +3457,6 @@ var (
 		{Name: "deposit_alipay_auth_freeze", Type: field.TypeBool, Nullable: true, Comment: "预授权信用免押金", Default: false},
 		{Name: "deposit_contract", Type: field.TypeBool, Nullable: true, Comment: "合同免押金", Default: false},
 		{Name: "deposit_pay", Type: field.TypeBool, Nullable: true, Comment: "支付押金", Default: false},
-		{Name: "deposit_payway", Type: field.TypeJSON, Nullable: true, Comment: "押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金"},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true, Comment: "父级"},
 	}
@@ -3469,13 +3468,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "plan_ebike_brand_brand",
-				Columns:    []*schema.Column{PlanColumns[28]},
+				Columns:    []*schema.Column{PlanColumns[27]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "plan_plan_complexes",
-				Columns:    []*schema.Column{PlanColumns[29]},
+				Columns:    []*schema.Column{PlanColumns[28]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3494,7 +3493,7 @@ var (
 			{
 				Name:    "plan_brand_id",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[28]},
+				Columns: []*schema.Column{PlanColumns[27]},
 			},
 			{
 				Name:    "plan_type",

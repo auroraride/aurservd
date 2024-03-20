@@ -379,18 +379,6 @@ func (*exchange) Overview() {}
 // @Success	200				{object}	model.PaginationRes{items=[]model.ExchangeRiderListRes}	"请求成功"
 func (*exchange) Log() {}
 
-// Refund
-// @ID		OrderRefund
-// @Router	/rider/v2/order/refund [POST]
-// @Summary	申请退款
-// @Tags	Order - 订单
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string			true	"骑手校验token"
-// @Param	body			body		model.RefundReq	true	"desc"
-// @Success	200				{object}	model.RefundRes	"请求成功"
-func (*order) Refund() {}
-
 // List
 // @ID		OrderList
 // @Router	/rider/v2/order [GET]

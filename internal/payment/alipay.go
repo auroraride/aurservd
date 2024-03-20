@@ -160,53 +160,6 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
 	}
 }
 
-// DecodeNotification todo 记得删除
-func (c *alipayClient) DecodeNotification(values url.Values) (notification *alipay.Notification, err error) {
-	notification = &alipay.Notification{}
-	notification.AppId = values.Get("app_id")
-	notification.AuthAppId = values.Get("auth_app_id")
-	notification.NotifyId = values.Get("notify_id")
-	notification.NotifyType = values.Get("notify_type")
-	notification.NotifyTime = values.Get("notify_time")
-	notification.TradeNo = values.Get("trade_no")
-	notification.TradeStatus = alipay.TradeStatus(values.Get("trade_status"))
-	notification.RefundStatus = values.Get("refund_status")
-	notification.RefundReason = values.Get("refund_reason")
-	notification.RefundAmount = values.Get("refund_amount")
-	notification.TotalAmount = values.Get("total_amount")
-	notification.ReceiptAmount = values.Get("receipt_amount")
-	notification.InvoiceAmount = values.Get("invoice_amount")
-	notification.BuyerPayAmount = values.Get("buyer_pay_amount")
-	notification.SellerId = values.Get("seller_id")
-	notification.SellerEmail = values.Get("seller_email")
-	notification.BuyerId = values.Get("buyer_id")
-	notification.BuyerLogonId = values.Get("buyer_logon_id")
-	notification.FundBillList = values.Get("fund_bill_list")
-	notification.Charset = values.Get("charset")
-	notification.PointAmount = values.Get("point_amount")
-	notification.OutTradeNo = values.Get("out_trade_no")
-	notification.OutRequestNo = values.Get("out_request_no")
-	notification.OutBizNo = values.Get("out_biz_no")
-	notification.GmtCreate = values.Get("gmt_create")
-	notification.GmtPayment = values.Get("gmt_payment")
-	notification.GmtRefund = values.Get("gmt_refund")
-	notification.GmtClose = values.Get("gmt_close")
-	notification.Subject = values.Get("subject")
-	notification.Body = values.Get("body")
-	notification.RefundFee = values.Get("refund_fee")
-	notification.Version = values.Get("version")
-	notification.SignType = values.Get("sign_type")
-	notification.Sign = values.Get("sign")
-	notification.PassbackParams = values.Get("passback_params")
-	notification.VoucherDetailList = values.Get("voucher_detail_list")
-	notification.AgreementNo = values.Get("agreement_no")
-	notification.ExternalAgreementNo = values.Get("external_agreement_no")
-	notification.DBackStatus = values.Get("dback_status")
-	notification.DBackAmount = values.Get("dback_amount")
-	notification.BankAckTime = values.Get("bank_ack_time")
-	return notification, err
-}
-
 // Notification 支付宝回调
 func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
 	err := req.ParseForm()
@@ -216,9 +169,7 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
 	}
 
 	var result *alipay.Notification
-	// result, err = c.Client.DecodeNotification(req.Form)
-	// todo 这里记得取消注释 验证签名
-	result, err = c.DecodeNotification(req.Form)
+	result, err = c.Client.DecodeNotification(req.Form)
 	zap.L().Info("支付宝回调", log.JsonData(result), zap.Error(err))
 	if err != nil {
 		return nil
@@ -407,10 +358,9 @@ func (c *alipayClient) NotificationFandAuthFreeze(req *http.Request) *model.Paym
 // DecodeFandAuthFreezeNotification 解析线上资金授权冻结回调
 func (c *alipayClient) DecodeFandAuthFreezeNotification(values url.Values) (notification *definition.FandAuthFreezeNotification, err error) {
 
-	// todo 这里记得取消注释 验证签名
-	// if err = c.VerifySign(values); err != nil {
-	// 	return nil, err
-	// }
+	if err = c.VerifySign(values); err != nil {
+		return nil, err
+	}
 
 	notification = &definition.FandAuthFreezeNotification{}
 	notification.AuthNo = values.Get("auth_no")

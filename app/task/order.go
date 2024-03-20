@@ -64,7 +64,7 @@ func (t *orderTask) Do() {
 	if len(o) == 0 {
 		return
 	}
-
+	// todo 这里有个问题还需要修改
 	for _, v := range o {
 		service.NewOrder().TradePay(v)
 	}

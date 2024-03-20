@@ -189,10 +189,12 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
 		case model.OrderPaywayWechat:
 			payment.NewWechat().Refund(prepay.Refund)
 		case model.OrderPaywayAlipayAuthFreeze:
+			// 芝麻免押参数不一样
 			var isDeposit bool
 			if o.Type == model.OrderTypeDeposit {
 				isDeposit = true
 			}
+			// 如果只是预支付直接解冻
 			err = payment.NewAlipay().FandAuthUnfreeze(&definition.FandAuthUnfreezeReq{
 				AuthNo:       o.AuthNo,
 				Amount:       or.Amount,
@@ -200,6 +202,9 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
 				Remark:       req.Remark,
 				IsDeposit:    isDeposit,
 			})
+			if err != nil {
+				snag.Panic("退款处理失败")
+			}
 		}
 		if err != nil {
 			snag.Panic("退款处理失败")

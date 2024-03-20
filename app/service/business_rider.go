@@ -769,7 +769,7 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 		go NewEnterprise().UpdateStatementByID(*sub.EnterpriseID)
 	}
 
-	// 当强制退租时 如果订阅为预授权支付 需要扣除金额并解冻(强制退租不自动扣除押金)
+	// 当强制退租时 如果订阅为预授权支付 需要扣除金额并解冻(强制退租不自动扣除押金) todo 这里还有问题
 	var o *ent.Order
 	o, _ = ent.Database.Order.QueryNotDeleted().Where(
 		order.SubscribeID(sub.ID),

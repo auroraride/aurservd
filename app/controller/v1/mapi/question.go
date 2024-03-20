@@ -36,7 +36,7 @@ func (a *question) Create(c echo.Context) error {
 
 // Modify
 // @ID		QuestionModify
-// @Router	/manager/v1/question [PUT]
+// @Router	/manager/v1/question/:id [PUT]
 // @Summary	修改常见问题
 // @Tags	设置
 // @Accept	json

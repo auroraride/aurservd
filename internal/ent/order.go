@@ -57,7 +57,7 @@ type Order struct {
 	ParentID uint64 `json:"parent_id,omitempty"`
 	// 所属订阅ID
 	SubscribeID uint64 `json:"subscribe_id,omitempty"`
-	// 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝 5取消订单 6冻结 7解冻
+	// 订单状态 0未支付 1已支付 2申请退款 3已退款
 	Status uint8 `json:"status,omitempty"`
 	// 支付方式 0手动 1支付宝 2微信 3支付宝预授权 4微信支付分
 	Payway uint8 `json:"payway,omitempty"`

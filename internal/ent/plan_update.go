@@ -513,24 +513,6 @@ func (pu *PlanUpdate) ClearDepositPay() *PlanUpdate {
 	return pu
 }
 
-// SetDepositPayway sets the "deposit_payway" field.
-func (pu *PlanUpdate) SetDepositPayway(u []uint8) *PlanUpdate {
-	pu.mutation.SetDepositPayway(u)
-	return pu
-}
-
-// AppendDepositPayway appends u to the "deposit_payway" field.
-func (pu *PlanUpdate) AppendDepositPayway(u []uint8) *PlanUpdate {
-	pu.mutation.AppendDepositPayway(u)
-	return pu
-}
-
-// ClearDepositPayway clears the value of the "deposit_payway" field.
-func (pu *PlanUpdate) ClearDepositPayway() *PlanUpdate {
-	pu.mutation.ClearDepositPayway()
-	return pu
-}
-
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (pu *PlanUpdate) SetBrand(e *EbikeBrand) *PlanUpdate {
 	return pu.SetBrandID(e.ID)
@@ -859,17 +841,6 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if pu.mutation.DepositPayCleared() {
 		_spec.ClearField(plan.FieldDepositPay, field.TypeBool)
-	}
-	if value, ok := pu.mutation.DepositPayway(); ok {
-		_spec.SetField(plan.FieldDepositPayway, field.TypeJSON, value)
-	}
-	if value, ok := pu.mutation.AppendedDepositPayway(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, plan.FieldDepositPayway, value)
-		})
-	}
-	if pu.mutation.DepositPaywayCleared() {
-		_spec.ClearField(plan.FieldDepositPayway, field.TypeJSON)
 	}
 	if pu.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1565,24 +1536,6 @@ func (puo *PlanUpdateOne) ClearDepositPay() *PlanUpdateOne {
 	return puo
 }
 
-// SetDepositPayway sets the "deposit_payway" field.
-func (puo *PlanUpdateOne) SetDepositPayway(u []uint8) *PlanUpdateOne {
-	puo.mutation.SetDepositPayway(u)
-	return puo
-}
-
-// AppendDepositPayway appends u to the "deposit_payway" field.
-func (puo *PlanUpdateOne) AppendDepositPayway(u []uint8) *PlanUpdateOne {
-	puo.mutation.AppendDepositPayway(u)
-	return puo
-}
-
-// ClearDepositPayway clears the value of the "deposit_payway" field.
-func (puo *PlanUpdateOne) ClearDepositPayway() *PlanUpdateOne {
-	puo.mutation.ClearDepositPayway()
-	return puo
-}
-
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (puo *PlanUpdateOne) SetBrand(e *EbikeBrand) *PlanUpdateOne {
 	return puo.SetBrandID(e.ID)
@@ -1941,17 +1894,6 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 	}
 	if puo.mutation.DepositPayCleared() {
 		_spec.ClearField(plan.FieldDepositPay, field.TypeBool)
-	}
-	if value, ok := puo.mutation.DepositPayway(); ok {
-		_spec.SetField(plan.FieldDepositPayway, field.TypeJSON, value)
-	}
-	if value, ok := puo.mutation.AppendedDepositPayway(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, plan.FieldDepositPayway, value)
-		})
-	}
-	if puo.mutation.DepositPaywayCleared() {
-		_spec.ClearField(plan.FieldDepositPayway, field.TypeJSON)
 	}
 	if puo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{

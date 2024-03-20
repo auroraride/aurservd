@@ -1056,20 +1056,6 @@ func (s *orderService) TradePay(o *ent.Order) *alipay.TradePayRsp {
 		subject = o.Edges.Plan.Name
 	}
 
-	var totalAmount float64
-	totalAmount = o.Amount
-
-	// 判定押金是否是预支付
-	od, _ := s.orm.QueryNotDeleted().
-		Where(
-			order.AuthNo(o.AuthNo),
-			order.Type(model.OrderTypeDeposit),
-			order.TradePayAtIsNil(),
-		).First(s.ctx)
-	if od != nil {
-		totalAmount = tools.NewDecimal().Sum(totalAmount, od.Amount)
-	}
-
 	// 查询授权订单状态
 	fundAuthOperationDetailQueryRsp, err := payment.NewAlipay().AlipayFundAuthOperationDetailQuery(definition.FundAuthOperationDetailReq{
 		OutOrderNo:   o.OutOrderNo,
@@ -1087,10 +1073,16 @@ func (s *orderService) TradePay(o *ent.Order) *alipay.TradePayRsp {
 	}
 
 	// 判定解冻金额
-	totalAmountString := strconv.FormatFloat(totalAmount, 'f', -1, 64)
+	totalAmountString := strconv.FormatFloat(o.Amount, 'f', -1, 64)
 	if totalAmountString > fundAuthOperationDetailQueryRsp.RestAmount {
 		zap.L().Error("资金冻结转支付失败", zap.String("解冻金额", fundAuthOperationDetailQueryRsp.RestAmount))
 		return nil
+	}
+
+	authConfirmMode := "NOT_COMPLETE"
+	if totalAmountString == fundAuthOperationDetailQueryRsp.RestAmount {
+		// 如果解冻金额等于订单金额 完结
+		authConfirmMode = "COMPLETE"
 	}
 
 	no := tools.NewUnique().NewSN28()
@@ -1100,10 +1092,11 @@ func (s *orderService) TradePay(o *ent.Order) *alipay.TradePayRsp {
 
 	// 调用资金冻结转支付
 	rsp, err := payment.NewAlipay().AlipayTradePay(&definition.TradePay{
-		AuthNo:      o.AuthNo,
-		OutTradeNo:  no,
-		TotalAmount: totalAmount,
-		Subject:     subject,
+		AuthNo:          o.AuthNo,
+		OutTradeNo:      no,
+		TotalAmount:     o.Amount,
+		Subject:         subject,
+		AuthConfirmMode: authConfirmMode,
 	})
 	if err != nil {
 		zap.L().Error("资金冻结转支付失败", zap.Error(err))
@@ -1158,3 +1151,37 @@ func (s *orderService) DepositPay(d *model.DepositCredit) {
 	}
 	cr.SaveX(s.ctx)
 }
+
+// 判定预支付是否需要完结
+// func (s *orderService) FandAuthUnfreezeFinish(o *ent.Order, amount float64) bool {
+// 	// 查询授权订单状态 押金或者套餐有可能是预支付
+// 	// 使用AuthNo是有可能一个预支付分成两个订单 但只退套餐的时候不需要完结
+//
+// 	// 假如冻结金额转支付了 只转了套餐金额 不完结 还剩押金金额
+//
+// 	// todo 先暂时不考虑免押 直接完结 默认全部解压或者转支付
+// 	// 查询子订单 和主订单
+// 	orders, _ := ent.Database.Order.Query().Where(
+// 		order.ParentID(o.ID),
+// 		order.Status(model.OrderStatusPaid),
+// 		order.TradePayAtIsNil(),                         // 未转支付
+// 		order.Payway(model.OrderPaywayAlipayAuthFreeze), // 预支付
+// 	).
+// 		Where(
+// 			order.Or(
+// 				order.ID(o.ID),
+// 			),
+// 		).All(s.ctx)
+//
+// 	// 整体预支付的金额
+// 	var total float64
+// 	for _, v := range orders {
+// 		total = tools.NewDecimal().Sum(total, v.Amount)
+// 	}
+//
+// 	// 如果预支付的金额和订单金额一致
+// 	if total == amount {
+// 		return true
+// 	}
+// 	return false
+// }

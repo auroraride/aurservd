@@ -7341,7 +7341,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M4006 批量导入电池
+      summary: 批量导入电池
       tags:
       - 电池
   /manager/v1/battery/bind:
@@ -8654,7 +8654,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5013 开仓取电池并绑定骑手
+      summary: 开仓取电池并绑定骑手
       tags:
       - 电柜
   /manager/v1/cabinet/reboot:
@@ -8801,7 +8801,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M2002 修改城市
+      summary: 修改城市
       tags:
       - 城市
   /manager/v1/contract:
@@ -11921,7 +11921,7 @@ paths:
             items:
               $ref: '#/definitions/model.PlanIntroduceOption'
             type: array
-      summary: M6005 获取未设定介绍的车电型号
+      summary: 获取未设定介绍的车电型号
       tags:
       - 骑士卡
   /manager/v1/plan/time:
@@ -13076,6 +13076,7 @@ paths:
       summary: 创建常见问题
       tags:
       - 设置
+  /manager/v1/question/:id:
     put:
       consumes:
       - application/json

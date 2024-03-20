@@ -4531,10 +4531,6 @@ const docTemplate = `{
                     "description": "姓名, 实名认证后才会有",
                     "type": "string"
                 },
-                "needDeposit": {
-                    "description": "是否需要缴纳押金(v2使用)",
-                    "type": "boolean"
-                },
                 "orderNotActived": {
                     "description": "是否存在未激活订单",
                     "type": "boolean"

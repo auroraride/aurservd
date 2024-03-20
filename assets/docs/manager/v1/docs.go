@@ -514,7 +514,7 @@ const docTemplate = `{
                 "tags": [
                     "电池"
                 ],
-                "summary": "M4006 批量导入电池",
+                "summary": "批量导入电池",
                 "operationId": "ManagerBatteryBatchCreate",
                 "parameters": [
                     {
@@ -2439,7 +2439,7 @@ const docTemplate = `{
                 "tags": [
                     "电柜"
                 ],
-                "summary": "M5013 开仓取电池并绑定骑手",
+                "summary": "开仓取电池并绑定骑手",
                 "operationId": "ManagerCabinetOpenBind",
                 "parameters": [
                     {
@@ -2775,7 +2775,7 @@ const docTemplate = `{
                 "tags": [
                     "城市"
                 ],
-                "summary": "M2002 修改城市",
+                "summary": "修改城市",
                 "operationId": "CityModify",
                 "parameters": [
                     {
@@ -7459,7 +7459,7 @@ const docTemplate = `{
                 "tags": [
                     "骑士卡"
                 ],
-                "summary": "M6005 获取未设定介绍的车电型号",
+                "summary": "获取未设定介绍的车电型号",
                 "operationId": "ManagerPlanIntroduceNotset",
                 "parameters": [
                     {
@@ -9274,45 +9274,6 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "设置"
-                ],
-                "summary": "修改常见问题",
-                "operationId": "QuestionModify",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "请求参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/definition.QuestionModifyReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -9340,6 +9301,47 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/definition.QuestionCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/question/:id": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "修改常见问题",
+                "operationId": "QuestionModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.QuestionModifyReq"
                         }
                     }
                 ],
