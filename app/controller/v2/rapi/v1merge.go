@@ -113,8 +113,6 @@ func (*Branch) Riding() {}
 // @Success	200				{object}	model.BranchFacilityRes	"请求成功"
 func (*Branch) Facility() {}
 
-type Business struct{}
-
 // Active
 // @ID		BusinessActive
 // @Router	/rider/v2/business/active [POST]
@@ -125,7 +123,7 @@ type Business struct{}
 // @Param	X-Rider-Token	header		string						true	"骑手校验token"
 // @Param	body			body		model.BusinessCabinetReq	true	"业务请求"
 // @Success	200				{object}	model.BusinessCabinetStatus	"请求成功"
-func (*Business) Active() {}
+func (*business) Active() {}
 
 // Unsubscribe
 // @ID		BusinessUnsubscribe
@@ -137,7 +135,7 @@ func (*Business) Active() {}
 // @Param	X-Rider-Token	header		string						true	"骑手校验token"
 // @Param	body			body		model.BusinessCabinetReq	true	"业务请求"
 // @Success	200				{object}	model.BusinessCabinetStatus	"请求成功"
-func (*Business) Unsubscribe() {}
+func (*business) Unsubscribe() {}
 
 // Pause
 // @ID		BusinessPause
@@ -149,7 +147,7 @@ func (*Business) Unsubscribe() {}
 // @Param	X-Rider-Token	header		string						true	"骑手校验token"
 // @Param	body			body		model.BusinessCabinetReq	true	"业务请求"
 // @Success	200				{object}	model.BusinessCabinetStatus	"请求成功"
-func (*Business) Pause() {}
+func (*business) Pause() {}
 
 // Continue
 // @ID		BusinessContinue
@@ -161,7 +159,7 @@ func (*Business) Pause() {}
 // @Param	X-Rider-Token	header		string						true	"骑手校验token"
 // @Param	body			body		model.BusinessCabinetReq	true	"业务请求"
 // @Success	200				{object}	model.BusinessCabinetStatus	"请求成功"
-func (*Business) Continue() {}
+func (*business) Continue() {}
 
 // Status
 // @ID		BusinessStatus
@@ -173,7 +171,7 @@ func (*Business) Continue() {}
 // @Param	X-Rider-Token	header		string							true	"骑手校验token"
 // @Param	query			query		model.BusinessCabinetStatusReq	true	"业务请求"
 // @Success	200				{object}	model.BusinessCabinetStatusRes	"请求成功"
-func (*Business) Status() {}
+func (*business) Status() {}
 
 // PauseInfo
 // @ID		BusinessPauseInfo
@@ -184,7 +182,7 @@ func (*Business) Status() {}
 // @Produce	json
 // @Param	X-Rider-Token	header		string						true	"骑手校验token"
 // @Success	200				{object}	model.BusinessPauseInfoRes	"请求成功"
-func (*Business) PauseInfo() {}
+func (*business) PauseInfo() {}
 
 // Allocated
 // @ID			BusinessAllocated
@@ -197,7 +195,7 @@ func (*Business) PauseInfo() {}
 // @Param		X-Rider-Token	header		string					true	"骑手校验token"
 // @Param		id				path		uint64					true	"订阅ID"
 // @Success		200				{object}	model.AllocateRiderRes	"请求成功"
-func (*Business) Allocated() {}
+func (*business) Allocated() {}
 
 // SubscribeSigned
 // @ID		BusinessSubscribeSigned
@@ -209,43 +207,7 @@ func (*Business) Allocated() {}
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"
 // @Param	id				path		uint64					true	"订阅ID"
 // @Success	200				{object}	model.SubscribeSigned	"请求成功"
-func (*Business) SubscribeSigned() {}
-
-// GetProcess
-// @ID		CabinetGetProcess
-// @Router	/rider/v2/cabinet/process/{serial} [GET]
-// @Summary	获取换电信息
-// @Tags	Cabinet - 电柜
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string					true	"骑手校验token"
-// @Param	serial			path		string					true	"电柜二维码"
-// @Success	200				{object}	model.RiderExchangeInfo	"请求成功"
-func (*cabinet) GetProcess() {}
-
-// Process
-// @ID		CabinetProcess
-// @Router	/rider/v2/cabinet/process [POST]
-// @Summary	操作换电
-// @Tags	Cabinet - 电柜
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string							true	"骑手校验token"
-// @Param	body			body		model.RiderExchangeProcessReq	true	"desc"
-// @Success	200				{object}	model.StatusResponse			"请求成功"
-func (*cabinet) Process() {}
-
-// ProcessStatus
-// @ID		CabinetProcessStatus
-// @Router	/rider/v2/cabinet/process/status [GET]
-// @Summary	换电状态
-// @Tags	Cabinet - 电柜
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string								true	"骑手校验token"
-// @Param	query			query		model.RiderExchangeProcessStatusReq	true	"desc"
-// @Success	200				{object}	model.RiderExchangeProcessRes		"请求成功"
-func (*cabinet) ProcessStatus() {}
+func (*business) SubscribeSigned() {}
 
 type City struct{}
 
@@ -382,8 +344,6 @@ func (*Enterprise) RiderEnterpriseInfo() {}
 // @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*Enterprise) ExitEnterprise() {}
 
-type Exchange struct{}
-
 // Store
 // @ID		ExchangeStore
 // @Router	/rider/v2/exchange/store [POST]
@@ -394,7 +354,7 @@ type Exchange struct{}
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"
 // @Param	body			body		model.ExchangeStoreReq	true	"desc"
 // @Success	200				{object}	model.ExchangeStoreRes	"请求成功"
-func (*Exchange) Store() {}
+func (*exchange) Store() {}
 
 // Overview
 // @ID		ExchangeOverview
@@ -405,7 +365,7 @@ func (*Exchange) Store() {}
 // @Produce	json
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"
 // @Success	200				{object}	model.ExchangeOverview	"请求成功"
-func (*Exchange) Overview() {}
+func (*exchange) Overview() {}
 
 // Log
 // @ID		ExchangeLog
@@ -417,7 +377,7 @@ func (*Exchange) Overview() {}
 // @Param	X-Rider-Token	header		string													true	"骑手校验token"
 // @Param	query			query		model.PaginationReq										true	"分页请求参数"
 // @Success	200				{object}	model.PaginationRes{items=[]model.ExchangeRiderListRes}	"请求成功"
-func (*Exchange) Log() {}
+func (*exchange) Log() {}
 
 // Refund
 // @ID		OrderRefund

@@ -187,6 +187,11 @@ type RiderAuthConfig struct {
 func RiderAuthMiddlewareV2WithConfig(cfg RiderAuthConfig) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
+			// 进行登录认证
+			err := RiderAuthMiddlewareV2()(next)(c)
+			if err != nil {
+				return err
+			}
 			ctx := c.(*app.RiderContext)
 			if ctx.Rider == nil {
 				snag.Panic(snag.StatusUnauthorized)
@@ -211,17 +216,4 @@ func RiderAuthMiddlewareV2() echo.MiddlewareFunc {
 // 该中间件中包含 RiderAuthMiddlewareV2
 func RiderCertificationMiddlewareV2() echo.MiddlewareFunc {
 	return RiderAuthMiddlewareV2WithConfig(RiderAuthConfig{Certification: true})
-}
-
-// 紧急联系人认证中间件
-func RiderRequireAuthAndContactV2() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			ctx := c.(*app.RiderContext)
-			if ctx.Rider.Contact == nil {
-				snag.Panic(snag.StatusRequireContact)
-			}
-			return next(ctx)
-		}
-	}
 }
