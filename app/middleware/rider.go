@@ -187,11 +187,6 @@ type RiderAuthConfig struct {
 func RiderAuthMiddlewareV2WithConfig(cfg RiderAuthConfig) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			// 进行登录认证
-			err := RiderAuthMiddlewareV2()(next)(c)
-			if err != nil {
-				return err
-			}
 			ctx := c.(*app.RiderContext)
 			if ctx.Rider == nil {
 				snag.Panic(snag.StatusUnauthorized)
