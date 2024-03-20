@@ -73,12 +73,10 @@ type AttendanceEdges struct {
 // StoreOrErr returns the Store value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AttendanceEdges) StoreOrErr() (*Store, error) {
-	if e.loadedTypes[0] {
-		if e.Store == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: store.Label}
-		}
+	if e.Store != nil {
 		return e.Store, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: store.Label}
 	}
 	return nil, &NotLoadedError{edge: "store"}
 }
@@ -86,12 +84,10 @@ func (e AttendanceEdges) StoreOrErr() (*Store, error) {
 // EmployeeOrErr returns the Employee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AttendanceEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[1] {
-		if e.Employee == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: employee.Label}
-		}
+	if e.Employee != nil {
 		return e.Employee, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: employee.Label}
 	}
 	return nil, &NotLoadedError{edge: "employee"}
 }

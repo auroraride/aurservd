@@ -73,6 +73,12 @@ const (
 	FieldDiscountNewly = "discount_newly"
 	// FieldTradePayAt holds the string denoting the trade_pay_at field in the database.
 	FieldTradePayAt = "trade_pay_at"
+	// FieldAuthNo holds the string denoting the auth_no field in the database.
+	FieldAuthNo = "auth_no"
+	// FieldOutOrderNo holds the string denoting the out_order_no field in the database.
+	FieldOutOrderNo = "out_order_no"
+	// FieldOutRequestNo holds the string denoting the out_request_no field in the database.
+	FieldOutRequestNo = "out_request_no"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -220,6 +226,9 @@ var Columns = []string{
 	FieldCouponAmount,
 	FieldDiscountNewly,
 	FieldTradePayAt,
+	FieldAuthNo,
+	FieldOutOrderNo,
+	FieldOutRequestNo,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -400,6 +409,21 @@ func ByDiscountNewly(opts ...sql.OrderTermOption) OrderOption {
 // ByTradePayAt orders the results by the trade_pay_at field.
 func ByTradePayAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTradePayAt, opts...).ToFunc()
+}
+
+// ByAuthNo orders the results by the auth_no field.
+func ByAuthNo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAuthNo, opts...).ToFunc()
+}
+
+// ByOutOrderNo orders the results by the out_order_no field.
+func ByOutOrderNo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOutOrderNo, opts...).ToFunc()
+}
+
+// ByOutRequestNo orders the results by the out_request_no field.
+func ByOutRequestNo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOutRequestNo, opts...).ToFunc()
 }
 
 // ByPlanField orders the results by plan field.

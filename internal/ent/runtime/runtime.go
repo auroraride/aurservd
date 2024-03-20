@@ -1121,6 +1121,22 @@ func init() {
 	planDescDeposit := planFields[15].Descriptor()
 	// plan.DefaultDeposit holds the default value on creation for the deposit field.
 	plan.DefaultDeposit = planDescDeposit.Default.(bool)
+	// planDescDepositWechatPayscore is the schema descriptor for deposit_wechat_payscore field.
+	planDescDepositWechatPayscore := planFields[17].Descriptor()
+	// plan.DefaultDepositWechatPayscore holds the default value on creation for the deposit_wechat_payscore field.
+	plan.DefaultDepositWechatPayscore = planDescDepositWechatPayscore.Default.(bool)
+	// planDescDepositAlipayAuthFreeze is the schema descriptor for deposit_alipay_auth_freeze field.
+	planDescDepositAlipayAuthFreeze := planFields[18].Descriptor()
+	// plan.DefaultDepositAlipayAuthFreeze holds the default value on creation for the deposit_alipay_auth_freeze field.
+	plan.DefaultDepositAlipayAuthFreeze = planDescDepositAlipayAuthFreeze.Default.(bool)
+	// planDescDepositContract is the schema descriptor for deposit_contract field.
+	planDescDepositContract := planFields[19].Descriptor()
+	// plan.DefaultDepositContract holds the default value on creation for the deposit_contract field.
+	plan.DefaultDepositContract = planDescDepositContract.Default.(bool)
+	// planDescDepositPay is the schema descriptor for deposit_pay field.
+	planDescDepositPay := planFields[20].Descriptor()
+	// plan.DefaultDepositPay holds the default value on creation for the deposit_pay field.
+	plan.DefaultDepositPay = planDescDepositPay.Default.(bool)
 	planintroduceMixin := schema.PlanIntroduce{}.Mixin()
 	planintroduceMixinFields0 := planintroduceMixin[0].Fields()
 	_ = planintroduceMixinFields0
@@ -1970,6 +1986,6 @@ func init() {
 }
 
 const (
-	Version = "v0.13.0"                                         // Version of ent codegen.
-	Sum     = "h1:DclxWczaCpyiKn6ZWVcJjq1zIKtJ11iNKy+08lNYsJE=" // Sum of ent codegen.
+	Version = "v0.13.1"                                         // Version of ent codegen.
+	Sum     = "h1:uD8QwN1h6SNphdCCzmkMN3feSUzNnVvV/WIkHKMbzOE=" // Sum of ent codegen.
 )

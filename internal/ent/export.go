@@ -65,12 +65,10 @@ type ExportEdges struct {
 // ManagerOrErr returns the Manager value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ExportEdges) ManagerOrErr() (*Manager, error) {
-	if e.loadedTypes[0] {
-		if e.Manager == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: manager.Label}
-		}
+	if e.Manager != nil {
 		return e.Manager, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: manager.Label}
 	}
 	return nil, &NotLoadedError{edge: "manager"}
 }

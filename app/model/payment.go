@@ -12,13 +12,13 @@ import (
 )
 
 const (
-	PaymentCacheTypePlan              uint = iota + 1 // 购买骑士卡订单
-	PaymentCacheTypeRefund                            // 退款订单
-	PaymentCacheTypeOverdueFee                        // 欠费订单
-	PaymentCacheTypeAssistance                        // 救援订单
-	PaymentCacheTypeAgentPrepay                       // 代理商预储值
-	PaymentCacheTypeAliDepositFree                    // 芝麻信用免押
-	PaymentCacheTypeWechatDepositFree                 // 微信免押
+	PaymentCacheTypePlan             uint = iota + 1 // 购买骑士卡订单
+	PaymentCacheTypeRefund                           // 退款订单
+	PaymentCacheTypeOverdueFee                       // 欠费订单
+	PaymentCacheTypeAssistance                       // 救援订单
+	PaymentCacheTypeAgentPrepay                      // 代理商预储值
+	PaymentCacheTypeAlipayAuthFreeze                 // 支付宝授权资金订单
+	PaymentCacheTypeDeposit                          // 押金订单
 )
 
 // PaymentSubscribe 购买骑士卡订单
@@ -46,6 +46,12 @@ type PaymentSubscribe struct {
 	Coupons       []uint64 `json:"coupons"`                // 使用优惠券列表
 	DiscountNewly float64  `json:"discountNewly"`          // 新签优惠
 	EbikeBrandID  *uint64  `json:"ebikeBrandId,omitempty"` // 电车型号
+
+	AuthNo         string  `json:"authNo,omitempty"`         // 支付宝授权资金订单号
+	OutOrderNo     string  `json:"outOrderNo,omitempty"`     // 商户端的唯一订单号
+	OutRequestNo   string  `json:"outRequestNo,omitempty"`   // 商户端的流水号
+	NeedContract   *bool   `json:"needContract"`             // 是否需要签约
+	DepositOrderNo *string `json:"depositOrderNo,omitempty"` // 押金订单编号
 }
 
 // PaymentRefund 退款详情
@@ -99,26 +105,29 @@ type PaymentAgentPrepay struct {
 	Attach     string `json:"attach,omitempty"`  // 订单备注
 }
 
-// DepositFree 押金免押订单
-type DepositFree struct {
-	PlanID     uint64  `json:"planId"` // 套餐ID
-	Payway     uint8   `json:"payway"`
-	OutTradeNo string  `json:"outTradeNo"`
-	TradeNo    string  `json:"tradeNo,omitempty"` // 支付单号
-	Amount     float64 `json:"amount"`            // 押金金额
-	Plan       *Plan   `json:"plan"`              // 骑士卡
-	RiderID    uint64  `json:"riderId"`           // 骑手ID
+// DepositCredit 押金免押订单
+type DepositCredit struct {
+	PlanID       uint64  `json:"planId"`                 // 套餐ID
+	Payway       uint8   `json:"payway"`                 // 支付方式
+	OutOrderNo   string  `json:"outOrderNo"`             // 订单号
+	AuthNo       string  `json:"authNo,omitempty"`       // 支付宝授权资金订单号
+	OutRequestNo string  `json:"outRequestNo,omitempty"` // 商户端的唯一请求流水号
+	Amount       float64 `json:"amount"`                 // 押金金额
+	Plan         *Plan   `json:"plan"`                   // 骑士卡
+	RiderID      uint64  `json:"riderId"`                // 骑手ID
+	OutTradeNo   string  `json:"outTradeNo"`             // 订单号
+	TradeNo      string  `json:"tradeNo,omitempty"`      // 支付单号
 }
 
 // PaymentCache 支付缓存
 type PaymentCache struct {
-	CacheType   uint                `json:"cacheType"`             // 订单类型
-	Subscribe   *PaymentSubscribe   `json:"create,omitempty"`      // 购买骑士卡订单
-	Refund      *PaymentRefund      `json:"refund,omitempty"`      // 退款订单
-	OverDueFee  *PaymentOverdueFee  `json:"overDueFee,omitempty"`  // 逾期费用订单
-	Assistance  *PaymentAssistance  `json:"assistance,omitempty"`  // 救援订单
-	AgentPrepay *PaymentAgentPrepay `json:"agentPrepay,omitempty"` // 代理商预充值
-	DepositFree *DepositFree        `json:"depositFree,omitempty"` // 押金免押订单
+	CacheType     uint                `json:"cacheType"`             // 订单类型
+	Subscribe     *PaymentSubscribe   `json:"create,omitempty"`      // 购买骑士卡订单
+	Refund        *PaymentRefund      `json:"refund,omitempty"`      // 退款订单
+	OverDueFee    *PaymentOverdueFee  `json:"overDueFee,omitempty"`  // 逾期费用订单
+	Assistance    *PaymentAssistance  `json:"assistance,omitempty"`  // 救援订单
+	AgentPrepay   *PaymentAgentPrepay `json:"agentPrepay,omitempty"` // 代理商预充值
+	DepositCredit *DepositCredit      `json:"depositFree,omitempty"` // 押金免押订单
 }
 
 func (pc *PaymentCache) MarshalBinary() ([]byte, error) {
@@ -139,6 +148,8 @@ func (pc *PaymentCache) GetPaymentArgs() (amount float64, desc string, outTradeN
 		return pc.Assistance.Cost, pc.Assistance.Subject, pc.Assistance.OutTradeNo, ""
 	case PaymentCacheTypeAgentPrepay:
 		return pc.AgentPrepay.Amount, "代理商自主储值", pc.AgentPrepay.OutTradeNo, pc.AgentPrepay.Attach
+	case PaymentCacheTypeDeposit:
+		return pc.DepositCredit.Amount, "押金", pc.DepositCredit.OutTradeNo, ""
 	}
 	return 0, "", "", ""
 }

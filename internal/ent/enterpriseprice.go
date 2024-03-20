@@ -68,12 +68,10 @@ type EnterprisePriceEdges struct {
 // CityOrErr returns the City value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterprisePriceEdges) CityOrErr() (*City, error) {
-	if e.loadedTypes[0] {
-		if e.City == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: city.Label}
-		}
+	if e.City != nil {
 		return e.City, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: city.Label}
 	}
 	return nil, &NotLoadedError{edge: "city"}
 }
@@ -81,12 +79,10 @@ func (e EnterprisePriceEdges) CityOrErr() (*City, error) {
 // BrandOrErr returns the Brand value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterprisePriceEdges) BrandOrErr() (*EbikeBrand, error) {
-	if e.loadedTypes[1] {
-		if e.Brand == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: ebikebrand.Label}
-		}
+	if e.Brand != nil {
 		return e.Brand, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: ebikebrand.Label}
 	}
 	return nil, &NotLoadedError{edge: "brand"}
 }
@@ -94,12 +90,10 @@ func (e EnterprisePriceEdges) BrandOrErr() (*EbikeBrand, error) {
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterprisePriceEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[2] {
-		if e.Enterprise == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprise.Label}
-		}
+	if e.Enterprise != nil {
 		return e.Enterprise, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
 }

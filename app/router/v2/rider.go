@@ -26,7 +26,9 @@ func LoadRiderV2Routes(root *echo.Group) {
 		RequestHeader:  true,
 		ResponseHeader: true,
 	})
-	g.Any("/callback/fand/auth/freeze", rapi.Callback.AlipayFandAuthFreeze, rawDump) //  骑手支付宝资金授权冻结回调中心
+	g.Any("/callback/alipay/auth/freeze", rapi.Callback.AlipayFandAuthFreeze, rawDump)     //  骑手支付宝资金授权冻结回调
+	g.Any("/callback/alipay/auth/unfreeze", rapi.Callback.AlipayFandAuthUnfreeze, rawDump) //  骑手支付宝资金授权解冻回调
+	g.Any("/callback/alipay/trade/pay", rapi.Callback.AlipayTradePay, rawDump)             // 冻结转支付回调
 
 	// 记录请求日志
 	dumpSkipPaths := map[string]bool{}
@@ -91,6 +93,8 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.GET("/question", rapi.Question.All)                  // 问题列表
 
 	g.GET("/instructions/:key", rapi.Instructions.Detail) // 买前必读 积分 优惠券使用说明
+
+	g.GET("/plan", v1.Plan.List) // 套餐列表
 
 	// 骑手登录认证中间件
 	// auth := g.Group("", middleware.RiderAuthMiddlewareV2())

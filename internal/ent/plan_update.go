@@ -433,21 +433,83 @@ func (pu *PlanUpdate) ClearDepositAmount() *PlanUpdate {
 	return pu
 }
 
-// SetDepositPayway sets the "deposit_payway" field.
-func (pu *PlanUpdate) SetDepositPayway(u []uint8) *PlanUpdate {
-	pu.mutation.SetDepositPayway(u)
+// SetDepositWechatPayscore sets the "deposit_wechat_payscore" field.
+func (pu *PlanUpdate) SetDepositWechatPayscore(b bool) *PlanUpdate {
+	pu.mutation.SetDepositWechatPayscore(b)
 	return pu
 }
 
-// AppendDepositPayway appends u to the "deposit_payway" field.
-func (pu *PlanUpdate) AppendDepositPayway(u []uint8) *PlanUpdate {
-	pu.mutation.AppendDepositPayway(u)
+// SetNillableDepositWechatPayscore sets the "deposit_wechat_payscore" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDepositWechatPayscore(b *bool) *PlanUpdate {
+	if b != nil {
+		pu.SetDepositWechatPayscore(*b)
+	}
 	return pu
 }
 
-// ClearDepositPayway clears the value of the "deposit_payway" field.
-func (pu *PlanUpdate) ClearDepositPayway() *PlanUpdate {
-	pu.mutation.ClearDepositPayway()
+// ClearDepositWechatPayscore clears the value of the "deposit_wechat_payscore" field.
+func (pu *PlanUpdate) ClearDepositWechatPayscore() *PlanUpdate {
+	pu.mutation.ClearDepositWechatPayscore()
+	return pu
+}
+
+// SetDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field.
+func (pu *PlanUpdate) SetDepositAlipayAuthFreeze(b bool) *PlanUpdate {
+	pu.mutation.SetDepositAlipayAuthFreeze(b)
+	return pu
+}
+
+// SetNillableDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDepositAlipayAuthFreeze(b *bool) *PlanUpdate {
+	if b != nil {
+		pu.SetDepositAlipayAuthFreeze(*b)
+	}
+	return pu
+}
+
+// ClearDepositAlipayAuthFreeze clears the value of the "deposit_alipay_auth_freeze" field.
+func (pu *PlanUpdate) ClearDepositAlipayAuthFreeze() *PlanUpdate {
+	pu.mutation.ClearDepositAlipayAuthFreeze()
+	return pu
+}
+
+// SetDepositContract sets the "deposit_contract" field.
+func (pu *PlanUpdate) SetDepositContract(b bool) *PlanUpdate {
+	pu.mutation.SetDepositContract(b)
+	return pu
+}
+
+// SetNillableDepositContract sets the "deposit_contract" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDepositContract(b *bool) *PlanUpdate {
+	if b != nil {
+		pu.SetDepositContract(*b)
+	}
+	return pu
+}
+
+// ClearDepositContract clears the value of the "deposit_contract" field.
+func (pu *PlanUpdate) ClearDepositContract() *PlanUpdate {
+	pu.mutation.ClearDepositContract()
+	return pu
+}
+
+// SetDepositPay sets the "deposit_pay" field.
+func (pu *PlanUpdate) SetDepositPay(b bool) *PlanUpdate {
+	pu.mutation.SetDepositPay(b)
+	return pu
+}
+
+// SetNillableDepositPay sets the "deposit_pay" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDepositPay(b *bool) *PlanUpdate {
+	if b != nil {
+		pu.SetDepositPay(*b)
+	}
+	return pu
+}
+
+// ClearDepositPay clears the value of the "deposit_pay" field.
+func (pu *PlanUpdate) ClearDepositPay() *PlanUpdate {
+	pu.mutation.ClearDepositPay()
 	return pu
 }
 
@@ -756,16 +818,29 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if pu.mutation.DepositAmountCleared() {
 		_spec.ClearField(plan.FieldDepositAmount, field.TypeFloat64)
 	}
-	if value, ok := pu.mutation.DepositPayway(); ok {
-		_spec.SetField(plan.FieldDepositPayway, field.TypeJSON, value)
+	if value, ok := pu.mutation.DepositWechatPayscore(); ok {
+		_spec.SetField(plan.FieldDepositWechatPayscore, field.TypeBool, value)
 	}
-	if value, ok := pu.mutation.AppendedDepositPayway(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, plan.FieldDepositPayway, value)
-		})
+	if pu.mutation.DepositWechatPayscoreCleared() {
+		_spec.ClearField(plan.FieldDepositWechatPayscore, field.TypeBool)
 	}
-	if pu.mutation.DepositPaywayCleared() {
-		_spec.ClearField(plan.FieldDepositPayway, field.TypeJSON)
+	if value, ok := pu.mutation.DepositAlipayAuthFreeze(); ok {
+		_spec.SetField(plan.FieldDepositAlipayAuthFreeze, field.TypeBool, value)
+	}
+	if pu.mutation.DepositAlipayAuthFreezeCleared() {
+		_spec.ClearField(plan.FieldDepositAlipayAuthFreeze, field.TypeBool)
+	}
+	if value, ok := pu.mutation.DepositContract(); ok {
+		_spec.SetField(plan.FieldDepositContract, field.TypeBool, value)
+	}
+	if pu.mutation.DepositContractCleared() {
+		_spec.ClearField(plan.FieldDepositContract, field.TypeBool)
+	}
+	if value, ok := pu.mutation.DepositPay(); ok {
+		_spec.SetField(plan.FieldDepositPay, field.TypeBool, value)
+	}
+	if pu.mutation.DepositPayCleared() {
+		_spec.ClearField(plan.FieldDepositPay, field.TypeBool)
 	}
 	if pu.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1381,21 +1456,83 @@ func (puo *PlanUpdateOne) ClearDepositAmount() *PlanUpdateOne {
 	return puo
 }
 
-// SetDepositPayway sets the "deposit_payway" field.
-func (puo *PlanUpdateOne) SetDepositPayway(u []uint8) *PlanUpdateOne {
-	puo.mutation.SetDepositPayway(u)
+// SetDepositWechatPayscore sets the "deposit_wechat_payscore" field.
+func (puo *PlanUpdateOne) SetDepositWechatPayscore(b bool) *PlanUpdateOne {
+	puo.mutation.SetDepositWechatPayscore(b)
 	return puo
 }
 
-// AppendDepositPayway appends u to the "deposit_payway" field.
-func (puo *PlanUpdateOne) AppendDepositPayway(u []uint8) *PlanUpdateOne {
-	puo.mutation.AppendDepositPayway(u)
+// SetNillableDepositWechatPayscore sets the "deposit_wechat_payscore" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDepositWechatPayscore(b *bool) *PlanUpdateOne {
+	if b != nil {
+		puo.SetDepositWechatPayscore(*b)
+	}
 	return puo
 }
 
-// ClearDepositPayway clears the value of the "deposit_payway" field.
-func (puo *PlanUpdateOne) ClearDepositPayway() *PlanUpdateOne {
-	puo.mutation.ClearDepositPayway()
+// ClearDepositWechatPayscore clears the value of the "deposit_wechat_payscore" field.
+func (puo *PlanUpdateOne) ClearDepositWechatPayscore() *PlanUpdateOne {
+	puo.mutation.ClearDepositWechatPayscore()
+	return puo
+}
+
+// SetDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field.
+func (puo *PlanUpdateOne) SetDepositAlipayAuthFreeze(b bool) *PlanUpdateOne {
+	puo.mutation.SetDepositAlipayAuthFreeze(b)
+	return puo
+}
+
+// SetNillableDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDepositAlipayAuthFreeze(b *bool) *PlanUpdateOne {
+	if b != nil {
+		puo.SetDepositAlipayAuthFreeze(*b)
+	}
+	return puo
+}
+
+// ClearDepositAlipayAuthFreeze clears the value of the "deposit_alipay_auth_freeze" field.
+func (puo *PlanUpdateOne) ClearDepositAlipayAuthFreeze() *PlanUpdateOne {
+	puo.mutation.ClearDepositAlipayAuthFreeze()
+	return puo
+}
+
+// SetDepositContract sets the "deposit_contract" field.
+func (puo *PlanUpdateOne) SetDepositContract(b bool) *PlanUpdateOne {
+	puo.mutation.SetDepositContract(b)
+	return puo
+}
+
+// SetNillableDepositContract sets the "deposit_contract" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDepositContract(b *bool) *PlanUpdateOne {
+	if b != nil {
+		puo.SetDepositContract(*b)
+	}
+	return puo
+}
+
+// ClearDepositContract clears the value of the "deposit_contract" field.
+func (puo *PlanUpdateOne) ClearDepositContract() *PlanUpdateOne {
+	puo.mutation.ClearDepositContract()
+	return puo
+}
+
+// SetDepositPay sets the "deposit_pay" field.
+func (puo *PlanUpdateOne) SetDepositPay(b bool) *PlanUpdateOne {
+	puo.mutation.SetDepositPay(b)
+	return puo
+}
+
+// SetNillableDepositPay sets the "deposit_pay" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDepositPay(b *bool) *PlanUpdateOne {
+	if b != nil {
+		puo.SetDepositPay(*b)
+	}
+	return puo
+}
+
+// ClearDepositPay clears the value of the "deposit_pay" field.
+func (puo *PlanUpdateOne) ClearDepositPay() *PlanUpdateOne {
+	puo.mutation.ClearDepositPay()
 	return puo
 }
 
@@ -1734,16 +1871,29 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 	if puo.mutation.DepositAmountCleared() {
 		_spec.ClearField(plan.FieldDepositAmount, field.TypeFloat64)
 	}
-	if value, ok := puo.mutation.DepositPayway(); ok {
-		_spec.SetField(plan.FieldDepositPayway, field.TypeJSON, value)
+	if value, ok := puo.mutation.DepositWechatPayscore(); ok {
+		_spec.SetField(plan.FieldDepositWechatPayscore, field.TypeBool, value)
 	}
-	if value, ok := puo.mutation.AppendedDepositPayway(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, plan.FieldDepositPayway, value)
-		})
+	if puo.mutation.DepositWechatPayscoreCleared() {
+		_spec.ClearField(plan.FieldDepositWechatPayscore, field.TypeBool)
 	}
-	if puo.mutation.DepositPaywayCleared() {
-		_spec.ClearField(plan.FieldDepositPayway, field.TypeJSON)
+	if value, ok := puo.mutation.DepositAlipayAuthFreeze(); ok {
+		_spec.SetField(plan.FieldDepositAlipayAuthFreeze, field.TypeBool, value)
+	}
+	if puo.mutation.DepositAlipayAuthFreezeCleared() {
+		_spec.ClearField(plan.FieldDepositAlipayAuthFreeze, field.TypeBool)
+	}
+	if value, ok := puo.mutation.DepositContract(); ok {
+		_spec.SetField(plan.FieldDepositContract, field.TypeBool, value)
+	}
+	if puo.mutation.DepositContractCleared() {
+		_spec.ClearField(plan.FieldDepositContract, field.TypeBool)
+	}
+	if value, ok := puo.mutation.DepositPay(); ok {
+		_spec.SetField(plan.FieldDepositPay, field.TypeBool, value)
+	}
+	if puo.mutation.DepositPayCleared() {
+		_spec.ClearField(plan.FieldDepositPay, field.TypeBool)
 	}
 	if puo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{

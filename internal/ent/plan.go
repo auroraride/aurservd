@@ -68,8 +68,14 @@ type Plan struct {
 	Deposit bool `json:"deposit,omitempty"`
 	// 押金金额
 	DepositAmount float64 `json:"deposit_amount,omitempty"`
-	// 押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金
-	DepositPayway []uint8 `json:"deposit_payway,omitempty"`
+	// 微信支付分免押金
+	DepositWechatPayscore bool `json:"deposit_wechat_payscore,omitempty"`
+	// 预授权信用免押金
+	DepositAlipayAuthFreeze bool `json:"deposit_alipay_auth_freeze,omitempty"`
+	// 合同免押金
+	DepositContract bool `json:"deposit_contract,omitempty"`
+	// 支付押金
+	DepositPay bool `json:"deposit_pay,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlanQuery when eager-loading is set.
 	Edges        PlanEdges `json:"edges"`
@@ -96,12 +102,10 @@ type PlanEdges struct {
 // BrandOrErr returns the Brand value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PlanEdges) BrandOrErr() (*EbikeBrand, error) {
-	if e.loadedTypes[0] {
-		if e.Brand == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: ebikebrand.Label}
-		}
+	if e.Brand != nil {
 		return e.Brand, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: ebikebrand.Label}
 	}
 	return nil, &NotLoadedError{edge: "brand"}
 }
@@ -118,12 +122,10 @@ func (e PlanEdges) CitiesOrErr() ([]*City, error) {
 // ParentOrErr returns the Parent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PlanEdges) ParentOrErr() (*Plan, error) {
-	if e.loadedTypes[2] {
-		if e.Parent == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: plan.Label}
-		}
+	if e.Parent != nil {
 		return e.Parent, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: plan.Label}
 	}
 	return nil, &NotLoadedError{edge: "parent"}
 }
@@ -151,9 +153,9 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case plan.FieldCreator, plan.FieldLastModifier, plan.FieldNotes, plan.FieldDepositPayway:
+		case plan.FieldCreator, plan.FieldLastModifier, plan.FieldNotes:
 			values[i] = new([]byte)
-		case plan.FieldEnable, plan.FieldIntelligent, plan.FieldDeposit:
+		case plan.FieldEnable, plan.FieldIntelligent, plan.FieldDeposit, plan.FieldDepositWechatPayscore, plan.FieldDepositAlipayAuthFreeze, plan.FieldDepositContract, plan.FieldDepositPay:
 			values[i] = new(sql.NullBool)
 		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal, plan.FieldDiscountNewly, plan.FieldDepositAmount:
 			values[i] = new(sql.NullFloat64)
@@ -337,13 +339,29 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.DepositAmount = value.Float64
 			}
-		case plan.FieldDepositPayway:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field deposit_payway", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &pl.DepositPayway); err != nil {
-					return fmt.Errorf("unmarshal field deposit_payway: %w", err)
-				}
+		case plan.FieldDepositWechatPayscore:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_wechat_payscore", values[i])
+			} else if value.Valid {
+				pl.DepositWechatPayscore = value.Bool
+			}
+		case plan.FieldDepositAlipayAuthFreeze:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_alipay_auth_freeze", values[i])
+			} else if value.Valid {
+				pl.DepositAlipayAuthFreeze = value.Bool
+			}
+		case plan.FieldDepositContract:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_contract", values[i])
+			} else if value.Valid {
+				pl.DepositContract = value.Bool
+			}
+		case plan.FieldDepositPay:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_pay", values[i])
+			} else if value.Valid {
+				pl.DepositPay = value.Bool
 			}
 		default:
 			pl.selectValues.Set(columns[i], values[i])
@@ -484,8 +502,17 @@ func (pl *Plan) String() string {
 	builder.WriteString("deposit_amount=")
 	builder.WriteString(fmt.Sprintf("%v", pl.DepositAmount))
 	builder.WriteString(", ")
-	builder.WriteString("deposit_payway=")
-	builder.WriteString(fmt.Sprintf("%v", pl.DepositPayway))
+	builder.WriteString("deposit_wechat_payscore=")
+	builder.WriteString(fmt.Sprintf("%v", pl.DepositWechatPayscore))
+	builder.WriteString(", ")
+	builder.WriteString("deposit_alipay_auth_freeze=")
+	builder.WriteString(fmt.Sprintf("%v", pl.DepositAlipayAuthFreeze))
+	builder.WriteString(", ")
+	builder.WriteString("deposit_contract=")
+	builder.WriteString(fmt.Sprintf("%v", pl.DepositContract))
+	builder.WriteString(", ")
+	builder.WriteString("deposit_pay=")
+	builder.WriteString(fmt.Sprintf("%v", pl.DepositPay))
 	builder.WriteByte(')')
 	return builder.String()
 }

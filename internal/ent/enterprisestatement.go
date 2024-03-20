@@ -68,12 +68,10 @@ type EnterpriseStatementEdges struct {
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseStatementEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[0] {
-		if e.Enterprise == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprise.Label}
-		}
+	if e.Enterprise != nil {
 		return e.Enterprise, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
 }

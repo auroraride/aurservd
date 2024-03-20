@@ -58,7 +58,7 @@ func main() {
 		}
 
 		doc, _ := os.ReadFile(filepath.Join(d, f.Name()))
-		re := regexp.MustCompile(`(?m)// @Router\s+(.*) \[(.*)][\S\s]*?@Summary\s+(.*)? (.*)`)
+		re := regexp.MustCompile(`(?m)// @Router\s+(.*) \[(.*)][\S\s]*?@Summary\s+(.*)\s+(.*)`)
 		bs := re.FindAllStringSubmatch(string(doc), -1)
 		for _, sub := range bs {
 			api := sub[1]

@@ -108,12 +108,10 @@ type BusinessEdges struct {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BusinessEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[0] {
-		if e.Rider == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: rider.Label}
-		}
+	if e.Rider != nil {
 		return e.Rider, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
 }
@@ -121,12 +119,10 @@ func (e BusinessEdges) RiderOrErr() (*Rider, error) {
 // CityOrErr returns the City value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BusinessEdges) CityOrErr() (*City, error) {
-	if e.loadedTypes[1] {
-		if e.City == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: city.Label}
-		}
+	if e.City != nil {
 		return e.City, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: city.Label}
 	}
 	return nil, &NotLoadedError{edge: "city"}
 }
@@ -134,12 +130,10 @@ func (e BusinessEdges) CityOrErr() (*City, error) {
 // SubscribeOrErr returns the Subscribe value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BusinessEdges) SubscribeOrErr() (*Subscribe, error) {
-	if e.loadedTypes[2] {
-		if e.Subscribe == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: subscribe.Label}
-		}
+	if e.Subscribe != nil {
 		return e.Subscribe, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: subscribe.Label}
 	}
 	return nil, &NotLoadedError{edge: "subscribe"}
 }
@@ -147,12 +141,10 @@ func (e BusinessEdges) SubscribeOrErr() (*Subscribe, error) {
 // EmployeeOrErr returns the Employee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BusinessEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[3] {
-		if e.Employee == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: employee.Label}
-		}
+	if e.Employee != nil {
 		return e.Employee, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: employee.Label}
 	}
 	return nil, &NotLoadedError{edge: "employee"}
 }
@@ -160,12 +152,10 @@ func (e BusinessEdges) EmployeeOrErr() (*Employee, error) {
 // StoreOrErr returns the Store value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BusinessEdges) StoreOrErr() (*Store, error) {
-	if e.loadedTypes[4] {
-		if e.Store == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: store.Label}
-		}
+	if e.Store != nil {
 		return e.Store, nil
+	} else if e.loadedTypes[4] {
+		return nil, &NotFoundError{label: store.Label}
 	}
 	return nil, &NotLoadedError{edge: "store"}
 }
@@ -173,12 +163,10 @@ func (e BusinessEdges) StoreOrErr() (*Store, error) {
 // PlanOrErr returns the Plan value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BusinessEdges) PlanOrErr() (*Plan, error) {
-	if e.loadedTypes[5] {
-		if e.Plan == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: plan.Label}
-		}
+	if e.Plan != nil {
 		return e.Plan, nil
+	} else if e.loadedTypes[5] {
+		return nil, &NotFoundError{label: plan.Label}
 	}
 	return nil, &NotLoadedError{edge: "plan"}
 }
@@ -186,12 +174,10 @@ func (e BusinessEdges) PlanOrErr() (*Plan, error) {
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BusinessEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[6] {
-		if e.Enterprise == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprise.Label}
-		}
+	if e.Enterprise != nil {
 		return e.Enterprise, nil
+	} else if e.loadedTypes[6] {
+		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
 }
@@ -199,12 +185,10 @@ func (e BusinessEdges) EnterpriseOrErr() (*Enterprise, error) {
 // StationOrErr returns the Station value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BusinessEdges) StationOrErr() (*EnterpriseStation, error) {
-	if e.loadedTypes[7] {
-		if e.Station == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprisestation.Label}
-		}
+	if e.Station != nil {
 		return e.Station, nil
+	} else if e.loadedTypes[7] {
+		return nil, &NotFoundError{label: enterprisestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "station"}
 }
@@ -212,12 +196,10 @@ func (e BusinessEdges) StationOrErr() (*EnterpriseStation, error) {
 // CabinetOrErr returns the Cabinet value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BusinessEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[8] {
-		if e.Cabinet == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: cabinet.Label}
-		}
+	if e.Cabinet != nil {
 		return e.Cabinet, nil
+	} else if e.loadedTypes[8] {
+		return nil, &NotFoundError{label: cabinet.Label}
 	}
 	return nil, &NotLoadedError{edge: "cabinet"}
 }
@@ -225,12 +207,10 @@ func (e BusinessEdges) CabinetOrErr() (*Cabinet, error) {
 // BatteryOrErr returns the Battery value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BusinessEdges) BatteryOrErr() (*Battery, error) {
-	if e.loadedTypes[9] {
-		if e.Battery == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: battery.Label}
-		}
+	if e.Battery != nil {
 		return e.Battery, nil
+	} else if e.loadedTypes[9] {
+		return nil, &NotFoundError{label: battery.Label}
 	}
 	return nil, &NotLoadedError{edge: "battery"}
 }
@@ -238,12 +218,10 @@ func (e BusinessEdges) BatteryOrErr() (*Battery, error) {
 // AgentOrErr returns the Agent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BusinessEdges) AgentOrErr() (*Agent, error) {
-	if e.loadedTypes[10] {
-		if e.Agent == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: agent.Label}
-		}
+	if e.Agent != nil {
 		return e.Agent, nil
+	} else if e.loadedTypes[10] {
+		return nil, &NotFoundError{label: agent.Label}
 	}
 	return nil, &NotLoadedError{edge: "agent"}
 }

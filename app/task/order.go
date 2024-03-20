@@ -55,7 +55,7 @@ func (t *orderTask) Do() {
 			subscribe.RemainingEQ(0),
 		),
 		order.TradePayAtIsNil(),
-		order.Payway(model.OrderPaywayAlipayAuthFreeze),
+		order.PaywayIn(model.OrderPaywayAlipayAuthFreeze, model.OrderPaywayWechatDeposit),
 	).
 		WithSubscribe().
 		WithPlan().
@@ -64,7 +64,7 @@ func (t *orderTask) Do() {
 	if len(o) == 0 {
 		return
 	}
-
+	// todo 这里有个问题还需要修改
 	for _, v := range o {
 		service.NewOrder().TradePay(v)
 	}

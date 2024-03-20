@@ -13,8 +13,10 @@ import (
 
 	"github.com/auroraride/adapter/log"
 	"github.com/golang-module/carbon/v2"
+	"github.com/smartwalle/alipay/v3"
 	"go.uber.org/zap"
 
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -135,7 +137,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
 		snag.Panic("团签用户无法购买")
 	}
 
-	// 查询是否有退款中的押金
+	// 查询是否有退款中的订单
 	if exists, _ := ent.Database.Order.QueryNotDeleted().Where(
 		order.RiderID(s.rider.ID),
 		order.Status(model.OrderStatusRefundPending),
@@ -168,17 +170,9 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
 		snag.Panic("未知的支付请求")
 	}
 
-	// 判定用户是否需要缴纳押金（没有使用过) 现在使用骑士卡的押金
-	// deposit := NewRider().Deposit(s.rider.ID)
-
-	var deposit float64
-	if p.Deposit && p.DepositAmount > 0 {
-		// 如果
-		deposit = p.DepositAmount
-	}
-
+	// 判定用户是否需要缴纳押金
+	deposit := NewRider().Deposit(s.rider.ID)
 	no := tools.NewUnique().NewSN28()
-	result.OutTradeNo = no
 
 	// 计算需要支付金额
 	// 1. 计算新签优惠
@@ -393,6 +387,7 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
 			snag.Panic("支付宝支付请求失败")
 		}
 		result.Prepay = str
+		result.OutTradeNo = no
 	case model.OrderPaywayWechat:
 		// 使用微信支付
 		str, err = payment.NewWechat().AppPay(prepay)
@@ -400,6 +395,7 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
 			snag.Panic("微信支付请求失败")
 		}
 		result.Prepay = str
+		result.OutTradeNo = no
 	case model.OrderPaywayAlipayAuthFreeze:
 		// 使用支付宝预授权支付
 		str, err = payment.NewAlipay().FandAuthFreeze(prepay)
@@ -407,6 +403,7 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
 			snag.Panic("支付宝预授权支付请求失败")
 		}
 		result.Prepay = str
+		result.OutOrderNo = no
 	default:
 		snag.Panic("支付方式错误")
 	}
@@ -428,6 +425,8 @@ func (s *orderService) DoPayment(pc *model.PaymentCache) {
 		s.FeePaid(pc.OverDueFee)
 	case model.PaymentCacheTypeAgentPrepay:
 		_, _ = NewPrepayment().UpdateBalance(pc.AgentPrepay.Payway, pc.AgentPrepay.AgentPrepay, pc.AgentPrepay)
+	case model.PaymentCacheTypeDeposit:
+		s.DepositPay(pc.DepositCredit)
 	}
 }
 
@@ -588,6 +587,25 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 				Save(s.ctx)
 			if err != nil {
 				zap.L().Error("订单已支付, 但押金订单创建失败: "+trade.OutTradeNo, zap.Error(err))
+				return
+			}
+		}
+
+		// 如果有押金订单编号, 更新订单关联
+		if trade.DepositOrderNo != nil {
+			do, err = tx.Order.QueryNotDeleted().Where(order.Status(model.OrderStatusPaid), order.Type(model.OrderTypeDeposit)).
+				Where(
+					order.Or(
+						order.OutOrderNo(*trade.DepositOrderNo),
+						order.OutTradeNo(*trade.DepositOrderNo),
+					)).First(s.ctx)
+			if err != nil {
+				zap.L().Error("订单已支付, 但押金订单查询失败: "+trade.OutTradeNo, zap.Error(err))
+				return
+			}
+			_, err = do.Update().SetParentID(o.ID).Save(s.ctx)
+			if err != nil {
+				zap.L().Error("订单已支付, 但押金订单更新失败: "+trade.OutTradeNo, zap.Error(err))
 				return
 			}
 		}
@@ -809,6 +827,10 @@ func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, a
 	if req.TradeNo != nil {
 		q.Where(order.TradeNo(*req.TradeNo))
 	}
+	if req.OutTradeNo != nil {
+		q.Where(order.OutTradeNo(*req.OutTradeNo))
+	}
+
 	return q, info
 }
 
@@ -837,6 +859,7 @@ func (s *orderService) Detail(item *ent.Order) model.Order {
 		DiscountNewly: item.DiscountNewly,
 		CouponAmount:  item.CouponAmount,
 		Ebike:         NewEbike().Detail(item.Edges.Ebike, item.Edges.Brand),
+		OutOrderNo:    item.OutOrderNo,
 	}
 	rc := item.Edges.City
 	if rc != nil {
@@ -942,6 +965,7 @@ func (s *orderService) Export(req *model.OrderListExport) model.ExportRes {
 			"支付状态",
 			"订单编号",
 			"支付编号",
+			"预支付编号",
 			"支付方式",
 			"支付金额",
 			"支付时间",
@@ -981,6 +1005,7 @@ func (s *orderService) Export(req *model.OrderListExport) model.ExportRes {
 				model.OrderStatuses[detail.Status],
 				detail.OutTradeNo,
 				detail.TradeNo,
+				detail.OutOrderNo,
 				model.OrderPayways[detail.Payway],
 				fmt.Sprintf("%.2f", detail.Amount),
 				detail.PayAt,
@@ -997,12 +1022,19 @@ func (s *orderService) Export(req *model.OrderListExport) model.ExportRes {
 func (s *orderService) QueryStatus(req *model.OrderStatusReq) (res model.OrderStatusRes) {
 	now := time.Now()
 	res = model.OrderStatusRes{
-		OutTradeNo: req.OutTradeNo,
-		Paid:       false,
+		OutTradeNo:  req.OutTradeNo,
+		OuthOrderNo: req.OuthOrderNo,
+		Paid:        false,
 	}
 	for {
-		o, _ := ent.Database.Order.QueryNotDeleted().Where(order.OutTradeNo(req.OutTradeNo)).First(s.ctx)
-
+		q := ent.Database.Order.QueryNotDeleted()
+		if req.OutTradeNo != "" {
+			q.Where(order.OutTradeNo(req.OutTradeNo))
+		}
+		if req.OuthOrderNo != "" {
+			q.Where(order.OutOrderNo(req.OuthOrderNo))
+		}
+		o, _ := q.First(s.ctx)
 		if o != nil && o.Status == model.OrderStatusPaid {
 			res.Paid = true
 			return
@@ -1016,52 +1048,140 @@ func (s *orderService) QueryStatus(req *model.OrderStatusReq) (res model.OrderSt
 	}
 }
 
-func (s *orderService) TradePay(o *ent.Order) {
+// TradePay 资金冻结转支付
+func (s *orderService) TradePay(o *ent.Order) *alipay.TradePayRsp {
 
 	subject := "订阅骑士卡"
 	if o.Edges.Plan != nil {
 		subject = o.Edges.Plan.Name
 	}
 
-	// 调用资金冻结转支付
-	res, err := payment.NewAlipay().AlipayTradePay(&model.TradePay{
-		AuthNo:      o.TradeNo,
-		OutTradeNo:  o.OutTradeNo,
-		TotalAmount: o.Total,
-		Subject:     subject,
+	// 查询授权订单状态
+	fundAuthOperationDetailQueryRsp, err := payment.NewAlipay().AlipayFundAuthOperationDetailQuery(definition.FundAuthOperationDetailReq{
+		OutOrderNo:   o.OutOrderNo,
+		OutRequestNo: o.OutRequestNo,
 	})
 	if err != nil {
 		zap.L().Error("资金冻结转支付失败", zap.Error(err))
-		return
+		return nil
 	}
+
+	// 授权订单状态 已授权状态：授权成功，可以进行转支付或解冻操作
+	if fundAuthOperationDetailQueryRsp.OrderStatus != alipay.OrderStatusAuthorized {
+		zap.L().Error("资金冻结转支付失败", zap.String("授权订单状态", string(fundAuthOperationDetailQueryRsp.OrderStatus)))
+		return nil
+	}
+
+	// 判定解冻金额
+	totalAmountString := strconv.FormatFloat(o.Amount, 'f', -1, 64)
+	if totalAmountString > fundAuthOperationDetailQueryRsp.RestAmount {
+		zap.L().Error("资金冻结转支付失败", zap.String("解冻金额", fundAuthOperationDetailQueryRsp.RestAmount))
+		return nil
+	}
+
+	authConfirmMode := "NOT_COMPLETE"
+	if totalAmountString == fundAuthOperationDetailQueryRsp.RestAmount {
+		// 如果解冻金额等于订单金额 完结
+		authConfirmMode = "COMPLETE"
+	}
+
 	no := tools.NewUnique().NewSN28()
-	var amount float64
-	amount, err = strconv.ParseFloat(res.TotalAmount, 64)
+
+	// 更新订单OutTradeNo
+	o.Update().SetOutTradeNo(no).SaveX(s.ctx)
+
+	// 调用资金冻结转支付
+	rsp, err := payment.NewAlipay().AlipayTradePay(&definition.TradePay{
+		AuthNo:          o.AuthNo,
+		OutTradeNo:      no,
+		TotalAmount:     o.Amount,
+		Subject:         subject,
+		AuthConfirmMode: authConfirmMode,
+	})
 	if err != nil {
 		zap.L().Error("资金冻结转支付失败", zap.Error(err))
+		return nil
+	}
+	return rsp
+}
+
+// DepositPay 押金订单
+func (s *orderService) DepositPay(d *model.DepositCredit) {
+	// 判定是否已有押金订单
+	if exists, _ := ent.Database.Order.QueryNotDeleted().Where(
+		order.RiderID(d.RiderID),
+		order.Status(model.OrderStatusPaid),
+		order.Type(model.OrderTypeDeposit),
+	).Exist(s.ctx); exists {
 		return
 	}
-	// 创建支付创建订单
-	ent.Database.Order.Create().
-		SetPayway(model.OrderPaywayAlipay).
-		SetNillablePlanID(o.PlanID).
-		SetRiderID(o.RiderID).
-		SetAmount(amount).
-		SetTotal(amount).
-		SetOutTradeNo(no).
-		SetTradeNo(res.TradeNo).
-		SetStatus(model.OrderStatusPaid).
-		SetType(o.Type).
-		SetNillableCityID(o.CityID).
-		SetInitialDays(o.InitialDays).
-		SetParentID(o.ParentID).
-		SetSubscribeID(o.SubscribeID).
-		SetPastDays(o.PastDays).
-		SetPoints(o.Points).
-		SetPointRatio(o.PointRatio).
-		SetCouponAmount(o.CouponAmount).
-		SetDiscountNewly(o.DiscountNewly).
-		SetNillableBrandID(o.BrandID).
-		SaveX(s.ctx)
 
+	// 查询订单是否存在
+	o := ent.Database.Order.QueryNotDeleted()
+	if d.OutTradeNo != "" {
+		o.Where(order.OutTradeNo(d.OutTradeNo))
+	}
+	if d.OutOrderNo != "" {
+		o.Where(order.OutOrderNo(d.OutOrderNo))
+	}
+	if exists, _ := o.Exist(s.ctx); exists {
+		return
+	}
+
+	// 创建押金订单
+	cr := ent.Database.Order.Create().
+		SetPayway(d.Payway).
+		SetPlanID(d.PlanID).
+		SetRiderID(d.RiderID).
+		SetAmount(d.Amount).
+		SetTotal(d.Amount).
+		SetStatus(model.OrderStatusPaid).
+		SetType(model.OrderTypeDeposit)
+	// 押金正常支付创建的订单
+	if d.OutTradeNo != "" {
+		cr.SetOutTradeNo(d.OutTradeNo)
+		cr.SetTradeNo(d.TradeNo)
+	}
+
+	// 信用付创建的订单
+	if d.OutOrderNo != "" {
+		cr.SetOutOrderNo(d.OutOrderNo)
+		cr.SetAuthNo(d.AuthNo)
+		cr.SetOutRequestNo(d.OutRequestNo)
+	}
+	cr.SaveX(s.ctx)
 }
+
+// 判定预支付是否需要完结
+// func (s *orderService) FandAuthUnfreezeFinish(o *ent.Order, amount float64) bool {
+// 	// 查询授权订单状态 押金或者套餐有可能是预支付
+// 	// 使用AuthNo是有可能一个预支付分成两个订单 但只退套餐的时候不需要完结
+//
+// 	// 假如冻结金额转支付了 只转了套餐金额 不完结 还剩押金金额
+//
+// 	// todo 先暂时不考虑免押 直接完结 默认全部解压或者转支付
+// 	// 查询子订单 和主订单
+// 	orders, _ := ent.Database.Order.Query().Where(
+// 		order.ParentID(o.ID),
+// 		order.Status(model.OrderStatusPaid),
+// 		order.TradePayAtIsNil(),                         // 未转支付
+// 		order.Payway(model.OrderPaywayAlipayAuthFreeze), // 预支付
+// 	).
+// 		Where(
+// 			order.Or(
+// 				order.ID(o.ID),
+// 			),
+// 		).All(s.ctx)
+//
+// 	// 整体预支付的金额
+// 	var total float64
+// 	for _, v := range orders {
+// 		total = tools.NewDecimal().Sum(total, v.Amount)
+// 	}
+//
+// 	// 如果预支付的金额和订单金额一致
+// 	if total == amount {
+// 		return true
+// 	}
+// 	return false
+// }

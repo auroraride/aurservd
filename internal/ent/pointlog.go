@@ -63,12 +63,10 @@ type PointLogEdges struct {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PointLogEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[0] {
-		if e.Rider == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: rider.Label}
-		}
+	if e.Rider != nil {
 		return e.Rider, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
 }
@@ -76,12 +74,10 @@ func (e PointLogEdges) RiderOrErr() (*Rider, error) {
 // OrderOrErr returns the Order value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PointLogEdges) OrderOrErr() (*Order, error) {
-	if e.loadedTypes[1] {
-		if e.Order == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: order.Label}
-		}
+	if e.Order != nil {
 		return e.Order, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: order.Label}
 	}
 	return nil, &NotLoadedError{edge: "order"}
 }

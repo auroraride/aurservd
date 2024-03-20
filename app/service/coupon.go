@@ -274,7 +274,7 @@ func (s *couponService) List(req *model.CouponListReq) *model.PaginationRes {
 		// 使用
 		ep := item.Edges.Plan
 		eo := item.Edges.Order
-		var usedAt, expiredAt, uo, up string
+		var usedAt, expiredAt, uo, up, outOrderNo string
 		if item.UsedAt != nil {
 			usedAt = item.UsedAt.Format(carbon.DateTimeLayout)
 			if ep != nil {
@@ -282,6 +282,7 @@ func (s *couponService) List(req *model.CouponListReq) *model.PaginationRes {
 			}
 			if eo != nil {
 				uo = eo.TradeNo
+				outOrderNo = eo.OutOrderNo
 			}
 		}
 		if item.ExpiresAt.IsZero() {
@@ -293,23 +294,24 @@ func (s *couponService) List(req *model.CouponListReq) *model.PaginationRes {
 			}
 		}
 		res = model.CouponListRes{
-			ID:         item.ID,
-			Amount:     item.Amount,
-			Name:       item.Name,
-			Code:       model.CouponCode(item.Code).Humanity(),
-			TemplateID: item.TemplateID,
-			AssemblyID: item.AssemblyID,
-			Creator:    item.Creator.Name + " - " + item.Creator.Phone,
-			Time:       item.CreatedAt.Format(carbon.DateTimeLayout),
-			Rider:      rn,
-			Phone:      rp,
-			Status:     s.Status(item),
-			Cities:     cities,
-			Plans:      plans,
-			UsedAt:     usedAt,
-			ExpiredAt:  expiredAt,
-			TradeNo:    uo,
-			Plan:       up,
+			ID:          item.ID,
+			Amount:      item.Amount,
+			Name:        item.Name,
+			Code:        model.CouponCode(item.Code).Humanity(),
+			TemplateID:  item.TemplateID,
+			AssemblyID:  item.AssemblyID,
+			Creator:     item.Creator.Name + " - " + item.Creator.Phone,
+			Time:        item.CreatedAt.Format(carbon.DateTimeLayout),
+			Rider:       rn,
+			Phone:       rp,
+			Status:      s.Status(item),
+			Cities:      cities,
+			Plans:       plans,
+			UsedAt:      usedAt,
+			ExpiredAt:   expiredAt,
+			TradeNo:     uo,
+			Plan:        up,
+			OuthOrderNo: outOrderNo,
 		}
 		return
 	})

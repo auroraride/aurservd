@@ -36,7 +36,7 @@ func (*city) List(c echo.Context) (err error) {
 // Modify
 // @ID			CityModify
 // @Router		/manager/v1/city/{id} [PUT]
-// @Summary		M2002 修改城市
+// @Summary		修改城市
 // @Description	desc
 // @Tags		城市
 // @Accept		json

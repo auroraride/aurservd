@@ -73,12 +73,10 @@ type StockSummaryEdges struct {
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockSummaryEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[0] {
-		if e.Enterprise == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprise.Label}
-		}
+	if e.Enterprise != nil {
 		return e.Enterprise, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
 }
@@ -86,12 +84,10 @@ func (e StockSummaryEdges) EnterpriseOrErr() (*Enterprise, error) {
 // StationOrErr returns the Station value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockSummaryEdges) StationOrErr() (*EnterpriseStation, error) {
-	if e.loadedTypes[1] {
-		if e.Station == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprisestation.Label}
-		}
+	if e.Station != nil {
 		return e.Station, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: enterprisestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "station"}
 }
@@ -99,12 +95,10 @@ func (e StockSummaryEdges) StationOrErr() (*EnterpriseStation, error) {
 // StoreOrErr returns the Store value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockSummaryEdges) StoreOrErr() (*Store, error) {
-	if e.loadedTypes[2] {
-		if e.Store == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: store.Label}
-		}
+	if e.Store != nil {
 		return e.Store, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: store.Label}
 	}
 	return nil, &NotLoadedError{edge: "store"}
 }
@@ -112,12 +106,10 @@ func (e StockSummaryEdges) StoreOrErr() (*Store, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockSummaryEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[3] {
-		if e.Rider == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: rider.Label}
-		}
+	if e.Rider != nil {
 		return e.Rider, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
 }
@@ -125,12 +117,10 @@ func (e StockSummaryEdges) RiderOrErr() (*Rider, error) {
 // CabinetOrErr returns the Cabinet value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockSummaryEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[4] {
-		if e.Cabinet == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: cabinet.Label}
-		}
+	if e.Cabinet != nil {
 		return e.Cabinet, nil
+	} else if e.loadedTypes[4] {
+		return nil, &NotFoundError{label: cabinet.Label}
 	}
 	return nil, &NotLoadedError{edge: "cabinet"}
 }

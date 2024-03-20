@@ -26,18 +26,6 @@ var (
 	PlanTypes = []PlanType{PlanTypeBattery, PlanTypeEbikeWithBattery}
 )
 
-type DepositPayway uint8
-
-const (
-	DepositPaywayZmxy DepositPayway = 1 + iota // 芝麻信用免押金
-	DepositPaywayWxsf                          // 微信支付分免押金
-	DepositPaywayPay                           // 支付押金
-)
-
-func (t DepositPayway) Value() uint8 {
-	return uint8(t)
-}
-
 // Plan 骑士卡基础信息
 type Plan struct {
 	ID          uint64  `json:"id"`          // 骑士卡ID
@@ -81,9 +69,12 @@ type PlanCreateReq struct {
 
 	Intelligent *bool `json:"intelligent" validate:"required"` // 是否智能柜套餐
 
-	Deposit       *bool    `json:"deposit" validate:"required"` // 是否开启押金
-	DepositAmount *float64 `json:"depositAmount"`               // 押金金额
-	DepositPayway []uint8  `json:"depositPayway"`               // 押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金
+	Deposit                 *bool    `json:"deposit" validate:"required"` // 是否开启押金
+	DepositAmount           *float64 `json:"depositAmount"`               // 押金金额
+	DepositPay              *bool    `json:"depositPay"`                  // 是否支持支付押金 true:支持 false:不支持
+	DepositWechatPayscore   *bool    `json:"depositWechatPayscore"`       // 是否支持微信支付分免押金 true:支持 false:不支持
+	DepositAlipayAuthFreeze *bool    `json:"depositAlipayAuthFreeze"`     // 是否支持预授权信用免押金 true:支持 false:不支持
+	DepositContract         *bool    `json:"depositContract"`             // 是否支持合同免押金 true:支持 false:不支持
 }
 
 // PlanEnableModifyReq 骑士卡状态修改请求
@@ -129,9 +120,12 @@ type PlanListRes struct {
 
 	NotSettedDailyRent []*PlanNotSettedDailyRent `json:"notSettedDailyRent,omitempty"` // 未设定的日租金
 
-	Deposit       bool    `json:"deposit"`       // 是否开启押金 fales:未开启 true:开启
-	DepositAmount float64 `json:"depositAmount"` // 押金金额
-	DepositPayway []uint8 `json:"depositPayway"` // 押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金
+	Deposit                 bool    `json:"deposit"`                 // 是否开启押金 fales:未开启 true:开启
+	DepositAmount           float64 `json:"depositAmount"`           // 押金金额
+	DepositPay              bool    `json:"depositPay"`              // 是否支持支付押金 true:支持 false:不支持
+	DepositWechatPayscore   bool    `json:"depositWechatPayscore"`   // 是否支持微信支付分免押金 true:支持 false:不支持
+	DepositAlipayAuthFreeze bool    `json:"depositAlipayAuthFreeze"` // 是否支持预授权信用免押金 true:支持 false:不支持
+	DepositContract         bool    `json:"depositContract"`         // 是否支持合同免押金 true:支持 false:不支持
 }
 
 // PlanListRiderReq 骑士卡列表请求
@@ -195,6 +189,13 @@ type PlanDaysPriceOption struct {
 	Original      float64 `json:"original"`      // 原价
 	DiscountNewly float64 `json:"discountNewly"` // 新签优惠
 	HasEbike      bool    `json:"hasEbike"`      // 是否包含电车
+
+	Deposit                 bool    `json:"deposit"`                 // 是否启用押金
+	DepositAmount           float64 `json:"depositAmount"`           // 押金金额
+	DepositWechatPayscore   bool    `json:"depositWechatPayscore"`   // 是否支持微信支付分免押金
+	DepositAlipayAuthFreeze bool    `json:"depositAlipayAuthFreeze"` // 是否支持预授权信用免押金
+	DepositContract         bool    `json:"depositContract"`         // 是否支持合同免押金
+	DepositPay              bool    `json:"depositPay"`              // 是否支持支付押金
 }
 
 type PlanModelOptions []*PlanModelOption

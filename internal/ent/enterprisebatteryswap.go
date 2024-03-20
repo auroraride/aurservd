@@ -78,12 +78,10 @@ type EnterpriseBatterySwapEdges struct {
 // ExchangeOrErr returns the Exchange value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseBatterySwapEdges) ExchangeOrErr() (*Exchange, error) {
-	if e.loadedTypes[0] {
-		if e.Exchange == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: exchange.Label}
-		}
+	if e.Exchange != nil {
 		return e.Exchange, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: exchange.Label}
 	}
 	return nil, &NotLoadedError{edge: "exchange"}
 }
@@ -91,12 +89,10 @@ func (e EnterpriseBatterySwapEdges) ExchangeOrErr() (*Exchange, error) {
 // CabinetOrErr returns the Cabinet value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseBatterySwapEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[1] {
-		if e.Cabinet == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: cabinet.Label}
-		}
+	if e.Cabinet != nil {
 		return e.Cabinet, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: cabinet.Label}
 	}
 	return nil, &NotLoadedError{edge: "cabinet"}
 }
@@ -104,12 +100,10 @@ func (e EnterpriseBatterySwapEdges) CabinetOrErr() (*Cabinet, error) {
 // PutinOrErr returns the Putin value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseBatterySwapEdges) PutinOrErr() (*Battery, error) {
-	if e.loadedTypes[2] {
-		if e.Putin == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: battery.Label}
-		}
+	if e.Putin != nil {
 		return e.Putin, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: battery.Label}
 	}
 	return nil, &NotLoadedError{edge: "putin"}
 }
@@ -117,12 +111,10 @@ func (e EnterpriseBatterySwapEdges) PutinOrErr() (*Battery, error) {
 // PutinEnterpriseOrErr returns the PutinEnterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseBatterySwapEdges) PutinEnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[3] {
-		if e.PutinEnterprise == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprise.Label}
-		}
+	if e.PutinEnterprise != nil {
 		return e.PutinEnterprise, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "putin_enterprise"}
 }
@@ -130,12 +122,10 @@ func (e EnterpriseBatterySwapEdges) PutinEnterpriseOrErr() (*Enterprise, error) 
 // PutinStationOrErr returns the PutinStation value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseBatterySwapEdges) PutinStationOrErr() (*EnterpriseStation, error) {
-	if e.loadedTypes[4] {
-		if e.PutinStation == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprisestation.Label}
-		}
+	if e.PutinStation != nil {
 		return e.PutinStation, nil
+	} else if e.loadedTypes[4] {
+		return nil, &NotFoundError{label: enterprisestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "putin_station"}
 }
@@ -143,12 +133,10 @@ func (e EnterpriseBatterySwapEdges) PutinStationOrErr() (*EnterpriseStation, err
 // PutoutOrErr returns the Putout value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseBatterySwapEdges) PutoutOrErr() (*Battery, error) {
-	if e.loadedTypes[5] {
-		if e.Putout == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: battery.Label}
-		}
+	if e.Putout != nil {
 		return e.Putout, nil
+	} else if e.loadedTypes[5] {
+		return nil, &NotFoundError{label: battery.Label}
 	}
 	return nil, &NotLoadedError{edge: "putout"}
 }
@@ -156,12 +144,10 @@ func (e EnterpriseBatterySwapEdges) PutoutOrErr() (*Battery, error) {
 // PutoutEnterpriseOrErr returns the PutoutEnterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseBatterySwapEdges) PutoutEnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[6] {
-		if e.PutoutEnterprise == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprise.Label}
-		}
+	if e.PutoutEnterprise != nil {
 		return e.PutoutEnterprise, nil
+	} else if e.loadedTypes[6] {
+		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "putout_enterprise"}
 }
@@ -169,12 +155,10 @@ func (e EnterpriseBatterySwapEdges) PutoutEnterpriseOrErr() (*Enterprise, error)
 // PutoutStationOrErr returns the PutoutStation value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseBatterySwapEdges) PutoutStationOrErr() (*EnterpriseStation, error) {
-	if e.loadedTypes[7] {
-		if e.PutoutStation == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprisestation.Label}
-		}
+	if e.PutoutStation != nil {
 		return e.PutoutStation, nil
+	} else if e.loadedTypes[7] {
+		return nil, &NotFoundError{label: enterprisestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "putout_station"}
 }

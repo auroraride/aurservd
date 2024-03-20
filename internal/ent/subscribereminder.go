@@ -70,12 +70,10 @@ type SubscribeReminderEdges struct {
 // SubscribeOrErr returns the Subscribe value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e SubscribeReminderEdges) SubscribeOrErr() (*Subscribe, error) {
-	if e.loadedTypes[0] {
-		if e.Subscribe == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: subscribe.Label}
-		}
+	if e.Subscribe != nil {
 		return e.Subscribe, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: subscribe.Label}
 	}
 	return nil, &NotLoadedError{edge: "subscribe"}
 }
@@ -83,12 +81,10 @@ func (e SubscribeReminderEdges) SubscribeOrErr() (*Subscribe, error) {
 // PlanOrErr returns the Plan value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e SubscribeReminderEdges) PlanOrErr() (*Plan, error) {
-	if e.loadedTypes[1] {
-		if e.Plan == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: plan.Label}
-		}
+	if e.Plan != nil {
 		return e.Plan, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: plan.Label}
 	}
 	return nil, &NotLoadedError{edge: "plan"}
 }
@@ -96,12 +92,10 @@ func (e SubscribeReminderEdges) PlanOrErr() (*Plan, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e SubscribeReminderEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[2] {
-		if e.Rider == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: rider.Label}
-		}
+	if e.Rider != nil {
 		return e.Rider, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
 }

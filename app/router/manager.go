@@ -55,7 +55,7 @@ func loadManagerRoutes() {
 	// 设置-常见问题
 	g.GET("/question", mapi.Question.List)
 	g.POST("/question", mapi.Question.Create)
-	g.PUT("/question", mapi.Question.Modify)
+	g.PUT("/question/:id", mapi.Question.Modify)
 	g.GET("/question/:id", mapi.Question.Detail)
 	g.DELETE("/question/:id", mapi.Question.Delete)
 
