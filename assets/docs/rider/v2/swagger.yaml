@@ -485,6 +485,22 @@ definitions:
         description: 骑士卡ID
         type: integer
     type: object
+  definition.RiderChangePhoneReq:
+    properties:
+      phone:
+        description: 手机号
+        type: string
+      smsCode:
+        description: 短信验证码, 短信验证码
+        type: string
+      smsId:
+        description: 短信ID, 短信ID
+        type: string
+    required:
+      - phone
+      - smsCode
+      - smsId
+    type: object
   definition.RiderDirectionRes:
     properties:
       destination:
@@ -3136,6 +3152,33 @@ paths:
       summary: 获取云端OCR参数
       tags:
       - Person - 实人
+  /rider/v2/change/phone:
+    post:
+      consumes:
+        - application/json
+      operationId: RiderChangePhone
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.RiderChangePhoneReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改手机号
+      tags:
+        - Rider - 骑手
   /rider/v2/city:
     get:
       consumes:
@@ -4311,14 +4354,6 @@ paths:
       - application/json
       operationId: SettingLatestVersion
       parameters:
-        - collectionFormat: csv
-          description: 平台, 平台
-        in: query
-          items:
-            type: string
-        name: appPlatform
-          required: true
-          type: array
         - description: 更新内容
           in: query
           name: content
@@ -4327,8 +4362,15 @@ paths:
         - description: 是否强制更新
           in: query
           name: force
-          required: true
           type: boolean
+        - collectionFormat: csv
+          description: 平台, 平台
+          in: query
+          items:
+            type: string
+          name: platform
+          required: true
+          type: array
         - description: 版本号
           in: query
           name: version

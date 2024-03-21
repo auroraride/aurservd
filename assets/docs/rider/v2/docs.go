@@ -1089,6 +1089,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/change/phone": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rider - 骑手"
+                ],
+                "summary": "修改手机号",
+                "operationId": "RiderChangePhone",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.RiderChangePhoneReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/city": {
             "get": {
                 "consumes": [
@@ -2890,17 +2931,6 @@ const docTemplate = `{
                 "operationId": "SettingLatestVersion",
                 "parameters": [
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "description": "平台, 平台",
-                        "name": "appPlatform",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
                         "type": "string",
                         "description": "更新内容",
                         "name": "content",
@@ -2911,6 +2941,16 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "是否强制更新",
                         "name": "force",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "平台, 平台",
+                        "name": "platform",
                         "in": "query",
                         "required": true
                     },
@@ -3807,6 +3847,28 @@ const docTemplate = `{
                 "subscribeId": {
                     "description": "骑士卡ID",
                     "type": "integer"
+                }
+            }
+        },
+        "definition.RiderChangePhoneReq": {
+            "type": "object",
+            "required": [
+                "phone",
+                "smsCode",
+                "smsId"
+            ],
+            "properties": {
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "smsCode": {
+                    "description": "短信验证码, 短信验证码",
+                    "type": "string"
+                },
+                "smsId": {
+                    "description": "短信ID, 短信ID",
+                    "type": "string"
                 }
             }
         },
