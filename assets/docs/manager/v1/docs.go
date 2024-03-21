@@ -11458,6 +11458,170 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/setting/version": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "获取版本列表",
+                "operationId": "SettingVersionList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.Version"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "创建版本",
+                "operationId": "SettingVersionCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.VersionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/setting/version/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "修改版本",
+                "operationId": "SettingVersionModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.VersionModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "删除版本",
+                "operationId": "SettingVersionDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "版本ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/setting/{key}": {
             "put": {
                 "consumes": [
@@ -13807,6 +13971,98 @@ const docTemplate = `{
                 "sort": {
                     "description": "排序",
                     "type": "integer"
+                }
+            }
+        },
+        "definition.Version": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "更新内容",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "force": {
+                    "description": "是否强制更新",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "platform": {
+                    "description": "平台",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.VersionModifyReq": {
+            "type": "object",
+            "required": [
+                "appPlatform",
+                "content",
+                "force",
+                "version"
+            ],
+            "properties": {
+                "appPlatform": {
+                    "description": "平台, 平台",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "content": {
+                    "description": "更新内容",
+                    "type": "string"
+                },
+                "force": {
+                    "description": "是否强制更新",
+                    "type": "boolean"
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.VersionReq": {
+            "type": "object",
+            "required": [
+                "appPlatform",
+                "content",
+                "force",
+                "version"
+            ],
+            "properties": {
+                "appPlatform": {
+                    "description": "平台, 平台",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "content": {
+                    "description": "更新内容",
+                    "type": "string"
+                },
+                "force": {
+                    "description": "是否强制更新",
+                    "type": "boolean"
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "string"
                 }
             }
         },

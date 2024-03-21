@@ -2890,17 +2890,34 @@ const docTemplate = `{
                 "operationId": "SettingLatestVersion",
                 "parameters": [
                     {
-                        "enum": [
-                            "android",
-                            "ios"
-                        ],
-                        "type": "string",
-                        "x-enum-varnames": [
-                            "AppPlatformAndroid",
-                            "AppPlatformIOS"
-                        ],
-                        "description": "平台",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "平台, 平台",
                         "name": "appPlatform",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "更新内容",
+                        "name": "content",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否强制更新",
+                        "name": "force",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "版本号",
+                        "name": "version",
                         "in": "query",
                         "required": true
                     }
@@ -3990,9 +4007,24 @@ const docTemplate = `{
                     "description": "更新内容",
                     "type": "string"
                 },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
                 "force": {
                     "description": "是否强制更新",
                     "type": "boolean"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "platform": {
+                    "description": "平台",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "version": {
                     "description": "版本号",
@@ -4008,17 +4040,6 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
-        },
-        "model.AppPlatform": {
-            "type": "string",
-            "enum": [
-                "android",
-                "ios"
-            ],
-            "x-enum-varnames": [
-                "AppPlatformAndroid",
-                "AppPlatformIOS"
-            ]
         },
         "model.AssistanceCancelReq": {
             "type": "object",

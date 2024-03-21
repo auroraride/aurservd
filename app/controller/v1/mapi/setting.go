@@ -215,3 +215,63 @@ func (*setting) ActivityCreate(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.ActivityCreateReq](c)
 	return ctx.SendResponse(biz.NewActivity().Create(req))
 }
+
+// VersionCreate
+// @ID		SettingVersionCreate
+// @Router	/manager/v1/setting/version [POST]
+// @Summary	创建版本
+// @Tags	设置
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	body			body		definition.VersionReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
+func (*setting) VersionCreate(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[definition.VersionReq](c)
+	return ctx.SendResponse(biz.NewVersion().Create(req))
+}
+
+// VersionModify
+// @ID		SettingVersionModify
+// @Router	/manager/v1/setting/version/{id} [PUT]
+// @Summary	修改版本
+// @Tags	设置
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	body			body		definition.VersionModifyReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse		"请求成功"
+func (*setting) VersionModify(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[definition.VersionModifyReq](c)
+	return ctx.SendResponse(biz.NewVersion().Modify(req))
+}
+
+// VersionList
+// @ID		SettingVersionList
+// @Router	/manager/v1/setting/version [GET]
+// @Summary	获取版本列表
+// @Tags	设置
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	query			query		definition.VersionListReq	true	"请求参数"
+// @Success	200				{object}	[]definition.Version		"请求成功"
+func (*setting) VersionList(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[definition.VersionListReq](c)
+	return ctx.SendResponse(biz.NewVersion().List(req))
+}
+
+// VersionDelete
+// @ID		SettingVersionDelete
+// @Router	/manager/v1/setting/version/{id} [DELETE]
+// @Summary	删除版本
+// @Tags	设置
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	id				path		string					true	"版本ID"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
+func (*setting) VersionDelete(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	return ctx.SendResponse(biz.NewVersion().Delete(req.ID))
+}

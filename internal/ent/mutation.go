@@ -114909,23 +114909,24 @@ func (m *SubscribeSuspendMutation) ResetEdge(name string) error {
 // VersionMutation represents an operation that mutates the Version nodes in the graph.
 type VersionMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	creator       **model.Modifier
-	last_modifier **model.Modifier
-	remark        *string
-	platform      *model.AppPlatform
-	version       *string
-	content       *string
-	force         *bool
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Version, error)
-	predicates    []predicate.Version
+	op             Op
+	typ            string
+	id             *uint64
+	created_at     *time.Time
+	updated_at     *time.Time
+	deleted_at     *time.Time
+	creator        **model.Modifier
+	last_modifier  **model.Modifier
+	remark         *string
+	platform       *[]string
+	appendplatform []string
+	version        *string
+	content        *string
+	force          *bool
+	clearedFields  map[string]struct{}
+	done           bool
+	oldValue       func(context.Context) (*Version, error)
+	predicates     []predicate.Version
 }
 
 var _ ent.Mutation = (*VersionMutation)(nil)
@@ -115295,12 +115296,13 @@ func (m *VersionMutation) ResetRemark() {
 }
 
 // SetPlatform sets the "platform" field.
-func (m *VersionMutation) SetPlatform(mp model.AppPlatform) {
-	m.platform = &mp
+func (m *VersionMutation) SetPlatform(s []string) {
+	m.platform = &s
+	m.appendplatform = nil
 }
 
 // Platform returns the value of the "platform" field in the mutation.
-func (m *VersionMutation) Platform() (r model.AppPlatform, exists bool) {
+func (m *VersionMutation) Platform() (r []string, exists bool) {
 	v := m.platform
 	if v == nil {
 		return
@@ -115311,7 +115313,7 @@ func (m *VersionMutation) Platform() (r model.AppPlatform, exists bool) {
 // OldPlatform returns the old "platform" field's value of the Version entity.
 // If the Version object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VersionMutation) OldPlatform(ctx context.Context) (v model.AppPlatform, err error) {
+func (m *VersionMutation) OldPlatform(ctx context.Context) (v []string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPlatform is only allowed on UpdateOne operations")
 	}
@@ -115325,9 +115327,23 @@ func (m *VersionMutation) OldPlatform(ctx context.Context) (v model.AppPlatform,
 	return oldValue.Platform, nil
 }
 
+// AppendPlatform adds s to the "platform" field.
+func (m *VersionMutation) AppendPlatform(s []string) {
+	m.appendplatform = append(m.appendplatform, s...)
+}
+
+// AppendedPlatform returns the list of values that were appended to the "platform" field in this mutation.
+func (m *VersionMutation) AppendedPlatform() ([]string, bool) {
+	if len(m.appendplatform) == 0 {
+		return nil, false
+	}
+	return m.appendplatform, true
+}
+
 // ResetPlatform resets all changes to the "platform" field.
 func (m *VersionMutation) ResetPlatform() {
 	m.platform = nil
+	m.appendplatform = nil
 }
 
 // SetVersion sets the "version" field.
@@ -115612,7 +115628,7 @@ func (m *VersionMutation) SetField(name string, value ent.Value) error {
 		m.SetRemark(v)
 		return nil
 	case version.FieldPlatform:
-		v, ok := value.(model.AppPlatform)
+		v, ok := value.([]string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

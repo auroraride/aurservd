@@ -92,16 +92,8 @@ func (vc *VersionCreate) SetNillableRemark(s *string) *VersionCreate {
 }
 
 // SetPlatform sets the "platform" field.
-func (vc *VersionCreate) SetPlatform(mp model.AppPlatform) *VersionCreate {
-	vc.mutation.SetPlatform(mp)
-	return vc
-}
-
-// SetNillablePlatform sets the "platform" field if the given value is not nil.
-func (vc *VersionCreate) SetNillablePlatform(mp *model.AppPlatform) *VersionCreate {
-	if mp != nil {
-		vc.SetPlatform(*mp)
-	}
+func (vc *VersionCreate) SetPlatform(s []string) *VersionCreate {
+	vc.mutation.SetPlatform(s)
 	return vc
 }
 
@@ -173,10 +165,6 @@ func (vc *VersionCreate) defaults() error {
 		}
 		v := version.DefaultUpdatedAt()
 		vc.mutation.SetUpdatedAt(v)
-	}
-	if _, ok := vc.mutation.Platform(); !ok {
-		v := version.DefaultPlatform
-		vc.mutation.SetPlatform(v)
 	}
 	return nil
 }
@@ -253,7 +241,7 @@ func (vc *VersionCreate) createSpec() (*Version, *sqlgraph.CreateSpec) {
 		_node.Remark = value
 	}
 	if value, ok := vc.mutation.Platform(); ok {
-		_spec.SetField(version.FieldPlatform, field.TypeOther, value)
+		_spec.SetField(version.FieldPlatform, field.TypeJSON, value)
 		_node.Platform = value
 	}
 	if value, ok := vc.mutation.Version(); ok {
@@ -387,7 +375,7 @@ func (u *VersionUpsert) ClearRemark() *VersionUpsert {
 }
 
 // SetPlatform sets the "platform" field.
-func (u *VersionUpsert) SetPlatform(v model.AppPlatform) *VersionUpsert {
+func (u *VersionUpsert) SetPlatform(v []string) *VersionUpsert {
 	u.Set(version.FieldPlatform, v)
 	return u
 }
@@ -560,7 +548,7 @@ func (u *VersionUpsertOne) ClearRemark() *VersionUpsertOne {
 }
 
 // SetPlatform sets the "platform" field.
-func (u *VersionUpsertOne) SetPlatform(v model.AppPlatform) *VersionUpsertOne {
+func (u *VersionUpsertOne) SetPlatform(v []string) *VersionUpsertOne {
 	return u.Update(func(s *VersionUpsert) {
 		s.SetPlatform(v)
 	})
@@ -907,7 +895,7 @@ func (u *VersionUpsertBulk) ClearRemark() *VersionUpsertBulk {
 }
 
 // SetPlatform sets the "platform" field.
-func (u *VersionUpsertBulk) SetPlatform(v model.AppPlatform) *VersionUpsertBulk {
+func (u *VersionUpsertBulk) SetPlatform(v []string) *VersionUpsertBulk {
 	return u.Update(func(s *VersionUpsert) {
 		s.SetPlatform(v)
 	})

@@ -5788,8 +5788,8 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
-		{Name: "platform", Type: field.TypeOther, Comment: "平台", SchemaType: map[string]string{"postgres": "character varying"}},
-		{Name: "version", Type: field.TypeString, Comment: "版本号"},
+		{Name: "platform", Type: field.TypeJSON, Comment: "平台"},
+		{Name: "version", Type: field.TypeString, Unique: true, Comment: "版本号"},
 		{Name: "content", Type: field.TypeString, Comment: "更新内容"},
 		{Name: "force", Type: field.TypeBool, Comment: "是否强制更新"},
 	}
