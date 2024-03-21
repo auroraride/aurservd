@@ -438,46 +438,44 @@ definitions:
     type: object
   definition.VersionModifyReq:
     properties:
-      appPlatform:
-        description: 平台, 平台
-        items:
-          type: string
-        type: array
       content:
         description: 更新内容
         type: string
       force:
         description: 是否强制更新
         type: boolean
+      platform:
+        description: 平台, 平台
+        items:
+          type: string
+        type: array
       version:
         description: 版本号
         type: string
     required:
-      - appPlatform
       - content
-      - force
+      - platform
       - version
     type: object
   definition.VersionReq:
     properties:
-      appPlatform:
-        description: 平台, 平台
-        items:
-          type: string
-        type: array
       content:
         description: 更新内容
         type: string
       force:
         description: 是否强制更新
         type: boolean
+      platform:
+        description: 平台, 平台
+        items:
+          type: string
+        type: array
       version:
         description: 版本号
         type: string
     required:
-      - appPlatform
       - content
-      - force
+      - platform
       - version
     type: object
   model.AgentCreateReq:

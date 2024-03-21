@@ -26,3 +26,18 @@ func (*rider) Direction(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.RiderDirectionReq](c)
 	return ctx.SendResponse(biz.NewRiderBiz().Direction(req))
 }
+
+// ChangePhone 修改手机号
+// @ID		RiderChangePhone
+// @Router	/rider/v2/change/phone [POST]
+// @Summary	修改手机号
+// @Tags	Rider - 骑手
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string							true	"骑手校验token"
+// @Param	body			body		definition.RiderChangePhoneReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse			"请求成功"
+func (*rider) ChangePhone(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.RiderChangePhoneReq](c)
+	return ctx.SendResponse(biz.NewRiderBiz().ChangePhone(ctx.Rider, req))
+}

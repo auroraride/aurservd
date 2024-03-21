@@ -14009,19 +14009,11 @@ const docTemplate = `{
         "definition.VersionModifyReq": {
             "type": "object",
             "required": [
-                "appPlatform",
                 "content",
-                "force",
+                "platform",
                 "version"
             ],
             "properties": {
-                "appPlatform": {
-                    "description": "平台, 平台",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "content": {
                     "description": "更新内容",
                     "type": "string"
@@ -14029,6 +14021,13 @@ const docTemplate = `{
                 "force": {
                     "description": "是否强制更新",
                     "type": "boolean"
+                },
+                "platform": {
+                    "description": "平台, 平台",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "version": {
                     "description": "版本号",
@@ -14039,19 +14038,11 @@ const docTemplate = `{
         "definition.VersionReq": {
             "type": "object",
             "required": [
-                "appPlatform",
                 "content",
-                "force",
+                "platform",
                 "version"
             ],
             "properties": {
-                "appPlatform": {
-                    "description": "平台, 平台",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "content": {
                     "description": "更新内容",
                     "type": "string"
@@ -14059,6 +14050,13 @@ const docTemplate = `{
                 "force": {
                     "description": "是否强制更新",
                     "type": "boolean"
+                },
+                "platform": {
+                    "description": "平台, 平台",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "version": {
                     "description": "版本号",

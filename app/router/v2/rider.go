@@ -105,9 +105,11 @@ func LoadRiderV2Routes(root *echo.Group) {
 	certification.POST("/face", rapi.Person.CertificationFace)             // 提交身份信息并获取人脸核身参数
 	certification.GET("/face/result", rapi.Person.CertificationFaceResult) // 获取人脸核身结果
 
-	g.GET("/profile", v1.Rider.Profile, logged())       // 获取用户信息
-	g.GET("/deposit", v1.Rider.Deposit, logged())       // 获取押金信息
-	g.GET("/deregister", v1.Rider.Deregister, logged()) // 注销账户
+	// 骑手
+	g.GET("/profile", v1.Rider.Profile, logged())             // 获取用户信息
+	g.GET("/deposit", v1.Rider.Deposit, logged())             // 获取押金信息
+	g.GET("/deregister", v1.Rider.Deregister, logged())       // 注销账户
+	g.POST("/change/phone", rapi.Rider.ChangePhone, logged()) // 修改手机号
 
 	// 骑士卡
 	plan := g.Group("/plan", logged())

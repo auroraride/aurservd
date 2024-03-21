@@ -99,3 +99,10 @@ type Destination struct {
 		Lat float64 `json:"lat"` // 终点纬度
 	} `json:"destinationPt"` // 终点坐标
 }
+
+// RiderChangePhoneReq 骑手修改手机号
+type RiderChangePhoneReq struct {
+	Phone   string `json:"phone" validate:"required"`                 // 手机号
+	SmsId   string `json:"smsId" validate:"required" trans:"短信ID"`    // 短信ID
+	SmsCode string `json:"smsCode" validate:"required" trans:"短信验证码"` // 短信验证码
+}
