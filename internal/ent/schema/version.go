@@ -1,9 +1,7 @@
 package schema
 
 import (
-	"ariga.io/atlas/sql/postgres"
 	"entgo.io/ent"
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
@@ -11,7 +9,6 @@ import (
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -62,10 +59,8 @@ func (Version) Annotations() []schema.Annotation {
 // Fields of the Version.
 func (Version) Fields() []ent.Field {
 	return []ent.Field{
-		field.Other("platform", model.AppPlatform("")).Default(model.AppPlatform("")).SchemaType(map[string]string{
-			dialect.Postgres: postgres.TypeCharVar,
-		}).Comment("平台"),
-		field.String("version").Comment("版本号"),
+		field.JSON("platform", []string{}).Comment("平台"),
+		field.String("version").Unique().Comment("版本号"),
 		field.String("content").Comment("更新内容"),
 		field.Bool("force").Comment("是否强制更新"),
 	}

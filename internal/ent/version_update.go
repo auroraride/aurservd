@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -89,16 +90,14 @@ func (vu *VersionUpdate) ClearRemark() *VersionUpdate {
 }
 
 // SetPlatform sets the "platform" field.
-func (vu *VersionUpdate) SetPlatform(mp model.AppPlatform) *VersionUpdate {
-	vu.mutation.SetPlatform(mp)
+func (vu *VersionUpdate) SetPlatform(s []string) *VersionUpdate {
+	vu.mutation.SetPlatform(s)
 	return vu
 }
 
-// SetNillablePlatform sets the "platform" field if the given value is not nil.
-func (vu *VersionUpdate) SetNillablePlatform(mp *model.AppPlatform) *VersionUpdate {
-	if mp != nil {
-		vu.SetPlatform(*mp)
-	}
+// AppendPlatform appends s to the "platform" field.
+func (vu *VersionUpdate) AppendPlatform(s []string) *VersionUpdate {
+	vu.mutation.AppendPlatform(s)
 	return vu
 }
 
@@ -231,7 +230,12 @@ func (vu *VersionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.ClearField(version.FieldRemark, field.TypeString)
 	}
 	if value, ok := vu.mutation.Platform(); ok {
-		_spec.SetField(version.FieldPlatform, field.TypeOther, value)
+		_spec.SetField(version.FieldPlatform, field.TypeJSON, value)
+	}
+	if value, ok := vu.mutation.AppendedPlatform(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, version.FieldPlatform, value)
+		})
 	}
 	if value, ok := vu.mutation.Version(); ok {
 		_spec.SetField(version.FieldVersion, field.TypeString, value)
@@ -323,16 +327,14 @@ func (vuo *VersionUpdateOne) ClearRemark() *VersionUpdateOne {
 }
 
 // SetPlatform sets the "platform" field.
-func (vuo *VersionUpdateOne) SetPlatform(mp model.AppPlatform) *VersionUpdateOne {
-	vuo.mutation.SetPlatform(mp)
+func (vuo *VersionUpdateOne) SetPlatform(s []string) *VersionUpdateOne {
+	vuo.mutation.SetPlatform(s)
 	return vuo
 }
 
-// SetNillablePlatform sets the "platform" field if the given value is not nil.
-func (vuo *VersionUpdateOne) SetNillablePlatform(mp *model.AppPlatform) *VersionUpdateOne {
-	if mp != nil {
-		vuo.SetPlatform(*mp)
-	}
+// AppendPlatform appends s to the "platform" field.
+func (vuo *VersionUpdateOne) AppendPlatform(s []string) *VersionUpdateOne {
+	vuo.mutation.AppendPlatform(s)
 	return vuo
 }
 
@@ -495,7 +497,12 @@ func (vuo *VersionUpdateOne) sqlSave(ctx context.Context) (_node *Version, err e
 		_spec.ClearField(version.FieldRemark, field.TypeString)
 	}
 	if value, ok := vuo.mutation.Platform(); ok {
-		_spec.SetField(version.FieldPlatform, field.TypeOther, value)
+		_spec.SetField(version.FieldPlatform, field.TypeJSON, value)
+	}
+	if value, ok := vuo.mutation.AppendedPlatform(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, version.FieldPlatform, value)
+		})
 	}
 	if value, ok := vuo.mutation.Version(); ok {
 		_spec.SetField(version.FieldVersion, field.TypeString, value)

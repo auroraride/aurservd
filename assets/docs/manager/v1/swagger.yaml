@@ -413,6 +413,73 @@ definitions:
     - name
     - sort
     type: object
+  definition.Version:
+    properties:
+      content:
+        description: 更新内容
+        type: string
+      createdAt:
+        description: 创建时间
+        type: string
+      force:
+        description: 是否强制更新
+        type: boolean
+      id:
+        description: ID
+        type: integer
+      platform:
+        description: 平台
+        items:
+          type: string
+        type: array
+      version:
+        description: 版本号
+        type: string
+    type: object
+  definition.VersionModifyReq:
+    properties:
+      appPlatform:
+        description: 平台, 平台
+        items:
+          type: string
+        type: array
+      content:
+        description: 更新内容
+        type: string
+      force:
+        description: 是否强制更新
+        type: boolean
+      version:
+        description: 版本号
+        type: string
+    required:
+      - appPlatform
+      - content
+      - force
+      - version
+    type: object
+  definition.VersionReq:
+    properties:
+      appPlatform:
+        description: 平台, 平台
+        items:
+          type: string
+        type: array
+      content:
+        description: 更新内容
+        type: string
+      force:
+        description: 是否强制更新
+        type: boolean
+      version:
+        description: 版本号
+        type: string
+    required:
+      - appPlatform
+      - content
+      - force
+      - version
+    type: object
   model.AgentCreateReq:
     properties:
       enterpriseId:
@@ -14531,6 +14598,115 @@ paths:
           schema:
             $ref: '#/definitions/model.LegalRes'
       summary: 获取法规
+      tags:
+        - 设置
+  /manager/v1/setting/version:
+    get:
+      consumes:
+        - application/json
+      operationId: SettingVersionList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 当前页, 从1开始, 默认1
+          in: query
+          name: current
+          type: integer
+        - description: 每页数据, 默认20
+          in: query
+          name: pageSize
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.Version'
+            type: array
+      summary: 获取版本列表
+      tags:
+        - 设置
+    post:
+      consumes:
+        - application/json
+      operationId: SettingVersionCreate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.VersionReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建版本
+      tags:
+        - 设置
+  /manager/v1/setting/version/{id}:
+    delete:
+      consumes:
+        - application/json
+      operationId: SettingVersionDelete
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 版本ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 删除版本
+      tags:
+        - 设置
+    put:
+      consumes:
+        - application/json
+      operationId: SettingVersionModify
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.VersionModifyReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改版本
       tags:
       - 设置
   /manager/v1/stock:

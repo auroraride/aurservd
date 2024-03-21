@@ -1979,10 +1979,6 @@ func init() {
 	version.DefaultUpdatedAt = versionDescUpdatedAt.Default.(func() time.Time)
 	// version.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	version.UpdateDefaultUpdatedAt = versionDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// versionDescPlatform is the schema descriptor for platform field.
-	versionDescPlatform := versionFields[0].Descriptor()
-	// version.DefaultPlatform holds the default value on creation for the platform field.
-	version.DefaultPlatform = versionDescPlatform.Default.(model.AppPlatform)
 }
 
 const (

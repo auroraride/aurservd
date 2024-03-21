@@ -45,6 +45,12 @@ func loadManagerRoutes() {
 	g.POST("/setting/activity", mapi.Setting.ActivityCreate)    // 新增
 	g.PUT("/setting/activity/:id", mapi.Setting.ActivityModify) // 编辑
 
+	// 设置-版本
+	g.GET("/setting/version", mapi.Setting.VersionList)
+	g.POST("/setting/version", mapi.Setting.VersionCreate)
+	g.PUT("/setting/version/:id", mapi.Setting.VersionModify)
+	g.DELETE("/setting/version/:id", mapi.Setting.VersionDelete)
+
 	// 设置-问题分类
 	g.GET("/question/category", mapi.QuestionCategory.List) // 列表
 	g.POST("/question/category", mapi.QuestionCategory.Create)

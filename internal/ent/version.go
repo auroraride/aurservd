@@ -32,7 +32,7 @@ type Version struct {
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
 	// 平台
-	Platform model.AppPlatform `json:"platform,omitempty"`
+	Platform []string `json:"platform,omitempty"`
 	// 版本号
 	Version string `json:"version,omitempty"`
 	// 更新内容
@@ -47,10 +47,8 @@ func (*Version) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case version.FieldCreator, version.FieldLastModifier:
+		case version.FieldCreator, version.FieldLastModifier, version.FieldPlatform:
 			values[i] = new([]byte)
-		case version.FieldPlatform:
-			values[i] = new(model.AppPlatform)
 		case version.FieldForce:
 			values[i] = new(sql.NullBool)
 		case version.FieldID:
@@ -122,10 +120,12 @@ func (v *Version) assignValues(columns []string, values []any) error {
 				v.Remark = value.String
 			}
 		case version.FieldPlatform:
-			if value, ok := values[i].(*model.AppPlatform); !ok {
+			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field platform", values[i])
-			} else if value != nil {
-				v.Platform = *value
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &v.Platform); err != nil {
+					return fmt.Errorf("unmarshal field platform: %w", err)
+				}
 			}
 		case version.FieldVersion:
 			if value, ok := values[i].(*sql.NullString); !ok {

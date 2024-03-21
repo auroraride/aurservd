@@ -623,9 +623,20 @@ definitions:
       content:
         description: 更新内容
         type: string
+      createdAt:
+        description: 创建时间
+        type: string
       force:
         description: 是否强制更新
         type: boolean
+      id:
+        description: ID
+        type: integer
+      platform:
+        description: 平台
+        items:
+          type: string
+        type: array
       version:
         description: 版本号
         type: string
@@ -636,14 +647,6 @@ definitions:
         description: 是否已分配
         type: boolean
     type: object
-  model.AppPlatform:
-    enum:
-    - android
-    - ios
-    type: string
-    x-enum-varnames:
-    - AppPlatformAndroid
-    - AppPlatformIOS
   model.AssistanceCancelReq:
     properties:
       desc:
@@ -4308,17 +4311,29 @@ paths:
       - application/json
       operationId: SettingLatestVersion
       parameters:
-      - description: 平台
-        enum:
-        - android
-        - ios
+        - collectionFormat: csv
+          description: 平台, 平台
         in: query
+          items:
+            type: string
         name: appPlatform
+          required: true
+          type: array
+        - description: 更新内容
+          in: query
+          name: content
         required: true
         type: string
-        x-enum-varnames:
-        - AppPlatformAndroid
-        - AppPlatformIOS
+        - description: 是否强制更新
+          in: query
+          name: force
+          required: true
+          type: boolean
+        - description: 版本号
+          in: query
+          name: version
+          required: true
+          type: string
       produces:
       - application/json
       responses:
