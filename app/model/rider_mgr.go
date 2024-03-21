@@ -15,6 +15,10 @@ type RiderMgrModifyReq struct {
 	Phone      *string           `json:"phone"`                      // 手机号
 	AuthStatus *PersonAuthStatus `json:"authStatus" enums:"0,1,2,3"` // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
 	Contact    *RiderContact     `json:"contact"`                    // 联系人
+
+	IdCardNumber   *string `json:"idCardNumber"`   // 身份证号
+	IdCardPortrait *string `json:"idCardPortrait"` // 身份证正面
+	IdCardNational *string `json:"idCardNational"` // 身份证国徽面
 }
 
 type RiderEmployeeSearchRes struct {
