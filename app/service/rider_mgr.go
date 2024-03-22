@@ -118,18 +118,16 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 	}
 
 	r := NewRiderWithModifier(s.modifier).Query(req.ID)
-	p := r.Edges.Person
 	var before, after []string
 
-	if (p == nil || p.Name == "" || p.IDCardNumber == "" || p.IDCardPortrait == "" || p.IDCardNational == "") && req.AuthStatus != nil {
-		snag.Panic("用户还未提交个人信息")
-	}
-
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-		pu := tx.Person.UpdateOne(p)
+
 		ru := tx.Rider.UpdateOne(r)
 
 		if req.Phone != nil {
+			if tx.Rider.QueryNotDeleted().Where(rider.Phone(*req.Phone)).ExistX(s.ctx) && r.Phone != *req.Phone {
+				snag.Panic("电话已存在")
+			}
 			ru.SetPhone(*req.Phone)
 			before = append(before, fmt.Sprintf("电话: %s", r.Phone))
 			after = append(after, fmt.Sprintf("电话: %s", *req.Phone))
@@ -146,15 +144,41 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 		}
 
 		if req.AuthStatus != nil {
-			pu.SetStatus(req.AuthStatus.Value())
-			before = append(before, fmt.Sprintf("认证状态: %s", model.PersonAuthStatus(p.Status).String()))
-			after = append(after, fmt.Sprintf("认证状态: %s", req.AuthStatus.String()))
+			// 查询实名信息是否已存在
+			p := r.Edges.Person
+			if *req.AuthStatus != model.PersonUnauthenticated && req.Name == nil && req.IdCardNumber == nil && req.IdCardPortrait == nil && req.IdCardNational == nil {
+				snag.Panic("修改实名状态时, 身份证信息不能为空")
+			}
+			// 更新或创建实名信息
+			if p != nil {
+				// 更新实名信息
+				p.Update().
+					SetNillableIDCardNumber(req.IdCardNumber).
+					SetNillableIDCardPortrait(req.IdCardPortrait).
+					SetNillableIDCardNational(req.IdCardNational).
+					SetStatus(req.AuthStatus.Value()).
+					SetNillableName(req.Name).
+					SaveX(s.ctx)
+			} else {
+				// 创建实名信息
+				p = ent.Database.Person.Create().
+					SetNillableIDCardNumber(req.IdCardNumber).
+					SetNillableIDCardPortrait(req.IdCardPortrait).
+					SetNillableIDCardNational(req.IdCardNational).
+					SetStatus(req.AuthStatus.Value()).
+					SetName(*req.Name).
+					SaveX(s.ctx)
+				// 更新骑手实名信息
+				ru.SetName(*req.Name).SetPersonID(p.ID)
+			}
+			before = append(before, fmt.Sprintf("认证状态: %s 身份证号: %s 正面: %s 国徽面:%s 姓名:%s ", model.PersonAuthStatus(p.Status).String(), p.IDCardNumber, p.IDCardPortrait, p.IDCardNational, p.Name))
+			if *req.AuthStatus != model.PersonUnauthenticated {
+				after = append(after, fmt.Sprintf("身份证号: %s 正面: %s 国徽面:%s 姓名: %s", *req.IdCardNumber, *req.IdCardPortrait, *req.IdCardNational, *req.Name))
+			}
+			after = append(after, fmt.Sprintf("认证状态: %s ", req.AuthStatus.String()))
 		}
-
-		_, err = pu.Save(s.ctx)
-		snag.PanicIfError(err)
-
 		_, err = ru.Save(s.ctx)
+		snag.PanicIfError(err)
 		return
 	})
 

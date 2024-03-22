@@ -14,7 +14,7 @@ var Fault = new(fault)
 
 // List
 // @ID		FaultList
-// @Router	/mapi/v1/fault [GET]
+// @Router	/manager/v1/fault [GET]
 // @Summary	故障列表
 // @Tags	故障上报
 // @Accept	json
@@ -29,7 +29,7 @@ func (*fault) List(c echo.Context) (err error) {
 
 // Modify
 // @ID		FaultModify
-// @Router	/mapi/v1/fault/:id [PUT]
+// @Router	/manager/v1/fault/:id [PUT]
 // @Summary	故障更改状态
 // @Tags	故障上报
 // @Accept	json
