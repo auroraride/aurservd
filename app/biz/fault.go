@@ -164,6 +164,7 @@ func (s *faultBiz) ModifyStatus(req *definition.FaultModifyStatusReq) (err error
 
 // FaultCause 故障原因
 func (s *faultBiz) FaultCause() (items []definition.FaultCauseRes, err error) {
+	items = make([]definition.FaultCauseRes, 0)
 	res, _ := ent.Database.Setting.Query().Where(setting.KeyIn(
 		"EBIKE_FAULT",
 		"BATTERY_FAULT",
@@ -171,7 +172,7 @@ func (s *faultBiz) FaultCause() (items []definition.FaultCauseRes, err error) {
 		"CABINET_FAULT",
 	)).All(s.ctx)
 	if res == nil {
-		return nil, nil
+		return items, nil
 	}
 
 	for _, v := range res {
