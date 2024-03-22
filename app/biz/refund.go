@@ -25,7 +25,7 @@ func NewRefundBiz() *refundBiz {
 }
 
 // Refund 申请退款
-func (s refundBiz) Refund(r *ent.Rider, req *definition.RefundReq) (err error) {
+func (s *refundBiz) Refund(r *ent.Rider, req *definition.RefundReq) (err error) {
 	sub := service.NewSubscribe().Recent(r.ID)
 	// 查询订单和押金
 	o, _ := ent.Database.Order.QueryNotDeleted().Where(

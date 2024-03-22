@@ -2005,23 +2005,25 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Store",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			store.FieldCreatedAt:    {Type: field.TypeTime, Column: store.FieldCreatedAt},
-			store.FieldUpdatedAt:    {Type: field.TypeTime, Column: store.FieldUpdatedAt},
-			store.FieldDeletedAt:    {Type: field.TypeTime, Column: store.FieldDeletedAt},
-			store.FieldCreator:      {Type: field.TypeJSON, Column: store.FieldCreator},
-			store.FieldLastModifier: {Type: field.TypeJSON, Column: store.FieldLastModifier},
-			store.FieldRemark:       {Type: field.TypeString, Column: store.FieldRemark},
-			store.FieldCityID:       {Type: field.TypeUint64, Column: store.FieldCityID},
-			store.FieldEmployeeID:   {Type: field.TypeUint64, Column: store.FieldEmployeeID},
-			store.FieldBranchID:     {Type: field.TypeUint64, Column: store.FieldBranchID},
-			store.FieldSn:           {Type: field.TypeString, Column: store.FieldSn},
-			store.FieldName:         {Type: field.TypeString, Column: store.FieldName},
-			store.FieldStatus:       {Type: field.TypeUint8, Column: store.FieldStatus},
-			store.FieldLng:          {Type: field.TypeFloat64, Column: store.FieldLng},
-			store.FieldLat:          {Type: field.TypeFloat64, Column: store.FieldLat},
-			store.FieldAddress:      {Type: field.TypeString, Column: store.FieldAddress},
-			store.FieldEbikeObtain:  {Type: field.TypeBool, Column: store.FieldEbikeObtain},
-			store.FieldEbikeRepair:  {Type: field.TypeBool, Column: store.FieldEbikeRepair},
+			store.FieldCreatedAt:     {Type: field.TypeTime, Column: store.FieldCreatedAt},
+			store.FieldUpdatedAt:     {Type: field.TypeTime, Column: store.FieldUpdatedAt},
+			store.FieldDeletedAt:     {Type: field.TypeTime, Column: store.FieldDeletedAt},
+			store.FieldCreator:       {Type: field.TypeJSON, Column: store.FieldCreator},
+			store.FieldLastModifier:  {Type: field.TypeJSON, Column: store.FieldLastModifier},
+			store.FieldRemark:        {Type: field.TypeString, Column: store.FieldRemark},
+			store.FieldCityID:        {Type: field.TypeUint64, Column: store.FieldCityID},
+			store.FieldEmployeeID:    {Type: field.TypeUint64, Column: store.FieldEmployeeID},
+			store.FieldBranchID:      {Type: field.TypeUint64, Column: store.FieldBranchID},
+			store.FieldSn:            {Type: field.TypeString, Column: store.FieldSn},
+			store.FieldName:          {Type: field.TypeString, Column: store.FieldName},
+			store.FieldStatus:        {Type: field.TypeUint8, Column: store.FieldStatus},
+			store.FieldLng:           {Type: field.TypeFloat64, Column: store.FieldLng},
+			store.FieldLat:           {Type: field.TypeFloat64, Column: store.FieldLat},
+			store.FieldAddress:       {Type: field.TypeString, Column: store.FieldAddress},
+			store.FieldEbikeObtain:   {Type: field.TypeBool, Column: store.FieldEbikeObtain},
+			store.FieldEbikeRepair:   {Type: field.TypeBool, Column: store.FieldEbikeRepair},
+			store.FieldEbikeSale:     {Type: field.TypeBool, Column: store.FieldEbikeSale},
+			store.FieldBusinessHours: {Type: field.TypeString, Column: store.FieldBusinessHours},
 		},
 	}
 	graph.Nodes[72] = &sqlgraph.Node{
@@ -17406,6 +17408,16 @@ func (f *StoreFilter) WhereEbikeObtain(p entql.BoolP) {
 // WhereEbikeRepair applies the entql bool predicate on the ebike_repair field.
 func (f *StoreFilter) WhereEbikeRepair(p entql.BoolP) {
 	f.Where(p.Field(store.FieldEbikeRepair))
+}
+
+// WhereEbikeSale applies the entql bool predicate on the ebike_sale field.
+func (f *StoreFilter) WhereEbikeSale(p entql.BoolP) {
+	f.Where(p.Field(store.FieldEbikeSale))
+}
+
+// WhereBusinessHours applies the entql string predicate on the business_hours field.
+func (f *StoreFilter) WhereBusinessHours(p entql.StringP) {
+	f.Where(p.Field(store.FieldBusinessHours))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.

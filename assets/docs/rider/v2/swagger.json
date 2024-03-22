@@ -2978,6 +2978,92 @@
                 }
             }
         },
+      "/rider/v2/store": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "Store - 门店"
+          ],
+          "summary": "门店列表",
+          "operationId": "StoreList",
+          "parameters": [
+            {
+              "type": "integer",
+              "description": "城市ID",
+              "name": "cityId",
+              "in": "query"
+            },
+            {
+              "type": "number",
+              "description": "距离",
+              "name": "distance",
+              "in": "query"
+            },
+            {
+              "type": "number",
+              "description": "纬度",
+              "name": "lat",
+              "in": "query",
+              "required": true
+            },
+            {
+              "type": "number",
+              "description": "经度",
+              "name": "lng",
+              "in": "query",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/definition.Store"
+                }
+              }
+            }
+          }
+        }
+      },
+      "/rider/v2/store/{id}": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "Store - 门店"
+          ],
+          "summary": "门店详情",
+          "operationId": "StoreDetail",
+          "parameters": [
+            {
+              "type": "integer",
+              "description": "门店id",
+              "name": "id",
+              "in": "path",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/definition.Store"
+              }
+            }
+          }
+        }
+      },
         "/rider/v2/wallet/coupons": {
             "get": {
                 "consumes": [
@@ -4033,6 +4119,71 @@
                     }
                 }
             }
+        },
+      "definition.Store": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "description": "地址",
+            "type": "string"
+          },
+          "businessHours": {
+            "description": "营业时间",
+            "type": "string"
+          },
+          "city": {
+            "description": "城市",
+            "allOf": [
+              {
+                "$ref": "#/definitions/model.City"
+              }
+            ]
+          },
+          "distance": {
+            "description": "距离(米)",
+            "type": "number"
+          },
+          "ebikeObtain": {
+            "description": "是否可以领取车辆",
+            "type": "boolean"
+          },
+          "ebikeRepair": {
+            "description": "是否可以维修车辆",
+            "type": "boolean"
+          },
+          "ebikeSale": {
+            "description": "是否可以买车",
+            "type": "boolean"
+          },
+          "employee": {
+            "description": "店员, 有可能不存在",
+            "allOf": [
+              {
+                "$ref": "#/definitions/model.Employee"
+              }
+            ]
+          },
+          "id": {
+            "description": "门店ID",
+            "type": "integer"
+          },
+          "lat": {
+            "description": "纬度",
+            "type": "number"
+          },
+          "lng": {
+            "description": "经度",
+            "type": "number"
+          },
+          "name": {
+            "description": "门店名称",
+            "type": "string"
+          },
+          "status": {
+            "description": "状态",
+            "type": "integer"
+          }
+        }
         },
         "definition.VersionRes": {
             "type": "object",

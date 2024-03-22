@@ -102655,6 +102655,8 @@ type StoreMutation struct {
 	address            *string
 	ebike_obtain       *bool
 	ebike_repair       *bool
+	ebike_sale         *bool
+	business_hours     *string
 	clearedFields      map[string]struct{}
 	city               *uint64
 	clearedcity        bool
@@ -103511,6 +103513,91 @@ func (m *StoreMutation) ResetEbikeRepair() {
 	m.ebike_repair = nil
 }
 
+// SetEbikeSale sets the "ebike_sale" field.
+func (m *StoreMutation) SetEbikeSale(b bool) {
+	m.ebike_sale = &b
+}
+
+// EbikeSale returns the value of the "ebike_sale" field in the mutation.
+func (m *StoreMutation) EbikeSale() (r bool, exists bool) {
+	v := m.ebike_sale
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEbikeSale returns the old "ebike_sale" field's value of the Store entity.
+// If the Store object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StoreMutation) OldEbikeSale(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEbikeSale is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEbikeSale requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEbikeSale: %w", err)
+	}
+	return oldValue.EbikeSale, nil
+}
+
+// ResetEbikeSale resets all changes to the "ebike_sale" field.
+func (m *StoreMutation) ResetEbikeSale() {
+	m.ebike_sale = nil
+}
+
+// SetBusinessHours sets the "business_hours" field.
+func (m *StoreMutation) SetBusinessHours(s string) {
+	m.business_hours = &s
+}
+
+// BusinessHours returns the value of the "business_hours" field in the mutation.
+func (m *StoreMutation) BusinessHours() (r string, exists bool) {
+	v := m.business_hours
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBusinessHours returns the old "business_hours" field's value of the Store entity.
+// If the Store object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StoreMutation) OldBusinessHours(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBusinessHours is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBusinessHours requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBusinessHours: %w", err)
+	}
+	return oldValue.BusinessHours, nil
+}
+
+// ClearBusinessHours clears the value of the "business_hours" field.
+func (m *StoreMutation) ClearBusinessHours() {
+	m.business_hours = nil
+	m.clearedFields[store.FieldBusinessHours] = struct{}{}
+}
+
+// BusinessHoursCleared returns if the "business_hours" field was cleared in this mutation.
+func (m *StoreMutation) BusinessHoursCleared() bool {
+	_, ok := m.clearedFields[store.FieldBusinessHours]
+	return ok
+}
+
+// ResetBusinessHours resets all changes to the "business_hours" field.
+func (m *StoreMutation) ResetBusinessHours() {
+	m.business_hours = nil
+	delete(m.clearedFields, store.FieldBusinessHours)
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *StoreMutation) ClearCity() {
 	m.clearedcity = true
@@ -103788,7 +103875,7 @@ func (m *StoreMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StoreMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, store.FieldCreatedAt)
 	}
@@ -103840,6 +103927,12 @@ func (m *StoreMutation) Fields() []string {
 	if m.ebike_repair != nil {
 		fields = append(fields, store.FieldEbikeRepair)
 	}
+	if m.ebike_sale != nil {
+		fields = append(fields, store.FieldEbikeSale)
+	}
+	if m.business_hours != nil {
+		fields = append(fields, store.FieldBusinessHours)
+	}
 	return fields
 }
 
@@ -103882,6 +103975,10 @@ func (m *StoreMutation) Field(name string) (ent.Value, bool) {
 		return m.EbikeObtain()
 	case store.FieldEbikeRepair:
 		return m.EbikeRepair()
+	case store.FieldEbikeSale:
+		return m.EbikeSale()
+	case store.FieldBusinessHours:
+		return m.BusinessHours()
 	}
 	return nil, false
 }
@@ -103925,6 +104022,10 @@ func (m *StoreMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldEbikeObtain(ctx)
 	case store.FieldEbikeRepair:
 		return m.OldEbikeRepair(ctx)
+	case store.FieldEbikeSale:
+		return m.OldEbikeSale(ctx)
+	case store.FieldBusinessHours:
+		return m.OldBusinessHours(ctx)
 	}
 	return nil, fmt.Errorf("unknown Store field %s", name)
 }
@@ -104053,6 +104154,20 @@ func (m *StoreMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEbikeRepair(v)
 		return nil
+	case store.FieldEbikeSale:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEbikeSale(v)
+		return nil
+	case store.FieldBusinessHours:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBusinessHours(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Store field %s", name)
 }
@@ -104137,6 +104252,9 @@ func (m *StoreMutation) ClearedFields() []string {
 	if m.FieldCleared(store.FieldEmployeeID) {
 		fields = append(fields, store.FieldEmployeeID)
 	}
+	if m.FieldCleared(store.FieldBusinessHours) {
+		fields = append(fields, store.FieldBusinessHours)
+	}
 	return fields
 }
 
@@ -104165,6 +104283,9 @@ func (m *StoreMutation) ClearField(name string) error {
 		return nil
 	case store.FieldEmployeeID:
 		m.ClearEmployeeID()
+		return nil
+	case store.FieldBusinessHours:
+		m.ClearBusinessHours()
 		return nil
 	}
 	return fmt.Errorf("unknown Store nullable field %s", name)
@@ -104224,6 +104345,12 @@ func (m *StoreMutation) ResetField(name string) error {
 		return nil
 	case store.FieldEbikeRepair:
 		m.ResetEbikeRepair()
+		return nil
+	case store.FieldEbikeSale:
+		m.ResetEbikeSale()
+		return nil
+	case store.FieldBusinessHours:
+		m.ResetBusinessHours()
 		return nil
 	}
 	return fmt.Errorf("unknown Store field %s", name)

@@ -26,7 +26,7 @@ func NewRiderBiz() *riderBiz {
 }
 
 // Direction 骑手路径规划
-func (*riderBiz) Direction(req *definition.RiderDirectionReq) (*definition.RiderDirectionRes, error) {
+func (b *riderBiz) Direction(req *definition.RiderDirectionReq) (*definition.RiderDirectionRes, error) {
 	direction, err := baidu.NewDirection().GetDirection(req.Origin, req.Destination)
 	if err != nil {
 		return nil, err

@@ -12467,6 +12467,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "业务类型 1:领取车辆(租车) 2:维修车辆 3:买车",
+                        "name": "businessType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "城市",
                         "name": "cityId",
                         "in": "query"
@@ -12475,18 +12481,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "是否可以领取车辆, 不携带即为查询所有",
-                        "name": "ebikeObtain",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "是否可以维修车辆, 不携带即为查询所有",
-                        "name": "ebikeRepair",
                         "in": "query"
                     },
                     {
@@ -21575,12 +21569,20 @@ const docTemplate = `{
                     "description": "网点",
                     "type": "integer"
                 },
+                "businessHours": {
+                    "description": "营业时间",
+                    "type": "string"
+                },
                 "ebikeObtain": {
                     "description": "是否可以领取车辆",
                     "type": "boolean"
                 },
                 "ebikeRepair": {
                     "description": "是否可以维修车辆",
+                    "type": "boolean"
+                },
+                "ebikeSale": {
+                    "description": "是否可以买车",
                     "type": "boolean"
                 },
                 "materials": {
@@ -21616,6 +21618,10 @@ const docTemplate = `{
                     "description": "网点ID",
                     "type": "integer"
                 },
+                "businessHours": {
+                    "description": "营业时间",
+                    "type": "string"
+                },
                 "city": {
                     "description": "城市",
                     "allOf": [
@@ -21630,6 +21636,10 @@ const docTemplate = `{
                 },
                 "ebikeRepair": {
                     "description": "是否可以维修车辆",
+                    "type": "boolean"
+                },
+                "ebikeSale": {
+                    "description": "是否可以买车",
                     "type": "boolean"
                 },
                 "employee": {
@@ -21664,12 +21674,20 @@ const docTemplate = `{
                     "description": "网点",
                     "type": "integer"
                 },
+                "businessHours": {
+                    "description": "营业时间",
+                    "type": "string"
+                },
                 "ebikeObtain": {
                     "description": "是否可以领取车辆",
                     "type": "boolean"
                 },
                 "ebikeRepair": {
                     "description": "是否可以维修车辆",
+                    "type": "boolean"
+                },
+                "ebikeSale": {
+                    "description": "是否可以买车",
                     "type": "boolean"
                 },
                 "name": {

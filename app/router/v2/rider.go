@@ -96,6 +96,16 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	g.GET("/plan", v1.Plan.List) // 套餐列表
 
+	// 电柜
+	cabinet := g.Group("/cabinet")
+	cabinet.GET("", rapi.Cabinet.List)           // 电柜列表
+	cabinet.GET("/:serial", rapi.Cabinet.Detail) // 详情
+
+	// 门店
+	store := g.Group("/store")
+	store.GET("", rapi.Store.List)       // 门店列表
+	store.GET("/:id", rapi.Store.Detail) // 门店详情
+
 	// 骑手登录认证中间件
 	// auth := g.Group("", middleware.RiderAuthMiddlewareV2())
 	certification := g.Group("/certification", logged())
@@ -115,11 +125,6 @@ func LoadRiderV2Routes(root *echo.Group) {
 	plan := g.Group("/plan", logged())
 	plan.GET("", v1.Plan.List)                 // 套餐列表
 	plan.GET("/plan/renewly", v1.Plan.Renewly) // 续费列表
-
-	// 电柜
-	cabinet := g.Group("/cabinet", person())
-	cabinet.GET("", rapi.Cabinet.List)           // 电柜列表
-	cabinet.GET("/:serial", rapi.Cabinet.Detail) // 详情
 
 	// 电池
 	battery := g.Group("/battery", person())
@@ -197,12 +202,14 @@ func LoadRiderV2Routes(root *echo.Group) {
 	// 换电
 	exchange := g.Group("/exchange", person())
 	exchange.GET("/overview", v1.Exchange.Overview) // 换电概览
-	exchange.GET("/log", v1.Exchange.Log)           // 换电记录
 	exchange.POST("/store", v1.Exchange.Store)      // 门店换电
+
+	g.GET("/exchange/log", v1.Exchange.Log, logged()) // 换电记录
 
 	// 预约
 	reserve := g.Group("/reserve", person())
 	reserve.GET("", v1.Reserve.Unfinished)    // 未完成预约
 	reserve.POST("", v1.Reserve.Create)       // 创建预约
 	reserve.DELETE("/:id", v1.Reserve.Cancel) // 取消预约
+
 }

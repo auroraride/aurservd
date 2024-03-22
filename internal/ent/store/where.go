@@ -130,6 +130,16 @@ func EbikeRepair(v bool) predicate.Store {
 	return predicate.Store(sql.FieldEQ(FieldEbikeRepair, v))
 }
 
+// EbikeSale applies equality check predicate on the "ebike_sale" field. It's identical to EbikeSaleEQ.
+func EbikeSale(v bool) predicate.Store {
+	return predicate.Store(sql.FieldEQ(FieldEbikeSale, v))
+}
+
+// BusinessHours applies equality check predicate on the "business_hours" field. It's identical to BusinessHoursEQ.
+func BusinessHours(v string) predicate.Store {
+	return predicate.Store(sql.FieldEQ(FieldBusinessHours, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Store {
 	return predicate.Store(sql.FieldEQ(FieldCreatedAt, v))
@@ -758,6 +768,91 @@ func EbikeRepairEQ(v bool) predicate.Store {
 // EbikeRepairNEQ applies the NEQ predicate on the "ebike_repair" field.
 func EbikeRepairNEQ(v bool) predicate.Store {
 	return predicate.Store(sql.FieldNEQ(FieldEbikeRepair, v))
+}
+
+// EbikeSaleEQ applies the EQ predicate on the "ebike_sale" field.
+func EbikeSaleEQ(v bool) predicate.Store {
+	return predicate.Store(sql.FieldEQ(FieldEbikeSale, v))
+}
+
+// EbikeSaleNEQ applies the NEQ predicate on the "ebike_sale" field.
+func EbikeSaleNEQ(v bool) predicate.Store {
+	return predicate.Store(sql.FieldNEQ(FieldEbikeSale, v))
+}
+
+// BusinessHoursEQ applies the EQ predicate on the "business_hours" field.
+func BusinessHoursEQ(v string) predicate.Store {
+	return predicate.Store(sql.FieldEQ(FieldBusinessHours, v))
+}
+
+// BusinessHoursNEQ applies the NEQ predicate on the "business_hours" field.
+func BusinessHoursNEQ(v string) predicate.Store {
+	return predicate.Store(sql.FieldNEQ(FieldBusinessHours, v))
+}
+
+// BusinessHoursIn applies the In predicate on the "business_hours" field.
+func BusinessHoursIn(vs ...string) predicate.Store {
+	return predicate.Store(sql.FieldIn(FieldBusinessHours, vs...))
+}
+
+// BusinessHoursNotIn applies the NotIn predicate on the "business_hours" field.
+func BusinessHoursNotIn(vs ...string) predicate.Store {
+	return predicate.Store(sql.FieldNotIn(FieldBusinessHours, vs...))
+}
+
+// BusinessHoursGT applies the GT predicate on the "business_hours" field.
+func BusinessHoursGT(v string) predicate.Store {
+	return predicate.Store(sql.FieldGT(FieldBusinessHours, v))
+}
+
+// BusinessHoursGTE applies the GTE predicate on the "business_hours" field.
+func BusinessHoursGTE(v string) predicate.Store {
+	return predicate.Store(sql.FieldGTE(FieldBusinessHours, v))
+}
+
+// BusinessHoursLT applies the LT predicate on the "business_hours" field.
+func BusinessHoursLT(v string) predicate.Store {
+	return predicate.Store(sql.FieldLT(FieldBusinessHours, v))
+}
+
+// BusinessHoursLTE applies the LTE predicate on the "business_hours" field.
+func BusinessHoursLTE(v string) predicate.Store {
+	return predicate.Store(sql.FieldLTE(FieldBusinessHours, v))
+}
+
+// BusinessHoursContains applies the Contains predicate on the "business_hours" field.
+func BusinessHoursContains(v string) predicate.Store {
+	return predicate.Store(sql.FieldContains(FieldBusinessHours, v))
+}
+
+// BusinessHoursHasPrefix applies the HasPrefix predicate on the "business_hours" field.
+func BusinessHoursHasPrefix(v string) predicate.Store {
+	return predicate.Store(sql.FieldHasPrefix(FieldBusinessHours, v))
+}
+
+// BusinessHoursHasSuffix applies the HasSuffix predicate on the "business_hours" field.
+func BusinessHoursHasSuffix(v string) predicate.Store {
+	return predicate.Store(sql.FieldHasSuffix(FieldBusinessHours, v))
+}
+
+// BusinessHoursIsNil applies the IsNil predicate on the "business_hours" field.
+func BusinessHoursIsNil() predicate.Store {
+	return predicate.Store(sql.FieldIsNull(FieldBusinessHours))
+}
+
+// BusinessHoursNotNil applies the NotNil predicate on the "business_hours" field.
+func BusinessHoursNotNil() predicate.Store {
+	return predicate.Store(sql.FieldNotNull(FieldBusinessHours))
+}
+
+// BusinessHoursEqualFold applies the EqualFold predicate on the "business_hours" field.
+func BusinessHoursEqualFold(v string) predicate.Store {
+	return predicate.Store(sql.FieldEqualFold(FieldBusinessHours, v))
+}
+
+// BusinessHoursContainsFold applies the ContainsFold predicate on the "business_hours" field.
+func BusinessHoursContainsFold(v string) predicate.Store {
+	return predicate.Store(sql.FieldContainsFold(FieldBusinessHours, v))
 }
 
 // HasCity applies the HasEdge predicate on the "city" edge.

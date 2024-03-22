@@ -49,6 +49,10 @@ const (
 	FieldEbikeObtain = "ebike_obtain"
 	// FieldEbikeRepair holds the string denoting the ebike_repair field in the database.
 	FieldEbikeRepair = "ebike_repair"
+	// FieldEbikeSale holds the string denoting the ebike_sale field in the database.
+	FieldEbikeSale = "ebike_sale"
+	// FieldBusinessHours holds the string denoting the business_hours field in the database.
+	FieldBusinessHours = "business_hours"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
@@ -127,6 +131,8 @@ var Columns = []string{
 	FieldAddress,
 	FieldEbikeObtain,
 	FieldEbikeRepair,
+	FieldEbikeSale,
+	FieldBusinessHours,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -158,6 +164,8 @@ var (
 	DefaultEbikeObtain bool
 	// DefaultEbikeRepair holds the default value on creation for the "ebike_repair" field.
 	DefaultEbikeRepair bool
+	// DefaultEbikeSale holds the default value on creation for the "ebike_sale" field.
+	DefaultEbikeSale bool
 )
 
 // OrderOption defines the ordering options for the Store queries.
@@ -241,6 +249,16 @@ func ByEbikeObtain(opts ...sql.OrderTermOption) OrderOption {
 // ByEbikeRepair orders the results by the ebike_repair field.
 func ByEbikeRepair(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEbikeRepair, opts...).ToFunc()
+}
+
+// ByEbikeSale orders the results by the ebike_sale field.
+func ByEbikeSale(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEbikeSale, opts...).ToFunc()
+}
+
+// ByBusinessHours orders the results by the business_hours field.
+func ByBusinessHours(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBusinessHours, opts...).ToFunc()
 }
 
 // ByCityField orders the results by city field.

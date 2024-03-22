@@ -15,15 +15,15 @@ type CabinetByRiderReq struct {
 // CabinetByRiderRes 电柜列表响应
 type CabinetByRiderRes struct {
 	model.CabinetDataRes
-	Distance   float64                     `json:"distance"`             // 距离
-	Lng        float64                     `json:"lng"`                  // 经度
-	Lat        float64                     `json:"lat"`                  // 纬度
-	StockNum   int                         `json:"stockNum,omitempty"`   // 库存电池
-	BranchID   uint64                      `json:"branchId"`             // 网点ID
-	Fid        string                      `json:"fid"`                  // 电柜FID
-	Address    string                      `json:"address"`              // 详细地址
-	Reserve    *model.ReserveUnfinishedRes `json:"reserve,omitempty"`    // 当前预约, 预约不存在时无此字段
-	Businesses []string                    `json:"businesses,omitempty"` // 可办理业务  active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+	Distance   float64                     `json:"distance"`           // 距离
+	Lng        float64                     `json:"lng"`                // 经度
+	Lat        float64                     `json:"lat"`                // 纬度
+	StockNum   int                         `json:"stockNum,omitempty"` // 库存电池
+	BranchID   uint64                      `json:"branchId"`           // 网点ID
+	Fid        string                      `json:"fid"`                // 电柜FID
+	Address    string                      `json:"address"`            // 详细地址
+	Reserve    *model.ReserveUnfinishedRes `json:"reserve,omitempty"`  // 当前预约, 预约不存在时无此字段
+	Businesses []string                    `json:"businesses"`         // 可办理业务  active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
 }
 
 // CabinetDetailReq 电柜详情请求参数
