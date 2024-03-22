@@ -2,13 +2,16 @@ package biz
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
@@ -25,11 +28,12 @@ func NewStore() *storeBiz {
 }
 
 // List 门店列表
-func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.Store) {
+func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.Store, err error) {
 	res = make([]*definition.Store, 0)
 	q := s.orm.QueryNotDeleted().
 		WithCity().
 		WithEmployee().
+		WithStocks().
 		Modify(func(sel *sql.Selector) {
 			sel.
 				AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance( ST_SetSRID(ST_MakePoint(%s, %s), 4326), ST_SetSRID(ST_MakePoint(%f, %f), 4326))`, sel.C("lng"), sel.C("lat"), req.Lng, req.Lat)), "distance").
@@ -50,12 +54,32 @@ func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.Store) 
 
 	list, _ := q.All(s.ctx)
 	if len(list) == 0 {
-		return res
-	}
-	for _, v := range list {
-		res = append(res, s.detail(v))
+		return res, nil
 	}
 
+	var pl *ent.Plan
+	if req.PlanID != nil {
+		pl, _ = ent.Database.Plan.QueryNotDeleted().Where(plan.ID(*req.PlanID)).First(s.ctx)
+		if pl == nil {
+			return nil, errors.New("未找到有效套餐")
+		}
+
+		if pl.Type == model.PlanTypeBattery.Value() {
+			return nil, errors.New("套餐类型错误")
+		}
+
+	}
+	for _, v := range list {
+		// 查询门店库存
+		if req.PlanID != nil && pl != nil {
+			ebikeNum, batteryNum := s.queryStocks(v, pl)
+			// 电车或电池库存为0则不展示
+			if ebikeNum <= 0 || batteryNum <= 0 {
+				continue
+			}
+		}
+		res = append(res, s.detail(v))
+	}
 	return
 }
 
@@ -65,6 +89,7 @@ func (s *storeBiz) Detail(id uint64) (res *definition.Store) {
 		Where(store.ID(id)).
 		WithCity().
 		WithEmployee().
+		WithStocks().
 		First(s.ctx)
 	if q == nil {
 		return nil
@@ -105,4 +130,28 @@ func (s *storeBiz) detail(item *ent.Store) (res *definition.Store) {
 
 	return
 
+}
+
+// 查询门店电车库存
+func (s *storeBiz) queryStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, batteryNum int) {
+	bikes := make(map[string]*model.StockMaterial)
+	batteries := make(map[string]*model.StockMaterial)
+	for _, st := range item.Edges.Stocks {
+		switch true {
+		case st.BrandID != nil && *st.BrandID == *pl.BrandID:
+			// 电车
+			service.NewStock().Calculate(bikes, st)
+		case st.Model != nil && *st.Model == pl.Model:
+			// 电池
+			service.NewStock().Calculate(batteries, st)
+		}
+	}
+	for _, bike := range bikes {
+		ebikeNum += bike.Surplus
+	}
+
+	for _, battery := range batteries {
+		batteryNum += battery.Surplus
+	}
+	return
 }

@@ -7,6 +7,7 @@ type StoreListReq struct {
 	Lat      float64  `json:"lat" query:"lat" validate:"required"` // 纬度
 	Distance *float64 `json:"distance" query:"distance" `          // 距离
 	CityID   *uint64  `json:"cityId" query:"cityId"`               // 城市ID
+	PlanID   *uint64  `json:"planId" query:"planId"`               // 套餐ID
 }
 
 // Store 门店信息
