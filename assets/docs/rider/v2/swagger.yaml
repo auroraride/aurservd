@@ -634,6 +634,50 @@ definitions:
           type: object
         type: array
     type: object
+  definition.Store:
+    properties:
+      address:
+        description: 地址
+        type: string
+      businessHours:
+        description: 营业时间
+        type: string
+      city:
+        allOf:
+          - $ref: '#/definitions/model.City'
+        description: 城市
+      distance:
+        description: 距离(米)
+        type: number
+      ebikeObtain:
+        description: 是否可以领取车辆
+        type: boolean
+      ebikeRepair:
+        description: 是否可以维修车辆
+        type: boolean
+      ebikeSale:
+        description: 是否可以买车
+        type: boolean
+      employee:
+        allOf:
+          - $ref: '#/definitions/model.Employee'
+        description: 店员, 有可能不存在
+      id:
+        description: 门店ID
+        type: integer
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      name:
+        description: 门店名称
+        type: string
+      status:
+        description: 状态
+        type: integer
+    type: object
   definition.VersionRes:
     properties:
       content:
@@ -4394,6 +4438,63 @@ paths:
       summary: 登录或注册
       tags:
       - Rider - 骑手
+  /rider/v2/store:
+    get:
+      consumes:
+        - application/json
+      operationId: StoreList
+      parameters:
+        - description: 城市ID
+          in: query
+          name: cityId
+          type: integer
+        - description: 距离
+          in: query
+          name: distance
+          type: number
+        - description: 纬度
+          in: query
+          name: lat
+          required: true
+          type: number
+        - description: 经度
+          in: query
+          name: lng
+          required: true
+          type: number
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.Store'
+            type: array
+      summary: 门店列表
+      tags:
+        - Store - 门店
+  /rider/v2/store/{id}:
+    get:
+      consumes:
+        - application/json
+      operationId: StoreDetail
+      parameters:
+        - description: 门店id
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.Store'
+      summary: 门店详情
+      tags:
+        - Store - 门店
   /rider/v2/wallet/coupons:
     get:
       consumes:

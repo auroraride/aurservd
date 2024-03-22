@@ -42,7 +42,7 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 				OrderBy(sql.Asc("distance"))
 			if req.Distance != nil {
 				if *req.Distance > 100000 {
-					return
+					*req.Distance = 100000
 				}
 				sel.Where(sql.P(func(b *sql.Builder) {
 					b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, cabinet.FieldGeom, *req.Lng, *req.Lat, *req.Distance))
@@ -102,10 +102,11 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 					BatteryNum: c.BatteryNum,
 					BinNum:     c.Doors,
 				},
-				Lng:     c.Lng,
-				Lat:     c.Lat,
-				Address: c.Address,
-				Reserve: nil,
+				Lng:        c.Lng,
+				Lat:        c.Lat,
+				Address:    c.Address,
+				Reserve:    nil,
+				Businesses: make([]string, 0),
 			}
 
 			if rev != nil && rev.CabinetID == c.ID {

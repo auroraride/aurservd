@@ -195,6 +195,34 @@ func (sc *StoreCreate) SetNillableEbikeRepair(b *bool) *StoreCreate {
 	return sc
 }
 
+// SetEbikeSale sets the "ebike_sale" field.
+func (sc *StoreCreate) SetEbikeSale(b bool) *StoreCreate {
+	sc.mutation.SetEbikeSale(b)
+	return sc
+}
+
+// SetNillableEbikeSale sets the "ebike_sale" field if the given value is not nil.
+func (sc *StoreCreate) SetNillableEbikeSale(b *bool) *StoreCreate {
+	if b != nil {
+		sc.SetEbikeSale(*b)
+	}
+	return sc
+}
+
+// SetBusinessHours sets the "business_hours" field.
+func (sc *StoreCreate) SetBusinessHours(s string) *StoreCreate {
+	sc.mutation.SetBusinessHours(s)
+	return sc
+}
+
+// SetNillableBusinessHours sets the "business_hours" field if the given value is not nil.
+func (sc *StoreCreate) SetNillableBusinessHours(s *string) *StoreCreate {
+	if s != nil {
+		sc.SetBusinessHours(*s)
+	}
+	return sc
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (sc *StoreCreate) SetCity(c *City) *StoreCreate {
 	return sc.SetCityID(c.ID)
@@ -318,6 +346,10 @@ func (sc *StoreCreate) defaults() error {
 		v := store.DefaultEbikeRepair
 		sc.mutation.SetEbikeRepair(v)
 	}
+	if _, ok := sc.mutation.EbikeSale(); !ok {
+		v := store.DefaultEbikeSale
+		sc.mutation.SetEbikeSale(v)
+	}
 	return nil
 }
 
@@ -358,6 +390,9 @@ func (sc *StoreCreate) check() error {
 	}
 	if _, ok := sc.mutation.EbikeRepair(); !ok {
 		return &ValidationError{Name: "ebike_repair", err: errors.New(`ent: missing required field "Store.ebike_repair"`)}
+	}
+	if _, ok := sc.mutation.EbikeSale(); !ok {
+		return &ValidationError{Name: "ebike_sale", err: errors.New(`ent: missing required field "Store.ebike_sale"`)}
 	}
 	if _, ok := sc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Store.city"`)}
@@ -447,6 +482,14 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.EbikeRepair(); ok {
 		_spec.SetField(store.FieldEbikeRepair, field.TypeBool, value)
 		_node.EbikeRepair = value
+	}
+	if value, ok := sc.mutation.EbikeSale(); ok {
+		_spec.SetField(store.FieldEbikeSale, field.TypeBool, value)
+		_node.EbikeSale = value
+	}
+	if value, ok := sc.mutation.BusinessHours(); ok {
+		_spec.SetField(store.FieldBusinessHours, field.TypeString, value)
+		_node.BusinessHours = value
 	}
 	if nodes := sc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -809,6 +852,36 @@ func (u *StoreUpsert) UpdateEbikeRepair() *StoreUpsert {
 	return u
 }
 
+// SetEbikeSale sets the "ebike_sale" field.
+func (u *StoreUpsert) SetEbikeSale(v bool) *StoreUpsert {
+	u.Set(store.FieldEbikeSale, v)
+	return u
+}
+
+// UpdateEbikeSale sets the "ebike_sale" field to the value that was provided on create.
+func (u *StoreUpsert) UpdateEbikeSale() *StoreUpsert {
+	u.SetExcluded(store.FieldEbikeSale)
+	return u
+}
+
+// SetBusinessHours sets the "business_hours" field.
+func (u *StoreUpsert) SetBusinessHours(v string) *StoreUpsert {
+	u.Set(store.FieldBusinessHours, v)
+	return u
+}
+
+// UpdateBusinessHours sets the "business_hours" field to the value that was provided on create.
+func (u *StoreUpsert) UpdateBusinessHours() *StoreUpsert {
+	u.SetExcluded(store.FieldBusinessHours)
+	return u
+}
+
+// ClearBusinessHours clears the value of the "business_hours" field.
+func (u *StoreUpsert) ClearBusinessHours() *StoreUpsert {
+	u.SetNull(store.FieldBusinessHours)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1102,6 +1175,41 @@ func (u *StoreUpsertOne) SetEbikeRepair(v bool) *StoreUpsertOne {
 func (u *StoreUpsertOne) UpdateEbikeRepair() *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdateEbikeRepair()
+	})
+}
+
+// SetEbikeSale sets the "ebike_sale" field.
+func (u *StoreUpsertOne) SetEbikeSale(v bool) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetEbikeSale(v)
+	})
+}
+
+// UpdateEbikeSale sets the "ebike_sale" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdateEbikeSale() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateEbikeSale()
+	})
+}
+
+// SetBusinessHours sets the "business_hours" field.
+func (u *StoreUpsertOne) SetBusinessHours(v string) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetBusinessHours(v)
+	})
+}
+
+// UpdateBusinessHours sets the "business_hours" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdateBusinessHours() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateBusinessHours()
+	})
+}
+
+// ClearBusinessHours clears the value of the "business_hours" field.
+func (u *StoreUpsertOne) ClearBusinessHours() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearBusinessHours()
 	})
 }
 
@@ -1564,6 +1672,41 @@ func (u *StoreUpsertBulk) SetEbikeRepair(v bool) *StoreUpsertBulk {
 func (u *StoreUpsertBulk) UpdateEbikeRepair() *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdateEbikeRepair()
+	})
+}
+
+// SetEbikeSale sets the "ebike_sale" field.
+func (u *StoreUpsertBulk) SetEbikeSale(v bool) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetEbikeSale(v)
+	})
+}
+
+// UpdateEbikeSale sets the "ebike_sale" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdateEbikeSale() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateEbikeSale()
+	})
+}
+
+// SetBusinessHours sets the "business_hours" field.
+func (u *StoreUpsertBulk) SetBusinessHours(v string) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetBusinessHours(v)
+	})
+}
+
+// UpdateBusinessHours sets the "business_hours" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdateBusinessHours() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateBusinessHours()
+	})
+}
+
+// ClearBusinessHours clears the value of the "business_hours" field.
+func (u *StoreUpsertBulk) ClearBusinessHours() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearBusinessHours()
 	})
 }
 
