@@ -4354,26 +4354,12 @@ paths:
       - application/json
       operationId: SettingLatestVersion
       parameters:
-        - description: 更新内容
+        - description: 平台
+          enum:
+            - android
+            - ios
           in: query
-          name: content
-        required: true
-        type: string
-        - description: 是否强制更新
-          in: query
-          name: force
-          type: boolean
-        - collectionFormat: csv
-          description: 平台, 平台
-          in: query
-          items:
-            type: string
           name: platform
-          required: true
-          type: array
-        - description: 版本号
-          in: query
-          name: version
           required: true
           type: string
       produces:

@@ -171,7 +171,7 @@ func (s *faultBiz) FaultCause() (items []definition.FaultCauseRes, err error) {
 		"CABINET_FAULT",
 	)).All(s.ctx)
 	if res == nil {
-		return items, nil
+		return nil, nil
 	}
 
 	for _, v := range res {

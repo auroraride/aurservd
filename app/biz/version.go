@@ -7,6 +7,8 @@ package biz
 import (
 	"context"
 
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"github.com/golang-module/carbon/v2"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
@@ -84,10 +86,14 @@ func (s *versionBiz) List(req *definition.VersionListReq) (res *model.Pagination
 }
 
 // LatestVersion 获取最新版本
-func (s *versionBiz) LatestVersion() *definition.Version {
-	q, _ := s.orm.QueryNotDeleted().Order(ent.Desc(version.FieldCreatedAt)).First(s.ctx)
+func (s *versionBiz) LatestVersion(req *definition.LatestVersionReq) *definition.Version {
+	q, _ := s.orm.QueryNotDeleted().
+		Where(func(selector *sql.Selector) {
+			selector.Where(sqljson.ValueContains(version.FieldPlatform, req.Platform))
+		}).
+		Order(ent.Desc(version.FieldCreatedAt)).First(s.ctx)
 	if q == nil {
-		return &definition.Version{}
+		return nil
 	}
 	return &definition.Version{
 		Platform:  q.Platform,

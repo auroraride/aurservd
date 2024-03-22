@@ -2931,33 +2931,13 @@ const docTemplate = `{
                 "operationId": "SettingLatestVersion",
                 "parameters": [
                     {
+                        "enum": [
+                            "android",
+                            "ios"
+                        ],
                         "type": "string",
-                        "description": "更新内容",
-                        "name": "content",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "是否强制更新",
-                        "name": "force",
-                        "in": "query"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "description": "平台, 平台",
+                        "description": "平台",
                         "name": "platform",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "版本号",
-                        "name": "version",
                         "in": "query",
                         "required": true
                     }

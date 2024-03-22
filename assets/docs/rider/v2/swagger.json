@@ -1117,11 +1117,11 @@
               "description": "请求成功",
               "schema": {
                 "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
+              }
             }
-        },
+          }
+        }
+      },
         "/rider/v2/city": {
             "get": {
                 "consumes": [
@@ -2923,35 +2923,15 @@
                 "operationId": "SettingLatestVersion",
                 "parameters": [
                     {
+                      "enum": [
+                        "android",
+                        "ios"
+                      ],
                       "type": "string",
-                      "description": "更新内容",
-                      "name": "content",
+                      "description": "平台",
+                      "name": "platform",
                       "in": "query",
                       "required": true
-                    },
-                  {
-                    "type": "boolean",
-                    "description": "是否强制更新",
-                    "name": "force",
-                    "in": "query"
-                  },
-                  {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "collectionFormat": "csv",
-                    "description": "平台, 平台",
-                    "name": "platform",
-                    "in": "query",
-                    "required": true
-                  },
-                  {
-                    "type": "string",
-                    "description": "版本号",
-                    "name": "version",
-                    "in": "query",
-                    "required": true
                     }
                 ],
                 "responses": {
