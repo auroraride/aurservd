@@ -146,7 +146,7 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 		if req.AuthStatus != nil {
 			// 查询实名信息是否已存在
 			p := r.Edges.Person
-			if *req.AuthStatus != model.PersonUnauthenticated && req.IdCardNumber == nil && req.IdCardPortrait == nil && req.IdCardNational == nil {
+			if *req.AuthStatus != model.PersonUnauthenticated && req.Name == nil && req.IdCardNumber == nil && req.IdCardPortrait == nil && req.IdCardNational == nil {
 				snag.Panic("修改实名状态时, 身份证信息不能为空")
 			}
 			// 更新或创建实名信息
@@ -157,6 +157,7 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 					SetNillableIDCardPortrait(req.IdCardPortrait).
 					SetNillableIDCardNational(req.IdCardNational).
 					SetStatus(req.AuthStatus.Value()).
+					SetNillableName(req.Name).
 					SaveX(s.ctx)
 			} else {
 				// 创建实名信息
@@ -165,13 +166,14 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 					SetNillableIDCardPortrait(req.IdCardPortrait).
 					SetNillableIDCardNational(req.IdCardNational).
 					SetStatus(req.AuthStatus.Value()).
+					SetName(*req.Name).
 					SaveX(s.ctx)
 				// 更新骑手实名信息
-				ru.SetPersonID(p.ID)
+				ru.SetName(*req.Name).SetPersonID(p.ID)
 			}
-			before = append(before, fmt.Sprintf("认证状态: %s 身份证号: %s 正面: %s 国徽面:%s ", model.PersonAuthStatus(p.Status).String(), p.IDCardNumber, p.IDCardPortrait, p.IDCardNational))
+			before = append(before, fmt.Sprintf("认证状态: %s 身份证号: %s 正面: %s 国徽面:%s 姓名:%s ", model.PersonAuthStatus(p.Status).String(), p.IDCardNumber, p.IDCardPortrait, p.IDCardNational, p.Name))
 			if *req.AuthStatus != model.PersonUnauthenticated {
-				after = append(after, fmt.Sprintf("身份证号: %s 正面: %s 国徽面:%s", *req.IdCardNumber, *req.IdCardPortrait, *req.IdCardNational))
+				after = append(after, fmt.Sprintf("身份证号: %s 正面: %s 国徽面:%s 姓名: %s", *req.IdCardNumber, *req.IdCardPortrait, *req.IdCardNational, *req.Name))
 			}
 			after = append(after, fmt.Sprintf("认证状态: %s ", req.AuthStatus.String()))
 		}

@@ -16,6 +16,7 @@ type RiderMgrModifyReq struct {
 	AuthStatus *PersonAuthStatus `json:"authStatus" enums:"0,1,2,3"` // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
 	Contact    *RiderContact     `json:"contact"`                    // 联系人
 
+	Name           *string `json:"name"`           // 骑手姓名
 	IdCardNumber   *string `json:"idCardNumber"`   // 身份证号
 	IdCardPortrait *string `json:"idCardPortrait"` // 身份证正面
 	IdCardNational *string `json:"idCardNational"` // 身份证国徽面

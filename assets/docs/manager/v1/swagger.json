@@ -20587,6 +20587,10 @@
                 "description": "身份证正面",
                 "type": "string"
               },
+              "name": {
+                "description": "骑手姓名",
+                "type": "string"
+              },
                 "phone": {
                     "description": "手机号",
                     "type": "string"
