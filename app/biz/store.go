@@ -13,6 +13,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 type storeBiz struct {
@@ -84,12 +85,16 @@ func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.Store, 
 }
 
 // Detail 门店详情
-func (s *storeBiz) Detail(id uint64) (res *definition.Store) {
+func (s *storeBiz) Detail(req *definition.StoreDetail) (res *definition.Store) {
 	q, _ := s.orm.QueryNotDeleted().
-		Where(store.ID(id)).
+		Where(store.ID(req.ID)).
 		WithCity().
 		WithEmployee().
-		WithStocks().
+		Modify(func(sel *sql.Selector) {
+			sel.AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance( ST_SetSRID(ST_MakePoint(%s, %s), 4326), ST_SetSRID(ST_MakePoint(%f, %f), 4326))`, sel.C("lng"), sel.C("lat"), req.Lng, req.Lat)), "distance").
+				OrderBy(sql.Asc("distance"))
+
+		}).
 		First(s.ctx)
 	if q == nil {
 		return nil
@@ -154,4 +159,18 @@ func (s *storeBiz) queryStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, battery
 		batteryNum += battery.Surplus
 	}
 	return
+}
+
+// StoreBySubscribe 根据订阅查询门店
+func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreBySubscribe) (res *definition.Store, err error) {
+	q, _ := ent.Database.Subscribe.QueryNotDeleted().
+		Where(subscribe.ID(req.ID), subscribe.RiderID(r.ID)).
+		WithStore(
+			func(query *ent.StoreQuery) {
+				query.WithCity().WithEmployee()
+			}).First(s.ctx)
+	if q == nil || q.Edges.Store == nil {
+		return nil, errors.New("未找到门店")
+	}
+	return s.detail(q.Edges.Store), nil
 }

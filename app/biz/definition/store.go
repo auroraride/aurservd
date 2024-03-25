@@ -26,3 +26,15 @@ type Store struct {
 	Distance      float64         `json:"distance"`           // 距离(米)
 	Address       string          `json:"address"`            // 地址
 }
+
+// StoreBySubscribe 根据订阅查询门店信息
+type StoreBySubscribe struct {
+	model.IDParamReq
+}
+
+// StoreDetail 门店详情
+type StoreDetail struct {
+	model.IDParamReq
+	Lng float64 `json:"lng" validate:"required" query:"lng"` // 经度
+	Lat float64 `json:"lat" validate:"required" query:"lat"` // 纬度
+}

@@ -630,7 +630,8 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 				AddOrders(o).
 				SetNillableBrandID(trade.EbikeBrandID).
 				SetIntelligent(trade.Plan.Intelligent).
-				SetNeedContract(true)
+				SetNeedContract(true).
+				SetNillableStoreID(trade.StoreID)
 			if do != nil {
 				sq.AddOrders(do)
 			}
