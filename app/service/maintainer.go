@@ -156,6 +156,11 @@ func (s *maintainerService) Modify(req *model.MaintainerModifyReq) {
 		updater.ClearCities().AddCityIDs(req.CityIDs...)
 	}
 
+	// 修改状态
+	if req.Enable != nil {
+		updater.SetEnable(*req.Enable)
+	}
+
 	snag.PanicIfError(updater.Exec(s.ctx))
 }
 

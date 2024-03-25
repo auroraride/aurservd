@@ -246,6 +246,11 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 		return nil, errors.New("骑士卡错误")
 	}
 
+	// 车电套餐需要传入门店ID
+	if p.Type == model.PlanTypeEbikeWithBattery.Value() && req.StoreID == nil {
+		return nil, errors.New("车电套餐需要选择门店")
+	}
+
 	// 查询是否企业骑手
 	if r.EnterpriseID != nil {
 		return nil, errors.New("企业骑手无法购买骑士卡")
@@ -414,43 +419,29 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 	total := tools.NewDecimal().Sum(price, deposit)
 
 	paySubscribe := &model.PaymentSubscribe{
-		CityID:        req.CityID,
-		OrderType:     t,
-		RiderID:       r.ID,
-		Name:          "购买" + p.Name,
-		Amount:        total,
-		Payway:        req.Payway,
-		Deposit:       deposit,
-		PastDays:      past,
-		Commission:    p.Commission,
-		Model:         p.Model,
-		Days:          p.Days,
-		OrderID:       orderID,
-		SubscribeID:   subID,
-		Points:        points,
-		PointRatio:    model.PointRatio,
-		CouponAmount:  camount,
-		Coupons:       req.Coupons,
-		DiscountNewly: ramount,
-		EbikeBrandID:  p.BrandID,
-		Plan:          p.BasicInfo(),
-	}
-
-	// 预授权支付
-	if req.Payway == model.OrderPaywayAlipayAuthFreeze {
-		paySubscribe.OutOrderNo = no
-	} else {
-		paySubscribe.OutTradeNo = no
-	}
-
-	// 新增是否需要签约
-	if req.NeedContract != nil {
-		paySubscribe.NeedContract = req.NeedContract
-	}
-
-	// 如果分开支付的押金需要
-	if req.DepositOrderNo != nil {
-		paySubscribe.DepositOrderNo = req.DepositOrderNo
+		CityID:         req.CityID,
+		OrderType:      t,
+		RiderID:        r.ID,
+		Name:           "购买" + p.Name,
+		Amount:         total,
+		Payway:         req.Payway,
+		Deposit:        deposit,
+		PastDays:       past,
+		Commission:     p.Commission,
+		Model:          p.Model,
+		Days:           p.Days,
+		OrderID:        orderID,
+		SubscribeID:    subID,
+		Points:         points,
+		PointRatio:     model.PointRatio,
+		CouponAmount:   camount,
+		Coupons:        req.Coupons,
+		DiscountNewly:  ramount,
+		EbikeBrandID:   p.BrandID,
+		Plan:           p.BasicInfo(),
+		NeedContract:   req.NeedContract,
+		StoreID:        req.StoreID,
+		DepositOrderNo: req.DepositOrderNo,
 	}
 
 	prepay := &model.PaymentCache{
@@ -458,10 +449,13 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 	}
 
 	// 订单缓存
-	if req.Payway == model.OrderPaywayAlipayAuthFreeze {
+	switch req.Payway {
+	case model.OrderPaywayAlipayAuthFreeze:
 		prepay.CacheType = model.PaymentCacheTypeAlipayAuthFreeze
-	} else {
+		paySubscribe.OutOrderNo = no
+	default:
 		prepay.CacheType = model.PaymentCacheTypePlan
+		paySubscribe.OutTradeNo = no
 	}
 
 	service.NewOrder().Prepay(req.Payway, no, prepay, result)
@@ -630,7 +624,8 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 				SetInitialOrderID(o.ID).
 				AddOrders(o).
 				SetNillableBrandID(trade.EbikeBrandID).
-				SetIntelligent(trade.Plan.Intelligent)
+				SetIntelligent(trade.Plan.Intelligent).
+				SetNillableStoreID(trade.StoreID)
 			// 根据用户选择是否需要签约 默认不需要签约
 			if trade.NeedContract != nil {
 				sq.SetNillableNeedContract(trade.NeedContract)

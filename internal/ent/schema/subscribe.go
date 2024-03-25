@@ -116,8 +116,6 @@ func (Subscribe) Edges() []ent.Edge {
 		edge.To("bills", EnterpriseBill.Type),
 
 		edge.To("battery", Battery.Type).Unique(),
-
-		// edge.To("feedbacks", Feedback.Type).Unique(),
 	}
 }
 

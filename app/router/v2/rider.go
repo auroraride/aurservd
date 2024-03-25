@@ -103,8 +103,9 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 门店
 	store := g.Group("/store")
-	store.GET("", rapi.Store.List)       // 门店列表
-	store.GET("/:id", rapi.Store.Detail) // 门店详情
+	store.GET("", rapi.Store.List)                                     // 门店列表
+	store.GET("/:id", rapi.Store.Detail)                               // 门店详情
+	store.GET("/subscribe/:id", rapi.Store.StoreBySubscribe, logged()) // 根据订阅查询骑手激活门店信息
 
 	// 骑手登录认证中间件
 	// auth := g.Group("", middleware.RiderAuthMiddlewareV2())
@@ -198,13 +199,12 @@ func LoadRiderV2Routes(root *echo.Group) {
 	business.GET("/pause/info", v1.Business.PauseInfo)                 // 寄存信息
 	business.GET("/allocated/:id", v1.Business.Allocated)              // 长连接轮询是否已分配
 	business.GET("/subscribe/signed/:id", v1.Business.SubscribeSigned) // 连接轮询是否已签约
+	g.GET("business/exchange/log", v1.Exchange.Log, logged())          // 换电记录
 
 	// 换电
 	exchange := g.Group("/exchange", person())
 	exchange.GET("/overview", v1.Exchange.Overview) // 换电概览
 	exchange.POST("/store", v1.Exchange.Store)      // 门店换电
-
-	g.GET("/exchange/log", v1.Exchange.Log, logged()) // 换电记录
 
 	// 预约
 	reserve := g.Group("/reserve", person())
@@ -212,4 +212,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	reserve.POST("", v1.Reserve.Create)       // 创建预约
 	reserve.DELETE("/:id", v1.Reserve.Cancel) // 取消预约
 
+	// 订阅
+	subscribe := g.Group("/subscribe", person())
+	subscribe.PUT("/store", rapi.Subscribe.StoreModify) // 车电套餐修改激活门店
 }

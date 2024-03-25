@@ -286,6 +286,9 @@ definitions:
       point:
         description: 是否使用积分
         type: boolean
+      storeId:
+        description: 门店ID
+        type: integer
     required:
       - orderType
       - payway
@@ -677,6 +680,18 @@ definitions:
       status:
         description: 状态
         type: integer
+    type: object
+  definition.SubscribeStoreModifyReq:
+    properties:
+      storeId:
+        description: 门店ID
+        type: integer
+      subscribeId:
+        description: 订阅ID
+        type: integer
+    required:
+      - storeId
+      - subscribeId
     type: object
   definition.VersionRes:
     properties:
@@ -4462,6 +4477,10 @@ paths:
           name: lng
           required: true
           type: number
+        - description: 套餐ID
+          in: query
+          name: planId
+          type: integer
       produces:
         - application/json
       responses:
@@ -4480,11 +4499,16 @@ paths:
         - application/json
       operationId: StoreDetail
       parameters:
-        - description: 门店id
-          in: path
-          name: id
+        - description: 纬度
+          in: query
+          name: lat
           required: true
-          type: integer
+          type: number
+        - description: 经度
+          in: query
+          name: lng
+          required: true
+          type: number
       produces:
         - application/json
       responses:
@@ -4495,6 +4519,43 @@ paths:
       summary: 门店详情
       tags:
         - Store - 门店
+  /rider/v2/store/subscribe/{id}:
+    get:
+      consumes:
+        - application/json
+      operationId: StoreBySubscribe
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.Store'
+      summary: 根据订阅查询骑手激活门店信息
+      tags:
+        - Store - 门店
+  /rider/v2/subscribe/store:
+    put:
+      consumes:
+        - application/json
+      operationId: SubscribeStoreModify
+      parameters:
+        - description: 请求详情
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.SubscribeStoreModifyReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 车电套餐修改激活门店
+      tags:
+        - Subscribe - 订阅
   /rider/v2/wallet/coupons:
     get:
       consumes:

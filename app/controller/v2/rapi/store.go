@@ -6,7 +6,6 @@ import (
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/biz"
 	"github.com/auroraride/aurservd/app/biz/definition"
-	"github.com/auroraride/aurservd/app/model"
 )
 
 type store struct{}
@@ -34,9 +33,23 @@ func (*store) List(c echo.Context) (err error) {
 // @Tags	Store - 门店
 // @Accept	json
 // @Produce	json
-// @Param	id	path		uint64				true	"门店id"
-// @Success	200	{object}	definition.Store	"请求成功"
+// @Param	query	query		definition.StoreDetail	true	"门店详情"
+// @Success	200		{object}	definition.Store		"请求成功"
 func (*store) Detail(c echo.Context) (err error) {
-	ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
-	return ctx.SendResponse(biz.NewStore().Detail(req.ID))
+	ctx, req := app.RiderContextAndBinding[definition.StoreDetail](c)
+	return ctx.SendResponse(biz.NewStore().Detail(req))
+}
+
+// StoreBySubscribe
+// @ID		StoreBySubscribe
+// @Router	/rider/v2/store/subscribe/{id} [GET]
+// @Summary	根据订阅查询骑手激活门店信息
+// @Tags	Store - 门店
+// @Accept	json
+// @Produce	json
+// @Param	query	query		definition.StoreBySubscribe	true	"请求详情"
+// @Success	200		{object}	definition.Store			"请求成功"
+func (*store) StoreBySubscribe(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.StoreBySubscribe](c)
+	return ctx.SendResponse(biz.NewStore().StoreBySubscribe(ctx.Rider, req))
 }

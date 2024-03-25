@@ -94,6 +94,15 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 		snag.Panic("门店和站点不能同时存在")
 	}
 
+	// 车电套餐(V2) 只能由骑手选择的当前门店激活
+	// 后台激活不受限制
+	if s.modifier == nil {
+		if sub.Edges.Plan != nil && sub.Edges.Plan.Type == model.PlanTypeEbikeWithBattery.Value() &&
+			sub.StoreID != nil && params.StoreID != nil && *sub.StoreID != *params.StoreID {
+			snag.Panic("请前往App选择的门店激活或者更改门店")
+		}
+	}
+
 	// 是否需要分配电车
 	if sub.BrandID != nil && !params.EbikeParam.Exists() {
 		snag.Panic("需要分配电车")

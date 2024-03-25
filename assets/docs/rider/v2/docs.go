@@ -3025,6 +3025,12 @@ const docTemplate = `{
                         "name": "lng",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "套餐ID",
+                        "name": "planId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3035,6 +3041,29 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/definition.Store"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/store/subscribe/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Store - 门店"
+                ],
+                "summary": "根据订阅查询骑手激活门店信息",
+                "operationId": "StoreBySubscribe",
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.Store"
                         }
                     }
                 }
@@ -3055,10 +3084,17 @@ const docTemplate = `{
                 "operationId": "StoreDetail",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "门店id",
-                        "name": "id",
-                        "in": "path",
+                        "type": "number",
+                        "description": "纬度",
+                        "name": "lat",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "经度",
+                        "name": "lng",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -3067,6 +3103,40 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/definition.Store"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/subscribe/store": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Subscribe - 订阅"
+                ],
+                "summary": "车电套餐修改激活门店",
+                "operationId": "SubscribeStoreModify",
+                "parameters": [
+                    {
+                        "description": "请求详情",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.SubscribeStoreModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -3638,6 +3708,10 @@ const docTemplate = `{
                 "point": {
                     "description": "是否使用积分",
                     "type": "boolean"
+                },
+                "storeId": {
+                    "description": "门店ID",
+                    "type": "integer"
                 }
             }
         },
@@ -4189,6 +4263,23 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "状态",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.SubscribeStoreModifyReq": {
+            "type": "object",
+            "required": [
+                "storeId",
+                "subscribeId"
+            ],
+            "properties": {
+                "storeId": {
+                    "description": "门店ID",
+                    "type": "integer"
+                },
+                "subscribeId": {
+                    "description": "订阅ID",
                     "type": "integer"
                 }
             }
