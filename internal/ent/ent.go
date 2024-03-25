@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
@@ -152,6 +153,7 @@ func checkColumn(table, column string) error {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			activity.Table:                   activity.ValidColumn,
 			agent.Table:                      agent.ValidColumn,
+			agreement.Table:                  agreement.ValidColumn,
 			allocate.Table:                   allocate.ValidColumn,
 			assistance.Table:                 assistance.ValidColumn,
 			attendance.Table:                 attendance.ValidColumn,

@@ -240,6 +240,16 @@ func Intelligent(v bool) predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldEQ(FieldIntelligent, v))
 }
 
+// AgreementHash applies equality check predicate on the "agreement_hash" field. It's identical to AgreementHashEQ.
+func AgreementHash(v string) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldEQ(FieldAgreementHash, v))
+}
+
+// EnterprisePriceID applies equality check predicate on the "enterprise_price_id" field. It's identical to EnterprisePriceIDEQ.
+func EnterprisePriceID(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldEQ(FieldEnterprisePriceID, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldEQ(FieldCreatedAt, v))
@@ -1738,6 +1748,131 @@ func IntelligentEQ(v bool) predicate.Subscribe {
 // IntelligentNEQ applies the NEQ predicate on the "intelligent" field.
 func IntelligentNEQ(v bool) predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldNEQ(FieldIntelligent, v))
+}
+
+// AgreementHashEQ applies the EQ predicate on the "agreement_hash" field.
+func AgreementHashEQ(v string) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldEQ(FieldAgreementHash, v))
+}
+
+// AgreementHashNEQ applies the NEQ predicate on the "agreement_hash" field.
+func AgreementHashNEQ(v string) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldNEQ(FieldAgreementHash, v))
+}
+
+// AgreementHashIn applies the In predicate on the "agreement_hash" field.
+func AgreementHashIn(vs ...string) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldIn(FieldAgreementHash, vs...))
+}
+
+// AgreementHashNotIn applies the NotIn predicate on the "agreement_hash" field.
+func AgreementHashNotIn(vs ...string) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldNotIn(FieldAgreementHash, vs...))
+}
+
+// AgreementHashGT applies the GT predicate on the "agreement_hash" field.
+func AgreementHashGT(v string) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldGT(FieldAgreementHash, v))
+}
+
+// AgreementHashGTE applies the GTE predicate on the "agreement_hash" field.
+func AgreementHashGTE(v string) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldGTE(FieldAgreementHash, v))
+}
+
+// AgreementHashLT applies the LT predicate on the "agreement_hash" field.
+func AgreementHashLT(v string) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldLT(FieldAgreementHash, v))
+}
+
+// AgreementHashLTE applies the LTE predicate on the "agreement_hash" field.
+func AgreementHashLTE(v string) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldLTE(FieldAgreementHash, v))
+}
+
+// AgreementHashContains applies the Contains predicate on the "agreement_hash" field.
+func AgreementHashContains(v string) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldContains(FieldAgreementHash, v))
+}
+
+// AgreementHashHasPrefix applies the HasPrefix predicate on the "agreement_hash" field.
+func AgreementHashHasPrefix(v string) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldHasPrefix(FieldAgreementHash, v))
+}
+
+// AgreementHashHasSuffix applies the HasSuffix predicate on the "agreement_hash" field.
+func AgreementHashHasSuffix(v string) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldHasSuffix(FieldAgreementHash, v))
+}
+
+// AgreementHashIsNil applies the IsNil predicate on the "agreement_hash" field.
+func AgreementHashIsNil() predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldIsNull(FieldAgreementHash))
+}
+
+// AgreementHashNotNil applies the NotNil predicate on the "agreement_hash" field.
+func AgreementHashNotNil() predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldNotNull(FieldAgreementHash))
+}
+
+// AgreementHashEqualFold applies the EqualFold predicate on the "agreement_hash" field.
+func AgreementHashEqualFold(v string) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldEqualFold(FieldAgreementHash, v))
+}
+
+// AgreementHashContainsFold applies the ContainsFold predicate on the "agreement_hash" field.
+func AgreementHashContainsFold(v string) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldContainsFold(FieldAgreementHash, v))
+}
+
+// EnterprisePriceIDEQ applies the EQ predicate on the "enterprise_price_id" field.
+func EnterprisePriceIDEQ(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldEQ(FieldEnterprisePriceID, v))
+}
+
+// EnterprisePriceIDNEQ applies the NEQ predicate on the "enterprise_price_id" field.
+func EnterprisePriceIDNEQ(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldNEQ(FieldEnterprisePriceID, v))
+}
+
+// EnterprisePriceIDIn applies the In predicate on the "enterprise_price_id" field.
+func EnterprisePriceIDIn(vs ...uint64) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldIn(FieldEnterprisePriceID, vs...))
+}
+
+// EnterprisePriceIDNotIn applies the NotIn predicate on the "enterprise_price_id" field.
+func EnterprisePriceIDNotIn(vs ...uint64) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldNotIn(FieldEnterprisePriceID, vs...))
+}
+
+// EnterprisePriceIDGT applies the GT predicate on the "enterprise_price_id" field.
+func EnterprisePriceIDGT(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldGT(FieldEnterprisePriceID, v))
+}
+
+// EnterprisePriceIDGTE applies the GTE predicate on the "enterprise_price_id" field.
+func EnterprisePriceIDGTE(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldGTE(FieldEnterprisePriceID, v))
+}
+
+// EnterprisePriceIDLT applies the LT predicate on the "enterprise_price_id" field.
+func EnterprisePriceIDLT(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldLT(FieldEnterprisePriceID, v))
+}
+
+// EnterprisePriceIDLTE applies the LTE predicate on the "enterprise_price_id" field.
+func EnterprisePriceIDLTE(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldLTE(FieldEnterprisePriceID, v))
+}
+
+// EnterprisePriceIDIsNil applies the IsNil predicate on the "enterprise_price_id" field.
+func EnterprisePriceIDIsNil() predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldIsNull(FieldEnterprisePriceID))
+}
+
+// EnterprisePriceIDNotNil applies the NotNil predicate on the "enterprise_price_id" field.
+func EnterprisePriceIDNotNil() predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldNotNull(FieldEnterprisePriceID))
 }
 
 // HasPlan applies the HasEdge predicate on the "plan" edge.

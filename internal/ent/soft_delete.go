@@ -8,6 +8,7 @@ import (
 
 	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/battery"
@@ -134,6 +135,46 @@ func (c *AgentClient) GetNotDeleted(ctx context.Context, id uint64) (*Agent, err
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *AgentClient) GetNotDeletedX(ctx context.Context, id uint64) *Agent {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Agreement.
+func (c *AgreementClient) SoftDelete() *AgreementUpdate {
+	mutation := newAgreementMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &AgreementUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *AgreementClient) SoftDeleteOne(a *Agreement) *AgreementUpdateOne {
+	mutation := newAgreementMutation(c.config, OpUpdateOne, withAgreement(a))
+	mutation.SetDeletedAt(time.Now())
+	return &AgreementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *AgreementClient) SoftDeleteOneID(id uint64) *AgreementUpdateOne {
+	mutation := newAgreementMutation(c.config, OpUpdateOne, withAgreementID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &AgreementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Agreement.
+func (c *AgreementClient) QueryNotDeleted() *AgreementQuery {
+	return c.Query().Where(agreement.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Agreement not deleted entity by its id.
+func (c *AgreementClient) GetNotDeleted(ctx context.Context, id uint64) (*Agreement, error) {
+	return c.Query().Where(agreement.ID(id), agreement.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *AgreementClient) GetNotDeletedX(ctx context.Context, id uint64) *Agreement {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

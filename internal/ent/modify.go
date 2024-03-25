@@ -65,6 +65,13 @@ func (c *AgentClient) ModifyOne(old *Agent, data any) *AgentUpdateOne {
 	return EntitySetAttributes[AgentUpdateOne, Agent](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for Agreement.
+func (c *AgreementClient) ModifyOne(old *Agreement, data any) *AgreementUpdateOne {
+	mutation := newAgreementMutation(c.config, OpUpdateOne, withAgreement(old))
+	up := &AgreementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AgreementUpdateOne, Agreement](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Allocate.
 func (c *AllocateClient) ModifyOne(old *Allocate, data any) *AllocateUpdateOne {
 	mutation := newAllocateMutation(c.config, OpUpdateOne, withAllocate(old))

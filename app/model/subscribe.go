@@ -84,6 +84,8 @@ type Subscribe struct {
 	Enterprise *Enterprise         `json:"enterprise,omitempty"` // 企业信息
 
 	Ebike *Ebike `json:"ebike,omitempty"` // 电车属性
+
+	EnterprisePriceID uint64 `json:"enterprisePriceId"` // 团签价格ID
 }
 
 type SubscribeActiveInfo struct {

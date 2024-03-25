@@ -53,6 +53,36 @@ definitions:
         description: 更新时间
         type: string
     type: object
+  definition.Agreement:
+    properties:
+      content:
+        description: 内容
+        type: string
+      createdAt:
+        description: 创建时间
+        type: string
+      forceReadTime:
+        description: 强制阅读时间
+        type: integer
+      hash:
+        description: Hash
+        type: string
+      id:
+        description: ID
+        type: integer
+      isDefault:
+        description: 是否为默认协议
+        type: boolean
+      name:
+        description: 协议名称
+        type: string
+      url:
+        description: URL
+        type: string
+      userType:
+        description: 用户类型 1:个签 2:团签
+        type: integer
+    type: object
   definition.CabinetByRiderRes:
     properties:
       address:
@@ -245,6 +275,9 @@ definitions:
     type: object
   definition.OrderCreateReq:
     properties:
+      agreementHash:
+        description: 协议hash
+        type: string
       cityId:
         description: 城市ID, 新签必填
         type: integer
@@ -714,6 +747,24 @@ definitions:
         type: array
       version:
         description: 版本号
+        type: string
+    type: object
+  model.Agreement:
+    properties:
+      forceReadTime:
+        description: 强制阅读时间
+        type: integer
+      hash:
+        description: hash
+        type: string
+      id:
+        description: ID
+        type: integer
+      name:
+        description: 协议名称
+        type: string
+      url:
+        description: URL
         type: string
     type: object
   model.AllocateRiderRes:
@@ -1463,6 +1514,10 @@ definitions:
     type: object
   model.EnterprisePriceWithCity:
     properties:
+      agreement:
+        allOf:
+          - $ref: '#/definitions/model.Agreement'
+        description: 协议
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -1862,6 +1917,10 @@ definitions:
     type: object
   model.PlanDaysPriceOption:
     properties:
+      agreement:
+        allOf:
+          - $ref: '#/definitions/model.Agreement'
+        description: 协议
       days:
         description: 天数
         type: integer
@@ -2433,6 +2492,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Enterprise'
         description: 企业信息
+      enterprisePriceId:
+        description: 团签价格ID
+        type: integer
       id:
         description: 订阅ID
         type: integer
@@ -2632,6 +2694,32 @@ paths:
       summary: 活动列表
       tags:
       - Activity - 活动
+  /rider/v2/agreement/enterprise/price/{id}:
+    get:
+      consumes:
+        - application/json
+      operationId: AgreementByEnterprisePriceID
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: 企业价格ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.Agreement'
+      summary: 根据企业价格ID查询协议
+      tags:
+        - Agreement - 协议
   /rider/v2/assistance:
     get:
       consumes:

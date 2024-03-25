@@ -30,6 +30,20 @@ func (a *Agent) GetName() string {
 	return a.Name
 }
 
+// GetTableName returns table name for Agreement.
+func (a *Agreement) GetTableName() string {
+	return "agreement"
+}
+
+// GetID returns id for Agreement.
+func (a *Agreement) GetID() uint64 {
+	return a.ID
+}
+
+func (a *Agreement) GetName() string {
+	return a.Name
+}
+
 // GetTableName returns table name for Allocate.
 func (a *Allocate) GetTableName() string {
 	return "allocate"

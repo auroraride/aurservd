@@ -18,6 +18,8 @@ type Tx struct {
 	Activity *ActivityClient
 	// Agent is the client for interacting with the Agent builders.
 	Agent *AgentClient
+	// Agreement is the client for interacting with the Agreement builders.
+	Agreement *AgreementClient
 	// Allocate is the client for interacting with the Allocate builders.
 	Allocate *AllocateClient
 	// Assistance is the client for interacting with the Assistance builders.
@@ -303,6 +305,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Activity = NewActivityClient(tx.config)
 	tx.Agent = NewAgentClient(tx.config)
+	tx.Agreement = NewAgreementClient(tx.config)
 	tx.Allocate = NewAllocateClient(tx.config)
 	tx.Assistance = NewAssistanceClient(tx.config)
 	tx.Attendance = NewAttendanceClient(tx.config)

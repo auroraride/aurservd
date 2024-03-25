@@ -109,6 +109,10 @@ type Subscribe struct {
 	NeedContract bool `json:"need_contract,omitempty"`
 	// 是否智能柜套餐
 	Intelligent bool `json:"intelligent,omitempty"`
+	// 签署协议hash
+	AgreementHash string `json:"agreement_hash,omitempty"`
+	// 团签价格ID
+	EnterprisePriceID uint64 `json:"enterprise_price_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeQuery when eager-loading is set.
 	Edges        SubscribeEdges `json:"edges"`
@@ -342,9 +346,9 @@ func (*Subscribe) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case subscribe.FieldPauseOverdue, subscribe.FieldNeedContract, subscribe.FieldIntelligent:
 			values[i] = new(sql.NullBool)
-		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldCabinetID, subscribe.FieldBrandID, subscribe.FieldEbikeID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldSuspendDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
+		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldCabinetID, subscribe.FieldBrandID, subscribe.FieldEbikeID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldSuspendDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining, subscribe.FieldEnterprisePriceID:
 			values[i] = new(sql.NullInt64)
-		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason, subscribe.FieldFormula:
+		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason, subscribe.FieldFormula, subscribe.FieldAgreementHash:
 			values[i] = new(sql.NullString)
 		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldSuspendAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt, subscribe.FieldLastBillDate, subscribe.FieldAgentEndAt:
 			values[i] = new(sql.NullTime)
@@ -624,6 +628,18 @@ func (s *Subscribe) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.Intelligent = value.Bool
 			}
+		case subscribe.FieldAgreementHash:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field agreement_hash", values[i])
+			} else if value.Valid {
+				s.AgreementHash = value.String
+			}
+		case subscribe.FieldEnterprisePriceID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field enterprise_price_id", values[i])
+			} else if value.Valid {
+				s.EnterprisePriceID = uint64(value.Int64)
+			}
 		default:
 			s.selectValues.Set(columns[i], values[i])
 		}
@@ -895,6 +911,12 @@ func (s *Subscribe) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("intelligent=")
 	builder.WriteString(fmt.Sprintf("%v", s.Intelligent))
+	builder.WriteString(", ")
+	builder.WriteString("agreement_hash=")
+	builder.WriteString(s.AgreementHash)
+	builder.WriteString(", ")
+	builder.WriteString("enterprise_price_id=")
+	builder.WriteString(fmt.Sprintf("%v", s.EnterprisePriceID))
 	builder.WriteByte(')')
 	return builder.String()
 }

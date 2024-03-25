@@ -152,6 +152,99 @@ definitions:
     - name
     - sort
     type: object
+  definition.Agreement:
+    properties:
+      content:
+        description: 内容
+        type: string
+      createdAt:
+        description: 创建时间
+        type: string
+      forceReadTime:
+        description: 强制阅读时间
+        type: integer
+      hash:
+        description: Hash
+        type: string
+      id:
+        description: ID
+        type: integer
+      isDefault:
+        description: 是否为默认协议
+        type: boolean
+      name:
+        description: 协议名称
+        type: string
+      url:
+        description: URL
+        type: string
+      userType:
+        description: 用户类型 1:个签 2:团签
+        type: integer
+    type: object
+  definition.AgreementCreateReq:
+    properties:
+      content:
+        description: 内容
+        type: string
+      forceReadTime:
+        description: 强制阅读时间
+        type: integer
+      isDefault:
+        description: 是否为默认协议
+        type: boolean
+      name:
+        description: 协议名称
+        type: string
+      userType:
+        description: 用户类型 1:个签 2:团签
+        type: integer
+    required:
+      - content
+      - forceReadTime
+      - isDefault
+      - name
+      - userType
+    type: object
+  definition.AgreementModifyReq:
+    properties:
+      content:
+        description: 内容
+        type: string
+      forceReadTime:
+        description: 强制阅读时间
+        type: integer
+      isDefault:
+        description: 是否为默认协议
+        type: boolean
+      name:
+        description: 协议名称
+        type: string
+      userType:
+        description: 用户类型 1:个签 2:团签
+        type: integer
+    required:
+      - content
+      - forceReadTime
+      - isDefault
+      - name
+      - userType
+    type: object
+  definition.AgreementSelectionRes:
+    properties:
+      hash:
+        description: Hash
+        type: string
+      id:
+        description: ID
+        type: integer
+      isDefault:
+        description: 是否为默认协议 true:是 false:否
+        type: boolean
+      name:
+        description: 协议名称
+        type: string
+    type: object
   definition.Fault:
     properties:
       attachments:
@@ -510,6 +603,24 @@ definitions:
         type: string
       phone:
         description: 电话
+        type: string
+    type: object
+  model.Agreement:
+    properties:
+      forceReadTime:
+        description: 强制阅读时间
+        type: integer
+      hash:
+        description: hash
+        type: string
+      id:
+        description: ID
+        type: integer
+      name:
+        description: 协议名称
+        type: string
+      url:
+        description: URL
         type: string
     type: object
   model.AllocateCreateRes:
@@ -3196,6 +3307,9 @@ definitions:
     type: object
   model.EnterprisePriceReq:
     properties:
+      agreementId:
+        description: 协议id
+        type: integer
       brandId:
         description: 电车型号
         type: integer
@@ -3225,6 +3339,10 @@ definitions:
     type: object
   model.EnterprisePriceWithCity:
     properties:
+      agreement:
+        allOf:
+          - $ref: '#/definitions/model.Agreement'
+        description: 协议
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -4268,6 +4386,9 @@ definitions:
     type: object
   model.PlanCreateReq:
     properties:
+      agreementId:
+        description: 协议ID
+        type: integer
       brandId:
         description: 电车型号, 车加电必填
         type: integer
@@ -4384,6 +4505,10 @@ definitions:
     type: object
   model.PlanListRes:
     properties:
+      agreement:
+        allOf:
+          - $ref: '#/definitions/model.Agreement'
+        description: 协议
       brand:
         allOf:
         - $ref: '#/definitions/model.EbikeBrand'
@@ -7059,6 +7184,155 @@ paths:
       summary: 新增合同
       tags:
       - 网点
+  /manager/v1/agreement:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerAgreementList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.Agreement'
+            type: array
+      summary: 协议列表
+      tags:
+        - 协议
+    post:
+      consumes:
+        - application/json
+      operationId: ManagerAgreementCreate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 创建协议请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.AgreementCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建协议
+      tags:
+        - 协议
+  /manager/v1/agreement/{id}:
+    delete:
+      consumes:
+        - application/json
+      operationId: ManagerAgreementDelete
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 协议ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 删除协议
+      tags:
+        - 协议
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerAgreementDetail
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 协议ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.Agreement'
+      summary: 协议详情
+      tags:
+        - 协议
+    put:
+      consumes:
+        - application/json
+      operationId: ManagerAgreementModify
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 修改协议请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.AgreementModifyReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改协议
+      tags:
+        - 协议
+  /manager/v1/agreement/selection:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerAgreementSelection
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.AgreementSelectionRes'
+            type: array
+      summary: 协议下拉列表
+      tags:
+        - 协议
   /manager/v1/assistance:
     get:
       consumes:
@@ -14707,9 +14981,9 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: "法规名称, policy: APP隐私政策; agreement: APP服务协议; agent-policy: 代理端小程序隐私政策;
+      - description: '法规名称, policy: APP隐私政策; agreement: APP服务协议; agent-policy: 代理端小程序隐私政策;
           agent-agreement: 代理端小程序服务协议; promote-policy: 推广端小程序隐私政策; promote-agreement:
-          推广端小程序服务协议 battery-rental-agreement:个签-电池租赁协议;\tebike-rental-agreement:个签-电车及电池租赁协议;\tenterprise-battery-rental-agreement:团签-电池租赁协议;\tenterprise-ebike-rental-agreement:团签-电车及电池租赁协议"
+          推广端小程序服务协议'
         in: path
         name: name
         required: true

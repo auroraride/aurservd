@@ -31,6 +31,8 @@ const (
 	FieldCityID = "city_id"
 	// FieldBrandID holds the string denoting the brand_id field in the database.
 	FieldBrandID = "brand_id"
+	// FieldAgreementID holds the string denoting the agreement_id field in the database.
+	FieldAgreementID = "agreement_id"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
 	FieldEnterpriseID = "enterprise_id"
 	// FieldPrice holds the string denoting the price field in the database.
@@ -43,6 +45,8 @@ const (
 	EdgeCity = "city"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
+	// EdgeAgreement holds the string denoting the agreement edge name in mutations.
+	EdgeAgreement = "agreement"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
 	// Table holds the table name of the enterpriseprice in the database.
@@ -61,6 +65,13 @@ const (
 	BrandInverseTable = "ebike_brand"
 	// BrandColumn is the table column denoting the brand relation/edge.
 	BrandColumn = "brand_id"
+	// AgreementTable is the table that holds the agreement relation/edge.
+	AgreementTable = "enterprise_price"
+	// AgreementInverseTable is the table name for the Agreement entity.
+	// It exists in this package in order to avoid circular dependency with the "agreement" package.
+	AgreementInverseTable = "agreement"
+	// AgreementColumn is the table column denoting the agreement relation/edge.
+	AgreementColumn = "agreement_id"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
 	EnterpriseTable = "enterprise_price"
 	// EnterpriseInverseTable is the table name for the Enterprise entity.
@@ -81,6 +92,7 @@ var Columns = []string{
 	FieldRemark,
 	FieldCityID,
 	FieldBrandID,
+	FieldAgreementID,
 	FieldEnterpriseID,
 	FieldPrice,
 	FieldModel,
@@ -152,6 +164,11 @@ func ByBrandID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBrandID, opts...).ToFunc()
 }
 
+// ByAgreementID orders the results by the agreement_id field.
+func ByAgreementID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAgreementID, opts...).ToFunc()
+}
+
 // ByEnterpriseID orders the results by the enterprise_id field.
 func ByEnterpriseID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEnterpriseID, opts...).ToFunc()
@@ -186,6 +203,13 @@ func ByBrandField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByAgreementField orders the results by agreement field.
+func ByAgreementField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAgreementStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByEnterpriseField orders the results by enterprise field.
 func ByEnterpriseField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -204,6 +228,13 @@ func newBrandStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BrandInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
+	)
+}
+func newAgreementStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AgreementInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, AgreementTable, AgreementColumn),
 	)
 }
 func newEnterpriseStep() *sqlgraph.Step {

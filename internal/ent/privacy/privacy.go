@@ -159,6 +159,30 @@ func (f AgentMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation)
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AgentMutation", m)
 }
 
+// The AgreementQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type AgreementQueryRuleFunc func(context.Context, *ent.AgreementQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f AgreementQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AgreementQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.AgreementQuery", q)
+}
+
+// The AgreementMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type AgreementMutationRuleFunc func(context.Context, *ent.AgreementMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f AgreementMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.AgreementMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AgreementMutation", m)
+}
+
 // The AllocateQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type AllocateQueryRuleFunc func(context.Context, *ent.AllocateQuery) error
@@ -2022,6 +2046,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.AgentQuery:
 		return q.Filter(), nil
+	case *ent.AgreementQuery:
+		return q.Filter(), nil
 	case *ent.AllocateQuery:
 		return q.Filter(), nil
 	case *ent.AssistanceQuery:
@@ -2184,6 +2210,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.ActivityMutation:
 		return m.Filter(), nil
 	case *ent.AgentMutation:
+		return m.Filter(), nil
+	case *ent.AgreementMutation:
 		return m.Filter(), nil
 	case *ent.AllocateMutation:
 		return m.Filter(), nil

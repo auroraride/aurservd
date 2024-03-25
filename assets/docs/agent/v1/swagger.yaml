@@ -469,6 +469,24 @@ definitions:
     required:
     - id
     type: object
+  model.Agreement:
+    properties:
+      forceReadTime:
+        description: 强制阅读时间
+        type: integer
+      hash:
+        description: hash
+        type: string
+      id:
+        description: ID
+        type: integer
+      name:
+        description: 协议名称
+        type: string
+      url:
+        description: URL
+        type: string
+    type: object
   model.AllocateCreateRes:
     properties:
       id:
@@ -927,6 +945,10 @@ definitions:
     type: object
   model.EnterprisePriceWithCity:
     properties:
+      agreement:
+        allOf:
+          - $ref: '#/definitions/model.Agreement'
+        description: 协议
       city:
         allOf:
         - $ref: '#/definitions/model.City'

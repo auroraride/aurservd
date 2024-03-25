@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -109,6 +110,26 @@ func (pu *PlanUpdate) SetNillableBrandID(u *uint64) *PlanUpdate {
 // ClearBrandID clears the value of the "brand_id" field.
 func (pu *PlanUpdate) ClearBrandID() *PlanUpdate {
 	pu.mutation.ClearBrandID()
+	return pu
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (pu *PlanUpdate) SetAgreementID(u uint64) *PlanUpdate {
+	pu.mutation.SetAgreementID(u)
+	return pu
+}
+
+// SetNillableAgreementID sets the "agreement_id" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableAgreementID(u *uint64) *PlanUpdate {
+	if u != nil {
+		pu.SetAgreementID(*u)
+	}
+	return pu
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (pu *PlanUpdate) ClearAgreementID() *PlanUpdate {
+	pu.mutation.ClearAgreementID()
 	return pu
 }
 
@@ -518,6 +539,11 @@ func (pu *PlanUpdate) SetBrand(e *EbikeBrand) *PlanUpdate {
 	return pu.SetBrandID(e.ID)
 }
 
+// SetAgreement sets the "agreement" edge to the Agreement entity.
+func (pu *PlanUpdate) SetAgreement(a *Agreement) *PlanUpdate {
+	return pu.SetAgreementID(a.ID)
+}
+
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
 func (pu *PlanUpdate) AddCityIDs(ids ...uint64) *PlanUpdate {
 	pu.mutation.AddCityIDs(ids...)
@@ -576,6 +602,12 @@ func (pu *PlanUpdate) Mutation() *PlanMutation {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (pu *PlanUpdate) ClearBrand() *PlanUpdate {
 	pu.mutation.ClearBrand()
+	return pu
+}
+
+// ClearAgreement clears the "agreement" edge to the Agreement entity.
+func (pu *PlanUpdate) ClearAgreement() *PlanUpdate {
+	pu.mutation.ClearAgreement()
 	return pu
 }
 
@@ -871,6 +903,35 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.AgreementCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.AgreementTable,
+			Columns: []string{plan.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.AgreementIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.AgreementTable,
+			Columns: []string{plan.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if pu.mutation.CitiesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -1132,6 +1193,26 @@ func (puo *PlanUpdateOne) SetNillableBrandID(u *uint64) *PlanUpdateOne {
 // ClearBrandID clears the value of the "brand_id" field.
 func (puo *PlanUpdateOne) ClearBrandID() *PlanUpdateOne {
 	puo.mutation.ClearBrandID()
+	return puo
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (puo *PlanUpdateOne) SetAgreementID(u uint64) *PlanUpdateOne {
+	puo.mutation.SetAgreementID(u)
+	return puo
+}
+
+// SetNillableAgreementID sets the "agreement_id" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableAgreementID(u *uint64) *PlanUpdateOne {
+	if u != nil {
+		puo.SetAgreementID(*u)
+	}
+	return puo
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (puo *PlanUpdateOne) ClearAgreementID() *PlanUpdateOne {
+	puo.mutation.ClearAgreementID()
 	return puo
 }
 
@@ -1541,6 +1622,11 @@ func (puo *PlanUpdateOne) SetBrand(e *EbikeBrand) *PlanUpdateOne {
 	return puo.SetBrandID(e.ID)
 }
 
+// SetAgreement sets the "agreement" edge to the Agreement entity.
+func (puo *PlanUpdateOne) SetAgreement(a *Agreement) *PlanUpdateOne {
+	return puo.SetAgreementID(a.ID)
+}
+
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
 func (puo *PlanUpdateOne) AddCityIDs(ids ...uint64) *PlanUpdateOne {
 	puo.mutation.AddCityIDs(ids...)
@@ -1599,6 +1685,12 @@ func (puo *PlanUpdateOne) Mutation() *PlanMutation {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (puo *PlanUpdateOne) ClearBrand() *PlanUpdateOne {
 	puo.mutation.ClearBrand()
+	return puo
+}
+
+// ClearAgreement clears the "agreement" edge to the Agreement entity.
+func (puo *PlanUpdateOne) ClearAgreement() *PlanUpdateOne {
+	puo.mutation.ClearAgreement()
 	return puo
 }
 
@@ -1917,6 +2009,35 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.AgreementCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.AgreementTable,
+			Columns: []string{plan.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.AgreementIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.AgreementTable,
+			Columns: []string{plan.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

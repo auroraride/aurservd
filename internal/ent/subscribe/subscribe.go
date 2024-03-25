@@ -93,6 +93,10 @@ const (
 	FieldNeedContract = "need_contract"
 	// FieldIntelligent holds the string denoting the intelligent field in the database.
 	FieldIntelligent = "intelligent"
+	// FieldAgreementHash holds the string denoting the agreement_hash field in the database.
+	FieldAgreementHash = "agreement_hash"
+	// FieldEnterprisePriceID holds the string denoting the enterprise_price_id field in the database.
+	FieldEnterprisePriceID = "enterprise_price_id"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -292,6 +296,8 @@ var Columns = []string{
 	FieldFormula,
 	FieldNeedContract,
 	FieldIntelligent,
+	FieldAgreementHash,
+	FieldEnterprisePriceID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -532,6 +538,16 @@ func ByNeedContract(opts ...sql.OrderTermOption) OrderOption {
 // ByIntelligent orders the results by the intelligent field.
 func ByIntelligent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIntelligent, opts...).ToFunc()
+}
+
+// ByAgreementHash orders the results by the agreement_hash field.
+func ByAgreementHash(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAgreementHash, opts...).ToFunc()
+}
+
+// ByEnterprisePriceID orders the results by the enterprise_price_id field.
+func ByEnterprisePriceID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEnterprisePriceID, opts...).ToFunc()
 }
 
 // ByPlanField orders the results by plan field.

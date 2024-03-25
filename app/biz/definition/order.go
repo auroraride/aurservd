@@ -28,6 +28,7 @@ type OrderCreateReq struct {
 	NeedContract            *bool   `json:"needContract"`            // 是否需要签约
 	DepositOrderNo          *string `json:"depositOrderNo"`          // 押金订单编号 (如果分开支付的押金此参必填 例如 选择了信用免押,支付为支付宝,则此参数必填)
 	StoreID                 *uint64 `json:"storeId"`                 // 门店ID
+	AgreementHash           *string `json:"agreementHash"`           // 协议hash
 }
 
 // OrderCreateRes 订单创建响应

@@ -121,7 +121,7 @@ func (s *enterpriseService) PriceKey(cityID uint64, model string, brandID *uint6
 func (s *enterpriseService) DetailQuery() *ent.EnterpriseQuery {
 	return s.orm.QueryNotDeleted().WithCity().
 		WithPrices(func(ep *ent.EnterprisePriceQuery) {
-			ep.Where(enterpriseprice.DeletedAtIsNil()).WithCity().WithBrand()
+			ep.Where(enterpriseprice.DeletedAtIsNil()).WithCity().WithBrand().WithAgreement()
 		}).
 		WithContracts(func(ecq *ent.EnterpriseContractQuery) {
 			ecq.Where(enterprisecontract.DeletedAtIsNil()).Order(ent.Desc(enterprisecontract.FieldEnd))
@@ -230,6 +230,16 @@ func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRe
 					ID:    eb.ID,
 					Name:  eb.Name,
 					Cover: eb.Cover,
+				}
+			}
+
+			if ep.Edges.Agreement != nil {
+				res.Prices[i].Agreement = &model.Agreement{
+					ID:            ep.Edges.Agreement.ID,
+					Name:          ep.Edges.Agreement.Name,
+					URL:           ep.Edges.Agreement.URL,
+					Hash:          ep.Edges.Agreement.Hash,
+					ForceReadTime: ep.Edges.Agreement.ForceReadTime,
 				}
 			}
 		}
@@ -580,6 +590,7 @@ func (s *enterpriseService) Price(req *model.EnterprisePriceReq) model.Enterpris
 			SetPrice(req.Price).
 			SetIntelligent(req.Intelligent).
 			SetNillableBrandID(req.BrandID).
+			SetNillableAgreementID(req.AgreementID).
 			Save(s.ctx)
 	} else {
 		p, err = s.PriceModify(req)

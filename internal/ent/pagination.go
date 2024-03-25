@@ -71,6 +71,37 @@ func (aq *AgentQuery) PaginationResult(req model.PaginationReq) model.Pagination
 	}
 }
 
+// Pagination returns pagination query builder for AgreementQuery.
+func (aq *AgreementQuery) Pagination(req model.PaginationReq) *AgreementQuery {
+	aq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return aq
+}
+
+// PaginationItems returns pagination query builder for AgreementQuery.
+func (aq *AgreementQuery) PaginationItemsX(req model.PaginationReq) any {
+	return aq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for AgreementQuery.
+func (aq *AgreementQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := aq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for AllocateQuery.
 func (aq *AllocateQuery) Pagination(req model.PaginationReq) *AllocateQuery {
 	aq.Offset(req.GetOffset()).Limit(req.GetLimit())
