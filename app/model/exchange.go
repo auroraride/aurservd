@@ -7,8 +7,6 @@ package model
 
 import (
 	"github.com/auroraride/adapter"
-	"github.com/auroraride/adapter/defs/cabdef"
-	jsoniter "github.com/json-iterator/go"
 )
 
 // ExchangeCabinet 电柜换电
@@ -117,17 +115,4 @@ type ExchangeManagerListRes struct {
 	Error         string            `json:"error,omitempty"`         // 换电失败原因
 	PutinBattery  *string           `json:"putinBattery,omitempty"`  // 放入电池编码
 	PutoutBattery *string           `json:"putoutBattery,omitempty"` // 取出电池编码
-}
-
-type ExchangeStepResultCache struct {
-	Index   int                           `json:"index"`   // 当前展示的步骤index
-	Results []*cabdef.ExchangeStepMessage `json:"results"` // 步骤列表
-}
-
-func (r *ExchangeStepResultCache) MarshalBinary() ([]byte, error) {
-	return jsoniter.Marshal(r)
-}
-
-func (r *ExchangeStepResultCache) UnmarshalBinary(data []byte) error {
-	return jsoniter.Unmarshal(data, r)
 }

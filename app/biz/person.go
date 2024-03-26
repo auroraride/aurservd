@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/auroraride/adapter/rpc/pb"
 	"github.com/golang-module/carbon/v2"
 	"github.com/lithammer/shortuuid/v4"
 	"google.golang.org/protobuf/proto"
@@ -45,7 +46,7 @@ func NewPerson() *personBiz {
 }
 
 // 加密身份信息
-func encryptPersonIdentity(identity *definition.PersonIdentity) string {
+func encryptPersonIdentity(identity *pb.PersonIdentity) string {
 	src, _ := proto.Marshal(identity)
 	rsa := ar.PersonRsa()
 
@@ -67,7 +68,7 @@ func encryptPersonIdentity(identity *definition.PersonIdentity) string {
 }
 
 // 解密身份信息
-func decryptPersonIdentity(str string) (identity *definition.PersonIdentity, err error) {
+func decryptPersonIdentity(str string) (identity *pb.PersonIdentity, err error) {
 	rsa := ar.PersonRsa()
 
 	var src []byte
@@ -96,7 +97,7 @@ func decryptPersonIdentity(str string) (identity *definition.PersonIdentity, err
 		return
 	}
 
-	identity = new(definition.PersonIdentity)
+	identity = new(pb.PersonIdentity)
 	err = proto.Unmarshal(b, identity)
 	return
 }
@@ -132,7 +133,7 @@ func (b *personBiz) CertificationOcrClient(r *ent.Rider) (res *definition.Person
 // 解析ocr识别结果
 // 通过腾讯OCR订单号获取到的result中，包含订单号`OrderNo`
 // 通过腾讯身份证识别及信息核验识别的身份证result中，不包含`OrderNo`
-func (b *personBiz) ocrResult(creator *ent.PersonCreate, identity *definition.PersonIdentity, ocrOrderNo, faceOrderNo string) {
+func (b *personBiz) ocrResult(creator *ent.PersonCreate, identity *pb.PersonIdentity, ocrOrderNo, faceOrderNo string) {
 	result := identity.OcrResult
 
 	// 异步上传照片到阿里云OSS
@@ -174,7 +175,7 @@ func (b *personBiz) ocrResult(creator *ent.PersonCreate, identity *definition.Pe
 
 // 异步上传ocr照片到阿里云OSS
 // TODO: 阿里云OSS以前的图片移动目录
-func (b *personBiz) uploadOcrFiles(result *definition.PersonIdentityOcrResult) (portrait, national string) {
+func (b *personBiz) uploadOcrFiles(result *pb.PersonIdentityOcrResult) (portrait, national string) {
 	prefix := "__rider_assets/faceverify/" + result.IdCardNumber + "/ocr-" + shortuuid.New() + "-"
 
 	if result.PortraitCrop != "" {
@@ -228,7 +229,7 @@ func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertif
 		return nil, errors.New("当前已认证，无法重复认证")
 	}
 
-	var identity *definition.PersonIdentity
+	var identity *pb.PersonIdentity
 	// 解密身份信息
 	identity, err = decryptPersonIdentity(req.Identity)
 	if err != nil {

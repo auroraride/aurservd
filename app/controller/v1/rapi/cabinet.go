@@ -20,7 +20,7 @@ var Cabinet = new(cabinet)
 // GetProcess
 // @ID		CabinetGetProcess
 // @Router	/rider/v1/cabinet/process/{serial} [GET]
-// @Summary	R4001 获取换电信息
+// @Summary	电柜换电 - 获取换电信息
 // @Tags	Cabinet - 电柜
 // @Accept	json
 // @Produce	json
@@ -35,7 +35,7 @@ func (*cabinet) GetProcess(c echo.Context) (err error) {
 // Process
 // @ID		CabinetProcess
 // @Router	/rider/v1/cabinet/process [POST]
-// @Summary	R4002 操作换电
+// @Summary	电柜换电 - 开始换电流程
 // @Tags	Cabinet - 电柜
 // @Accept	json
 // @Produce	json
@@ -49,15 +49,16 @@ func (*cabinet) Process(c echo.Context) (err error) {
 }
 
 // ProcessStatus
-// @ID		CabinetProcessStatus
-// @Router	/rider/v1/cabinet/process/status [GET]
-// @Summary	R4003 换电状态
-// @Tags	Cabinet - 电柜
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string								true	"骑手校验token"
-// @Param	query			query		model.RiderExchangeProcessStatusReq	true	"desc"
-// @Success	200				{object}	model.RiderExchangeProcessRes		"请求成功"
+// @ID			CabinetProcessStatus
+// @Router		/rider/v1/cabinet/process/status [GET]
+// @Summary		电柜换电 - 获取流程状态
+// @Description	使用http长轮询，获取换电流程状态，每次轮询超时时间为30s
+// @Tags		Cabinet - 电柜
+// @Accept		json
+// @Produce		json
+// @Param		X-Rider-Token	header		string								true	"骑手校验token"
+// @Param		query			query		model.RiderExchangeProcessStatusReq	true	"desc"
+// @Success		200				{object}	model.RiderExchangeProcessRes		"请求成功"
 func (*cabinet) ProcessStatus(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.RiderExchangeProcessStatusReq](c)
 

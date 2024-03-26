@@ -1746,7 +1746,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v2/exchange/log": {
+        "/rider/v2/exchange": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -1757,8 +1757,8 @@ const docTemplate = `{
                 "tags": [
                     "Exchange - 换电"
                 ],
-                "summary": "换电记录",
-                "operationId": "ExchangeLog",
+                "summary": "换电历史记录",
+                "operationId": "ExchangeList",
                 "parameters": [
                     {
                         "type": "string",
@@ -1832,6 +1832,125 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.ExchangeOverview"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/exchange/process": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cabinet - 电柜"
+                ],
+                "summary": "电柜换电 - 开始换电流程",
+                "operationId": "CabinetProcess",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderExchangeProcessReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/exchange/process/status": {
+            "get": {
+                "description": "使用http长轮询，获取换电流程状态，每次轮询超时时间为30s",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cabinet - 电柜"
+                ],
+                "summary": "电柜换电 - 获取流程状态",
+                "operationId": "CabinetProcessStatus",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "操作ID",
+                        "name": "uuid",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderExchangeProcessRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/exchange/process/{serial}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cabinet - 电柜"
+                ],
+                "summary": "电柜换电 - 获取换电信息",
+                "operationId": "CabinetGetProcess",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜二维码",
+                        "name": "serial",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderExchangeInfo"
                         }
                     }
                 }
@@ -4521,6 +4640,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.BinInfo": {
+            "type": "object",
+            "properties": {
+                "electricity": {
+                    "description": "电量",
+                    "type": "number"
+                },
+                "index": {
+                    "description": "仓位index",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "电压(V)",
+                    "type": "number"
+                }
+            }
+        },
         "model.BranchFacility": {
             "type": "object",
             "properties": {
@@ -6358,6 +6494,128 @@ const docTemplate = `{
                 }
             }
         },
+        "model.RiderExchangeInfo": {
+            "type": "object",
+            "properties": {
+                "alternative": {
+                    "description": "备选方案",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.BinInfo"
+                        }
+                    ]
+                },
+                "batteryFullNum": {
+                    "description": "总满电电池数",
+                    "type": "integer"
+                },
+                "batteryNum": {
+                    "description": "总电池数",
+                    "type": "integer"
+                },
+                "brand": {
+                    "description": "电柜型号",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/adapter.CabinetBrand"
+                        }
+                    ]
+                },
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "doors": {
+                    "description": "总仓位",
+                    "type": "integer"
+                },
+                "emptyBin": {
+                    "description": "空仓位",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.BinInfo"
+                        }
+                    ]
+                },
+                "full": {
+                    "description": "是否有满电电池",
+                    "type": "boolean"
+                },
+                "fullBin": {
+                    "description": "满电仓位",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.BinInfo"
+                        }
+                    ]
+                },
+                "health": {
+                    "description": "电柜健康状态 0离线 1正常 2故障",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜编码",
+                    "type": "string"
+                },
+                "uuid": {
+                    "description": "操作ID",
+                    "type": "string"
+                }
+            }
+        },
+        "model.RiderExchangeProcessReq": {
+            "type": "object",
+            "required": [
+                "uuid"
+            ],
+            "properties": {
+                "alternative": {
+                    "description": "是否使用备选方案",
+                    "type": "boolean"
+                },
+                "uuid": {
+                    "description": "操作ID",
+                    "type": "string"
+                }
+            }
+        },
+        "model.RiderExchangeProcessRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "description": "消息",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态 0:未开始 1:处理中 2:成功 3:失败",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.TaskStatus"
+                        }
+                    ]
+                },
+                "step": {
+                    "description": "操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池",
+                    "type": "integer"
+                },
+                "stop": {
+                    "description": "步骤是否终止，当该参数为true时，表示换电流程已结束",
+                    "type": "boolean"
+                }
+            }
+        },
         "model.RiderPlanItem": {
             "type": "object",
             "properties": {
@@ -6854,6 +7112,27 @@ const docTemplate = `{
                     ]
                 }
             }
+        },
+        "model.TaskStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "TaskStatusFail": "失败",
+                "TaskStatusNotStart": "未开始",
+                "TaskStatusProcessing": "处理中",
+                "TaskStatusSuccess": "成功"
+            },
+            "x-enum-varnames": [
+                "TaskStatusNotStart",
+                "TaskStatusProcessing",
+                "TaskStatusSuccess",
+                "TaskStatusFail"
+            ]
         },
         "model.WalletOverview": {
             "type": "object",

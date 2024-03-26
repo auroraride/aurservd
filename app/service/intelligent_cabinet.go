@@ -7,22 +7,21 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/defs/cabdef"
-	"github.com/auroraride/adapter/log"
-	"github.com/go-resty/resty/v2"
+	"github.com/auroraride/adapter/rpc/pb"
+	"github.com/auroraride/adapter/rpc/pb/timestamppb"
 	"github.com/golang-module/carbon/v2"
 	"github.com/google/uuid"
 	"github.com/lithammer/shortuuid/v4"
 	"go.uber.org/zap"
-	"golang.org/x/exp/slices"
 
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/rpc"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -79,17 +78,19 @@ func (s *intelligentCabinetService) ExchangeUsable(bm string, cab *ent.Cabinet) 
 }
 
 func (s *intelligentCabinetService) exchangeCacheKey(uid string) string {
-	return "INTELLIGENT-CABINET-EXCHANGE-" + uid
+	return "EXCHANGE:" + uid
 }
 
 // Exchange 请求换电
 func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *ent.Subscribe, old *ent.Battery, cab *ent.Cabinet) {
-	id, err := uuid.Parse(uid)
-	if err != nil || (cab.Intelligent && old == nil) {
+	if cab.Intelligent && old == nil {
 		snag.Panic("请求参数错误")
 	}
 
+	user := s.GetAdapterUserX()
+
 	var (
+		err      error
 		stopAt   *time.Time
 		duration float64
 		success  bool
@@ -97,6 +98,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 		putin    string
 		empty    *model.BinInfo
 		bs       = NewBattery()
+		key      = s.exchangeCacheKey(uid)
 	)
 
 	defer func() {
@@ -104,14 +106,6 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
 		if err != nil {
 			updater.SetRemark(err.Error())
-
-			// 若换电失败, 标记任务失败
-			_ = cache.Set(s.ctx, s.exchangeCacheKey(uid), &model.ExchangeStepResultCache{
-				Index: 0,
-				Results: []*cabdef.ExchangeStepMessage{
-					{Step: 1, Message: err.Error(), Success: false},
-				},
-			}, 10*time.Minute).Err()
 		}
 
 		if stopAt == nil {
@@ -135,123 +129,83 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 			Exec(s.ctx)
 	}()
 
-	payload := &cabdef.ExchangeRequest{
-		UUID:    id,
-		Serial:  cab.Serial,
-		Expires: model.CabinetBusinessScanExpires,
-		Timeout: model.CabinetBusinessStepTimeout,
-		Minsoc:  cache.Float64(model.SettingExchangeMinBatteryKey),
-	}
-
-	if old != nil {
-		payload.Battery = old.Sn
-	}
-
-	var v cabdef.ExchangeResponse
-	v, err = adapter.Post[cabdef.ExchangeResponse](s.GetCabinetAdapterUrlX(cab, "/exchange/do"), s.GetAdapterUserX(), payload, func(r *resty.Response) {
-		zap.L().Info("换电请求完成", log.ResponseBody(r.Body()))
+	// 缓存第一步
+	ar.Redis.RPush(s.ctx, key, &pb.CabinetExchangeResponse{
+		Uuid:     uid,
+		Step:     model.ExchangeStepOpenEmpty.Uint32(),
+		Business: adapter.BusinessExchange.String(),
+		StartAt:  timestamppb.New(time.Now()),
 	})
 
+	// 使用gRPC请求换电
+	var batSN string
+	if old != nil {
+		batSN = old.Sn
+	}
+	err = rpc.CabinetExchange(
+		rpc.CabinetKey(cab.Brand, cab.Intelligent),
+		user,
+		&pb.CabinetExchangeRequest{
+			Uuid:    uid,
+			Serial:  cab.Serial,
+			Battery: batSN,
+			Expires: model.CabinetBusinessScanExpires,
+			Timeout: model.CabinetBusinessStepTimeout,
+			Minsoc:  cache.Float64(model.SettingExchangeMinBatteryKey),
+		}, func(result *pb.CabinetExchangeResponse, stop bool) {
+			duration += result.Duration
+			stopAt = silk.Pointer(result.StopAt.AsTime())
+
+			// 如果成功并且是智能柜, 记录电池编码
+			if result.Success && cab.Intelligent {
+				after := result.After
+				before := result.Before
+
+				// 记录用户放入的电池
+				if result.Step == model.ExchangeStepPutInto.Uint32() && after != nil {
+					putin = after.BatterySn
+					empty = &model.BinInfo{
+						Index:       int(after.Ordinal) - 1,
+						Electricity: model.BatterySoc(after.Current),
+						Voltage:     after.Voltage,
+					}
+
+					// 清除旧电池分配信息
+					_ = NewBattery().Unallocate(old.Update())
+
+					go bs.RiderBusiness(true, putin, s.rider, cab, int(after.Ordinal))
+				}
+
+				// 记录用户取走的电池
+				// 判定第三步是否成功, 只要柜门开启就把电池绑定到骑手 - BY: 曹博文
+				if result.Step == model.ExchangeStepOpenFull.Uint32() && before != nil {
+					putout = before.BatterySn
+
+					go bs.RiderBusiness(false, putout, s.rider, cab, int(before.Ordinal))
+
+					// 更新新电池信息
+					bat, _ := bs.LoadOrCreate(putout)
+					if bat != nil {
+						_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+							return NewBattery().Allocate(tx, bat, sub, true)
+						})
+					}
+				}
+			}
+
+			// 缓存结果
+			ar.Redis.RPush(s.ctx, key, result)
+
+			// 判定是否终止
+			if stop {
+				success = result.Success
+			}
+		},
+	)
+
 	if err != nil {
-		zap.L().Error("换电请求失败", zap.Error(err))
-		return
-	}
-
-	// 查询结果
-	for _, result := range v.Results {
-		duration += result.Duration
-		stopAt = result.StopAt
-
-		// 如果成功并且是智能柜, 记录电池编码
-		if result.Success && cab.Intelligent {
-			after := result.After
-			before := result.Before
-
-			// 记录用户放入的电池
-			if model.ExchangeStepPutInto.EqualInt(result.Step) && after != nil {
-				putin = after.BatterySN
-				empty = &model.BinInfo{
-					Index:       after.Ordinal - 1,
-					Electricity: model.BatterySoc(after.Current),
-					Voltage:     after.Voltage,
-				}
-
-				// 清除旧电池分配信息
-				_ = NewBattery().Unallocate(old.Update())
-
-				go bs.RiderBusiness(true, putin, s.rider, cab, after.Ordinal)
-			}
-
-			// 记录用户取走的电池
-			// 判定第三步是否成功, 只要柜门开启就把电池绑定到骑手 - BY: 曹博文
-			if result.Step == model.ExchangeStepOpenFull.Int() && before != nil {
-				putout = before.BatterySN
-
-				go bs.RiderBusiness(false, putout, s.rider, cab, before.Ordinal)
-
-				// 更新新电池信息
-				bat, _ := bs.LoadOrCreate(putout)
-				if bat != nil {
-					_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-						return NewBattery().Allocate(tx, bat, sub, true)
-					})
-				}
-			}
-		}
-	}
-
-	success = v.Success
-
-	// 若换电成功 直接返回
-	if success {
-		if cab.Intelligent {
-			// 换电成功后需要查询放入和取走的电池是否代理商电池并更新
-			NewBattery().StationBusinessTransfer(
-				cab.ID,
-				ex.ID,
-				&model.BatteryEnterpriseTransfer{
-					Sn:           v.PutinBattery,
-					StationID:    sub.StationID,
-					EnterpriseID: sub.EnterpriseID,
-				},
-				&model.BatteryEnterpriseTransfer{
-					Sn:           v.PutoutBattery,
-					StationID:    cab.StationID,
-					EnterpriseID: cab.EnterpriseID,
-				},
-			)
-		}
-		return
-	}
-
-	if v.Error != "" {
-		err = fmt.Errorf("%s", v.Error)
-	}
-}
-
-// ExchangeStepSync 换电步骤同步
-func (s *intelligentCabinetService) ExchangeStepSync(items []*cabdef.ExchangeStepMessage) {
-	for _, req := range items {
-		if req.Step == 0 {
-			return
-		}
-
-		// TODO 检查电池是否存在???
-		key := s.exchangeCacheKey(req.UUID)
-
-		c := &model.ExchangeStepResultCache{}
-		_ = cache.Get(s.ctx, key).Scan(c)
-		c.Results = append(c.Results, req)
-
-		// 排序
-		slices.SortStableFunc(c.Results, func(a, b *cabdef.ExchangeStepMessage) int {
-			if a.Step > b.Step {
-				return 1
-			}
-			return -1
-		})
-
-		cache.Set(s.ctx, key, c, 10*time.Minute)
+		zap.L().Error("换电请求失败", zap.Error(err), user.ZapField(), zap.String("uuid", uid))
+		success = false
 	}
 }
 
@@ -260,7 +214,7 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
 	key := s.exchangeCacheKey(uid)
 	res = &model.RiderExchangeProcessRes{
 		Step:   uint8(model.ExchangeStepOpenEmpty),
-		Status: uint8(model.TaskStatusProcessing),
+		Status: model.TaskStatusNotStart,
 	}
 
 	start := time.Now()
@@ -273,51 +227,34 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
 			return
 		}
 
-		c := &model.ExchangeStepResultCache{}
-		err := cache.Get(s.ctx, key).Scan(c)
+		// 获取缓存信息
+		var data pb.CabinetExchangeResponse
+		err := ar.Redis.LPop(s.ctx, key).Scan(&data)
+		// 未获取到缓存信息
+		// && errors.Is(err, redis.Nil)
 		if err != nil {
 			continue
 		}
-
-		n := len(c.Results)
-		index := c.Index
-
-		// 当前的数据
-		if index == n {
-			s.exchangeStepResultFromCache(index-1, c, res)
-			if res.Step < uint8(model.ExchangeStepPutOut) {
-				res.Step += 1
+		status := model.TaskStatusProcessing
+		if data.StopAt != nil {
+			if data.Success {
+				status = model.TaskStatusSuccess
+			} else {
+				status = model.TaskStatusFail
 			}
-			res.Status = uint8(model.TaskStatusProcessing)
 		}
 
-		if index >= n {
-			continue
+		res = &model.RiderExchangeProcessRes{
+			Step:    uint8(data.Step),
+			Status:  status,
+			Message: data.Message,
+			Stop:    data.Step == model.ExchangeStepPutOut.Uint32() || data.Message != "",
 		}
 
-		s.exchangeStepResultFromCache(index, c, res)
-
-		if !res.Stop {
-			ttl, _ := ar.Redis.TTL(s.ctx, key).Result()
-			c.Index += 1
-			cache.Set(s.ctx, key, c, ttl)
-		}
 		return
 	}
 
 	return
-}
-
-// stepResult 获取换电步骤结果
-func (s *intelligentCabinetService) exchangeStepResultFromCache(index int, c *model.ExchangeStepResultCache, res *model.RiderExchangeProcessRes) {
-	data := c.Results[index]
-	res.Step = uint8(data.Step)
-	res.Message = data.Message
-	if data.Success {
-		res.Status = uint8(model.TaskStatusSuccess)
-	}
-
-	res.Stop = data.Step == 4 || !data.Success
 }
 
 // BusinessCensorX 校验用户是否可以使用智能柜办理业务

@@ -453,9 +453,9 @@ definitions:
         description: 版本号
         type: string
     required:
-      - content
-      - platform
-      - version
+    - content
+    - platform
+    - version
     type: object
   definition.VersionReq:
     properties:
@@ -474,9 +474,9 @@ definitions:
         description: 版本号
         type: string
     required:
-      - content
-      - platform
-      - version
+    - content
+    - platform
+    - version
     type: object
   model.AgentCreateReq:
     properties:
@@ -11238,91 +11238,91 @@ paths:
   /manager/v1/fault:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: FaultList
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 城市ID
-          in: query
-          name: cityId
-          type: integer
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 设备编号
-          in: query
-          name: deviceNo
-          type: string
-        - description: 结束时间
-          in: query
-          name: end
-          type: string
-        - description: 关键字 用户姓名、手机号
-          in: query
-          name: keyword
-          type: string
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
-        - description: 开始时间
-          in: query
-          name: start
-          type: string
-        - description: 故障状态 0未处理 1已处理
-          in: query
-          name: status
-          type: integer
-        - description: 故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他
-          in: query
-          name: type
-          type: integer
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 设备编号
+        in: query
+        name: deviceNo
+        type: string
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 关键字 用户姓名、手机号
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 故障状态 0未处理 1已处理
+        in: query
+        name: status
+        type: integer
+      - description: 故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他
+        in: query
+        name: type
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/definition.Fault'
-                    type: array
-                type: object
+                    $ref: '#/definitions/definition.Fault'
+                  type: array
+              type: object
       summary: 故障列表
       tags:
-        - 故障上报
+      - 故障上报
   /manager/v1/fault/:id:
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: FaultModify
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 故障ID
-          in: path
-          name: id
-          required: true
-          type: integer
-        - description: 故障修改请求
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.FaultModifyStatusReq'
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 故障ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 故障修改请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.FaultModifyStatusReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -11330,7 +11330,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 故障更改状态
       tags:
-        - 故障上报
+      - 故障上报
   /manager/v1/import/rider:
     post:
       consumes:
@@ -14723,28 +14723,28 @@ paths:
             $ref: '#/definitions/model.LegalRes'
       summary: 获取法规
       tags:
-        - 设置
+      - 设置
   /manager/v1/setting/version:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: SettingVersionList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -14754,25 +14754,25 @@ paths:
             type: array
       summary: 获取版本列表
       tags:
-        - 设置
+      - 设置
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: SettingVersionCreate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.VersionReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.VersionReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -14780,25 +14780,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建版本
       tags:
-        - 设置
+      - 设置
   /manager/v1/setting/version/{id}:
     delete:
       consumes:
-        - application/json
+      - application/json
       operationId: SettingVersionDelete
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 版本ID
-          in: path
-          name: id
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 版本ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -14806,25 +14806,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除版本
       tags:
-        - 设置
+      - 设置
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: SettingVersionModify
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.VersionModifyReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.VersionModifyReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功

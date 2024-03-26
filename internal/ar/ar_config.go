@@ -73,6 +73,10 @@ type config struct {
 		}
 	}
 
+	GRPC struct {
+		Business string // 业务grpc服务端口
+	}
+
 	Sync struct {
 		Kxcab struct {
 			Api string

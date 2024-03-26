@@ -4,18 +4,6 @@
 
 package rapi
 
-import (
-	"github.com/labstack/echo/v4"
-
-	"github.com/auroraride/aurservd/app"
-)
-
 type business struct{}
 
 var Business = new(business)
-
-func (*business) Exchange(c echo.Context) (err error) {
-	ctx := app.Context(c)
-
-	return ctx.SendResponse()
-}

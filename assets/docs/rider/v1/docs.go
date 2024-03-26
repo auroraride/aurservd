@@ -875,7 +875,7 @@ const docTemplate = `{
                 "tags": [
                     "Cabinet - 电柜"
                 ],
-                "summary": "R4002 操作换电",
+                "summary": "电柜换电 - 开始换电流程",
                 "operationId": "CabinetProcess",
                 "parameters": [
                     {
@@ -907,6 +907,7 @@ const docTemplate = `{
         },
         "/rider/v1/cabinet/process/status": {
             "get": {
+                "description": "使用http长轮询，获取换电流程状态，每次轮询超时时间为30s",
                 "consumes": [
                     "application/json"
                 ],
@@ -916,7 +917,7 @@ const docTemplate = `{
                 "tags": [
                     "Cabinet - 电柜"
                 ],
-                "summary": "R4003 换电状态",
+                "summary": "电柜换电 - 获取流程状态",
                 "operationId": "CabinetProcessStatus",
                 "parameters": [
                     {
@@ -954,7 +955,7 @@ const docTemplate = `{
                 "tags": [
                     "Cabinet - 电柜"
                 ],
-                "summary": "R4001 获取换电信息",
+                "summary": "电柜换电 - 获取换电信息",
                 "operationId": "CabinetGetProcess",
                 "parameters": [
                     {
@@ -4392,15 +4393,19 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "description": "状态 1:处理中 2:成功 3:失败",
-                    "type": "integer"
+                    "description": "状态 0:未开始 1:处理中 2:成功 3:失败",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.TaskStatus"
+                        }
+                    ]
                 },
                 "step": {
                     "description": "操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池",
                     "type": "integer"
                 },
                 "stop": {
-                    "description": "步骤是否终止",
+                    "description": "步骤是否终止，当该参数为true时，表示换电流程已结束",
                     "type": "boolean"
                 }
             }
@@ -4901,6 +4906,27 @@ const docTemplate = `{
                     ]
                 }
             }
+        },
+        "model.TaskStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "TaskStatusFail": "失败",
+                "TaskStatusNotStart": "未开始",
+                "TaskStatusProcessing": "处理中",
+                "TaskStatusSuccess": "成功"
+            },
+            "x-enum-varnames": [
+                "TaskStatusNotStart",
+                "TaskStatusProcessing",
+                "TaskStatusSuccess",
+                "TaskStatusFail"
+            ]
         },
         "model.WalletOverview": {
             "type": "object",

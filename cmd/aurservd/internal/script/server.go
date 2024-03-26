@@ -12,10 +12,10 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/auroraride/aurservd/app/biz/instant"
 	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/router"
-	"github.com/auroraride/aurservd/app/rpc"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/app/sync"
 	"github.com/auroraride/aurservd/app/task"
@@ -69,7 +69,7 @@ func serverCommand() *cobra.Command {
 			go sync.Run()
 
 			// 启动rpc服务端
-			go rpc.Run()
+			go instant.Run()
 
 			// 启动服务器
 			go router.Run()

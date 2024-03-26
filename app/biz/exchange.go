@@ -15,3 +15,7 @@ func NewExchange() *exchangeBiz {
 		orm: ent.Database.Exchange,
 	}
 }
+
+func (b *exchangeBiz) Start() {
+
+}

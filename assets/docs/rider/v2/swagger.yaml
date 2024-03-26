@@ -216,7 +216,7 @@ definitions:
         description: 授权资金订单号
         type: string
     required:
-      - outOrderNo
+    - outOrderNo
     type: object
   definition.GuideDetail:
     properties:
@@ -265,20 +265,20 @@ definitions:
       orderType:
         description: 订单类型, 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
         enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
-          - 7
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
         type: integer
       payway:
         description: 支付方式, 1支付宝 2微信 3支付宝预授权(仅限V2使用)
         enum:
-          - 1
-          - 2
-          - 3
+        - 1
+        - 2
+        - 3
         type: integer
       planId:
         description: 套餐ID
@@ -290,17 +290,17 @@ definitions:
         description: 门店ID
         type: integer
     required:
-      - orderType
-      - payway
-      - planId
+    - orderType
+    - payway
+    - planId
     type: object
   definition.OrderDepositCreditReq:
     properties:
       payway:
         description: 支付方式, 1支付宝 2微信 3支付宝信用免押 4 微信支付分
         enum:
-          - 1
-          - 2
+        - 1
+        - 2
         - 3
         - 4
         type: integer
@@ -329,7 +329,7 @@ definitions:
         description: 支付宝授权资金订单号
         type: string
     required:
-      - outOrderNo
+    - outOrderNo
     type: object
   definition.Origin:
     properties:
@@ -500,9 +500,9 @@ definitions:
         description: 短信ID, 短信ID
         type: string
     required:
-      - phone
-      - smsCode
-      - smsId
+    - phone
+    - smsCode
+    - smsId
     type: object
   definition.RiderDirectionRes:
     properties:
@@ -647,7 +647,7 @@ definitions:
         type: string
       city:
         allOf:
-          - $ref: '#/definitions/model.City'
+        - $ref: '#/definitions/model.City'
         description: 城市
       distance:
         description: 距离(米)
@@ -663,7 +663,7 @@ definitions:
         type: boolean
       employee:
         allOf:
-          - $ref: '#/definitions/model.Employee'
+        - $ref: '#/definitions/model.Employee'
         description: 店员, 有可能不存在
       id:
         description: 门店ID
@@ -690,8 +690,8 @@ definitions:
         description: 订阅ID
         type: integer
     required:
-      - storeId
-      - subscribeId
+    - storeId
+    - subscribeId
     type: object
   definition.VersionRes:
     properties:
@@ -853,6 +853,18 @@ definitions:
       model:
         description: 电池型号
         type: string
+    type: object
+  model.BinInfo:
+    properties:
+      electricity:
+        description: 电量
+        type: number
+      index:
+        description: 仓位index
+        type: integer
+      voltage:
+        description: 电压(V)
+        type: number
     type: object
   model.BranchFacility:
     properties:
@@ -2132,6 +2144,85 @@ definitions:
       deposit:
         type: number
     type: object
+  model.RiderExchangeInfo:
+    properties:
+      alternative:
+        allOf:
+        - $ref: '#/definitions/model.BinInfo'
+        description: 备选方案
+      batteryFullNum:
+        description: 总满电电池数
+        type: integer
+      batteryNum:
+        description: 总电池数
+        type: integer
+      brand:
+        allOf:
+        - $ref: '#/definitions/adapter.CabinetBrand'
+        description: 电柜型号
+      cityId:
+        description: 城市ID
+        type: integer
+      doors:
+        description: 总仓位
+        type: integer
+      emptyBin:
+        allOf:
+        - $ref: '#/definitions/model.BinInfo'
+        description: 空仓位
+      full:
+        description: 是否有满电电池
+        type: boolean
+      fullBin:
+        allOf:
+        - $ref: '#/definitions/model.BinInfo'
+        description: 满电仓位
+      health:
+        description: 电柜健康状态 0离线 1正常 2故障
+        type: integer
+      id:
+        description: 电柜ID
+        type: integer
+      model:
+        description: 电池型号
+        type: string
+      name:
+        description: 电柜名称
+        type: string
+      serial:
+        description: 电柜编码
+        type: string
+      uuid:
+        description: 操作ID
+        type: string
+    type: object
+  model.RiderExchangeProcessReq:
+    properties:
+      alternative:
+        description: 是否使用备选方案
+        type: boolean
+      uuid:
+        description: 操作ID
+        type: string
+    required:
+    - uuid
+    type: object
+  model.RiderExchangeProcessRes:
+    properties:
+      message:
+        description: 消息
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/model.TaskStatus'
+        description: 状态 0:未开始 1:处理中 2:成功 3:失败
+      step:
+        description: 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
+        type: integer
+      stop:
+        description: 步骤是否终止，当该参数为true时，表示换电流程已结束
+        type: boolean
+    type: object
   model.RiderPlanItem:
     properties:
       days:
@@ -2468,6 +2559,23 @@ definitions:
         - 2
         type: integer
     type: object
+  model.TaskStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-comments:
+      TaskStatusFail: 失败
+      TaskStatusNotStart: 未开始
+      TaskStatusProcessing: 处理中
+      TaskStatusSuccess: 成功
+    x-enum-varnames:
+    - TaskStatusNotStart
+    - TaskStatusProcessing
+    - TaskStatusSuccess
+    - TaskStatusFail
   model.WalletOverview:
     properties:
       balance:
@@ -3214,22 +3322,22 @@ paths:
   /rider/v2/change/phone:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: RiderChangePhone
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.RiderChangePhoneReq'
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.RiderChangePhoneReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -3237,7 +3345,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改手机号
       tags:
-        - Rider - 骑手
+      - Rider - 骑手
   /rider/v2/city:
     get:
       consumes:
@@ -3643,11 +3751,11 @@ paths:
       summary: 加时申请列表
       tags:
       - Enterprise - 团签
-  /rider/v2/exchange/log:
+  /rider/v2/exchange:
     get:
       consumes:
       - application/json
-      operationId: ExchangeLog
+      operationId: ExchangeList
       parameters:
       - description: 骑手校验token
         in: header
@@ -3676,7 +3784,7 @@ paths:
                     $ref: '#/definitions/model.ExchangeRiderListRes'
                   type: array
               type: object
-      summary: 换电记录
+      summary: 换电历史记录
       tags:
       - Exchange - 换电
   /rider/v2/exchange/overview:
@@ -3700,6 +3808,85 @@ paths:
       summary: 换电概览
       tags:
       - Exchange - 换电
+  /rider/v2/exchange/process:
+    post:
+      consumes:
+      - application/json
+      operationId: CabinetProcess
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderExchangeProcessReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 电柜换电 - 开始换电流程
+      tags:
+      - Cabinet - 电柜
+  /rider/v2/exchange/process/{serial}:
+    get:
+      consumes:
+      - application/json
+      operationId: CabinetGetProcess
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 电柜二维码
+        in: path
+        name: serial
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderExchangeInfo'
+      summary: 电柜换电 - 获取换电信息
+      tags:
+      - Cabinet - 电柜
+  /rider/v2/exchange/process/status:
+    get:
+      consumes:
+      - application/json
+      description: 使用http长轮询，获取换电流程状态，每次轮询超时时间为30s
+      operationId: CabinetProcessStatus
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 操作ID
+        in: query
+        name: uuid
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderExchangeProcessRes'
+      summary: 电柜换电 - 获取流程状态
+      tags:
+      - Cabinet - 电柜
   /rider/v2/exchange/store:
     post:
       consumes:
@@ -4051,26 +4238,26 @@ paths:
             $ref: '#/definitions/definition.OrderDepositCreditRes'
       summary: 免押金支付
       tags:
-        - Order - 订单
+      - Order - 订单
   /rider/v2/order/payment/freezetopay:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: OrderPaymentFreezeToPay
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 冻结转支付请求
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.FreezeToPay'
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 冻结转支付请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.FreezeToPay'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4105,7 +4292,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 申请退款
       tags:
-        - Order - 骑手
+      - Order - 骑手
   /rider/v2/order/status:
     get:
       consumes:
@@ -4131,26 +4318,26 @@ paths:
             $ref: '#/definitions/model.OrderStatusRes'
       summary: 订单支付状态
       tags:
-        - Order - 订单
+      - Order - 订单
   /rider/v2/order/unfreeze:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: OrderUnfreeze
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 解冻押金请求
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.OrderDepositUnfreezeReq'
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 解冻押金请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.OrderDepositUnfreezeReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4413,14 +4600,14 @@ paths:
       - application/json
       operationId: SettingLatestVersion
       parameters:
-        - description: 平台
-          enum:
-            - android
-            - ios
-          in: query
-          name: platform
-          required: true
-          type: string
+      - description: 平台
+        enum:
+        - android
+        - ios
+        in: query
+        name: platform
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -4456,33 +4643,33 @@ paths:
   /rider/v2/store:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: StoreList
       parameters:
-        - description: 城市ID
-          in: query
-          name: cityId
-          type: integer
-        - description: 距离
-          in: query
-          name: distance
-          type: number
-        - description: 纬度
-          in: query
-          name: lat
-          required: true
-          type: number
-        - description: 经度
-          in: query
-          name: lng
-          required: true
-          type: number
-        - description: 套餐ID
-          in: query
-          name: planId
-          type: integer
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 距离
+        in: query
+        name: distance
+        type: number
+      - description: 纬度
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: 经度
+        in: query
+        name: lng
+        required: true
+        type: number
+      - description: 套餐ID
+        in: query
+        name: planId
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4492,25 +4679,25 @@ paths:
             type: array
       summary: 门店列表
       tags:
-        - Store - 门店
+      - Store - 门店
   /rider/v2/store/{id}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: StoreDetail
       parameters:
-        - description: 纬度
-          in: query
-          name: lat
-          required: true
-          type: number
-        - description: 经度
-          in: query
-          name: lng
-          required: true
-          type: number
+      - description: 纬度
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: 经度
+        in: query
+        name: lng
+        required: true
+        type: number
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4518,14 +4705,14 @@ paths:
             $ref: '#/definitions/definition.Store'
       summary: 门店详情
       tags:
-        - Store - 门店
+      - Store - 门店
   /rider/v2/store/subscribe/{id}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: StoreBySubscribe
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4533,21 +4720,21 @@ paths:
             $ref: '#/definitions/definition.Store'
       summary: 根据订阅查询骑手激活门店信息
       tags:
-        - Store - 门店
+      - Store - 门店
   /rider/v2/subscribe/store:
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: SubscribeStoreModify
       parameters:
-        - description: 请求详情
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.SubscribeStoreModifyReq'
+      - description: 请求详情
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.SubscribeStoreModifyReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4555,7 +4742,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 车电套餐修改激活门店
       tags:
-        - Subscribe - 订阅
+      - Subscribe - 订阅
   /rider/v2/wallet/coupons:
     get:
       consumes:

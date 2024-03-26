@@ -367,17 +367,57 @@ func (*exchange) Store() {}
 // @Success	200				{object}	model.ExchangeOverview	"请求成功"
 func (*exchange) Overview() {}
 
-// Log
-// @ID		ExchangeLog
-// @Router	/rider/v2/exchange/log [GET]
-// @Summary	换电记录
+// List
+// @ID		ExchangeList
+// @Router	/rider/v2/exchange [GET]
+// @Summary	换电历史记录
 // @Tags	Exchange - 换电
 // @Accept	json
 // @Produce	json
 // @Param	X-Rider-Token	header		string													true	"骑手校验token"
 // @Param	query			query		model.PaginationReq										true	"分页请求参数"
 // @Success	200				{object}	model.PaginationRes{items=[]model.ExchangeRiderListRes}	"请求成功"
-func (*exchange) Log() {}
+func (*exchange) List() {}
+
+// GetProcess
+// @ID		CabinetGetProcess
+// @Router	/rider/v2/exchange/process/{serial} [GET]
+// @Summary	电柜换电 - 获取换电信息
+// @Tags	Cabinet - 电柜
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Param	serial			path		string					true	"电柜二维码"
+// @Success	200				{object}	model.RiderExchangeInfo	"请求成功"
+func (*cabinet) GetProcess() {
+}
+
+// Process
+// @ID		CabinetProcess
+// @Router	/rider/v2/exchange/process [POST]
+// @Summary	电柜换电 - 开始换电流程
+// @Tags	Cabinet - 电柜
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string							true	"骑手校验token"
+// @Param	body			body		model.RiderExchangeProcessReq	true	"desc"
+// @Success	200				{object}	model.StatusResponse			"请求成功"
+func (*cabinet) Process() {
+}
+
+// ProcessStatus
+// @ID			CabinetProcessStatus
+// @Router		/rider/v2/exchange/process/status [GET]
+// @Summary		电柜换电 - 获取流程状态
+// @Description	使用http长轮询，获取换电流程状态，每次轮询超时时间为30s
+// @Tags		Cabinet - 电柜
+// @Accept		json
+// @Produce		json
+// @Param		X-Rider-Token	header		string								true	"骑手校验token"
+// @Param		query			query		model.RiderExchangeProcessStatusReq	true	"desc"
+// @Success		200				{object}	model.RiderExchangeProcessRes		"请求成功"
+func (*cabinet) ProcessStatus() {
+}
 
 // List
 // @ID		OrderList

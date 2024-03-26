@@ -104,6 +104,10 @@ func (es ExchangeStep) Int() int {
 	return int(es)
 }
 
+func (es ExchangeStep) Uint32() uint32 {
+	return uint32(es)
+}
+
 func (es ExchangeStep) String() string {
 	switch es {
 	case ExchangeStepOpenEmpty:

@@ -199,12 +199,14 @@ func LoadRiderV2Routes(root *echo.Group) {
 	business.GET("/pause/info", v1.Business.PauseInfo)                 // 寄存信息
 	business.GET("/allocated/:id", v1.Business.Allocated)              // 长连接轮询是否已分配
 	business.GET("/subscribe/signed/:id", v1.Business.SubscribeSigned) // 连接轮询是否已签约
-	g.GET("business/exchange/log", v1.Exchange.Log, logged())          // 换电记录
 
 	// 换电
-	exchange := g.Group("/exchange", person())
-	exchange.GET("/overview", v1.Exchange.Overview) // 换电概览
-	exchange.POST("/store", v1.Exchange.Store)      // 门店换电
+	g.GET("/exchange/overview", v1.Exchange.Overview, logged())           // 换电概览
+	g.POST("/exchange/store", v1.Exchange.Store, logged())                // 门店换电
+	g.GET("/exchange", v1.Exchange.Log, logged())                         // 换电记录
+	g.GET("/exchange/process/:serial", v1.Cabinet.GetProcess, person())   // 电柜换电 - 获取换电信息
+	g.POST("/exchange/process", v1.Cabinet.Process, person())             // 电柜换电 - 开始流程
+	g.GET("/exchange/process/status", v1.Cabinet.ProcessStatus, person()) // 电柜换电 - 获取流程状态
 
 	// 预约
 	reserve := g.Group("/reserve", person())

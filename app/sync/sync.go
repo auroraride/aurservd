@@ -7,7 +7,6 @@ package sync
 
 import (
 	"github.com/auroraride/adapter/defs/batdef"
-	"github.com/auroraride/adapter/defs/cabdef"
 	"github.com/auroraride/adapter/sync"
 	"github.com/redis/go-redis/v9"
 
@@ -29,18 +28,6 @@ func Run() {
 			sync.StreamBatteryFlow,
 			func(data []*batdef.BatteryFlow) {
 				go service.NewBatteryBms().Sync(data)
-			},
-		).Run()
-	}()
-
-	// 同步换电步骤
-	go func() {
-		sync.New[cabdef.ExchangeStepMessage](
-			rdb,
-			ar.Config.Environment,
-			sync.StreamExchange,
-			func(data []*cabdef.ExchangeStepMessage) {
-				go service.NewIntelligentCabinet().ExchangeStepSync(data)
 			},
 		).Run()
 	}()

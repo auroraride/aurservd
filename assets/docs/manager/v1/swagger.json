@@ -507,7 +507,7 @@
                 "tags": [
                     "电池"
                 ],
-              "summary": "批量导入电池",
+                "summary": "批量导入电池",
                 "operationId": "ManagerBatteryBatchCreate",
                 "parameters": [
                     {
@@ -2432,7 +2432,7 @@
                 "tags": [
                     "电柜"
                 ],
-              "summary": "开仓取电池并绑定骑手",
+                "summary": "开仓取电池并绑定骑手",
                 "operationId": "ManagerCabinetOpenBind",
                 "parameters": [
                     {
@@ -2768,7 +2768,7 @@
                 "tags": [
                     "城市"
                 ],
-              "summary": "修改城市",
+                "summary": "修改城市",
                 "operationId": "CityModify",
                 "parameters": [
                     {
@@ -6369,155 +6369,155 @@
                 }
             }
         },
-      "/manager/v1/fault": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "故障上报"
-          ],
-          "summary": "故障列表",
-          "operationId": "FaultList",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "骑手校验token",
-              "name": "X-Rider-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "integer",
-              "description": "城市ID",
-              "name": "cityId",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "当前页, 从1开始, 默认1",
-              "name": "current",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "设备编号",
-              "name": "deviceNo",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "结束时间",
-              "name": "end",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "关键字 用户姓名、手机号",
-              "name": "keyword",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "每页数据, 默认20",
-              "name": "pageSize",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "开始时间",
-              "name": "start",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "故障状态 0未处理 1已处理",
-              "name": "status",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他",
-              "name": "type",
-              "in": "query"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/model.PaginationRes"
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "items": {
-                        "type": "array",
-                        "items": {
-                          "$ref": "#/definitions/definition.Fault"
-                        }
-                      }
+        "/manager/v1/fault": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "故障上报"
+                ],
+                "summary": "故障列表",
+                "operationId": "FaultList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "设备编号",
+                        "name": "deviceNo",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字 用户姓名、手机号",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "故障状态 0未处理 1已处理",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他",
+                        "name": "type",
+                        "in": "query"
                     }
-                  }
-                ]
-              }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/definition.Fault"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
             }
-          }
-        }
-      },
-      "/manager/v1/fault/:id": {
-        "put": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "故障上报"
-          ],
-          "summary": "故障更改状态",
-          "operationId": "FaultModify",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "骑手校验token",
-              "name": "X-Rider-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "integer",
-              "description": "故障ID",
-              "name": "id",
-              "in": "path",
-              "required": true
-            },
-            {
-              "description": "故障修改请求",
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/definition.FaultModifyStatusReq"
-              }
+        },
+        "/manager/v1/fault/:id": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "故障上报"
+                ],
+                "summary": "故障更改状态",
+                "operationId": "FaultModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "故障ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "故障修改请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.FaultModifyStatusReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
             }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
-              }
-            }
-          }
-        }
-      },
+        },
         "/manager/v1/import/rider": {
             "post": {
                 "consumes": [
@@ -6992,12 +6992,12 @@
                         "in": "query"
                     },
                     {
-                      "type": "string",
-                      "description": "预支付订单号",
-                      "name": "outTradeNo",
-                      "in": "query"
+                        "type": "string",
+                        "description": "预支付订单号",
+                        "name": "outTradeNo",
+                        "in": "query"
                     },
-                  {
+                    {
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
@@ -7010,7 +7010,7 @@
                             2
                         ],
                         "type": "integer",
-                      "description": "支付方式 0:手动 1:支付宝 2:微信,3:支付宝预授权,4:微信支付分 不携带此参数为获取全部",
+                        "description": "支付方式 0:手动 1:支付宝 2:微信,3:支付宝预授权,4:微信支付分 不携带此参数为获取全部",
                         "name": "payway",
                         "in": "query"
                     },
@@ -7601,7 +7601,7 @@
                 "tags": [
                     "骑士卡"
                 ],
-              "summary": "获取未设定介绍的车电型号",
+                "summary": "获取未设定介绍的车电型号",
                 "operationId": "ManagerPlanIntroduceNotset",
                 "parameters": [
                     {
@@ -9416,7 +9416,7 @@
                     }
                 }
             },
-          "post": {
+            "post": {
                 "consumes": [
                     "application/json"
                 ],
@@ -9426,8 +9426,8 @@
                 "tags": [
                     "设置"
                 ],
-            "summary": "创建常见问题",
-            "operationId": "QuestionCreate",
+                "summary": "创建常见问题",
+                "operationId": "QuestionCreate",
                 "parameters": [
                     {
                         "type": "string",
@@ -9442,7 +9442,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                          "$ref": "#/definitions/definition.QuestionCreateReq"
+                            "$ref": "#/definitions/definition.QuestionCreateReq"
                         }
                     }
                 ],
@@ -9454,10 +9454,10 @@
                         }
                     }
                 }
-          }
+            }
         },
-      "/manager/v1/question/:id": {
-        "put": {
+        "/manager/v1/question/:id": {
+            "put": {
                 "consumes": [
                     "application/json"
                 ],
@@ -9467,8 +9467,8 @@
                 "tags": [
                     "设置"
                 ],
-          "summary": "修改常见问题",
-          "operationId": "QuestionModify",
+                "summary": "修改常见问题",
+                "operationId": "QuestionModify",
                 "parameters": [
                     {
                         "type": "string",
@@ -9483,7 +9483,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                          "$ref": "#/definitions/definition.QuestionModifyReq"
+                            "$ref": "#/definitions/definition.QuestionModifyReq"
                         }
                     }
                 ],
@@ -11600,170 +11600,170 @@
                 }
             }
         },
-      "/manager/v1/setting/version": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "设置"
-          ],
-          "summary": "获取版本列表",
-          "operationId": "SettingVersionList",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "integer",
-              "description": "当前页, 从1开始, 默认1",
-              "name": "current",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "每页数据, 默认20",
-              "name": "pageSize",
-              "in": "query"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/definition.Version"
+        "/manager/v1/setting/version": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "获取版本列表",
+                "operationId": "SettingVersionList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.Version"
+                            }
+                        }
+                    }
                 }
-              }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "创建版本",
+                "operationId": "SettingVersionCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.VersionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
             }
-          }
         },
-        "post": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "设置"
-          ],
-          "summary": "创建版本",
-          "operationId": "SettingVersionCreate",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
+        "/manager/v1/setting/version/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "修改版本",
+                "operationId": "SettingVersionModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.VersionModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
             },
-            {
-              "description": "请求参数",
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/definition.VersionReq"
-              }
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "删除版本",
+                "operationId": "SettingVersionDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "版本ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
             }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
-              }
-            }
-          }
-        }
-      },
-      "/manager/v1/setting/version/{id}": {
-        "put": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "设置"
-          ],
-          "summary": "修改版本",
-          "operationId": "SettingVersionModify",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "description": "请求参数",
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/definition.VersionModifyReq"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
-              }
-            }
-          }
         },
-        "delete": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "设置"
-          ],
-          "summary": "删除版本",
-          "operationId": "SettingVersionDelete",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "string",
-              "description": "版本ID",
-              "name": "id",
-              "in": "path",
-              "required": true
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
-              }
-            }
-          }
-        }
-      },
         "/manager/v1/setting/{key}": {
             "put": {
                 "consumes": [
@@ -12459,12 +12459,12 @@
                         "required": true
                     },
                     {
-                      "type": "integer",
-                      "description": "业务类型 1:领取车辆(租车) 2:维修车辆 3:买车",
-                      "name": "businessType",
-                      "in": "query"
+                        "type": "integer",
+                        "description": "业务类型 1:领取车辆(租车) 2:维修车辆 3:买车",
+                        "name": "businessType",
+                        "in": "query"
                     },
-                  {
+                    {
                         "type": "integer",
                         "description": "城市",
                         "name": "cityId",
@@ -13793,7 +13793,7 @@
                     "description": "内容"
                 },
                 "key": {
-                  "description": "键  rent 租电买前必读 rentCar 租车买前必读 buyCar 买车买前必读 coupon 优惠券使用说明 point 积分使用说明 deposit 押金规则说明",
+                    "description": "键  rent 租电买前必读 rentCar 租车买前必读 buyCar 买车买前必读 coupon 优惠券使用说明 point 积分使用说明 deposit 押金规则说明",
                     "type": "string"
                 },
                 "title": {
@@ -13961,96 +13961,96 @@
                 }
             }
         },
-      "definition.Version": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "description": "更新内容",
-            "type": "string"
-          },
-          "createdAt": {
-            "description": "创建时间",
-            "type": "string"
-          },
-          "force": {
-            "description": "是否强制更新",
-            "type": "boolean"
-          },
-          "id": {
-            "description": "ID",
-            "type": "integer"
-          },
-          "platform": {
-            "description": "平台",
-            "type": "array",
-            "items": {
-              "type": "string"
+        "definition.Version": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "更新内容",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "force": {
+                    "description": "是否强制更新",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "platform": {
+                    "description": "平台",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "string"
+                }
             }
-          },
-          "version": {
-            "description": "版本号",
-            "type": "string"
-          }
-        }
-      },
-      "definition.VersionModifyReq": {
-        "type": "object",
-        "required": [
-          "content",
-          "platform",
-          "version"
-        ],
-        "properties": {
-          "content": {
-            "description": "更新内容",
-            "type": "string"
-          },
-          "force": {
-            "description": "是否强制更新",
-            "type": "boolean"
-          },
-          "platform": {
-            "description": "平台, 平台",
-            "type": "array",
-            "items": {
-              "type": "string"
+        },
+        "definition.VersionModifyReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "platform",
+                "version"
+            ],
+            "properties": {
+                "content": {
+                    "description": "更新内容",
+                    "type": "string"
+                },
+                "force": {
+                    "description": "是否强制更新",
+                    "type": "boolean"
+                },
+                "platform": {
+                    "description": "平台, 平台",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "string"
+                }
             }
-          },
-          "version": {
-            "description": "版本号",
-            "type": "string"
-          }
-        }
-      },
-      "definition.VersionReq": {
-        "type": "object",
-        "required": [
-          "content",
-          "platform",
-          "version"
-        ],
-        "properties": {
-          "content": {
-            "description": "更新内容",
-            "type": "string"
-          },
-          "force": {
-            "description": "是否强制更新",
-            "type": "boolean"
-          },
-          "platform": {
-            "description": "平台, 平台",
-            "type": "array",
-            "items": {
-              "type": "string"
+        },
+        "definition.VersionReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "platform",
+                "version"
+            ],
+            "properties": {
+                "content": {
+                    "description": "更新内容",
+                    "type": "string"
+                },
+                "force": {
+                    "description": "是否强制更新",
+                    "type": "boolean"
+                },
+                "platform": {
+                    "description": "平台, 平台",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "string"
+                }
             }
-          },
-          "version": {
-            "description": "版本号",
-            "type": "string"
-          }
-        }
-      },
+        },
         "model.AgentCreateReq": {
             "type": "object",
             "required": [
@@ -16804,10 +16804,10 @@
                     "description": "名称",
                     "type": "string"
                 },
-              "outOrderNo": {
-                "description": "预授权订单号",
-                "type": "string"
-              },
+                "outOrderNo": {
+                    "description": "预授权订单号",
+                    "type": "string"
+                },
                 "outTradeNo": {
                     "description": "使用订单编号",
                     "type": "string"
@@ -19095,10 +19095,10 @@
                     "description": "电池型号 (可为空)",
                     "type": "string"
                 },
-              "outOrderNo": {
-                "description": "预授权订单号",
-                "type": "string"
-              },
+                "outOrderNo": {
+                    "description": "预授权订单号",
+                    "type": "string"
+                },
                 "outTradeNo": {
                     "description": "订单编号",
                     "type": "string"
@@ -19108,7 +19108,7 @@
                     "type": "string"
                 },
                 "payway": {
-                  "description": "支付方式 1支付宝 2微信 3支付宝预授权",
+                    "description": "支付方式 1支付宝 2微信 3支付宝预授权",
                     "type": "integer"
                 },
                 "plan": {
@@ -19216,12 +19216,12 @@
                     "description": "电池型号",
                     "type": "string"
                 },
-              "outTradeNo": {
-                "description": "预支付订单号",
-                "type": "string"
+                "outTradeNo": {
+                    "description": "预支付订单号",
+                    "type": "string"
                 },
                 "payway": {
-                  "description": "支付方式 0:手动 1:支付宝 2:微信,3:支付宝预授权,4:微信支付分 不携带此参数为获取全部",
+                    "description": "支付方式 0:手动 1:支付宝 2:微信,3:支付宝预授权,4:微信支付分 不携带此参数为获取全部",
                     "type": "integer",
                     "enum": [
                         0,
@@ -19478,25 +19478,25 @@
                     "description": "是否开启押金",
                     "type": "boolean"
                 },
-              "depositAlipayAuthFreeze": {
-                "description": "是否支持预授权信用免押金 true:支持 false:不支持",
-                "type": "boolean"
-              },
+                "depositAlipayAuthFreeze": {
+                    "description": "是否支持预授权信用免押金 true:支持 false:不支持",
+                    "type": "boolean"
+                },
                 "depositAmount": {
                     "description": "押金金额",
                     "type": "number"
                 },
-              "depositContract": {
-                "description": "是否支持合同免押金 true:支持 false:不支持",
-                "type": "boolean"
-              },
-              "depositPay": {
-                "description": "是否支持支付押金 true:支持 false:不支持",
-                "type": "boolean"
-              },
-              "depositWechatPayscore": {
-                "description": "是否支持微信支付分免押金 true:支持 false:不支持",
-                "type": "boolean"
+                "depositContract": {
+                    "description": "是否支持合同免押金 true:支持 false:不支持",
+                    "type": "boolean"
+                },
+                "depositPay": {
+                    "description": "是否支持支付押金 true:支持 false:不支持",
+                    "type": "boolean"
+                },
+                "depositWechatPayscore": {
+                    "description": "是否支持微信支付分免押金 true:支持 false:不支持",
+                    "type": "boolean"
                 },
                 "enable": {
                     "description": "是否启用",
@@ -19633,25 +19633,25 @@
                     "description": "是否开启押金 fales:未开启 true:开启",
                     "type": "boolean"
                 },
-              "depositAlipayAuthFreeze": {
-                "description": "是否支持预授权信用免押金 true:支持 false:不支持",
-                "type": "boolean"
-              },
+                "depositAlipayAuthFreeze": {
+                    "description": "是否支持预授权信用免押金 true:支持 false:不支持",
+                    "type": "boolean"
+                },
                 "depositAmount": {
                     "description": "押金金额",
                     "type": "number"
                 },
-              "depositContract": {
-                "description": "是否支持合同免押金 true:支持 false:不支持",
-                "type": "boolean"
-              },
-              "depositPay": {
-                "description": "是否支持支付押金 true:支持 false:不支持",
-                "type": "boolean"
-              },
-              "depositWechatPayscore": {
-                "description": "是否支持微信支付分免押金 true:支持 false:不支持",
-                "type": "boolean"
+                "depositContract": {
+                    "description": "是否支持合同免押金 true:支持 false:不支持",
+                    "type": "boolean"
+                },
+                "depositPay": {
+                    "description": "是否支持支付押金 true:支持 false:不支持",
+                    "type": "boolean"
+                },
+                "depositWechatPayscore": {
+                    "description": "是否支持微信支付分免押金 true:支持 false:不支持",
+                    "type": "boolean"
                 },
                 "enable": {
                     "description": "是否启用",
@@ -20569,22 +20569,22 @@
                     "description": "骑手ID",
                     "type": "integer"
                 },
-              "idCardNational": {
-                "description": "身份证国徽面",
-                "type": "string"
-              },
-              "idCardNumber": {
-                "description": "身份证号",
-                "type": "string"
-              },
-              "idCardPortrait": {
-                "description": "身份证正面",
-                "type": "string"
-              },
-              "name": {
-                "description": "骑手姓名",
-                "type": "string"
-              },
+                "idCardNational": {
+                    "description": "身份证国徽面",
+                    "type": "string"
+                },
+                "idCardNumber": {
+                    "description": "身份证号",
+                    "type": "string"
+                },
+                "idCardPortrait": {
+                    "description": "身份证正面",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "骑手姓名",
+                    "type": "string"
+                },
                 "phone": {
                     "description": "手机号",
                     "type": "string"
@@ -21562,10 +21562,10 @@
                     "description": "网点",
                     "type": "integer"
                 },
-              "businessHours": {
-                "description": "营业时间",
-                "type": "string"
-              },
+                "businessHours": {
+                    "description": "营业时间",
+                    "type": "string"
+                },
                 "ebikeObtain": {
                     "description": "是否可以领取车辆",
                     "type": "boolean"
@@ -21574,9 +21574,9 @@
                     "description": "是否可以维修车辆",
                     "type": "boolean"
                 },
-              "ebikeSale": {
-                "description": "是否可以买车",
-                "type": "boolean"
+                "ebikeSale": {
+                    "description": "是否可以买车",
+                    "type": "boolean"
                 },
                 "materials": {
                     "description": "门店物资",
@@ -21611,10 +21611,10 @@
                     "description": "网点ID",
                     "type": "integer"
                 },
-              "businessHours": {
-                "description": "营业时间",
-                "type": "string"
-              },
+                "businessHours": {
+                    "description": "营业时间",
+                    "type": "string"
+                },
                 "city": {
                     "description": "城市",
                     "allOf": [
@@ -21631,10 +21631,10 @@
                     "description": "是否可以维修车辆",
                     "type": "boolean"
                 },
-              "ebikeSale": {
-                "description": "是否可以买车",
-                "type": "boolean"
-              },
+                "ebikeSale": {
+                    "description": "是否可以买车",
+                    "type": "boolean"
+                },
                 "employee": {
                     "description": "店员, 有可能不存在",
                     "allOf": [
@@ -21667,10 +21667,10 @@
                     "description": "网点",
                     "type": "integer"
                 },
-              "businessHours": {
-                "description": "营业时间",
-                "type": "string"
-              },
+                "businessHours": {
+                    "description": "营业时间",
+                    "type": "string"
+                },
                 "ebikeObtain": {
                     "description": "是否可以领取车辆",
                     "type": "boolean"
@@ -21679,9 +21679,9 @@
                     "description": "是否可以维修车辆",
                     "type": "boolean"
                 },
-              "ebikeSale": {
-                "description": "是否可以买车",
-                "type": "boolean"
+                "ebikeSale": {
+                    "description": "是否可以买车",
+                    "type": "boolean"
                 },
                 "name": {
                     "description": "门店名称",
