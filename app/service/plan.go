@@ -197,7 +197,8 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 			SetNillableDepositWechatPayscore(req.DepositWechatPayscore).
 			SetNillableDepositAlipayAuthFreeze(req.DepositAlipayAuthFreeze).
 			SetNillableDepositContract(req.DepositContract).
-			SetNillableDepositPay(req.DepositPay)
+			SetNillableDepositPay(req.DepositPay).
+			SetNillableAgreementID(req.AgreementID)
 
 		for i, cl := range req.Complexes {
 			c := creator.Clone().
@@ -340,6 +341,16 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 		DepositAmount:           item.DepositAmount,
 	}
 
+	if item.Edges.Agreement != nil {
+		res.Agreement = &model.Agreement{
+			ID:            item.Edges.Agreement.ID,
+			Name:          item.Edges.Agreement.Name,
+			URL:           item.Edges.Agreement.URL,
+			Hash:          item.Edges.Agreement.Hash,
+			ForceReadTime: item.Edges.Agreement.ForceReadTime,
+		}
+	}
+
 	// 电车型号
 	eb := item.Edges.Brand
 	if eb != nil {
@@ -421,6 +432,7 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
 			})
 		}).
 		WithBrand().
+		WithAgreement().
 		Order(ent.Desc(plan.FieldStart), ent.Asc(plan.FieldEnd))
 
 	if req.Intelligent != nil {
@@ -556,6 +568,7 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 		).
 		WithBrand().
 		WithCities().
+		WithAgreement().
 		Order(ent.Asc(plan.FieldDays)).
 		AllX(s.ctx)
 
@@ -592,7 +605,7 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 			}
 		}
 
-		*m.Children = append(*m.Children, model.PlanDaysPriceOption{
+		planDaysPriceOption := model.PlanDaysPriceOption{
 			ID:                      item.ID,
 			Name:                    item.Name,
 			Price:                   item.Price,
@@ -605,7 +618,19 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 			DepositWechatPayscore:   item.DepositWechatPayscore,
 			DepositAlipayAuthFreeze: item.DepositAlipayAuthFreeze,
 			DepositContract:         item.DepositContract,
-		})
+			DepositPay:              item.DepositPay,
+		}
+		if item.Edges.Agreement != nil {
+			planDaysPriceOption.Agreement = &model.Agreement{
+				ID:            item.Edges.Agreement.ID,
+				Name:          item.Edges.Agreement.Name,
+				URL:           item.Edges.Agreement.URL,
+				Hash:          item.Edges.Agreement.Hash,
+				ForceReadTime: item.Edges.Agreement.ForceReadTime,
+			}
+		}
+
+		*m.Children = append(*m.Children, planDaysPriceOption)
 
 		if item.BrandID != nil {
 			var b *model.PlanEbikeBrandOption

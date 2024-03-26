@@ -12,6 +12,9 @@ type Activity func(*sql.Selector)
 // Agent is the predicate function for agent builders.
 type Agent func(*sql.Selector)
 
+// Agreement is the predicate function for agreement builders.
+type Agreement func(*sql.Selector)
+
 // Allocate is the predicate function for allocate builders.
 type Allocate func(*sql.Selector)
 

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -114,6 +115,20 @@ func (epc *EnterprisePriceCreate) SetNillableBrandID(u *uint64) *EnterprisePrice
 	return epc
 }
 
+// SetAgreementID sets the "agreement_id" field.
+func (epc *EnterprisePriceCreate) SetAgreementID(u uint64) *EnterprisePriceCreate {
+	epc.mutation.SetAgreementID(u)
+	return epc
+}
+
+// SetNillableAgreementID sets the "agreement_id" field if the given value is not nil.
+func (epc *EnterprisePriceCreate) SetNillableAgreementID(u *uint64) *EnterprisePriceCreate {
+	if u != nil {
+		epc.SetAgreementID(*u)
+	}
+	return epc
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (epc *EnterprisePriceCreate) SetEnterpriseID(u uint64) *EnterprisePriceCreate {
 	epc.mutation.SetEnterpriseID(u)
@@ -154,6 +169,11 @@ func (epc *EnterprisePriceCreate) SetCity(c *City) *EnterprisePriceCreate {
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (epc *EnterprisePriceCreate) SetBrand(e *EbikeBrand) *EnterprisePriceCreate {
 	return epc.SetBrandID(e.ID)
+}
+
+// SetAgreement sets the "agreement" edge to the Agreement entity.
+func (epc *EnterprisePriceCreate) SetAgreement(a *Agreement) *EnterprisePriceCreate {
+	return epc.SetAgreementID(a.ID)
 }
 
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
@@ -345,6 +365,23 @@ func (epc *EnterprisePriceCreate) createSpec() (*EnterprisePrice, *sqlgraph.Crea
 		_node.BrandID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := epc.mutation.AgreementIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprice.AgreementTable,
+			Columns: []string{enterpriseprice.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AgreementID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := epc.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -507,6 +544,24 @@ func (u *EnterprisePriceUpsert) UpdateBrandID() *EnterprisePriceUpsert {
 // ClearBrandID clears the value of the "brand_id" field.
 func (u *EnterprisePriceUpsert) ClearBrandID() *EnterprisePriceUpsert {
 	u.SetNull(enterpriseprice.FieldBrandID)
+	return u
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (u *EnterprisePriceUpsert) SetAgreementID(v uint64) *EnterprisePriceUpsert {
+	u.Set(enterpriseprice.FieldAgreementID, v)
+	return u
+}
+
+// UpdateAgreementID sets the "agreement_id" field to the value that was provided on create.
+func (u *EnterprisePriceUpsert) UpdateAgreementID() *EnterprisePriceUpsert {
+	u.SetExcluded(enterpriseprice.FieldAgreementID)
+	return u
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (u *EnterprisePriceUpsert) ClearAgreementID() *EnterprisePriceUpsert {
+	u.SetNull(enterpriseprice.FieldAgreementID)
 	return u
 }
 
@@ -721,6 +776,27 @@ func (u *EnterprisePriceUpsertOne) UpdateBrandID() *EnterprisePriceUpsertOne {
 func (u *EnterprisePriceUpsertOne) ClearBrandID() *EnterprisePriceUpsertOne {
 	return u.Update(func(s *EnterprisePriceUpsert) {
 		s.ClearBrandID()
+	})
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (u *EnterprisePriceUpsertOne) SetAgreementID(v uint64) *EnterprisePriceUpsertOne {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.SetAgreementID(v)
+	})
+}
+
+// UpdateAgreementID sets the "agreement_id" field to the value that was provided on create.
+func (u *EnterprisePriceUpsertOne) UpdateAgreementID() *EnterprisePriceUpsertOne {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.UpdateAgreementID()
+	})
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (u *EnterprisePriceUpsertOne) ClearAgreementID() *EnterprisePriceUpsertOne {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.ClearAgreementID()
 	})
 }
 
@@ -1110,6 +1186,27 @@ func (u *EnterprisePriceUpsertBulk) UpdateBrandID() *EnterprisePriceUpsertBulk {
 func (u *EnterprisePriceUpsertBulk) ClearBrandID() *EnterprisePriceUpsertBulk {
 	return u.Update(func(s *EnterprisePriceUpsert) {
 		s.ClearBrandID()
+	})
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (u *EnterprisePriceUpsertBulk) SetAgreementID(v uint64) *EnterprisePriceUpsertBulk {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.SetAgreementID(v)
+	})
+}
+
+// UpdateAgreementID sets the "agreement_id" field to the value that was provided on create.
+func (u *EnterprisePriceUpsertBulk) UpdateAgreementID() *EnterprisePriceUpsertBulk {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.UpdateAgreementID()
+	})
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (u *EnterprisePriceUpsertBulk) ClearAgreementID() *EnterprisePriceUpsertBulk {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.ClearAgreementID()
 	})
 }
 

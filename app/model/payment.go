@@ -53,6 +53,7 @@ type PaymentSubscribe struct {
 	NeedContract   *bool   `json:"needContract"`             // 是否需要签约
 	DepositOrderNo *string `json:"depositOrderNo,omitempty"` // 押金订单编号
 	StoreID        *uint64 `json:"storeId,omitempty"`        // 门店ID
+	AgreementHash  *string `json:"agreementHash,omitempty"`  // 协议hash
 }
 
 // PaymentRefund 退款详情

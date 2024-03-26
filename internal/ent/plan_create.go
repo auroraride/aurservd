@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -104,6 +105,20 @@ func (pc *PlanCreate) SetBrandID(u uint64) *PlanCreate {
 func (pc *PlanCreate) SetNillableBrandID(u *uint64) *PlanCreate {
 	if u != nil {
 		pc.SetBrandID(*u)
+	}
+	return pc
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (pc *PlanCreate) SetAgreementID(u uint64) *PlanCreate {
+	pc.mutation.SetAgreementID(u)
+	return pc
+}
+
+// SetNillableAgreementID sets the "agreement_id" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableAgreementID(u *uint64) *PlanCreate {
+	if u != nil {
+		pc.SetAgreementID(*u)
 	}
 	return pc
 }
@@ -341,6 +356,11 @@ func (pc *PlanCreate) SetNillableDepositPay(b *bool) *PlanCreate {
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (pc *PlanCreate) SetBrand(e *EbikeBrand) *PlanCreate {
 	return pc.SetBrandID(e.ID)
+}
+
+// SetAgreement sets the "agreement" edge to the Agreement entity.
+func (pc *PlanCreate) SetAgreement(a *Agreement) *PlanCreate {
+	return pc.SetAgreementID(a.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -668,6 +688,23 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 		_node.BrandID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := pc.mutation.AgreementIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.AgreementTable,
+			Columns: []string{plan.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AgreementID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := pc.mutation.CitiesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -866,6 +903,24 @@ func (u *PlanUpsert) UpdateBrandID() *PlanUpsert {
 // ClearBrandID clears the value of the "brand_id" field.
 func (u *PlanUpsert) ClearBrandID() *PlanUpsert {
 	u.SetNull(plan.FieldBrandID)
+	return u
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (u *PlanUpsert) SetAgreementID(v uint64) *PlanUpsert {
+	u.Set(plan.FieldAgreementID, v)
+	return u
+}
+
+// UpdateAgreementID sets the "agreement_id" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateAgreementID() *PlanUpsert {
+	u.SetExcluded(plan.FieldAgreementID)
+	return u
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (u *PlanUpsert) ClearAgreementID() *PlanUpsert {
+	u.SetNull(plan.FieldAgreementID)
 	return u
 }
 
@@ -1366,6 +1421,27 @@ func (u *PlanUpsertOne) UpdateBrandID() *PlanUpsertOne {
 func (u *PlanUpsertOne) ClearBrandID() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearBrandID()
+	})
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (u *PlanUpsertOne) SetAgreementID(v uint64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetAgreementID(v)
+	})
+}
+
+// UpdateAgreementID sets the "agreement_id" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateAgreementID() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateAgreementID()
+	})
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (u *PlanUpsertOne) ClearAgreementID() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearAgreementID()
 	})
 }
 
@@ -2091,6 +2167,27 @@ func (u *PlanUpsertBulk) UpdateBrandID() *PlanUpsertBulk {
 func (u *PlanUpsertBulk) ClearBrandID() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearBrandID()
+	})
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (u *PlanUpsertBulk) SetAgreementID(v uint64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetAgreementID(v)
+	})
+}
+
+// UpdateAgreementID sets the "agreement_id" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateAgreementID() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateAgreementID()
+	})
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (u *PlanUpsertBulk) ClearAgreementID() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearAgreementID()
 	})
 }
 

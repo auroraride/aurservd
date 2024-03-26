@@ -442,6 +442,7 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 		NeedContract:   req.NeedContract,
 		StoreID:        req.StoreID,
 		DepositOrderNo: req.DepositOrderNo,
+		AgreementHash:  req.AgreementHash,
 	}
 
 	prepay := &model.PaymentCache{
@@ -625,7 +626,8 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 				AddOrders(o).
 				SetNillableBrandID(trade.EbikeBrandID).
 				SetIntelligent(trade.Plan.Intelligent).
-				SetNillableStoreID(trade.StoreID)
+				SetNillableStoreID(trade.StoreID).
+				SetNillableAgreementHash(trade.AgreementHash)
 			// 根据用户选择是否需要签约 默认不需要签约
 			if trade.NeedContract != nil {
 				sq.SetNillableNeedContract(trade.NeedContract)

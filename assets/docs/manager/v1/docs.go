@@ -15,6 +15,230 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/manager/v1/agreement": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "协议"
+                ],
+                "summary": "协议列表",
+                "operationId": "ManagerAgreementList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.Agreement"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "协议"
+                ],
+                "summary": "创建协议",
+                "operationId": "ManagerAgreementCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "创建协议请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.AgreementCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/agreement/selection": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "协议"
+                ],
+                "summary": "协议下拉列表",
+                "operationId": "ManagerAgreementSelection",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.AgreementSelectionRes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/agreement/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "协议"
+                ],
+                "summary": "协议详情",
+                "operationId": "ManagerAgreementDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "协议ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.Agreement"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "协议"
+                ],
+                "summary": "修改协议",
+                "operationId": "ManagerAgreementModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "修改协议请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.AgreementModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "协议"
+                ],
+                "summary": "删除协议",
+                "operationId": "ManagerAgreementDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "协议ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/assistance": {
             "get": {
                 "consumes": [
@@ -11591,7 +11815,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "法规名称, policy: APP隐私政策; agreement: APP服务协议; agent-policy: 代理端小程序隐私政策; agent-agreement: 代理端小程序服务协议; promote-policy: 推广端小程序隐私政策; promote-agreement: 推广端小程序服务协议 battery-rental-agreement:个签-电池租赁协议;\tebike-rental-agreement:个签-电车及电池租赁协议;\tenterprise-battery-rental-agreement:团签-电池租赁协议;\tenterprise-ebike-rental-agreement:团签-电车及电池租赁协议",
+                        "description": "法规名称, policy: APP隐私政策; agreement: APP服务协议; agent-policy: 代理端小程序隐私政策; agent-agreement: 代理端小程序服务协议; promote-policy: 推广端小程序隐私政策; promote-agreement: 推广端小程序服务协议",
                         "name": "name",
                         "in": "path",
                         "required": true
@@ -13603,6 +13827,132 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.Agreement": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "内容",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "forceReadTime": {
+                    "description": "强制阅读时间",
+                    "type": "integer"
+                },
+                "hash": {
+                    "description": "Hash",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "isDefault": {
+                    "description": "是否为默认协议",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "协议名称",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "URL",
+                    "type": "string"
+                },
+                "userType": {
+                    "description": "用户类型 1:个签 2:团签",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.AgreementCreateReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "forceReadTime",
+                "isDefault",
+                "name",
+                "userType"
+            ],
+            "properties": {
+                "content": {
+                    "description": "内容",
+                    "type": "string"
+                },
+                "forceReadTime": {
+                    "description": "强制阅读时间",
+                    "type": "integer"
+                },
+                "isDefault": {
+                    "description": "是否为默认协议",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "协议名称",
+                    "type": "string"
+                },
+                "userType": {
+                    "description": "用户类型 1:个签 2:团签",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.AgreementModifyReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "forceReadTime",
+                "isDefault",
+                "name",
+                "userType"
+            ],
+            "properties": {
+                "content": {
+                    "description": "内容",
+                    "type": "string"
+                },
+                "forceReadTime": {
+                    "description": "强制阅读时间",
+                    "type": "integer"
+                },
+                "isDefault": {
+                    "description": "是否为默认协议",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "协议名称",
+                    "type": "string"
+                },
+                "userType": {
+                    "description": "用户类型 1:个签 2:团签",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.AgreementSelectionRes": {
+            "type": "object",
+            "properties": {
+                "hash": {
+                    "description": "Hash",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "isDefault": {
+                    "description": "是否为默认协议 true:是 false:否",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "协议名称",
+                    "type": "string"
+                }
+            }
+        },
         "definition.Fault": {
             "type": "object",
             "properties": {
@@ -14103,6 +14453,31 @@ const docTemplate = `{
                 },
                 "phone": {
                     "description": "电话",
+                    "type": "string"
+                }
+            }
+        },
+        "model.Agreement": {
+            "type": "object",
+            "properties": {
+                "forceReadTime": {
+                    "description": "强制阅读时间",
+                    "type": "integer"
+                },
+                "hash": {
+                    "description": "hash",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "协议名称",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "URL",
                     "type": "string"
                 }
             }
@@ -17930,6 +18305,10 @@ const docTemplate = `{
                 "price"
             ],
             "properties": {
+                "agreementId": {
+                    "description": "协议id",
+                    "type": "integer"
+                },
                 "brandId": {
                     "description": "电车型号",
                     "type": "integer"
@@ -17963,6 +18342,14 @@ const docTemplate = `{
         "model.EnterprisePriceWithCity": {
             "type": "object",
             "properties": {
+                "agreement": {
+                    "description": "协议",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Agreement"
+                        }
+                    ]
+                },
                 "city": {
                     "description": "城市",
                     "allOf": [
@@ -19461,6 +19848,10 @@ const docTemplate = `{
                 "type"
             ],
             "properties": {
+                "agreementId": {
+                    "description": "协议ID",
+                    "type": "integer"
+                },
                 "brandId": {
                     "description": "电车型号, 车加电必填",
                     "type": "integer"
@@ -19611,6 +20002,14 @@ const docTemplate = `{
         "model.PlanListRes": {
             "type": "object",
             "properties": {
+                "agreement": {
+                    "description": "协议",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Agreement"
+                        }
+                    ]
+                },
                 "brand": {
                     "description": "电车型号",
                     "allOf": [

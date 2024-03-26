@@ -362,4 +362,12 @@ func loadManagerRoutes() {
 	// PMA 推广关系
 	g.GET("/promotion/progress/list/:id", mapi.PromotionReferrals.ProgressList) // 推广关系列表
 
+	// 租赁协议
+	agreement := g.Group("/agreement")
+	agreement.GET("", mapi.Agreement.List)                // 协议列表
+	agreement.POST("", mapi.Agreement.Create)             // 创建协议
+	agreement.GET("/:id", mapi.Agreement.Detail)          // 协议详情
+	agreement.PUT("/:id", mapi.Agreement.Modify)          // 修改协议
+	agreement.DELETE("/:id", mapi.Agreement.Delete)       // 删除协议
+	agreement.GET("/selection", mapi.Agreement.Selection) // 协议选择
 }

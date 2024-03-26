@@ -44,7 +44,8 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
 			pq.Where(plan.DeletedAtIsNil())
 		}).
 		WithCities().
-		WithBrand()
+		WithBrand().
+		WithAgreement()
 
 	if req.Effect != nil && *req.Effect != 0 {
 		now := time.Now()

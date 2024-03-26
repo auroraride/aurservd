@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
@@ -107,6 +108,7 @@ const (
 	// Node types.
 	TypeActivity                   = "Activity"
 	TypeAgent                      = "Agent"
+	TypeAgreement                  = "Agreement"
 	TypeAllocate                   = "Allocate"
 	TypeAssistance                 = "Assistance"
 	TypeAttendance                 = "Attendance"
@@ -2213,6 +2215,1166 @@ func (m *AgentMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Agent edge %s", name)
+}
+
+// AgreementMutation represents an operation that mutates the Agreement nodes in the graph.
+type AgreementMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *uint64
+	created_at         *time.Time
+	updated_at         *time.Time
+	deleted_at         *time.Time
+	creator            **model.Modifier
+	last_modifier      **model.Modifier
+	remark             *string
+	name               *string
+	content            *string
+	user_type          *uint8
+	adduser_type       *int8
+	force_read_time    *uint8
+	addforce_read_time *int8
+	is_default         *bool
+	hash               *string
+	url                *string
+	clearedFields      map[string]struct{}
+	done               bool
+	oldValue           func(context.Context) (*Agreement, error)
+	predicates         []predicate.Agreement
+}
+
+var _ ent.Mutation = (*AgreementMutation)(nil)
+
+// agreementOption allows management of the mutation configuration using functional options.
+type agreementOption func(*AgreementMutation)
+
+// newAgreementMutation creates new mutation for the Agreement entity.
+func newAgreementMutation(c config, op Op, opts ...agreementOption) *AgreementMutation {
+	m := &AgreementMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAgreement,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAgreementID sets the ID field of the mutation.
+func withAgreementID(id uint64) agreementOption {
+	return func(m *AgreementMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Agreement
+		)
+		m.oldValue = func(ctx context.Context) (*Agreement, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Agreement.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAgreement sets the old Agreement of the mutation.
+func withAgreement(node *Agreement) agreementOption {
+	return func(m *AgreementMutation) {
+		m.oldValue = func(context.Context) (*Agreement, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AgreementMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AgreementMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AgreementMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AgreementMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Agreement.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *AgreementMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *AgreementMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Agreement entity.
+// If the Agreement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgreementMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *AgreementMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *AgreementMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *AgreementMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Agreement entity.
+// If the Agreement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgreementMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *AgreementMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *AgreementMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *AgreementMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Agreement entity.
+// If the Agreement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgreementMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *AgreementMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[agreement.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *AgreementMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[agreement.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *AgreementMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, agreement.FieldDeletedAt)
+}
+
+// SetCreator sets the "creator" field.
+func (m *AgreementMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *AgreementMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the Agreement entity.
+// If the Agreement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgreementMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *AgreementMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[agreement.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *AgreementMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[agreement.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *AgreementMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, agreement.FieldCreator)
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (m *AgreementMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
+}
+
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *AgreementMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastModifier returns the old "last_modifier" field's value of the Agreement entity.
+// If the Agreement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgreementMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
+	}
+	return oldValue.LastModifier, nil
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *AgreementMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[agreement.FieldLastModifier] = struct{}{}
+}
+
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *AgreementMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[agreement.FieldLastModifier]
+	return ok
+}
+
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *AgreementMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, agreement.FieldLastModifier)
+}
+
+// SetRemark sets the "remark" field.
+func (m *AgreementMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *AgreementMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the Agreement entity.
+// If the Agreement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgreementMutation) OldRemark(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (m *AgreementMutation) ClearRemark() {
+	m.remark = nil
+	m.clearedFields[agreement.FieldRemark] = struct{}{}
+}
+
+// RemarkCleared returns if the "remark" field was cleared in this mutation.
+func (m *AgreementMutation) RemarkCleared() bool {
+	_, ok := m.clearedFields[agreement.FieldRemark]
+	return ok
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *AgreementMutation) ResetRemark() {
+	m.remark = nil
+	delete(m.clearedFields, agreement.FieldRemark)
+}
+
+// SetName sets the "name" field.
+func (m *AgreementMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *AgreementMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Agreement entity.
+// If the Agreement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgreementMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *AgreementMutation) ResetName() {
+	m.name = nil
+}
+
+// SetContent sets the "content" field.
+func (m *AgreementMutation) SetContent(s string) {
+	m.content = &s
+}
+
+// Content returns the value of the "content" field in the mutation.
+func (m *AgreementMutation) Content() (r string, exists bool) {
+	v := m.content
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContent returns the old "content" field's value of the Agreement entity.
+// If the Agreement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgreementMutation) OldContent(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldContent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldContent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContent: %w", err)
+	}
+	return oldValue.Content, nil
+}
+
+// ResetContent resets all changes to the "content" field.
+func (m *AgreementMutation) ResetContent() {
+	m.content = nil
+}
+
+// SetUserType sets the "user_type" field.
+func (m *AgreementMutation) SetUserType(u uint8) {
+	m.user_type = &u
+	m.adduser_type = nil
+}
+
+// UserType returns the value of the "user_type" field in the mutation.
+func (m *AgreementMutation) UserType() (r uint8, exists bool) {
+	v := m.user_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserType returns the old "user_type" field's value of the Agreement entity.
+// If the Agreement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgreementMutation) OldUserType(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserType: %w", err)
+	}
+	return oldValue.UserType, nil
+}
+
+// AddUserType adds u to the "user_type" field.
+func (m *AgreementMutation) AddUserType(u int8) {
+	if m.adduser_type != nil {
+		*m.adduser_type += u
+	} else {
+		m.adduser_type = &u
+	}
+}
+
+// AddedUserType returns the value that was added to the "user_type" field in this mutation.
+func (m *AgreementMutation) AddedUserType() (r int8, exists bool) {
+	v := m.adduser_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUserType resets all changes to the "user_type" field.
+func (m *AgreementMutation) ResetUserType() {
+	m.user_type = nil
+	m.adduser_type = nil
+}
+
+// SetForceReadTime sets the "force_read_time" field.
+func (m *AgreementMutation) SetForceReadTime(u uint8) {
+	m.force_read_time = &u
+	m.addforce_read_time = nil
+}
+
+// ForceReadTime returns the value of the "force_read_time" field in the mutation.
+func (m *AgreementMutation) ForceReadTime() (r uint8, exists bool) {
+	v := m.force_read_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldForceReadTime returns the old "force_read_time" field's value of the Agreement entity.
+// If the Agreement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgreementMutation) OldForceReadTime(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldForceReadTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldForceReadTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldForceReadTime: %w", err)
+	}
+	return oldValue.ForceReadTime, nil
+}
+
+// AddForceReadTime adds u to the "force_read_time" field.
+func (m *AgreementMutation) AddForceReadTime(u int8) {
+	if m.addforce_read_time != nil {
+		*m.addforce_read_time += u
+	} else {
+		m.addforce_read_time = &u
+	}
+}
+
+// AddedForceReadTime returns the value that was added to the "force_read_time" field in this mutation.
+func (m *AgreementMutation) AddedForceReadTime() (r int8, exists bool) {
+	v := m.addforce_read_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetForceReadTime resets all changes to the "force_read_time" field.
+func (m *AgreementMutation) ResetForceReadTime() {
+	m.force_read_time = nil
+	m.addforce_read_time = nil
+}
+
+// SetIsDefault sets the "is_default" field.
+func (m *AgreementMutation) SetIsDefault(b bool) {
+	m.is_default = &b
+}
+
+// IsDefault returns the value of the "is_default" field in the mutation.
+func (m *AgreementMutation) IsDefault() (r bool, exists bool) {
+	v := m.is_default
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsDefault returns the old "is_default" field's value of the Agreement entity.
+// If the Agreement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgreementMutation) OldIsDefault(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsDefault is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsDefault requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsDefault: %w", err)
+	}
+	return oldValue.IsDefault, nil
+}
+
+// ResetIsDefault resets all changes to the "is_default" field.
+func (m *AgreementMutation) ResetIsDefault() {
+	m.is_default = nil
+}
+
+// SetHash sets the "hash" field.
+func (m *AgreementMutation) SetHash(s string) {
+	m.hash = &s
+}
+
+// Hash returns the value of the "hash" field in the mutation.
+func (m *AgreementMutation) Hash() (r string, exists bool) {
+	v := m.hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHash returns the old "hash" field's value of the Agreement entity.
+// If the Agreement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgreementMutation) OldHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHash: %w", err)
+	}
+	return oldValue.Hash, nil
+}
+
+// ClearHash clears the value of the "hash" field.
+func (m *AgreementMutation) ClearHash() {
+	m.hash = nil
+	m.clearedFields[agreement.FieldHash] = struct{}{}
+}
+
+// HashCleared returns if the "hash" field was cleared in this mutation.
+func (m *AgreementMutation) HashCleared() bool {
+	_, ok := m.clearedFields[agreement.FieldHash]
+	return ok
+}
+
+// ResetHash resets all changes to the "hash" field.
+func (m *AgreementMutation) ResetHash() {
+	m.hash = nil
+	delete(m.clearedFields, agreement.FieldHash)
+}
+
+// SetURL sets the "url" field.
+func (m *AgreementMutation) SetURL(s string) {
+	m.url = &s
+}
+
+// URL returns the value of the "url" field in the mutation.
+func (m *AgreementMutation) URL() (r string, exists bool) {
+	v := m.url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldURL returns the old "url" field's value of the Agreement entity.
+// If the Agreement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgreementMutation) OldURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldURL: %w", err)
+	}
+	return oldValue.URL, nil
+}
+
+// ClearURL clears the value of the "url" field.
+func (m *AgreementMutation) ClearURL() {
+	m.url = nil
+	m.clearedFields[agreement.FieldURL] = struct{}{}
+}
+
+// URLCleared returns if the "url" field was cleared in this mutation.
+func (m *AgreementMutation) URLCleared() bool {
+	_, ok := m.clearedFields[agreement.FieldURL]
+	return ok
+}
+
+// ResetURL resets all changes to the "url" field.
+func (m *AgreementMutation) ResetURL() {
+	m.url = nil
+	delete(m.clearedFields, agreement.FieldURL)
+}
+
+// Where appends a list predicates to the AgreementMutation builder.
+func (m *AgreementMutation) Where(ps ...predicate.Agreement) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the AgreementMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *AgreementMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Agreement, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *AgreementMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *AgreementMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Agreement).
+func (m *AgreementMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AgreementMutation) Fields() []string {
+	fields := make([]string, 0, 13)
+	if m.created_at != nil {
+		fields = append(fields, agreement.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, agreement.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, agreement.FieldDeletedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, agreement.FieldCreator)
+	}
+	if m.last_modifier != nil {
+		fields = append(fields, agreement.FieldLastModifier)
+	}
+	if m.remark != nil {
+		fields = append(fields, agreement.FieldRemark)
+	}
+	if m.name != nil {
+		fields = append(fields, agreement.FieldName)
+	}
+	if m.content != nil {
+		fields = append(fields, agreement.FieldContent)
+	}
+	if m.user_type != nil {
+		fields = append(fields, agreement.FieldUserType)
+	}
+	if m.force_read_time != nil {
+		fields = append(fields, agreement.FieldForceReadTime)
+	}
+	if m.is_default != nil {
+		fields = append(fields, agreement.FieldIsDefault)
+	}
+	if m.hash != nil {
+		fields = append(fields, agreement.FieldHash)
+	}
+	if m.url != nil {
+		fields = append(fields, agreement.FieldURL)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AgreementMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case agreement.FieldCreatedAt:
+		return m.CreatedAt()
+	case agreement.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case agreement.FieldDeletedAt:
+		return m.DeletedAt()
+	case agreement.FieldCreator:
+		return m.Creator()
+	case agreement.FieldLastModifier:
+		return m.LastModifier()
+	case agreement.FieldRemark:
+		return m.Remark()
+	case agreement.FieldName:
+		return m.Name()
+	case agreement.FieldContent:
+		return m.Content()
+	case agreement.FieldUserType:
+		return m.UserType()
+	case agreement.FieldForceReadTime:
+		return m.ForceReadTime()
+	case agreement.FieldIsDefault:
+		return m.IsDefault()
+	case agreement.FieldHash:
+		return m.Hash()
+	case agreement.FieldURL:
+		return m.URL()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AgreementMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case agreement.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case agreement.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case agreement.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case agreement.FieldCreator:
+		return m.OldCreator(ctx)
+	case agreement.FieldLastModifier:
+		return m.OldLastModifier(ctx)
+	case agreement.FieldRemark:
+		return m.OldRemark(ctx)
+	case agreement.FieldName:
+		return m.OldName(ctx)
+	case agreement.FieldContent:
+		return m.OldContent(ctx)
+	case agreement.FieldUserType:
+		return m.OldUserType(ctx)
+	case agreement.FieldForceReadTime:
+		return m.OldForceReadTime(ctx)
+	case agreement.FieldIsDefault:
+		return m.OldIsDefault(ctx)
+	case agreement.FieldHash:
+		return m.OldHash(ctx)
+	case agreement.FieldURL:
+		return m.OldURL(ctx)
+	}
+	return nil, fmt.Errorf("unknown Agreement field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AgreementMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case agreement.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case agreement.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case agreement.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case agreement.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
+		return nil
+	case agreement.FieldLastModifier:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastModifier(v)
+		return nil
+	case agreement.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
+		return nil
+	case agreement.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case agreement.FieldContent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContent(v)
+		return nil
+	case agreement.FieldUserType:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserType(v)
+		return nil
+	case agreement.FieldForceReadTime:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetForceReadTime(v)
+		return nil
+	case agreement.FieldIsDefault:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsDefault(v)
+		return nil
+	case agreement.FieldHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHash(v)
+		return nil
+	case agreement.FieldURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetURL(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Agreement field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AgreementMutation) AddedFields() []string {
+	var fields []string
+	if m.adduser_type != nil {
+		fields = append(fields, agreement.FieldUserType)
+	}
+	if m.addforce_read_time != nil {
+		fields = append(fields, agreement.FieldForceReadTime)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AgreementMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case agreement.FieldUserType:
+		return m.AddedUserType()
+	case agreement.FieldForceReadTime:
+		return m.AddedForceReadTime()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AgreementMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case agreement.FieldUserType:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUserType(v)
+		return nil
+	case agreement.FieldForceReadTime:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddForceReadTime(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Agreement numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AgreementMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(agreement.FieldDeletedAt) {
+		fields = append(fields, agreement.FieldDeletedAt)
+	}
+	if m.FieldCleared(agreement.FieldCreator) {
+		fields = append(fields, agreement.FieldCreator)
+	}
+	if m.FieldCleared(agreement.FieldLastModifier) {
+		fields = append(fields, agreement.FieldLastModifier)
+	}
+	if m.FieldCleared(agreement.FieldRemark) {
+		fields = append(fields, agreement.FieldRemark)
+	}
+	if m.FieldCleared(agreement.FieldHash) {
+		fields = append(fields, agreement.FieldHash)
+	}
+	if m.FieldCleared(agreement.FieldURL) {
+		fields = append(fields, agreement.FieldURL)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AgreementMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AgreementMutation) ClearField(name string) error {
+	switch name {
+	case agreement.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case agreement.FieldCreator:
+		m.ClearCreator()
+		return nil
+	case agreement.FieldLastModifier:
+		m.ClearLastModifier()
+		return nil
+	case agreement.FieldRemark:
+		m.ClearRemark()
+		return nil
+	case agreement.FieldHash:
+		m.ClearHash()
+		return nil
+	case agreement.FieldURL:
+		m.ClearURL()
+		return nil
+	}
+	return fmt.Errorf("unknown Agreement nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AgreementMutation) ResetField(name string) error {
+	switch name {
+	case agreement.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case agreement.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case agreement.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case agreement.FieldCreator:
+		m.ResetCreator()
+		return nil
+	case agreement.FieldLastModifier:
+		m.ResetLastModifier()
+		return nil
+	case agreement.FieldRemark:
+		m.ResetRemark()
+		return nil
+	case agreement.FieldName:
+		m.ResetName()
+		return nil
+	case agreement.FieldContent:
+		m.ResetContent()
+		return nil
+	case agreement.FieldUserType:
+		m.ResetUserType()
+		return nil
+	case agreement.FieldForceReadTime:
+		m.ResetForceReadTime()
+		return nil
+	case agreement.FieldIsDefault:
+		m.ResetIsDefault()
+		return nil
+	case agreement.FieldHash:
+		m.ResetHash()
+		return nil
+	case agreement.FieldURL:
+		m.ResetURL()
+		return nil
+	}
+	return fmt.Errorf("unknown Agreement field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AgreementMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AgreementMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AgreementMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AgreementMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AgreementMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AgreementMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AgreementMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Agreement unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AgreementMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Agreement edge %s", name)
 }
 
 // AllocateMutation represents an operation that mutates the Allocate nodes in the graph.
@@ -43773,6 +44935,8 @@ type EnterprisePriceMutation struct {
 	clearedcity       bool
 	brand             *uint64
 	clearedbrand      bool
+	agreement         *uint64
+	clearedagreement  bool
 	enterprise        *uint64
 	clearedenterprise bool
 	done              bool
@@ -44231,6 +45395,55 @@ func (m *EnterprisePriceMutation) ResetBrandID() {
 	delete(m.clearedFields, enterpriseprice.FieldBrandID)
 }
 
+// SetAgreementID sets the "agreement_id" field.
+func (m *EnterprisePriceMutation) SetAgreementID(u uint64) {
+	m.agreement = &u
+}
+
+// AgreementID returns the value of the "agreement_id" field in the mutation.
+func (m *EnterprisePriceMutation) AgreementID() (r uint64, exists bool) {
+	v := m.agreement
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAgreementID returns the old "agreement_id" field's value of the EnterprisePrice entity.
+// If the EnterprisePrice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterprisePriceMutation) OldAgreementID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAgreementID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAgreementID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAgreementID: %w", err)
+	}
+	return oldValue.AgreementID, nil
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (m *EnterprisePriceMutation) ClearAgreementID() {
+	m.agreement = nil
+	m.clearedFields[enterpriseprice.FieldAgreementID] = struct{}{}
+}
+
+// AgreementIDCleared returns if the "agreement_id" field was cleared in this mutation.
+func (m *EnterprisePriceMutation) AgreementIDCleared() bool {
+	_, ok := m.clearedFields[enterpriseprice.FieldAgreementID]
+	return ok
+}
+
+// ResetAgreementID resets all changes to the "agreement_id" field.
+func (m *EnterprisePriceMutation) ResetAgreementID() {
+	m.agreement = nil
+	delete(m.clearedFields, enterpriseprice.FieldAgreementID)
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (m *EnterprisePriceMutation) SetEnterpriseID(u uint64) {
 	m.enterprise = &u
@@ -44449,6 +45662,33 @@ func (m *EnterprisePriceMutation) ResetBrand() {
 	m.clearedbrand = false
 }
 
+// ClearAgreement clears the "agreement" edge to the Agreement entity.
+func (m *EnterprisePriceMutation) ClearAgreement() {
+	m.clearedagreement = true
+	m.clearedFields[enterpriseprice.FieldAgreementID] = struct{}{}
+}
+
+// AgreementCleared reports if the "agreement" edge to the Agreement entity was cleared.
+func (m *EnterprisePriceMutation) AgreementCleared() bool {
+	return m.AgreementIDCleared() || m.clearedagreement
+}
+
+// AgreementIDs returns the "agreement" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AgreementID instead. It exists only for internal usage by the builders.
+func (m *EnterprisePriceMutation) AgreementIDs() (ids []uint64) {
+	if id := m.agreement; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetAgreement resets all changes to the "agreement" edge.
+func (m *EnterprisePriceMutation) ResetAgreement() {
+	m.agreement = nil
+	m.clearedagreement = false
+}
+
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *EnterprisePriceMutation) ClearEnterprise() {
 	m.clearedenterprise = true
@@ -44510,7 +45750,7 @@ func (m *EnterprisePriceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterprisePriceMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, enterpriseprice.FieldCreatedAt)
 	}
@@ -44534,6 +45774,9 @@ func (m *EnterprisePriceMutation) Fields() []string {
 	}
 	if m.brand != nil {
 		fields = append(fields, enterpriseprice.FieldBrandID)
+	}
+	if m.agreement != nil {
+		fields = append(fields, enterpriseprice.FieldAgreementID)
 	}
 	if m.enterprise != nil {
 		fields = append(fields, enterpriseprice.FieldEnterpriseID)
@@ -44571,6 +45814,8 @@ func (m *EnterprisePriceMutation) Field(name string) (ent.Value, bool) {
 		return m.CityID()
 	case enterpriseprice.FieldBrandID:
 		return m.BrandID()
+	case enterpriseprice.FieldAgreementID:
+		return m.AgreementID()
 	case enterpriseprice.FieldEnterpriseID:
 		return m.EnterpriseID()
 	case enterpriseprice.FieldPrice:
@@ -44604,6 +45849,8 @@ func (m *EnterprisePriceMutation) OldField(ctx context.Context, name string) (en
 		return m.OldCityID(ctx)
 	case enterpriseprice.FieldBrandID:
 		return m.OldBrandID(ctx)
+	case enterpriseprice.FieldAgreementID:
+		return m.OldAgreementID(ctx)
 	case enterpriseprice.FieldEnterpriseID:
 		return m.OldEnterpriseID(ctx)
 	case enterpriseprice.FieldPrice:
@@ -44676,6 +45923,13 @@ func (m *EnterprisePriceMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBrandID(v)
+		return nil
+	case enterpriseprice.FieldAgreementID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAgreementID(v)
 		return nil
 	case enterpriseprice.FieldEnterpriseID:
 		v, ok := value.(uint64)
@@ -44765,6 +46019,9 @@ func (m *EnterprisePriceMutation) ClearedFields() []string {
 	if m.FieldCleared(enterpriseprice.FieldBrandID) {
 		fields = append(fields, enterpriseprice.FieldBrandID)
 	}
+	if m.FieldCleared(enterpriseprice.FieldAgreementID) {
+		fields = append(fields, enterpriseprice.FieldAgreementID)
+	}
 	return fields
 }
 
@@ -44793,6 +46050,9 @@ func (m *EnterprisePriceMutation) ClearField(name string) error {
 		return nil
 	case enterpriseprice.FieldBrandID:
 		m.ClearBrandID()
+		return nil
+	case enterpriseprice.FieldAgreementID:
+		m.ClearAgreementID()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrice nullable field %s", name)
@@ -44826,6 +46086,9 @@ func (m *EnterprisePriceMutation) ResetField(name string) error {
 	case enterpriseprice.FieldBrandID:
 		m.ResetBrandID()
 		return nil
+	case enterpriseprice.FieldAgreementID:
+		m.ResetAgreementID()
+		return nil
 	case enterpriseprice.FieldEnterpriseID:
 		m.ResetEnterpriseID()
 		return nil
@@ -44844,12 +46107,15 @@ func (m *EnterprisePriceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EnterprisePriceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.city != nil {
 		edges = append(edges, enterpriseprice.EdgeCity)
 	}
 	if m.brand != nil {
 		edges = append(edges, enterpriseprice.EdgeBrand)
+	}
+	if m.agreement != nil {
+		edges = append(edges, enterpriseprice.EdgeAgreement)
 	}
 	if m.enterprise != nil {
 		edges = append(edges, enterpriseprice.EdgeEnterprise)
@@ -44869,6 +46135,10 @@ func (m *EnterprisePriceMutation) AddedIDs(name string) []ent.Value {
 		if id := m.brand; id != nil {
 			return []ent.Value{*id}
 		}
+	case enterpriseprice.EdgeAgreement:
+		if id := m.agreement; id != nil {
+			return []ent.Value{*id}
+		}
 	case enterpriseprice.EdgeEnterprise:
 		if id := m.enterprise; id != nil {
 			return []ent.Value{*id}
@@ -44879,7 +46149,7 @@ func (m *EnterprisePriceMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EnterprisePriceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -44891,12 +46161,15 @@ func (m *EnterprisePriceMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EnterprisePriceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedcity {
 		edges = append(edges, enterpriseprice.EdgeCity)
 	}
 	if m.clearedbrand {
 		edges = append(edges, enterpriseprice.EdgeBrand)
+	}
+	if m.clearedagreement {
+		edges = append(edges, enterpriseprice.EdgeAgreement)
 	}
 	if m.clearedenterprise {
 		edges = append(edges, enterpriseprice.EdgeEnterprise)
@@ -44912,6 +46185,8 @@ func (m *EnterprisePriceMutation) EdgeCleared(name string) bool {
 		return m.clearedcity
 	case enterpriseprice.EdgeBrand:
 		return m.clearedbrand
+	case enterpriseprice.EdgeAgreement:
+		return m.clearedagreement
 	case enterpriseprice.EdgeEnterprise:
 		return m.clearedenterprise
 	}
@@ -44927,6 +46202,9 @@ func (m *EnterprisePriceMutation) ClearEdge(name string) error {
 		return nil
 	case enterpriseprice.EdgeBrand:
 		m.ClearBrand()
+		return nil
+	case enterpriseprice.EdgeAgreement:
+		m.ClearAgreement()
 		return nil
 	case enterpriseprice.EdgeEnterprise:
 		m.ClearEnterprise()
@@ -44944,6 +46222,9 @@ func (m *EnterprisePriceMutation) ResetEdge(name string) error {
 		return nil
 	case enterpriseprice.EdgeBrand:
 		m.ResetBrand()
+		return nil
+	case enterpriseprice.EdgeAgreement:
+		m.ResetAgreement()
 		return nil
 	case enterpriseprice.EdgeEnterprise:
 		m.ResetEnterprise()
@@ -66805,6 +68086,8 @@ type PlanMutation struct {
 	clearedFields              map[string]struct{}
 	brand                      *uint64
 	clearedbrand               bool
+	agreement                  *uint64
+	clearedagreement           bool
 	cities                     map[uint64]struct{}
 	removedcities              map[uint64]struct{}
 	clearedcities              bool
@@ -67234,6 +68517,55 @@ func (m *PlanMutation) BrandIDCleared() bool {
 func (m *PlanMutation) ResetBrandID() {
 	m.brand = nil
 	delete(m.clearedFields, plan.FieldBrandID)
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (m *PlanMutation) SetAgreementID(u uint64) {
+	m.agreement = &u
+}
+
+// AgreementID returns the value of the "agreement_id" field in the mutation.
+func (m *PlanMutation) AgreementID() (r uint64, exists bool) {
+	v := m.agreement
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAgreementID returns the old "agreement_id" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldAgreementID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAgreementID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAgreementID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAgreementID: %w", err)
+	}
+	return oldValue.AgreementID, nil
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (m *PlanMutation) ClearAgreementID() {
+	m.agreement = nil
+	m.clearedFields[plan.FieldAgreementID] = struct{}{}
+}
+
+// AgreementIDCleared returns if the "agreement_id" field was cleared in this mutation.
+func (m *PlanMutation) AgreementIDCleared() bool {
+	_, ok := m.clearedFields[plan.FieldAgreementID]
+	return ok
+}
+
+// ResetAgreementID resets all changes to the "agreement_id" field.
+func (m *PlanMutation) ResetAgreementID() {
+	m.agreement = nil
+	delete(m.clearedFields, plan.FieldAgreementID)
 }
 
 // SetModel sets the "model" field.
@@ -68307,6 +69639,33 @@ func (m *PlanMutation) ResetBrand() {
 	m.clearedbrand = false
 }
 
+// ClearAgreement clears the "agreement" edge to the Agreement entity.
+func (m *PlanMutation) ClearAgreement() {
+	m.clearedagreement = true
+	m.clearedFields[plan.FieldAgreementID] = struct{}{}
+}
+
+// AgreementCleared reports if the "agreement" edge to the Agreement entity was cleared.
+func (m *PlanMutation) AgreementCleared() bool {
+	return m.AgreementIDCleared() || m.clearedagreement
+}
+
+// AgreementIDs returns the "agreement" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AgreementID instead. It exists only for internal usage by the builders.
+func (m *PlanMutation) AgreementIDs() (ids []uint64) {
+	if id := m.agreement; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetAgreement resets all changes to the "agreement" edge.
+func (m *PlanMutation) ResetAgreement() {
+	m.agreement = nil
+	m.clearedagreement = false
+}
+
 // AddCityIDs adds the "cities" edge to the City entity by ids.
 func (m *PlanMutation) AddCityIDs(ids ...uint64) {
 	if m.cities == nil {
@@ -68530,7 +69889,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 28)
+	fields := make([]string, 0, 29)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -68551,6 +69910,9 @@ func (m *PlanMutation) Fields() []string {
 	}
 	if m.brand != nil {
 		fields = append(fields, plan.FieldBrandID)
+	}
+	if m.agreement != nil {
+		fields = append(fields, plan.FieldAgreementID)
 	}
 	if m.model != nil {
 		fields = append(fields, plan.FieldModel)
@@ -68637,6 +69999,8 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case plan.FieldBrandID:
 		return m.BrandID()
+	case plan.FieldAgreementID:
+		return m.AgreementID()
 	case plan.FieldModel:
 		return m.Model()
 	case plan.FieldEnable:
@@ -68702,6 +70066,8 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldRemark(ctx)
 	case plan.FieldBrandID:
 		return m.OldBrandID(ctx)
+	case plan.FieldAgreementID:
+		return m.OldAgreementID(ctx)
 	case plan.FieldModel:
 		return m.OldModel(ctx)
 	case plan.FieldEnable:
@@ -68801,6 +70167,13 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBrandID(v)
+		return nil
+	case plan.FieldAgreementID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAgreementID(v)
 		return nil
 	case plan.FieldModel:
 		v, ok := value.(string)
@@ -69081,6 +70454,9 @@ func (m *PlanMutation) ClearedFields() []string {
 	if m.FieldCleared(plan.FieldBrandID) {
 		fields = append(fields, plan.FieldBrandID)
 	}
+	if m.FieldCleared(plan.FieldAgreementID) {
+		fields = append(fields, plan.FieldAgreementID)
+	}
 	if m.FieldCleared(plan.FieldModel) {
 		fields = append(fields, plan.FieldModel)
 	}
@@ -69140,6 +70516,9 @@ func (m *PlanMutation) ClearField(name string) error {
 	case plan.FieldBrandID:
 		m.ClearBrandID()
 		return nil
+	case plan.FieldAgreementID:
+		m.ClearAgreementID()
+		return nil
 	case plan.FieldModel:
 		m.ClearModel()
 		return nil
@@ -69198,6 +70577,9 @@ func (m *PlanMutation) ResetField(name string) error {
 		return nil
 	case plan.FieldBrandID:
 		m.ResetBrandID()
+		return nil
+	case plan.FieldAgreementID:
+		m.ResetAgreementID()
 		return nil
 	case plan.FieldModel:
 		m.ResetModel()
@@ -69268,9 +70650,12 @@ func (m *PlanMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlanMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.brand != nil {
 		edges = append(edges, plan.EdgeBrand)
+	}
+	if m.agreement != nil {
+		edges = append(edges, plan.EdgeAgreement)
 	}
 	if m.cities != nil {
 		edges = append(edges, plan.EdgeCities)
@@ -69293,6 +70678,10 @@ func (m *PlanMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case plan.EdgeBrand:
 		if id := m.brand; id != nil {
+			return []ent.Value{*id}
+		}
+	case plan.EdgeAgreement:
+		if id := m.agreement; id != nil {
 			return []ent.Value{*id}
 		}
 	case plan.EdgeCities:
@@ -69323,7 +70712,7 @@ func (m *PlanMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlanMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.removedcities != nil {
 		edges = append(edges, plan.EdgeCities)
 	}
@@ -69364,9 +70753,12 @@ func (m *PlanMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlanMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedbrand {
 		edges = append(edges, plan.EdgeBrand)
+	}
+	if m.clearedagreement {
+		edges = append(edges, plan.EdgeAgreement)
 	}
 	if m.clearedcities {
 		edges = append(edges, plan.EdgeCities)
@@ -69389,6 +70781,8 @@ func (m *PlanMutation) EdgeCleared(name string) bool {
 	switch name {
 	case plan.EdgeBrand:
 		return m.clearedbrand
+	case plan.EdgeAgreement:
+		return m.clearedagreement
 	case plan.EdgeCities:
 		return m.clearedcities
 	case plan.EdgeParent:
@@ -69408,6 +70802,9 @@ func (m *PlanMutation) ClearEdge(name string) error {
 	case plan.EdgeBrand:
 		m.ClearBrand()
 		return nil
+	case plan.EdgeAgreement:
+		m.ClearAgreement()
+		return nil
 	case plan.EdgeParent:
 		m.ClearParent()
 		return nil
@@ -69421,6 +70818,9 @@ func (m *PlanMutation) ResetEdge(name string) error {
 	switch name {
 	case plan.EdgeBrand:
 		m.ResetBrand()
+		return nil
+	case plan.EdgeAgreement:
+		m.ResetAgreement()
 		return nil
 	case plan.EdgeCities:
 		m.ResetCities()
@@ -104549,89 +105949,92 @@ func (m *StoreMutation) ResetEdge(name string) error {
 // SubscribeMutation represents an operation that mutates the Subscribe nodes in the graph.
 type SubscribeMutation struct {
 	config
-	op                   Op
-	typ                  string
-	id                   *uint64
-	created_at           *time.Time
-	updated_at           *time.Time
-	deleted_at           *time.Time
-	creator              **model.Modifier
-	last_modifier        **model.Modifier
-	remark               *string
-	status               *uint8
-	addstatus            *int8
-	_type                *uint
-	add_type             *int
-	model                *string
-	initial_days         *int
-	addinitial_days      *int
-	alter_days           *int
-	addalter_days        *int
-	pause_days           *int
-	addpause_days        *int
-	suspend_days         *int
-	addsuspend_days      *int
-	renewal_days         *int
-	addrenewal_days      *int
-	overdue_days         *int
-	addoverdue_days      *int
-	remaining            *int
-	addremaining         *int
-	paused_at            *time.Time
-	suspend_at           *time.Time
-	start_at             *time.Time
-	end_at               *time.Time
-	refund_at            *time.Time
-	unsubscribe_reason   *string
-	last_bill_date       *time.Time
-	pause_overdue        *bool
-	agent_end_at         *time.Time
-	formula              *string
-	need_contract        *bool
-	intelligent          *bool
-	clearedFields        map[string]struct{}
-	plan                 *uint64
-	clearedplan          bool
-	employee             *uint64
-	clearedemployee      bool
-	city                 *uint64
-	clearedcity          bool
-	station              *uint64
-	clearedstation       bool
-	store                *uint64
-	clearedstore         bool
-	cabinet              *uint64
-	clearedcabinet       bool
-	brand                *uint64
-	clearedbrand         bool
-	ebike                *uint64
-	clearedebike         bool
-	rider                *uint64
-	clearedrider         bool
-	enterprise           *uint64
-	clearedenterprise    bool
-	pauses               map[uint64]struct{}
-	removedpauses        map[uint64]struct{}
-	clearedpauses        bool
-	suspends             map[uint64]struct{}
-	removedsuspends      map[uint64]struct{}
-	clearedsuspends      bool
-	alters               map[uint64]struct{}
-	removedalters        map[uint64]struct{}
-	clearedalters        bool
-	orders               map[uint64]struct{}
-	removedorders        map[uint64]struct{}
-	clearedorders        bool
-	initial_order        *uint64
-	clearedinitial_order bool
-	bills                map[uint64]struct{}
-	removedbills         map[uint64]struct{}
-	clearedbills         bool
-	battery              *uint64
-	clearedbattery       bool
-	done                 bool
-	oldValue             func(context.Context) (*Subscribe, error)
-	predicates           []predicate.Subscribe
+	op                     Op
+	typ                    string
+	id                     *uint64
+	created_at             *time.Time
+	updated_at             *time.Time
+	deleted_at             *time.Time
+	creator                **model.Modifier
+	last_modifier          **model.Modifier
+	remark                 *string
+	status                 *uint8
+	addstatus              *int8
+	_type                  *uint
+	add_type               *int
+	model                  *string
+	initial_days           *int
+	addinitial_days        *int
+	alter_days             *int
+	addalter_days          *int
+	pause_days             *int
+	addpause_days          *int
+	suspend_days           *int
+	addsuspend_days        *int
+	renewal_days           *int
+	addrenewal_days        *int
+	overdue_days           *int
+	addoverdue_days        *int
+	remaining              *int
+	addremaining           *int
+	paused_at              *time.Time
+	suspend_at             *time.Time
+	start_at               *time.Time
+	end_at                 *time.Time
+	refund_at              *time.Time
+	unsubscribe_reason     *string
+	last_bill_date         *time.Time
+	pause_overdue          *bool
+	agent_end_at           *time.Time
+	formula                *string
+	need_contract          *bool
+	intelligent            *bool
+	agreement_hash         *string
+	enterprise_price_id    *uint64
+	addenterprise_price_id *int64
+	clearedFields          map[string]struct{}
+	plan                   *uint64
+	clearedplan            bool
+	employee               *uint64
+	clearedemployee        bool
+	city                   *uint64
+	clearedcity            bool
+	station                *uint64
+	clearedstation         bool
+	store                  *uint64
+	clearedstore           bool
+	cabinet                *uint64
+	clearedcabinet         bool
+	brand                  *uint64
+	clearedbrand           bool
+	ebike                  *uint64
+	clearedebike           bool
+	rider                  *uint64
+	clearedrider           bool
+	enterprise             *uint64
+	clearedenterprise      bool
+	pauses                 map[uint64]struct{}
+	removedpauses          map[uint64]struct{}
+	clearedpauses          bool
+	suspends               map[uint64]struct{}
+	removedsuspends        map[uint64]struct{}
+	clearedsuspends        bool
+	alters                 map[uint64]struct{}
+	removedalters          map[uint64]struct{}
+	clearedalters          bool
+	orders                 map[uint64]struct{}
+	removedorders          map[uint64]struct{}
+	clearedorders          bool
+	initial_order          *uint64
+	clearedinitial_order   bool
+	bills                  map[uint64]struct{}
+	removedbills           map[uint64]struct{}
+	clearedbills           bool
+	battery                *uint64
+	clearedbattery         bool
+	done                   bool
+	oldValue               func(context.Context) (*Subscribe, error)
+	predicates             []predicate.Subscribe
 }
 
 var _ ent.Mutation = (*SubscribeMutation)(nil)
@@ -106616,6 +108019,125 @@ func (m *SubscribeMutation) ResetIntelligent() {
 	m.intelligent = nil
 }
 
+// SetAgreementHash sets the "agreement_hash" field.
+func (m *SubscribeMutation) SetAgreementHash(s string) {
+	m.agreement_hash = &s
+}
+
+// AgreementHash returns the value of the "agreement_hash" field in the mutation.
+func (m *SubscribeMutation) AgreementHash() (r string, exists bool) {
+	v := m.agreement_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAgreementHash returns the old "agreement_hash" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldAgreementHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAgreementHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAgreementHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAgreementHash: %w", err)
+	}
+	return oldValue.AgreementHash, nil
+}
+
+// ClearAgreementHash clears the value of the "agreement_hash" field.
+func (m *SubscribeMutation) ClearAgreementHash() {
+	m.agreement_hash = nil
+	m.clearedFields[subscribe.FieldAgreementHash] = struct{}{}
+}
+
+// AgreementHashCleared returns if the "agreement_hash" field was cleared in this mutation.
+func (m *SubscribeMutation) AgreementHashCleared() bool {
+	_, ok := m.clearedFields[subscribe.FieldAgreementHash]
+	return ok
+}
+
+// ResetAgreementHash resets all changes to the "agreement_hash" field.
+func (m *SubscribeMutation) ResetAgreementHash() {
+	m.agreement_hash = nil
+	delete(m.clearedFields, subscribe.FieldAgreementHash)
+}
+
+// SetEnterprisePriceID sets the "enterprise_price_id" field.
+func (m *SubscribeMutation) SetEnterprisePriceID(u uint64) {
+	m.enterprise_price_id = &u
+	m.addenterprise_price_id = nil
+}
+
+// EnterprisePriceID returns the value of the "enterprise_price_id" field in the mutation.
+func (m *SubscribeMutation) EnterprisePriceID() (r uint64, exists bool) {
+	v := m.enterprise_price_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnterprisePriceID returns the old "enterprise_price_id" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldEnterprisePriceID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnterprisePriceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnterprisePriceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnterprisePriceID: %w", err)
+	}
+	return oldValue.EnterprisePriceID, nil
+}
+
+// AddEnterprisePriceID adds u to the "enterprise_price_id" field.
+func (m *SubscribeMutation) AddEnterprisePriceID(u int64) {
+	if m.addenterprise_price_id != nil {
+		*m.addenterprise_price_id += u
+	} else {
+		m.addenterprise_price_id = &u
+	}
+}
+
+// AddedEnterprisePriceID returns the value that was added to the "enterprise_price_id" field in this mutation.
+func (m *SubscribeMutation) AddedEnterprisePriceID() (r int64, exists bool) {
+	v := m.addenterprise_price_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearEnterprisePriceID clears the value of the "enterprise_price_id" field.
+func (m *SubscribeMutation) ClearEnterprisePriceID() {
+	m.enterprise_price_id = nil
+	m.addenterprise_price_id = nil
+	m.clearedFields[subscribe.FieldEnterprisePriceID] = struct{}{}
+}
+
+// EnterprisePriceIDCleared returns if the "enterprise_price_id" field was cleared in this mutation.
+func (m *SubscribeMutation) EnterprisePriceIDCleared() bool {
+	_, ok := m.clearedFields[subscribe.FieldEnterprisePriceID]
+	return ok
+}
+
+// ResetEnterprisePriceID resets all changes to the "enterprise_price_id" field.
+func (m *SubscribeMutation) ResetEnterprisePriceID() {
+	m.enterprise_price_id = nil
+	m.addenterprise_price_id = nil
+	delete(m.clearedFields, subscribe.FieldEnterprisePriceID)
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *SubscribeMutation) ClearPlan() {
 	m.clearedplan = true
@@ -107256,7 +108778,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 39)
+	fields := make([]string, 0, 41)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -107374,6 +108896,12 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.intelligent != nil {
 		fields = append(fields, subscribe.FieldIntelligent)
 	}
+	if m.agreement_hash != nil {
+		fields = append(fields, subscribe.FieldAgreementHash)
+	}
+	if m.enterprise_price_id != nil {
+		fields = append(fields, subscribe.FieldEnterprisePriceID)
+	}
 	return fields
 }
 
@@ -107460,6 +108988,10 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.NeedContract()
 	case subscribe.FieldIntelligent:
 		return m.Intelligent()
+	case subscribe.FieldAgreementHash:
+		return m.AgreementHash()
+	case subscribe.FieldEnterprisePriceID:
+		return m.EnterprisePriceID()
 	}
 	return nil, false
 }
@@ -107547,6 +109079,10 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldNeedContract(ctx)
 	case subscribe.FieldIntelligent:
 		return m.OldIntelligent(ctx)
+	case subscribe.FieldAgreementHash:
+		return m.OldAgreementHash(ctx)
+	case subscribe.FieldEnterprisePriceID:
+		return m.OldEnterprisePriceID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -107829,6 +109365,20 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIntelligent(v)
 		return nil
+	case subscribe.FieldAgreementHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAgreementHash(v)
+		return nil
+	case subscribe.FieldEnterprisePriceID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnterprisePriceID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -107864,6 +109414,9 @@ func (m *SubscribeMutation) AddedFields() []string {
 	if m.addremaining != nil {
 		fields = append(fields, subscribe.FieldRemaining)
 	}
+	if m.addenterprise_price_id != nil {
+		fields = append(fields, subscribe.FieldEnterprisePriceID)
+	}
 	return fields
 }
 
@@ -107890,6 +109443,8 @@ func (m *SubscribeMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedOverdueDays()
 	case subscribe.FieldRemaining:
 		return m.AddedRemaining()
+	case subscribe.FieldEnterprisePriceID:
+		return m.AddedEnterprisePriceID()
 	}
 	return nil, false
 }
@@ -107961,6 +109516,13 @@ func (m *SubscribeMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddRemaining(v)
+		return nil
+	case subscribe.FieldEnterprisePriceID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddEnterprisePriceID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe numeric field %s", name)
@@ -108038,6 +109600,12 @@ func (m *SubscribeMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(subscribe.FieldFormula) {
 		fields = append(fields, subscribe.FieldFormula)
+	}
+	if m.FieldCleared(subscribe.FieldAgreementHash) {
+		fields = append(fields, subscribe.FieldAgreementHash)
+	}
+	if m.FieldCleared(subscribe.FieldEnterprisePriceID) {
+		fields = append(fields, subscribe.FieldEnterprisePriceID)
 	}
 	return fields
 }
@@ -108121,6 +109689,12 @@ func (m *SubscribeMutation) ClearField(name string) error {
 		return nil
 	case subscribe.FieldFormula:
 		m.ClearFormula()
+		return nil
+	case subscribe.FieldAgreementHash:
+		m.ClearAgreementHash()
+		return nil
+	case subscribe.FieldEnterprisePriceID:
+		m.ClearEnterprisePriceID()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe nullable field %s", name)
@@ -108246,6 +109820,12 @@ func (m *SubscribeMutation) ResetField(name string) error {
 		return nil
 	case subscribe.FieldIntelligent:
 		m.ResetIntelligent()
+		return nil
+	case subscribe.FieldAgreementHash:
+		m.ResetAgreementHash()
+		return nil
+	case subscribe.FieldEnterprisePriceID:
+		m.ResetEnterprisePriceID()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)

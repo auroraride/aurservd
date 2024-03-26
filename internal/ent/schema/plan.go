@@ -100,6 +100,7 @@ func (Plan) Mixin() []ent.Mixin {
 		internal.DeleteMixin{},
 		internal.Modifier{},
 		EbikeBrandMixin{Optional: true},
+		AgreementMixin{Optional: true},
 	}
 }
 

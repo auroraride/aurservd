@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -38,6 +39,8 @@ type EnterprisePrice struct {
 	CityID uint64 `json:"city_id,omitempty"`
 	// BrandID holds the value of the "brand_id" field.
 	BrandID *uint64 `json:"brand_id,omitempty"`
+	// AgreementID holds the value of the "agreement_id" field.
+	AgreementID *uint64 `json:"agreement_id,omitempty"`
 	// EnterpriseID holds the value of the "enterprise_id" field.
 	EnterpriseID uint64 `json:"enterprise_id,omitempty"`
 	// 单价 元/天
@@ -58,11 +61,13 @@ type EnterprisePriceEdges struct {
 	City *City `json:"city,omitempty"`
 	// Brand holds the value of the brand edge.
 	Brand *EbikeBrand `json:"brand,omitempty"`
+	// Agreement holds the value of the agreement edge.
+	Agreement *Agreement `json:"agreement,omitempty"`
 	// Enterprise holds the value of the enterprise edge.
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -87,12 +92,23 @@ func (e EnterprisePriceEdges) BrandOrErr() (*EbikeBrand, error) {
 	return nil, &NotLoadedError{edge: "brand"}
 }
 
+// AgreementOrErr returns the Agreement value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EnterprisePriceEdges) AgreementOrErr() (*Agreement, error) {
+	if e.Agreement != nil {
+		return e.Agreement, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: agreement.Label}
+	}
+	return nil, &NotLoadedError{edge: "agreement"}
+}
+
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterprisePriceEdges) EnterpriseOrErr() (*Enterprise, error) {
 	if e.Enterprise != nil {
 		return e.Enterprise, nil
-	} else if e.loadedTypes[2] {
+	} else if e.loadedTypes[3] {
 		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
@@ -109,7 +125,7 @@ func (*EnterprisePrice) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case enterpriseprice.FieldPrice:
 			values[i] = new(sql.NullFloat64)
-		case enterpriseprice.FieldID, enterpriseprice.FieldCityID, enterpriseprice.FieldBrandID, enterpriseprice.FieldEnterpriseID:
+		case enterpriseprice.FieldID, enterpriseprice.FieldCityID, enterpriseprice.FieldBrandID, enterpriseprice.FieldAgreementID, enterpriseprice.FieldEnterpriseID:
 			values[i] = new(sql.NullInt64)
 		case enterpriseprice.FieldRemark, enterpriseprice.FieldModel:
 			values[i] = new(sql.NullString)
@@ -190,6 +206,13 @@ func (ep *EnterprisePrice) assignValues(columns []string, values []any) error {
 				ep.BrandID = new(uint64)
 				*ep.BrandID = uint64(value.Int64)
 			}
+		case enterpriseprice.FieldAgreementID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field agreement_id", values[i])
+			} else if value.Valid {
+				ep.AgreementID = new(uint64)
+				*ep.AgreementID = uint64(value.Int64)
+			}
 		case enterpriseprice.FieldEnterpriseID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
@@ -235,6 +258,11 @@ func (ep *EnterprisePrice) QueryCity() *CityQuery {
 // QueryBrand queries the "brand" edge of the EnterprisePrice entity.
 func (ep *EnterprisePrice) QueryBrand() *EbikeBrandQuery {
 	return NewEnterprisePriceClient(ep.config).QueryBrand(ep)
+}
+
+// QueryAgreement queries the "agreement" edge of the EnterprisePrice entity.
+func (ep *EnterprisePrice) QueryAgreement() *AgreementQuery {
+	return NewEnterprisePriceClient(ep.config).QueryAgreement(ep)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the EnterprisePrice entity.
@@ -290,6 +318,11 @@ func (ep *EnterprisePrice) String() string {
 	builder.WriteString(", ")
 	if v := ep.BrandID; v != nil {
 		builder.WriteString("brand_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := ep.AgreementID; v != nil {
+		builder.WriteString("agreement_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

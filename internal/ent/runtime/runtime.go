@@ -9,6 +9,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
@@ -143,6 +144,35 @@ func init() {
 	agentDescSuper := agentFields[2].Descriptor()
 	// agent.DefaultSuper holds the default value on creation for the super field.
 	agent.DefaultSuper = agentDescSuper.Default.(bool)
+	agreementMixin := schema.Agreement{}.Mixin()
+	agreementMixinHooks2 := agreementMixin[2].Hooks()
+	agreement.Hooks[0] = agreementMixinHooks2[0]
+	agreementMixinFields0 := agreementMixin[0].Fields()
+	_ = agreementMixinFields0
+	agreementFields := schema.Agreement{}.Fields()
+	_ = agreementFields
+	// agreementDescCreatedAt is the schema descriptor for created_at field.
+	agreementDescCreatedAt := agreementMixinFields0[0].Descriptor()
+	// agreement.DefaultCreatedAt holds the default value on creation for the created_at field.
+	agreement.DefaultCreatedAt = agreementDescCreatedAt.Default.(func() time.Time)
+	// agreementDescUpdatedAt is the schema descriptor for updated_at field.
+	agreementDescUpdatedAt := agreementMixinFields0[1].Descriptor()
+	// agreement.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	agreement.DefaultUpdatedAt = agreementDescUpdatedAt.Default.(func() time.Time)
+	// agreement.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	agreement.UpdateDefaultUpdatedAt = agreementDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// agreementDescUserType is the schema descriptor for user_type field.
+	agreementDescUserType := agreementFields[2].Descriptor()
+	// agreement.DefaultUserType holds the default value on creation for the user_type field.
+	agreement.DefaultUserType = agreementDescUserType.Default.(uint8)
+	// agreementDescForceReadTime is the schema descriptor for force_read_time field.
+	agreementDescForceReadTime := agreementFields[3].Descriptor()
+	// agreement.DefaultForceReadTime holds the default value on creation for the force_read_time field.
+	agreement.DefaultForceReadTime = agreementDescForceReadTime.Default.(uint8)
+	// agreementDescIsDefault is the schema descriptor for is_default field.
+	agreementDescIsDefault := agreementFields[4].Descriptor()
+	// agreement.DefaultIsDefault holds the default value on creation for the is_default field.
+	agreement.DefaultIsDefault = agreementDescIsDefault.Default.(bool)
 	allocateMixin := schema.Allocate{}.Mixin()
 	allocateMixinHooks3 := allocateMixin[3].Hooks()
 	allocate.Hooks[0] = allocateMixinHooks3[0]

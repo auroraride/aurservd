@@ -97,6 +97,8 @@ func (Subscribe) Fields() []ent.Field {
 		field.String("formula").Optional().Nillable().Comment("计算公式"),
 		field.Bool("need_contract").Default(false).Comment("是否需要签约"),
 		field.Bool("intelligent").Default(false).Comment("是否智能柜套餐"),
+		field.String("agreement_hash").Optional().Comment("签署协议hash"),
+		field.Uint64("enterprise_price_id").Optional().Comment("团签价格ID"),
 	}
 }
 
@@ -116,6 +118,8 @@ func (Subscribe) Edges() []ent.Edge {
 		edge.To("bills", EnterpriseBill.Type),
 
 		edge.To("battery", Battery.Type).Unique(),
+
+		edge.To("enterprise_price", EnterprisePrice.Type).Unique().Field("enterprise_price_id"),
 	}
 }
 

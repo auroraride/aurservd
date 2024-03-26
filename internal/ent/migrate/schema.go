@@ -100,6 +100,41 @@ var (
 			},
 		},
 	}
+	// AgreementColumns holds the columns for the "agreement" table.
+	AgreementColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "name", Type: field.TypeString, Comment: "协议名称"},
+		{Name: "content", Type: field.TypeString, Size: 2147483647, Comment: "协议内容"},
+		{Name: "user_type", Type: field.TypeUint8, Comment: "用户类型 1:个签 2:团签", Default: 1},
+		{Name: "force_read_time", Type: field.TypeUint8, Comment: "强制阅读时间", Default: 0},
+		{Name: "is_default", Type: field.TypeBool, Comment: "是否为默认协议", Default: false},
+		{Name: "hash", Type: field.TypeString, Nullable: true, Comment: "hash"},
+		{Name: "url", Type: field.TypeString, Nullable: true, Comment: "url"},
+	}
+	// AgreementTable holds the schema information for the "agreement" table.
+	AgreementTable = &schema.Table{
+		Name:       "agreement",
+		Columns:    AgreementColumns,
+		PrimaryKey: []*schema.Column{AgreementColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "agreement_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AgreementColumns[1]},
+			},
+			{
+				Name:    "agreement_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{AgreementColumns[3]},
+			},
+		},
+	}
 	// AllocateColumns holds the columns for the "allocate" table.
 	AllocateColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -2295,6 +2330,7 @@ var (
 		{Name: "enterprise_id", Type: field.TypeUint64},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "agreement_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// EnterprisePriceTable holds the schema information for the "enterprise_price" table.
 	EnterprisePriceTable = &schema.Table{
@@ -2320,6 +2356,12 @@ var (
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
+			{
+				Symbol:     "enterprise_price_agreement_agreement",
+				Columns:    []*schema.Column{EnterprisePriceColumns[13]},
+				RefColumns: []*schema.Column{AgreementColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
 		},
 		Indexes: []*schema.Index{
 			{
@@ -2341,6 +2383,11 @@ var (
 				Name:    "enterpriseprice_brand_id",
 				Unique:  false,
 				Columns: []*schema.Column{EnterprisePriceColumns[12]},
+			},
+			{
+				Name:    "enterpriseprice_agreement_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterprisePriceColumns[13]},
 			},
 			{
 				Name:    "enterpriseprice_model",
@@ -3458,6 +3505,7 @@ var (
 		{Name: "deposit_contract", Type: field.TypeBool, Nullable: true, Comment: "合同免押金", Default: false},
 		{Name: "deposit_pay", Type: field.TypeBool, Nullable: true, Comment: "支付押金", Default: false},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "agreement_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true, Comment: "父级"},
 	}
 	// PlanTable holds the schema information for the "plan" table.
@@ -3473,8 +3521,14 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "plan_plan_complexes",
+				Symbol:     "plan_agreement_agreement",
 				Columns:    []*schema.Column{PlanColumns[28]},
+				RefColumns: []*schema.Column{AgreementColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "plan_plan_complexes",
+				Columns:    []*schema.Column{PlanColumns[29]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3494,6 +3548,11 @@ var (
 				Name:    "plan_brand_id",
 				Unique:  false,
 				Columns: []*schema.Column{PlanColumns[27]},
+			},
+			{
+				Name:    "plan_agreement_id",
+				Unique:  false,
+				Columns: []*schema.Column{PlanColumns[28]},
 			},
 			{
 				Name:    "plan_type",
@@ -5207,6 +5266,8 @@ var (
 		{Name: "formula", Type: field.TypeString, Nullable: true, Comment: "计算公式"},
 		{Name: "need_contract", Type: field.TypeBool, Comment: "是否需要签约", Default: false},
 		{Name: "intelligent", Type: field.TypeBool, Comment: "是否智能柜套餐", Default: false},
+		{Name: "agreement_hash", Type: field.TypeString, Nullable: true, Comment: "签署协议hash"},
+		{Name: "enterprise_price_id", Type: field.TypeUint64, Nullable: true, Comment: "团签价格ID"},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "企业ID"},
 		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
@@ -5227,67 +5288,67 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "subscribe_enterprise_subscribes",
-				Columns:    []*schema.Column{SubscribeColumns[29]},
+				Columns:    []*schema.Column{SubscribeColumns[31]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_rider_subscribes",
-				Columns:    []*schema.Column{SubscribeColumns[30]},
+				Columns:    []*schema.Column{SubscribeColumns[32]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_plan_plan",
-				Columns:    []*schema.Column{SubscribeColumns[31]},
+				Columns:    []*schema.Column{SubscribeColumns[33]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_employee_employee",
-				Columns:    []*schema.Column{SubscribeColumns[32]},
+				Columns:    []*schema.Column{SubscribeColumns[34]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_city_city",
-				Columns:    []*schema.Column{SubscribeColumns[33]},
+				Columns:    []*schema.Column{SubscribeColumns[35]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_enterprise_station_station",
-				Columns:    []*schema.Column{SubscribeColumns[34]},
+				Columns:    []*schema.Column{SubscribeColumns[36]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_store_store",
-				Columns:    []*schema.Column{SubscribeColumns[35]},
+				Columns:    []*schema.Column{SubscribeColumns[37]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_cabinet_cabinet",
-				Columns:    []*schema.Column{SubscribeColumns[36]},
+				Columns:    []*schema.Column{SubscribeColumns[38]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_ebike_brand_brand",
-				Columns:    []*schema.Column{SubscribeColumns[37]},
+				Columns:    []*schema.Column{SubscribeColumns[39]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_ebike_ebike",
-				Columns:    []*schema.Column{SubscribeColumns[38]},
+				Columns:    []*schema.Column{SubscribeColumns[40]},
 				RefColumns: []*schema.Column{EbikeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_order_initial_order",
-				Columns:    []*schema.Column{SubscribeColumns[39]},
+				Columns:    []*schema.Column{SubscribeColumns[41]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -5306,52 +5367,52 @@ var (
 			{
 				Name:    "subscribe_plan_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[31]},
+				Columns: []*schema.Column{SubscribeColumns[33]},
 			},
 			{
 				Name:    "subscribe_employee_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[32]},
+				Columns: []*schema.Column{SubscribeColumns[34]},
 			},
 			{
 				Name:    "subscribe_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[33]},
+				Columns: []*schema.Column{SubscribeColumns[35]},
 			},
 			{
 				Name:    "subscribe_station_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[34]},
+				Columns: []*schema.Column{SubscribeColumns[36]},
 			},
 			{
 				Name:    "subscribe_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[35]},
+				Columns: []*schema.Column{SubscribeColumns[37]},
 			},
 			{
 				Name:    "subscribe_cabinet_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[36]},
+				Columns: []*schema.Column{SubscribeColumns[38]},
 			},
 			{
 				Name:    "subscribe_brand_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[37]},
+				Columns: []*schema.Column{SubscribeColumns[39]},
 			},
 			{
 				Name:    "subscribe_ebike_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[38]},
+				Columns: []*schema.Column{SubscribeColumns[40]},
 			},
 			{
 				Name:    "subscribe_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[30]},
+				Columns: []*schema.Column{SubscribeColumns[32]},
 			},
 			{
 				Name:    "subscribe_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[29]},
+				Columns: []*schema.Column{SubscribeColumns[31]},
 			},
 			{
 				Name:    "subscribe_paused_at",
@@ -5922,6 +5983,7 @@ var (
 	Tables = []*schema.Table{
 		ActivityTable,
 		AgentTable,
+		AgreementTable,
 		AllocateTable,
 		AssistanceTable,
 		AttendanceTable,
@@ -6013,6 +6075,9 @@ func init() {
 	AgentTable.ForeignKeys[1].RefTable = EnterpriseTable
 	AgentTable.Annotation = &entsql.Annotation{
 		Table: "agent",
+	}
+	AgreementTable.Annotation = &entsql.Annotation{
+		Table: "agreement",
 	}
 	AllocateTable.ForeignKeys[0].RefTable = RiderTable
 	AllocateTable.ForeignKeys[1].RefTable = SubscribeTable
@@ -6182,6 +6247,7 @@ func init() {
 	EnterprisePriceTable.ForeignKeys[0].RefTable = EnterpriseTable
 	EnterprisePriceTable.ForeignKeys[1].RefTable = CityTable
 	EnterprisePriceTable.ForeignKeys[2].RefTable = EbikeBrandTable
+	EnterprisePriceTable.ForeignKeys[3].RefTable = AgreementTable
 	EnterprisePriceTable.Annotation = &entsql.Annotation{
 		Table: "enterprise_price",
 	}
@@ -6264,7 +6330,8 @@ func init() {
 		Table: "person",
 	}
 	PlanTable.ForeignKeys[0].RefTable = EbikeBrandTable
-	PlanTable.ForeignKeys[1].RefTable = PlanTable
+	PlanTable.ForeignKeys[1].RefTable = AgreementTable
+	PlanTable.ForeignKeys[2].RefTable = PlanTable
 	PlanTable.Annotation = &entsql.Annotation{
 		Table: "plan",
 	}

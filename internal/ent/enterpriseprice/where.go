@@ -85,6 +85,11 @@ func BrandID(v uint64) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(sql.FieldEQ(FieldBrandID, v))
 }
 
+// AgreementID applies equality check predicate on the "agreement_id" field. It's identical to AgreementIDEQ.
+func AgreementID(v uint64) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldEQ(FieldAgreementID, v))
+}
+
 // EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
 func EnterpriseID(v uint64) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(sql.FieldEQ(FieldEnterpriseID, v))
@@ -380,6 +385,36 @@ func BrandIDNotNil() predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(sql.FieldNotNull(FieldBrandID))
 }
 
+// AgreementIDEQ applies the EQ predicate on the "agreement_id" field.
+func AgreementIDEQ(v uint64) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldEQ(FieldAgreementID, v))
+}
+
+// AgreementIDNEQ applies the NEQ predicate on the "agreement_id" field.
+func AgreementIDNEQ(v uint64) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldNEQ(FieldAgreementID, v))
+}
+
+// AgreementIDIn applies the In predicate on the "agreement_id" field.
+func AgreementIDIn(vs ...uint64) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldIn(FieldAgreementID, vs...))
+}
+
+// AgreementIDNotIn applies the NotIn predicate on the "agreement_id" field.
+func AgreementIDNotIn(vs ...uint64) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldNotIn(FieldAgreementID, vs...))
+}
+
+// AgreementIDIsNil applies the IsNil predicate on the "agreement_id" field.
+func AgreementIDIsNil() predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldIsNull(FieldAgreementID))
+}
+
+// AgreementIDNotNil applies the NotNil predicate on the "agreement_id" field.
+func AgreementIDNotNil() predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldNotNull(FieldAgreementID))
+}
+
 // EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
 func EnterpriseIDEQ(v uint64) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(sql.FieldEQ(FieldEnterpriseID, v))
@@ -553,6 +588,29 @@ func HasBrand() predicate.EnterprisePrice {
 func HasBrandWith(preds ...predicate.EbikeBrand) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(func(s *sql.Selector) {
 		step := newBrandStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAgreement applies the HasEdge predicate on the "agreement" edge.
+func HasAgreement() predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, AgreementTable, AgreementColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAgreementWith applies the HasEdge predicate on the "agreement" edge with a given conditions (other predicates).
+func HasAgreementWith(preds ...predicate.Agreement) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(func(s *sql.Selector) {
+		step := newAgreementStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

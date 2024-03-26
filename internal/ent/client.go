@@ -17,6 +17,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
@@ -106,6 +107,8 @@ type Client struct {
 	Activity *ActivityClient
 	// Agent is the client for interacting with the Agent builders.
 	Agent *AgentClient
+	// Agreement is the client for interacting with the Agreement builders.
+	Agreement *AgreementClient
 	// Allocate is the client for interacting with the Allocate builders.
 	Allocate *AllocateClient
 	// Assistance is the client for interacting with the Assistance builders.
@@ -271,6 +274,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Activity = NewActivityClient(c.config)
 	c.Agent = NewAgentClient(c.config)
+	c.Agreement = NewAgreementClient(c.config)
 	c.Allocate = NewAllocateClient(c.config)
 	c.Assistance = NewAssistanceClient(c.config)
 	c.Attendance = NewAttendanceClient(c.config)
@@ -441,6 +445,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:                     cfg,
 		Activity:                   NewActivityClient(cfg),
 		Agent:                      NewAgentClient(cfg),
+		Agreement:                  NewAgreementClient(cfg),
 		Allocate:                   NewAllocateClient(cfg),
 		Assistance:                 NewAssistanceClient(cfg),
 		Attendance:                 NewAttendanceClient(cfg),
@@ -538,6 +543,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:                     cfg,
 		Activity:                   NewActivityClient(cfg),
 		Agent:                      NewAgentClient(cfg),
+		Agreement:                  NewAgreementClient(cfg),
 		Allocate:                   NewAllocateClient(cfg),
 		Assistance:                 NewAssistanceClient(cfg),
 		Attendance:                 NewAttendanceClient(cfg),
@@ -643,16 +649,16 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Activity, c.Agent, c.Allocate, c.Assistance, c.Attendance, c.Battery,
-		c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract, c.Business,
-		c.Cabinet, c.CabinetFault, c.City, c.Commission, c.Contract, c.Coupon,
-		c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand, c.Employee,
-		c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
-		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
-		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
-		c.Guide, c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Order,
-		c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog,
-		c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
+		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Assistance, c.Attendance,
+		c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract,
+		c.Business, c.Cabinet, c.CabinetFault, c.City, c.Commission, c.Contract,
+		c.Coupon, c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand,
+		c.Employee, c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill,
+		c.EnterpriseContract, c.EnterprisePrepayment, c.EnterprisePrice,
+		c.EnterpriseStatement, c.EnterpriseStation, c.Exception, c.Exchange, c.Export,
+		c.Fault, c.Feedback, c.Guide, c.Instructions, c.Inventory, c.Maintainer,
+		c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce,
+		c.PointLog, c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
 		c.PromotionCommissionPlan, c.PromotionEarnings, c.PromotionGrowth,
 		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
@@ -670,16 +676,16 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Activity, c.Agent, c.Allocate, c.Assistance, c.Attendance, c.Battery,
-		c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract, c.Business,
-		c.Cabinet, c.CabinetFault, c.City, c.Commission, c.Contract, c.Coupon,
-		c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand, c.Employee,
-		c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
-		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
-		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
-		c.Guide, c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Order,
-		c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog,
-		c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
+		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Assistance, c.Attendance,
+		c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract,
+		c.Business, c.Cabinet, c.CabinetFault, c.City, c.Commission, c.Contract,
+		c.Coupon, c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand,
+		c.Employee, c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill,
+		c.EnterpriseContract, c.EnterprisePrepayment, c.EnterprisePrice,
+		c.EnterpriseStatement, c.EnterpriseStation, c.Exception, c.Exchange, c.Export,
+		c.Fault, c.Feedback, c.Guide, c.Instructions, c.Inventory, c.Maintainer,
+		c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce,
+		c.PointLog, c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
 		c.PromotionCommissionPlan, c.PromotionEarnings, c.PromotionGrowth,
 		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
@@ -700,6 +706,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Activity.mutate(ctx, m)
 	case *AgentMutation:
 		return c.Agent.mutate(ctx, m)
+	case *AgreementMutation:
+		return c.Agreement.mutate(ctx, m)
 	case *AllocateMutation:
 		return c.Allocate.mutate(ctx, m)
 	case *AssistanceMutation:
@@ -1153,6 +1161,140 @@ func (c *AgentClient) mutate(ctx context.Context, m *AgentMutation) (Value, erro
 		return (&AgentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Agent mutation op: %q", m.Op())
+	}
+}
+
+// AgreementClient is a client for the Agreement schema.
+type AgreementClient struct {
+	config
+}
+
+// NewAgreementClient returns a client for the Agreement from the given config.
+func NewAgreementClient(c config) *AgreementClient {
+	return &AgreementClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `agreement.Hooks(f(g(h())))`.
+func (c *AgreementClient) Use(hooks ...Hook) {
+	c.hooks.Agreement = append(c.hooks.Agreement, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `agreement.Intercept(f(g(h())))`.
+func (c *AgreementClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Agreement = append(c.inters.Agreement, interceptors...)
+}
+
+// Create returns a builder for creating a Agreement entity.
+func (c *AgreementClient) Create() *AgreementCreate {
+	mutation := newAgreementMutation(c.config, OpCreate)
+	return &AgreementCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Agreement entities.
+func (c *AgreementClient) CreateBulk(builders ...*AgreementCreate) *AgreementCreateBulk {
+	return &AgreementCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AgreementClient) MapCreateBulk(slice any, setFunc func(*AgreementCreate, int)) *AgreementCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AgreementCreateBulk{err: fmt.Errorf("calling to AgreementClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AgreementCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AgreementCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Agreement.
+func (c *AgreementClient) Update() *AgreementUpdate {
+	mutation := newAgreementMutation(c.config, OpUpdate)
+	return &AgreementUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AgreementClient) UpdateOne(a *Agreement) *AgreementUpdateOne {
+	mutation := newAgreementMutation(c.config, OpUpdateOne, withAgreement(a))
+	return &AgreementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AgreementClient) UpdateOneID(id uint64) *AgreementUpdateOne {
+	mutation := newAgreementMutation(c.config, OpUpdateOne, withAgreementID(id))
+	return &AgreementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Agreement.
+func (c *AgreementClient) Delete() *AgreementDelete {
+	mutation := newAgreementMutation(c.config, OpDelete)
+	return &AgreementDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AgreementClient) DeleteOne(a *Agreement) *AgreementDeleteOne {
+	return c.DeleteOneID(a.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AgreementClient) DeleteOneID(id uint64) *AgreementDeleteOne {
+	builder := c.Delete().Where(agreement.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AgreementDeleteOne{builder}
+}
+
+// Query returns a query builder for Agreement.
+func (c *AgreementClient) Query() *AgreementQuery {
+	return &AgreementQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAgreement},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Agreement entity by its id.
+func (c *AgreementClient) Get(ctx context.Context, id uint64) (*Agreement, error) {
+	return c.Query().Where(agreement.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AgreementClient) GetX(ctx context.Context, id uint64) *Agreement {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AgreementClient) Hooks() []Hook {
+	hooks := c.hooks.Agreement
+	return append(hooks[:len(hooks):len(hooks)], agreement.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *AgreementClient) Interceptors() []Interceptor {
+	return c.inters.Agreement
+}
+
+func (c *AgreementClient) mutate(ctx context.Context, m *AgreementMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AgreementCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AgreementUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AgreementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AgreementDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Agreement mutation op: %q", m.Op())
 	}
 }
 
@@ -6675,6 +6817,22 @@ func (c *EnterprisePriceClient) QueryBrand(ep *EnterprisePrice) *EbikeBrandQuery
 	return query
 }
 
+// QueryAgreement queries the agreement edge of a EnterprisePrice.
+func (c *EnterprisePriceClient) QueryAgreement(ep *EnterprisePrice) *AgreementQuery {
+	query := (&AgreementClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ep.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterpriseprice.Table, enterpriseprice.FieldID, id),
+			sqlgraph.To(agreement.Table, agreement.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterpriseprice.AgreementTable, enterpriseprice.AgreementColumn),
+		)
+		fromV = sqlgraph.Neighbors(ep.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryEnterprise queries the enterprise edge of a EnterprisePrice.
 func (c *EnterprisePriceClient) QueryEnterprise(ep *EnterprisePrice) *EnterpriseQuery {
 	query := (&EnterpriseClient{config: c.config}).Query()
@@ -9593,6 +9751,22 @@ func (c *PlanClient) QueryBrand(pl *Plan) *EbikeBrandQuery {
 			sqlgraph.From(plan.Table, plan.FieldID, id),
 			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, plan.BrandTable, plan.BrandColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAgreement queries the agreement edge of a Plan.
+func (c *PlanClient) QueryAgreement(pl *Plan) *AgreementQuery {
+	query := (&AgreementClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(agreement.Table, agreement.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, plan.AgreementTable, plan.AgreementColumn),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil
@@ -16193,38 +16367,40 @@ func (c *VersionClient) mutate(ctx context.Context, m *VersionMutation) (Value, 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Activity, Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow,
-		BatteryModel, Branch, BranchContract, Business, Cabinet, CabinetFault, City,
-		Commission, Contract, Coupon, CouponAssembly, CouponTemplate, Ebike,
-		EbikeBrand, Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
-		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
-		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Guide,
-		Instructions, Inventory, Maintainer, Manager, Order, OrderRefund, Person, Plan,
-		PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
-		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
-		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
-		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
-		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
-		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
-		Role, Setting, Stock, StockSummary, Store, Subscribe, SubscribeAlter,
-		SubscribePause, SubscribeReminder, SubscribeSuspend, Version []ent.Hook
+		Activity, Agent, Agreement, Allocate, Assistance, Attendance, Battery,
+		BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
+		CabinetFault, City, Commission, Contract, Coupon, CouponAssembly,
+		CouponTemplate, Ebike, EbikeBrand, Employee, Enterprise, EnterpriseBatterySwap,
+		EnterpriseBill, EnterpriseContract, EnterprisePrepayment, EnterprisePrice,
+		EnterpriseStatement, EnterpriseStation, Exception, Exchange, Export, Fault,
+		Feedback, Guide, Instructions, Inventory, Maintainer, Manager, Order,
+		OrderRefund, Person, Plan, PlanIntroduce, PointLog, PromotionAchievement,
+		PromotionBankCard, PromotionCommission, PromotionCommissionPlan,
+		PromotionEarnings, PromotionGrowth, PromotionLevel, PromotionLevelTask,
+		PromotionMember, PromotionMemberCommission, PromotionPerson,
+		PromotionPrivilege, PromotionReferrals, PromotionReferralsProgress,
+		PromotionSetting, PromotionWithdrawal, Question, QuestionCategory, Reserve,
+		Rider, RiderFollowUp, Role, Setting, Stock, StockSummary, Store, Subscribe,
+		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		Version []ent.Hook
 	}
 	inters struct {
-		Activity, Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow,
-		BatteryModel, Branch, BranchContract, Business, Cabinet, CabinetFault, City,
-		Commission, Contract, Coupon, CouponAssembly, CouponTemplate, Ebike,
-		EbikeBrand, Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
-		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
-		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Guide,
-		Instructions, Inventory, Maintainer, Manager, Order, OrderRefund, Person, Plan,
-		PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
-		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
-		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
-		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
-		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
-		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
-		Role, Setting, Stock, StockSummary, Store, Subscribe, SubscribeAlter,
-		SubscribePause, SubscribeReminder, SubscribeSuspend, Version []ent.Interceptor
+		Activity, Agent, Agreement, Allocate, Assistance, Attendance, Battery,
+		BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
+		CabinetFault, City, Commission, Contract, Coupon, CouponAssembly,
+		CouponTemplate, Ebike, EbikeBrand, Employee, Enterprise, EnterpriseBatterySwap,
+		EnterpriseBill, EnterpriseContract, EnterprisePrepayment, EnterprisePrice,
+		EnterpriseStatement, EnterpriseStation, Exception, Exchange, Export, Fault,
+		Feedback, Guide, Instructions, Inventory, Maintainer, Manager, Order,
+		OrderRefund, Person, Plan, PlanIntroduce, PointLog, PromotionAchievement,
+		PromotionBankCard, PromotionCommission, PromotionCommissionPlan,
+		PromotionEarnings, PromotionGrowth, PromotionLevel, PromotionLevelTask,
+		PromotionMember, PromotionMemberCommission, PromotionPerson,
+		PromotionPrivilege, PromotionReferrals, PromotionReferralsProgress,
+		PromotionSetting, PromotionWithdrawal, Question, QuestionCategory, Reserve,
+		Rider, RiderFollowUp, Role, Setting, Stock, StockSummary, Store, Subscribe,
+		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		Version []ent.Interceptor
 	}
 )
 

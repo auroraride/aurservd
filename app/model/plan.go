@@ -75,6 +75,7 @@ type PlanCreateReq struct {
 	DepositWechatPayscore   *bool    `json:"depositWechatPayscore"`       // 是否支持微信支付分免押金 true:支持 false:不支持
 	DepositAlipayAuthFreeze *bool    `json:"depositAlipayAuthFreeze"`     // 是否支持预授权信用免押金 true:支持 false:不支持
 	DepositContract         *bool    `json:"depositContract"`             // 是否支持合同免押金 true:支持 false:不支持
+	AgreementID             *uint64  `json:"agreementId"`                 // 协议ID
 }
 
 // PlanEnableModifyReq 骑士卡状态修改请求
@@ -120,12 +121,13 @@ type PlanListRes struct {
 
 	NotSettedDailyRent []*PlanNotSettedDailyRent `json:"notSettedDailyRent,omitempty"` // 未设定的日租金
 
-	Deposit                 bool    `json:"deposit"`                 // 是否开启押金 fales:未开启 true:开启
-	DepositAmount           float64 `json:"depositAmount"`           // 押金金额
-	DepositPay              bool    `json:"depositPay"`              // 是否支持支付押金 true:支持 false:不支持
-	DepositWechatPayscore   bool    `json:"depositWechatPayscore"`   // 是否支持微信支付分免押金 true:支持 false:不支持
-	DepositAlipayAuthFreeze bool    `json:"depositAlipayAuthFreeze"` // 是否支持预授权信用免押金 true:支持 false:不支持
-	DepositContract         bool    `json:"depositContract"`         // 是否支持合同免押金 true:支持 false:不支持
+	Deposit                 bool       `json:"deposit"`                 // 是否开启押金 fales:未开启 true:开启
+	DepositAmount           float64    `json:"depositAmount"`           // 押金金额
+	DepositPay              bool       `json:"depositPay"`              // 是否支持支付押金 true:支持 false:不支持
+	DepositWechatPayscore   bool       `json:"depositWechatPayscore"`   // 是否支持微信支付分免押金 true:支持 false:不支持
+	DepositAlipayAuthFreeze bool       `json:"depositAlipayAuthFreeze"` // 是否支持预授权信用免押金 true:支持 false:不支持
+	DepositContract         bool       `json:"depositContract"`         // 是否支持合同免押金 true:支持 false:不支持
+	Agreement               *Agreement `json:"agreement,omitempty"`     // 协议
 }
 
 // PlanListRiderReq 骑士卡列表请求
@@ -190,12 +192,13 @@ type PlanDaysPriceOption struct {
 	DiscountNewly float64 `json:"discountNewly"` // 新签优惠
 	HasEbike      bool    `json:"hasEbike"`      // 是否包含电车
 
-	Deposit                 bool    `json:"deposit"`                 // 是否启用押金
-	DepositAmount           float64 `json:"depositAmount"`           // 押金金额
-	DepositWechatPayscore   bool    `json:"depositWechatPayscore"`   // 是否支持微信支付分免押金
-	DepositAlipayAuthFreeze bool    `json:"depositAlipayAuthFreeze"` // 是否支持预授权信用免押金
-	DepositContract         bool    `json:"depositContract"`         // 是否支持合同免押金
-	DepositPay              bool    `json:"depositPay"`              // 是否支持支付押金
+	Deposit                 bool       `json:"deposit"`                 // 是否启用押金
+	DepositAmount           float64    `json:"depositAmount"`           // 押金金额
+	DepositWechatPayscore   bool       `json:"depositWechatPayscore"`   // 是否支持微信支付分免押金
+	DepositAlipayAuthFreeze bool       `json:"depositAlipayAuthFreeze"` // 是否支持预授权信用免押金
+	DepositContract         bool       `json:"depositContract"`         // 是否支持合同免押金
+	DepositPay              bool       `json:"depositPay"`              // 是否支持支付押金
+	Agreement               *Agreement `json:"agreement,omitempty"`     // 协议
 }
 
 type PlanModelOptions []*PlanModelOption
@@ -240,4 +243,12 @@ type PlanModifyTimeReq struct {
 	ID    uint64 `json:"id" validate:"required" trans:"骑士卡ID"` // 使用items[n].id
 	Start string `json:"start" validate:"required,datetime=2006-01-02" trans:"开始日期"`
 	End   string `json:"end" validate:"required,datetime=2006-01-02" trans:"结束日期"`
+}
+
+type Agreement struct {
+	ID            uint64 `json:"id"`            // ID
+	Name          string `json:"name"`          // 协议名称
+	URL           string `json:"url"`           // URL
+	Hash          string `json:"hash"`          // hash
+	ForceReadTime uint8  `json:"forceReadTime"` // 强制阅读时间
 }

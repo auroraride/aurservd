@@ -80,6 +80,11 @@ func BrandID(v uint64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldBrandID, v))
 }
 
+// AgreementID applies equality check predicate on the "agreement_id" field. It's identical to AgreementIDEQ.
+func AgreementID(v uint64) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldAgreementID, v))
+}
+
 // Model applies equality check predicate on the "model" field. It's identical to ModelEQ.
 func Model(v string) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldModel, v))
@@ -433,6 +438,36 @@ func BrandIDIsNil() predicate.Plan {
 // BrandIDNotNil applies the NotNil predicate on the "brand_id" field.
 func BrandIDNotNil() predicate.Plan {
 	return predicate.Plan(sql.FieldNotNull(FieldBrandID))
+}
+
+// AgreementIDEQ applies the EQ predicate on the "agreement_id" field.
+func AgreementIDEQ(v uint64) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldAgreementID, v))
+}
+
+// AgreementIDNEQ applies the NEQ predicate on the "agreement_id" field.
+func AgreementIDNEQ(v uint64) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldAgreementID, v))
+}
+
+// AgreementIDIn applies the In predicate on the "agreement_id" field.
+func AgreementIDIn(vs ...uint64) predicate.Plan {
+	return predicate.Plan(sql.FieldIn(FieldAgreementID, vs...))
+}
+
+// AgreementIDNotIn applies the NotIn predicate on the "agreement_id" field.
+func AgreementIDNotIn(vs ...uint64) predicate.Plan {
+	return predicate.Plan(sql.FieldNotIn(FieldAgreementID, vs...))
+}
+
+// AgreementIDIsNil applies the IsNil predicate on the "agreement_id" field.
+func AgreementIDIsNil() predicate.Plan {
+	return predicate.Plan(sql.FieldIsNull(FieldAgreementID))
+}
+
+// AgreementIDNotNil applies the NotNil predicate on the "agreement_id" field.
+func AgreementIDNotNil() predicate.Plan {
+	return predicate.Plan(sql.FieldNotNull(FieldAgreementID))
 }
 
 // ModelEQ applies the EQ predicate on the "model" field.
@@ -1195,6 +1230,29 @@ func HasBrand() predicate.Plan {
 func HasBrandWith(preds ...predicate.EbikeBrand) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		step := newBrandStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAgreement applies the HasEdge predicate on the "agreement" edge.
+func HasAgreement() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, AgreementTable, AgreementColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAgreementWith applies the HasEdge predicate on the "agreement" edge with a given conditions (other predicates).
+func HasAgreementWith(preds ...predicate.Agreement) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		step := newAgreementStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

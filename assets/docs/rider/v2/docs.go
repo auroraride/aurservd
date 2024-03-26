@@ -50,6 +50,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/agreement/enterprise/price/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Agreement - 协议"
+                ],
+                "summary": "根据企业价格ID查询协议",
+                "operationId": "AgreementByEnterprisePriceID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "企业价格ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.Agreement"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/assistance": {
             "get": {
                 "consumes": [
@@ -3498,6 +3537,47 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.Agreement": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "内容",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "forceReadTime": {
+                    "description": "强制阅读时间",
+                    "type": "integer"
+                },
+                "hash": {
+                    "description": "Hash",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "isDefault": {
+                    "description": "是否为默认协议",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "协议名称",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "URL",
+                    "type": "string"
+                },
+                "userType": {
+                    "description": "用户类型 1:个签 2:团签",
+                    "type": "integer"
+                }
+            }
+        },
         "definition.CabinetByRiderRes": {
             "type": "object",
             "properties": {
@@ -3775,6 +3855,10 @@ const docTemplate = `{
                 "planId"
             ],
             "properties": {
+                "agreementHash": {
+                    "description": "协议hash",
+                    "type": "string"
+                },
                 "cityId": {
                     "description": "城市ID, 新签必填",
                     "type": "integer"
@@ -4431,6 +4515,31 @@ const docTemplate = `{
                 },
                 "version": {
                     "description": "版本号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.Agreement": {
+            "type": "object",
+            "properties": {
+                "forceReadTime": {
+                    "description": "强制阅读时间",
+                    "type": "integer"
+                },
+                "hash": {
+                    "description": "hash",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "协议名称",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "URL",
                     "type": "string"
                 }
             }
@@ -5501,6 +5610,14 @@ const docTemplate = `{
         "model.EnterprisePriceWithCity": {
             "type": "object",
             "properties": {
+                "agreement": {
+                    "description": "协议",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Agreement"
+                        }
+                    ]
+                },
                 "city": {
                     "description": "城市",
                     "allOf": [
@@ -6096,6 +6213,14 @@ const docTemplate = `{
         "model.PlanDaysPriceOption": {
             "type": "object",
             "properties": {
+                "agreement": {
+                    "description": "协议",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Agreement"
+                        }
+                    ]
+                },
                 "days": {
                     "description": "天数",
                     "type": "integer"
@@ -6932,6 +7057,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
+                },
+                "enterprisePriceId": {
+                    "description": "团签价格ID",
+                    "type": "integer"
                 },
                 "id": {
                     "description": "订阅ID",

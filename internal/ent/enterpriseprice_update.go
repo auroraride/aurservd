@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -125,6 +126,26 @@ func (epu *EnterprisePriceUpdate) ClearBrandID() *EnterprisePriceUpdate {
 	return epu
 }
 
+// SetAgreementID sets the "agreement_id" field.
+func (epu *EnterprisePriceUpdate) SetAgreementID(u uint64) *EnterprisePriceUpdate {
+	epu.mutation.SetAgreementID(u)
+	return epu
+}
+
+// SetNillableAgreementID sets the "agreement_id" field if the given value is not nil.
+func (epu *EnterprisePriceUpdate) SetNillableAgreementID(u *uint64) *EnterprisePriceUpdate {
+	if u != nil {
+		epu.SetAgreementID(*u)
+	}
+	return epu
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (epu *EnterprisePriceUpdate) ClearAgreementID() *EnterprisePriceUpdate {
+	epu.mutation.ClearAgreementID()
+	return epu
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (epu *EnterprisePriceUpdate) SetEnterpriseID(u uint64) *EnterprisePriceUpdate {
 	epu.mutation.SetEnterpriseID(u)
@@ -198,6 +219,11 @@ func (epu *EnterprisePriceUpdate) SetBrand(e *EbikeBrand) *EnterprisePriceUpdate
 	return epu.SetBrandID(e.ID)
 }
 
+// SetAgreement sets the "agreement" edge to the Agreement entity.
+func (epu *EnterprisePriceUpdate) SetAgreement(a *Agreement) *EnterprisePriceUpdate {
+	return epu.SetAgreementID(a.ID)
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (epu *EnterprisePriceUpdate) SetEnterprise(e *Enterprise) *EnterprisePriceUpdate {
 	return epu.SetEnterpriseID(e.ID)
@@ -217,6 +243,12 @@ func (epu *EnterprisePriceUpdate) ClearCity() *EnterprisePriceUpdate {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (epu *EnterprisePriceUpdate) ClearBrand() *EnterprisePriceUpdate {
 	epu.mutation.ClearBrand()
+	return epu
+}
+
+// ClearAgreement clears the "agreement" edge to the Agreement entity.
+func (epu *EnterprisePriceUpdate) ClearAgreement() *EnterprisePriceUpdate {
+	epu.mutation.ClearAgreement()
 	return epu
 }
 
@@ -391,6 +423,35 @@ func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if epu.mutation.AgreementCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprice.AgreementTable,
+			Columns: []string{enterpriseprice.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := epu.mutation.AgreementIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprice.AgreementTable,
+			Columns: []string{enterpriseprice.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if epu.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -534,6 +595,26 @@ func (epuo *EnterprisePriceUpdateOne) ClearBrandID() *EnterprisePriceUpdateOne {
 	return epuo
 }
 
+// SetAgreementID sets the "agreement_id" field.
+func (epuo *EnterprisePriceUpdateOne) SetAgreementID(u uint64) *EnterprisePriceUpdateOne {
+	epuo.mutation.SetAgreementID(u)
+	return epuo
+}
+
+// SetNillableAgreementID sets the "agreement_id" field if the given value is not nil.
+func (epuo *EnterprisePriceUpdateOne) SetNillableAgreementID(u *uint64) *EnterprisePriceUpdateOne {
+	if u != nil {
+		epuo.SetAgreementID(*u)
+	}
+	return epuo
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (epuo *EnterprisePriceUpdateOne) ClearAgreementID() *EnterprisePriceUpdateOne {
+	epuo.mutation.ClearAgreementID()
+	return epuo
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (epuo *EnterprisePriceUpdateOne) SetEnterpriseID(u uint64) *EnterprisePriceUpdateOne {
 	epuo.mutation.SetEnterpriseID(u)
@@ -607,6 +688,11 @@ func (epuo *EnterprisePriceUpdateOne) SetBrand(e *EbikeBrand) *EnterprisePriceUp
 	return epuo.SetBrandID(e.ID)
 }
 
+// SetAgreement sets the "agreement" edge to the Agreement entity.
+func (epuo *EnterprisePriceUpdateOne) SetAgreement(a *Agreement) *EnterprisePriceUpdateOne {
+	return epuo.SetAgreementID(a.ID)
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (epuo *EnterprisePriceUpdateOne) SetEnterprise(e *Enterprise) *EnterprisePriceUpdateOne {
 	return epuo.SetEnterpriseID(e.ID)
@@ -626,6 +712,12 @@ func (epuo *EnterprisePriceUpdateOne) ClearCity() *EnterprisePriceUpdateOne {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (epuo *EnterprisePriceUpdateOne) ClearBrand() *EnterprisePriceUpdateOne {
 	epuo.mutation.ClearBrand()
+	return epuo
+}
+
+// ClearAgreement clears the "agreement" edge to the Agreement entity.
+func (epuo *EnterprisePriceUpdateOne) ClearAgreement() *EnterprisePriceUpdateOne {
+	epuo.mutation.ClearAgreement()
 	return epuo
 }
 
@@ -823,6 +915,35 @@ func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *Enter
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if epuo.mutation.AgreementCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprice.AgreementTable,
+			Columns: []string{enterpriseprice.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := epuo.mutation.AgreementIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprice.AgreementTable,
+			Columns: []string{enterpriseprice.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -545,6 +545,34 @@ func (sc *SubscribeCreate) SetNillableIntelligent(b *bool) *SubscribeCreate {
 	return sc
 }
 
+// SetAgreementHash sets the "agreement_hash" field.
+func (sc *SubscribeCreate) SetAgreementHash(s string) *SubscribeCreate {
+	sc.mutation.SetAgreementHash(s)
+	return sc
+}
+
+// SetNillableAgreementHash sets the "agreement_hash" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableAgreementHash(s *string) *SubscribeCreate {
+	if s != nil {
+		sc.SetAgreementHash(*s)
+	}
+	return sc
+}
+
+// SetEnterprisePriceID sets the "enterprise_price_id" field.
+func (sc *SubscribeCreate) SetEnterprisePriceID(u uint64) *SubscribeCreate {
+	sc.mutation.SetEnterprisePriceID(u)
+	return sc
+}
+
+// SetNillableEnterprisePriceID sets the "enterprise_price_id" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableEnterprisePriceID(u *uint64) *SubscribeCreate {
+	if u != nil {
+		sc.SetEnterprisePriceID(*u)
+	}
+	return sc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (sc *SubscribeCreate) SetPlan(p *Plan) *SubscribeCreate {
 	return sc.SetPlanID(p.ID)
@@ -986,6 +1014,14 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.Intelligent(); ok {
 		_spec.SetField(subscribe.FieldIntelligent, field.TypeBool, value)
 		_node.Intelligent = value
+	}
+	if value, ok := sc.mutation.AgreementHash(); ok {
+		_spec.SetField(subscribe.FieldAgreementHash, field.TypeString, value)
+		_node.AgreementHash = value
+	}
+	if value, ok := sc.mutation.EnterprisePriceID(); ok {
+		_spec.SetField(subscribe.FieldEnterprisePriceID, field.TypeUint64, value)
+		_node.EnterprisePriceID = value
 	}
 	if nodes := sc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1934,6 +1970,48 @@ func (u *SubscribeUpsert) UpdateIntelligent() *SubscribeUpsert {
 	return u
 }
 
+// SetAgreementHash sets the "agreement_hash" field.
+func (u *SubscribeUpsert) SetAgreementHash(v string) *SubscribeUpsert {
+	u.Set(subscribe.FieldAgreementHash, v)
+	return u
+}
+
+// UpdateAgreementHash sets the "agreement_hash" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateAgreementHash() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldAgreementHash)
+	return u
+}
+
+// ClearAgreementHash clears the value of the "agreement_hash" field.
+func (u *SubscribeUpsert) ClearAgreementHash() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldAgreementHash)
+	return u
+}
+
+// SetEnterprisePriceID sets the "enterprise_price_id" field.
+func (u *SubscribeUpsert) SetEnterprisePriceID(v uint64) *SubscribeUpsert {
+	u.Set(subscribe.FieldEnterprisePriceID, v)
+	return u
+}
+
+// UpdateEnterprisePriceID sets the "enterprise_price_id" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateEnterprisePriceID() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldEnterprisePriceID)
+	return u
+}
+
+// AddEnterprisePriceID adds v to the "enterprise_price_id" field.
+func (u *SubscribeUpsert) AddEnterprisePriceID(v uint64) *SubscribeUpsert {
+	u.Add(subscribe.FieldEnterprisePriceID, v)
+	return u
+}
+
+// ClearEnterprisePriceID clears the value of the "enterprise_price_id" field.
+func (u *SubscribeUpsert) ClearEnterprisePriceID() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldEnterprisePriceID)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2696,6 +2774,55 @@ func (u *SubscribeUpsertOne) SetIntelligent(v bool) *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) UpdateIntelligent() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateIntelligent()
+	})
+}
+
+// SetAgreementHash sets the "agreement_hash" field.
+func (u *SubscribeUpsertOne) SetAgreementHash(v string) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetAgreementHash(v)
+	})
+}
+
+// UpdateAgreementHash sets the "agreement_hash" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateAgreementHash() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateAgreementHash()
+	})
+}
+
+// ClearAgreementHash clears the value of the "agreement_hash" field.
+func (u *SubscribeUpsertOne) ClearAgreementHash() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearAgreementHash()
+	})
+}
+
+// SetEnterprisePriceID sets the "enterprise_price_id" field.
+func (u *SubscribeUpsertOne) SetEnterprisePriceID(v uint64) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetEnterprisePriceID(v)
+	})
+}
+
+// AddEnterprisePriceID adds v to the "enterprise_price_id" field.
+func (u *SubscribeUpsertOne) AddEnterprisePriceID(v uint64) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.AddEnterprisePriceID(v)
+	})
+}
+
+// UpdateEnterprisePriceID sets the "enterprise_price_id" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateEnterprisePriceID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateEnterprisePriceID()
+	})
+}
+
+// ClearEnterprisePriceID clears the value of the "enterprise_price_id" field.
+func (u *SubscribeUpsertOne) ClearEnterprisePriceID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearEnterprisePriceID()
 	})
 }
 
@@ -3627,6 +3754,55 @@ func (u *SubscribeUpsertBulk) SetIntelligent(v bool) *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) UpdateIntelligent() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateIntelligent()
+	})
+}
+
+// SetAgreementHash sets the "agreement_hash" field.
+func (u *SubscribeUpsertBulk) SetAgreementHash(v string) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetAgreementHash(v)
+	})
+}
+
+// UpdateAgreementHash sets the "agreement_hash" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateAgreementHash() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateAgreementHash()
+	})
+}
+
+// ClearAgreementHash clears the value of the "agreement_hash" field.
+func (u *SubscribeUpsertBulk) ClearAgreementHash() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearAgreementHash()
+	})
+}
+
+// SetEnterprisePriceID sets the "enterprise_price_id" field.
+func (u *SubscribeUpsertBulk) SetEnterprisePriceID(v uint64) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetEnterprisePriceID(v)
+	})
+}
+
+// AddEnterprisePriceID adds v to the "enterprise_price_id" field.
+func (u *SubscribeUpsertBulk) AddEnterprisePriceID(v uint64) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.AddEnterprisePriceID(v)
+	})
+}
+
+// UpdateEnterprisePriceID sets the "enterprise_price_id" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateEnterprisePriceID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateEnterprisePriceID()
+	})
+}
+
+// ClearEnterprisePriceID clears the value of the "enterprise_price_id" field.
+func (u *SubscribeUpsertBulk) ClearEnterprisePriceID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearEnterprisePriceID()
 	})
 }
 

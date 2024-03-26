@@ -722,6 +722,53 @@ func (su *SubscribeUpdate) SetNillableIntelligent(b *bool) *SubscribeUpdate {
 	return su
 }
 
+// SetAgreementHash sets the "agreement_hash" field.
+func (su *SubscribeUpdate) SetAgreementHash(s string) *SubscribeUpdate {
+	su.mutation.SetAgreementHash(s)
+	return su
+}
+
+// SetNillableAgreementHash sets the "agreement_hash" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableAgreementHash(s *string) *SubscribeUpdate {
+	if s != nil {
+		su.SetAgreementHash(*s)
+	}
+	return su
+}
+
+// ClearAgreementHash clears the value of the "agreement_hash" field.
+func (su *SubscribeUpdate) ClearAgreementHash() *SubscribeUpdate {
+	su.mutation.ClearAgreementHash()
+	return su
+}
+
+// SetEnterprisePriceID sets the "enterprise_price_id" field.
+func (su *SubscribeUpdate) SetEnterprisePriceID(u uint64) *SubscribeUpdate {
+	su.mutation.ResetEnterprisePriceID()
+	su.mutation.SetEnterprisePriceID(u)
+	return su
+}
+
+// SetNillableEnterprisePriceID sets the "enterprise_price_id" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableEnterprisePriceID(u *uint64) *SubscribeUpdate {
+	if u != nil {
+		su.SetEnterprisePriceID(*u)
+	}
+	return su
+}
+
+// AddEnterprisePriceID adds u to the "enterprise_price_id" field.
+func (su *SubscribeUpdate) AddEnterprisePriceID(u int64) *SubscribeUpdate {
+	su.mutation.AddEnterprisePriceID(u)
+	return su
+}
+
+// ClearEnterprisePriceID clears the value of the "enterprise_price_id" field.
+func (su *SubscribeUpdate) ClearEnterprisePriceID() *SubscribeUpdate {
+	su.mutation.ClearEnterprisePriceID()
+	return su
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (su *SubscribeUpdate) SetPlan(p *Plan) *SubscribeUpdate {
 	return su.SetPlanID(p.ID)
@@ -1264,6 +1311,21 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.Intelligent(); ok {
 		_spec.SetField(subscribe.FieldIntelligent, field.TypeBool, value)
+	}
+	if value, ok := su.mutation.AgreementHash(); ok {
+		_spec.SetField(subscribe.FieldAgreementHash, field.TypeString, value)
+	}
+	if su.mutation.AgreementHashCleared() {
+		_spec.ClearField(subscribe.FieldAgreementHash, field.TypeString)
+	}
+	if value, ok := su.mutation.EnterprisePriceID(); ok {
+		_spec.SetField(subscribe.FieldEnterprisePriceID, field.TypeUint64, value)
+	}
+	if value, ok := su.mutation.AddedEnterprisePriceID(); ok {
+		_spec.AddField(subscribe.FieldEnterprisePriceID, field.TypeUint64, value)
+	}
+	if su.mutation.EnterprisePriceIDCleared() {
+		_spec.ClearField(subscribe.FieldEnterprisePriceID, field.TypeUint64)
 	}
 	if su.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2536,6 +2598,53 @@ func (suo *SubscribeUpdateOne) SetNillableIntelligent(b *bool) *SubscribeUpdateO
 	return suo
 }
 
+// SetAgreementHash sets the "agreement_hash" field.
+func (suo *SubscribeUpdateOne) SetAgreementHash(s string) *SubscribeUpdateOne {
+	suo.mutation.SetAgreementHash(s)
+	return suo
+}
+
+// SetNillableAgreementHash sets the "agreement_hash" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableAgreementHash(s *string) *SubscribeUpdateOne {
+	if s != nil {
+		suo.SetAgreementHash(*s)
+	}
+	return suo
+}
+
+// ClearAgreementHash clears the value of the "agreement_hash" field.
+func (suo *SubscribeUpdateOne) ClearAgreementHash() *SubscribeUpdateOne {
+	suo.mutation.ClearAgreementHash()
+	return suo
+}
+
+// SetEnterprisePriceID sets the "enterprise_price_id" field.
+func (suo *SubscribeUpdateOne) SetEnterprisePriceID(u uint64) *SubscribeUpdateOne {
+	suo.mutation.ResetEnterprisePriceID()
+	suo.mutation.SetEnterprisePriceID(u)
+	return suo
+}
+
+// SetNillableEnterprisePriceID sets the "enterprise_price_id" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableEnterprisePriceID(u *uint64) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetEnterprisePriceID(*u)
+	}
+	return suo
+}
+
+// AddEnterprisePriceID adds u to the "enterprise_price_id" field.
+func (suo *SubscribeUpdateOne) AddEnterprisePriceID(u int64) *SubscribeUpdateOne {
+	suo.mutation.AddEnterprisePriceID(u)
+	return suo
+}
+
+// ClearEnterprisePriceID clears the value of the "enterprise_price_id" field.
+func (suo *SubscribeUpdateOne) ClearEnterprisePriceID() *SubscribeUpdateOne {
+	suo.mutation.ClearEnterprisePriceID()
+	return suo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (suo *SubscribeUpdateOne) SetPlan(p *Plan) *SubscribeUpdateOne {
 	return suo.SetPlanID(p.ID)
@@ -3108,6 +3217,21 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 	}
 	if value, ok := suo.mutation.Intelligent(); ok {
 		_spec.SetField(subscribe.FieldIntelligent, field.TypeBool, value)
+	}
+	if value, ok := suo.mutation.AgreementHash(); ok {
+		_spec.SetField(subscribe.FieldAgreementHash, field.TypeString, value)
+	}
+	if suo.mutation.AgreementHashCleared() {
+		_spec.ClearField(subscribe.FieldAgreementHash, field.TypeString)
+	}
+	if value, ok := suo.mutation.EnterprisePriceID(); ok {
+		_spec.SetField(subscribe.FieldEnterprisePriceID, field.TypeUint64, value)
+	}
+	if value, ok := suo.mutation.AddedEnterprisePriceID(); ok {
+		_spec.AddField(subscribe.FieldEnterprisePriceID, field.TypeUint64, value)
+	}
+	if suo.mutation.EnterprisePriceIDCleared() {
+		_spec.ClearField(subscribe.FieldEnterprisePriceID, field.TypeUint64)
 	}
 	if suo.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{

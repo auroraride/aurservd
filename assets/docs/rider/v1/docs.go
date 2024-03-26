@@ -2482,6 +2482,31 @@ const docTemplate = `{
                 "CabinetBrandXiliulouServer"
             ]
         },
+        "model.Agreement": {
+            "type": "object",
+            "properties": {
+                "forceReadTime": {
+                    "description": "强制阅读时间",
+                    "type": "integer"
+                },
+                "hash": {
+                    "description": "hash",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "协议名称",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "URL",
+                    "type": "string"
+                }
+            }
+        },
         "model.AllocateRiderRes": {
             "type": "object",
             "properties": {
@@ -3322,6 +3347,14 @@ const docTemplate = `{
         "model.EnterprisePriceWithCity": {
             "type": "object",
             "properties": {
+                "agreement": {
+                    "description": "协议",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Agreement"
+                        }
+                    ]
+                },
                 "city": {
                     "description": "城市",
                     "allOf": [
@@ -3895,6 +3928,14 @@ const docTemplate = `{
         "model.PlanDaysPriceOption": {
             "type": "object",
             "properties": {
+                "agreement": {
+                    "description": "协议",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Agreement"
+                        }
+                    ]
+                },
                 "days": {
                     "description": "天数",
                     "type": "integer"
@@ -4726,6 +4767,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
+                },
+                "enterprisePriceId": {
+                    "description": "团签价格ID",
+                    "type": "integer"
                 },
                 "id": {
                     "description": "订阅ID",
