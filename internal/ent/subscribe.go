@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -155,9 +156,11 @@ type SubscribeEdges struct {
 	Bills []*EnterpriseBill `json:"bills,omitempty"`
 	// Battery holds the value of the battery edge.
 	Battery *Battery `json:"battery,omitempty"`
+	// EnterprisePrice holds the value of the enterprise_price edge.
+	EnterprisePrice *EnterprisePrice `json:"enterprise_price,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [17]bool
+	loadedTypes [18]bool
 }
 
 // PlanOrErr returns the Plan value or an error if the edge
@@ -335,6 +338,17 @@ func (e SubscribeEdges) BatteryOrErr() (*Battery, error) {
 		return nil, &NotFoundError{label: battery.Label}
 	}
 	return nil, &NotLoadedError{edge: "battery"}
+}
+
+// EnterprisePriceOrErr returns the EnterprisePrice value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SubscribeEdges) EnterprisePriceOrErr() (*EnterprisePrice, error) {
+	if e.EnterprisePrice != nil {
+		return e.EnterprisePrice, nil
+	} else if e.loadedTypes[17] {
+		return nil, &NotFoundError{label: enterpriseprice.Label}
+	}
+	return nil, &NotLoadedError{edge: "enterprise_price"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -736,6 +750,11 @@ func (s *Subscribe) QueryBills() *EnterpriseBillQuery {
 // QueryBattery queries the "battery" edge of the Subscribe entity.
 func (s *Subscribe) QueryBattery() *BatteryQuery {
 	return NewSubscribeClient(s.config).QueryBattery(s)
+}
+
+// QueryEnterprisePrice queries the "enterprise_price" edge of the Subscribe entity.
+func (s *Subscribe) QueryEnterprisePrice() *EnterprisePriceQuery {
+	return NewSubscribeClient(s.config).QueryEnterprisePrice(s)
 }
 
 // Update returns a builder for updating this Subscribe.

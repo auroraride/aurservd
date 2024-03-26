@@ -82,14 +82,6 @@ func (ac *ActivityCreate) SetSort(i int) *ActivityCreate {
 	return ac
 }
 
-// SetNillableSort sets the "sort" field if the given value is not nil.
-func (ac *ActivityCreate) SetNillableSort(i *int) *ActivityCreate {
-	if i != nil {
-		ac.SetSort(*i)
-	}
-	return ac
-}
-
 // SetEnable sets the "enable" field.
 func (ac *ActivityCreate) SetEnable(b bool) *ActivityCreate {
 	ac.mutation.SetEnable(b)
@@ -200,10 +192,6 @@ func (ac *ActivityCreate) defaults() {
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
 		v := activity.DefaultUpdatedAt()
 		ac.mutation.SetUpdatedAt(v)
-	}
-	if _, ok := ac.mutation.Sort(); !ok {
-		v := activity.DefaultSort
-		ac.mutation.SetSort(v)
 	}
 	if _, ok := ac.mutation.Enable(); !ok {
 		v := activity.DefaultEnable

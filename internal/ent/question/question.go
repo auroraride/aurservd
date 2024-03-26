@@ -86,12 +86,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// NameValidator is a validator for the "name" field. It is called by the builders before save.
-	NameValidator func(string) error
-	// DefaultSort holds the default value on creation for the "sort" field.
-	DefaultSort int
-	// AnswerValidator is a validator for the "answer" field. It is called by the builders before save.
-	AnswerValidator func(string) error
 )
 
 // OrderOption defines the ordering options for the Question queries.

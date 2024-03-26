@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -744,7 +745,6 @@ func (su *SubscribeUpdate) ClearAgreementHash() *SubscribeUpdate {
 
 // SetEnterprisePriceID sets the "enterprise_price_id" field.
 func (su *SubscribeUpdate) SetEnterprisePriceID(u uint64) *SubscribeUpdate {
-	su.mutation.ResetEnterprisePriceID()
 	su.mutation.SetEnterprisePriceID(u)
 	return su
 }
@@ -754,12 +754,6 @@ func (su *SubscribeUpdate) SetNillableEnterprisePriceID(u *uint64) *SubscribeUpd
 	if u != nil {
 		su.SetEnterprisePriceID(*u)
 	}
-	return su
-}
-
-// AddEnterprisePriceID adds u to the "enterprise_price_id" field.
-func (su *SubscribeUpdate) AddEnterprisePriceID(u int64) *SubscribeUpdate {
-	su.mutation.AddEnterprisePriceID(u)
 	return su
 }
 
@@ -916,6 +910,11 @@ func (su *SubscribeUpdate) SetNillableBatteryID(id *uint64) *SubscribeUpdate {
 // SetBattery sets the "battery" edge to the Battery entity.
 func (su *SubscribeUpdate) SetBattery(b *Battery) *SubscribeUpdate {
 	return su.SetBatteryID(b.ID)
+}
+
+// SetEnterprisePrice sets the "enterprise_price" edge to the EnterprisePrice entity.
+func (su *SubscribeUpdate) SetEnterprisePrice(e *EnterprisePrice) *SubscribeUpdate {
+	return su.SetEnterprisePriceID(e.ID)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -1097,6 +1096,12 @@ func (su *SubscribeUpdate) RemoveBills(e ...*EnterpriseBill) *SubscribeUpdate {
 // ClearBattery clears the "battery" edge to the Battery entity.
 func (su *SubscribeUpdate) ClearBattery() *SubscribeUpdate {
 	su.mutation.ClearBattery()
+	return su
+}
+
+// ClearEnterprisePrice clears the "enterprise_price" edge to the EnterprisePrice entity.
+func (su *SubscribeUpdate) ClearEnterprisePrice() *SubscribeUpdate {
+	su.mutation.ClearEnterprisePrice()
 	return su
 }
 
@@ -1317,15 +1322,6 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if su.mutation.AgreementHashCleared() {
 		_spec.ClearField(subscribe.FieldAgreementHash, field.TypeString)
-	}
-	if value, ok := su.mutation.EnterprisePriceID(); ok {
-		_spec.SetField(subscribe.FieldEnterprisePriceID, field.TypeUint64, value)
-	}
-	if value, ok := su.mutation.AddedEnterprisePriceID(); ok {
-		_spec.AddField(subscribe.FieldEnterprisePriceID, field.TypeUint64, value)
-	}
-	if su.mutation.EnterprisePriceIDCleared() {
-		_spec.ClearField(subscribe.FieldEnterprisePriceID, field.TypeUint64)
 	}
 	if su.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1893,6 +1889,35 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.EnterprisePriceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EnterprisePriceTable,
+			Columns: []string{subscribe.EnterprisePriceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprice.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.EnterprisePriceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EnterprisePriceTable,
+			Columns: []string{subscribe.EnterprisePriceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprice.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2620,7 +2645,6 @@ func (suo *SubscribeUpdateOne) ClearAgreementHash() *SubscribeUpdateOne {
 
 // SetEnterprisePriceID sets the "enterprise_price_id" field.
 func (suo *SubscribeUpdateOne) SetEnterprisePriceID(u uint64) *SubscribeUpdateOne {
-	suo.mutation.ResetEnterprisePriceID()
 	suo.mutation.SetEnterprisePriceID(u)
 	return suo
 }
@@ -2630,12 +2654,6 @@ func (suo *SubscribeUpdateOne) SetNillableEnterprisePriceID(u *uint64) *Subscrib
 	if u != nil {
 		suo.SetEnterprisePriceID(*u)
 	}
-	return suo
-}
-
-// AddEnterprisePriceID adds u to the "enterprise_price_id" field.
-func (suo *SubscribeUpdateOne) AddEnterprisePriceID(u int64) *SubscribeUpdateOne {
-	suo.mutation.AddEnterprisePriceID(u)
 	return suo
 }
 
@@ -2792,6 +2810,11 @@ func (suo *SubscribeUpdateOne) SetNillableBatteryID(id *uint64) *SubscribeUpdate
 // SetBattery sets the "battery" edge to the Battery entity.
 func (suo *SubscribeUpdateOne) SetBattery(b *Battery) *SubscribeUpdateOne {
 	return suo.SetBatteryID(b.ID)
+}
+
+// SetEnterprisePrice sets the "enterprise_price" edge to the EnterprisePrice entity.
+func (suo *SubscribeUpdateOne) SetEnterprisePrice(e *EnterprisePrice) *SubscribeUpdateOne {
+	return suo.SetEnterprisePriceID(e.ID)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -2973,6 +2996,12 @@ func (suo *SubscribeUpdateOne) RemoveBills(e ...*EnterpriseBill) *SubscribeUpdat
 // ClearBattery clears the "battery" edge to the Battery entity.
 func (suo *SubscribeUpdateOne) ClearBattery() *SubscribeUpdateOne {
 	suo.mutation.ClearBattery()
+	return suo
+}
+
+// ClearEnterprisePrice clears the "enterprise_price" edge to the EnterprisePrice entity.
+func (suo *SubscribeUpdateOne) ClearEnterprisePrice() *SubscribeUpdateOne {
+	suo.mutation.ClearEnterprisePrice()
 	return suo
 }
 
@@ -3223,15 +3252,6 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 	}
 	if suo.mutation.AgreementHashCleared() {
 		_spec.ClearField(subscribe.FieldAgreementHash, field.TypeString)
-	}
-	if value, ok := suo.mutation.EnterprisePriceID(); ok {
-		_spec.SetField(subscribe.FieldEnterprisePriceID, field.TypeUint64, value)
-	}
-	if value, ok := suo.mutation.AddedEnterprisePriceID(); ok {
-		_spec.AddField(subscribe.FieldEnterprisePriceID, field.TypeUint64, value)
-	}
-	if suo.mutation.EnterprisePriceIDCleared() {
-		_spec.ClearField(subscribe.FieldEnterprisePriceID, field.TypeUint64)
 	}
 	if suo.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -3799,6 +3819,35 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.EnterprisePriceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EnterprisePriceTable,
+			Columns: []string{subscribe.EnterprisePriceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprice.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.EnterprisePriceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EnterprisePriceTable,
+			Columns: []string{subscribe.EnterprisePriceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprice.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

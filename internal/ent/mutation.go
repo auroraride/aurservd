@@ -105949,92 +105949,92 @@ func (m *StoreMutation) ResetEdge(name string) error {
 // SubscribeMutation represents an operation that mutates the Subscribe nodes in the graph.
 type SubscribeMutation struct {
 	config
-	op                     Op
-	typ                    string
-	id                     *uint64
-	created_at             *time.Time
-	updated_at             *time.Time
-	deleted_at             *time.Time
-	creator                **model.Modifier
-	last_modifier          **model.Modifier
-	remark                 *string
-	status                 *uint8
-	addstatus              *int8
-	_type                  *uint
-	add_type               *int
-	model                  *string
-	initial_days           *int
-	addinitial_days        *int
-	alter_days             *int
-	addalter_days          *int
-	pause_days             *int
-	addpause_days          *int
-	suspend_days           *int
-	addsuspend_days        *int
-	renewal_days           *int
-	addrenewal_days        *int
-	overdue_days           *int
-	addoverdue_days        *int
-	remaining              *int
-	addremaining           *int
-	paused_at              *time.Time
-	suspend_at             *time.Time
-	start_at               *time.Time
-	end_at                 *time.Time
-	refund_at              *time.Time
-	unsubscribe_reason     *string
-	last_bill_date         *time.Time
-	pause_overdue          *bool
-	agent_end_at           *time.Time
-	formula                *string
-	need_contract          *bool
-	intelligent            *bool
-	agreement_hash         *string
-	enterprise_price_id    *uint64
-	addenterprise_price_id *int64
-	clearedFields          map[string]struct{}
-	plan                   *uint64
-	clearedplan            bool
-	employee               *uint64
-	clearedemployee        bool
-	city                   *uint64
-	clearedcity            bool
-	station                *uint64
-	clearedstation         bool
-	store                  *uint64
-	clearedstore           bool
-	cabinet                *uint64
-	clearedcabinet         bool
-	brand                  *uint64
-	clearedbrand           bool
-	ebike                  *uint64
-	clearedebike           bool
-	rider                  *uint64
-	clearedrider           bool
-	enterprise             *uint64
-	clearedenterprise      bool
-	pauses                 map[uint64]struct{}
-	removedpauses          map[uint64]struct{}
-	clearedpauses          bool
-	suspends               map[uint64]struct{}
-	removedsuspends        map[uint64]struct{}
-	clearedsuspends        bool
-	alters                 map[uint64]struct{}
-	removedalters          map[uint64]struct{}
-	clearedalters          bool
-	orders                 map[uint64]struct{}
-	removedorders          map[uint64]struct{}
-	clearedorders          bool
-	initial_order          *uint64
-	clearedinitial_order   bool
-	bills                  map[uint64]struct{}
-	removedbills           map[uint64]struct{}
-	clearedbills           bool
-	battery                *uint64
-	clearedbattery         bool
-	done                   bool
-	oldValue               func(context.Context) (*Subscribe, error)
-	predicates             []predicate.Subscribe
+	op                      Op
+	typ                     string
+	id                      *uint64
+	created_at              *time.Time
+	updated_at              *time.Time
+	deleted_at              *time.Time
+	creator                 **model.Modifier
+	last_modifier           **model.Modifier
+	remark                  *string
+	status                  *uint8
+	addstatus               *int8
+	_type                   *uint
+	add_type                *int
+	model                   *string
+	initial_days            *int
+	addinitial_days         *int
+	alter_days              *int
+	addalter_days           *int
+	pause_days              *int
+	addpause_days           *int
+	suspend_days            *int
+	addsuspend_days         *int
+	renewal_days            *int
+	addrenewal_days         *int
+	overdue_days            *int
+	addoverdue_days         *int
+	remaining               *int
+	addremaining            *int
+	paused_at               *time.Time
+	suspend_at              *time.Time
+	start_at                *time.Time
+	end_at                  *time.Time
+	refund_at               *time.Time
+	unsubscribe_reason      *string
+	last_bill_date          *time.Time
+	pause_overdue           *bool
+	agent_end_at            *time.Time
+	formula                 *string
+	need_contract           *bool
+	intelligent             *bool
+	agreement_hash          *string
+	clearedFields           map[string]struct{}
+	plan                    *uint64
+	clearedplan             bool
+	employee                *uint64
+	clearedemployee         bool
+	city                    *uint64
+	clearedcity             bool
+	station                 *uint64
+	clearedstation          bool
+	store                   *uint64
+	clearedstore            bool
+	cabinet                 *uint64
+	clearedcabinet          bool
+	brand                   *uint64
+	clearedbrand            bool
+	ebike                   *uint64
+	clearedebike            bool
+	rider                   *uint64
+	clearedrider            bool
+	enterprise              *uint64
+	clearedenterprise       bool
+	pauses                  map[uint64]struct{}
+	removedpauses           map[uint64]struct{}
+	clearedpauses           bool
+	suspends                map[uint64]struct{}
+	removedsuspends         map[uint64]struct{}
+	clearedsuspends         bool
+	alters                  map[uint64]struct{}
+	removedalters           map[uint64]struct{}
+	clearedalters           bool
+	orders                  map[uint64]struct{}
+	removedorders           map[uint64]struct{}
+	clearedorders           bool
+	initial_order           *uint64
+	clearedinitial_order    bool
+	bills                   map[uint64]struct{}
+	removedbills            map[uint64]struct{}
+	clearedbills            bool
+	battery                 *uint64
+	clearedbattery          bool
+	enterprise_price        *uint64
+	clearedenterprise_price bool
+	done                    bool
+	oldValue                func(context.Context) (*Subscribe, error)
+	predicates              []predicate.Subscribe
 }
 
 var _ ent.Mutation = (*SubscribeMutation)(nil)
@@ -108070,13 +108070,12 @@ func (m *SubscribeMutation) ResetAgreementHash() {
 
 // SetEnterprisePriceID sets the "enterprise_price_id" field.
 func (m *SubscribeMutation) SetEnterprisePriceID(u uint64) {
-	m.enterprise_price_id = &u
-	m.addenterprise_price_id = nil
+	m.enterprise_price = &u
 }
 
 // EnterprisePriceID returns the value of the "enterprise_price_id" field in the mutation.
 func (m *SubscribeMutation) EnterprisePriceID() (r uint64, exists bool) {
-	v := m.enterprise_price_id
+	v := m.enterprise_price
 	if v == nil {
 		return
 	}
@@ -108100,28 +108099,9 @@ func (m *SubscribeMutation) OldEnterprisePriceID(ctx context.Context) (v uint64,
 	return oldValue.EnterprisePriceID, nil
 }
 
-// AddEnterprisePriceID adds u to the "enterprise_price_id" field.
-func (m *SubscribeMutation) AddEnterprisePriceID(u int64) {
-	if m.addenterprise_price_id != nil {
-		*m.addenterprise_price_id += u
-	} else {
-		m.addenterprise_price_id = &u
-	}
-}
-
-// AddedEnterprisePriceID returns the value that was added to the "enterprise_price_id" field in this mutation.
-func (m *SubscribeMutation) AddedEnterprisePriceID() (r int64, exists bool) {
-	v := m.addenterprise_price_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ClearEnterprisePriceID clears the value of the "enterprise_price_id" field.
 func (m *SubscribeMutation) ClearEnterprisePriceID() {
-	m.enterprise_price_id = nil
-	m.addenterprise_price_id = nil
+	m.enterprise_price = nil
 	m.clearedFields[subscribe.FieldEnterprisePriceID] = struct{}{}
 }
 
@@ -108133,8 +108113,7 @@ func (m *SubscribeMutation) EnterprisePriceIDCleared() bool {
 
 // ResetEnterprisePriceID resets all changes to the "enterprise_price_id" field.
 func (m *SubscribeMutation) ResetEnterprisePriceID() {
-	m.enterprise_price_id = nil
-	m.addenterprise_price_id = nil
+	m.enterprise_price = nil
 	delete(m.clearedFields, subscribe.FieldEnterprisePriceID)
 }
 
@@ -108744,6 +108723,33 @@ func (m *SubscribeMutation) ResetBattery() {
 	m.clearedbattery = false
 }
 
+// ClearEnterprisePrice clears the "enterprise_price" edge to the EnterprisePrice entity.
+func (m *SubscribeMutation) ClearEnterprisePrice() {
+	m.clearedenterprise_price = true
+	m.clearedFields[subscribe.FieldEnterprisePriceID] = struct{}{}
+}
+
+// EnterprisePriceCleared reports if the "enterprise_price" edge to the EnterprisePrice entity was cleared.
+func (m *SubscribeMutation) EnterprisePriceCleared() bool {
+	return m.EnterprisePriceIDCleared() || m.clearedenterprise_price
+}
+
+// EnterprisePriceIDs returns the "enterprise_price" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EnterprisePriceID instead. It exists only for internal usage by the builders.
+func (m *SubscribeMutation) EnterprisePriceIDs() (ids []uint64) {
+	if id := m.enterprise_price; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEnterprisePrice resets all changes to the "enterprise_price" edge.
+func (m *SubscribeMutation) ResetEnterprisePrice() {
+	m.enterprise_price = nil
+	m.clearedenterprise_price = false
+}
+
 // Where appends a list predicates to the SubscribeMutation builder.
 func (m *SubscribeMutation) Where(ps ...predicate.Subscribe) {
 	m.predicates = append(m.predicates, ps...)
@@ -108899,7 +108905,7 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.agreement_hash != nil {
 		fields = append(fields, subscribe.FieldAgreementHash)
 	}
-	if m.enterprise_price_id != nil {
+	if m.enterprise_price != nil {
 		fields = append(fields, subscribe.FieldEnterprisePriceID)
 	}
 	return fields
@@ -109414,9 +109420,6 @@ func (m *SubscribeMutation) AddedFields() []string {
 	if m.addremaining != nil {
 		fields = append(fields, subscribe.FieldRemaining)
 	}
-	if m.addenterprise_price_id != nil {
-		fields = append(fields, subscribe.FieldEnterprisePriceID)
-	}
 	return fields
 }
 
@@ -109443,8 +109446,6 @@ func (m *SubscribeMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedOverdueDays()
 	case subscribe.FieldRemaining:
 		return m.AddedRemaining()
-	case subscribe.FieldEnterprisePriceID:
-		return m.AddedEnterprisePriceID()
 	}
 	return nil, false
 }
@@ -109516,13 +109517,6 @@ func (m *SubscribeMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddRemaining(v)
-		return nil
-	case subscribe.FieldEnterprisePriceID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddEnterprisePriceID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe numeric field %s", name)
@@ -109833,7 +109827,7 @@ func (m *SubscribeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SubscribeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 18)
 	if m.plan != nil {
 		edges = append(edges, subscribe.EdgePlan)
 	}
@@ -109884,6 +109878,9 @@ func (m *SubscribeMutation) AddedEdges() []string {
 	}
 	if m.battery != nil {
 		edges = append(edges, subscribe.EdgeBattery)
+	}
+	if m.enterprise_price != nil {
+		edges = append(edges, subscribe.EdgeEnterprisePrice)
 	}
 	return edges
 }
@@ -109970,13 +109967,17 @@ func (m *SubscribeMutation) AddedIDs(name string) []ent.Value {
 		if id := m.battery; id != nil {
 			return []ent.Value{*id}
 		}
+	case subscribe.EdgeEnterprisePrice:
+		if id := m.enterprise_price; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SubscribeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 18)
 	if m.removedpauses != nil {
 		edges = append(edges, subscribe.EdgePauses)
 	}
@@ -110035,7 +110036,7 @@ func (m *SubscribeMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SubscribeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 18)
 	if m.clearedplan {
 		edges = append(edges, subscribe.EdgePlan)
 	}
@@ -110087,6 +110088,9 @@ func (m *SubscribeMutation) ClearedEdges() []string {
 	if m.clearedbattery {
 		edges = append(edges, subscribe.EdgeBattery)
 	}
+	if m.clearedenterprise_price {
+		edges = append(edges, subscribe.EdgeEnterprisePrice)
+	}
 	return edges
 }
 
@@ -110128,6 +110132,8 @@ func (m *SubscribeMutation) EdgeCleared(name string) bool {
 		return m.clearedbills
 	case subscribe.EdgeBattery:
 		return m.clearedbattery
+	case subscribe.EdgeEnterprisePrice:
+		return m.clearedenterprise_price
 	}
 	return false
 }
@@ -110171,6 +110177,9 @@ func (m *SubscribeMutation) ClearEdge(name string) error {
 		return nil
 	case subscribe.EdgeBattery:
 		m.ClearBattery()
+		return nil
+	case subscribe.EdgeEnterprisePrice:
+		m.ClearEnterprisePrice()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe unique edge %s", name)
@@ -110230,6 +110239,9 @@ func (m *SubscribeMutation) ResetEdge(name string) error {
 		return nil
 	case subscribe.EdgeBattery:
 		m.ResetBattery()
+		return nil
+	case subscribe.EdgeEnterprisePrice:
+		m.ResetEnterprisePrice()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe edge %s", name)

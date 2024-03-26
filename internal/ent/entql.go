@@ -5679,6 +5679,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Battery",
 	)
 	graph.MustAddE(
+		"enterprise_price",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EnterprisePriceTable,
+			Columns: []string{subscribe.EnterprisePriceColumn},
+			Bidi:    false,
+		},
+		"Subscribe",
+		"EnterprisePrice",
+	)
+	graph.MustAddE(
 		"rider",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -18179,6 +18191,20 @@ func (f *SubscribeFilter) WhereHasBattery() {
 // WhereHasBatteryWith applies a predicate to check if query has an edge battery with a given conditions (other predicates).
 func (f *SubscribeFilter) WhereHasBatteryWith(preds ...predicate.Battery) {
 	f.Where(entql.HasEdgeWith("battery", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasEnterprisePrice applies a predicate to check if query has an edge enterprise_price.
+func (f *SubscribeFilter) WhereHasEnterprisePrice() {
+	f.Where(entql.HasEdge("enterprise_price"))
+}
+
+// WhereHasEnterprisePriceWith applies a predicate to check if query has an edge enterprise_price with a given conditions (other predicates).
+func (f *SubscribeFilter) WhereHasEnterprisePriceWith(preds ...predicate.EnterprisePrice) {
+	f.Where(entql.HasEdgeWith("enterprise_price", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

@@ -6,13 +6,16 @@ package biz
 
 import (
 	"context"
+	"errors"
+	"strings"
 
 	"github.com/golang-module/carbon/v2"
+
+	"github.com/auroraride/aurservd/internal/ent/activity"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
@@ -50,6 +53,9 @@ func (a *activityBiz) Create(req *definition.ActivityCreateReq) error {
 		SetIntroduction(req.Introduction).
 		Save(ctx)
 	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key value") {
+			return errors.New("请勿重复添加")
+		}
 		return err
 	}
 	return nil
@@ -68,6 +74,9 @@ func (a *activityBiz) Modify(req *definition.ActivityModifyReq) error {
 		SetIntroduction(req.Introduction).
 		Save(a.ctx)
 	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key value") {
+			return errors.New("请勿重复添加")
+		}
 		return err
 	}
 	return nil
@@ -88,7 +97,7 @@ func (a *activityBiz) All() ([]*definition.ActivityDetail, error) {
 }
 
 func (a *activityBiz) List(req *definition.ActivityListReq) *model.PaginationRes {
-	query := a.orm.QueryNotDeleted().Order(ent.Desc(activity.FieldCreatedAt))
+	query := a.orm.QueryNotDeleted().Order(ent.Desc(activity.FieldSort))
 	if req.Keyword != nil {
 		query.Where(activity.NameContains(*req.Keyword))
 	}

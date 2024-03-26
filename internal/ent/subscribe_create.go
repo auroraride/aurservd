@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -722,6 +723,11 @@ func (sc *SubscribeCreate) SetBattery(b *Battery) *SubscribeCreate {
 	return sc.SetBatteryID(b.ID)
 }
 
+// SetEnterprisePrice sets the "enterprise_price" edge to the EnterprisePrice entity.
+func (sc *SubscribeCreate) SetEnterprisePrice(e *EnterprisePrice) *SubscribeCreate {
+	return sc.SetEnterprisePriceID(e.ID)
+}
+
 // Mutation returns the SubscribeMutation object of the builder.
 func (sc *SubscribeCreate) Mutation() *SubscribeMutation {
 	return sc.mutation
@@ -1019,10 +1025,6 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		_spec.SetField(subscribe.FieldAgreementHash, field.TypeString, value)
 		_node.AgreementHash = value
 	}
-	if value, ok := sc.mutation.EnterprisePriceID(); ok {
-		_spec.SetField(subscribe.FieldEnterprisePriceID, field.TypeUint64, value)
-		_node.EnterprisePriceID = value
-	}
 	if nodes := sc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1304,6 +1306,23 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.EnterprisePriceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EnterprisePriceTable,
+			Columns: []string{subscribe.EnterprisePriceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprice.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EnterprisePriceID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -1997,12 +2016,6 @@ func (u *SubscribeUpsert) SetEnterprisePriceID(v uint64) *SubscribeUpsert {
 // UpdateEnterprisePriceID sets the "enterprise_price_id" field to the value that was provided on create.
 func (u *SubscribeUpsert) UpdateEnterprisePriceID() *SubscribeUpsert {
 	u.SetExcluded(subscribe.FieldEnterprisePriceID)
-	return u
-}
-
-// AddEnterprisePriceID adds v to the "enterprise_price_id" field.
-func (u *SubscribeUpsert) AddEnterprisePriceID(v uint64) *SubscribeUpsert {
-	u.Add(subscribe.FieldEnterprisePriceID, v)
 	return u
 }
 
@@ -2802,13 +2815,6 @@ func (u *SubscribeUpsertOne) ClearAgreementHash() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) SetEnterprisePriceID(v uint64) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.SetEnterprisePriceID(v)
-	})
-}
-
-// AddEnterprisePriceID adds v to the "enterprise_price_id" field.
-func (u *SubscribeUpsertOne) AddEnterprisePriceID(v uint64) *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.AddEnterprisePriceID(v)
 	})
 }
 
@@ -3782,13 +3788,6 @@ func (u *SubscribeUpsertBulk) ClearAgreementHash() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) SetEnterprisePriceID(v uint64) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.SetEnterprisePriceID(v)
-	})
-}
-
-// AddEnterprisePriceID adds v to the "enterprise_price_id" field.
-func (u *SubscribeUpsertBulk) AddEnterprisePriceID(v uint64) *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.AddEnterprisePriceID(v)
 	})
 }
 

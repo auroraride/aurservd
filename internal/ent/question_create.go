@@ -104,14 +104,6 @@ func (qc *QuestionCreate) SetSort(i int) *QuestionCreate {
 	return qc
 }
 
-// SetNillableSort sets the "sort" field if the given value is not nil.
-func (qc *QuestionCreate) SetNillableSort(i *int) *QuestionCreate {
-	if i != nil {
-		qc.SetSort(*i)
-	}
-	return qc
-}
-
 // SetAnswer sets the "answer" field.
 func (qc *QuestionCreate) SetAnswer(s string) *QuestionCreate {
 	qc.mutation.SetAnswer(s)
@@ -188,10 +180,6 @@ func (qc *QuestionCreate) defaults() error {
 		v := question.DefaultUpdatedAt()
 		qc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := qc.mutation.Sort(); !ok {
-		v := question.DefaultSort
-		qc.mutation.SetSort(v)
-	}
 	return nil
 }
 
@@ -206,21 +194,11 @@ func (qc *QuestionCreate) check() error {
 	if _, ok := qc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Question.name"`)}
 	}
-	if v, ok := qc.mutation.Name(); ok {
-		if err := question.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Question.name": %w`, err)}
-		}
-	}
 	if _, ok := qc.mutation.Sort(); !ok {
 		return &ValidationError{Name: "sort", err: errors.New(`ent: missing required field "Question.sort"`)}
 	}
 	if _, ok := qc.mutation.Answer(); !ok {
 		return &ValidationError{Name: "answer", err: errors.New(`ent: missing required field "Question.answer"`)}
-	}
-	if v, ok := qc.mutation.Answer(); ok {
-		if err := question.AnswerValidator(v); err != nil {
-			return &ValidationError{Name: "answer", err: fmt.Errorf(`ent: validator failed for field "Question.answer": %w`, err)}
-		}
 	}
 	return nil
 }

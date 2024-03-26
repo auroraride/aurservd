@@ -61,7 +61,7 @@ func (Activity) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").Comment("名称"),
 		field.String("link").Comment("链接"),
-		field.Int("sort").Default(0).Comment("排序"),
+		field.Int("sort").Unique().Comment("排序"),
 		field.Bool("enable").Default(true).Comment("状态 true:启用 false:禁用"),
 		field.String("introduction").Comment("简介"),
 		field.Bool("popup").Default(false).Comment("活动入口:弹窗"),

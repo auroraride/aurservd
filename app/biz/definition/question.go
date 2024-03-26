@@ -31,6 +31,6 @@ type QuestionModifyReq struct {
 // QuestionListReq 列表请求
 type QuestionListReq struct {
 	model.PaginationReq
-	Keyword    *string `json:"keywords"`                             // 关键字
-	CategoryID *uint64 `json:"categoryId" trans:"分类ID,0表示其他，不传表示全部"` // 分类ID
+	Keyword    *string `json:"keyword" query:"keyword"`                                 // 关键字
+	CategoryID *uint64 `json:"categoryId" query:"categoryId" trans:"分类ID,0表示其他，不传表示全部"` // 分类ID
 }

@@ -216,21 +216,6 @@ func (qu *QuestionUpdate) defaults() error {
 	return nil
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (qu *QuestionUpdate) check() error {
-	if v, ok := qu.mutation.Name(); ok {
-		if err := question.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Question.name": %w`, err)}
-		}
-	}
-	if v, ok := qu.mutation.Answer(); ok {
-		if err := question.AnswerValidator(v); err != nil {
-			return &ValidationError{Name: "answer", err: fmt.Errorf(`ent: validator failed for field "Question.answer": %w`, err)}
-		}
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (qu *QuestionUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *QuestionUpdate {
 	qu.modifiers = append(qu.modifiers, modifiers...)
@@ -238,9 +223,6 @@ func (qu *QuestionUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Quest
 }
 
 func (qu *QuestionUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := qu.check(); err != nil {
-		return n, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(question.Table, question.Columns, sqlgraph.NewFieldSpec(question.FieldID, field.TypeUint64))
 	if ps := qu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -534,21 +516,6 @@ func (quo *QuestionUpdateOne) defaults() error {
 	return nil
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (quo *QuestionUpdateOne) check() error {
-	if v, ok := quo.mutation.Name(); ok {
-		if err := question.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Question.name": %w`, err)}
-		}
-	}
-	if v, ok := quo.mutation.Answer(); ok {
-		if err := question.AnswerValidator(v); err != nil {
-			return &ValidationError{Name: "answer", err: fmt.Errorf(`ent: validator failed for field "Question.answer": %w`, err)}
-		}
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (quo *QuestionUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *QuestionUpdateOne {
 	quo.modifiers = append(quo.modifiers, modifiers...)
@@ -556,9 +523,6 @@ func (quo *QuestionUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Q
 }
 
 func (quo *QuestionUpdateOne) sqlSave(ctx context.Context) (_node *Question, err error) {
-	if err := quo.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(question.Table, question.Columns, sqlgraph.NewFieldSpec(question.FieldID, field.TypeUint64))
 	id, ok := quo.mutation.ID()
 	if !ok {
