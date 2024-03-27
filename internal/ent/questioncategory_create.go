@@ -104,14 +104,6 @@ func (qcc *QuestionCategoryCreate) SetSort(u uint64) *QuestionCategoryCreate {
 	return qcc
 }
 
-// SetNillableSort sets the "sort" field if the given value is not nil.
-func (qcc *QuestionCategoryCreate) SetNillableSort(u *uint64) *QuestionCategoryCreate {
-	if u != nil {
-		qcc.SetSort(*u)
-	}
-	return qcc
-}
-
 // AddQuestionIDs adds the "questions" edge to the Question entity by IDs.
 func (qcc *QuestionCategoryCreate) AddQuestionIDs(ids ...uint64) *QuestionCategoryCreate {
 	qcc.mutation.AddQuestionIDs(ids...)
@@ -178,10 +170,6 @@ func (qcc *QuestionCategoryCreate) defaults() error {
 		v := questioncategory.DefaultUpdatedAt()
 		qcc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := qcc.mutation.Sort(); !ok {
-		v := questioncategory.DefaultSort
-		qcc.mutation.SetSort(v)
-	}
 	return nil
 }
 
@@ -195,11 +183,6 @@ func (qcc *QuestionCategoryCreate) check() error {
 	}
 	if _, ok := qcc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "QuestionCategory.name"`)}
-	}
-	if v, ok := qcc.mutation.Name(); ok {
-		if err := questioncategory.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "QuestionCategory.name": %w`, err)}
-		}
 	}
 	if _, ok := qcc.mutation.Sort(); !ok {
 		return &ValidationError{Name: "sort", err: errors.New(`ent: missing required field "QuestionCategory.sort"`)}

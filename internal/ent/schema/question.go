@@ -59,9 +59,9 @@ func (Question) Annotations() []schema.Annotation {
 // Fields of the Question.
 func (Question) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name").NotEmpty().Comment("问题名称"),
-		field.Int("sort").Default(0).Comment("排序"),
-		field.String("answer").NotEmpty().Comment("答案"),
+		field.String("name").Comment("问题名称"),
+		field.Int("sort").Unique().Comment("排序"),
+		field.String("answer").Comment("答案"),
 		field.Uint64("category_id").Optional().Comment("分类ID"),
 	}
 }

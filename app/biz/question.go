@@ -6,6 +6,8 @@ package biz
 
 import (
 	"context"
+	"errors"
+	"strings"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
@@ -34,6 +36,9 @@ func (b *questionBiz) Create(req *definition.QuestionCreateReq) error {
 		SetAnswer(req.Answer).
 		Save(b.ctx)
 	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key value") {
+			return errors.New("请勿重复添加")
+		}
 		return err
 	}
 	return nil
@@ -48,6 +53,9 @@ func (b *questionBiz) Modify(req *definition.QuestionModifyReq) error {
 		SetAnswer(req.Answer).
 		Save(b.ctx)
 	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key value") {
+			return errors.New("请勿重复添加")
+		}
 		return err
 	}
 	return nil
@@ -81,7 +89,9 @@ func (b *questionBiz) Detail(id uint64) (*definition.QuestionDetail, error) {
 
 // List 列表
 func (b *questionBiz) List(req *definition.QuestionListReq) (*model.PaginationRes, error) {
-	query := b.orm.QueryNotDeleted().WithCategory().Order(ent.Desc(question.FieldSort))
+	query := b.orm.QueryNotDeleted().WithCategory(func(query *ent.QuestionCategoryQuery) {
+		query.Order(ent.Desc(question.FieldSort))
+	}).Order(ent.Desc(question.FieldSort))
 	if req.Keyword != nil {
 		query.Where(question.NameContains(*req.Keyword))
 	}
@@ -109,7 +119,11 @@ func (b *questionBiz) List(req *definition.QuestionListReq) (*model.PaginationRe
 
 // All 全部
 func (b *questionBiz) All() ([]*definition.QuestionDetail, error) {
-	query := b.orm.QueryNotDeleted().WithCategory().Order(ent.Desc(question.FieldSort))
+	query := b.orm.QueryNotDeleted().WithCategory(
+		func(query *ent.QuestionCategoryQuery) {
+			query.Order(ent.Desc(question.FieldSort))
+		},
+	).Order(ent.Desc(question.FieldSort))
 	items, err := query.All(b.ctx)
 	if err != nil {
 		return nil, err

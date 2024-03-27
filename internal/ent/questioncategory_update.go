@@ -207,16 +207,6 @@ func (qcu *QuestionCategoryUpdate) defaults() error {
 	return nil
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (qcu *QuestionCategoryUpdate) check() error {
-	if v, ok := qcu.mutation.Name(); ok {
-		if err := questioncategory.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "QuestionCategory.name": %w`, err)}
-		}
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (qcu *QuestionCategoryUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *QuestionCategoryUpdate {
 	qcu.modifiers = append(qcu.modifiers, modifiers...)
@@ -224,9 +214,6 @@ func (qcu *QuestionCategoryUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder
 }
 
 func (qcu *QuestionCategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := qcu.check(); err != nil {
-		return n, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(questioncategory.Table, questioncategory.Columns, sqlgraph.NewFieldSpec(questioncategory.FieldID, field.TypeUint64))
 	if ps := qcu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -524,16 +511,6 @@ func (qcuo *QuestionCategoryUpdateOne) defaults() error {
 	return nil
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (qcuo *QuestionCategoryUpdateOne) check() error {
-	if v, ok := qcuo.mutation.Name(); ok {
-		if err := questioncategory.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "QuestionCategory.name": %w`, err)}
-		}
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (qcuo *QuestionCategoryUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *QuestionCategoryUpdateOne {
 	qcuo.modifiers = append(qcuo.modifiers, modifiers...)
@@ -541,9 +518,6 @@ func (qcuo *QuestionCategoryUpdateOne) Modify(modifiers ...func(u *sql.UpdateBui
 }
 
 func (qcuo *QuestionCategoryUpdateOne) sqlSave(ctx context.Context) (_node *QuestionCategory, err error) {
-	if err := qcuo.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(questioncategory.Table, questioncategory.Columns, sqlgraph.NewFieldSpec(questioncategory.FieldID, field.TypeUint64))
 	id, ok := qcuo.mutation.ID()
 	if !ok {

@@ -1845,26 +1845,6 @@ func EnterprisePriceIDNotIn(vs ...uint64) predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldNotIn(FieldEnterprisePriceID, vs...))
 }
 
-// EnterprisePriceIDGT applies the GT predicate on the "enterprise_price_id" field.
-func EnterprisePriceIDGT(v uint64) predicate.Subscribe {
-	return predicate.Subscribe(sql.FieldGT(FieldEnterprisePriceID, v))
-}
-
-// EnterprisePriceIDGTE applies the GTE predicate on the "enterprise_price_id" field.
-func EnterprisePriceIDGTE(v uint64) predicate.Subscribe {
-	return predicate.Subscribe(sql.FieldGTE(FieldEnterprisePriceID, v))
-}
-
-// EnterprisePriceIDLT applies the LT predicate on the "enterprise_price_id" field.
-func EnterprisePriceIDLT(v uint64) predicate.Subscribe {
-	return predicate.Subscribe(sql.FieldLT(FieldEnterprisePriceID, v))
-}
-
-// EnterprisePriceIDLTE applies the LTE predicate on the "enterprise_price_id" field.
-func EnterprisePriceIDLTE(v uint64) predicate.Subscribe {
-	return predicate.Subscribe(sql.FieldLTE(FieldEnterprisePriceID, v))
-}
-
 // EnterprisePriceIDIsNil applies the IsNil predicate on the "enterprise_price_id" field.
 func EnterprisePriceIDIsNil() predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldIsNull(FieldEnterprisePriceID))
@@ -2258,6 +2238,29 @@ func HasBattery() predicate.Subscribe {
 func HasBatteryWith(preds ...predicate.Battery) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		step := newBatteryStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEnterprisePrice applies the HasEdge predicate on the "enterprise_price" edge.
+func HasEnterprisePrice() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EnterprisePriceTable, EnterprisePriceColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEnterprisePriceWith applies the HasEdge predicate on the "enterprise_price" edge with a given conditions (other predicates).
+func HasEnterprisePriceWith(preds ...predicate.EnterprisePrice) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		step := newEnterprisePriceStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

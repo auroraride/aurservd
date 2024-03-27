@@ -17,7 +17,7 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
 		{Name: "link", Type: field.TypeString, Comment: "链接"},
-		{Name: "sort", Type: field.TypeInt, Comment: "排序", Default: 0},
+		{Name: "sort", Type: field.TypeInt, Unique: true, Comment: "排序"},
 		{Name: "enable", Type: field.TypeBool, Comment: "状态 true:启用 false:禁用", Default: true},
 		{Name: "introduction", Type: field.TypeString, Comment: "简介"},
 		{Name: "popup", Type: field.TypeBool, Comment: "活动入口:弹窗", Default: false},
@@ -4464,7 +4464,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "name", Type: field.TypeString, Comment: "问题名称"},
-		{Name: "sort", Type: field.TypeInt, Comment: "排序", Default: 0},
+		{Name: "sort", Type: field.TypeInt, Unique: true, Comment: "排序"},
 		{Name: "answer", Type: field.TypeString, Comment: "答案"},
 		{Name: "category_id", Type: field.TypeUint64, Nullable: true, Comment: "分类ID"},
 	}
@@ -4508,8 +4508,8 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
-		{Name: "name", Type: field.TypeString, Comment: "名称"},
-		{Name: "sort", Type: field.TypeUint64, Comment: "排序", Default: 0},
+		{Name: "name", Type: field.TypeString, Unique: true, Comment: "名称"},
+		{Name: "sort", Type: field.TypeUint64, Unique: true, Comment: "排序"},
 	}
 	// QuestionCategoryTable holds the schema information for the "question_category" table.
 	QuestionCategoryTable = &schema.Table{
@@ -5267,7 +5267,6 @@ var (
 		{Name: "need_contract", Type: field.TypeBool, Comment: "是否需要签约", Default: false},
 		{Name: "intelligent", Type: field.TypeBool, Comment: "是否智能柜套餐", Default: false},
 		{Name: "agreement_hash", Type: field.TypeString, Nullable: true, Comment: "签署协议hash"},
-		{Name: "enterprise_price_id", Type: field.TypeUint64, Nullable: true, Comment: "团签价格ID"},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "企业ID"},
 		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
@@ -5279,6 +5278,7 @@ var (
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "initial_order_id", Type: field.TypeUint64, Nullable: true, Comment: "初始订单ID(开通订阅的初始订单), 团签用户无此字段"},
+		{Name: "enterprise_price_id", Type: field.TypeUint64, Nullable: true, Comment: "团签价格ID"},
 	}
 	// SubscribeTable holds the schema information for the "subscribe" table.
 	SubscribeTable = &schema.Table{
@@ -5288,68 +5288,74 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "subscribe_enterprise_subscribes",
-				Columns:    []*schema.Column{SubscribeColumns[31]},
+				Columns:    []*schema.Column{SubscribeColumns[30]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_rider_subscribes",
-				Columns:    []*schema.Column{SubscribeColumns[32]},
+				Columns:    []*schema.Column{SubscribeColumns[31]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_plan_plan",
-				Columns:    []*schema.Column{SubscribeColumns[33]},
+				Columns:    []*schema.Column{SubscribeColumns[32]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_employee_employee",
-				Columns:    []*schema.Column{SubscribeColumns[34]},
+				Columns:    []*schema.Column{SubscribeColumns[33]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_city_city",
-				Columns:    []*schema.Column{SubscribeColumns[35]},
+				Columns:    []*schema.Column{SubscribeColumns[34]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_enterprise_station_station",
-				Columns:    []*schema.Column{SubscribeColumns[36]},
+				Columns:    []*schema.Column{SubscribeColumns[35]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_store_store",
-				Columns:    []*schema.Column{SubscribeColumns[37]},
+				Columns:    []*schema.Column{SubscribeColumns[36]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_cabinet_cabinet",
-				Columns:    []*schema.Column{SubscribeColumns[38]},
+				Columns:    []*schema.Column{SubscribeColumns[37]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_ebike_brand_brand",
-				Columns:    []*schema.Column{SubscribeColumns[39]},
+				Columns:    []*schema.Column{SubscribeColumns[38]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_ebike_ebike",
-				Columns:    []*schema.Column{SubscribeColumns[40]},
+				Columns:    []*schema.Column{SubscribeColumns[39]},
 				RefColumns: []*schema.Column{EbikeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_order_initial_order",
-				Columns:    []*schema.Column{SubscribeColumns[41]},
+				Columns:    []*schema.Column{SubscribeColumns[40]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscribe_enterprise_price_enterprise_price",
+				Columns:    []*schema.Column{SubscribeColumns[41]},
+				RefColumns: []*schema.Column{EnterprisePriceColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -5367,52 +5373,52 @@ var (
 			{
 				Name:    "subscribe_plan_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[33]},
+				Columns: []*schema.Column{SubscribeColumns[32]},
 			},
 			{
 				Name:    "subscribe_employee_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[34]},
+				Columns: []*schema.Column{SubscribeColumns[33]},
 			},
 			{
 				Name:    "subscribe_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[35]},
+				Columns: []*schema.Column{SubscribeColumns[34]},
 			},
 			{
 				Name:    "subscribe_station_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[36]},
+				Columns: []*schema.Column{SubscribeColumns[35]},
 			},
 			{
 				Name:    "subscribe_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[37]},
+				Columns: []*schema.Column{SubscribeColumns[36]},
 			},
 			{
 				Name:    "subscribe_cabinet_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[38]},
+				Columns: []*schema.Column{SubscribeColumns[37]},
 			},
 			{
 				Name:    "subscribe_brand_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[39]},
+				Columns: []*schema.Column{SubscribeColumns[38]},
 			},
 			{
 				Name:    "subscribe_ebike_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[40]},
+				Columns: []*schema.Column{SubscribeColumns[39]},
 			},
 			{
 				Name:    "subscribe_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[32]},
+				Columns: []*schema.Column{SubscribeColumns[31]},
 			},
 			{
 				Name:    "subscribe_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeColumns[31]},
+				Columns: []*schema.Column{SubscribeColumns[30]},
 			},
 			{
 				Name:    "subscribe_paused_at",
@@ -6491,6 +6497,7 @@ func init() {
 	SubscribeTable.ForeignKeys[8].RefTable = EbikeBrandTable
 	SubscribeTable.ForeignKeys[9].RefTable = EbikeTable
 	SubscribeTable.ForeignKeys[10].RefTable = OrderTable
+	SubscribeTable.ForeignKeys[11].RefTable = EnterprisePriceTable
 	SubscribeTable.Annotation = &entsql.Annotation{
 		Table: "subscribe",
 	}

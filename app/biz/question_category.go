@@ -6,6 +6,8 @@ package biz
 
 import (
 	"context"
+	"errors"
+	"strings"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
@@ -50,6 +52,9 @@ func (q *questionCategoryBiz) Create(req *definition.QuestionCategoryCreateReq) 
 		SetRemark(req.Remark).
 		Save(q.ctx)
 	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key value") {
+			return errors.New("请勿重复添加")
+		}
 		return err
 	}
 	return nil
@@ -63,6 +68,9 @@ func (q *questionCategoryBiz) Modify(req *definition.QuestionCategoryModifyReq) 
 		SetRemark(req.Remark).
 		Save(q.ctx)
 	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key value") {
+			return errors.New("请勿重复添加")
+		}
 		return err
 	}
 	return nil
@@ -85,7 +93,7 @@ func (q *questionCategoryBiz) Delete(id uint64) error {
 
 // List 列表
 func (q *questionCategoryBiz) List(req *definition.QuestionCategoryListReq) (*model.PaginationRes, error) {
-	query := q.orm.QueryNotDeleted().Order(ent.Desc(questioncategory.FieldCreatedAt))
+	query := q.orm.QueryNotDeleted().Order(ent.Desc(questioncategory.FieldSort))
 	return model.ParsePaginationResponse(query, req.PaginationReq, func(item *ent.QuestionCategory) *definition.QuestionCategoryDetail {
 		return &definition.QuestionCategoryDetail{
 			IDRes: model.IDRes{ID: item.ID},

@@ -131,6 +131,8 @@ const (
 	EdgeBills = "bills"
 	// EdgeBattery holds the string denoting the battery edge name in mutations.
 	EdgeBattery = "battery"
+	// EdgeEnterprisePrice holds the string denoting the enterprise_price edge name in mutations.
+	EdgeEnterprisePrice = "enterprise_price"
 	// Table holds the table name of the subscribe in the database.
 	Table = "subscribe"
 	// PlanTable is the table that holds the plan relation/edge.
@@ -252,6 +254,13 @@ const (
 	BatteryInverseTable = "battery"
 	// BatteryColumn is the table column denoting the battery relation/edge.
 	BatteryColumn = "subscribe_id"
+	// EnterprisePriceTable is the table that holds the enterprise_price relation/edge.
+	EnterprisePriceTable = "subscribe"
+	// EnterprisePriceInverseTable is the table name for the EnterprisePrice entity.
+	// It exists in this package in order to avoid circular dependency with the "enterpriseprice" package.
+	EnterprisePriceInverseTable = "enterprise_price"
+	// EnterprisePriceColumn is the table column denoting the enterprise_price relation/edge.
+	EnterprisePriceColumn = "enterprise_price_id"
 )
 
 // Columns holds all SQL columns for subscribe fields.
@@ -703,6 +712,13 @@ func ByBatteryField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newBatteryStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByEnterprisePriceField orders the results by enterprise_price field.
+func ByEnterprisePriceField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEnterprisePriceStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newPlanStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -820,5 +836,12 @@ func newBatteryStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BatteryInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2O, false, BatteryTable, BatteryColumn),
+	)
+}
+func newEnterprisePriceStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EnterprisePriceInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, EnterprisePriceTable, EnterprisePriceColumn),
 	)
 }

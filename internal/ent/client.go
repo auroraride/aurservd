@@ -15317,6 +15317,22 @@ func (c *SubscribeClient) QueryBattery(s *Subscribe) *BatteryQuery {
 	return query
 }
 
+// QueryEnterprisePrice queries the enterprise_price edge of a Subscribe.
+func (c *SubscribeClient) QueryEnterprisePrice(s *Subscribe) *EnterprisePriceQuery {
+	query := (&EnterprisePriceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(enterpriseprice.Table, enterpriseprice.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.EnterprisePriceTable, subscribe.EnterprisePriceColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *SubscribeClient) Hooks() []Hook {
 	hooks := c.hooks.Subscribe
