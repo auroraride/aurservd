@@ -65,20 +65,14 @@ func main() {
 				continue
 			}
 			method := sub[2]
-			// sn := sub[3]
 			desc := sub[3]
 			pg.Permissions = append(pg.Permissions, permission.Item{
 				Key:    permission.GetKey(method, api),
 				Method: method,
 				Api:    api,
 				Desc:   desc,
-				// SN:     sn,
 			})
 		}
-
-		// sort.Slice(pg.Permissions, func(i, j int) bool {
-		// 	return strings.Compare(pg.Permissions[i].SN, pg.Permissions[j].SN) < 0
-		// })
 	}
 
 	permission.Save(m)
@@ -94,7 +88,7 @@ func main() {
 }
 
 func upload(addr string) {
-	privPEM, _ := os.ReadFile("/Users/liasica/.ssh/id_rsa")
+	privPEM, _ := os.ReadFile("~/.ssh/id_rsa")
 	sshConf, _ := scp.NewSSHConfigFromPrivateKey("root", privPEM)
 	client, err := scp.NewClient(addr, sshConf, &scp.ClientOption{})
 	if err != nil {

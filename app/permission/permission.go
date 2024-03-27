@@ -36,7 +36,6 @@ type Item struct {
 	Method string `json:"method"` // api请求method
 	Api    string `json:"api"`    // api请求path
 	Desc   string `json:"desc"`   // 接口描述
-	SN     string `json:"sn"`     // 接口编号
 }
 
 var v *viper.Viper
