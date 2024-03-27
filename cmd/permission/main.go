@@ -10,7 +10,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"strings"
 
 	"github.com/povsister/scp"
@@ -66,20 +65,20 @@ func main() {
 				continue
 			}
 			method := sub[2]
-			sn := sub[3]
-			desc := sub[4]
+			// sn := sub[3]
+			desc := sub[3]
 			pg.Permissions = append(pg.Permissions, permission.Item{
 				Key:    permission.GetKey(method, api),
 				Method: method,
 				Api:    api,
 				Desc:   desc,
-				SN:     sn,
+				// SN:     sn,
 			})
 		}
 
-		sort.Slice(pg.Permissions, func(i, j int) bool {
-			return strings.Compare(pg.Permissions[i].SN, pg.Permissions[j].SN) < 0
-		})
+		// sort.Slice(pg.Permissions, func(i, j int) bool {
+		// 	return strings.Compare(pg.Permissions[i].SN, pg.Permissions[j].SN) < 0
+		// })
 	}
 
 	permission.Save(m)
