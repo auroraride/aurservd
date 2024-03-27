@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
@@ -579,6 +580,10 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 	serv := NewPlanIntroduce()
 	intro := serv.QueryMap()
 
+	// 查询个签默认协议
+	var defaultAgreement *ent.Agreement
+	defaultAgreement, _ = ent.Database.Agreement.QueryNotDeleted().Where(agreement.UserType(1), agreement.IsDefault(true)).First(s.ctx)
+
 	for _, item := range items {
 		key := s.Key(item.Model, item.BrandID)
 		m, ok := mmap[key]
@@ -627,6 +632,14 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 				URL:           item.Edges.Agreement.URL,
 				Hash:          item.Edges.Agreement.Hash,
 				ForceReadTime: item.Edges.Agreement.ForceReadTime,
+			}
+		} else if defaultAgreement != nil {
+			planDaysPriceOption.Agreement = &model.Agreement{
+				ID:            defaultAgreement.ID,
+				Name:          defaultAgreement.Name,
+				URL:           defaultAgreement.URL,
+				Hash:          defaultAgreement.Hash,
+				ForceReadTime: defaultAgreement.ForceReadTime,
 			}
 		}
 
