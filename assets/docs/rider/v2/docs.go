@@ -1888,7 +1888,7 @@ const docTemplate = `{
                     "Exchange - 换电"
                 ],
                 "summary": "电柜换电 - 开始换电流程",
-                "operationId": "CabinetProcess",
+                "operationId": "ExchangeProcess",
                 "parameters": [
                     {
                         "type": "string",
@@ -1930,7 +1930,7 @@ const docTemplate = `{
                     "Exchange - 换电"
                 ],
                 "summary": "电柜换电 - 获取流程状态",
-                "operationId": "CabinetProcessStatus",
+                "operationId": "ExchangeProcessStatus",
                 "parameters": [
                     {
                         "type": "string",
@@ -1968,7 +1968,7 @@ const docTemplate = `{
                     "Exchange - 换电"
                 ],
                 "summary": "电柜换电 - 获取换电信息",
-                "operationId": "CabinetGetProcess",
+                "operationId": "ExchangeGetProcess",
                 "parameters": [
                     {
                         "type": "string",
@@ -2345,6 +2345,13 @@ const docTemplate = `{
                         "description": "骑手校验token",
                         "name": "X-Rider-Token",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "说明key",
+                        "name": "key",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -3221,6 +3228,15 @@ const docTemplate = `{
                 ],
                 "summary": "根据订阅查询骑手激活门店信息",
                 "operationId": "StoreBySubscribe",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "订阅ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
@@ -3245,6 +3261,13 @@ const docTemplate = `{
                 "summary": "门店详情",
                 "operationId": "StoreDetail",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "订阅ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "number",
                         "description": "纬度",

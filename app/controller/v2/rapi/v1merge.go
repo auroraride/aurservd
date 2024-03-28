@@ -380,7 +380,7 @@ func (*exchange) Overview() {}
 func (*exchange) List() {}
 
 // GetProcess
-// @ID		CabinetGetProcess
+// @ID		ExchangeGetProcess
 // @Router	/rider/v2/exchange/process/{serial} [GET]
 // @Summary	电柜换电 - 获取换电信息
 // @Tags	Exchange - 换电
@@ -393,7 +393,7 @@ func (*cabinet) GetProcess() {
 }
 
 // Process
-// @ID		CabinetProcess
+// @ID		ExchangeProcess
 // @Router	/rider/v2/exchange/process [POST]
 // @Summary	电柜换电 - 开始换电流程
 // @Tags	Exchange - 换电
@@ -406,7 +406,7 @@ func (*cabinet) Process() {
 }
 
 // ProcessStatus
-// @ID			CabinetProcessStatus
+// @ID			ExchangeProcessStatus
 // @Router		/rider/v2/exchange/process/status [GET]
 // @Summary		电柜换电 - 获取流程状态
 // @Description	使用http长轮询，获取换电流程状态，每次轮询超时时间为30s

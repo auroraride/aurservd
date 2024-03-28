@@ -3918,7 +3918,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: CabinetProcess
+      operationId: ExchangeProcess
       parameters:
       - description: 骑手校验token
         in: header
@@ -3945,7 +3945,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: CabinetGetProcess
+      operationId: ExchangeGetProcess
       parameters:
       - description: 骑手校验token
         in: header
@@ -3972,7 +3972,7 @@ paths:
       consumes:
       - application/json
       description: 使用http长轮询，获取换电流程状态，每次轮询超时时间为30s
-      operationId: CabinetProcessStatus
+      operationId: ExchangeProcessStatus
       parameters:
       - description: 骑手校验token
         in: header
@@ -4218,6 +4218,11 @@ paths:
       - description: 骑手校验token
         in: header
         name: X-Rider-Token
+        required: true
+        type: string
+      - description: 说明key
+        in: path
+        name: key
         required: true
         type: string
       produces:
@@ -4795,6 +4800,11 @@ paths:
       - application/json
       operationId: StoreDetail
       parameters:
+      - description: 订阅ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: 纬度
         in: query
         name: lat
@@ -4820,6 +4830,12 @@ paths:
       consumes:
       - application/json
       operationId: StoreBySubscribe
+      parameters:
+      - description: 订阅ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
