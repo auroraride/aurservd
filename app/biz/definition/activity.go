@@ -4,10 +4,10 @@ import "github.com/auroraride/aurservd/app/model"
 
 // Activity 活动公共字段
 type Activity struct {
-	Name         string        `json:"name" `        // 名称
-	Sort         int           `json:"sort" `        // 排序
-	Image        ActivityImage `json:"image" `       // 图片
-	Link         string        `json:"link" `        // 链接
+	Name         string        `json:"name"`         // 名称
+	Sort         int           `json:"sort"`         // 排序
+	Image        ActivityImage `json:"image"`        // 图片
+	Link         string        `json:"link"`         // 链接
 	Popup        *bool         `json:"popup"`        // 弹窗 true:是 false:否
 	Home         *bool         `json:"home"`         // 首页icon true:是 false:否
 	Remark       string        `json:"remark"`       // 备注

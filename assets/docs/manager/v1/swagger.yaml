@@ -47,7 +47,7 @@ definitions:
         type: boolean
       image:
         allOf:
-          - $ref: '#/definitions/definition.ActivityImage'
+        - $ref: '#/definitions/definition.ActivityImage'
         description: 图片, 图片
       introduction:
         description: 活动简介
@@ -87,7 +87,7 @@ definitions:
         type: integer
       image:
         allOf:
-          - $ref: '#/definitions/definition.ActivityImage'
+        - $ref: '#/definitions/definition.ActivityImage'
         description: 图片
       introduction:
         description: 活动简介
@@ -133,7 +133,7 @@ definitions:
         type: boolean
       image:
         allOf:
-          - $ref: '#/definitions/definition.ActivityImage'
+        - $ref: '#/definitions/definition.ActivityImage'
         description: 图片, 图片
       introduction:
         description: 活动简介
@@ -519,7 +519,7 @@ definitions:
     properties:
       appPlatform:
         allOf:
-          - $ref: '#/definitions/model.AppPlatform'
+        - $ref: '#/definitions/model.AppPlatform'
         description: 平台
       content:
         description: 更新内容
@@ -541,11 +541,11 @@ definitions:
     properties:
       appPlatform:
         allOf:
-          - $ref: '#/definitions/model.AppPlatform'
+        - $ref: '#/definitions/model.AppPlatform'
         description: 平台
         enum:
-          - android
-          - ios
+        - android
+        - ios
       content:
         description: 更新内容
         type: string
@@ -556,7 +556,7 @@ definitions:
         description: 版本号
         type: string
     required:
-      - appPlatform
+    - appPlatform
     - content
     - version
     type: object
@@ -564,11 +564,11 @@ definitions:
     properties:
       appPlatform:
         allOf:
-          - $ref: '#/definitions/model.AppPlatform'
+        - $ref: '#/definitions/model.AppPlatform'
         description: 平台
         enum:
-          - android
-          - ios
+        - android
+        - ios
       content:
         description: 更新内容
         type: string
@@ -579,7 +579,7 @@ definitions:
         description: 版本号
         type: string
     required:
-      - appPlatform
+    - appPlatform
     - content
     - version
     type: object
@@ -644,12 +644,12 @@ definitions:
     type: object
   model.AppPlatform:
     enum:
-      - android
-      - ios
+    - android
+    - ios
     type: string
     x-enum-varnames:
-      - AppPlatformAndroid
-      - AppPlatformIOS
+    - AppPlatformAndroid
+    - AppPlatformIOS
   model.AssistanceAllocateReq:
     properties:
       id:

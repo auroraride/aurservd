@@ -28,7 +28,7 @@ definitions:
         type: integer
       image:
         allOf:
-          - $ref: '#/definitions/definition.ActivityImage'
+        - $ref: '#/definitions/definition.ActivityImage'
         description: 图片
       introduction:
         description: 活动简介
@@ -741,7 +741,7 @@ definitions:
     properties:
       appPlatform:
         allOf:
-          - $ref: '#/definitions/model.AppPlatform'
+        - $ref: '#/definitions/model.AppPlatform'
         description: 平台
       content:
         description: 更新内容
@@ -785,12 +785,12 @@ definitions:
     type: object
   model.AppPlatform:
     enum:
-      - android
-      - ios
+    - android
+    - ios
     type: string
     x-enum-varnames:
-      - AppPlatformAndroid
-      - AppPlatformIOS
+    - AppPlatformAndroid
+    - AppPlatformIOS
   model.AssistanceCancelReq:
     properties:
       desc:
@@ -3940,7 +3940,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 电柜换电 - 开始换电流程
       tags:
-        - Exchange - 换电
+      - Exchange - 换电
   /rider/v2/exchange/process/{serial}:
     get:
       consumes:
@@ -3966,7 +3966,7 @@ paths:
             $ref: '#/definitions/model.RiderExchangeInfo'
       summary: 电柜换电 - 获取换电信息
       tags:
-        - Exchange - 换电
+      - Exchange - 换电
   /rider/v2/exchange/process/status:
     get:
       consumes:
@@ -3992,7 +3992,7 @@ paths:
             $ref: '#/definitions/model.RiderExchangeProcessRes'
       summary: 电柜换电 - 获取流程状态
       tags:
-        - Exchange - 换电
+      - Exchange - 换电
   /rider/v2/exchange/store:
     post:
       consumes:
@@ -4715,8 +4715,8 @@ paths:
         required: true
         type: string
         x-enum-varnames:
-          - AppPlatformAndroid
-          - AppPlatformIOS
+        - AppPlatformAndroid
+        - AppPlatformIOS
       produces:
       - application/json
       responses:
