@@ -43,7 +43,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/definition.Agreement"
+                                "$ref": "#/definitions/definition.AgreementDetail"
                             }
                         }
                     }
@@ -157,7 +157,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.Agreement"
+                            "$ref": "#/definitions/definition.AgreementDetail"
                         }
                     }
                 }
@@ -9625,7 +9625,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "关键字",
-                        "name": "keywords",
+                        "name": "keyword",
                         "in": "query"
                     },
                     {
@@ -13827,7 +13827,39 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.Agreement": {
+        "definition.AgreementCreateReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "forceReadTime",
+                "isDefault",
+                "name",
+                "userType"
+            ],
+            "properties": {
+                "content": {
+                    "description": "内容",
+                    "type": "string"
+                },
+                "forceReadTime": {
+                    "description": "强制阅读时间",
+                    "type": "integer"
+                },
+                "isDefault": {
+                    "description": "是否为默认协议",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "协议名称",
+                    "type": "string"
+                },
+                "userType": {
+                    "description": "用户类型 1:个签 2:团签",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.AgreementDetail": {
             "type": "object",
             "properties": {
                 "content": {
@@ -13860,38 +13892,6 @@ const docTemplate = `{
                 },
                 "url": {
                     "description": "URL",
-                    "type": "string"
-                },
-                "userType": {
-                    "description": "用户类型 1:个签 2:团签",
-                    "type": "integer"
-                }
-            }
-        },
-        "definition.AgreementCreateReq": {
-            "type": "object",
-            "required": [
-                "content",
-                "forceReadTime",
-                "isDefault",
-                "name",
-                "userType"
-            ],
-            "properties": {
-                "content": {
-                    "description": "内容",
-                    "type": "string"
-                },
-                "forceReadTime": {
-                    "description": "强制阅读时间",
-                    "type": "integer"
-                },
-                "isDefault": {
-                    "description": "是否为默认协议",
-                    "type": "boolean"
-                },
-                "name": {
-                    "description": "协议名称",
                     "type": "string"
                 },
                 "userType": {

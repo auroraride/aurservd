@@ -108,7 +108,7 @@ const (
 	// Node types.
 	TypeActivity                   = "Activity"
 	TypeAgent                      = "Agent"
-	TypeAgreement                  = "Agreement"
+	TypeAgreement                  = "AgreementRes"
 	TypeAllocate                   = "Allocate"
 	TypeAssistance                 = "Assistance"
 	TypeAttendance                 = "Attendance"
@@ -3072,7 +3072,7 @@ func (m *AgreementMutation) OldField(ctx context.Context, name string) (ent.Valu
 	case agreement.FieldURL:
 		return m.OldURL(ctx)
 	}
-	return nil, fmt.Errorf("unknown Agreement field %s", name)
+	return nil, fmt.Errorf("unknown AgreementRes field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
@@ -3172,7 +3172,7 @@ func (m *AgreementMutation) SetField(name string, value ent.Value) error {
 		m.SetURL(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Agreement field %s", name)
+	return fmt.Errorf("unknown AgreementRes field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
@@ -3221,7 +3221,7 @@ func (m *AgreementMutation) AddField(name string, value ent.Value) error {
 		m.AddForceReadTime(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Agreement numeric field %s", name)
+	return fmt.Errorf("unknown AgreementRes numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
@@ -3279,7 +3279,7 @@ func (m *AgreementMutation) ClearField(name string) error {
 		m.ClearURL()
 		return nil
 	}
-	return fmt.Errorf("unknown Agreement nullable field %s", name)
+	return fmt.Errorf("unknown AgreementRes nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
@@ -3326,7 +3326,7 @@ func (m *AgreementMutation) ResetField(name string) error {
 		m.ResetURL()
 		return nil
 	}
-	return fmt.Errorf("unknown Agreement field %s", name)
+	return fmt.Errorf("unknown AgreementRes field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
@@ -3368,13 +3368,13 @@ func (m *AgreementMutation) EdgeCleared(name string) bool {
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *AgreementMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown Agreement unique edge %s", name)
+	return fmt.Errorf("unknown AgreementRes unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *AgreementMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown Agreement edge %s", name)
+	return fmt.Errorf("unknown AgreementRes edge %s", name)
 }
 
 // AllocateMutation represents an operation that mutates the Allocate nodes in the graph.

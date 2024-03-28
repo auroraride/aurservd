@@ -621,7 +621,7 @@ definitions:
     properties:
       agreement:
         allOf:
-          - $ref: '#/definitions/model.Agreement'
+        - $ref: '#/definitions/model.Agreement'
         description: 协议
       city:
         allOf:
@@ -1010,7 +1010,7 @@ definitions:
     properties:
       agreement:
         allOf:
-          - $ref: '#/definitions/model.Agreement'
+        - $ref: '#/definitions/model.Agreement'
         description: 协议
       days:
         description: 天数

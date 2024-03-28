@@ -109,15 +109,15 @@ func (a *agreementBiz) Modify(req *definition.AgreementModifyReq) error {
 }
 
 // List 协议列表
-func (a *agreementBiz) List() (res []*definition.Agreement, err error) {
-	res = make([]*definition.Agreement, 0)
+func (a *agreementBiz) List() (res []*definition.AgreementDetail, err error) {
+	res = make([]*definition.AgreementDetail, 0)
 	items, _ := a.orm.QueryNotDeleted().All(a.ctx)
 	if len(items) == 0 {
 		return res, nil
 	}
 
 	for _, v := range items {
-		res = append(res, &definition.Agreement{
+		res = append(res, &definition.AgreementDetail{
 			ID:            v.ID,
 			Name:          v.Name,
 			Content:       v.Content,
@@ -180,12 +180,12 @@ func (a *agreementBiz) AgreementSelection(req *definition.AgreementSearchReq) (r
 }
 
 // Detail 协议详情
-func (a *agreementBiz) Detail(id uint64) (res *definition.Agreement, err error) {
+func (a *agreementBiz) Detail(id uint64) (res *definition.AgreementDetail, err error) {
 	item, _ := a.orm.QueryNotDeleted().Where(agreement.ID(id)).First(a.ctx)
 	if item == nil {
 		return nil, err
 	}
-	return &definition.Agreement{
+	return &definition.AgreementDetail{
 		ID:            item.ID,
 		Name:          item.Name,
 		Content:       item.Content,
@@ -216,12 +216,12 @@ func (a *agreementBiz) GenerateAgreementFile(title string, content string) (url 
 }
 
 // QueryAgreementByEnterprisePriceID 通过价格ID获取协议信息
-func (a *agreementBiz) QueryAgreementByEnterprisePriceID(id uint64) *definition.Agreement {
+func (a *agreementBiz) QueryAgreementByEnterprisePriceID(id uint64) *definition.AgreementDetail {
 	item, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.ID(id)).WithAgreement().First(a.ctx)
 	if item == nil || item.Edges.Agreement == nil {
 		return nil
 	}
-	return &definition.Agreement{
+	return &definition.AgreementDetail{
 		ID:            item.Edges.Agreement.ID,
 		Hash:          item.Edges.Agreement.Hash,
 		Content:       item.Edges.Agreement.Content,

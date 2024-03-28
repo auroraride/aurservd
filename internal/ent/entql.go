@@ -150,7 +150,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 				Column: agreement.FieldID,
 			},
 		},
-		Type: "Agreement",
+		Type: "AgreementRes",
 		Fields: map[string]*sqlgraph.FieldSpec{
 			agreement.FieldCreatedAt:     {Type: field.TypeTime, Column: agreement.FieldCreatedAt},
 			agreement.FieldUpdatedAt:     {Type: field.TypeTime, Column: agreement.FieldUpdatedAt},
@@ -3828,7 +3828,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"EnterprisePrice",
-		"Agreement",
+		"AgreementRes",
 	)
 	graph.MustAddE(
 		"enterprise",
@@ -4428,7 +4428,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"Plan",
-		"Agreement",
+		"AgreementRes",
 	)
 	graph.MustAddE(
 		"cities",

@@ -83,7 +83,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.Agreement"
+                            "$ref": "#/definitions/definition.AgreementDetail"
                         }
                     }
                 }
@@ -2326,7 +2326,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v2/instructions/:key": {
+        "/rider/v2/instructions/{key}": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -3197,7 +3197,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/definition.Store"
+                                "$ref": "#/definitions/definition.StoreDetail"
                             }
                         }
                     }
@@ -3221,7 +3221,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.Store"
+                            "$ref": "#/definitions/definition.StoreDetail"
                         }
                     }
                 }
@@ -3260,7 +3260,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.Store"
+                            "$ref": "#/definitions/definition.StoreDetail"
                         }
                     }
                 }
@@ -3537,7 +3537,7 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.Agreement": {
+        "definition.AgreementDetail": {
             "type": "object",
             "properties": {
                 "content": {
@@ -4405,7 +4405,7 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.Store": {
+        "definition.StoreDetail": {
             "type": "object",
             "properties": {
                 "address": {

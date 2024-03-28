@@ -2,8 +2,8 @@ package definition
 
 import "github.com/auroraride/aurservd/app/model"
 
-// ActivityReqCommon 活动请求公共字段
-type ActivityReqCommon struct {
+// Activity 活动公共字段
+type Activity struct {
 	Name         string            `json:"name" `        // 名称
 	Sort         int               `json:"sort" `        // 排序
 	Image        map[string]string `json:"image" `       // 图片  {"list":"图片地址","popup":"图片地址","index":"图片地址" }
@@ -28,7 +28,7 @@ type ActivityListReq struct {
 // ActivityDetail 活动详情
 type ActivityDetail struct {
 	ID uint64 `json:"id"`
-	ActivityReqCommon
+	Activity
 }
 
 // ActivityCreateReq 活动保存请求

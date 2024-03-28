@@ -29,8 +29,8 @@ func NewStore() *storeBiz {
 }
 
 // List 门店列表
-func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.Store, err error) {
-	res = make([]*definition.Store, 0)
+func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDetail, err error) {
+	res = make([]*definition.StoreDetail, 0)
 	q := s.orm.QueryNotDeleted().
 		WithCity().
 		WithEmployee().
@@ -85,7 +85,7 @@ func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.Store, 
 }
 
 // Detail 门店详情
-func (s *storeBiz) Detail(req *definition.StoreDetail) (res *definition.Store) {
+func (s *storeBiz) Detail(req *definition.StoreDetailReq) (res *definition.StoreDetail) {
 	q, _ := s.orm.QueryNotDeleted().
 		Where(store.ID(req.ID)).
 		WithCity().
@@ -102,8 +102,8 @@ func (s *storeBiz) Detail(req *definition.StoreDetail) (res *definition.Store) {
 	return s.detail(q)
 }
 
-func (s *storeBiz) detail(item *ent.Store) (res *definition.Store) {
-	res = &definition.Store{
+func (s *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
+	res = &definition.StoreDetail{
 		ID:            item.ID,
 		Name:          item.Name,
 		Status:        item.Status,
@@ -162,7 +162,7 @@ func (s *storeBiz) queryStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, battery
 }
 
 // StoreBySubscribe 根据订阅查询门店
-func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreBySubscribe) (res *definition.Store, err error) {
+func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreBySubscribeReq) (res *definition.StoreDetail, err error) {
 	q, _ := ent.Database.Subscribe.QueryNotDeleted().
 		Where(subscribe.ID(req.ID), subscribe.RiderID(r.ID)).
 		WithStore(

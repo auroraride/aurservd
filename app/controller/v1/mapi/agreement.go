@@ -20,8 +20,8 @@ var Agreement = new(agreement)
 // @Tags	协议
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Success	200				{object}	[]definition.Agreement	"请求成功"
+// @Param	X-Manager-Token	header		string							true	"管理员校验token"
+// @Success	200				{object}	[]definition.AgreementDetail	"请求成功"
 func (*agreement) List(c echo.Context) (err error) {
 	ctx := app.ContextX[app.ManagerContext](c)
 	return ctx.SendResponse(biz.NewAgreement().List())
@@ -34,9 +34,9 @@ func (*agreement) List(c echo.Context) (err error) {
 // @Tags	协议
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	id				path		string					true	"协议ID"
-// @Success	200				{object}	definition.Agreement	"请求成功"
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	id				path		string						true	"协议ID"
+// @Success	200				{object}	definition.AgreementDetail	"请求成功"
 func (*agreement) Detail(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewAgreement().Detail(req.ID))

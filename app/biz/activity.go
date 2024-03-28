@@ -123,7 +123,7 @@ func (a *activityBiz) List(req *definition.ActivityListReq) *model.PaginationRes
 func toActivityDetail(item *ent.Activity) *definition.ActivityDetail {
 	return &definition.ActivityDetail{
 		ID: item.ID,
-		ActivityReqCommon: definition.ActivityReqCommon{
+		Activity: definition.Activity{
 			Name:         item.Name,
 			Sort:         item.Sort,
 			Image:        item.Image,

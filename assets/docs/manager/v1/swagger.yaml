@@ -152,7 +152,31 @@ definitions:
     - name
     - sort
     type: object
-  definition.Agreement:
+  definition.AgreementCreateReq:
+    properties:
+      content:
+        description: 内容
+        type: string
+      forceReadTime:
+        description: 强制阅读时间
+        type: integer
+      isDefault:
+        description: 是否为默认协议
+        type: boolean
+      name:
+        description: 协议名称
+        type: string
+      userType:
+        description: 用户类型 1:个签 2:团签
+        type: integer
+    required:
+    - content
+    - forceReadTime
+    - isDefault
+    - name
+    - userType
+    type: object
+  definition.AgreementDetail:
     properties:
       content:
         description: 内容
@@ -182,30 +206,6 @@ definitions:
         description: 用户类型 1:个签 2:团签
         type: integer
     type: object
-  definition.AgreementCreateReq:
-    properties:
-      content:
-        description: 内容
-        type: string
-      forceReadTime:
-        description: 强制阅读时间
-        type: integer
-      isDefault:
-        description: 是否为默认协议
-        type: boolean
-      name:
-        description: 协议名称
-        type: string
-      userType:
-        description: 用户类型 1:个签 2:团签
-        type: integer
-    required:
-      - content
-      - forceReadTime
-      - isDefault
-      - name
-      - userType
-    type: object
   definition.AgreementModifyReq:
     properties:
       content:
@@ -224,11 +224,11 @@ definitions:
         description: 用户类型 1:个签 2:团签
         type: integer
     required:
-      - content
-      - forceReadTime
-      - isDefault
-      - name
-      - userType
+    - content
+    - forceReadTime
+    - isDefault
+    - name
+    - userType
     type: object
   definition.AgreementSelectionRes:
     properties:
@@ -3341,7 +3341,7 @@ definitions:
     properties:
       agreement:
         allOf:
-          - $ref: '#/definitions/model.Agreement'
+        - $ref: '#/definitions/model.Agreement'
         description: 协议
       city:
         allOf:
@@ -4507,7 +4507,7 @@ definitions:
     properties:
       agreement:
         allOf:
-          - $ref: '#/definitions/model.Agreement'
+        - $ref: '#/definitions/model.Agreement'
         description: 协议
       brand:
         allOf:
@@ -7187,44 +7187,44 @@ paths:
   /manager/v1/agreement:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerAgreementList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             items:
-              $ref: '#/definitions/definition.Agreement'
+              $ref: '#/definitions/definition.AgreementDetail'
             type: array
       summary: 协议列表
       tags:
-        - 协议
+      - 协议
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerAgreementCreate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 创建协议请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.AgreementCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 创建协议请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.AgreementCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -7232,25 +7232,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建协议
       tags:
-        - 协议
+      - 协议
   /manager/v1/agreement/{id}:
     delete:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerAgreementDelete
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 协议ID
-          in: path
-          name: id
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 协议ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -7258,50 +7258,50 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除协议
       tags:
-        - 协议
+      - 协议
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerAgreementDetail
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 协议ID
-          in: path
-          name: id
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 协议ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/definition.Agreement'
+            $ref: '#/definitions/definition.AgreementDetail'
       summary: 协议详情
       tags:
-        - 协议
+      - 协议
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerAgreementModify
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 修改协议请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.AgreementModifyReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 修改协议请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.AgreementModifyReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -7309,20 +7309,20 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改协议
       tags:
-        - 协议
+      - 协议
   /manager/v1/agreement/selection:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerAgreementSelection
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -7332,7 +7332,7 @@ paths:
             type: array
       summary: 协议下拉列表
       tags:
-        - 协议
+      - 协议
   /manager/v1/assistance:
     get:
       consumes:
@@ -13497,7 +13497,7 @@ paths:
         type: integer
       - description: 关键字
         in: query
-        name: keywords
+        name: keyword
         type: string
       - description: 每页数据, 默认20
         in: query

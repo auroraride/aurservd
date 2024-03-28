@@ -192,7 +192,7 @@ func (a *Agreement) Update() *AgreementUpdateOne {
 func (a *Agreement) Unwrap() *Agreement {
 	_tx, ok := a.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Agreement is not a transactional entity")
+		panic("ent: AgreementRes is not a transactional entity")
 	}
 	a.config.driver = _tx.drv
 	return a
@@ -201,7 +201,7 @@ func (a *Agreement) Unwrap() *Agreement {
 // String implements the fmt.Stringer.
 func (a *Agreement) String() string {
 	var builder strings.Builder
-	builder.WriteString("Agreement(")
+	builder.WriteString("AgreementRes(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", a.ID))
 	builder.WriteString("created_at=")
 	builder.WriteString(a.CreatedAt.Format(time.ANSIC))

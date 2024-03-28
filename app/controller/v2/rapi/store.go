@@ -20,7 +20,7 @@ var Store = new(store)
 // @Accept	json
 // @Produce	json
 // @Param	query	query		definition.StoreListReq	true	"门店列表请求参数"
-// @Success	200		{object}	[]definition.Store		"请求成功"
+// @Success	200		{object}	[]definition.StoreDetail		"请求成功"
 func (*store) List(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.StoreListReq](c)
 	return ctx.SendResponse(biz.NewStore().List(req))
@@ -33,10 +33,10 @@ func (*store) List(c echo.Context) (err error) {
 // @Tags	Store - 门店
 // @Accept	json
 // @Produce	json
-// @Param	query	query		definition.StoreDetail	true	"门店详情"
-// @Success	200		{object}	definition.Store		"请求成功"
+// @Param	query	query		definition.StoreDetailReq	true	"门店详情"
+// @Success	200		{object}	definition.StoreDetail		"请求成功"
 func (*store) Detail(c echo.Context) (err error) {
-	ctx, req := app.RiderContextAndBinding[definition.StoreDetail](c)
+	ctx, req := app.RiderContextAndBinding[definition.StoreDetailReq](c)
 	return ctx.SendResponse(biz.NewStore().Detail(req))
 }
 
@@ -47,9 +47,9 @@ func (*store) Detail(c echo.Context) (err error) {
 // @Tags	Store - 门店
 // @Accept	json
 // @Produce	json
-// @Param	query	query		definition.StoreBySubscribe	true	"请求详情"
-// @Success	200		{object}	definition.Store			"请求成功"
+// @Param	query	query		definition.StoreBySubscribeReq	true	"请求详情"
+// @Success	200		{object}	definition.StoreDetail			"请求成功"
 func (*store) StoreBySubscribe(c echo.Context) (err error) {
-	ctx, req := app.RiderContextAndBinding[definition.StoreBySubscribe](c)
+	ctx, req := app.RiderContextAndBinding[definition.StoreBySubscribeReq](c)
 	return ctx.SendResponse(biz.NewStore().StoreBySubscribe(ctx.Rider, req))
 }

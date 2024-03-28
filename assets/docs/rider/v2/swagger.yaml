@@ -53,7 +53,7 @@ definitions:
         description: 更新时间
         type: string
     type: object
-  definition.Agreement:
+  definition.AgreementDetail:
     properties:
       content:
         description: 内容
@@ -670,7 +670,7 @@ definitions:
           type: object
         type: array
     type: object
-  definition.Store:
+  definition.StoreDetail:
     properties:
       address:
         description: 地址
@@ -1516,7 +1516,7 @@ definitions:
     properties:
       agreement:
         allOf:
-          - $ref: '#/definitions/model.Agreement'
+        - $ref: '#/definitions/model.Agreement'
         description: 协议
       city:
         allOf:
@@ -1919,7 +1919,7 @@ definitions:
     properties:
       agreement:
         allOf:
-          - $ref: '#/definitions/model.Agreement'
+        - $ref: '#/definitions/model.Agreement'
         description: 协议
       days:
         description: 天数
@@ -2697,29 +2697,29 @@ paths:
   /rider/v2/agreement/enterprise/price/{id}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AgreementByEnterprisePriceID
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 企业价格ID
-          in: path
-          name: id
-          required: true
-          type: integer
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 企业价格ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/definition.Agreement'
+            $ref: '#/definitions/definition.AgreementDetail'
       summary: 根据企业价格ID查询协议
       tags:
-        - Agreement - 协议
+      - Agreement - 协议
   /rider/v2/assistance:
     get:
       consumes:
@@ -4191,7 +4191,7 @@ paths:
       summary: 新手指引列表
       tags:
       - Guide - 新手引导
-  /rider/v2/instructions/:key:
+  /rider/v2/instructions/{key}:
     get:
       consumes:
       - application/json
@@ -4763,7 +4763,7 @@ paths:
           description: 请求成功
           schema:
             items:
-              $ref: '#/definitions/definition.Store'
+              $ref: '#/definitions/definition.StoreDetail'
             type: array
       summary: 门店列表
       tags:
@@ -4790,7 +4790,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/definition.Store'
+            $ref: '#/definitions/definition.StoreDetail'
       summary: 门店详情
       tags:
       - Store - 门店
@@ -4805,7 +4805,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/definition.Store'
+            $ref: '#/definitions/definition.StoreDetail'
       summary: 根据订阅查询骑手激活门店信息
       tags:
       - Store - 门店

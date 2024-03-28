@@ -29,7 +29,8 @@ type AgreementModifyReq struct {
 	AgreementCreateReq
 }
 
-type Agreement struct {
+// AgreementDetail 协议返回
+type AgreementDetail struct {
 	ID            uint64 `json:"id"`                  // ID
 	Name          string `json:"name"`                // 协议名称
 	Content       string `json:"content"`             // 内容

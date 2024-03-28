@@ -10,8 +10,8 @@ type StoreListReq struct {
 	PlanID   *uint64  `json:"planId" query:"planId"`               // 套餐ID
 }
 
-// Store 门店信息
-type Store struct {
+// StoreDetail 门店信息
+type StoreDetail struct {
 	ID            uint64          `json:"id"`                 // 门店ID
 	Name          string          `json:"name"`               // 门店名称
 	Status        uint8           `json:"status"`             // 状态
@@ -27,13 +27,13 @@ type Store struct {
 	Address       string          `json:"address"`            // 地址
 }
 
-// StoreBySubscribe 根据订阅查询门店信息
-type StoreBySubscribe struct {
+// StoreBySubscribeReq 根据订阅查询门店信息请求
+type StoreBySubscribeReq struct {
 	model.IDParamReq
 }
 
-// StoreDetail 门店详情
-type StoreDetail struct {
+// StoreDetailReq 门店详情请求
+type StoreDetailReq struct {
 	model.IDParamReq
 	Lng float64 `json:"lng" validate:"required" query:"lng"` // 经度
 	Lat float64 `json:"lat" validate:"required" query:"lat"` // 纬度

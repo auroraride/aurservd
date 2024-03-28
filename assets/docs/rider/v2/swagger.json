@@ -42,40 +42,40 @@
                 }
             }
         },
-      "/rider/v2/agreement/enterprise/price/{id}": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "Agreement - 协议"
-          ],
-          "summary": "根据企业价格ID查询协议",
-          "operationId": "AgreementByEnterprisePriceID",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "骑手校验token",
-              "name": "X-Rider-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "integer",
-              "description": "企业价格ID",
-              "name": "id",
-              "in": "path",
-              "required": true
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/definition.Agreement"
+        "/rider/v2/agreement/enterprise/price/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Agreement - 协议"
+                ],
+                "summary": "根据企业价格ID查询协议",
+                "operationId": "AgreementByEnterprisePriceID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "企业价格ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.AgreementDetail"
                         }
                     }
                 }
@@ -2318,7 +2318,7 @@
                 }
             }
         },
-        "/rider/v2/instructions/:key": {
+        "/rider/v2/instructions/{key}": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -3189,7 +3189,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/definition.Store"
+                                "$ref": "#/definitions/definition.StoreDetail"
                             }
                         }
                     }
@@ -3213,7 +3213,7 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.Store"
+                            "$ref": "#/definitions/definition.StoreDetail"
                         }
                     }
                 }
@@ -3252,7 +3252,7 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.Store"
+                            "$ref": "#/definitions/definition.StoreDetail"
                         }
                     }
                 }
@@ -3529,47 +3529,47 @@
                 }
             }
         },
-      "definition.Agreement": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "description": "内容",
-            "type": "string"
-          },
-          "createdAt": {
-            "description": "创建时间",
-            "type": "string"
-          },
-          "forceReadTime": {
-            "description": "强制阅读时间",
-            "type": "integer"
-          },
-          "hash": {
-            "description": "Hash",
-            "type": "string"
-          },
-          "id": {
-            "description": "ID",
-            "type": "integer"
-          },
-          "isDefault": {
-            "description": "是否为默认协议",
-            "type": "boolean"
-          },
-          "name": {
-            "description": "协议名称",
-            "type": "string"
-          },
-          "url": {
-            "description": "URL",
-            "type": "string"
-          },
-          "userType": {
-            "description": "用户类型 1:个签 2:团签",
-            "type": "integer"
-          }
-        }
-      },
+        "definition.AgreementDetail": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "内容",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "forceReadTime": {
+                    "description": "强制阅读时间",
+                    "type": "integer"
+                },
+                "hash": {
+                    "description": "Hash",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "isDefault": {
+                    "description": "是否为默认协议",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "协议名称",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "URL",
+                    "type": "string"
+                },
+                "userType": {
+                    "description": "用户类型 1:个签 2:团签",
+                    "type": "integer"
+                }
+            }
+        },
         "definition.CabinetByRiderRes": {
             "type": "object",
             "properties": {
@@ -3847,10 +3847,10 @@
                 "planId"
             ],
             "properties": {
-              "agreementHash": {
-                "description": "协议hash",
-                "type": "string"
-              },
+                "agreementHash": {
+                    "description": "协议hash",
+                    "type": "string"
+                },
                 "cityId": {
                     "description": "城市ID, 新签必填",
                     "type": "integer"
@@ -4397,7 +4397,7 @@
                 }
             }
         },
-        "definition.Store": {
+        "definition.StoreDetail": {
             "type": "object",
             "properties": {
                 "address": {
@@ -4511,28 +4511,28 @@
                 }
             }
         },
-      "model.Agreement": {
-        "type": "object",
-        "properties": {
-          "forceReadTime": {
-            "description": "强制阅读时间",
-            "type": "integer"
-          },
-          "hash": {
-            "description": "hash",
-            "type": "string"
-          },
-          "id": {
-            "description": "ID",
-            "type": "integer"
-          },
-          "name": {
-            "description": "协议名称",
-            "type": "string"
-          },
-          "url": {
-            "description": "URL",
-            "type": "string"
+        "model.Agreement": {
+            "type": "object",
+            "properties": {
+                "forceReadTime": {
+                    "description": "强制阅读时间",
+                    "type": "integer"
+                },
+                "hash": {
+                    "description": "hash",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "协议名称",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "URL",
+                    "type": "string"
                 }
             }
         },
@@ -5602,14 +5602,14 @@
         "model.EnterprisePriceWithCity": {
             "type": "object",
             "properties": {
-              "agreement": {
-                "description": "协议",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/model.Agreement"
-                  }
-                ]
-              },
+                "agreement": {
+                    "description": "协议",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Agreement"
+                        }
+                    ]
+                },
                 "city": {
                     "description": "城市",
                     "allOf": [
@@ -6205,14 +6205,14 @@
         "model.PlanDaysPriceOption": {
             "type": "object",
             "properties": {
-              "agreement": {
-                "description": "协议",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/model.Agreement"
-                  }
-                ]
-              },
+                "agreement": {
+                    "description": "协议",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Agreement"
+                        }
+                    ]
+                },
                 "days": {
                     "description": "天数",
                     "type": "integer"
@@ -7050,10 +7050,10 @@
                         }
                     ]
                 },
-              "enterprisePriceId": {
-                "description": "团签价格ID",
-                "type": "integer"
-              },
+                "enterprisePriceId": {
+                    "description": "团签价格ID",
+                    "type": "integer"
+                },
                 "id": {
                     "description": "订阅ID",
                     "type": "integer"
