@@ -93,7 +93,7 @@ var (
 	DefaultIsDefault bool
 )
 
-// OrderOption defines the ordering options for the AgreementRes queries.
+// OrderOption defines the ordering options for the Agreement queries.
 type OrderOption func(*sql.Selector)
 
 // ByID orders the results by the id field.

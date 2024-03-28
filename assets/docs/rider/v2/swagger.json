@@ -3086,8 +3086,12 @@
                             "ios"
                         ],
                         "type": "string",
+                      "x-enum-varnames": [
+                        "AppPlatformAndroid",
+                        "AppPlatformIOS"
+                      ],
                         "description": "平台",
-                        "name": "platform",
+                      "name": "appPlatform",
                         "in": "query",
                         "required": true
                     }
@@ -4482,6 +4486,14 @@
         "definition.VersionRes": {
             "type": "object",
             "properties": {
+              "appPlatform": {
+                "description": "平台",
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/model.AppPlatform"
+                  }
+                ]
+              },
                 "content": {
                     "description": "更新内容",
                     "type": "string"
@@ -4497,13 +4509,6 @@
                 "id": {
                     "description": "ID",
                     "type": "integer"
-                },
-                "platform": {
-                    "description": "平台",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "version": {
                     "description": "版本号",
@@ -4545,6 +4550,17 @@
                 }
             }
         },
+      "model.AppPlatform": {
+        "type": "string",
+        "enum": [
+          "android",
+          "ios"
+        ],
+        "x-enum-varnames": [
+          "AppPlatformAndroid",
+          "AppPlatformIOS"
+        ]
+      },
         "model.AssistanceCancelReq": {
             "type": "object",
             "required": [

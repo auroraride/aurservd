@@ -108,7 +108,7 @@ const (
 	// Node types.
 	TypeActivity                   = "Activity"
 	TypeAgent                      = "Agent"
-	TypeAgreement                  = "AgreementRes"
+	TypeAgreement                  = "Agreement"
 	TypeAllocate                   = "Allocate"
 	TypeAssistance                 = "Assistance"
 	TypeAttendance                 = "Attendance"
@@ -3072,7 +3072,7 @@ func (m *AgreementMutation) OldField(ctx context.Context, name string) (ent.Valu
 	case agreement.FieldURL:
 		return m.OldURL(ctx)
 	}
-	return nil, fmt.Errorf("unknown AgreementRes field %s", name)
+	return nil, fmt.Errorf("unknown Agreement field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
@@ -3172,7 +3172,7 @@ func (m *AgreementMutation) SetField(name string, value ent.Value) error {
 		m.SetURL(v)
 		return nil
 	}
-	return fmt.Errorf("unknown AgreementRes field %s", name)
+	return fmt.Errorf("unknown Agreement field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
@@ -3221,7 +3221,7 @@ func (m *AgreementMutation) AddField(name string, value ent.Value) error {
 		m.AddForceReadTime(v)
 		return nil
 	}
-	return fmt.Errorf("unknown AgreementRes numeric field %s", name)
+	return fmt.Errorf("unknown Agreement numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
@@ -3279,7 +3279,7 @@ func (m *AgreementMutation) ClearField(name string) error {
 		m.ClearURL()
 		return nil
 	}
-	return fmt.Errorf("unknown AgreementRes nullable field %s", name)
+	return fmt.Errorf("unknown Agreement nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
@@ -3326,7 +3326,7 @@ func (m *AgreementMutation) ResetField(name string) error {
 		m.ResetURL()
 		return nil
 	}
-	return fmt.Errorf("unknown AgreementRes field %s", name)
+	return fmt.Errorf("unknown Agreement field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
@@ -3368,13 +3368,13 @@ func (m *AgreementMutation) EdgeCleared(name string) bool {
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *AgreementMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown AgreementRes unique edge %s", name)
+	return fmt.Errorf("unknown Agreement unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *AgreementMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown AgreementRes edge %s", name)
+	return fmt.Errorf("unknown Agreement edge %s", name)
 }
 
 // AllocateMutation represents an operation that mutates the Allocate nodes in the graph.
@@ -116628,24 +116628,23 @@ func (m *SubscribeSuspendMutation) ResetEdge(name string) error {
 // VersionMutation represents an operation that mutates the Version nodes in the graph.
 type VersionMutation struct {
 	config
-	op             Op
-	typ            string
-	id             *uint64
-	created_at     *time.Time
-	updated_at     *time.Time
-	deleted_at     *time.Time
-	creator        **model.Modifier
-	last_modifier  **model.Modifier
-	remark         *string
-	platform       *[]string
-	appendplatform []string
-	version        *string
-	content        *string
-	force          *bool
-	clearedFields  map[string]struct{}
-	done           bool
-	oldValue       func(context.Context) (*Version, error)
-	predicates     []predicate.Version
+	op            Op
+	typ           string
+	id            *uint64
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	creator       **model.Modifier
+	last_modifier **model.Modifier
+	remark        *string
+	platform      *model.AppPlatform
+	version       *string
+	content       *string
+	force         *bool
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*Version, error)
+	predicates    []predicate.Version
 }
 
 var _ ent.Mutation = (*VersionMutation)(nil)
@@ -117015,13 +117014,12 @@ func (m *VersionMutation) ResetRemark() {
 }
 
 // SetPlatform sets the "platform" field.
-func (m *VersionMutation) SetPlatform(s []string) {
-	m.platform = &s
-	m.appendplatform = nil
+func (m *VersionMutation) SetPlatform(mp model.AppPlatform) {
+	m.platform = &mp
 }
 
 // Platform returns the value of the "platform" field in the mutation.
-func (m *VersionMutation) Platform() (r []string, exists bool) {
+func (m *VersionMutation) Platform() (r model.AppPlatform, exists bool) {
 	v := m.platform
 	if v == nil {
 		return
@@ -117032,7 +117030,7 @@ func (m *VersionMutation) Platform() (r []string, exists bool) {
 // OldPlatform returns the old "platform" field's value of the Version entity.
 // If the Version object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VersionMutation) OldPlatform(ctx context.Context) (v []string, err error) {
+func (m *VersionMutation) OldPlatform(ctx context.Context) (v model.AppPlatform, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPlatform is only allowed on UpdateOne operations")
 	}
@@ -117046,23 +117044,9 @@ func (m *VersionMutation) OldPlatform(ctx context.Context) (v []string, err erro
 	return oldValue.Platform, nil
 }
 
-// AppendPlatform adds s to the "platform" field.
-func (m *VersionMutation) AppendPlatform(s []string) {
-	m.appendplatform = append(m.appendplatform, s...)
-}
-
-// AppendedPlatform returns the list of values that were appended to the "platform" field in this mutation.
-func (m *VersionMutation) AppendedPlatform() ([]string, bool) {
-	if len(m.appendplatform) == 0 {
-		return nil, false
-	}
-	return m.appendplatform, true
-}
-
 // ResetPlatform resets all changes to the "platform" field.
 func (m *VersionMutation) ResetPlatform() {
 	m.platform = nil
-	m.appendplatform = nil
 }
 
 // SetVersion sets the "version" field.
@@ -117347,7 +117331,7 @@ func (m *VersionMutation) SetField(name string, value ent.Value) error {
 		m.SetRemark(v)
 		return nil
 	case version.FieldPlatform:
-		v, ok := value.([]string)
+		v, ok := value.(model.AppPlatform)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

@@ -7,8 +7,6 @@ package biz
 import (
 	"context"
 
-	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqljson"
 	"github.com/golang-module/carbon/v2"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
@@ -32,7 +30,7 @@ func NewVersion() *versionBiz {
 // Create 创建版本
 func (s *versionBiz) Create(req *definition.VersionReq) (err error) {
 	_, err = s.orm.Create().
-		SetPlatform(req.Platform).
+		SetPlatform(req.AppPlatform).
 		SetContent(req.Content).
 		SetVersion(req.Version).
 		SetForce(req.Force).
@@ -46,7 +44,7 @@ func (s *versionBiz) Create(req *definition.VersionReq) (err error) {
 // Modify 修改
 func (s *versionBiz) Modify(req *definition.VersionModifyReq) (err error) {
 	_, err = s.orm.UpdateOneID(req.ID).
-		SetPlatform(req.Platform).
+		SetPlatform(req.AppPlatform).
 		SetContent(req.Content).
 		SetVersion(req.Version).
 		SetForce(req.Force).
@@ -74,12 +72,12 @@ func (s *versionBiz) List(req *definition.VersionListReq) (res *model.Pagination
 		req.PaginationReq,
 		func(item *ent.Version) (res *definition.Version) {
 			return &definition.Version{
-				ID:        item.ID,
-				Platform:  item.Platform,
-				Version:   item.Version,
-				Content:   item.Content,
-				Force:     item.Force,
-				CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
+				ID:          item.ID,
+				AppPlatform: item.Platform,
+				Version:     item.Version,
+				Content:     item.Content,
+				Force:       item.Force,
+				CreatedAt:   item.CreatedAt.Format(carbon.DateTimeLayout),
 			}
 		},
 	)
@@ -88,18 +86,16 @@ func (s *versionBiz) List(req *definition.VersionListReq) (res *model.Pagination
 // LatestVersion 获取最新版本
 func (s *versionBiz) LatestVersion(req *definition.LatestVersionReq) *definition.Version {
 	q, _ := s.orm.QueryNotDeleted().
-		Where(func(selector *sql.Selector) {
-			selector.Where(sqljson.ValueContains(version.FieldPlatform, req.Platform))
-		}).
+		Where(version.PlatformEQ(req.AppPlatform)).
 		Order(ent.Desc(version.FieldCreatedAt)).First(s.ctx)
 	if q == nil {
 		return nil
 	}
 	return &definition.Version{
-		Platform:  q.Platform,
-		Version:   q.Version,
-		Content:   q.Content,
-		Force:     q.Force,
-		CreatedAt: q.CreatedAt.Format(carbon.DateTimeLayout),
+		AppPlatform: q.Platform,
+		Version:     q.Version,
+		Content:     q.Content,
+		Force:       q.Force,
+		CreatedAt:   q.CreatedAt.Format(carbon.DateTimeLayout),
 	}
 }

@@ -7,10 +7,10 @@ package definition
 import "github.com/auroraride/aurservd/app/model"
 
 type VersionReq struct {
-	Platform []string `json:"platform" validate:"required,dive,required,oneof=android ios" trans:"平台"` // 平台
-	Version  string   `json:"version" validate:"required"`                                             // 版本号
-	Content  string   `json:"content" validate:"required"`                                             // 更新内容
-	Force    bool     `json:"force" `                                                                  // 是否强制更新
+	AppPlatform model.AppPlatform `json:"appPlatform" query:"appPlatform" validate:"required,oneof=android ios" trans:"平台" enums:"android,ios"`
+	Version     string            `json:"version" validate:"required"` // 版本号
+	Content     string            `json:"content" validate:"required"` // 更新内容
+	Force       bool              `json:"force" `                      // 是否强制更新
 }
 
 type VersionRes struct {
@@ -18,12 +18,12 @@ type VersionRes struct {
 }
 
 type Version struct {
-	ID        uint64   `json:"id,omitempty"`       // ID
-	Platform  []string `json:"platform,omitempty"` // 平台
-	Version   string   `json:"version"`            // 版本号
-	Content   string   `json:"content"`            // 更新内容
-	Force     bool     `json:"force"`              // 是否强制更新
-	CreatedAt string   `json:"createdAt"`          // 创建时间
+	ID          uint64            `json:"id,omitempty"`          // ID
+	AppPlatform model.AppPlatform `json:"appPlatform,omitempty"` // 平台
+	Version     string            `json:"version"`               // 版本号
+	Content     string            `json:"content"`               // 更新内容
+	Force       bool              `json:"force"`                 // 是否强制更新
+	CreatedAt   string            `json:"createdAt"`             // 创建时间
 }
 
 type VersionModifyReq struct {
@@ -36,5 +36,5 @@ type VersionListReq struct {
 }
 
 type LatestVersionReq struct {
-	Platform string `json:"platform" query:"platform" validate:"required,oneof=android ios" enums:"android,ios"` // 平台
+	AppPlatform model.AppPlatform `json:"appPlatform" query:"appPlatform" validate:"required,oneof=android ios" enums:"android,ios"` // 平台
 }

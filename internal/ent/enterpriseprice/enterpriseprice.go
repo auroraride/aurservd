@@ -67,7 +67,7 @@ const (
 	BrandColumn = "brand_id"
 	// AgreementTable is the table that holds the agreement relation/edge.
 	AgreementTable = "enterprise_price"
-	// AgreementInverseTable is the table name for the AgreementRes entity.
+	// AgreementInverseTable is the table name for the Agreement entity.
 	// It exists in this package in order to avoid circular dependency with the "agreement" package.
 	AgreementInverseTable = "agreement"
 	// AgreementColumn is the table column denoting the agreement relation/edge.

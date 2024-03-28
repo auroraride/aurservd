@@ -1294,7 +1294,7 @@ func (c *AgreementClient) mutate(ctx context.Context, m *AgreementMutation) (Val
 	case OpDelete, OpDeleteOne:
 		return (&AgreementDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown AgreementRes mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Agreement mutation op: %q", m.Op())
 	}
 }
 
