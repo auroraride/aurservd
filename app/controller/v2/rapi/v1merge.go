@@ -383,7 +383,7 @@ func (*exchange) List() {}
 // @ID		CabinetGetProcess
 // @Router	/rider/v2/exchange/process/{serial} [GET]
 // @Summary	电柜换电 - 获取换电信息
-// @Tags	Cabinet - 电柜
+// @Tags	Exchange - 换电
 // @Accept	json
 // @Produce	json
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"
@@ -396,7 +396,7 @@ func (*cabinet) GetProcess() {
 // @ID		CabinetProcess
 // @Router	/rider/v2/exchange/process [POST]
 // @Summary	电柜换电 - 开始换电流程
-// @Tags	Cabinet - 电柜
+// @Tags	Exchange - 换电
 // @Accept	json
 // @Produce	json
 // @Param	X-Rider-Token	header		string							true	"骑手校验token"
@@ -410,7 +410,7 @@ func (*cabinet) Process() {
 // @Router		/rider/v2/exchange/process/status [GET]
 // @Summary		电柜换电 - 获取流程状态
 // @Description	使用http长轮询，获取换电流程状态，每次轮询超时时间为30s
-// @Tags		Cabinet - 电柜
+// @Tags		Exchange - 换电
 // @Accept		json
 // @Produce		json
 // @Param		X-Rider-Token	header		string								true	"骑手校验token"

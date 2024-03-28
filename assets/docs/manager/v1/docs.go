@@ -22409,10 +22409,6 @@ const docTemplate = `{
                 "method": {
                     "description": "api请求method",
                     "type": "string"
-                },
-                "sn": {
-                    "description": "接口编号",
-                    "type": "string"
                 }
             }
         },

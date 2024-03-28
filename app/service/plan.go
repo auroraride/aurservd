@@ -342,6 +342,10 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 		DepositAmount:           item.DepositAmount,
 	}
 
+	// 查询个签默认协议
+	var defaultAgreement *ent.Agreement
+	defaultAgreement, _ = ent.Database.Agreement.QueryNotDeleted().Where(agreement.UserType(1), agreement.IsDefault(true)).First(s.ctx)
+
 	if item.Edges.Agreement != nil {
 		res.Agreement = &model.Agreement{
 			ID:            item.Edges.Agreement.ID,
@@ -349,6 +353,15 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 			URL:           item.Edges.Agreement.URL,
 			Hash:          item.Edges.Agreement.Hash,
 			ForceReadTime: item.Edges.Agreement.ForceReadTime,
+		}
+	} else if defaultAgreement != nil {
+		// 如果没有设置协议, 则使用默认协议
+		res.Agreement = &model.Agreement{
+			ID:            defaultAgreement.ID,
+			Name:          defaultAgreement.Name,
+			URL:           defaultAgreement.URL,
+			Hash:          defaultAgreement.Hash,
+			ForceReadTime: defaultAgreement.ForceReadTime,
 		}
 	}
 
