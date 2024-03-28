@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/internal/ent/activity"
 )
 
@@ -116,23 +117,23 @@ func (ac *ActivityCreate) SetNillablePopup(b *bool) *ActivityCreate {
 	return ac
 }
 
-// SetIndex sets the "index" field.
-func (ac *ActivityCreate) SetIndex(b bool) *ActivityCreate {
-	ac.mutation.SetIndex(b)
+// SetHome sets the "home" field.
+func (ac *ActivityCreate) SetHome(b bool) *ActivityCreate {
+	ac.mutation.SetHome(b)
 	return ac
 }
 
-// SetNillableIndex sets the "index" field if the given value is not nil.
-func (ac *ActivityCreate) SetNillableIndex(b *bool) *ActivityCreate {
+// SetNillableHome sets the "home" field if the given value is not nil.
+func (ac *ActivityCreate) SetNillableHome(b *bool) *ActivityCreate {
 	if b != nil {
-		ac.SetIndex(*b)
+		ac.SetHome(*b)
 	}
 	return ac
 }
 
 // SetImage sets the "image" field.
-func (ac *ActivityCreate) SetImage(m map[string]string) *ActivityCreate {
-	ac.mutation.SetImage(m)
+func (ac *ActivityCreate) SetImage(di definition.ActivityImage) *ActivityCreate {
+	ac.mutation.SetImage(di)
 	return ac
 }
 
@@ -201,9 +202,9 @@ func (ac *ActivityCreate) defaults() {
 		v := activity.DefaultPopup
 		ac.mutation.SetPopup(v)
 	}
-	if _, ok := ac.mutation.Index(); !ok {
-		v := activity.DefaultIndex
-		ac.mutation.SetIndex(v)
+	if _, ok := ac.mutation.Home(); !ok {
+		v := activity.DefaultHome
+		ac.mutation.SetHome(v)
 	}
 }
 
@@ -233,8 +234,8 @@ func (ac *ActivityCreate) check() error {
 	if _, ok := ac.mutation.Popup(); !ok {
 		return &ValidationError{Name: "popup", err: errors.New(`ent: missing required field "Activity.popup"`)}
 	}
-	if _, ok := ac.mutation.Index(); !ok {
-		return &ValidationError{Name: "index", err: errors.New(`ent: missing required field "Activity.index"`)}
+	if _, ok := ac.mutation.Home(); !ok {
+		return &ValidationError{Name: "home", err: errors.New(`ent: missing required field "Activity.home"`)}
 	}
 	if _, ok := ac.mutation.Image(); !ok {
 		return &ValidationError{Name: "image", err: errors.New(`ent: missing required field "Activity.image"`)}
@@ -302,9 +303,9 @@ func (ac *ActivityCreate) createSpec() (*Activity, *sqlgraph.CreateSpec) {
 		_spec.SetField(activity.FieldPopup, field.TypeBool, value)
 		_node.Popup = value
 	}
-	if value, ok := ac.mutation.Index(); ok {
-		_spec.SetField(activity.FieldIndex, field.TypeBool, value)
-		_node.Index = value
+	if value, ok := ac.mutation.Home(); ok {
+		_spec.SetField(activity.FieldHome, field.TypeBool, value)
+		_node.Home = value
 	}
 	if value, ok := ac.mutation.Image(); ok {
 		_spec.SetField(activity.FieldImage, field.TypeJSON, value)
@@ -474,20 +475,20 @@ func (u *ActivityUpsert) UpdatePopup() *ActivityUpsert {
 	return u
 }
 
-// SetIndex sets the "index" field.
-func (u *ActivityUpsert) SetIndex(v bool) *ActivityUpsert {
-	u.Set(activity.FieldIndex, v)
+// SetHome sets the "home" field.
+func (u *ActivityUpsert) SetHome(v bool) *ActivityUpsert {
+	u.Set(activity.FieldHome, v)
 	return u
 }
 
-// UpdateIndex sets the "index" field to the value that was provided on create.
-func (u *ActivityUpsert) UpdateIndex() *ActivityUpsert {
-	u.SetExcluded(activity.FieldIndex)
+// UpdateHome sets the "home" field to the value that was provided on create.
+func (u *ActivityUpsert) UpdateHome() *ActivityUpsert {
+	u.SetExcluded(activity.FieldHome)
 	return u
 }
 
 // SetImage sets the "image" field.
-func (u *ActivityUpsert) SetImage(v map[string]string) *ActivityUpsert {
+func (u *ActivityUpsert) SetImage(v definition.ActivityImage) *ActivityUpsert {
 	u.Set(activity.FieldImage, v)
 	return u
 }
@@ -687,22 +688,22 @@ func (u *ActivityUpsertOne) UpdatePopup() *ActivityUpsertOne {
 	})
 }
 
-// SetIndex sets the "index" field.
-func (u *ActivityUpsertOne) SetIndex(v bool) *ActivityUpsertOne {
+// SetHome sets the "home" field.
+func (u *ActivityUpsertOne) SetHome(v bool) *ActivityUpsertOne {
 	return u.Update(func(s *ActivityUpsert) {
-		s.SetIndex(v)
+		s.SetHome(v)
 	})
 }
 
-// UpdateIndex sets the "index" field to the value that was provided on create.
-func (u *ActivityUpsertOne) UpdateIndex() *ActivityUpsertOne {
+// UpdateHome sets the "home" field to the value that was provided on create.
+func (u *ActivityUpsertOne) UpdateHome() *ActivityUpsertOne {
 	return u.Update(func(s *ActivityUpsert) {
-		s.UpdateIndex()
+		s.UpdateHome()
 	})
 }
 
 // SetImage sets the "image" field.
-func (u *ActivityUpsertOne) SetImage(v map[string]string) *ActivityUpsertOne {
+func (u *ActivityUpsertOne) SetImage(v definition.ActivityImage) *ActivityUpsertOne {
 	return u.Update(func(s *ActivityUpsert) {
 		s.SetImage(v)
 	})
@@ -1073,22 +1074,22 @@ func (u *ActivityUpsertBulk) UpdatePopup() *ActivityUpsertBulk {
 	})
 }
 
-// SetIndex sets the "index" field.
-func (u *ActivityUpsertBulk) SetIndex(v bool) *ActivityUpsertBulk {
+// SetHome sets the "home" field.
+func (u *ActivityUpsertBulk) SetHome(v bool) *ActivityUpsertBulk {
 	return u.Update(func(s *ActivityUpsert) {
-		s.SetIndex(v)
+		s.SetHome(v)
 	})
 }
 
-// UpdateIndex sets the "index" field to the value that was provided on create.
-func (u *ActivityUpsertBulk) UpdateIndex() *ActivityUpsertBulk {
+// UpdateHome sets the "home" field to the value that was provided on create.
+func (u *ActivityUpsertBulk) UpdateHome() *ActivityUpsertBulk {
 	return u.Update(func(s *ActivityUpsert) {
-		s.UpdateIndex()
+		s.UpdateHome()
 	})
 }
 
 // SetImage sets the "image" field.
-func (u *ActivityUpsertBulk) SetImage(v map[string]string) *ActivityUpsertBulk {
+func (u *ActivityUpsertBulk) SetImage(v definition.ActivityImage) *ActivityUpsertBulk {
 	return u.Update(func(s *ActivityUpsert) {
 		s.SetImage(v)
 	})

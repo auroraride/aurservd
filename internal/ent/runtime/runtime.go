@@ -115,10 +115,10 @@ func init() {
 	activityDescPopup := activityFields[5].Descriptor()
 	// activity.DefaultPopup holds the default value on creation for the popup field.
 	activity.DefaultPopup = activityDescPopup.Default.(bool)
-	// activityDescIndex is the schema descriptor for index field.
-	activityDescIndex := activityFields[6].Descriptor()
-	// activity.DefaultIndex holds the default value on creation for the index field.
-	activity.DefaultIndex = activityDescIndex.Default.(bool)
+	// activityDescHome is the schema descriptor for home field.
+	activityDescHome := activityFields[6].Descriptor()
+	// activity.DefaultHome holds the default value on creation for the home field.
+	activity.DefaultHome = activityDescHome.Default.(bool)
 	agentMixin := schema.Agent{}.Mixin()
 	agentMixinHooks2 := agentMixin[2].Hooks()
 	agent.Hooks[0] = agentMixinHooks2[0]

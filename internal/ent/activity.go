@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/internal/ent/activity"
 )
 
@@ -37,9 +38,9 @@ type Activity struct {
 	// 活动入口:弹窗
 	Popup bool `json:"popup,omitempty"`
 	// 活动入口:首页icon
-	Index bool `json:"index,omitempty"`
+	Home bool `json:"home,omitempty"`
 	// 图片
-	Image map[string]string `json:"image,omitempty"`
+	Image definition.ActivityImage `json:"image,omitempty"`
 	// 备注
 	Remark       string `json:"remark,omitempty"`
 	selectValues sql.SelectValues
@@ -52,7 +53,7 @@ func (*Activity) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case activity.FieldImage:
 			values[i] = new([]byte)
-		case activity.FieldEnable, activity.FieldPopup, activity.FieldIndex:
+		case activity.FieldEnable, activity.FieldPopup, activity.FieldHome:
 			values[i] = new(sql.NullBool)
 		case activity.FieldID, activity.FieldSort:
 			values[i] = new(sql.NullInt64)
@@ -136,11 +137,11 @@ func (a *Activity) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.Popup = value.Bool
 			}
-		case activity.FieldIndex:
+		case activity.FieldHome:
 			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field index", values[i])
+				return fmt.Errorf("unexpected type %T for field home", values[i])
 			} else if value.Valid {
-				a.Index = value.Bool
+				a.Home = value.Bool
 			}
 		case activity.FieldImage:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -221,8 +222,8 @@ func (a *Activity) String() string {
 	builder.WriteString("popup=")
 	builder.WriteString(fmt.Sprintf("%v", a.Popup))
 	builder.WriteString(", ")
-	builder.WriteString("index=")
-	builder.WriteString(fmt.Sprintf("%v", a.Index))
+	builder.WriteString("home=")
+	builder.WriteString(fmt.Sprintf("%v", a.Home))
 	builder.WriteString(", ")
 	builder.WriteString("image=")
 	builder.WriteString(fmt.Sprintf("%v", a.Image))

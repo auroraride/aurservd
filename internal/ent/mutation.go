@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/adapter"
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent/activity"
@@ -203,8 +204,8 @@ type ActivityMutation struct {
 	enable        *bool
 	introduction  *string
 	popup         *bool
-	index         *bool
-	image         *map[string]string
+	home          *bool
+	image         *definition.ActivityImage
 	remark        *string
 	clearedFields map[string]struct{}
 	done          bool
@@ -667,49 +668,49 @@ func (m *ActivityMutation) ResetPopup() {
 	m.popup = nil
 }
 
-// SetIndex sets the "index" field.
-func (m *ActivityMutation) SetIndex(b bool) {
-	m.index = &b
+// SetHome sets the "home" field.
+func (m *ActivityMutation) SetHome(b bool) {
+	m.home = &b
 }
 
-// Index returns the value of the "index" field in the mutation.
-func (m *ActivityMutation) Index() (r bool, exists bool) {
-	v := m.index
+// Home returns the value of the "home" field in the mutation.
+func (m *ActivityMutation) Home() (r bool, exists bool) {
+	v := m.home
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIndex returns the old "index" field's value of the Activity entity.
+// OldHome returns the old "home" field's value of the Activity entity.
 // If the Activity object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ActivityMutation) OldIndex(ctx context.Context) (v bool, err error) {
+func (m *ActivityMutation) OldHome(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIndex is only allowed on UpdateOne operations")
+		return v, errors.New("OldHome is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIndex requires an ID field in the mutation")
+		return v, errors.New("OldHome requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIndex: %w", err)
+		return v, fmt.Errorf("querying old value for OldHome: %w", err)
 	}
-	return oldValue.Index, nil
+	return oldValue.Home, nil
 }
 
-// ResetIndex resets all changes to the "index" field.
-func (m *ActivityMutation) ResetIndex() {
-	m.index = nil
+// ResetHome resets all changes to the "home" field.
+func (m *ActivityMutation) ResetHome() {
+	m.home = nil
 }
 
 // SetImage sets the "image" field.
-func (m *ActivityMutation) SetImage(value map[string]string) {
-	m.image = &value
+func (m *ActivityMutation) SetImage(di definition.ActivityImage) {
+	m.image = &di
 }
 
 // Image returns the value of the "image" field in the mutation.
-func (m *ActivityMutation) Image() (r map[string]string, exists bool) {
+func (m *ActivityMutation) Image() (r definition.ActivityImage, exists bool) {
 	v := m.image
 	if v == nil {
 		return
@@ -720,7 +721,7 @@ func (m *ActivityMutation) Image() (r map[string]string, exists bool) {
 // OldImage returns the old "image" field's value of the Activity entity.
 // If the Activity object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ActivityMutation) OldImage(ctx context.Context) (v map[string]string, err error) {
+func (m *ActivityMutation) OldImage(ctx context.Context) (v definition.ActivityImage, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldImage is only allowed on UpdateOne operations")
 	}
@@ -850,8 +851,8 @@ func (m *ActivityMutation) Fields() []string {
 	if m.popup != nil {
 		fields = append(fields, activity.FieldPopup)
 	}
-	if m.index != nil {
-		fields = append(fields, activity.FieldIndex)
+	if m.home != nil {
+		fields = append(fields, activity.FieldHome)
 	}
 	if m.image != nil {
 		fields = append(fields, activity.FieldImage)
@@ -885,8 +886,8 @@ func (m *ActivityMutation) Field(name string) (ent.Value, bool) {
 		return m.Introduction()
 	case activity.FieldPopup:
 		return m.Popup()
-	case activity.FieldIndex:
-		return m.Index()
+	case activity.FieldHome:
+		return m.Home()
 	case activity.FieldImage:
 		return m.Image()
 	case activity.FieldRemark:
@@ -918,8 +919,8 @@ func (m *ActivityMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldIntroduction(ctx)
 	case activity.FieldPopup:
 		return m.OldPopup(ctx)
-	case activity.FieldIndex:
-		return m.OldIndex(ctx)
+	case activity.FieldHome:
+		return m.OldHome(ctx)
 	case activity.FieldImage:
 		return m.OldImage(ctx)
 	case activity.FieldRemark:
@@ -996,15 +997,15 @@ func (m *ActivityMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPopup(v)
 		return nil
-	case activity.FieldIndex:
+	case activity.FieldHome:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetIndex(v)
+		m.SetHome(v)
 		return nil
 	case activity.FieldImage:
-		v, ok := value.(map[string]string)
+		v, ok := value.(definition.ActivityImage)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1123,8 +1124,8 @@ func (m *ActivityMutation) ResetField(name string) error {
 	case activity.FieldPopup:
 		m.ResetPopup()
 		return nil
-	case activity.FieldIndex:
-		m.ResetIndex()
+	case activity.FieldHome:
+		m.ResetHome()
 		return nil
 	case activity.FieldImage:
 		m.ResetImage()

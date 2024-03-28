@@ -9,6 +9,7 @@ import (
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -65,8 +66,8 @@ func (Activity) Fields() []ent.Field {
 		field.Bool("enable").Default(true).Comment("状态 true:启用 false:禁用"),
 		field.String("introduction").Comment("简介"),
 		field.Bool("popup").Default(false).Comment("活动入口:弹窗"),
-		field.Bool("index").Default(false).Comment("活动入口:首页icon"),
-		field.JSON("image", map[string]string{}).Comment("图片"),
+		field.Bool("home").Default(false).Comment("活动入口:首页icon"),
+		field.JSON("image", definition.ActivityImage{}).Comment("图片"),
 		field.String("remark").Optional().Comment("备注"),
 	}
 }

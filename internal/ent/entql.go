@@ -113,7 +113,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			activity.FieldEnable:       {Type: field.TypeBool, Column: activity.FieldEnable},
 			activity.FieldIntroduction: {Type: field.TypeString, Column: activity.FieldIntroduction},
 			activity.FieldPopup:        {Type: field.TypeBool, Column: activity.FieldPopup},
-			activity.FieldIndex:        {Type: field.TypeBool, Column: activity.FieldIndex},
+			activity.FieldHome:         {Type: field.TypeBool, Column: activity.FieldHome},
 			activity.FieldImage:        {Type: field.TypeJSON, Column: activity.FieldImage},
 			activity.FieldRemark:       {Type: field.TypeString, Column: activity.FieldRemark},
 		},
@@ -6048,9 +6048,9 @@ func (f *ActivityFilter) WherePopup(p entql.BoolP) {
 	f.Where(p.Field(activity.FieldPopup))
 }
 
-// WhereIndex applies the entql bool predicate on the index field.
-func (f *ActivityFilter) WhereIndex(p entql.BoolP) {
-	f.Where(p.Field(activity.FieldIndex))
+// WhereHome applies the entql bool predicate on the home field.
+func (f *ActivityFilter) WhereHome(p entql.BoolP) {
+	f.Where(p.Field(activity.FieldHome))
 }
 
 // WhereImage applies the entql json.RawMessage predicate on the image field.

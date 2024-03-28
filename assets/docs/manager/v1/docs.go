@@ -13687,16 +13687,17 @@ const docTemplate = `{
                     "description": "是否启用 true:是 false:否",
                     "type": "boolean"
                 },
-                "image": {
-                    "description": "图片, 图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "index": {
+                "home": {
                     "description": "首页icon true:是 false:否",
                     "type": "boolean"
+                },
+                "image": {
+                    "description": "图片, 图片",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.ActivityImage"
+                        }
+                    ]
                 },
                 "introduction": {
                     "description": "活动简介",
@@ -13731,19 +13732,20 @@ const docTemplate = `{
                     "description": "是否启用 true:是 false:否",
                     "type": "boolean"
                 },
+                "home": {
+                    "description": "首页icon true:是 false:否",
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "integer"
                 },
                 "image": {
-                    "description": "图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "index": {
-                    "description": "首页icon true:是 false:否",
-                    "type": "boolean"
+                    "description": "图片",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.ActivityImage"
+                        }
+                    ]
                 },
                 "introduction": {
                     "description": "活动简介",
@@ -13775,6 +13777,23 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.ActivityImage": {
+            "type": "object",
+            "properties": {
+                "home": {
+                    "description": "首页icon图片",
+                    "type": "string"
+                },
+                "list": {
+                    "description": "列表图片",
+                    "type": "string"
+                },
+                "popup": {
+                    "description": "弹窗图片",
+                    "type": "string"
+                }
+            }
+        },
         "definition.ActivityModifyReq": {
             "type": "object",
             "required": [
@@ -13790,16 +13809,17 @@ const docTemplate = `{
                     "description": "是否启用 true:是 false:否",
                     "type": "boolean"
                 },
-                "image": {
-                    "description": "图片, 图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "index": {
+                "home": {
                     "description": "首页icon true:是 false:否",
                     "type": "boolean"
+                },
+                "image": {
+                    "description": "图片, 图片",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.ActivityImage"
+                        }
+                    ]
                 },
                 "introduction": {
                     "description": "活动简介",
@@ -14321,6 +14341,14 @@ const docTemplate = `{
         "definition.Version": {
             "type": "object",
             "properties": {
+                "appPlatform": {
+                    "description": "平台",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AppPlatform"
+                        }
+                    ]
+                },
                 "content": {
                     "description": "更新内容",
                     "type": "string"
@@ -14337,13 +14365,6 @@ const docTemplate = `{
                     "description": "ID",
                     "type": "integer"
                 },
-                "platform": {
-                    "description": "平台",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "version": {
                     "description": "版本号",
                     "type": "string"
@@ -14353,11 +14374,23 @@ const docTemplate = `{
         "definition.VersionModifyReq": {
             "type": "object",
             "required": [
+                "appPlatform",
                 "content",
-                "platform",
                 "version"
             ],
             "properties": {
+                "appPlatform": {
+                    "description": "平台",
+                    "enum": [
+                        "android",
+                        "ios"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AppPlatform"
+                        }
+                    ]
+                },
                 "content": {
                     "description": "更新内容",
                     "type": "string"
@@ -14365,13 +14398,6 @@ const docTemplate = `{
                 "force": {
                     "description": "是否强制更新",
                     "type": "boolean"
-                },
-                "platform": {
-                    "description": "平台, 平台",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "version": {
                     "description": "版本号",
@@ -14382,11 +14408,23 @@ const docTemplate = `{
         "definition.VersionReq": {
             "type": "object",
             "required": [
+                "appPlatform",
                 "content",
-                "platform",
                 "version"
             ],
             "properties": {
+                "appPlatform": {
+                    "description": "平台",
+                    "enum": [
+                        "android",
+                        "ios"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AppPlatform"
+                        }
+                    ]
+                },
                 "content": {
                     "description": "更新内容",
                     "type": "string"
@@ -14394,13 +14432,6 @@ const docTemplate = `{
                 "force": {
                     "description": "是否强制更新",
                     "type": "boolean"
-                },
-                "platform": {
-                    "description": "平台, 平台",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "version": {
                     "description": "版本号",
@@ -14492,6 +14523,17 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
+        },
+        "model.AppPlatform": {
+            "type": "string",
+            "enum": [
+                "android",
+                "ios"
+            ],
+            "x-enum-varnames": [
+                "AppPlatformAndroid",
+                "AppPlatformIOS"
+            ]
         },
         "model.AssistanceAllocateReq": {
             "type": "object",
