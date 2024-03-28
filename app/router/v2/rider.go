@@ -156,7 +156,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	order.GET("/:id", v1.Order.Detail)                      // 订单详情
 	order.GET("/status", v1.Order.Status)                   // 订单状态
 	order.POST("", rapi.Order.Create)                       // 创建订单
-	order.POST("/refund", v1.Order.Refund)                  // 申请退款
+	order.POST("/refund", rapi.Order.Refund)                // 申请退款
 	order.POST("/deposit/credit", rapi.Order.DepositCredit) // 押金订单
 
 	// 设置

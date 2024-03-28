@@ -1885,7 +1885,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Cabinet - 电柜"
+                    "Exchange - 换电"
                 ],
                 "summary": "电柜换电 - 开始换电流程",
                 "operationId": "CabinetProcess",
@@ -1927,7 +1927,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Cabinet - 电柜"
+                    "Exchange - 换电"
                 ],
                 "summary": "电柜换电 - 获取流程状态",
                 "operationId": "CabinetProcessStatus",
@@ -1965,7 +1965,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Cabinet - 电柜"
+                    "Exchange - 换电"
                 ],
                 "summary": "电柜换电 - 获取换电信息",
                 "operationId": "CabinetGetProcess",

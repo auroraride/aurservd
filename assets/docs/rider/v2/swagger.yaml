@@ -3922,7 +3922,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 电柜换电 - 开始换电流程
       tags:
-      - Cabinet - 电柜
+        - Exchange - 换电
   /rider/v2/exchange/process/{serial}:
     get:
       consumes:
@@ -3948,7 +3948,7 @@ paths:
             $ref: '#/definitions/model.RiderExchangeInfo'
       summary: 电柜换电 - 获取换电信息
       tags:
-      - Cabinet - 电柜
+        - Exchange - 换电
   /rider/v2/exchange/process/status:
     get:
       consumes:
@@ -3974,7 +3974,7 @@ paths:
             $ref: '#/definitions/model.RiderExchangeProcessRes'
       summary: 电柜换电 - 获取流程状态
       tags:
-      - Cabinet - 电柜
+        - Exchange - 换电
   /rider/v2/exchange/store:
     post:
       consumes:
