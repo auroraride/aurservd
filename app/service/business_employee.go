@@ -70,7 +70,10 @@ func (s *businessEmployeeService) Active(em *ent.Employee, req *model.EmployeeAl
 }
 
 func (s *businessEmployeeService) UnSubscribe(req *model.UnsubscribeEmployeeReq) {
-	NewBusinessRiderWithEmployee(s.entEmployee).UnSubscribe(&model.BusinessSubscribeReq{ID: req.SubscribeID}, func(sub *ent.Subscribe) {
+	NewBusinessRiderWithEmployee(s.entEmployee).UnSubscribe(&model.BusinessSubscribeReq{
+		ID:               req.SubscribeID,
+		ForceUnsubscribe: silk.Bool(true),
+	}, func(sub *ent.Subscribe) {
 		if sub.BrandID != nil {
 			if req.Qrcode == "" {
 				snag.Panic("必须提交车辆信息")

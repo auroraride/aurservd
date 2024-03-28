@@ -250,6 +250,11 @@ func EnterprisePriceID(v uint64) predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldEQ(FieldEnterprisePriceID, v))
 }
 
+// ForceUnsubscribe applies equality check predicate on the "force_unsubscribe" field. It's identical to ForceUnsubscribeEQ.
+func ForceUnsubscribe(v bool) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldEQ(FieldForceUnsubscribe, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldEQ(FieldCreatedAt, v))
@@ -1853,6 +1858,16 @@ func EnterprisePriceIDIsNil() predicate.Subscribe {
 // EnterprisePriceIDNotNil applies the NotNil predicate on the "enterprise_price_id" field.
 func EnterprisePriceIDNotNil() predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldNotNull(FieldEnterprisePriceID))
+}
+
+// ForceUnsubscribeEQ applies the EQ predicate on the "force_unsubscribe" field.
+func ForceUnsubscribeEQ(v bool) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldEQ(FieldForceUnsubscribe, v))
+}
+
+// ForceUnsubscribeNEQ applies the NEQ predicate on the "force_unsubscribe" field.
+func ForceUnsubscribeNEQ(v bool) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldNEQ(FieldForceUnsubscribe, v))
 }
 
 // HasPlan applies the HasEdge predicate on the "plan" edge.

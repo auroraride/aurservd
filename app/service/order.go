@@ -7,6 +7,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -912,6 +913,9 @@ func (s *orderService) Detail(item *ent.Order) model.Order {
 				Phone: oe.Phone,
 			}
 		}
+
+		res.ForceUnsubscribe = osub.ForceUnsubscribe
+
 	}
 
 	// refund
@@ -1051,7 +1055,7 @@ func (s *orderService) QueryStatus(req *model.OrderStatusReq) (res model.OrderSt
 }
 
 // TradePay 资金冻结转支付
-func (s *orderService) TradePay(o *ent.Order) *alipay.TradePayRsp {
+func (s *orderService) TradePay(o *ent.Order) error {
 
 	subject := "订阅骑士卡"
 	if o.Edges.Plan != nil {
@@ -1064,21 +1068,18 @@ func (s *orderService) TradePay(o *ent.Order) *alipay.TradePayRsp {
 		OutRequestNo: o.OutRequestNo,
 	})
 	if err != nil {
-		zap.L().Error("资金冻结转支付失败", zap.Error(err))
-		return nil
+		return errors.New("查询授权订单状态失败")
 	}
 
 	// 授权订单状态 已授权状态：授权成功，可以进行转支付或解冻操作
 	if fundAuthOperationDetailQueryRsp.OrderStatus != alipay.OrderStatusAuthorized {
-		zap.L().Error("资金冻结转支付失败", zap.String("授权订单状态", string(fundAuthOperationDetailQueryRsp.OrderStatus)))
-		return nil
+		return errors.New("授权订单状态异常")
 	}
 
 	// 判定解冻金额
 	totalAmountString := strconv.FormatFloat(o.Amount, 'f', -1, 64)
 	if totalAmountString > fundAuthOperationDetailQueryRsp.RestAmount {
-		zap.L().Error("资金冻结转支付失败", zap.String("解冻金额", fundAuthOperationDetailQueryRsp.RestAmount))
-		return nil
+		return errors.New("解冻金额不足")
 	}
 
 	authConfirmMode := "NOT_COMPLETE"
@@ -1101,8 +1102,7 @@ func (s *orderService) TradePay(o *ent.Order) *alipay.TradePayRsp {
 		AuthConfirmMode: authConfirmMode,
 	})
 	if err != nil {
-		zap.L().Error("资金冻结转支付失败", zap.Error(err))
-		return nil
+		return errors.New("资金冻结转支付失败")
 	}
 	return rsp
 }

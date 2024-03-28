@@ -13,6 +13,7 @@ import (
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/payment"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -150,9 +151,35 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
 		snag.Panic("原始订单查询失败")
 	}
 
-	status := req.Status
+	// 退款处理
+	s.DoRefund(o, or, req.Status, req.Remark)
+
+	// 退押金
+	depositOrder := ent.Database.Order.
+		QueryNotDeleted().
+		Where(
+			order.ParentID(o.ID),
+			order.Type(model.OrderTypeDeposit),
+			order.Status(model.OrderStatusRefundPending),
+		).
+		WithRefund().
+		FirstX(s.ctx)
+	if depositOrder != nil && depositOrder.Edges.Refund != nil {
+		// 判定押金退款状态
+		if depositOrder.Edges.Refund.Status == model.RefundStatusPending {
+			s.DoRefund(depositOrder, depositOrder.Edges.Refund, req.Status, req.Remark)
+		}
+	}
+}
+
+// DoRefund  退款处理
+func (s *refundService) DoRefund(o *ent.Order, or *ent.OrderRefund, status uint8, remark string) {
 	var os uint8
-	after := "订阅已退订，系统自动退押"
+
+	after := "同意退款"
+	if o.Type == model.OrderTypeDeposit {
+		after = "订阅已退订，系统自动退押"
+	}
 
 	prepay := &model.PaymentCache{
 		CacheType: model.PaymentCacheTypeRefund,
@@ -166,7 +193,7 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
 		},
 	}
 
-	if req.Status == 1 {
+	if status == 1 {
 
 		// 订单缓存 (原始订单号key)
 		var no string
@@ -199,12 +226,14 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
 				AuthNo:       o.AuthNo,
 				Amount:       or.Amount,
 				OutRequestNo: or.OutRefundNo,
-				Remark:       req.Remark,
+				Remark:       remark,
 				IsDeposit:    isDeposit,
 			})
 			if err != nil {
 				snag.Panic("退款处理失败")
 			}
+		default:
+			snag.Panic("退款处理失败")
 		}
 		if err != nil {
 			snag.Panic("退款处理失败")
@@ -226,7 +255,7 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
 		NewOrder().RefundSuccess(prepay.Refund)
 	} else {
 		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-			_, err = tx.OrderRefund.UpdateOne(or).SetStatus(status).SetRemark(req.Remark).Save(s.ctx)
+			_, err = tx.OrderRefund.UpdateOne(or).SetStatus(status).SetRemark(remark).Save(s.ctx)
 			if err != nil {
 				return
 			}

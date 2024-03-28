@@ -25,12 +25,16 @@ func NewRefundBiz() *refundBiz {
 }
 
 // Refund 申请退款
-func (s *refundBiz) Refund(r *ent.Rider, req *definition.RefundReq) (err error) {
-	sub := service.NewSubscribe().Recent(r.ID)
+func (s *refundBiz) Refund(rid uint64, req *definition.RefundReq) (err error) {
+	sub := service.NewSubscribe().Recent(rid)
 	// 查询订单和押金
 	o, _ := ent.Database.Order.QueryNotDeleted().Where(
 		order.Or(
-			order.ParentID(sub.InitialOrderID),
+			order.And(
+				order.ParentID(sub.InitialOrderID),
+				order.Type(model.OrderTypeDeposit),
+				order.Status(model.OrderStatusPaid),
+			),
 			order.And(
 				order.IDEQ(sub.InitialOrderID),
 				order.Status(model.OrderStatusPaid),

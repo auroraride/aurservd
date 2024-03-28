@@ -737,6 +737,7 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 			SetEndAt(time.Now()).
 			SetStatus(model.SubscribeStatusUnSubscribed).
 			SetUnsubscribeReason(reason).
+			SetNillableForceUnsubscribe(req.ForceUnsubscribe).
 			Save(s.ctx)
 		snag.PanicIfError(err)
 
@@ -769,17 +770,50 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 		go NewEnterprise().UpdateStatementByID(*sub.EnterpriseID)
 	}
 
-	// 当强制退租时 如果订阅为预授权支付 需要扣除金额并解冻(强制退租不自动扣除押金) todo 这里还有问题
-	var o *ent.Order
-	o, _ = ent.Database.Order.QueryNotDeleted().Where(
-		order.SubscribeID(sub.ID),
-		order.Payway(model.OrderPaywayAlipayAuthFreeze),
-		order.TradePayAtIsNil(),
-		order.TypeNotIn(model.OrderTypeNewly, model.OrderTypeAgain),
-	).Order(ent.Desc(order.FieldCreatedAt)).WithPlan().First(s.ctx)
-	if o != nil {
-		NewOrder().TradePay(o)
+	// 查询订单
+	o, _ := ent.Database.Order.QueryNotDeleted().Where(order.SubscribeID(sub.ID)).All(s.ctx)
+	if len(o) == 0 {
+		return
 	}
+
+	for _, item := range o {
+		if *req.ForceUnsubscribe {
+			if item.Payway == model.OrderPaywayAlipayAuthFreeze && item.TradePayAt == nil && item.Status == model.OrderStatusPaid {
+				if item.Type != model.OrderTypeDeposit {
+					// 当强制退租时 如果订阅为预授权支付 需要扣除金额并解冻(强制退租不自动扣除押金) todo 这里还有问题
+					// 冻结金额转支付
+					err = NewOrder().TradePay(item)
+					if err != nil {
+						zap.L().Error("强制退租 冻结转支付失败", zap.Error(err))
+						return
+					}
+				}
+			}
+
+			if item.Type == model.OrderTypeDeposit {
+				// 当为支付押金时 生成押金退款订单
+				or, _ := ent.Database.Order.QueryNotDeleted().
+					Where(
+						order.ParentID(item.ID),
+						order.Type(model.OrderTypeDeposit),
+						order.Status(model.OrderStatusPaid),
+					).First(s.ctx)
+				if or != nil {
+					no := tools.NewUnique().NewSN28()
+					orc := ent.Database.OrderRefund.Create().SetOutRefundNo(no).SetStatus(model.RefundStatusPending)
+					_, err = orc.SetOrderID(or.ID).
+						SetAmount(or.Amount).
+						SetReason("强制退租,系统自动申请").
+						Save(s.ctx)
+					if err != nil {
+						zap.L().Error("押金退款订单创建失败", zap.Error(err))
+						return
+					}
+				}
+			}
+		}
+	}
+
 }
 
 // Pause 寄存

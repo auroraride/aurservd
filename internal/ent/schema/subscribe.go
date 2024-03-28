@@ -99,6 +99,7 @@ func (Subscribe) Fields() []ent.Field {
 		field.Bool("intelligent").Default(false).Comment("是否智能柜套餐"),
 		field.String("agreement_hash").Optional().Comment("签署协议hash"),
 		field.Uint64("enterprise_price_id").Optional().Comment("团签价格ID"),
+		field.Bool("force_unsubscribe").Default(false).Comment("是否强制退订 true:强制退订 false:正常退订"),
 	}
 }
 

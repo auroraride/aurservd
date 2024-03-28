@@ -105991,6 +105991,7 @@ type SubscribeMutation struct {
 	need_contract           *bool
 	intelligent             *bool
 	agreement_hash          *string
+	force_unsubscribe       *bool
 	clearedFields           map[string]struct{}
 	plan                    *uint64
 	clearedplan             bool
@@ -108118,6 +108119,42 @@ func (m *SubscribeMutation) ResetEnterprisePriceID() {
 	delete(m.clearedFields, subscribe.FieldEnterprisePriceID)
 }
 
+// SetForceUnsubscribe sets the "force_unsubscribe" field.
+func (m *SubscribeMutation) SetForceUnsubscribe(b bool) {
+	m.force_unsubscribe = &b
+}
+
+// ForceUnsubscribe returns the value of the "force_unsubscribe" field in the mutation.
+func (m *SubscribeMutation) ForceUnsubscribe() (r bool, exists bool) {
+	v := m.force_unsubscribe
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldForceUnsubscribe returns the old "force_unsubscribe" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldForceUnsubscribe(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldForceUnsubscribe is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldForceUnsubscribe requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldForceUnsubscribe: %w", err)
+	}
+	return oldValue.ForceUnsubscribe, nil
+}
+
+// ResetForceUnsubscribe resets all changes to the "force_unsubscribe" field.
+func (m *SubscribeMutation) ResetForceUnsubscribe() {
+	m.force_unsubscribe = nil
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *SubscribeMutation) ClearPlan() {
 	m.clearedplan = true
@@ -108785,7 +108822,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 41)
+	fields := make([]string, 0, 42)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -108909,6 +108946,9 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.enterprise_price != nil {
 		fields = append(fields, subscribe.FieldEnterprisePriceID)
 	}
+	if m.force_unsubscribe != nil {
+		fields = append(fields, subscribe.FieldForceUnsubscribe)
+	}
 	return fields
 }
 
@@ -108999,6 +109039,8 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.AgreementHash()
 	case subscribe.FieldEnterprisePriceID:
 		return m.EnterprisePriceID()
+	case subscribe.FieldForceUnsubscribe:
+		return m.ForceUnsubscribe()
 	}
 	return nil, false
 }
@@ -109090,6 +109132,8 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldAgreementHash(ctx)
 	case subscribe.FieldEnterprisePriceID:
 		return m.OldEnterprisePriceID(ctx)
+	case subscribe.FieldForceUnsubscribe:
+		return m.OldForceUnsubscribe(ctx)
 	}
 	return nil, fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -109385,6 +109429,13 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEnterprisePriceID(v)
+		return nil
+	case subscribe.FieldForceUnsubscribe:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetForceUnsubscribe(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)
@@ -109821,6 +109872,9 @@ func (m *SubscribeMutation) ResetField(name string) error {
 		return nil
 	case subscribe.FieldEnterprisePriceID:
 		m.ResetEnterprisePriceID()
+		return nil
+	case subscribe.FieldForceUnsubscribe:
+		m.ResetForceUnsubscribe()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)

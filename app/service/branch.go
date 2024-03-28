@@ -652,7 +652,8 @@ func (s *branchService) DecodeFacility(fid string) (b *ent.Branch, sto *ent.Stor
 				cabinet.BranchID(b.ID),
 				cabinet.IDNEQ(cab.ID),
 				cabinet.Status(model.CabinetStatusNormal.Value()),
-				cabinet.Health(model.CabinetHealthStatusOnline),
+				// 离线也展示
+				// cabinet.Health(model.CabinetHealthStatusOnline),
 			).
 			All(s.ctx)
 		cabs = append([]*ent.Cabinet{cab}, items...)

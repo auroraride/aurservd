@@ -165,4 +165,7 @@ type Order struct {
 	Ebike         *Ebike        `json:"ebike"`              // 车辆详情
 	Agent         *OrderAgent   `json:"agent"`              // 代理信息
 	OutOrderNo    string        `json:"outOrderNo"`         // 预授权订单号
+
+	ForceUnsubscribe bool `json:"forceUnsubscribe"` // 是否强制退订 true:强制退订 false:正常退订
+
 }

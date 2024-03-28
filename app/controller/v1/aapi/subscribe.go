@@ -11,6 +11,7 @@ import (
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/pkg/silk"
 )
 
 type subscribe struct{}
@@ -88,8 +89,9 @@ func (*subscribe) AlterReivew(c echo.Context) (err error) {
 func (*subscribe) Halt(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.BusinessSubscribeReq](c)
 	service.NewBusinessRider(nil).UnSubscribe(&model.BusinessSubscribeReq{
-		ID:      req.ID,
-		AgentID: &ctx.Agent.ID,
+		ID:               req.ID,
+		AgentID:          &ctx.Agent.ID,
+		ForceUnsubscribe: silk.Bool(true),
 	})
 	return ctx.SendResponse()
 }

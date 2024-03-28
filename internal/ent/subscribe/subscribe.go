@@ -97,6 +97,8 @@ const (
 	FieldAgreementHash = "agreement_hash"
 	// FieldEnterprisePriceID holds the string denoting the enterprise_price_id field in the database.
 	FieldEnterprisePriceID = "enterprise_price_id"
+	// FieldForceUnsubscribe holds the string denoting the force_unsubscribe field in the database.
+	FieldForceUnsubscribe = "force_unsubscribe"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -307,6 +309,7 @@ var Columns = []string{
 	FieldIntelligent,
 	FieldAgreementHash,
 	FieldEnterprisePriceID,
+	FieldForceUnsubscribe,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -354,6 +357,8 @@ var (
 	DefaultNeedContract bool
 	// DefaultIntelligent holds the default value on creation for the "intelligent" field.
 	DefaultIntelligent bool
+	// DefaultForceUnsubscribe holds the default value on creation for the "force_unsubscribe" field.
+	DefaultForceUnsubscribe bool
 )
 
 // OrderOption defines the ordering options for the Subscribe queries.
@@ -557,6 +562,11 @@ func ByAgreementHash(opts ...sql.OrderTermOption) OrderOption {
 // ByEnterprisePriceID orders the results by the enterprise_price_id field.
 func ByEnterprisePriceID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEnterprisePriceID, opts...).ToFunc()
+}
+
+// ByForceUnsubscribe orders the results by the force_unsubscribe field.
+func ByForceUnsubscribe(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldForceUnsubscribe, opts...).ToFunc()
 }
 
 // ByPlanField orders the results by plan field.

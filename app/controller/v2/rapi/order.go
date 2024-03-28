@@ -67,10 +67,10 @@ func (*order) Unfreeze(c echo.Context) (err error) {
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"
 // @Param	body			body		definition.FreezeToPay	true	"冻结转支付请求"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
-func (*order) PaymentFreezeToPay(c echo.Context) (err error) {
-	ctx, req := app.RiderContextAndBinding[definition.FreezeToPay](c)
-	return ctx.SendResponse(biz.NewOrderBiz().PaymentFreezeToPay(req))
-}
+// func (*order) PaymentFreezeToPay(c echo.Context) (err error) {
+// 	ctx, req := app.RiderContextAndBinding[definition.FreezeToPay](c)
+// 	return ctx.SendResponse(biz.NewOrderBiz().PaymentFreezeToPay(req))
+// }
 
 // Refund
 // @ID		OrderRefund
@@ -84,5 +84,5 @@ func (*order) PaymentFreezeToPay(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*order) Refund(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.RefundReq](c)
-	return ctx.SendResponse(biz.NewRefundBiz().Refund(ctx.Rider, req))
+	return ctx.SendResponse(biz.NewRefundBiz().Refund(ctx.Rider.ID, req))
 }
