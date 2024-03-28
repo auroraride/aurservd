@@ -21,7 +21,7 @@ var (
 		{Name: "enable", Type: field.TypeBool, Comment: "状态 true:启用 false:禁用", Default: true},
 		{Name: "introduction", Type: field.TypeString, Comment: "简介"},
 		{Name: "popup", Type: field.TypeBool, Comment: "活动入口:弹窗", Default: false},
-		{Name: "index", Type: field.TypeBool, Comment: "活动入口:首页icon", Default: false},
+		{Name: "home", Type: field.TypeBool, Comment: "活动入口:首页icon", Default: false},
 		{Name: "image", Type: field.TypeJSON, Comment: "图片"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
 	}

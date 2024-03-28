@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -146,23 +147,31 @@ func (au *ActivityUpdate) SetNillablePopup(b *bool) *ActivityUpdate {
 	return au
 }
 
-// SetIndex sets the "index" field.
-func (au *ActivityUpdate) SetIndex(b bool) *ActivityUpdate {
-	au.mutation.SetIndex(b)
+// SetHome sets the "home" field.
+func (au *ActivityUpdate) SetHome(b bool) *ActivityUpdate {
+	au.mutation.SetHome(b)
 	return au
 }
 
-// SetNillableIndex sets the "index" field if the given value is not nil.
-func (au *ActivityUpdate) SetNillableIndex(b *bool) *ActivityUpdate {
+// SetNillableHome sets the "home" field if the given value is not nil.
+func (au *ActivityUpdate) SetNillableHome(b *bool) *ActivityUpdate {
 	if b != nil {
-		au.SetIndex(*b)
+		au.SetHome(*b)
 	}
 	return au
 }
 
 // SetImage sets the "image" field.
-func (au *ActivityUpdate) SetImage(m map[string]string) *ActivityUpdate {
-	au.mutation.SetImage(m)
+func (au *ActivityUpdate) SetImage(di definition.ActivityImage) *ActivityUpdate {
+	au.mutation.SetImage(di)
+	return au
+}
+
+// SetNillableImage sets the "image" field if the given value is not nil.
+func (au *ActivityUpdate) SetNillableImage(di *definition.ActivityImage) *ActivityUpdate {
+	if di != nil {
+		au.SetImage(*di)
+	}
 	return au
 }
 
@@ -272,8 +281,8 @@ func (au *ActivityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := au.mutation.Popup(); ok {
 		_spec.SetField(activity.FieldPopup, field.TypeBool, value)
 	}
-	if value, ok := au.mutation.Index(); ok {
-		_spec.SetField(activity.FieldIndex, field.TypeBool, value)
+	if value, ok := au.mutation.Home(); ok {
+		_spec.SetField(activity.FieldHome, field.TypeBool, value)
 	}
 	if value, ok := au.mutation.Image(); ok {
 		_spec.SetField(activity.FieldImage, field.TypeJSON, value)
@@ -423,23 +432,31 @@ func (auo *ActivityUpdateOne) SetNillablePopup(b *bool) *ActivityUpdateOne {
 	return auo
 }
 
-// SetIndex sets the "index" field.
-func (auo *ActivityUpdateOne) SetIndex(b bool) *ActivityUpdateOne {
-	auo.mutation.SetIndex(b)
+// SetHome sets the "home" field.
+func (auo *ActivityUpdateOne) SetHome(b bool) *ActivityUpdateOne {
+	auo.mutation.SetHome(b)
 	return auo
 }
 
-// SetNillableIndex sets the "index" field if the given value is not nil.
-func (auo *ActivityUpdateOne) SetNillableIndex(b *bool) *ActivityUpdateOne {
+// SetNillableHome sets the "home" field if the given value is not nil.
+func (auo *ActivityUpdateOne) SetNillableHome(b *bool) *ActivityUpdateOne {
 	if b != nil {
-		auo.SetIndex(*b)
+		auo.SetHome(*b)
 	}
 	return auo
 }
 
 // SetImage sets the "image" field.
-func (auo *ActivityUpdateOne) SetImage(m map[string]string) *ActivityUpdateOne {
-	auo.mutation.SetImage(m)
+func (auo *ActivityUpdateOne) SetImage(di definition.ActivityImage) *ActivityUpdateOne {
+	auo.mutation.SetImage(di)
+	return auo
+}
+
+// SetNillableImage sets the "image" field if the given value is not nil.
+func (auo *ActivityUpdateOne) SetNillableImage(di *definition.ActivityImage) *ActivityUpdateOne {
+	if di != nil {
+		auo.SetImage(*di)
+	}
 	return auo
 }
 
@@ -579,8 +596,8 @@ func (auo *ActivityUpdateOne) sqlSave(ctx context.Context) (_node *Activity, err
 	if value, ok := auo.mutation.Popup(); ok {
 		_spec.SetField(activity.FieldPopup, field.TypeBool, value)
 	}
-	if value, ok := auo.mutation.Index(); ok {
-		_spec.SetField(activity.FieldIndex, field.TypeBool, value)
+	if value, ok := auo.mutation.Home(); ok {
+		_spec.SetField(activity.FieldHome, field.TypeBool, value)
 	}
 	if value, ok := auo.mutation.Image(); ok {
 		_spec.SetField(activity.FieldImage, field.TypeJSON, value)

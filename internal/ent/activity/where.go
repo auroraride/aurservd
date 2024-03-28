@@ -99,9 +99,9 @@ func Popup(v bool) predicate.Activity {
 	return predicate.Activity(sql.FieldEQ(FieldPopup, v))
 }
 
-// Index applies equality check predicate on the "index" field. It's identical to IndexEQ.
-func Index(v bool) predicate.Activity {
-	return predicate.Activity(sql.FieldEQ(FieldIndex, v))
+// Home applies equality check predicate on the "home" field. It's identical to HomeEQ.
+func Home(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldEQ(FieldHome, v))
 }
 
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
@@ -494,14 +494,14 @@ func PopupNEQ(v bool) predicate.Activity {
 	return predicate.Activity(sql.FieldNEQ(FieldPopup, v))
 }
 
-// IndexEQ applies the EQ predicate on the "index" field.
-func IndexEQ(v bool) predicate.Activity {
-	return predicate.Activity(sql.FieldEQ(FieldIndex, v))
+// HomeEQ applies the EQ predicate on the "home" field.
+func HomeEQ(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldEQ(FieldHome, v))
 }
 
-// IndexNEQ applies the NEQ predicate on the "index" field.
-func IndexNEQ(v bool) predicate.Activity {
-	return predicate.Activity(sql.FieldNEQ(FieldIndex, v))
+// HomeNEQ applies the NEQ predicate on the "home" field.
+func HomeNEQ(v bool) predicate.Activity {
+	return predicate.Activity(sql.FieldNEQ(FieldHome, v))
 }
 
 // RemarkEQ applies the EQ predicate on the "remark" field.

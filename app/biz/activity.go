@@ -47,7 +47,7 @@ func (a *activityBiz) Create(req *definition.ActivityCreateReq) error {
 		SetImage(req.Image).
 		SetLink(req.Link).
 		SetNillablePopup(req.Popup).
-		SetNillableIndex(req.Index).
+		SetNillableHome(req.Home).
 		SetNillableRemark(req.Remark).
 		SetNillableEnable(req.Enable).
 		SetIntroduction(req.Introduction).
@@ -68,7 +68,7 @@ func (a *activityBiz) Modify(req *definition.ActivityModifyReq) error {
 		SetImage(req.Image).
 		SetLink(req.Link).
 		SetNillablePopup(req.Popup).
-		SetNillableIndex(req.Index).
+		SetNillableHome(req.Home).
 		SetNillableRemark(req.Remark).
 		SetNillableEnable(req.Enable).
 		SetIntroduction(req.Introduction).
@@ -128,9 +128,9 @@ func toActivityDetail(item *ent.Activity) *definition.ActivityDetail {
 			Sort:         item.Sort,
 			Image:        item.Image,
 			Link:         item.Link,
-			Remark:       &item.Remark,
+			Remark:       item.Remark,
 			Popup:        &item.Popup,
-			Index:        &item.Index,
+			Home:         &item.Home,
 			Enable:       item.Enable,
 			UpdatedAt:    item.UpdatedAt.Format(carbon.DateTimeLayout),
 			Introduction: item.Introduction,

@@ -31,8 +31,8 @@ const (
 	FieldIntroduction = "introduction"
 	// FieldPopup holds the string denoting the popup field in the database.
 	FieldPopup = "popup"
-	// FieldIndex holds the string denoting the index field in the database.
-	FieldIndex = "index"
+	// FieldHome holds the string denoting the home field in the database.
+	FieldHome = "home"
 	// FieldImage holds the string denoting the image field in the database.
 	FieldImage = "image"
 	// FieldRemark holds the string denoting the remark field in the database.
@@ -53,7 +53,7 @@ var Columns = []string{
 	FieldEnable,
 	FieldIntroduction,
 	FieldPopup,
-	FieldIndex,
+	FieldHome,
 	FieldImage,
 	FieldRemark,
 }
@@ -79,8 +79,8 @@ var (
 	DefaultEnable bool
 	// DefaultPopup holds the default value on creation for the "popup" field.
 	DefaultPopup bool
-	// DefaultIndex holds the default value on creation for the "index" field.
-	DefaultIndex bool
+	// DefaultHome holds the default value on creation for the "home" field.
+	DefaultHome bool
 )
 
 // OrderOption defines the ordering options for the Activity queries.
@@ -136,9 +136,9 @@ func ByPopup(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPopup, opts...).ToFunc()
 }
 
-// ByIndex orders the results by the index field.
-func ByIndex(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldIndex, opts...).ToFunc()
+// ByHome orders the results by the home field.
+func ByHome(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHome, opts...).ToFunc()
 }
 
 // ByRemark orders the results by the remark field.

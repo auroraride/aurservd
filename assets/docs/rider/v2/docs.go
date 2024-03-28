@@ -3094,8 +3094,12 @@ const docTemplate = `{
                             "ios"
                         ],
                         "type": "string",
+                        "x-enum-varnames": [
+                            "AppPlatformAndroid",
+                            "AppPlatformIOS"
+                        ],
                         "description": "平台",
-                        "name": "platform",
+                        "name": "appPlatform",
                         "in": "query",
                         "required": true
                     }
@@ -3493,19 +3497,20 @@ const docTemplate = `{
                     "description": "是否启用 true:是 false:否",
                     "type": "boolean"
                 },
+                "home": {
+                    "description": "首页icon true:是 false:否",
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "integer"
                 },
                 "image": {
-                    "description": "图片  {\"list\":\"图片地址\",\"popup\":\"图片地址\",\"index\":\"图片地址\" }",
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "index": {
-                    "description": "首页icon true:是 false:否",
-                    "type": "boolean"
+                    "description": "图片",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.ActivityImage"
+                        }
+                    ]
                 },
                 "introduction": {
                     "description": "活动简介",
@@ -3533,6 +3538,23 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "description": "更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.ActivityImage": {
+            "type": "object",
+            "properties": {
+                "home": {
+                    "description": "首页icon图片",
+                    "type": "string"
+                },
+                "list": {
+                    "description": "列表图片",
+                    "type": "string"
+                },
+                "popup": {
+                    "description": "弹窗图片",
                     "type": "string"
                 }
             }
@@ -4490,6 +4512,14 @@ const docTemplate = `{
         "definition.VersionRes": {
             "type": "object",
             "properties": {
+                "appPlatform": {
+                    "description": "平台",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AppPlatform"
+                        }
+                    ]
+                },
                 "content": {
                     "description": "更新内容",
                     "type": "string"
@@ -4505,13 +4535,6 @@ const docTemplate = `{
                 "id": {
                     "description": "ID",
                     "type": "integer"
-                },
-                "platform": {
-                    "description": "平台",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "version": {
                     "description": "版本号",
@@ -4552,6 +4575,17 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
+        },
+        "model.AppPlatform": {
+            "type": "string",
+            "enum": [
+                "android",
+                "ios"
+            ],
+            "x-enum-varnames": [
+                "AppPlatformAndroid",
+                "AppPlatformIOS"
+            ]
         },
         "model.AssistanceCancelReq": {
             "type": "object",
