@@ -14314,6 +14314,14 @@
         "definition.Version": {
             "type": "object",
             "properties": {
+              "appPlatform": {
+                "description": "平台",
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/model.AppPlatform"
+                  }
+                ]
+              },
                 "content": {
                     "description": "更新内容",
                     "type": "string"
@@ -14330,13 +14338,6 @@
                     "description": "ID",
                     "type": "integer"
                 },
-                "platform": {
-                    "description": "平台",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "version": {
                     "description": "版本号",
                     "type": "string"
@@ -14346,11 +14347,23 @@
         "definition.VersionModifyReq": {
             "type": "object",
             "required": [
+              "appPlatform",
                 "content",
-                "platform",
                 "version"
             ],
             "properties": {
+              "appPlatform": {
+                "description": "平台",
+                "enum": [
+                  "android",
+                  "ios"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/model.AppPlatform"
+                  }
+                ]
+              },
                 "content": {
                     "description": "更新内容",
                     "type": "string"
@@ -14358,13 +14371,6 @@
                 "force": {
                     "description": "是否强制更新",
                     "type": "boolean"
-                },
-                "platform": {
-                    "description": "平台, 平台",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "version": {
                     "description": "版本号",
@@ -14375,11 +14381,23 @@
         "definition.VersionReq": {
             "type": "object",
             "required": [
+              "appPlatform",
                 "content",
-                "platform",
                 "version"
             ],
             "properties": {
+              "appPlatform": {
+                "description": "平台",
+                "enum": [
+                  "android",
+                  "ios"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/model.AppPlatform"
+                  }
+                ]
+              },
                 "content": {
                     "description": "更新内容",
                     "type": "string"
@@ -14387,13 +14405,6 @@
                 "force": {
                     "description": "是否强制更新",
                     "type": "boolean"
-                },
-                "platform": {
-                    "description": "平台, 平台",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "version": {
                     "description": "版本号",
@@ -14486,6 +14497,17 @@
                 }
             }
         },
+      "model.AppPlatform": {
+        "type": "string",
+        "enum": [
+          "android",
+          "ios"
+        ],
+        "x-enum-varnames": [
+          "AppPlatformAndroid",
+          "AppPlatformIOS"
+        ]
+      },
         "model.AssistanceAllocateReq": {
             "type": "object",
             "required": [
@@ -22401,10 +22423,6 @@
                 },
                 "method": {
                     "description": "api请求method",
-                    "type": "string"
-                },
-                "sn": {
-                    "description": "接口编号",
                     "type": "string"
                 }
             }

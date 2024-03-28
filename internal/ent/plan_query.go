@@ -948,7 +948,7 @@ type PlanQueryWith string
 
 var (
 	PlanQueryWithBrand       PlanQueryWith = "Brand"
-	PlanQueryWithAgreement   PlanQueryWith = "AgreementRes"
+	PlanQueryWithAgreement   PlanQueryWith = "Agreement"
 	PlanQueryWithCities      PlanQueryWith = "Cities"
 	PlanQueryWithParent      PlanQueryWith = "Parent"
 	PlanQueryWithComplexes   PlanQueryWith = "Complexes"

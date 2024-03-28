@@ -728,6 +728,10 @@ definitions:
     type: object
   definition.VersionRes:
     properties:
+      appPlatform:
+        allOf:
+          - $ref: '#/definitions/model.AppPlatform'
+        description: 平台
       content:
         description: 更新内容
         type: string
@@ -740,11 +744,6 @@ definitions:
       id:
         description: ID
         type: integer
-      platform:
-        description: 平台
-        items:
-          type: string
-        type: array
       version:
         description: 版本号
         type: string
@@ -773,6 +772,14 @@ definitions:
         description: 是否已分配
         type: boolean
     type: object
+  model.AppPlatform:
+    enum:
+      - android
+      - ios
+    type: string
+    x-enum-varnames:
+      - AppPlatformAndroid
+      - AppPlatformIOS
   model.AssistanceCancelReq:
     properties:
       desc:
@@ -4693,9 +4700,12 @@ paths:
         - android
         - ios
         in: query
-        name: platform
+        name: appPlatform
         required: true
         type: string
+        x-enum-varnames:
+          - AppPlatformAndroid
+          - AppPlatformIOS
       produces:
       - application/json
       responses:

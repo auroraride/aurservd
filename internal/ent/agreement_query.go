@@ -266,7 +266,7 @@ func (aq *AgreementQuery) Clone() *AgreementQuery {
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.AgreementRes.Query().
+//	client.Agreement.Query().
 //		GroupBy(agreement.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
@@ -288,7 +288,7 @@ func (aq *AgreementQuery) GroupBy(field string, fields ...string) *AgreementGrou
 //		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
-//	client.AgreementRes.Query().
+//	client.Agreement.Query().
 //		Select(agreement.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (aq *AgreementQuery) Select(fields ...string) *AgreementSelect {

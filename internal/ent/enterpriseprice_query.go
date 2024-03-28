@@ -766,7 +766,7 @@ type EnterprisePriceQueryWith string
 var (
 	EnterprisePriceQueryWithCity       EnterprisePriceQueryWith = "City"
 	EnterprisePriceQueryWithBrand      EnterprisePriceQueryWith = "Brand"
-	EnterprisePriceQueryWithAgreement  EnterprisePriceQueryWith = "AgreementRes"
+	EnterprisePriceQueryWithAgreement  EnterprisePriceQueryWith = "Agreement"
 	EnterprisePriceQueryWithEnterprise EnterprisePriceQueryWith = "Enterprise"
 )
 

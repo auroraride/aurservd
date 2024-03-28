@@ -150,7 +150,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 				Column: agreement.FieldID,
 			},
 		},
-		Type: "AgreementRes",
+		Type: "Agreement",
 		Fields: map[string]*sqlgraph.FieldSpec{
 			agreement.FieldCreatedAt:     {Type: field.TypeTime, Column: agreement.FieldCreatedAt},
 			agreement.FieldUpdatedAt:     {Type: field.TypeTime, Column: agreement.FieldUpdatedAt},
@@ -2240,7 +2240,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			version.FieldCreator:      {Type: field.TypeJSON, Column: version.FieldCreator},
 			version.FieldLastModifier: {Type: field.TypeJSON, Column: version.FieldLastModifier},
 			version.FieldRemark:       {Type: field.TypeString, Column: version.FieldRemark},
-			version.FieldPlatform:     {Type: field.TypeJSON, Column: version.FieldPlatform},
+			version.FieldPlatform:     {Type: field.TypeOther, Column: version.FieldPlatform},
 			version.FieldVersion:      {Type: field.TypeString, Column: version.FieldVersion},
 			version.FieldContent:      {Type: field.TypeString, Column: version.FieldContent},
 			version.FieldForce:        {Type: field.TypeBool, Column: version.FieldForce},
@@ -3828,7 +3828,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"EnterprisePrice",
-		"AgreementRes",
+		"Agreement",
 	)
 	graph.MustAddE(
 		"enterprise",
@@ -4428,7 +4428,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"Plan",
-		"AgreementRes",
+		"Agreement",
 	)
 	graph.MustAddE(
 		"cities",
@@ -19059,8 +19059,8 @@ func (f *VersionFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(version.FieldRemark))
 }
 
-// WherePlatform applies the entql json.RawMessage predicate on the platform field.
-func (f *VersionFilter) WherePlatform(p entql.BytesP) {
+// WherePlatform applies the entql other predicate on the platform field.
+func (f *VersionFilter) WherePlatform(p entql.OtherP) {
 	f.Where(p.Field(version.FieldPlatform))
 }
 

@@ -34,7 +34,7 @@ func (f AgentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 }
 
 // The AgreementFunc type is an adapter to allow the use of ordinary
-// function as AgreementRes mutator.
+// function as Agreement mutator.
 type AgreementFunc func(context.Context, *ent.AgreementMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).

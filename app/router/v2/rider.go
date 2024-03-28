@@ -123,7 +123,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.POST("/change/phone", rapi.Rider.ChangePhone, logged()) // 修改手机号
 
 	// 骑士卡
-	plan := g.Group("/plan", logged())
+	plan := g.Group("/plan")
 	plan.GET("", v1.Plan.List)                 // 套餐列表
 	plan.GET("/plan/renewly", v1.Plan.Renewly) // 续费列表
 

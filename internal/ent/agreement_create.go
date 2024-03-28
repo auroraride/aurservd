@@ -242,25 +242,25 @@ func (ac *AgreementCreate) defaults() error {
 // check runs all checks and user-defined validators on the builder.
 func (ac *AgreementCreate) check() error {
 	if _, ok := ac.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "AgreementRes.created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Agreement.created_at"`)}
 	}
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "AgreementRes.updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Agreement.updated_at"`)}
 	}
 	if _, ok := ac.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "AgreementRes.name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Agreement.name"`)}
 	}
 	if _, ok := ac.mutation.Content(); !ok {
-		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "AgreementRes.content"`)}
+		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Agreement.content"`)}
 	}
 	if _, ok := ac.mutation.UserType(); !ok {
-		return &ValidationError{Name: "user_type", err: errors.New(`ent: missing required field "AgreementRes.user_type"`)}
+		return &ValidationError{Name: "user_type", err: errors.New(`ent: missing required field "Agreement.user_type"`)}
 	}
 	if _, ok := ac.mutation.ForceReadTime(); !ok {
-		return &ValidationError{Name: "force_read_time", err: errors.New(`ent: missing required field "AgreementRes.force_read_time"`)}
+		return &ValidationError{Name: "force_read_time", err: errors.New(`ent: missing required field "Agreement.force_read_time"`)}
 	}
 	if _, ok := ac.mutation.IsDefault(); !ok {
-		return &ValidationError{Name: "is_default", err: errors.New(`ent: missing required field "AgreementRes.is_default"`)}
+		return &ValidationError{Name: "is_default", err: errors.New(`ent: missing required field "Agreement.is_default"`)}
 	}
 	return nil
 }
@@ -347,7 +347,7 @@ func (ac *AgreementCreate) createSpec() (*Agreement, *sqlgraph.CreateSpec) {
 // OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
 // of the `INSERT` statement. For example:
 //
-//	client.AgreementRes.Create().
+//	client.Agreement.Create().
 //		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
@@ -370,7 +370,7 @@ func (ac *AgreementCreate) OnConflict(opts ...sql.ConflictOption) *AgreementUpse
 // OnConflictColumns calls `OnConflict` and configures the columns
 // as conflict target. Using this option is equivalent to using:
 //
-//	client.AgreementRes.Create().
+//	client.Agreement.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
 func (ac *AgreementCreate) OnConflictColumns(columns ...string) *AgreementUpsertOne {
@@ -382,7 +382,7 @@ func (ac *AgreementCreate) OnConflictColumns(columns ...string) *AgreementUpsert
 
 type (
 	// AgreementUpsertOne is the builder for "upsert"-ing
-	//  one AgreementRes node.
+	//  one Agreement node.
 	AgreementUpsertOne struct {
 		create *AgreementCreate
 	}
@@ -570,7 +570,7 @@ func (u *AgreementUpsert) ClearURL() *AgreementUpsert {
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
-//	client.AgreementRes.Create().
+//	client.Agreement.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
 //		).
@@ -591,7 +591,7 @@ func (u *AgreementUpsertOne) UpdateNewValues() *AgreementUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.AgreementRes.Create().
+//	client.Agreement.Create().
 //	    OnConflict(sql.ResolveWithIgnore()).
 //	    Exec(ctx)
 func (u *AgreementUpsertOne) Ignore() *AgreementUpsertOne {
@@ -944,7 +944,7 @@ func (acb *AgreementCreateBulk) ExecX(ctx context.Context) {
 // OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
 // of the `INSERT` statement. For example:
 //
-//	client.AgreementRes.CreateBulk(builders...).
+//	client.Agreement.CreateBulk(builders...).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -966,7 +966,7 @@ func (acb *AgreementCreateBulk) OnConflict(opts ...sql.ConflictOption) *Agreemen
 // OnConflictColumns calls `OnConflict` and configures the columns
 // as conflict target. Using this option is equivalent to using:
 //
-//	client.AgreementRes.Create().
+//	client.Agreement.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
 func (acb *AgreementCreateBulk) OnConflictColumns(columns ...string) *AgreementUpsertBulk {
@@ -985,7 +985,7 @@ type AgreementUpsertBulk struct {
 // UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
-//	client.AgreementRes.Create().
+//	client.Agreement.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
 //		).
@@ -1008,7 +1008,7 @@ func (u *AgreementUpsertBulk) UpdateNewValues() *AgreementUpsertBulk {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.AgreementRes.Create().
+//	client.Agreement.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
 func (u *AgreementUpsertBulk) Ignore() *AgreementUpsertBulk {
