@@ -255,6 +255,11 @@ func ForceUnsubscribe(v bool) predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldEQ(FieldForceUnsubscribe, v))
 }
 
+// DepositType applies equality check predicate on the "deposit_type" field. It's identical to DepositTypeEQ.
+func DepositType(v uint8) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldEQ(FieldDepositType, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldEQ(FieldCreatedAt, v))
@@ -1868,6 +1873,56 @@ func ForceUnsubscribeEQ(v bool) predicate.Subscribe {
 // ForceUnsubscribeNEQ applies the NEQ predicate on the "force_unsubscribe" field.
 func ForceUnsubscribeNEQ(v bool) predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldNEQ(FieldForceUnsubscribe, v))
+}
+
+// DepositTypeEQ applies the EQ predicate on the "deposit_type" field.
+func DepositTypeEQ(v uint8) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldEQ(FieldDepositType, v))
+}
+
+// DepositTypeNEQ applies the NEQ predicate on the "deposit_type" field.
+func DepositTypeNEQ(v uint8) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldNEQ(FieldDepositType, v))
+}
+
+// DepositTypeIn applies the In predicate on the "deposit_type" field.
+func DepositTypeIn(vs ...uint8) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldIn(FieldDepositType, vs...))
+}
+
+// DepositTypeNotIn applies the NotIn predicate on the "deposit_type" field.
+func DepositTypeNotIn(vs ...uint8) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldNotIn(FieldDepositType, vs...))
+}
+
+// DepositTypeGT applies the GT predicate on the "deposit_type" field.
+func DepositTypeGT(v uint8) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldGT(FieldDepositType, v))
+}
+
+// DepositTypeGTE applies the GTE predicate on the "deposit_type" field.
+func DepositTypeGTE(v uint8) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldGTE(FieldDepositType, v))
+}
+
+// DepositTypeLT applies the LT predicate on the "deposit_type" field.
+func DepositTypeLT(v uint8) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldLT(FieldDepositType, v))
+}
+
+// DepositTypeLTE applies the LTE predicate on the "deposit_type" field.
+func DepositTypeLTE(v uint8) predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldLTE(FieldDepositType, v))
+}
+
+// DepositTypeIsNil applies the IsNil predicate on the "deposit_type" field.
+func DepositTypeIsNil() predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldIsNull(FieldDepositType))
+}
+
+// DepositTypeNotNil applies the NotNil predicate on the "deposit_type" field.
+func DepositTypeNotNil() predicate.Subscribe {
+	return predicate.Subscribe(sql.FieldNotNull(FieldDepositType))
 }
 
 // HasPlan applies the HasEdge predicate on the "plan" edge.

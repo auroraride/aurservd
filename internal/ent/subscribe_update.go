@@ -777,6 +777,33 @@ func (su *SubscribeUpdate) SetNillableForceUnsubscribe(b *bool) *SubscribeUpdate
 	return su
 }
 
+// SetDepositType sets the "deposit_type" field.
+func (su *SubscribeUpdate) SetDepositType(u uint8) *SubscribeUpdate {
+	su.mutation.ResetDepositType()
+	su.mutation.SetDepositType(u)
+	return su
+}
+
+// SetNillableDepositType sets the "deposit_type" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableDepositType(u *uint8) *SubscribeUpdate {
+	if u != nil {
+		su.SetDepositType(*u)
+	}
+	return su
+}
+
+// AddDepositType adds u to the "deposit_type" field.
+func (su *SubscribeUpdate) AddDepositType(u int8) *SubscribeUpdate {
+	su.mutation.AddDepositType(u)
+	return su
+}
+
+// ClearDepositType clears the value of the "deposit_type" field.
+func (su *SubscribeUpdate) ClearDepositType() *SubscribeUpdate {
+	su.mutation.ClearDepositType()
+	return su
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (su *SubscribeUpdate) SetPlan(p *Plan) *SubscribeUpdate {
 	return su.SetPlanID(p.ID)
@@ -1339,6 +1366,15 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.ForceUnsubscribe(); ok {
 		_spec.SetField(subscribe.FieldForceUnsubscribe, field.TypeBool, value)
+	}
+	if value, ok := su.mutation.DepositType(); ok {
+		_spec.SetField(subscribe.FieldDepositType, field.TypeUint8, value)
+	}
+	if value, ok := su.mutation.AddedDepositType(); ok {
+		_spec.AddField(subscribe.FieldDepositType, field.TypeUint8, value)
+	}
+	if su.mutation.DepositTypeCleared() {
+		_spec.ClearField(subscribe.FieldDepositType, field.TypeUint8)
 	}
 	if su.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2694,6 +2730,33 @@ func (suo *SubscribeUpdateOne) SetNillableForceUnsubscribe(b *bool) *SubscribeUp
 	return suo
 }
 
+// SetDepositType sets the "deposit_type" field.
+func (suo *SubscribeUpdateOne) SetDepositType(u uint8) *SubscribeUpdateOne {
+	suo.mutation.ResetDepositType()
+	suo.mutation.SetDepositType(u)
+	return suo
+}
+
+// SetNillableDepositType sets the "deposit_type" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableDepositType(u *uint8) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetDepositType(*u)
+	}
+	return suo
+}
+
+// AddDepositType adds u to the "deposit_type" field.
+func (suo *SubscribeUpdateOne) AddDepositType(u int8) *SubscribeUpdateOne {
+	suo.mutation.AddDepositType(u)
+	return suo
+}
+
+// ClearDepositType clears the value of the "deposit_type" field.
+func (suo *SubscribeUpdateOne) ClearDepositType() *SubscribeUpdateOne {
+	suo.mutation.ClearDepositType()
+	return suo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (suo *SubscribeUpdateOne) SetPlan(p *Plan) *SubscribeUpdateOne {
 	return suo.SetPlanID(p.ID)
@@ -3286,6 +3349,15 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 	}
 	if value, ok := suo.mutation.ForceUnsubscribe(); ok {
 		_spec.SetField(subscribe.FieldForceUnsubscribe, field.TypeBool, value)
+	}
+	if value, ok := suo.mutation.DepositType(); ok {
+		_spec.SetField(subscribe.FieldDepositType, field.TypeUint8, value)
+	}
+	if value, ok := suo.mutation.AddedDepositType(); ok {
+		_spec.AddField(subscribe.FieldDepositType, field.TypeUint8, value)
+	}
+	if suo.mutation.DepositTypeCleared() {
+		_spec.ClearField(subscribe.FieldDepositType, field.TypeUint8)
 	}
 	if suo.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{

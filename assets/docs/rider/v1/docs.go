@@ -3660,6 +3660,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "forceUnsubscribe": {
+                    "description": "是否强制退订 true:强制退订 false:正常退订",
+                    "type": "boolean"
+                },
                 "id": {
                     "description": "订单ID",
                     "type": "integer"
@@ -4772,6 +4776,10 @@ const docTemplate = `{
                     "description": "团签价格ID",
                     "type": "integer"
                 },
+                "forceUnsubscribe": {
+                    "description": "是否强制退订 true:强制退订 false:正常退订",
+                    "type": "boolean"
+                },
                 "id": {
                     "description": "订阅ID",
                     "type": "integer"
@@ -4987,6 +4995,10 @@ const docTemplate = `{
                 "deposit": {
                     "description": "已缴纳押金",
                     "type": "number"
+                },
+                "depositType": {
+                    "description": "押金类型  1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金",
+                    "type": "integer"
                 },
                 "points": {
                     "description": "积分数量",

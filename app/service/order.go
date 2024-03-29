@@ -633,7 +633,8 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 				SetIntelligent(trade.Plan.Intelligent).
 				SetNeedContract(true).
 				SetNillableStoreID(trade.StoreID).
-				SetNillableAgreementHash(trade.AgreementHash)
+				SetNillableAgreementHash(trade.AgreementHash).
+				SetNillableDepositType(trade.DepositType)
 			if do != nil {
 				sq.AddOrders(do)
 			}

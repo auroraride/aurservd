@@ -18,10 +18,23 @@ func NewWallet(params ...any) *walletService {
 }
 
 func (s *walletService) Overview() model.WalletOverview {
+	// 获取当前订阅信息
+	or := NewRider().DepositOrder(s.entRider.ID)
+	var deposit float64
+	var depositType uint8
+	if or != nil {
+		deposit = or.Amount
+		if or.Edges.Subscribe != nil {
+			depositType = or.Edges.Subscribe.DepositType
+		}
+
+	}
+
 	return model.WalletOverview{
-		Balance: 0,
-		Points:  s.entRider.Points,
-		Coupons: len(NewCoupon().QueryEffective(s.rider.ID)),
-		Deposit: NewRider().DepositPaid(s.rider.ID).Deposit,
+		Balance:     0,
+		Points:      s.entRider.Points,
+		Coupons:     len(NewCoupon().QueryEffective(s.rider.ID)),
+		Deposit:     deposit,
+		DepositType: depositType,
 	}
 }

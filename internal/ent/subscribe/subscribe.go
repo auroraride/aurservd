@@ -99,6 +99,8 @@ const (
 	FieldEnterprisePriceID = "enterprise_price_id"
 	// FieldForceUnsubscribe holds the string denoting the force_unsubscribe field in the database.
 	FieldForceUnsubscribe = "force_unsubscribe"
+	// FieldDepositType holds the string denoting the deposit_type field in the database.
+	FieldDepositType = "deposit_type"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -310,6 +312,7 @@ var Columns = []string{
 	FieldAgreementHash,
 	FieldEnterprisePriceID,
 	FieldForceUnsubscribe,
+	FieldDepositType,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -567,6 +570,11 @@ func ByEnterprisePriceID(opts ...sql.OrderTermOption) OrderOption {
 // ByForceUnsubscribe orders the results by the force_unsubscribe field.
 func ByForceUnsubscribe(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldForceUnsubscribe, opts...).ToFunc()
+}
+
+// ByDepositType orders the results by the deposit_type field.
+func ByDepositType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepositType, opts...).ToFunc()
 }
 
 // ByPlanField orders the results by plan field.

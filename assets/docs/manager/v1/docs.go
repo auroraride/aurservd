@@ -16051,9 +16051,17 @@ const docTemplate = `{
                     "description": "电柜ID",
                     "type": "integer"
                 },
+                "forceUnsubscribe": {
+                    "description": "是否强制退租, 是否强制退订(后台使用)",
+                    "type": "boolean"
+                },
                 "id": {
                     "description": "订阅ID",
                     "type": "integer"
+                },
+                "refundDeposit": {
+                    "description": "是否退押金, 是否退押金(后台使用)",
+                    "type": "boolean"
                 },
                 "storeId": {
                     "description": "门店ID",
@@ -19523,6 +19531,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "forceUnsubscribe": {
+                    "description": "是否强制退订 true:强制退订 false:正常退订",
+                    "type": "boolean"
+                },
                 "id": {
                     "description": "订单ID",
                     "type": "integer"
@@ -20991,6 +21003,10 @@ const docTemplate = `{
                 "id"
             ],
             "properties": {
+                "address": {
+                    "description": "详细地址",
+                    "type": "string"
+                },
                 "authStatus": {
                     "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
                     "enum": [

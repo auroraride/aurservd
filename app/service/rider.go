@@ -1023,7 +1023,7 @@ func (s *riderService) DepositOrder(riderID uint64) *ent.Order {
 		order.Status(model.OrderStatusPaid),
 		order.Type(model.OrderTypeDeposit),
 		order.DeletedAtIsNil(),
-	).First(s.ctx)
+	).WithSubscribe().First(s.ctx)
 	return o
 }
 

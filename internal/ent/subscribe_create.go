@@ -588,6 +588,20 @@ func (sc *SubscribeCreate) SetNillableForceUnsubscribe(b *bool) *SubscribeCreate
 	return sc
 }
 
+// SetDepositType sets the "deposit_type" field.
+func (sc *SubscribeCreate) SetDepositType(u uint8) *SubscribeCreate {
+	sc.mutation.SetDepositType(u)
+	return sc
+}
+
+// SetNillableDepositType sets the "deposit_type" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableDepositType(u *uint8) *SubscribeCreate {
+	if u != nil {
+		sc.SetDepositType(*u)
+	}
+	return sc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (sc *SubscribeCreate) SetPlan(p *Plan) *SubscribeCreate {
 	return sc.SetPlanID(p.ID)
@@ -1049,6 +1063,10 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.ForceUnsubscribe(); ok {
 		_spec.SetField(subscribe.FieldForceUnsubscribe, field.TypeBool, value)
 		_node.ForceUnsubscribe = value
+	}
+	if value, ok := sc.mutation.DepositType(); ok {
+		_spec.SetField(subscribe.FieldDepositType, field.TypeUint8, value)
+		_node.DepositType = value
 	}
 	if nodes := sc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -2062,6 +2080,30 @@ func (u *SubscribeUpsert) UpdateForceUnsubscribe() *SubscribeUpsert {
 	return u
 }
 
+// SetDepositType sets the "deposit_type" field.
+func (u *SubscribeUpsert) SetDepositType(v uint8) *SubscribeUpsert {
+	u.Set(subscribe.FieldDepositType, v)
+	return u
+}
+
+// UpdateDepositType sets the "deposit_type" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateDepositType() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldDepositType)
+	return u
+}
+
+// AddDepositType adds v to the "deposit_type" field.
+func (u *SubscribeUpsert) AddDepositType(v uint8) *SubscribeUpsert {
+	u.Add(subscribe.FieldDepositType, v)
+	return u
+}
+
+// ClearDepositType clears the value of the "deposit_type" field.
+func (u *SubscribeUpsert) ClearDepositType() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldDepositType)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2880,6 +2922,34 @@ func (u *SubscribeUpsertOne) SetForceUnsubscribe(v bool) *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) UpdateForceUnsubscribe() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateForceUnsubscribe()
+	})
+}
+
+// SetDepositType sets the "deposit_type" field.
+func (u *SubscribeUpsertOne) SetDepositType(v uint8) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetDepositType(v)
+	})
+}
+
+// AddDepositType adds v to the "deposit_type" field.
+func (u *SubscribeUpsertOne) AddDepositType(v uint8) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.AddDepositType(v)
+	})
+}
+
+// UpdateDepositType sets the "deposit_type" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateDepositType() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateDepositType()
+	})
+}
+
+// ClearDepositType clears the value of the "deposit_type" field.
+func (u *SubscribeUpsertOne) ClearDepositType() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearDepositType()
 	})
 }
 
@@ -3867,6 +3937,34 @@ func (u *SubscribeUpsertBulk) SetForceUnsubscribe(v bool) *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) UpdateForceUnsubscribe() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateForceUnsubscribe()
+	})
+}
+
+// SetDepositType sets the "deposit_type" field.
+func (u *SubscribeUpsertBulk) SetDepositType(v uint8) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetDepositType(v)
+	})
+}
+
+// AddDepositType adds v to the "deposit_type" field.
+func (u *SubscribeUpsertBulk) AddDepositType(v uint8) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.AddDepositType(v)
+	})
+}
+
+// UpdateDepositType sets the "deposit_type" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateDepositType() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateDepositType()
+	})
+}
+
+// ClearDepositType clears the value of the "deposit_type" field.
+func (u *SubscribeUpsertBulk) ClearDepositType() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearDepositType()
 	})
 }
 

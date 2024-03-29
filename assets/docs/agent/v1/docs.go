@@ -3342,9 +3342,17 @@ const docTemplate = `{
                     "description": "电柜ID",
                     "type": "integer"
                 },
+                "forceUnsubscribe": {
+                    "description": "是否强制退租, 是否强制退订(后台使用)",
+                    "type": "boolean"
+                },
                 "id": {
                     "description": "订阅ID",
                     "type": "integer"
+                },
+                "refundDeposit": {
+                    "description": "是否退押金, 是否退押金(后台使用)",
+                    "type": "boolean"
                 },
                 "storeId": {
                     "description": "门店ID",
