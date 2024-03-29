@@ -2504,47 +2504,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v2/order/payment/freezetopay": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Order - 订单"
-                ],
-                "summary": "冻结转支付",
-                "operationId": "OrderPaymentFreezeToPay",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "冻结转支付请求",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/definition.FreezeToPay"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v2/order/refund": {
             "post": {
                 "consumes": [
@@ -2620,47 +2579,6 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.OrderStatusRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/rider/v2/order/unfreeze": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Order - 订单"
-                ],
-                "summary": "解冻资金",
-                "operationId": "OrderUnfreeze",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "解冻押金请求",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/definition.OrderDepositUnfreezeReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -3844,18 +3762,6 @@ const docTemplate = `{
                 "FaultTypeOther"
             ]
         },
-        "definition.FreezeToPay": {
-            "type": "object",
-            "required": [
-                "outOrderNo"
-            ],
-            "properties": {
-                "outOrderNo": {
-                    "description": "授权资金订单号",
-                    "type": "string"
-                }
-            }
-        },
         "definition.GuideDetail": {
             "type": "object",
             "properties": {
@@ -3922,6 +3828,16 @@ const docTemplate = `{
                 "depositOrderNo": {
                     "description": "押金订单编号 (如果分开支付的押金此参必填 例如 选择了信用免押,支付为支付宝,则此参数必填)",
                     "type": "string"
+                },
+                "depositType": {
+                    "description": "押金类型 1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4
+                    ]
                 },
                 "needContract": {
                     "description": "是否需要签约",
@@ -3999,18 +3915,6 @@ const docTemplate = `{
                 },
                 "prepay": {
                     "description": "支付信息",
-                    "type": "string"
-                }
-            }
-        },
-        "definition.OrderDepositUnfreezeReq": {
-            "type": "object",
-            "required": [
-                "outOrderNo"
-            ],
-            "properties": {
-                "outOrderNo": {
-                    "description": "支付宝授权资金订单号",
                     "type": "string"
                 }
             }
@@ -6052,6 +5956,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "forceUnsubscribe": {
+                    "description": "是否强制退订 true:强制退订 false:正常退订",
+                    "type": "boolean"
+                },
                 "id": {
                     "description": "订单ID",
                     "type": "integer"
@@ -7119,6 +7027,10 @@ const docTemplate = `{
                     "description": "团签价格ID",
                     "type": "integer"
                 },
+                "forceUnsubscribe": {
+                    "description": "是否强制退订 true:强制退订 false:正常退订",
+                    "type": "boolean"
+                },
                 "id": {
                     "description": "订阅ID",
                     "type": "integer"
@@ -7334,6 +7246,10 @@ const docTemplate = `{
                 "deposit": {
                     "description": "已缴纳押金",
                     "type": "number"
+                },
+                "depositType": {
+                    "description": "押金类型  1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金",
+                    "type": "integer"
                 },
                 "points": {
                     "description": "积分数量",

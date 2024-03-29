@@ -1703,9 +1703,15 @@ definitions:
       cabinetId:
         description: 电柜ID
         type: integer
+      forceUnsubscribe:
+        description: 是否强制退租, 是否强制退订(后台使用)
+        type: boolean
       id:
         description: 订阅ID
         type: integer
+      refundDeposit:
+        description: 是否退押金, 是否退押金(后台使用)
+        type: boolean
       storeId:
         description: 门店ID
         type: integer
@@ -4153,6 +4159,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Employee'
         description: 店员 (可为空)
+      forceUnsubscribe:
+        description: 是否强制退订 true:强制退订 false:正常退订
+        type: boolean
       id:
         description: 订单ID
         type: integer
@@ -5177,6 +5186,9 @@ definitions:
     type: object
   model.RiderMgrModifyReq:
     properties:
+      address:
+        description: 详细地址
+        type: string
       authStatus:
         allOf:
         - $ref: '#/definitions/model.PersonAuthStatus'

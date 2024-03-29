@@ -7,6 +7,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -632,7 +633,8 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 				SetIntelligent(trade.Plan.Intelligent).
 				SetNeedContract(true).
 				SetNillableStoreID(trade.StoreID).
-				SetNillableAgreementHash(trade.AgreementHash)
+				SetNillableAgreementHash(trade.AgreementHash).
+				SetNillableDepositType(trade.DepositType)
 			if do != nil {
 				sq.AddOrders(do)
 			}
@@ -912,6 +914,9 @@ func (s *orderService) Detail(item *ent.Order) model.Order {
 				Phone: oe.Phone,
 			}
 		}
+
+		res.ForceUnsubscribe = osub.ForceUnsubscribe
+
 	}
 
 	// refund
@@ -1051,7 +1056,7 @@ func (s *orderService) QueryStatus(req *model.OrderStatusReq) (res model.OrderSt
 }
 
 // TradePay 资金冻结转支付
-func (s *orderService) TradePay(o *ent.Order) *alipay.TradePayRsp {
+func (s *orderService) TradePay(o *ent.Order) error {
 
 	subject := "订阅骑士卡"
 	if o.Edges.Plan != nil {
@@ -1064,21 +1069,18 @@ func (s *orderService) TradePay(o *ent.Order) *alipay.TradePayRsp {
 		OutRequestNo: o.OutRequestNo,
 	})
 	if err != nil {
-		zap.L().Error("资金冻结转支付失败", zap.Error(err))
-		return nil
+		return errors.New("查询授权订单状态失败")
 	}
 
 	// 授权订单状态 已授权状态：授权成功，可以进行转支付或解冻操作
 	if fundAuthOperationDetailQueryRsp.OrderStatus != alipay.OrderStatusAuthorized {
-		zap.L().Error("资金冻结转支付失败", zap.String("授权订单状态", string(fundAuthOperationDetailQueryRsp.OrderStatus)))
-		return nil
+		return errors.New("授权订单状态异常")
 	}
 
 	// 判定解冻金额
 	totalAmountString := strconv.FormatFloat(o.Amount, 'f', -1, 64)
 	if totalAmountString > fundAuthOperationDetailQueryRsp.RestAmount {
-		zap.L().Error("资金冻结转支付失败", zap.String("解冻金额", fundAuthOperationDetailQueryRsp.RestAmount))
-		return nil
+		return errors.New("解冻金额不足")
 	}
 
 	authConfirmMode := "NOT_COMPLETE"
@@ -1093,7 +1095,7 @@ func (s *orderService) TradePay(o *ent.Order) *alipay.TradePayRsp {
 	o.Update().SetOutTradeNo(no).SaveX(s.ctx)
 
 	// 调用资金冻结转支付
-	rsp, err := payment.NewAlipay().AlipayTradePay(&definition.TradePay{
+	_, err = payment.NewAlipay().AlipayTradePay(&definition.TradePay{
 		AuthNo:          o.AuthNo,
 		OutTradeNo:      no,
 		TotalAmount:     o.Amount,
@@ -1101,10 +1103,9 @@ func (s *orderService) TradePay(o *ent.Order) *alipay.TradePayRsp {
 		AuthConfirmMode: authConfirmMode,
 	})
 	if err != nil {
-		zap.L().Error("资金冻结转支付失败", zap.Error(err))
-		return nil
+		return errors.New("资金冻结转支付失败")
 	}
-	return rsp
+	return nil
 }
 
 // DepositPay 押金订单
@@ -1154,36 +1155,40 @@ func (s *orderService) DepositPay(d *model.DepositCredit) {
 	cr.SaveX(s.ctx)
 }
 
-// 判定预支付是否需要完结
-// func (s *orderService) FandAuthUnfreezeFinish(o *ent.Order, amount float64) bool {
-// 	// 查询授权订单状态 押金或者套餐有可能是预支付
-// 	// 使用AuthNo是有可能一个预支付分成两个订单 但只退套餐的时候不需要完结
-//
-// 	// 假如冻结金额转支付了 只转了套餐金额 不完结 还剩押金金额
-//
-// 	// todo 先暂时不考虑免押 直接完结 默认全部解压或者转支付
-// 	// 查询子订单 和主订单
-// 	orders, _ := ent.Database.Order.Query().Where(
-// 		order.ParentID(o.ID),
-// 		order.Status(model.OrderStatusPaid),
-// 		order.TradePayAtIsNil(),                         // 未转支付
-// 		order.Payway(model.OrderPaywayAlipayAuthFreeze), // 预支付
-// 	).
-// 		Where(
-// 			order.Or(
-// 				order.ID(o.ID),
-// 			),
-// 		).All(s.ctx)
-//
-// 	// 整体预支付的金额
-// 	var total float64
-// 	for _, v := range orders {
-// 		total = tools.NewDecimal().Sum(total, v.Amount)
-// 	}
-//
-// 	// 如果预支付的金额和订单金额一致
-// 	if total == amount {
-// 		return true
-// 	}
-// 	return false
-// }
+// FandAuthUnfreeze 解冻资金
+func (s *orderService) FandAuthUnfreeze(o *ent.Order) error {
+
+	fandAuthUnfreezeReq := &definition.FandAuthUnfreezeReq{
+		AuthNo:       o.AuthNo,
+		OutRequestNo: o.OutRequestNo,
+		Amount:       o.Amount,
+		Remark:       "冻结资金解冻",
+	}
+
+	if o.Type == model.OrderTypeDeposit {
+		fandAuthUnfreezeReq.IsDeposit = true
+		fandAuthUnfreezeReq.Remark = "押金解冻"
+	}
+
+	// 查询授权订单状态
+	fundAuthOperationDetailQueryRsp, err := payment.NewAlipay().AlipayFundAuthOperationDetailQuery(definition.FundAuthOperationDetailReq{
+		OutOrderNo:   o.OutOrderNo,
+		OutRequestNo: o.OutRequestNo,
+	})
+	if err != nil {
+		return errors.New("查询支付宝订单状态失败")
+	}
+
+	// 授权订单状态 已授权状态：授权成功，可以进行转支付或解冻操作
+	if fundAuthOperationDetailQueryRsp.OrderStatus != alipay.OrderStatusAuthorized {
+		return errors.New("支付宝订单状态错误")
+	}
+
+	// 判定解冻金额
+	totalAmountString := strconv.FormatFloat(o.Amount, 'f', -1, 64)
+	if totalAmountString > fundAuthOperationDetailQueryRsp.RestAmount {
+		return errors.New("解冻金额大于剩余金额")
+	}
+
+	return payment.NewAlipay().FandAuthUnfreeze(fandAuthUnfreezeReq)
+}

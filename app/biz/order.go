@@ -188,49 +188,6 @@ func (s *orderBiz) DoPaymentFreezeToPay(req *definition.OrderDepositFreezeToPayR
 	return nil
 }
 
-// FandAuthUnfreeze 解冻资金
-func (s *orderBiz) FandAuthUnfreeze(req *definition.OrderDepositUnfreezeReq) error {
-	// 查询订单是否存在
-	o, _ := s.orm.Query().Where(order.OutOrderNo(req.OutOrderNo)).First(s.ctx)
-	if o == nil {
-		return errors.New("订单不存在")
-	}
-
-	fandAuthUnfreezeReq := &definition.FandAuthUnfreezeReq{
-		AuthNo:       o.AuthNo,
-		OutRequestNo: o.OutRequestNo,
-		Amount:       o.Amount,
-		Remark:       "冻结资金解冻",
-	}
-
-	if o.Type == model.OrderTypeDeposit {
-		fandAuthUnfreezeReq.IsDeposit = true
-		fandAuthUnfreezeReq.Remark = "押金解冻"
-	}
-
-	// 查询授权订单状态
-	fundAuthOperationDetailQueryRsp, err := payment.NewAlipay().AlipayFundAuthOperationDetailQuery(definition.FundAuthOperationDetailReq{
-		OutOrderNo:   o.OutOrderNo,
-		OutRequestNo: o.OutRequestNo,
-	})
-	if err != nil {
-		return errors.New("查询支付宝订单状态失败")
-	}
-
-	// 授权订单状态 已授权状态：授权成功，可以进行转支付或解冻操作
-	if fundAuthOperationDetailQueryRsp.OrderStatus != alipay.OrderStatusAuthorized {
-		return errors.New("支付宝订单状态错误")
-	}
-
-	// 判定解冻金额
-	totalAmountString := strconv.FormatFloat(o.Amount, 'f', -1, 64)
-	if totalAmountString > fundAuthOperationDetailQueryRsp.RestAmount {
-		return errors.New("解冻金额大于剩余金额")
-	}
-
-	return payment.NewAlipay().FandAuthUnfreeze(fandAuthUnfreezeReq)
-}
-
 // Create 订单创建
 func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result *model.OrderCreateRes, err error) {
 	if req.OrderType == model.OrderTypeFee {
@@ -443,6 +400,7 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 		StoreID:        req.StoreID,
 		DepositOrderNo: req.DepositOrderNo,
 		AgreementHash:  req.AgreementHash,
+		DepositType:    req.DepositType,
 	}
 
 	prepay := &model.PaymentCache{
@@ -627,7 +585,8 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 				SetNillableBrandID(trade.EbikeBrandID).
 				SetIntelligent(trade.Plan.Intelligent).
 				SetNillableStoreID(trade.StoreID).
-				SetNillableAgreementHash(trade.AgreementHash)
+				SetNillableAgreementHash(trade.AgreementHash).
+				SetNillableDepositType(trade.DepositType)
 			// 根据用户选择是否需要签约 默认不需要签约
 			if trade.NeedContract != nil {
 				sq.SetNillableNeedContract(trade.NeedContract)
@@ -714,14 +673,14 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 	}
 }
 
-// PaymentFreezeToPay 转支付
-func (s *orderBiz) PaymentFreezeToPay(req *definition.FreezeToPay) (*alipay.TradePayRsp, error) {
-	// 查询订单
-	o, _ := s.orm.Query().Where(order.OutOrderNo(req.OutOrderNo)).WithSubscribe().
-		WithPlan().First(s.ctx)
-	if o == nil {
-		return nil, errors.New("订单不存在")
-	}
-
-	return service.NewOrder().TradePay(o), nil
-}
+// // PaymentFreezeToPay 转支付
+// func (s *orderBiz) PaymentFreezeToPay(req *definition.FreezeToPay) (*alipay.TradePayRsp, error) {
+// 	// 查询订单
+// 	o, _ := s.orm.Query().Where(order.OutOrderNo(req.OutOrderNo)).WithSubscribe().
+// 		WithPlan().First(s.ctx)
+// 	if o == nil {
+// 		return nil, errors.New("订单不存在")
+// 	}
+//
+// 	return service.NewOrder().TradePay(o), nil
+// }

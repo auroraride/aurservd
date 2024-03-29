@@ -425,13 +425,13 @@ func (c *alipayClient) NotificationFandAuthUnfreeze(req *http.Request) (res *mod
 	err := req.ParseForm()
 	if err != nil {
 		zap.L().Error("资金授权解冻回调失败", zap.Error(err))
-		return nil
+		return
 	}
 
 	result, err := c.DecodeFandAuthFreezeNotification(req.Form)
 	if err != nil {
 		zap.L().Error("资金授权解冻回调解析失败", zap.Error(err))
-		return nil
+		return
 	}
 
 	// 从缓存中获取订单数据
@@ -440,7 +440,7 @@ func (c *alipayClient) NotificationFandAuthUnfreeze(req *http.Request) (res *mod
 	err = cache.Get(context.Background(), out).Scan(pc)
 	if err != nil {
 		zap.L().Error("从缓存获取订单信息失败", zap.Error(err))
-		return nil
+		return
 	}
 
 	if result.Status == definition.FandAuthFreezeStatusSuccess {
@@ -499,7 +499,7 @@ func (c *alipayClient) NotificationTradePay(req *http.Request) (res *definition.
 	err := req.ParseForm()
 	if err != nil {
 		zap.L().Error("支付宝回调失败", zap.Error(err))
-		return nil
+		return
 	}
 
 	var result *alipay.Notification
@@ -507,7 +507,7 @@ func (c *alipayClient) NotificationTradePay(req *http.Request) (res *definition.
 	zap.L().Info("支付宝回调", log.JsonData(result))
 	if err != nil {
 		zap.L().Error("支付宝回调解析失败", zap.Error(err))
-		return nil
+		return
 	}
 	res.TradeNo = result.TradeNo
 	res.OutTradeNo = result.OutTradeNo

@@ -114,6 +114,10 @@ type Subscribe struct {
 	AgreementHash string `json:"agreement_hash,omitempty"`
 	// 团签价格ID
 	EnterprisePriceID uint64 `json:"enterprise_price_id,omitempty"`
+	// 是否强制退订 true:强制退订 false:正常退订
+	ForceUnsubscribe bool `json:"force_unsubscribe,omitempty"`
+	// 押金类型 1:芝麻免押 2:微信支付分免押 3:合同免押 4:支付押金
+	DepositType uint8 `json:"deposit_type,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeQuery when eager-loading is set.
 	Edges        SubscribeEdges `json:"edges"`
@@ -358,9 +362,9 @@ func (*Subscribe) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case subscribe.FieldCreator, subscribe.FieldLastModifier:
 			values[i] = new([]byte)
-		case subscribe.FieldPauseOverdue, subscribe.FieldNeedContract, subscribe.FieldIntelligent:
+		case subscribe.FieldPauseOverdue, subscribe.FieldNeedContract, subscribe.FieldIntelligent, subscribe.FieldForceUnsubscribe:
 			values[i] = new(sql.NullBool)
-		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldCabinetID, subscribe.FieldBrandID, subscribe.FieldEbikeID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldSuspendDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining, subscribe.FieldEnterprisePriceID:
+		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldCabinetID, subscribe.FieldBrandID, subscribe.FieldEbikeID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldSuspendDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining, subscribe.FieldEnterprisePriceID, subscribe.FieldDepositType:
 			values[i] = new(sql.NullInt64)
 		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason, subscribe.FieldFormula, subscribe.FieldAgreementHash:
 			values[i] = new(sql.NullString)
@@ -654,6 +658,18 @@ func (s *Subscribe) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.EnterprisePriceID = uint64(value.Int64)
 			}
+		case subscribe.FieldForceUnsubscribe:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field force_unsubscribe", values[i])
+			} else if value.Valid {
+				s.ForceUnsubscribe = value.Bool
+			}
+		case subscribe.FieldDepositType:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_type", values[i])
+			} else if value.Valid {
+				s.DepositType = uint8(value.Int64)
+			}
 		default:
 			s.selectValues.Set(columns[i], values[i])
 		}
@@ -936,6 +952,12 @@ func (s *Subscribe) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("enterprise_price_id=")
 	builder.WriteString(fmt.Sprintf("%v", s.EnterprisePriceID))
+	builder.WriteString(", ")
+	builder.WriteString("force_unsubscribe=")
+	builder.WriteString(fmt.Sprintf("%v", s.ForceUnsubscribe))
+	builder.WriteString(", ")
+	builder.WriteString("deposit_type=")
+	builder.WriteString(fmt.Sprintf("%v", s.DepositType))
 	builder.WriteByte(')')
 	return builder.String()
 }

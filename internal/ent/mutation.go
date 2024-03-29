@@ -105991,6 +105991,9 @@ type SubscribeMutation struct {
 	need_contract           *bool
 	intelligent             *bool
 	agreement_hash          *string
+	force_unsubscribe       *bool
+	deposit_type            *uint8
+	adddeposit_type         *int8
 	clearedFields           map[string]struct{}
 	plan                    *uint64
 	clearedplan             bool
@@ -108118,6 +108121,112 @@ func (m *SubscribeMutation) ResetEnterprisePriceID() {
 	delete(m.clearedFields, subscribe.FieldEnterprisePriceID)
 }
 
+// SetForceUnsubscribe sets the "force_unsubscribe" field.
+func (m *SubscribeMutation) SetForceUnsubscribe(b bool) {
+	m.force_unsubscribe = &b
+}
+
+// ForceUnsubscribe returns the value of the "force_unsubscribe" field in the mutation.
+func (m *SubscribeMutation) ForceUnsubscribe() (r bool, exists bool) {
+	v := m.force_unsubscribe
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldForceUnsubscribe returns the old "force_unsubscribe" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldForceUnsubscribe(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldForceUnsubscribe is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldForceUnsubscribe requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldForceUnsubscribe: %w", err)
+	}
+	return oldValue.ForceUnsubscribe, nil
+}
+
+// ResetForceUnsubscribe resets all changes to the "force_unsubscribe" field.
+func (m *SubscribeMutation) ResetForceUnsubscribe() {
+	m.force_unsubscribe = nil
+}
+
+// SetDepositType sets the "deposit_type" field.
+func (m *SubscribeMutation) SetDepositType(u uint8) {
+	m.deposit_type = &u
+	m.adddeposit_type = nil
+}
+
+// DepositType returns the value of the "deposit_type" field in the mutation.
+func (m *SubscribeMutation) DepositType() (r uint8, exists bool) {
+	v := m.deposit_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDepositType returns the old "deposit_type" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldDepositType(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDepositType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDepositType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDepositType: %w", err)
+	}
+	return oldValue.DepositType, nil
+}
+
+// AddDepositType adds u to the "deposit_type" field.
+func (m *SubscribeMutation) AddDepositType(u int8) {
+	if m.adddeposit_type != nil {
+		*m.adddeposit_type += u
+	} else {
+		m.adddeposit_type = &u
+	}
+}
+
+// AddedDepositType returns the value that was added to the "deposit_type" field in this mutation.
+func (m *SubscribeMutation) AddedDepositType() (r int8, exists bool) {
+	v := m.adddeposit_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDepositType clears the value of the "deposit_type" field.
+func (m *SubscribeMutation) ClearDepositType() {
+	m.deposit_type = nil
+	m.adddeposit_type = nil
+	m.clearedFields[subscribe.FieldDepositType] = struct{}{}
+}
+
+// DepositTypeCleared returns if the "deposit_type" field was cleared in this mutation.
+func (m *SubscribeMutation) DepositTypeCleared() bool {
+	_, ok := m.clearedFields[subscribe.FieldDepositType]
+	return ok
+}
+
+// ResetDepositType resets all changes to the "deposit_type" field.
+func (m *SubscribeMutation) ResetDepositType() {
+	m.deposit_type = nil
+	m.adddeposit_type = nil
+	delete(m.clearedFields, subscribe.FieldDepositType)
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *SubscribeMutation) ClearPlan() {
 	m.clearedplan = true
@@ -108785,7 +108894,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 41)
+	fields := make([]string, 0, 43)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -108909,6 +109018,12 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.enterprise_price != nil {
 		fields = append(fields, subscribe.FieldEnterprisePriceID)
 	}
+	if m.force_unsubscribe != nil {
+		fields = append(fields, subscribe.FieldForceUnsubscribe)
+	}
+	if m.deposit_type != nil {
+		fields = append(fields, subscribe.FieldDepositType)
+	}
 	return fields
 }
 
@@ -108999,6 +109114,10 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.AgreementHash()
 	case subscribe.FieldEnterprisePriceID:
 		return m.EnterprisePriceID()
+	case subscribe.FieldForceUnsubscribe:
+		return m.ForceUnsubscribe()
+	case subscribe.FieldDepositType:
+		return m.DepositType()
 	}
 	return nil, false
 }
@@ -109090,6 +109209,10 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldAgreementHash(ctx)
 	case subscribe.FieldEnterprisePriceID:
 		return m.OldEnterprisePriceID(ctx)
+	case subscribe.FieldForceUnsubscribe:
+		return m.OldForceUnsubscribe(ctx)
+	case subscribe.FieldDepositType:
+		return m.OldDepositType(ctx)
 	}
 	return nil, fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -109386,6 +109509,20 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEnterprisePriceID(v)
 		return nil
+	case subscribe.FieldForceUnsubscribe:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetForceUnsubscribe(v)
+		return nil
+	case subscribe.FieldDepositType:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDepositType(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -109421,6 +109558,9 @@ func (m *SubscribeMutation) AddedFields() []string {
 	if m.addremaining != nil {
 		fields = append(fields, subscribe.FieldRemaining)
 	}
+	if m.adddeposit_type != nil {
+		fields = append(fields, subscribe.FieldDepositType)
+	}
 	return fields
 }
 
@@ -109447,6 +109587,8 @@ func (m *SubscribeMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedOverdueDays()
 	case subscribe.FieldRemaining:
 		return m.AddedRemaining()
+	case subscribe.FieldDepositType:
+		return m.AddedDepositType()
 	}
 	return nil, false
 }
@@ -109518,6 +109660,13 @@ func (m *SubscribeMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddRemaining(v)
+		return nil
+	case subscribe.FieldDepositType:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDepositType(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe numeric field %s", name)
@@ -109601,6 +109750,9 @@ func (m *SubscribeMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(subscribe.FieldEnterprisePriceID) {
 		fields = append(fields, subscribe.FieldEnterprisePriceID)
+	}
+	if m.FieldCleared(subscribe.FieldDepositType) {
+		fields = append(fields, subscribe.FieldDepositType)
 	}
 	return fields
 }
@@ -109690,6 +109842,9 @@ func (m *SubscribeMutation) ClearField(name string) error {
 		return nil
 	case subscribe.FieldEnterprisePriceID:
 		m.ClearEnterprisePriceID()
+		return nil
+	case subscribe.FieldDepositType:
+		m.ClearDepositType()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe nullable field %s", name)
@@ -109821,6 +109976,12 @@ func (m *SubscribeMutation) ResetField(name string) error {
 		return nil
 	case subscribe.FieldEnterprisePriceID:
 		m.ResetEnterprisePriceID()
+		return nil
+	case subscribe.FieldForceUnsubscribe:
+		m.ResetForceUnsubscribe()
+		return nil
+	case subscribe.FieldDepositType:
+		m.ResetDepositType()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)

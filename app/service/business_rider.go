@@ -26,6 +26,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/auroraride/aurservd/internal/payment"
+	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -737,6 +739,7 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 			SetEndAt(time.Now()).
 			SetStatus(model.SubscribeStatusUnSubscribed).
 			SetUnsubscribeReason(reason).
+			SetNillableForceUnsubscribe(req.ForceUnsubscribe).
 			Save(s.ctx)
 		snag.PanicIfError(err)
 
@@ -769,17 +772,90 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 		go NewEnterprise().UpdateStatementByID(*sub.EnterpriseID)
 	}
 
-	// 当强制退租时 如果订阅为预授权支付 需要扣除金额并解冻(强制退租不自动扣除押金) todo 这里还有问题
-	var o *ent.Order
-	o, _ = ent.Database.Order.QueryNotDeleted().Where(
-		order.SubscribeID(sub.ID),
-		order.Payway(model.OrderPaywayAlipayAuthFreeze),
-		order.TradePayAtIsNil(),
-		order.TypeNotIn(model.OrderTypeNewly, model.OrderTypeAgain),
-	).Order(ent.Desc(order.FieldCreatedAt)).WithPlan().First(s.ctx)
-	if o != nil {
-		NewOrder().TradePay(o)
+	// 查询订单
+	o, _ := ent.Database.Order.QueryNotDeleted().Where(order.SubscribeID(sub.ID)).All(s.ctx)
+	if len(o) == 0 {
+		return
 	}
+
+	for _, item := range o {
+		// 强制退租
+		if *req.ForceUnsubscribe {
+			// 押金订单
+			if item.Type == model.OrderTypeDeposit {
+				outRefundNo := tools.NewUnique().NewSN28()
+				or, err := ent.Database.OrderRefund.Create().
+					SetOrderID(item.ID).
+					SetOutRefundNo(outRefundNo).
+					SetAmount(item.Amount).
+					SetReason("强制退租,系统自动申请").
+					SetOrderID(item.ID).
+					SetStatus(model.RefundStatusPending).
+					Save(s.ctx)
+				if err != nil {
+					snag.PanicIfError(err)
+					return
+				}
+
+				prepay := &model.PaymentCache{
+					CacheType: model.PaymentCacheTypeRefund,
+					Refund: &model.PaymentRefund{
+						OrderID:      item.ID,
+						TradeNo:      item.TradeNo,
+						Total:        item.Total,
+						RefundAmount: or.Amount,
+						Reason:       or.Reason,
+						OutRefundNo:  or.OutRefundNo,
+					},
+				}
+
+				var no string
+				no = item.OutTradeNo
+
+				// 预支付订单号
+				if item.TradePayAt == nil && item.OutOrderNo != "" {
+					no = item.OutOrderNo
+				}
+
+				err = cache.Set(s.ctx, no, prepay, 20*time.Minute).Err()
+				if err != nil {
+					snag.PanicIfError(err)
+					return
+				}
+
+				// 预授权退款
+				if item.Payway == model.OrderPaywayAlipayAuthFreeze && item.TradePayAt == nil && item.Status == model.OrderStatusPaid {
+					if *req.RefundDeposit {
+						// 解冻押金
+						err = NewOrder().FandAuthUnfreeze(item)
+					} else {
+						// 押金转支付
+						err = NewOrder().TradePay(item)
+					}
+					if err != nil {
+						zap.L().Error("强制退租失败", zap.Error(err))
+						snag.PanicIfError(err)
+					}
+				}
+				// 当为支付押金时退款
+				if (item.Payway == model.OrderPaywayAlipay || item.Payway == model.OrderPaywayWechat) && *req.RefundDeposit {
+					payment.NewWechat().Refund(prepay.Refund)
+					return
+				}
+			}
+
+			// 预授权支付的订单转支付
+			if item.Payway == model.OrderPaywayAlipayAuthFreeze && (item.Type == model.OrderTypeNewly || item.Type == model.OrderTypeAgain) {
+				// 转支付
+				err = NewOrder().TradePay(item)
+				if err != nil {
+					zap.L().Error("强制退租失败", zap.Error(err))
+					snag.PanicIfError(err)
+				}
+			}
+		}
+	}
+
 }
 
 // Pause 寄存

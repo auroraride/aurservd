@@ -2107,6 +2107,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldIntelligent:       {Type: field.TypeBool, Column: subscribe.FieldIntelligent},
 			subscribe.FieldAgreementHash:     {Type: field.TypeString, Column: subscribe.FieldAgreementHash},
 			subscribe.FieldEnterprisePriceID: {Type: field.TypeUint64, Column: subscribe.FieldEnterprisePriceID},
+			subscribe.FieldForceUnsubscribe:  {Type: field.TypeBool, Column: subscribe.FieldForceUnsubscribe},
+			subscribe.FieldDepositType:       {Type: field.TypeUint8, Column: subscribe.FieldDepositType},
 		},
 	}
 	graph.Nodes[74] = &sqlgraph.Node{
@@ -17957,6 +17959,16 @@ func (f *SubscribeFilter) WhereAgreementHash(p entql.StringP) {
 // WhereEnterprisePriceID applies the entql uint64 predicate on the enterprise_price_id field.
 func (f *SubscribeFilter) WhereEnterprisePriceID(p entql.Uint64P) {
 	f.Where(p.Field(subscribe.FieldEnterprisePriceID))
+}
+
+// WhereForceUnsubscribe applies the entql bool predicate on the force_unsubscribe field.
+func (f *SubscribeFilter) WhereForceUnsubscribe(p entql.BoolP) {
+	f.Where(p.Field(subscribe.FieldForceUnsubscribe))
+}
+
+// WhereDepositType applies the entql uint8 predicate on the deposit_type field.
+func (f *SubscribeFilter) WhereDepositType(p entql.Uint8P) {
+	f.Where(p.Field(subscribe.FieldDepositType))
 }
 
 // WhereHasPlan applies a predicate to check if query has an edge plan.
