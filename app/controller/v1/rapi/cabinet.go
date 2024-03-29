@@ -61,10 +61,7 @@ func (*cabinet) Process(c echo.Context) (err error) {
 // @Success		200				{object}	model.RiderExchangeProcessRes		"请求成功"
 func (*cabinet) ProcessStatus(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.RiderExchangeProcessStatusReq](c)
-
-	return ctx.SendResponse(
-		service.NewRiderExchange(ctx.Rider).GetProcessStatus(req),
-	)
+	return ctx.SendResponse(service.NewRiderExchange(ctx.Rider).GetProcessStatus(req))
 }
 
 // Report

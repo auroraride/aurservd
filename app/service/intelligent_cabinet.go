@@ -213,10 +213,6 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 // ExchangeResult 查询换电结果
 func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.RiderExchangeProcessRes) {
 	key := s.exchangeCacheKey(uid)
-	res = &model.RiderExchangeProcessRes{
-		Step:   uint8(model.ExchangeStepOpenEmpty),
-		Status: model.TaskStatusNotStart,
-	}
 
 	start := time.Now()
 
@@ -245,17 +241,15 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
 			}
 		}
 
-		res = &model.RiderExchangeProcessRes{
+		return &model.RiderExchangeProcessRes{
 			Step:    uint8(data.Step),
 			Status:  status,
 			Message: data.Message,
 			Stop:    data.Step == model.ExchangeStepPutOut.Uint32() || data.Message != "",
 		}
-
-		return
 	}
 
-	return
+	return nil
 }
 
 // BusinessCensorX 校验用户是否可以使用智能柜办理业务
