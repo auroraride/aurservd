@@ -121,6 +121,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.GET("/deposit", v1.Rider.Deposit, logged())             // 获取押金信息
 	g.GET("/deregister", v1.Rider.Deregister, logged())       // 注销账户
 	g.POST("/change/phone", rapi.Rider.ChangePhone, logged()) // 修改手机号
+	g.POST("/contact", v1.Rider.Contact, logged())            // 编辑紧急联系人
 
 	// 骑士卡
 	plan := g.Group("/plan")

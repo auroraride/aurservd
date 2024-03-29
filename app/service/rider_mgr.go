@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -149,13 +150,26 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 			if *req.AuthStatus != model.PersonUnauthenticated && req.Name == nil && req.IdCardNumber == nil && req.IdCardPortrait == nil && req.IdCardNational == nil {
 				snag.Panic("修改实名状态时, 身份证信息不能为空")
 			}
+			var portrait, national *string
+			if req.IdCardPortrait != nil {
+				portrait = req.IdCardPortrait
+				if !strings.HasPrefix(*portrait, "http") {
+					portrait = silk.String("https://cdn.auroraride.com/" + *portrait)
+				}
+			}
+			if req.IdCardNational != nil {
+				national = req.IdCardNational
+				if !strings.HasPrefix(*national, "http") {
+					national = silk.String("https://cdn.auroraride.com/" + *national)
+				}
+			}
 			// 更新或创建实名信息
 			if p != nil {
 				// 更新实名信息
 				p.Update().
 					SetNillableIDCardNumber(req.IdCardNumber).
-					SetNillableIDCardPortrait(req.IdCardPortrait).
-					SetNillableIDCardNational(req.IdCardNational).
+					SetNillableIDCardPortrait(portrait).
+					SetNillableIDCardNational(national).
 					SetStatus(req.AuthStatus.Value()).
 					SetNillableName(req.Name).
 					SaveX(s.ctx)
@@ -163,8 +177,8 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 				// 创建实名信息
 				p = ent.Database.Person.Create().
 					SetNillableIDCardNumber(req.IdCardNumber).
-					SetNillableIDCardPortrait(req.IdCardPortrait).
-					SetNillableIDCardNational(req.IdCardNational).
+					SetNillableIDCardPortrait(portrait).
+					SetNillableIDCardNational(national).
 					SetStatus(req.AuthStatus.Value()).
 					SetName(*req.Name).
 					SaveX(s.ctx)

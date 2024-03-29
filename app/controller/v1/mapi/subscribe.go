@@ -11,7 +11,6 @@ import (
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/auroraride/aurservd/pkg/silk"
 )
 
 type subscribe struct{}
@@ -86,7 +85,8 @@ func (*subscribe) Halt(c echo.Context) (err error) {
 		UnSubscribe(
 			&model.BusinessSubscribeReq{
 				ID:               req.ID,
-				ForceUnsubscribe: silk.Bool(true),
+				ForceUnsubscribe: req.ForceUnsubscribe,
+				RefundDeposit:    req.RefundDeposit,
 			},
 		)
 	return ctx.SendResponse()

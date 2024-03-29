@@ -8,11 +8,13 @@ package model
 import jsoniter "github.com/json-iterator/go"
 
 type BusinessSubscribeReq struct {
-	ID               uint64  `json:"id" validate:"required" trans:"订阅ID"`
-	StoreID          *uint64 `json:"storeId" trans:"门店ID"`
-	CabinetID        *uint64 `json:"cabinetId" trans:"电柜ID"`
-	AgentID          *uint64 `json:"agentId"`          // 代理商ID
-	ForceUnsubscribe *bool   `json:"forceUnsubscribe"` // 强制退订
+	ID        uint64  `json:"id" validate:"required" trans:"订阅ID"`
+	StoreID   *uint64 `json:"storeId" trans:"门店ID"`
+	CabinetID *uint64 `json:"cabinetId" trans:"电柜ID"`
+	AgentID   *uint64 `json:"agentId"` // 代理商ID
+
+	ForceUnsubscribe *bool `json:"forceUnsubscribe" trans:"是否强制退租"` // 是否强制退订(后台使用)
+	RefundDeposit    *bool `json:"refundDeposit" trans:"是否退押金"`     // 是否退押金(后台使用)
 }
 
 type BusinessCabinetReq struct {

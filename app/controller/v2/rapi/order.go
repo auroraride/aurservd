@@ -52,10 +52,10 @@ func (*order) DepositCredit(c echo.Context) (err error) {
 // @Param	X-Rider-Token	header		string								true	"骑手校验token"
 // @Param	body			body		definition.OrderDepositUnfreezeReq	true	"解冻押金请求"
 // @Success	200				{object}	model.StatusResponse				"请求成功"
-func (*order) Unfreeze(c echo.Context) (err error) {
-	ctx, req := app.RiderContextAndBinding[definition.OrderDepositUnfreezeReq](c)
-	return ctx.SendResponse(biz.NewOrderBiz().FandAuthUnfreeze(req))
-}
+// func (*order) Unfreeze(c echo.Context) (err error) {
+// 	ctx, req := app.RiderContextAndBinding[definition.OrderDepositUnfreezeReq](c)
+// 	return ctx.SendResponse(biz.NewOrderBiz().FandAuthUnfreeze(req))
+// }
 
 // PaymentFreezeToPay
 // @ID		OrderPaymentFreezeToPay
