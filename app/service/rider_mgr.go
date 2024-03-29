@@ -147,7 +147,8 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 		if req.AuthStatus != nil {
 			// 查询实名信息是否已存在
 			p := r.Edges.Person
-			if *req.AuthStatus != model.PersonUnauthenticated && req.Name == nil && req.IdCardNumber == nil && req.IdCardPortrait == nil && req.IdCardNational == nil {
+			if *req.AuthStatus != model.PersonUnauthenticated && req.Name == nil && req.IdCardNumber == nil &&
+				req.IdCardPortrait == nil && req.IdCardNational == nil && req.Address == nil {
 				snag.Panic("修改实名状态时, 身份证信息不能为空")
 			}
 			var portrait, national *string
@@ -163,17 +164,28 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 					national = silk.String("https://cdn.auroraride.com/" + *national)
 				}
 			}
+
 			// 更新或创建实名信息
 			if p != nil {
+				p.AuthResult.Name = *req.Name
+				p.AuthResult.IdCardNumber = *req.IdCardNumber
+				p.AuthResult.Address = *req.Address
 				// 更新实名信息
 				p.Update().
 					SetNillableIDCardNumber(req.IdCardNumber).
 					SetNillableIDCardPortrait(portrait).
 					SetNillableIDCardNational(national).
 					SetStatus(req.AuthStatus.Value()).
+					SetAuthResult(p.AuthResult).
 					SetNillableName(req.Name).
 					SaveX(s.ctx)
 			} else {
+				baiduFaceVerifyResult := &model.BaiduFaceVerifyResult{
+					Name:         *req.Name,
+					IdCardNumber: *req.IdCardNumber,
+					Address:      *req.Address,
+				}
+
 				// 创建实名信息
 				p = ent.Database.Person.Create().
 					SetNillableIDCardNumber(req.IdCardNumber).
@@ -181,9 +193,10 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 					SetNillableIDCardNational(national).
 					SetStatus(req.AuthStatus.Value()).
 					SetName(*req.Name).
+					SetAuthResult(baiduFaceVerifyResult).
 					SaveX(s.ctx)
 				// 更新骑手实名信息
-				ru.SetName(*req.Name).SetPersonID(p.ID)
+				ru.SetName(*req.Name).SetPersonID(p.ID).SetIDCardNumber(*req.IdCardNumber)
 			}
 			before = append(before, fmt.Sprintf("认证状态: %s 身份证号: %s 正面: %s 国徽面:%s 姓名:%s ", model.PersonAuthStatus(p.Status).String(), p.IDCardNumber, p.IDCardPortrait, p.IDCardNational, p.Name))
 			if *req.AuthStatus != model.PersonUnauthenticated {
