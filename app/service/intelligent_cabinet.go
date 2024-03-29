@@ -12,6 +12,7 @@ import (
 
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/defs/cabdef"
+	"github.com/auroraride/adapter/log"
 	"github.com/auroraride/adapter/rpc/pb"
 	"github.com/auroraride/adapter/rpc/pb/timestamppb"
 	"github.com/golang-module/carbon/v2"
@@ -446,7 +447,9 @@ func (s *intelligentCabinetService) Operate(operator *logging.Operator, cab *ent
 		Remark:  req.Remark,
 	}
 
-	_, err = adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, "/operate/bin"), operator.GetAdapterUserX(), payload)
+	var data []*cabdef.BinOperateResult
+	data, err = adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, "/operate/bin"), operator.GetAdapterUserX(), payload)
+	zap.L().Info("电柜操作", zap.Bool("success", success), log.Payload(data), zap.Error(err))
 
 	success = err == nil
 
