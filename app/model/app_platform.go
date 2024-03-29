@@ -24,5 +24,5 @@ func (b *AppPlatform) Scan(src interface{}) error {
 }
 
 func (b AppPlatform) Value() (driver.Value, error) {
-	return b, nil
+	return string(b), nil
 }

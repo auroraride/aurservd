@@ -20,7 +20,7 @@ require (
 	github.com/aliyun/aliyun-log-go-sdk v0.1.71
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
 	github.com/aliyun/credentials-go v1.3.2
-	github.com/auroraride/adapter v0.0.0-20240326071425-887df67d901b
+	github.com/auroraride/adapter v0.0.0-20240329063809-04d8343bf421
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/getkin/kin-openapi v0.123.0
 	github.com/go-playground/locales v0.14.1

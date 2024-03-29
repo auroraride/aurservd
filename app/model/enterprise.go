@@ -61,7 +61,7 @@ func (s *EnterpriseSignType) Scan(src interface{}) error {
 }
 
 func (s EnterpriseSignType) Value() (driver.Value, error) {
-	return s, nil
+	return string(s), nil
 }
 
 const (

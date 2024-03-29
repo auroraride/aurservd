@@ -164,6 +164,10 @@ github.com/auroraride/adapter v0.0.0-20240326070508-9a89e46d120a h1:JHMB3LwwYZDR
 github.com/auroraride/adapter v0.0.0-20240326070508-9a89e46d120a/go.mod h1:Jbpq8ireoBzjF5Kq6y8ww2Z6WV8wdH4jh+ksNAa/Uzg=
 github.com/auroraride/adapter v0.0.0-20240326071425-887df67d901b h1:FazSZ5yHsUbpSotdIaIbDMOCo0nXITZ5Kg/wKg5uL/w=
 github.com/auroraride/adapter v0.0.0-20240326071425-887df67d901b/go.mod h1:Jbpq8ireoBzjF5Kq6y8ww2Z6WV8wdH4jh+ksNAa/Uzg=
+github.com/auroraride/adapter v0.0.0-20240329063438-4b8c75a3f451 h1:FVP/IA/0VwEgZZAPok0TESR+iF5Af/6L1/aN5eeXYZQ=
+github.com/auroraride/adapter v0.0.0-20240329063438-4b8c75a3f451/go.mod h1:Jbpq8ireoBzjF5Kq6y8ww2Z6WV8wdH4jh+ksNAa/Uzg=
+github.com/auroraride/adapter v0.0.0-20240329063809-04d8343bf421 h1:TlsahWmXiW8lqDsey0ruGV2QnUCSBTVLuZz6sB/4o/g=
+github.com/auroraride/adapter v0.0.0-20240329063809-04d8343bf421/go.mod h1:Jbpq8ireoBzjF5Kq6y8ww2Z6WV8wdH4jh+ksNAa/Uzg=
 github.com/aws/aws-lambda-go v1.13.3/go.mod h1:4UKl9IzQMoD+QF79YdCuzCwp8VbmG4VAQwij/eHl5CU=
 github.com/aws/aws-sdk-go v1.27.0/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go-v2 v0.18.0/go.mod h1:JWVYvqSMppoMJC0x5wdwiImzgXTI9FuZwxzkQq9wy+g=
