@@ -62,11 +62,11 @@ type PersonBanReq struct {
 
 type Person struct {
 	// 证件号码
-	IDCardNumber string `json:"id_card_number,omitempty"`
+	IDCardNumber string `json:"idCardNumber,omitempty"`
 	// 证件人像面
-	IDCardPortrait string `json:"id_card_portrait,omitempty"`
+	IDCardPortrait string `json:"idCardPortrait,omitempty"`
 	// 证件国徽面
-	IDCardNational string `json:"id_card_national,omitempty"`
+	IDCardNational string `json:"idCardNational,omitempty"`
 	// 实名认证人脸照片
-	AuthFace string `json:"auth_face,omitempty"`
+	AuthFace string `json:"authFace,omitempty"`
 }
