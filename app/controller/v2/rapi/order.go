@@ -76,7 +76,7 @@ func (*order) DepositCredit(c echo.Context) (err error) {
 // @ID		OrderRefund
 // @Router	/rider/v2/order/refund [POST]
 // @Summary	申请退款
-// @Tags	Order - 骑手
+// @Tags	Order - 订单
 // @Accept	json
 // @Produce	json
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"

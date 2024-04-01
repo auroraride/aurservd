@@ -50,7 +50,6 @@ type PaymentSubscribe struct {
 	AuthNo         string       `json:"authNo,omitempty"`         // 支付宝授权资金订单号
 	OutOrderNo     string       `json:"outOrderNo,omitempty"`     // 商户端的唯一订单号
 	OutRequestNo   string       `json:"outRequestNo,omitempty"`   // 商户端的流水号
-	NeedContract   *bool        `json:"needContract"`             // 是否需要签约
 	DepositOrderNo *string      `json:"depositOrderNo,omitempty"` // 押金订单编号
 	StoreID        *uint64      `json:"storeId,omitempty"`        // 门店ID
 	AgreementHash  *string      `json:"agreementHash,omitempty"`  // 协议hash

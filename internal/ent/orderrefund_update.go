@@ -193,6 +193,33 @@ func (oru *OrderRefundUpdate) ClearRefundAt() *OrderRefundUpdate {
 	return oru
 }
 
+// SetRemainAmount sets the "remain_amount" field.
+func (oru *OrderRefundUpdate) SetRemainAmount(f float64) *OrderRefundUpdate {
+	oru.mutation.ResetRemainAmount()
+	oru.mutation.SetRemainAmount(f)
+	return oru
+}
+
+// SetNillableRemainAmount sets the "remain_amount" field if the given value is not nil.
+func (oru *OrderRefundUpdate) SetNillableRemainAmount(f *float64) *OrderRefundUpdate {
+	if f != nil {
+		oru.SetRemainAmount(*f)
+	}
+	return oru
+}
+
+// AddRemainAmount adds f to the "remain_amount" field.
+func (oru *OrderRefundUpdate) AddRemainAmount(f float64) *OrderRefundUpdate {
+	oru.mutation.AddRemainAmount(f)
+	return oru
+}
+
+// ClearRemainAmount clears the value of the "remain_amount" field.
+func (oru *OrderRefundUpdate) ClearRemainAmount() *OrderRefundUpdate {
+	oru.mutation.ClearRemainAmount()
+	return oru
+}
+
 // SetOrder sets the "order" edge to the Order entity.
 func (oru *OrderRefundUpdate) SetOrder(o *Order) *OrderRefundUpdate {
 	return oru.SetOrderID(o.ID)
@@ -324,6 +351,15 @@ func (oru *OrderRefundUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if oru.mutation.RefundAtCleared() {
 		_spec.ClearField(orderrefund.FieldRefundAt, field.TypeTime)
+	}
+	if value, ok := oru.mutation.RemainAmount(); ok {
+		_spec.SetField(orderrefund.FieldRemainAmount, field.TypeFloat64, value)
+	}
+	if value, ok := oru.mutation.AddedRemainAmount(); ok {
+		_spec.AddField(orderrefund.FieldRemainAmount, field.TypeFloat64, value)
+	}
+	if oru.mutation.RemainAmountCleared() {
+		_spec.ClearField(orderrefund.FieldRemainAmount, field.TypeFloat64)
 	}
 	if oru.mutation.OrderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -538,6 +574,33 @@ func (oruo *OrderRefundUpdateOne) ClearRefundAt() *OrderRefundUpdateOne {
 	return oruo
 }
 
+// SetRemainAmount sets the "remain_amount" field.
+func (oruo *OrderRefundUpdateOne) SetRemainAmount(f float64) *OrderRefundUpdateOne {
+	oruo.mutation.ResetRemainAmount()
+	oruo.mutation.SetRemainAmount(f)
+	return oruo
+}
+
+// SetNillableRemainAmount sets the "remain_amount" field if the given value is not nil.
+func (oruo *OrderRefundUpdateOne) SetNillableRemainAmount(f *float64) *OrderRefundUpdateOne {
+	if f != nil {
+		oruo.SetRemainAmount(*f)
+	}
+	return oruo
+}
+
+// AddRemainAmount adds f to the "remain_amount" field.
+func (oruo *OrderRefundUpdateOne) AddRemainAmount(f float64) *OrderRefundUpdateOne {
+	oruo.mutation.AddRemainAmount(f)
+	return oruo
+}
+
+// ClearRemainAmount clears the value of the "remain_amount" field.
+func (oruo *OrderRefundUpdateOne) ClearRemainAmount() *OrderRefundUpdateOne {
+	oruo.mutation.ClearRemainAmount()
+	return oruo
+}
+
 // SetOrder sets the "order" edge to the Order entity.
 func (oruo *OrderRefundUpdateOne) SetOrder(o *Order) *OrderRefundUpdateOne {
 	return oruo.SetOrderID(o.ID)
@@ -699,6 +762,15 @@ func (oruo *OrderRefundUpdateOne) sqlSave(ctx context.Context) (_node *OrderRefu
 	}
 	if oruo.mutation.RefundAtCleared() {
 		_spec.ClearField(orderrefund.FieldRefundAt, field.TypeTime)
+	}
+	if value, ok := oruo.mutation.RemainAmount(); ok {
+		_spec.SetField(orderrefund.FieldRemainAmount, field.TypeFloat64, value)
+	}
+	if value, ok := oruo.mutation.AddedRemainAmount(); ok {
+		_spec.AddField(orderrefund.FieldRemainAmount, field.TypeFloat64, value)
+	}
+	if oruo.mutation.RemainAmountCleared() {
+		_spec.ClearField(orderrefund.FieldRemainAmount, field.TypeFloat64)
 	}
 	if oruo.mutation.OrderCleared() {
 		edge := &sqlgraph.EdgeSpec{

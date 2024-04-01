@@ -85,8 +85,7 @@ type Subscribe struct {
 
 	Ebike *Ebike `json:"ebike,omitempty"` // 电车属性
 
-	EnterprisePriceID uint64 `json:"enterprisePriceId"`          // 团签价格ID
-	ForceUnsubscribe  bool   `json:"forceUnsubscribe,omitempty"` // 是否强制退订 true:强制退订 false:正常退订
+	EnterprisePriceID uint64 `json:"enterprisePriceId"` // 团签价格ID
 }
 
 type SubscribeActiveInfo struct {

@@ -44,6 +44,8 @@ type OrderRefund struct {
 	Reason string `json:"reason,omitempty"`
 	// 退款成功时间
 	RefundAt *time.Time `json:"refund_at,omitempty"`
+	// 剩余未退金额
+	RemainAmount float64 `json:"remain_amount,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderRefundQuery when eager-loading is set.
 	Edges        OrderRefundEdges `json:"edges"`
@@ -77,7 +79,7 @@ func (*OrderRefund) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case orderrefund.FieldCreator, orderrefund.FieldLastModifier:
 			values[i] = new([]byte)
-		case orderrefund.FieldAmount:
+		case orderrefund.FieldAmount, orderrefund.FieldRemainAmount:
 			values[i] = new(sql.NullFloat64)
 		case orderrefund.FieldID, orderrefund.FieldOrderID, orderrefund.FieldStatus:
 			values[i] = new(sql.NullInt64)
@@ -184,6 +186,12 @@ func (or *OrderRefund) assignValues(columns []string, values []any) error {
 				or.RefundAt = new(time.Time)
 				*or.RefundAt = value.Time
 			}
+		case orderrefund.FieldRemainAmount:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field remain_amount", values[i])
+			} else if value.Valid {
+				or.RemainAmount = value.Float64
+			}
 		default:
 			or.selectValues.Set(columns[i], values[i])
 		}
@@ -264,6 +272,9 @@ func (or *OrderRefund) String() string {
 		builder.WriteString("refund_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("remain_amount=")
+	builder.WriteString(fmt.Sprintf("%v", or.RemainAmount))
 	builder.WriteByte(')')
 	return builder.String()
 }

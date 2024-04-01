@@ -763,20 +763,6 @@ func (su *SubscribeUpdate) ClearEnterprisePriceID() *SubscribeUpdate {
 	return su
 }
 
-// SetForceUnsubscribe sets the "force_unsubscribe" field.
-func (su *SubscribeUpdate) SetForceUnsubscribe(b bool) *SubscribeUpdate {
-	su.mutation.SetForceUnsubscribe(b)
-	return su
-}
-
-// SetNillableForceUnsubscribe sets the "force_unsubscribe" field if the given value is not nil.
-func (su *SubscribeUpdate) SetNillableForceUnsubscribe(b *bool) *SubscribeUpdate {
-	if b != nil {
-		su.SetForceUnsubscribe(*b)
-	}
-	return su
-}
-
 // SetDepositType sets the "deposit_type" field.
 func (su *SubscribeUpdate) SetDepositType(u uint8) *SubscribeUpdate {
 	su.mutation.ResetDepositType()
@@ -1363,9 +1349,6 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if su.mutation.AgreementHashCleared() {
 		_spec.ClearField(subscribe.FieldAgreementHash, field.TypeString)
-	}
-	if value, ok := su.mutation.ForceUnsubscribe(); ok {
-		_spec.SetField(subscribe.FieldForceUnsubscribe, field.TypeBool, value)
 	}
 	if value, ok := su.mutation.DepositType(); ok {
 		_spec.SetField(subscribe.FieldDepositType, field.TypeUint8, value)
@@ -2716,20 +2699,6 @@ func (suo *SubscribeUpdateOne) ClearEnterprisePriceID() *SubscribeUpdateOne {
 	return suo
 }
 
-// SetForceUnsubscribe sets the "force_unsubscribe" field.
-func (suo *SubscribeUpdateOne) SetForceUnsubscribe(b bool) *SubscribeUpdateOne {
-	suo.mutation.SetForceUnsubscribe(b)
-	return suo
-}
-
-// SetNillableForceUnsubscribe sets the "force_unsubscribe" field if the given value is not nil.
-func (suo *SubscribeUpdateOne) SetNillableForceUnsubscribe(b *bool) *SubscribeUpdateOne {
-	if b != nil {
-		suo.SetForceUnsubscribe(*b)
-	}
-	return suo
-}
-
 // SetDepositType sets the "deposit_type" field.
 func (suo *SubscribeUpdateOne) SetDepositType(u uint8) *SubscribeUpdateOne {
 	suo.mutation.ResetDepositType()
@@ -3346,9 +3315,6 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 	}
 	if suo.mutation.AgreementHashCleared() {
 		_spec.ClearField(subscribe.FieldAgreementHash, field.TypeString)
-	}
-	if value, ok := suo.mutation.ForceUnsubscribe(); ok {
-		_spec.SetField(subscribe.FieldForceUnsubscribe, field.TypeBool, value)
 	}
 	if value, ok := suo.mutation.DepositType(); ok {
 		_spec.SetField(subscribe.FieldDepositType, field.TypeUint8, value)

@@ -84,9 +84,9 @@ func (*subscribe) Halt(c echo.Context) (err error) {
 		SetStoreID(req.StoreID).
 		UnSubscribe(
 			&model.BusinessSubscribeReq{
-				ID:               req.ID,
-				ForceUnsubscribe: req.ForceUnsubscribe,
-				RefundDeposit:    req.RefundDeposit,
+				ID:            req.ID,
+				RefundDeposit: req.RefundDeposit,
+				DepositAmount: req.DepositAmount,
 			},
 		)
 	return ctx.SendResponse()

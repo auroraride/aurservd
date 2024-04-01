@@ -136,6 +136,20 @@ func (orc *OrderRefundCreate) SetNillableRefundAt(t *time.Time) *OrderRefundCrea
 	return orc
 }
 
+// SetRemainAmount sets the "remain_amount" field.
+func (orc *OrderRefundCreate) SetRemainAmount(f float64) *OrderRefundCreate {
+	orc.mutation.SetRemainAmount(f)
+	return orc
+}
+
+// SetNillableRemainAmount sets the "remain_amount" field if the given value is not nil.
+func (orc *OrderRefundCreate) SetNillableRemainAmount(f *float64) *OrderRefundCreate {
+	if f != nil {
+		orc.SetRemainAmount(*f)
+	}
+	return orc
+}
+
 // SetOrder sets the "order" edge to the Order entity.
 func (orc *OrderRefundCreate) SetOrder(o *Order) *OrderRefundCreate {
 	return orc.SetOrderID(o.ID)
@@ -291,6 +305,10 @@ func (orc *OrderRefundCreate) createSpec() (*OrderRefund, *sqlgraph.CreateSpec) 
 	if value, ok := orc.mutation.RefundAt(); ok {
 		_spec.SetField(orderrefund.FieldRefundAt, field.TypeTime, value)
 		_node.RefundAt = &value
+	}
+	if value, ok := orc.mutation.RemainAmount(); ok {
+		_spec.SetField(orderrefund.FieldRemainAmount, field.TypeFloat64, value)
+		_node.RemainAmount = value
 	}
 	if nodes := orc.mutation.OrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -514,6 +532,30 @@ func (u *OrderRefundUpsert) UpdateRefundAt() *OrderRefundUpsert {
 // ClearRefundAt clears the value of the "refund_at" field.
 func (u *OrderRefundUpsert) ClearRefundAt() *OrderRefundUpsert {
 	u.SetNull(orderrefund.FieldRefundAt)
+	return u
+}
+
+// SetRemainAmount sets the "remain_amount" field.
+func (u *OrderRefundUpsert) SetRemainAmount(v float64) *OrderRefundUpsert {
+	u.Set(orderrefund.FieldRemainAmount, v)
+	return u
+}
+
+// UpdateRemainAmount sets the "remain_amount" field to the value that was provided on create.
+func (u *OrderRefundUpsert) UpdateRemainAmount() *OrderRefundUpsert {
+	u.SetExcluded(orderrefund.FieldRemainAmount)
+	return u
+}
+
+// AddRemainAmount adds v to the "remain_amount" field.
+func (u *OrderRefundUpsert) AddRemainAmount(v float64) *OrderRefundUpsert {
+	u.Add(orderrefund.FieldRemainAmount, v)
+	return u
+}
+
+// ClearRemainAmount clears the value of the "remain_amount" field.
+func (u *OrderRefundUpsert) ClearRemainAmount() *OrderRefundUpsert {
+	u.SetNull(orderrefund.FieldRemainAmount)
 	return u
 }
 
@@ -744,6 +786,34 @@ func (u *OrderRefundUpsertOne) UpdateRefundAt() *OrderRefundUpsertOne {
 func (u *OrderRefundUpsertOne) ClearRefundAt() *OrderRefundUpsertOne {
 	return u.Update(func(s *OrderRefundUpsert) {
 		s.ClearRefundAt()
+	})
+}
+
+// SetRemainAmount sets the "remain_amount" field.
+func (u *OrderRefundUpsertOne) SetRemainAmount(v float64) *OrderRefundUpsertOne {
+	return u.Update(func(s *OrderRefundUpsert) {
+		s.SetRemainAmount(v)
+	})
+}
+
+// AddRemainAmount adds v to the "remain_amount" field.
+func (u *OrderRefundUpsertOne) AddRemainAmount(v float64) *OrderRefundUpsertOne {
+	return u.Update(func(s *OrderRefundUpsert) {
+		s.AddRemainAmount(v)
+	})
+}
+
+// UpdateRemainAmount sets the "remain_amount" field to the value that was provided on create.
+func (u *OrderRefundUpsertOne) UpdateRemainAmount() *OrderRefundUpsertOne {
+	return u.Update(func(s *OrderRefundUpsert) {
+		s.UpdateRemainAmount()
+	})
+}
+
+// ClearRemainAmount clears the value of the "remain_amount" field.
+func (u *OrderRefundUpsertOne) ClearRemainAmount() *OrderRefundUpsertOne {
+	return u.Update(func(s *OrderRefundUpsert) {
+		s.ClearRemainAmount()
 	})
 }
 
@@ -1140,6 +1210,34 @@ func (u *OrderRefundUpsertBulk) UpdateRefundAt() *OrderRefundUpsertBulk {
 func (u *OrderRefundUpsertBulk) ClearRefundAt() *OrderRefundUpsertBulk {
 	return u.Update(func(s *OrderRefundUpsert) {
 		s.ClearRefundAt()
+	})
+}
+
+// SetRemainAmount sets the "remain_amount" field.
+func (u *OrderRefundUpsertBulk) SetRemainAmount(v float64) *OrderRefundUpsertBulk {
+	return u.Update(func(s *OrderRefundUpsert) {
+		s.SetRemainAmount(v)
+	})
+}
+
+// AddRemainAmount adds v to the "remain_amount" field.
+func (u *OrderRefundUpsertBulk) AddRemainAmount(v float64) *OrderRefundUpsertBulk {
+	return u.Update(func(s *OrderRefundUpsert) {
+		s.AddRemainAmount(v)
+	})
+}
+
+// UpdateRemainAmount sets the "remain_amount" field to the value that was provided on create.
+func (u *OrderRefundUpsertBulk) UpdateRemainAmount() *OrderRefundUpsertBulk {
+	return u.Update(func(s *OrderRefundUpsert) {
+		s.UpdateRemainAmount()
+	})
+}
+
+// ClearRemainAmount clears the value of the "remain_amount" field.
+func (u *OrderRefundUpsertBulk) ClearRemainAmount() *OrderRefundUpsertBulk {
+	return u.Update(func(s *OrderRefundUpsert) {
+		s.ClearRemainAmount()
 	})
 }
 

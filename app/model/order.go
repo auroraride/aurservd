@@ -166,8 +166,6 @@ type Order struct {
 	Agent         *OrderAgent   `json:"agent"`              // 代理信息
 	OutOrderNo    string        `json:"outOrderNo"`         // 预授权订单号
 
-	ForceUnsubscribe bool `json:"forceUnsubscribe"` // 是否强制退订 true:强制退订 false:正常退订
-
 }
 
 type DepositType uint8

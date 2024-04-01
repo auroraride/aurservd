@@ -250,11 +250,6 @@ func EnterprisePriceID(v uint64) predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldEQ(FieldEnterprisePriceID, v))
 }
 
-// ForceUnsubscribe applies equality check predicate on the "force_unsubscribe" field. It's identical to ForceUnsubscribeEQ.
-func ForceUnsubscribe(v bool) predicate.Subscribe {
-	return predicate.Subscribe(sql.FieldEQ(FieldForceUnsubscribe, v))
-}
-
 // DepositType applies equality check predicate on the "deposit_type" field. It's identical to DepositTypeEQ.
 func DepositType(v uint8) predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldEQ(FieldDepositType, v))
@@ -1863,16 +1858,6 @@ func EnterprisePriceIDIsNil() predicate.Subscribe {
 // EnterprisePriceIDNotNil applies the NotNil predicate on the "enterprise_price_id" field.
 func EnterprisePriceIDNotNil() predicate.Subscribe {
 	return predicate.Subscribe(sql.FieldNotNull(FieldEnterprisePriceID))
-}
-
-// ForceUnsubscribeEQ applies the EQ predicate on the "force_unsubscribe" field.
-func ForceUnsubscribeEQ(v bool) predicate.Subscribe {
-	return predicate.Subscribe(sql.FieldEQ(FieldForceUnsubscribe, v))
-}
-
-// ForceUnsubscribeNEQ applies the NEQ predicate on the "force_unsubscribe" field.
-func ForceUnsubscribeNEQ(v bool) predicate.Subscribe {
-	return predicate.Subscribe(sql.FieldNEQ(FieldForceUnsubscribe, v))
 }
 
 // DepositTypeEQ applies the EQ predicate on the "deposit_type" field.

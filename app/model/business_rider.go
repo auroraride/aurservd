@@ -13,8 +13,8 @@ type BusinessSubscribeReq struct {
 	CabinetID *uint64 `json:"cabinetId" trans:"电柜ID"`
 	AgentID   *uint64 `json:"agentId"` // 代理商ID
 
-	ForceUnsubscribe *bool `json:"forceUnsubscribe" trans:"是否强制退租"` // 是否强制退订(后台使用)
-	RefundDeposit    *bool `json:"refundDeposit" trans:"是否退押金"`     // 是否退押金(后台使用)
+	RefundDeposit *bool    `json:"refundDeposit" trans:"是否退押金"` // 是否退押金(后台使用)
+	DepositAmount *float64 `json:"depositAmount"`               // 退押金金额(后台使用)
 }
 
 type BusinessCabinetReq struct {

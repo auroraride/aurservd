@@ -65123,28 +65123,30 @@ func (m *OrderMutation) ResetEdge(name string) error {
 // OrderRefundMutation represents an operation that mutates the OrderRefund nodes in the graph.
 type OrderRefundMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	creator       **model.Modifier
-	last_modifier **model.Modifier
-	remark        *string
-	status        *uint8
-	addstatus     *int8
-	amount        *float64
-	addamount     *float64
-	out_refund_no *string
-	reason        *string
-	refund_at     *time.Time
-	clearedFields map[string]struct{}
-	_order        *uint64
-	cleared_order bool
-	done          bool
-	oldValue      func(context.Context) (*OrderRefund, error)
-	predicates    []predicate.OrderRefund
+	op               Op
+	typ              string
+	id               *uint64
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	creator          **model.Modifier
+	last_modifier    **model.Modifier
+	remark           *string
+	status           *uint8
+	addstatus        *int8
+	amount           *float64
+	addamount        *float64
+	out_refund_no    *string
+	reason           *string
+	refund_at        *time.Time
+	remain_amount    *float64
+	addremain_amount *float64
+	clearedFields    map[string]struct{}
+	_order           *uint64
+	cleared_order    bool
+	done             bool
+	oldValue         func(context.Context) (*OrderRefund, error)
+	predicates       []predicate.OrderRefund
 }
 
 var _ ent.Mutation = (*OrderRefundMutation)(nil)
@@ -65782,6 +65784,76 @@ func (m *OrderRefundMutation) ResetRefundAt() {
 	delete(m.clearedFields, orderrefund.FieldRefundAt)
 }
 
+// SetRemainAmount sets the "remain_amount" field.
+func (m *OrderRefundMutation) SetRemainAmount(f float64) {
+	m.remain_amount = &f
+	m.addremain_amount = nil
+}
+
+// RemainAmount returns the value of the "remain_amount" field in the mutation.
+func (m *OrderRefundMutation) RemainAmount() (r float64, exists bool) {
+	v := m.remain_amount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemainAmount returns the old "remain_amount" field's value of the OrderRefund entity.
+// If the OrderRefund object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderRefundMutation) OldRemainAmount(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemainAmount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemainAmount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemainAmount: %w", err)
+	}
+	return oldValue.RemainAmount, nil
+}
+
+// AddRemainAmount adds f to the "remain_amount" field.
+func (m *OrderRefundMutation) AddRemainAmount(f float64) {
+	if m.addremain_amount != nil {
+		*m.addremain_amount += f
+	} else {
+		m.addremain_amount = &f
+	}
+}
+
+// AddedRemainAmount returns the value that was added to the "remain_amount" field in this mutation.
+func (m *OrderRefundMutation) AddedRemainAmount() (r float64, exists bool) {
+	v := m.addremain_amount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearRemainAmount clears the value of the "remain_amount" field.
+func (m *OrderRefundMutation) ClearRemainAmount() {
+	m.remain_amount = nil
+	m.addremain_amount = nil
+	m.clearedFields[orderrefund.FieldRemainAmount] = struct{}{}
+}
+
+// RemainAmountCleared returns if the "remain_amount" field was cleared in this mutation.
+func (m *OrderRefundMutation) RemainAmountCleared() bool {
+	_, ok := m.clearedFields[orderrefund.FieldRemainAmount]
+	return ok
+}
+
+// ResetRemainAmount resets all changes to the "remain_amount" field.
+func (m *OrderRefundMutation) ResetRemainAmount() {
+	m.remain_amount = nil
+	m.addremain_amount = nil
+	delete(m.clearedFields, orderrefund.FieldRemainAmount)
+}
+
 // ClearOrder clears the "order" edge to the Order entity.
 func (m *OrderRefundMutation) ClearOrder() {
 	m.cleared_order = true
@@ -65843,7 +65915,7 @@ func (m *OrderRefundMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OrderRefundMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, orderrefund.FieldCreatedAt)
 	}
@@ -65880,6 +65952,9 @@ func (m *OrderRefundMutation) Fields() []string {
 	if m.refund_at != nil {
 		fields = append(fields, orderrefund.FieldRefundAt)
 	}
+	if m.remain_amount != nil {
+		fields = append(fields, orderrefund.FieldRemainAmount)
+	}
 	return fields
 }
 
@@ -65912,6 +65987,8 @@ func (m *OrderRefundMutation) Field(name string) (ent.Value, bool) {
 		return m.Reason()
 	case orderrefund.FieldRefundAt:
 		return m.RefundAt()
+	case orderrefund.FieldRemainAmount:
+		return m.RemainAmount()
 	}
 	return nil, false
 }
@@ -65945,6 +66022,8 @@ func (m *OrderRefundMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldReason(ctx)
 	case orderrefund.FieldRefundAt:
 		return m.OldRefundAt(ctx)
+	case orderrefund.FieldRemainAmount:
+		return m.OldRemainAmount(ctx)
 	}
 	return nil, fmt.Errorf("unknown OrderRefund field %s", name)
 }
@@ -66038,6 +66117,13 @@ func (m *OrderRefundMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRefundAt(v)
 		return nil
+	case orderrefund.FieldRemainAmount:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemainAmount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown OrderRefund field %s", name)
 }
@@ -66052,6 +66138,9 @@ func (m *OrderRefundMutation) AddedFields() []string {
 	if m.addamount != nil {
 		fields = append(fields, orderrefund.FieldAmount)
 	}
+	if m.addremain_amount != nil {
+		fields = append(fields, orderrefund.FieldRemainAmount)
+	}
 	return fields
 }
 
@@ -66064,6 +66153,8 @@ func (m *OrderRefundMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedStatus()
 	case orderrefund.FieldAmount:
 		return m.AddedAmount()
+	case orderrefund.FieldRemainAmount:
+		return m.AddedRemainAmount()
 	}
 	return nil, false
 }
@@ -66087,6 +66178,13 @@ func (m *OrderRefundMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddAmount(v)
 		return nil
+	case orderrefund.FieldRemainAmount:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRemainAmount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown OrderRefund numeric field %s", name)
 }
@@ -66109,6 +66207,9 @@ func (m *OrderRefundMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(orderrefund.FieldRefundAt) {
 		fields = append(fields, orderrefund.FieldRefundAt)
+	}
+	if m.FieldCleared(orderrefund.FieldRemainAmount) {
+		fields = append(fields, orderrefund.FieldRemainAmount)
 	}
 	return fields
 }
@@ -66138,6 +66239,9 @@ func (m *OrderRefundMutation) ClearField(name string) error {
 		return nil
 	case orderrefund.FieldRefundAt:
 		m.ClearRefundAt()
+		return nil
+	case orderrefund.FieldRemainAmount:
+		m.ClearRemainAmount()
 		return nil
 	}
 	return fmt.Errorf("unknown OrderRefund nullable field %s", name)
@@ -66182,6 +66286,9 @@ func (m *OrderRefundMutation) ResetField(name string) error {
 		return nil
 	case orderrefund.FieldRefundAt:
 		m.ResetRefundAt()
+		return nil
+	case orderrefund.FieldRemainAmount:
+		m.ResetRemainAmount()
 		return nil
 	}
 	return fmt.Errorf("unknown OrderRefund field %s", name)
@@ -105991,7 +106098,6 @@ type SubscribeMutation struct {
 	need_contract           *bool
 	intelligent             *bool
 	agreement_hash          *string
-	force_unsubscribe       *bool
 	deposit_type            *uint8
 	adddeposit_type         *int8
 	clearedFields           map[string]struct{}
@@ -108121,42 +108227,6 @@ func (m *SubscribeMutation) ResetEnterprisePriceID() {
 	delete(m.clearedFields, subscribe.FieldEnterprisePriceID)
 }
 
-// SetForceUnsubscribe sets the "force_unsubscribe" field.
-func (m *SubscribeMutation) SetForceUnsubscribe(b bool) {
-	m.force_unsubscribe = &b
-}
-
-// ForceUnsubscribe returns the value of the "force_unsubscribe" field in the mutation.
-func (m *SubscribeMutation) ForceUnsubscribe() (r bool, exists bool) {
-	v := m.force_unsubscribe
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldForceUnsubscribe returns the old "force_unsubscribe" field's value of the Subscribe entity.
-// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscribeMutation) OldForceUnsubscribe(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldForceUnsubscribe is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldForceUnsubscribe requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldForceUnsubscribe: %w", err)
-	}
-	return oldValue.ForceUnsubscribe, nil
-}
-
-// ResetForceUnsubscribe resets all changes to the "force_unsubscribe" field.
-func (m *SubscribeMutation) ResetForceUnsubscribe() {
-	m.force_unsubscribe = nil
-}
-
 // SetDepositType sets the "deposit_type" field.
 func (m *SubscribeMutation) SetDepositType(u uint8) {
 	m.deposit_type = &u
@@ -108894,7 +108964,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 43)
+	fields := make([]string, 0, 42)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -109018,9 +109088,6 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.enterprise_price != nil {
 		fields = append(fields, subscribe.FieldEnterprisePriceID)
 	}
-	if m.force_unsubscribe != nil {
-		fields = append(fields, subscribe.FieldForceUnsubscribe)
-	}
 	if m.deposit_type != nil {
 		fields = append(fields, subscribe.FieldDepositType)
 	}
@@ -109114,8 +109181,6 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.AgreementHash()
 	case subscribe.FieldEnterprisePriceID:
 		return m.EnterprisePriceID()
-	case subscribe.FieldForceUnsubscribe:
-		return m.ForceUnsubscribe()
 	case subscribe.FieldDepositType:
 		return m.DepositType()
 	}
@@ -109209,8 +109274,6 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldAgreementHash(ctx)
 	case subscribe.FieldEnterprisePriceID:
 		return m.OldEnterprisePriceID(ctx)
-	case subscribe.FieldForceUnsubscribe:
-		return m.OldForceUnsubscribe(ctx)
 	case subscribe.FieldDepositType:
 		return m.OldDepositType(ctx)
 	}
@@ -109508,13 +109571,6 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEnterprisePriceID(v)
-		return nil
-	case subscribe.FieldForceUnsubscribe:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetForceUnsubscribe(v)
 		return nil
 	case subscribe.FieldDepositType:
 		v, ok := value.(uint8)
@@ -109976,9 +110032,6 @@ func (m *SubscribeMutation) ResetField(name string) error {
 		return nil
 	case subscribe.FieldEnterprisePriceID:
 		m.ResetEnterprisePriceID()
-		return nil
-	case subscribe.FieldForceUnsubscribe:
-		m.ResetForceUnsubscribe()
 		return nil
 	case subscribe.FieldDepositType:
 		m.ResetDepositType()

@@ -1291,6 +1291,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			orderrefund.FieldOutRefundNo:  {Type: field.TypeString, Column: orderrefund.FieldOutRefundNo},
 			orderrefund.FieldReason:       {Type: field.TypeString, Column: orderrefund.FieldReason},
 			orderrefund.FieldRefundAt:     {Type: field.TypeTime, Column: orderrefund.FieldRefundAt},
+			orderrefund.FieldRemainAmount: {Type: field.TypeFloat64, Column: orderrefund.FieldRemainAmount},
 		},
 	}
 	graph.Nodes[43] = &sqlgraph.Node{
@@ -2107,7 +2108,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldIntelligent:       {Type: field.TypeBool, Column: subscribe.FieldIntelligent},
 			subscribe.FieldAgreementHash:     {Type: field.TypeString, Column: subscribe.FieldAgreementHash},
 			subscribe.FieldEnterprisePriceID: {Type: field.TypeUint64, Column: subscribe.FieldEnterprisePriceID},
-			subscribe.FieldForceUnsubscribe:  {Type: field.TypeBool, Column: subscribe.FieldForceUnsubscribe},
 			subscribe.FieldDepositType:       {Type: field.TypeUint8, Column: subscribe.FieldDepositType},
 		},
 	}
@@ -13382,6 +13382,11 @@ func (f *OrderRefundFilter) WhereRefundAt(p entql.TimeP) {
 	f.Where(p.Field(orderrefund.FieldRefundAt))
 }
 
+// WhereRemainAmount applies the entql float64 predicate on the remain_amount field.
+func (f *OrderRefundFilter) WhereRemainAmount(p entql.Float64P) {
+	f.Where(p.Field(orderrefund.FieldRemainAmount))
+}
+
 // WhereHasOrder applies a predicate to check if query has an edge order.
 func (f *OrderRefundFilter) WhereHasOrder() {
 	f.Where(entql.HasEdge("order"))
@@ -17959,11 +17964,6 @@ func (f *SubscribeFilter) WhereAgreementHash(p entql.StringP) {
 // WhereEnterprisePriceID applies the entql uint64 predicate on the enterprise_price_id field.
 func (f *SubscribeFilter) WhereEnterprisePriceID(p entql.Uint64P) {
 	f.Where(p.Field(subscribe.FieldEnterprisePriceID))
-}
-
-// WhereForceUnsubscribe applies the entql bool predicate on the force_unsubscribe field.
-func (f *SubscribeFilter) WhereForceUnsubscribe(p entql.BoolP) {
-	f.Where(p.Field(subscribe.FieldForceUnsubscribe))
 }
 
 // WhereDepositType applies the entql uint8 predicate on the deposit_type field.

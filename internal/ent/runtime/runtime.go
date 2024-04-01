@@ -1894,10 +1894,6 @@ func init() {
 	subscribeDescIntelligent := subscribeFields[24].Descriptor()
 	// subscribe.DefaultIntelligent holds the default value on creation for the intelligent field.
 	subscribe.DefaultIntelligent = subscribeDescIntelligent.Default.(bool)
-	// subscribeDescForceUnsubscribe is the schema descriptor for force_unsubscribe field.
-	subscribeDescForceUnsubscribe := subscribeFields[27].Descriptor()
-	// subscribe.DefaultForceUnsubscribe holds the default value on creation for the force_unsubscribe field.
-	subscribe.DefaultForceUnsubscribe = subscribeDescForceUnsubscribe.Default.(bool)
 	subscribealterMixin := schema.SubscribeAlter{}.Mixin()
 	subscribealterMixinHooks1 := subscribealterMixin[1].Hooks()
 	subscribealter.Hooks[0] = subscribealterMixinHooks1[0]

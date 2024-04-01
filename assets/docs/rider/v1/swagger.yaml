@@ -840,9 +840,6 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Employee'
         description: 店员 (可为空)
-      forceUnsubscribe:
-        description: 是否强制退订 true:强制退订 false:正常退订
-        type: boolean
       id:
         description: 订单ID
         type: integer
@@ -1601,9 +1598,6 @@ definitions:
       enterprisePriceId:
         description: 团签价格ID
         type: integer
-      forceUnsubscribe:
-        description: 是否强制退订 true:强制退订 false:正常退订
-        type: boolean
       id:
         description: 订阅ID
         type: integer
