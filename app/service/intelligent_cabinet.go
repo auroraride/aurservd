@@ -260,7 +260,7 @@ func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *e
 
 	// 判定电柜状态
 	if cab.Status == model.CabinetStatusMaintenance.Value() {
-		snag.Panic("电柜开小差了, 请联系客服")
+		snag.Panic("电柜维护中，请联系客服")
 	}
 
 	// 判定是否智能电柜套餐
