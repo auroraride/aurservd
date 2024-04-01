@@ -3831,12 +3831,10 @@ const docTemplate = `{
                 },
                 "depositType": {
                     "description": "押金类型 1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金",
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2,
-                        3,
-                        4
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.DepositType"
+                        }
                     ]
                 },
                 "needContract": {
@@ -5465,6 +5463,27 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.DepositType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "x-enum-comments": {
+                "DepositTypeAlipayAuthFreeze": "芝麻免押",
+                "DepositTypeContract": "合同押金",
+                "DepositTypePay": "支付押金",
+                "DepositTypeWechatDeposit": "微信支付分免押"
+            },
+            "x-enum-varnames": [
+                "DepositTypeAlipayAuthFreeze",
+                "DepositTypeWechatDeposit",
+                "DepositTypeContract",
+                "DepositTypePay"
+            ]
         },
         "model.Ebike": {
             "type": "object",
@@ -7249,7 +7268,11 @@ const docTemplate = `{
                 },
                 "depositType": {
                     "description": "押金类型  1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.DepositType"
+                        }
+                    ]
                 },
                 "points": {
                     "description": "积分数量",

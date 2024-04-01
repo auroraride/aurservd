@@ -35,6 +35,6 @@ func (s *walletService) Overview() model.WalletOverview {
 		Points:      s.entRider.Points,
 		Coupons:     len(NewCoupon().QueryEffective(s.rider.ID)),
 		Deposit:     deposit,
-		DepositType: depositType,
+		DepositType: model.DepositType(depositType),
 	}
 }

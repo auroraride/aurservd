@@ -634,7 +634,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 				SetNeedContract(true).
 				SetNillableStoreID(trade.StoreID).
 				SetNillableAgreementHash(trade.AgreementHash).
-				SetNillableDepositType(trade.DepositType)
+				SetNillableDepositType(trade.DepositType.Value())
 			if do != nil {
 				sq.AddOrders(do)
 			}
@@ -1191,4 +1191,28 @@ func (s *orderService) FandAuthUnfreeze(o *ent.Order) error {
 	}
 
 	return payment.NewAlipay().FandAuthUnfreeze(fandAuthUnfreezeReq)
+}
+
+// QueryDepositBySubscribeID 通过订阅id查询未退款押金
+func (s *orderService) QueryDepositBySubscribeID(orderID uint64) (float64, error) {
+	o, _ := s.orm.QueryNotDeleted().Where(
+		order.SubscribeID(orderID),
+		order.Type(model.OrderTypeDeposit),
+		order.Or(
+			order.And(
+				// 查询支付并且未退款的订单
+				order.Status(model.OrderStatusPaid),
+				order.PaywayIn(model.OrderPaywayAlipay, model.OrderPaywayWechat),
+			),
+			order.And(
+				// 查询是预支付 并且未转支付的订单
+				order.PaywayEQ(model.OrderPaywayAlipayAuthFreeze),
+				order.TradePayAtIsNil(),
+			),
+		),
+	).First(s.ctx)
+	if o == nil {
+		return 0, nil
+	}
+	return o.Amount, nil
 }

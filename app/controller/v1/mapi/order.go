@@ -50,7 +50,17 @@ func (*order) RefundAudit(c echo.Context) (err error) {
 	return ctx.SendResponse()
 }
 
-func (*order) Coupon(c echo.Context) (err error) {
-	ctx := app.Context(c)
-	return ctx.SendResponse()
+// DepositByOrderID
+// @ID		ManagerOrderDepositByOrderID
+// @Router	/manager/v1/order/deposit/{id} [GET]
+// @Summary	根据订单ID查询押金
+// @Tags	订单
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header	string	true	"管理员校验token"
+// @Param	id				path	string	true	"订单ID"
+// @Success	200				amount	float64	"请求成功"
+func (*order) DepositByOrderID(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	return ctx.SendResponse(service.NewOrderWithModifier(ctx.Modifier).QueryDepositByOrderID(req.ID))
 }

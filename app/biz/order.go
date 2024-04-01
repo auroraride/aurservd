@@ -586,7 +586,7 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 				SetIntelligent(trade.Plan.Intelligent).
 				SetNillableStoreID(trade.StoreID).
 				SetNillableAgreementHash(trade.AgreementHash).
-				SetNillableDepositType(trade.DepositType)
+				SetNillableDepositType(trade.DepositType.Value())
 			// 根据用户选择是否需要签约 默认不需要签约
 			if trade.NeedContract != nil {
 				sq.SetNillableNeedContract(trade.NeedContract)
@@ -672,15 +672,3 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 		}()
 	}
 }
-
-// // PaymentFreezeToPay 转支付
-// func (s *orderBiz) PaymentFreezeToPay(req *definition.FreezeToPay) (*alipay.TradePayRsp, error) {
-// 	// 查询订单
-// 	o, _ := s.orm.Query().Where(order.OutOrderNo(req.OutOrderNo)).WithSubscribe().
-// 		WithPlan().First(s.ctx)
-// 	if o == nil {
-// 		return nil, errors.New("订单不存在")
-// 	}
-//
-// 	return service.NewOrder().TradePay(o), nil
-// }

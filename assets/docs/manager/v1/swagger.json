@@ -7300,6 +7300,45 @@
                 }
             }
         },
+      "/manager/v1/order/deposit/{id}": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "订单"
+          ],
+          "summary": "根据订单ID查询押金",
+          "operationId": "ManagerOrderDepositByOrderID",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "管理员校验token",
+              "name": "X-Manager-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "string",
+              "description": "订单ID",
+              "name": "id",
+              "in": "path",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "type": "amount"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/order/refund": {
             "post": {
                 "consumes": [

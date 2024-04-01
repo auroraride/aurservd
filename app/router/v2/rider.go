@@ -125,8 +125,8 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 骑士卡
 	plan := g.Group("/plan")
-	plan.GET("", v1.Plan.List)                 // 套餐列表
-	plan.GET("/plan/renewly", v1.Plan.Renewly) // 续费列表
+	plan.GET("", v1.Plan.List)            // 套餐列表
+	plan.GET("/renewly", v1.Plan.Renewly) // 续费列表
 
 	// 电池
 	battery := g.Group("/battery", person())
