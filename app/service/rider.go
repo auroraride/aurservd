@@ -690,9 +690,7 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 		ri.Contract = contracts[0].Files[0]
 	}
 
-	if item.Edges.Orders != nil && len(item.Edges.Orders) > 0 {
-		ri.Deposit = item.Edges.Orders[0].Amount
-	}
+	ri.Deposit = NewRider().Deposit(item.ID)
 
 	if item.Edges.Subscribes != nil && len(item.Edges.Subscribes) > 0 {
 		sub := item.Edges.Subscribes[0]
@@ -1045,8 +1043,7 @@ func (s *riderService) Deposit(riderID uint64) float64 {
 	if o != nil {
 		return 0
 	}
-	f, _ := cache.Get(s.ctx, model.SettingDepositKey).Float64()
-	return f
+	return o.Amount
 }
 
 func (s *riderService) GetQrcode(id uint64) string {
