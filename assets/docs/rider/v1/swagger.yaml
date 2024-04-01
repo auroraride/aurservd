@@ -547,6 +547,23 @@ definitions:
         description: 使用时间
         type: string
     type: object
+  model.DepositType:
+    enum:
+      - 1
+      - 2
+      - 3
+      - 4
+    type: integer
+    x-enum-comments:
+      DepositTypeAlipayAuthFreeze: 芝麻免押
+      DepositTypeContract: 合同押金
+      DepositTypePay: 支付押金
+      DepositTypeWechatDeposit: 微信支付分免押
+    x-enum-varnames:
+      - DepositTypeAlipayAuthFreeze
+      - DepositTypeWechatDeposit
+      - DepositTypeContract
+      - DepositTypePay
   model.Ebike:
     properties:
       brand:
@@ -1742,8 +1759,9 @@ definitions:
         description: 已缴纳押金
         type: number
       depositType:
+        allOf:
+          - $ref: '#/definitions/model.DepositType'
         description: 押金类型  1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金
-        type: integer
       points:
         description: 积分数量
         type: integer

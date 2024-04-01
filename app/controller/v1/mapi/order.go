@@ -49,8 +49,3 @@ func (*order) RefundAudit(c echo.Context) (err error) {
 	service.NewRefundWithModifier(ctx.Modifier).RefundAudit(req)
 	return ctx.SendResponse()
 }
-
-func (*order) Coupon(c echo.Context) (err error) {
-	ctx := app.Context(c)
-	return ctx.SendResponse()
-}

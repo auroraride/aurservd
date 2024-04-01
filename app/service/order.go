@@ -634,7 +634,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 				SetNeedContract(true).
 				SetNillableStoreID(trade.StoreID).
 				SetNillableAgreementHash(trade.AgreementHash).
-				SetNillableDepositType(trade.DepositType)
+				SetNillableDepositType(trade.DepositType.Value())
 			if do != nil {
 				sq.AddOrders(do)
 			}

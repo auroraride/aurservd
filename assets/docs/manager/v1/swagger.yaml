@@ -11998,6 +11998,32 @@ paths:
       summary: 订单列表
       tags:
       - 订单
+  /manager/v1/order/deposit/{id}:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerOrderDepositByOrderID
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 订单ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: amount
+      summary: 根据订单ID查询押金
+      tags:
+        - 订单
   /manager/v1/order/refund:
     post:
       consumes:

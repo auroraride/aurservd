@@ -169,3 +169,16 @@ type Order struct {
 	ForceUnsubscribe bool `json:"forceUnsubscribe"` // 是否强制退订 true:强制退订 false:正常退订
 
 }
+
+type DepositType uint8
+
+const (
+	DepositTypeAlipayAuthFreeze DepositType = iota + 1 // 芝麻免押
+	DepositTypeWechatDeposit                           // 微信支付分免押
+	DepositTypeContract                                // 合同押金
+	DepositTypePay                                     // 支付押金
+)
+
+func (d DepositType) Value() *uint8 {
+	return (*uint8)(&d)
+}
