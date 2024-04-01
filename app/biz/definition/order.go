@@ -26,12 +26,12 @@ type OrderCreateReq struct {
 	Coupons []uint64 `json:"coupons"` // 优惠券
 
 	// 以下字段仅限V2使用
-	DepositAlipayAuthFreeze bool               `json:"depositAlipayAuthFreeze"`          // 是否使用支付宝预授权信用分支付押金
-	NeedContract            *bool              `json:"needContract"`                     // 是否需要签约
-	DepositOrderNo          *string            `json:"depositOrderNo"`                   // 押金订单编号 (如果分开支付的押金此参必填 例如 选择了信用免押,支付为支付宝,则此参数必填)
-	StoreID                 *uint64            `json:"storeId"`                          // 门店ID
-	AgreementHash           *string            `json:"agreementHash"`                    // 协议hash
-	DepositType             *model.DepositType `json:"depositType" validate:"required" ` // 押金类型 1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金
+	DepositAlipayAuthFreeze bool               `json:"depositAlipayAuthFreeze"` // 是否使用支付宝预授权信用分支付押金
+	NeedContract            *bool              `json:"needContract"`            // 是否需要签约
+	DepositOrderNo          *string            `json:"depositOrderNo"`          // 押金订单编号 (如果分开支付的押金此参必填 例如 选择了信用免押,支付为支付宝,则此参数必填)
+	StoreID                 *uint64            `json:"storeId"`                 // 门店ID
+	AgreementHash           *string            `json:"agreementHash"`           // 协议hash
+	DepositType             *model.DepositType `json:"depositType"`             // 押金类型 1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金
 }
 
 // OrderCreateRes 订单创建响应
