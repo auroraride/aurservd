@@ -631,14 +631,19 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 				AddOrders(o).
 				SetNillableBrandID(trade.EbikeBrandID).
 				SetIntelligent(trade.Plan.Intelligent).
-				SetNeedContract(true).
 				SetNillableStoreID(trade.StoreID).
 				SetNillableAgreementHash(trade.AgreementHash)
 			// 兼容老版本 老版本如果未传递则默认为合同押金
 			if trade.DepositType == nil {
-				sq.SetDepositType(model.DepositTypeContract.Value())
+				// 合同押金需要签约
+				sq.SetNeedContract(true).SetDepositType(model.DepositTypeContract.Value())
 			} else {
 				sq.SetDepositType(trade.DepositType.Value())
+				sq.SetNeedContract(false)
+				if *trade.DepositType == model.DepositTypeContract {
+					sq.SetNeedContract(true)
+				}
+
 			}
 			if do != nil {
 				sq.AddOrders(do)
@@ -919,8 +924,6 @@ func (s *orderService) Detail(item *ent.Order) model.Order {
 				Phone: oe.Phone,
 			}
 		}
-
-		res.ForceUnsubscribe = osub.ForceUnsubscribe
 
 	}
 

@@ -105,6 +105,11 @@ func RefundAt(v time.Time) predicate.OrderRefund {
 	return predicate.OrderRefund(sql.FieldEQ(FieldRefundAt, v))
 }
 
+// RemainAmount applies equality check predicate on the "remain_amount" field. It's identical to RemainAmountEQ.
+func RemainAmount(v float64) predicate.OrderRefund {
+	return predicate.OrderRefund(sql.FieldEQ(FieldRemainAmount, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.OrderRefund {
 	return predicate.OrderRefund(sql.FieldEQ(FieldCreatedAt, v))
@@ -608,6 +613,56 @@ func RefundAtIsNil() predicate.OrderRefund {
 // RefundAtNotNil applies the NotNil predicate on the "refund_at" field.
 func RefundAtNotNil() predicate.OrderRefund {
 	return predicate.OrderRefund(sql.FieldNotNull(FieldRefundAt))
+}
+
+// RemainAmountEQ applies the EQ predicate on the "remain_amount" field.
+func RemainAmountEQ(v float64) predicate.OrderRefund {
+	return predicate.OrderRefund(sql.FieldEQ(FieldRemainAmount, v))
+}
+
+// RemainAmountNEQ applies the NEQ predicate on the "remain_amount" field.
+func RemainAmountNEQ(v float64) predicate.OrderRefund {
+	return predicate.OrderRefund(sql.FieldNEQ(FieldRemainAmount, v))
+}
+
+// RemainAmountIn applies the In predicate on the "remain_amount" field.
+func RemainAmountIn(vs ...float64) predicate.OrderRefund {
+	return predicate.OrderRefund(sql.FieldIn(FieldRemainAmount, vs...))
+}
+
+// RemainAmountNotIn applies the NotIn predicate on the "remain_amount" field.
+func RemainAmountNotIn(vs ...float64) predicate.OrderRefund {
+	return predicate.OrderRefund(sql.FieldNotIn(FieldRemainAmount, vs...))
+}
+
+// RemainAmountGT applies the GT predicate on the "remain_amount" field.
+func RemainAmountGT(v float64) predicate.OrderRefund {
+	return predicate.OrderRefund(sql.FieldGT(FieldRemainAmount, v))
+}
+
+// RemainAmountGTE applies the GTE predicate on the "remain_amount" field.
+func RemainAmountGTE(v float64) predicate.OrderRefund {
+	return predicate.OrderRefund(sql.FieldGTE(FieldRemainAmount, v))
+}
+
+// RemainAmountLT applies the LT predicate on the "remain_amount" field.
+func RemainAmountLT(v float64) predicate.OrderRefund {
+	return predicate.OrderRefund(sql.FieldLT(FieldRemainAmount, v))
+}
+
+// RemainAmountLTE applies the LTE predicate on the "remain_amount" field.
+func RemainAmountLTE(v float64) predicate.OrderRefund {
+	return predicate.OrderRefund(sql.FieldLTE(FieldRemainAmount, v))
+}
+
+// RemainAmountIsNil applies the IsNil predicate on the "remain_amount" field.
+func RemainAmountIsNil() predicate.OrderRefund {
+	return predicate.OrderRefund(sql.FieldIsNull(FieldRemainAmount))
+}
+
+// RemainAmountNotNil applies the NotNil predicate on the "remain_amount" field.
+func RemainAmountNotNil() predicate.OrderRefund {
+	return predicate.OrderRefund(sql.FieldNotNull(FieldRemainAmount))
 }
 
 // HasOrder applies the HasEdge predicate on the "order" edge.

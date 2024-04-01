@@ -167,9 +167,17 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 
 			// 更新或创建实名信息
 			if p != nil {
-				p.AuthResult.Name = *req.Name
-				p.AuthResult.IdCardNumber = *req.IdCardNumber
-				p.AuthResult.Address = *req.Address
+				if p.AuthResult != nil {
+					p.AuthResult.Name = *req.Name
+					p.AuthResult.IdCardNumber = *req.IdCardNumber
+					p.AuthResult.Address = *req.Address
+				} else {
+					p.AuthResult = &model.BaiduFaceVerifyResult{
+						Name:         *req.Name,
+						IdCardNumber: *req.IdCardNumber,
+						Address:      *req.Address,
+					}
+				}
 				// 更新实名信息
 				p.Update().
 					SetNillableIDCardNumber(req.IdCardNumber).

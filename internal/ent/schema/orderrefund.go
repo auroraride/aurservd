@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -32,6 +33,7 @@ func (OrderRefund) Fields() []ent.Field {
 		field.String("out_refund_no").Unique().Comment("退款订单编号"),
 		field.String("reason").Comment("退款理由"),
 		field.Time("refund_at").Optional().Nillable().Comment("退款成功时间"),
+		field.Float("remain_amount").Optional().Comment("剩余未退金额"),
 	}
 }
 

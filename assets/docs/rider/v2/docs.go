@@ -2513,7 +2513,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Order - 骑手"
+                    "Order - 订单"
                 ],
                 "summary": "申请退款",
                 "operationId": "OrderRefund",
@@ -3801,7 +3801,6 @@ const docTemplate = `{
         "definition.OrderCreateReq": {
             "type": "object",
             "required": [
-                "depositType",
                 "orderType",
                 "payway",
                 "planId"
@@ -3837,10 +3836,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.DepositType"
                         }
                     ]
-                },
-                "needContract": {
-                    "description": "是否需要签约",
-                    "type": "boolean"
                 },
                 "orderType": {
                     "description": "订单类型, 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
@@ -5976,10 +5971,6 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "forceUnsubscribe": {
-                    "description": "是否强制退订 true:强制退订 false:正常退订",
-                    "type": "boolean"
-                },
                 "id": {
                     "description": "订单ID",
                     "type": "integer"
@@ -7046,10 +7037,6 @@ const docTemplate = `{
                 "enterprisePriceId": {
                     "description": "团签价格ID",
                     "type": "integer"
-                },
-                "forceUnsubscribe": {
-                    "description": "是否强制退订 true:强制退订 false:正常退订",
-                    "type": "boolean"
                 },
                 "id": {
                     "description": "订阅ID",

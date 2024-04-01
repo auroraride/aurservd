@@ -3342,9 +3342,9 @@ const docTemplate = `{
                     "description": "电柜ID",
                     "type": "integer"
                 },
-                "forceUnsubscribe": {
-                    "description": "是否强制退租, 是否强制退订(后台使用)",
-                    "type": "boolean"
+                "depositAmount": {
+                    "description": "退押金金额(后台使用)",
+                    "type": "number"
                 },
                 "id": {
                     "description": "订阅ID",

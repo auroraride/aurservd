@@ -39,6 +39,8 @@ const (
 	FieldReason = "reason"
 	// FieldRefundAt holds the string denoting the refund_at field in the database.
 	FieldRefundAt = "refund_at"
+	// FieldRemainAmount holds the string denoting the remain_amount field in the database.
+	FieldRemainAmount = "remain_amount"
 	// EdgeOrder holds the string denoting the order edge name in mutations.
 	EdgeOrder = "order"
 	// Table holds the table name of the orderrefund in the database.
@@ -67,6 +69,7 @@ var Columns = []string{
 	FieldOutRefundNo,
 	FieldReason,
 	FieldRefundAt,
+	FieldRemainAmount,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -150,6 +153,11 @@ func ByReason(opts ...sql.OrderTermOption) OrderOption {
 // ByRefundAt orders the results by the refund_at field.
 func ByRefundAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRefundAt, opts...).ToFunc()
+}
+
+// ByRemainAmount orders the results by the remain_amount field.
+func ByRemainAmount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRemainAmount, opts...).ToFunc()
 }
 
 // ByOrderField orders the results by order field.

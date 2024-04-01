@@ -574,20 +574,6 @@ func (sc *SubscribeCreate) SetNillableEnterprisePriceID(u *uint64) *SubscribeCre
 	return sc
 }
 
-// SetForceUnsubscribe sets the "force_unsubscribe" field.
-func (sc *SubscribeCreate) SetForceUnsubscribe(b bool) *SubscribeCreate {
-	sc.mutation.SetForceUnsubscribe(b)
-	return sc
-}
-
-// SetNillableForceUnsubscribe sets the "force_unsubscribe" field if the given value is not nil.
-func (sc *SubscribeCreate) SetNillableForceUnsubscribe(b *bool) *SubscribeCreate {
-	if b != nil {
-		sc.SetForceUnsubscribe(*b)
-	}
-	return sc
-}
-
 // SetDepositType sets the "deposit_type" field.
 func (sc *SubscribeCreate) SetDepositType(u uint8) *SubscribeCreate {
 	sc.mutation.SetDepositType(u)
@@ -851,10 +837,6 @@ func (sc *SubscribeCreate) defaults() error {
 		v := subscribe.DefaultIntelligent
 		sc.mutation.SetIntelligent(v)
 	}
-	if _, ok := sc.mutation.ForceUnsubscribe(); !ok {
-		v := subscribe.DefaultForceUnsubscribe
-		sc.mutation.SetForceUnsubscribe(v)
-	}
 	return nil
 }
 
@@ -907,9 +889,6 @@ func (sc *SubscribeCreate) check() error {
 	}
 	if _, ok := sc.mutation.Intelligent(); !ok {
 		return &ValidationError{Name: "intelligent", err: errors.New(`ent: missing required field "Subscribe.intelligent"`)}
-	}
-	if _, ok := sc.mutation.ForceUnsubscribe(); !ok {
-		return &ValidationError{Name: "force_unsubscribe", err: errors.New(`ent: missing required field "Subscribe.force_unsubscribe"`)}
 	}
 	if _, ok := sc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Subscribe.city"`)}
@@ -1059,10 +1038,6 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.AgreementHash(); ok {
 		_spec.SetField(subscribe.FieldAgreementHash, field.TypeString, value)
 		_node.AgreementHash = value
-	}
-	if value, ok := sc.mutation.ForceUnsubscribe(); ok {
-		_spec.SetField(subscribe.FieldForceUnsubscribe, field.TypeBool, value)
-		_node.ForceUnsubscribe = value
 	}
 	if value, ok := sc.mutation.DepositType(); ok {
 		_spec.SetField(subscribe.FieldDepositType, field.TypeUint8, value)
@@ -2068,18 +2043,6 @@ func (u *SubscribeUpsert) ClearEnterprisePriceID() *SubscribeUpsert {
 	return u
 }
 
-// SetForceUnsubscribe sets the "force_unsubscribe" field.
-func (u *SubscribeUpsert) SetForceUnsubscribe(v bool) *SubscribeUpsert {
-	u.Set(subscribe.FieldForceUnsubscribe, v)
-	return u
-}
-
-// UpdateForceUnsubscribe sets the "force_unsubscribe" field to the value that was provided on create.
-func (u *SubscribeUpsert) UpdateForceUnsubscribe() *SubscribeUpsert {
-	u.SetExcluded(subscribe.FieldForceUnsubscribe)
-	return u
-}
-
 // SetDepositType sets the "deposit_type" field.
 func (u *SubscribeUpsert) SetDepositType(v uint8) *SubscribeUpsert {
 	u.Set(subscribe.FieldDepositType, v)
@@ -2908,20 +2871,6 @@ func (u *SubscribeUpsertOne) UpdateEnterprisePriceID() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) ClearEnterprisePriceID() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearEnterprisePriceID()
-	})
-}
-
-// SetForceUnsubscribe sets the "force_unsubscribe" field.
-func (u *SubscribeUpsertOne) SetForceUnsubscribe(v bool) *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.SetForceUnsubscribe(v)
-	})
-}
-
-// UpdateForceUnsubscribe sets the "force_unsubscribe" field to the value that was provided on create.
-func (u *SubscribeUpsertOne) UpdateForceUnsubscribe() *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.UpdateForceUnsubscribe()
 	})
 }
 
@@ -3923,20 +3872,6 @@ func (u *SubscribeUpsertBulk) UpdateEnterprisePriceID() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearEnterprisePriceID() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearEnterprisePriceID()
-	})
-}
-
-// SetForceUnsubscribe sets the "force_unsubscribe" field.
-func (u *SubscribeUpsertBulk) SetForceUnsubscribe(v bool) *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.SetForceUnsubscribe(v)
-	})
-}
-
-// UpdateForceUnsubscribe sets the "force_unsubscribe" field to the value that was provided on create.
-func (u *SubscribeUpsertBulk) UpdateForceUnsubscribe() *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.UpdateForceUnsubscribe()
 	})
 }
 

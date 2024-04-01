@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 	"github.com/auroraride/aurservd/internal/payment"
@@ -185,6 +186,15 @@ func (s *orderBiz) DoPaymentFreezeToPay(req *definition.OrderDepositFreezeToPayR
 		return err
 	}
 
+	// 查询订单是否有押金订单 有押金订单转为拒绝 并备注(拒接退款)
+	orderRefund, _ := ent.Database.OrderRefund.QueryNotDeleted().Where(orderrefund.OrderID(o.ID)).First(s.ctx)
+	if orderRefund != nil {
+		_, err = orderRefund.Update().SetStatus(model.RefundStatusRefused).SetRemark("拒绝退款").Save(s.ctx)
+		if err != nil {
+			zap.L().Error("订单退款失败", zap.Error(err))
+			return err
+		}
+	}
 	return nil
 }
 
@@ -396,7 +406,6 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 		DiscountNewly:  ramount,
 		EbikeBrandID:   p.BrandID,
 		Plan:           p.BasicInfo(),
-		NeedContract:   req.NeedContract,
 		StoreID:        req.StoreID,
 		DepositOrderNo: req.DepositOrderNo,
 		AgreementHash:  req.AgreementHash,
@@ -585,11 +594,14 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 				SetNillableBrandID(trade.EbikeBrandID).
 				SetIntelligent(trade.Plan.Intelligent).
 				SetNillableStoreID(trade.StoreID).
-				SetNillableAgreementHash(trade.AgreementHash).
-				SetDepositType(trade.DepositType.Value())
+				SetNillableAgreementHash(trade.AgreementHash)
 			// 根据用户选择是否需要签约 默认不需要签约
-			if trade.NeedContract != nil {
-				sq.SetNillableNeedContract(trade.NeedContract)
+			if trade.DepositType != nil {
+				sq.SetDepositType(trade.DepositType.Value())
+				sq.SetNeedContract(false)
+				if *trade.DepositType == model.DepositTypeContract {
+					sq.SetNeedContract(true)
+				}
 			}
 
 			if do != nil {

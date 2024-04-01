@@ -3681,10 +3681,6 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "forceUnsubscribe": {
-                    "description": "是否强制退订 true:强制退订 false:正常退订",
-                    "type": "boolean"
-                },
                 "id": {
                     "description": "订单ID",
                     "type": "integer"
@@ -4796,10 +4792,6 @@ const docTemplate = `{
                 "enterprisePriceId": {
                     "description": "团签价格ID",
                     "type": "integer"
-                },
-                "forceUnsubscribe": {
-                    "description": "是否强制退订 true:强制退订 false:正常退订",
-                    "type": "boolean"
                 },
                 "id": {
                     "description": "订阅ID",
