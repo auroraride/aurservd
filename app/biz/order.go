@@ -586,7 +586,7 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 				SetIntelligent(trade.Plan.Intelligent).
 				SetNillableStoreID(trade.StoreID).
 				SetNillableAgreementHash(trade.AgreementHash).
-				SetNillableDepositType(trade.DepositType.Value())
+				SetDepositType(trade.DepositType.Value())
 			// 根据用户选择是否需要签约 默认不需要签约
 			if trade.NeedContract != nil {
 				sq.SetNillableNeedContract(trade.NeedContract)

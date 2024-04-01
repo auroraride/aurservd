@@ -3801,6 +3801,7 @@ const docTemplate = `{
         "definition.OrderCreateReq": {
             "type": "object",
             "required": [
+                "depositType",
                 "orderType",
                 "payway",
                 "planId"

@@ -633,8 +633,13 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 				SetIntelligent(trade.Plan.Intelligent).
 				SetNeedContract(true).
 				SetNillableStoreID(trade.StoreID).
-				SetNillableAgreementHash(trade.AgreementHash).
-				SetNillableDepositType(trade.DepositType.Value())
+				SetNillableAgreementHash(trade.AgreementHash)
+			// 兼容老版本 老版本如果未传递则默认为合同押金
+			if trade.DepositType == nil {
+				sq.SetDepositType(model.DepositTypeContract.Value())
+			} else {
+				sq.SetDepositType(trade.DepositType.Value())
+			}
 			if do != nil {
 				sq.AddOrders(do)
 			}

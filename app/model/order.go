@@ -179,6 +179,6 @@ const (
 	DepositTypePay                                     // 支付押金
 )
 
-func (d DepositType) Value() *uint8 {
-	return (*uint8)(&d)
+func (d DepositType) Value() uint8 {
+	return uint8(d)
 }

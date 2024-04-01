@@ -330,6 +330,7 @@ definitions:
         description: 门店ID
         type: integer
     required:
+      - depositType
     - orderType
     - payway
     - planId
