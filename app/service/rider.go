@@ -1040,7 +1040,7 @@ func (s *riderService) DepositPaid(riderID uint64) model.RiderDepositRes {
 // Deposit 获取用户应交押金
 func (s *riderService) Deposit(riderID uint64) float64 {
 	o := s.DepositOrder(riderID)
-	if o != nil {
+	if o == nil {
 		return 0
 	}
 	return o.Amount

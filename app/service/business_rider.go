@@ -772,7 +772,7 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 		go NewEnterprise().UpdateStatementByID(*sub.EnterpriseID)
 	}
 
-	// 查询订单 todo 有问题
+	// 查询订单
 	o, _ := ent.Database.Order.QueryNotDeleted().Where(order.SubscribeID(sub.ID)).All(s.ctx)
 	if len(o) == 0 {
 		return
