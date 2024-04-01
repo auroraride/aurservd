@@ -548,7 +548,7 @@ func (s *cabinetService) Businessable(cab *ent.Cabinet) (health bool, maintenanc
 func (s *cabinetService) BusinessableX(cab *ent.Cabinet) {
 	health, maintenance := s.Businessable(cab)
 	if maintenance {
-		snag.Panic("电柜开小差了, 请联系客服")
+		snag.Panic("电柜维护中，请联系客服")
 	}
 	if !health {
 		snag.Panic("电柜离线, 暂无法使用")

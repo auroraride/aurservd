@@ -260,7 +260,7 @@ func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *e
 
 	// 判定电柜状态
 	if cab.Status == model.CabinetStatusMaintenance.Value() {
-		snag.Panic("电柜开小差了, 请联系客服")
+		snag.Panic("电柜维护中，请联系客服")
 	}
 
 	// 判定是否智能电柜套餐
@@ -280,7 +280,7 @@ func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *e
 
 		// 检查电池型号与电柜型号兼容
 		if !NewCabinet().ModelInclude(cab, bat.Model) {
-			snag.Panic("电池型号不兼容")
+			snag.Panic("电池型号不匹配，请更换电柜重试")
 		}
 	}
 

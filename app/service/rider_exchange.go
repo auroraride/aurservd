@@ -66,7 +66,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 
 	// 检查可用电池型号
 	if !cs.ModelInclude(cab, sub.Model) {
-		snag.Panic("电池型号不兼容")
+		snag.Panic("电池型号不匹配，请更换电柜重试")
 	}
 
 	var (
