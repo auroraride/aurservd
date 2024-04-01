@@ -280,7 +280,7 @@ func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *e
 
 		// 检查电池型号与电柜型号兼容
 		if !NewCabinet().ModelInclude(cab, bat.Model) {
-			snag.Panic("电池型号不兼容")
+			snag.Panic("电池型号不匹配，请更换电柜重试")
 		}
 	}
 
