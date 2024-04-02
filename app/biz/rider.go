@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/logging"
@@ -10,7 +11,9 @@ import (
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/baidu"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/pkg/snag"
 )
 
 type riderBiz struct {
@@ -63,5 +66,37 @@ func (b *riderBiz) ChangePhone(r *ent.Rider, req *definition.RiderChangePhoneReq
 		SetOperate(model.OperateProfile).
 		SetDiff(r.Phone, req.Phone).
 		Send()
+	return
+}
+
+// Allocated V2测试签约写的分配信息 TODO 记得删除
+func (b *riderBiz) Allocated(req *definition.RiderAllocatedReq) {
+	r := service.NewRider().QueryPhoneX(req.Phone)
+
+	// 是否有生效中套餐
+	sub := service.NewSubscribe().Recent(r.ID)
+	if sub == nil {
+		snag.Panic("无生效中的骑行卡")
+	}
+
+	cab := service.NewCabinet().QueryOneSerialX(req.Serial)
+
+	// 查询分配信息是否存在, 如果存在则删除
+	service.NewAllocate().SubscribeDeleteIfExists(sub.ID)
+
+	// 存储分配信息
+	err := ent.Database.Allocate.Create().
+		SetType(allocate.TypeBattery).
+		SetSubscribe(sub).
+		SetRider(r).
+		SetStatus(model.AllocateStatusPending.Value()).
+		SetTime(time.Now()).
+		SetModel(sub.Model).
+		SetCabinetID(cab.ID).
+		SetRemark("用户自主扫码").
+		Exec(b.ctx)
+	if err != nil {
+		snag.Panic("请求失败")
+	}
 	return
 }
