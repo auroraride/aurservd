@@ -73,7 +73,7 @@ func (t *orderTask) Do() {
 	now := time.Now()
 	for _, v := range o {
 		// 订阅到期时间为0  或者订阅开始时间到现在超过360天
-		if v.Edges.Subscribe != nil && (v.Edges.Subscribe.Remaining == 0) || now.Sub(v.Edges.Subscribe.StartAt.Local()).Hours()/24 >= 360 {
+		if v.Edges.Subscribe != nil && (v.Edges.Subscribe.Remaining == 0 || now.Sub(v.Edges.Subscribe.StartAt.Local()).Hours()/24 >= 360) {
 			err := service.NewOrder().TradePay(v)
 			if err != nil {
 				zap.L().Error(fmt.Sprintf("定时预授权转支付失败 订单ID: %d, 用户id: %d", v.ID, v.RiderID), zap.Error(err))
