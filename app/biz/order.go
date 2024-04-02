@@ -214,7 +214,8 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 	}
 
 	// 车电套餐需要传入门店ID
-	if p.Type == model.PlanTypeEbikeWithBattery.Value() && req.StoreID == nil {
+	if p.Type == model.PlanTypeEbikeWithBattery.Value() && req.StoreID == nil &&
+		(req.OrderType == model.OrderTypeNewly || req.OrderType == model.OrderTypeAgain) {
 		return nil, errors.New("车电套餐需要选择门店")
 	}
 
