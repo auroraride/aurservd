@@ -138,6 +138,9 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 		StartAt:  timestamppb.New(time.Now()),
 	})
 
+	// 设置10分钟超时
+	_ = ar.Redis.Expire(s.ctx, key, 10*time.Minute)
+
 	// 使用gRPC请求换电
 	var batSN string
 	if old != nil {
