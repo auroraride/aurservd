@@ -106,3 +106,9 @@ type RiderChangePhoneReq struct {
 	SmsId   string `json:"smsId" validate:"required" trans:"短信ID"`    // 短信ID
 	SmsCode string `json:"smsCode" validate:"required" trans:"短信验证码"` // 短信验证码
 }
+
+// RiderAllocatedReq 骑手分配信息
+type RiderAllocatedReq struct {
+	Serial string `json:"serial" validate:"required" query:"serial"`
+	Phone  string `json:"phone" validate:"required" query:"phone"`
+}
