@@ -87,6 +87,7 @@ func (*subscribe) Halt(c echo.Context) (err error) {
 				ID:            req.ID,
 				RefundDeposit: req.RefundDeposit,
 				DepositAmount: req.DepositAmount,
+				Remark:        req.Remark,
 			},
 		)
 	return ctx.SendResponse()

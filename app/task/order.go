@@ -7,6 +7,8 @@ package task
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
@@ -26,6 +28,7 @@ func NewOrder() *orderTask {
 }
 
 func (t *orderTask) Start() {
+	// 处理预授权订单
 	c := cron.New()
 	_, err := c.AddFunc("0 9 * * *", func() {
 		zap.L().Info("开始执行 @daily[orderTradePay] 定时任务")
@@ -38,6 +41,9 @@ func (t *orderTask) Start() {
 	c.Start()
 }
 
+// Do
+// 处理预授权订单 当订阅到期时间为0时，自动发起预授权转支付
+// 假如当前订阅未到期 查询当前订阅时间是否超过360天 如果超过360天则自动发起预授权转支付
 func (t *orderTask) Do() {
 	ctx := context.Background()
 	// 查询订阅到期的
@@ -51,11 +57,10 @@ func (t *orderTask) Do() {
 			subscribe.StartAtNotNil(),
 			// 非企业
 			subscribe.EnterpriseIDIsNil(),
-			// 剩余0天
-			subscribe.RemainingEQ(0),
 		),
 		order.TradePayAtIsNil(),
-		order.PaywayIn(model.OrderPaywayAlipayAuthFreeze, model.OrderPaywayWechatDeposit),
+		order.PaywayIn(model.OrderPaywayAlipayAuthFreeze),
+		order.Status(model.OrderStatusPaid),
 	).
 		WithSubscribe().
 		WithPlan().
@@ -64,8 +69,16 @@ func (t *orderTask) Do() {
 	if len(o) == 0 {
 		return
 	}
-	// todo 这里有个问题还需要修改
+
+	now := time.Now()
 	for _, v := range o {
-		service.NewOrder().TradePay(v)
+		// 订阅到期时间为0  或者订阅开始时间到现在超过360天
+		if v.Edges.Subscribe != nil && (v.Edges.Subscribe.Remaining == 0) || now.Sub(v.Edges.Subscribe.StartAt.Local()).Hours()/24 >= 360 {
+			err := service.NewOrder().TradePay(v)
+			if err != nil {
+				zap.L().Error(fmt.Sprintf("定时预授权转支付失败 订单ID: %d, 用户id: %d", v.ID, v.RiderID), zap.Error(err))
+				continue
+			}
+		}
 	}
 }

@@ -893,6 +893,7 @@ func (s *businessRiderService) ForceUnsubscribe(req *model.BusinessSubscribeReq,
 			SetOrderID(depositOrder.ID).
 			SetStatus(model.RefundStatusPending).
 			SetRemainAmount(remainAmount).
+			SetNillableRemark(req.Remark).
 			Save(s.ctx)
 		if err != nil {
 			return err
