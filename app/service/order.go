@@ -531,15 +531,21 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 			gift, proportion := NewPoint().CalculateGift(trade.Amount, trade.CityID)
 
 			var r *ent.Rider
-			r, err = tx.Rider.UpdateOneID(trade.RiderID).AddPoints(-trade.Points + gift).Save(s.ctx)
+			r, _ = tx.Rider.QueryNotDeleted().Where(rider.ID(trade.RiderID)).First(s.ctx)
+			if r == nil {
+				zap.L().Error("订单已支付查询骑手失败: "+trade.OutTradeNo, zap.Error(err))
+				return
+			}
+
 			before := r.Points
+			_, err = r.Update().AddPoints(-trade.Points + gift).Save(s.ctx)
 			if err != nil {
 				zap.L().Error("订单已支付, 但积分更新失败: "+trade.OutTradeNo, zap.Error(err))
 				return
 			}
 
 			err = tx.PointLog.Create().
-				SetPoints(trade.Points).
+				SetPoints(-trade.Points).
 				SetRiderID(trade.RiderID).
 				SetReason("订阅骑士卡").
 				SetType(model.PointLogTypeConsume.Value()).
@@ -554,20 +560,22 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 			NewPoint().RemovePreConsume(r, trade.Points)
 
 			// 存储赠送积分
-			err = tx.PointLog.Create().
-				SetPoints(gift).
-				SetRiderID(trade.RiderID).
-				SetReason("消费赠送").
-				SetType(model.PointLogTypeAward.Value()).
-				SetAfter(r.Points).
-				SetAttach(&model.PointLogAttach{PointGift: &model.PointGift{
-					Amount:     trade.Amount,
-					Proportion: proportion,
-				}}).
-				SetOrder(o).
-				Exec(s.ctx)
-			if err != nil {
-				zap.L().Error("订单已支付, 但积分赠送记录创建失败: "+trade.OutTradeNo, zap.Error(err))
+			if gift > 0 {
+				err = tx.PointLog.Create().
+					SetPoints(gift).
+					SetRiderID(trade.RiderID).
+					SetReason("消费赠送").
+					SetType(model.PointLogTypeAward.Value()).
+					SetAfter(r.Points).
+					SetAttach(&model.PointLogAttach{PointGift: &model.PointGift{
+						Amount:     trade.Amount,
+						Proportion: proportion,
+					}}).
+					SetOrder(o).
+					Exec(s.ctx)
+				if err != nil {
+					zap.L().Error("订单已支付, 但积分赠送记录创建失败: "+trade.OutTradeNo, zap.Error(err))
+				}
 			}
 		}
 

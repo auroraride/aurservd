@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/payment"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
@@ -213,12 +214,6 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 		return nil, errors.New("骑士卡错误")
 	}
 
-	// 车电套餐需要传入门店ID
-	if p.Type == model.PlanTypeEbikeWithBattery.Value() && req.StoreID == nil &&
-		(req.OrderType == model.OrderTypeNewly || req.OrderType == model.OrderTypeAgain) {
-		return nil, errors.New("车电套餐需要选择门店")
-	}
-
 	// 查询是否企业骑手
 	if r.EnterpriseID != nil {
 		return nil, errors.New("企业骑手无法购买骑士卡")
@@ -259,12 +254,20 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 
 	// 判定押金是否需要支付
 	var deposit float64
-	// 当支付方式为支付宝或微信,并且套餐支持押金支付时 并且不是分开支付的押金订单
-	if (req.Payway == model.OrderPaywayAlipay || req.Payway == model.OrderPaywayWechat) && p.DepositPay && req.DepositOrderNo == nil ||
-		// 当选择支付宝预授权支付时, 且套餐支持押金支付时
-		req.Payway == model.OrderPaywayAlipayAuthFreeze && req.DepositAlipayAuthFreeze {
-		if p.Deposit && p.DepositAmount > 0 {
-			deposit = p.DepositAmount
+
+	if t == model.OrderTypeNewly || t == model.OrderTypeAgain {
+		// 车电套餐需要传入门店ID
+		if p.Type == model.PlanTypeEbikeWithBattery.Value() && req.StoreID == nil {
+			return nil, errors.New("车电套餐需要选择门店")
+		}
+		// 只有新签和重签才需要支付押金
+		// 当支付方式为支付宝或微信,并且套餐支持押金支付时 并且不是分开支付的押金订单
+		if (req.Payway == model.OrderPaywayAlipay || req.Payway == model.OrderPaywayWechat) && p.DepositPay && req.DepositOrderNo == nil ||
+			// 当选择支付宝预授权支付时, 且套餐支持押金支付时
+			req.Payway == model.OrderPaywayAlipayAuthFreeze && req.DepositAlipayAuthFreeze {
+			if p.Deposit && p.DepositAmount > 0 {
+				deposit = p.DepositAmount
+			}
 		}
 	}
 
@@ -493,15 +496,21 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 			gift, proportion := service.NewPoint().CalculateGift(trade.Amount, trade.CityID)
 
 			var r *ent.Rider
-			r, err = tx.Rider.UpdateOneID(trade.RiderID).AddPoints(-trade.Points + gift).Save(s.ctx)
+			r, _ = tx.Rider.QueryNotDeleted().Where(rider.ID(trade.RiderID)).First(s.ctx)
+			if r == nil {
+				zap.L().Error("订单已支付查询骑手失败: "+no, zap.Error(err))
+				return
+			}
+
 			before := r.Points
+			_, err = r.Update().AddPoints(-trade.Points + gift).Save(s.ctx)
 			if err != nil {
 				zap.L().Error("订单已支付, 但积分更新失败: "+no, zap.Error(err))
 				return
 			}
 
 			err = tx.PointLog.Create().
-				SetPoints(trade.Points).
+				SetPoints(-trade.Points).
 				SetRiderID(trade.RiderID).
 				SetReason("订阅骑士卡").
 				SetType(model.PointLogTypeConsume.Value()).
@@ -516,20 +525,22 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 			service.NewPoint().RemovePreConsume(r, trade.Points)
 
 			// 存储赠送积分
-			err = tx.PointLog.Create().
-				SetPoints(gift).
-				SetRiderID(trade.RiderID).
-				SetReason("消费赠送").
-				SetType(model.PointLogTypeAward.Value()).
-				SetAfter(r.Points).
-				SetAttach(&model.PointLogAttach{PointGift: &model.PointGift{
-					Amount:     trade.Amount,
-					Proportion: proportion,
-				}}).
-				SetOrder(o).
-				Exec(s.ctx)
-			if err != nil {
-				zap.L().Error("订单已支付, 但积分赠送记录创建失败: "+no, zap.Error(err))
+			if gift > 0 {
+				err = tx.PointLog.Create().
+					SetPoints(gift).
+					SetRiderID(trade.RiderID).
+					SetReason("消费赠送").
+					SetType(model.PointLogTypeAward.Value()).
+					SetAfter(r.Points).
+					SetAttach(&model.PointLogAttach{PointGift: &model.PointGift{
+						Amount:     trade.Amount,
+						Proportion: proportion,
+					}}).
+					SetOrder(o).
+					Exec(s.ctx)
+				if err != nil {
+					zap.L().Error("订单已支付, 但积分赠送记录创建失败: "+no, zap.Error(err))
+				}
 			}
 		}
 
