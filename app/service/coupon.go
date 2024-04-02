@@ -347,7 +347,7 @@ func (s *couponService) RiderDetail(item *ent.Coupon) (res model.CouponRider) {
 }
 
 func (s *couponService) RiderList(req *model.CouponRiderListReq) (res []model.CouponRider) {
-	q := s.orm.Query().Where(coupon.RiderID(s.rider.ID)).Order(ent.Desc(coupon.FieldCreatedAt))
+	q := s.orm.Query().Where(coupon.RiderID(s.rider.ID)).Order(ent.Desc(coupon.FieldCreatedAt)).WithTemplate()
 	switch req.Type {
 	case 0:
 		q.Where(
@@ -380,6 +380,11 @@ func (s *couponService) RiderList(req *model.CouponRiderListReq) (res []model.Co
 				contains = true
 				break
 			}
+		}
+
+		// 优惠券模版如果绑定是城市也需要显示 具体使用还要在订单去判定
+		if item.Edges.Template != nil && item.Edges.Template.Meta != nil && len(item.Edges.Template.Meta.Cities) > 0 {
+			contains = true
 		}
 
 		if contains {
