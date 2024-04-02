@@ -15,6 +15,7 @@ type BusinessSubscribeReq struct {
 
 	RefundDeposit *bool    `json:"refundDeposit" trans:"是否退押金"` // 是否退押金(后台使用)
 	DepositAmount *float64 `json:"depositAmount"`               // 退押金金额(后台使用)
+	Remark        *string  `json:"remark"`                      // 备注
 }
 
 type BusinessCabinetReq struct {
