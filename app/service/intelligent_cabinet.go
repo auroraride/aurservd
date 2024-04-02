@@ -245,7 +245,7 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
 			Step:    uint8(data.Step),
 			Status:  status,
 			Message: data.Message,
-			Stop:    data.Step == model.ExchangeStepPutOut.Uint32() || data.Message != "",
+			Stop:    data.Step == model.ExchangeStepPutOut.Uint32() || status != model.TaskStatusSuccess || data.Message != "",
 		}
 	}
 

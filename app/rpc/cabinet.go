@@ -116,16 +116,17 @@ func CabinetExchange(key string, user *adapter.User, req *pb.CabinetExchangeRequ
 
 		// 连接结束
 		if err == io.EOF {
-			stop = true
 			zap.L().Info("换电请求已结束", user.ZapField(), user.ZapField(), log.Payload(res))
-			// 判定返回步骤是否最后一步，若非最后一步代表换电失败
-			if res != nil {
-				if res.Step < 4 {
-					err = errors.New("网络异常，换电失败")
-				} else {
-					err = nil
-				}
-			}
+			// // 判定返回步骤是否最后一步，若非最后一步代表换电失败
+			// stop = true
+			// if res != nil {
+			// 	if res.Step < 4 {
+			// 		err = errors.New("网络异常，换电失败")
+			// 	} else {
+			// 		err = nil
+			// 	}
+			// }
+			return nil
 		}
 
 		if err != nil {
@@ -145,7 +146,7 @@ func CabinetExchange(key string, user *adapter.User, req *pb.CabinetExchangeRequ
 		}
 
 		// 步骤结果回调
-		bor(res, stop)
+		go bor(res, stop)
 
 		if stop {
 			return
