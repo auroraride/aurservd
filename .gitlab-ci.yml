@@ -28,9 +28,9 @@ lint:
   - export GITLAB_API="https://gitlab.liasica.com/api/v4"
   script:
   - reviewdog -reporter=gitlab-mr-discussion
-  after_script:
-  - go clean -cache
-  - go clean -fuzzcache
+#  after_script:
+#  - go clean -cache
+#  - go clean -fuzzcache
 sast:
   stage: test
 include:
