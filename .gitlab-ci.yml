@@ -21,8 +21,8 @@ lint:
     - export REVIEWDOG_INSECURE_SKIP_VERIFY=true
     - export GITLAB_API="https://gitlab.liasica.com/api/v4"
   script:
-    - ls go.mod
-    - bash ./generate_doc.sh
+#    - ls go.mod
+#    - bash ./generate_doc.sh
     - reviewdog -reporter=gitlab-mr-discussion
   after_script:
     - go clean -cache
