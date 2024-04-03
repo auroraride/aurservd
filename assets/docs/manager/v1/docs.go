@@ -7224,8 +7224,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "预支付订单号",
-                        "name": "outTradeNo",
+                        "description": "预授权订单号",
+                        "name": "outOrderNo",
                         "in": "query"
                     },
                     {
@@ -7261,6 +7261,20 @@ const docTemplate = `{
                         "type": "string",
                         "description": "时间起始, 格式为: 2022-01-01",
                         "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5
+                        ],
+                        "type": "integer",
+                        "description": "订单状态 0:待支付 1:已支付 2:申请退款 3:已退款 4:退款被拒绝 5:取消订单",
+                        "name": "status",
                         "in": "query"
                     },
                     {
@@ -16063,6 +16077,10 @@ const docTemplate = `{
                     "description": "是否退押金, 是否退押金(后台使用)",
                     "type": "boolean"
                 },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
                 "storeId": {
                     "description": "门店ID",
                     "type": "integer"
@@ -19511,6 +19529,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.CouponRider"
                     }
                 },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
                 "discountNewly": {
                     "description": "新签优惠",
                     "type": "number"
@@ -19660,8 +19682,8 @@ const docTemplate = `{
                     "description": "电池型号",
                     "type": "string"
                 },
-                "outTradeNo": {
-                    "description": "预支付订单号",
+                "outOrderNo": {
+                    "description": "预授权订单号",
                     "type": "string"
                 },
                 "payway": {
@@ -19688,6 +19710,18 @@ const docTemplate = `{
                 "start": {
                     "description": "时间起始, 格式为: 2022-01-01",
                     "type": "string"
+                },
+                "status": {
+                    "description": "订单状态 0:待支付 1:已支付 2:申请退款 3:已退款 4:退款被拒绝 5:取消订单",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
                 },
                 "storeName": {
                     "description": "门店名字",
@@ -20416,6 +20450,10 @@ const docTemplate = `{
                 "refundAt": {
                     "description": "退款成功时间",
                     "type": "string"
+                },
+                "remainAmount": {
+                    "description": "剩余金额",
+                    "type": "number"
                 },
                 "remark": {
                     "description": "备注",

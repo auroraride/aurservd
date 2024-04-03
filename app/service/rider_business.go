@@ -21,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/pkg/cache"
+	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
 
@@ -213,7 +214,7 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
 				SetCabinetTask(func() (*model.BinInfo, *model.Battery, error) {
 					return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessUnsubscribe, s.subscribe, s.battery, s.cabinet)
 				}).
-				UnSubscribe(&model.BusinessSubscribeReq{ID: req.ID})
+				UnSubscribe(&model.BusinessSubscribeReq{ID: req.ID, RefundDeposit: silk.Bool(true)})
 		})
 
 		if err != nil {

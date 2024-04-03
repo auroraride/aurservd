@@ -3354,6 +3354,10 @@ const docTemplate = `{
                     "description": "是否退押金, 是否退押金(后台使用)",
                     "type": "boolean"
                 },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
                 "storeId": {
                     "description": "门店ID",
                     "type": "integer"

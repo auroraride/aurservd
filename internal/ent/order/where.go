@@ -205,6 +205,11 @@ func OutRequestNo(v string) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldOutRequestNo, v))
 }
 
+// SubscribeEndAt applies equality check predicate on the "subscribe_end_at" field. It's identical to SubscribeEndAtEQ.
+func SubscribeEndAt(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldSubscribeEndAt, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldCreatedAt, v))
@@ -1603,6 +1608,56 @@ func OutRequestNoEqualFold(v string) predicate.Order {
 // OutRequestNoContainsFold applies the ContainsFold predicate on the "out_request_no" field.
 func OutRequestNoContainsFold(v string) predicate.Order {
 	return predicate.Order(sql.FieldContainsFold(FieldOutRequestNo, v))
+}
+
+// SubscribeEndAtEQ applies the EQ predicate on the "subscribe_end_at" field.
+func SubscribeEndAtEQ(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldSubscribeEndAt, v))
+}
+
+// SubscribeEndAtNEQ applies the NEQ predicate on the "subscribe_end_at" field.
+func SubscribeEndAtNEQ(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldSubscribeEndAt, v))
+}
+
+// SubscribeEndAtIn applies the In predicate on the "subscribe_end_at" field.
+func SubscribeEndAtIn(vs ...time.Time) predicate.Order {
+	return predicate.Order(sql.FieldIn(FieldSubscribeEndAt, vs...))
+}
+
+// SubscribeEndAtNotIn applies the NotIn predicate on the "subscribe_end_at" field.
+func SubscribeEndAtNotIn(vs ...time.Time) predicate.Order {
+	return predicate.Order(sql.FieldNotIn(FieldSubscribeEndAt, vs...))
+}
+
+// SubscribeEndAtGT applies the GT predicate on the "subscribe_end_at" field.
+func SubscribeEndAtGT(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldGT(FieldSubscribeEndAt, v))
+}
+
+// SubscribeEndAtGTE applies the GTE predicate on the "subscribe_end_at" field.
+func SubscribeEndAtGTE(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldGTE(FieldSubscribeEndAt, v))
+}
+
+// SubscribeEndAtLT applies the LT predicate on the "subscribe_end_at" field.
+func SubscribeEndAtLT(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldLT(FieldSubscribeEndAt, v))
+}
+
+// SubscribeEndAtLTE applies the LTE predicate on the "subscribe_end_at" field.
+func SubscribeEndAtLTE(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldLTE(FieldSubscribeEndAt, v))
+}
+
+// SubscribeEndAtIsNil applies the IsNil predicate on the "subscribe_end_at" field.
+func SubscribeEndAtIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldSubscribeEndAt))
+}
+
+// SubscribeEndAtNotNil applies the NotNil predicate on the "subscribe_end_at" field.
+func SubscribeEndAtNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldSubscribeEndAt))
 }
 
 // HasPlan applies the HasEdge predicate on the "plan" edge.

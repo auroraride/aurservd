@@ -344,7 +344,11 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 
 	// 查询个签默认协议
 	var defaultAgreement *ent.Agreement
-	defaultAgreement, _ = ent.Database.Agreement.QueryNotDeleted().Where(agreement.UserType(1), agreement.IsDefault(true)).First(s.ctx)
+	defaultAgreement, _ = ent.Database.Agreement.QueryNotDeleted().
+		Where(
+			agreement.UserType(model.AgreementUserTypePersonal.Value()),
+			agreement.IsDefault(true),
+		).First(s.ctx)
 
 	if item.Edges.Agreement != nil {
 		res.Agreement = &model.Agreement{
@@ -595,7 +599,11 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 
 	// 查询个签默认协议
 	var defaultAgreement *ent.Agreement
-	defaultAgreement, _ = ent.Database.Agreement.QueryNotDeleted().Where(agreement.UserType(1), agreement.IsDefault(true)).First(s.ctx)
+	defaultAgreement, _ = ent.Database.Agreement.QueryNotDeleted().
+		Where(
+			agreement.UserType(model.AgreementUserTypePersonal.Value()),
+			agreement.IsDefault(true),
+		).First(s.ctx)
 
 	for _, item := range items {
 		key := s.Key(item.Model, item.BrandID)

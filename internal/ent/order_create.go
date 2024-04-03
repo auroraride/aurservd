@@ -442,6 +442,20 @@ func (oc *OrderCreate) SetNillableOutRequestNo(s *string) *OrderCreate {
 	return oc
 }
 
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (oc *OrderCreate) SetSubscribeEndAt(t time.Time) *OrderCreate {
+	oc.mutation.SetSubscribeEndAt(t)
+	return oc
+}
+
+// SetNillableSubscribeEndAt sets the "subscribe_end_at" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableSubscribeEndAt(t *time.Time) *OrderCreate {
+	if t != nil {
+		oc.SetSubscribeEndAt(*t)
+	}
+	return oc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (oc *OrderCreate) SetPlan(p *Plan) *OrderCreate {
 	return oc.SetPlanID(p.ID)
@@ -804,6 +818,10 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 	if value, ok := oc.mutation.OutRequestNo(); ok {
 		_spec.SetField(order.FieldOutRequestNo, field.TypeString, value)
 		_node.OutRequestNo = value
+	}
+	if value, ok := oc.mutation.SubscribeEndAt(); ok {
+		_spec.SetField(order.FieldSubscribeEndAt, field.TypeTime, value)
+		_node.SubscribeEndAt = &value
 	}
 	if nodes := oc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1547,6 +1565,24 @@ func (u *OrderUpsert) ClearOutRequestNo() *OrderUpsert {
 	return u
 }
 
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (u *OrderUpsert) SetSubscribeEndAt(v time.Time) *OrderUpsert {
+	u.Set(order.FieldSubscribeEndAt, v)
+	return u
+}
+
+// UpdateSubscribeEndAt sets the "subscribe_end_at" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateSubscribeEndAt() *OrderUpsert {
+	u.SetExcluded(order.FieldSubscribeEndAt)
+	return u
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (u *OrderUpsert) ClearSubscribeEndAt() *OrderUpsert {
+	u.SetNull(order.FieldSubscribeEndAt)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2157,6 +2193,27 @@ func (u *OrderUpsertOne) UpdateOutRequestNo() *OrderUpsertOne {
 func (u *OrderUpsertOne) ClearOutRequestNo() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearOutRequestNo()
+	})
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (u *OrderUpsertOne) SetSubscribeEndAt(v time.Time) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetSubscribeEndAt(v)
+	})
+}
+
+// UpdateSubscribeEndAt sets the "subscribe_end_at" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateSubscribeEndAt() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateSubscribeEndAt()
+	})
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (u *OrderUpsertOne) ClearSubscribeEndAt() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearSubscribeEndAt()
 	})
 }
 
@@ -2936,6 +2993,27 @@ func (u *OrderUpsertBulk) UpdateOutRequestNo() *OrderUpsertBulk {
 func (u *OrderUpsertBulk) ClearOutRequestNo() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearOutRequestNo()
+	})
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (u *OrderUpsertBulk) SetSubscribeEndAt(v time.Time) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetSubscribeEndAt(v)
+	})
+}
+
+// UpdateSubscribeEndAt sets the "subscribe_end_at" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateSubscribeEndAt() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateSubscribeEndAt()
+	})
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (u *OrderUpsertBulk) ClearSubscribeEndAt() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearSubscribeEndAt()
 	})
 }
 

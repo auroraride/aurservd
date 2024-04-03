@@ -609,6 +609,9 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 		var (
 			aend *time.Time
 		)
+
+		endAt := silk.Pointer(tools.NewTime().WillEnd(time.Now(), sub.InitialDays))
+
 		// 如果是代理商, 计算骑士卡代理商结束时间
 		if sub.EnterpriseID != nil {
 			if sub.Edges.Enterprise == nil {
@@ -618,7 +621,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 				snag.Panic("未找到团签信息")
 			}
 			if sub.Edges.Enterprise.Agent {
-				aend = silk.Pointer(tools.NewTime().WillEnd(time.Now(), sub.InitialDays))
+				aend = endAt
 			}
 		}
 
@@ -653,8 +656,8 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 			)
 		}
 
-		// 若有退款, 则标记更新状态为失败
 		if sub.EnterpriseID == nil && sub.InitialOrderID != 0 {
+			// 若有退款, 则标记更新状态为失败
 			of, _ := tx.OrderRefund.QueryNotDeleted().Where(orderrefund.OrderID(sub.InitialOrderID)).First(s.ctx)
 			if of != nil {
 				err = tx.OrderRefund.UpdateOne(of).SetReason("激活订阅, 自动拒绝退款").SetStatus(model.OrderStatusRefundRefused).Exec(s.ctx)
@@ -662,6 +665,12 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 					return
 				}
 				_ = tx.Order.UpdateOneID(of.OrderID).SetStatus(model.OrderStatusPaid).Exec(s.ctx)
+			}
+			// 更新订阅到期时间
+			err = tx.Order.UpdateOneID(sub.InitialOrderID).SetSubscribeEndAt(*endAt).Exec(s.ctx)
+			if err != nil {
+				zap.L().Error("更新订阅到期时间失败", zap.Error(err))
+				return
 			}
 		}
 	})
@@ -774,6 +783,7 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 	// 处理退款
 	err = s.ForceUnsubscribe(req, sub.ID, sub.RiderID)
 	if err != nil {
+		zap.L().Error("退款失败", zap.Error(err))
 		snag.Panic(err)
 	}
 
@@ -857,110 +867,130 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
 
 // ForceUnsubscribe 处理强制退租预支付和退款
 func (s *businessRiderService) ForceUnsubscribe(req *model.BusinessSubscribeReq, subscribeID uint64, riderID uint64) error {
-	// 处理预支付订单
-	o, _ := ent.Database.Order.QueryNotDeleted().Where(order.SubscribeID(subscribeID)).First(s.ctx)
-	// 预授权支付的订单转支付
-	if o != nil && o.Payway == model.OrderPaywayAlipayAuthFreeze && (o.Type == model.OrderTypeNewly || o.Type == model.OrderTypeAgain) {
-		// 转支付
-		err := NewOrder().TradePay(o)
-		if err != nil {
-			return err
-		}
-	}
-
-	// 处理押金退款
-	depositOrder := NewRider().DepositOrder(riderID)
-	if depositOrder != nil {
-
-		// 部分退款
-		var remainAmount float64
-		if req.DepositAmount != nil && *req.DepositAmount > 0 {
-			if *req.DepositAmount > depositOrder.Amount {
-				return fmt.Errorf("退款金额超出押金金额")
-			}
-			// 剩余金额
-			remainAmount = depositOrder.Amount - *req.DepositAmount
-			// 退款金额
-			depositOrder.Amount = *req.DepositAmount
-		}
-
-		outRefundNo := tools.NewUnique().NewSN28()
-		or, err := ent.Database.OrderRefund.Create().
-			SetOrderID(depositOrder.ID).
-			SetOutRefundNo(outRefundNo).
-			SetAmount(depositOrder.Amount).
-			SetReason("强制退租,系统自动申请").
-			SetOrderID(depositOrder.ID).
-			SetStatus(model.RefundStatusPending).
-			SetRemainAmount(remainAmount).
-			SetNillableRemark(req.Remark).
-			Save(s.ctx)
-		if err != nil {
-			return err
-		}
-
-		// 更新订单状态
-		_, err = depositOrder.Update().SetStatus(model.OrderStatusRefundPending).Save(s.ctx)
-		if err != nil {
-			return err
-		}
-
-		prepay := &model.PaymentCache{
-			CacheType: model.PaymentCacheTypeRefund,
-			Refund: &model.PaymentRefund{
-				OrderID:      depositOrder.ID,
-				TradeNo:      depositOrder.TradeNo,
-				Total:        depositOrder.Total,
-				RefundAmount: or.Amount,
-				Reason:       or.Reason,
-				OutRefundNo:  or.OutRefundNo,
-			},
-		}
-
-		var no string
-		no = depositOrder.OutTradeNo
-
-		// 预支付订单号
-		if depositOrder.TradePayAt == nil && depositOrder.OutOrderNo != "" {
-			no = depositOrder.OutOrderNo
-		}
-
-		err = cache.Set(s.ctx, no, prepay, 20*time.Minute).Err()
-		if err != nil {
-			return err
-		}
-
-		// 当为支付押金时退款
-		if (depositOrder.Payway == model.OrderPaywayAlipay || depositOrder.Payway == model.OrderPaywayWechat) && *req.RefundDeposit {
-			switch depositOrder.Payway {
-			case model.OrderPaywayAlipay:
-				payment.NewAlipay().Refund(prepay.Refund)
-			case model.OrderPaywayWechat:
-				payment.NewWechat().Refund(prepay.Refund)
-			default:
-				return fmt.Errorf("不支持的支付方式")
-			}
-		}
-
-		// 预授权 退款未转支付的订单
-		if depositOrder.Payway == model.OrderPaywayAlipayAuthFreeze && depositOrder.TradePayAt == nil {
-			if *req.RefundDeposit {
-				// 退款 解冻押金
-				err = NewOrder().FandAuthUnfreeze(depositOrder)
-				// 如果退部分押金 还有部分要退的金额转支付
-				if remainAmount > 0 {
-					depositOrder.Amount = remainAmount
-					err = NewOrder().TradePay(depositOrder)
-				}
-			} else {
-				// 不退款 押金转支付
-				err = NewOrder().TradePay(depositOrder)
-			}
-
+	err := ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+		// 处理预支付订单
+		o, _ := ent.Database.Order.QueryNotDeleted().Where(order.SubscribeID(subscribeID)).First(s.ctx)
+		// 预授权支付的订单转支付
+		if o != nil && o.Payway == model.OrderPaywayAlipayAuthFreeze && (o.Type == model.OrderTypeNewly || o.Type == model.OrderTypeAgain) {
+			// 转支付
+			err = NewOrder().TradePay(o)
 			if err != nil {
 				return err
 			}
 		}
+
+		// 处理押金退款
+		depositOrder := NewRider().DepositOrder(riderID)
+		if depositOrder != nil && req.RefundDeposit != nil {
+			var remainAmount float64
+			var reason string
+
+			if *req.RefundDeposit {
+				reason = "订阅已退订，系统自动退押"
+			} else {
+				reason = "拒绝退押"
+			}
+
+			// 如果没传押金金额 默认全退
+			if req.DepositAmount != nil {
+				if *req.DepositAmount > depositOrder.Amount {
+					return fmt.Errorf("退款金额超出押金金额")
+				}
+				reason = "人工退押"
+				// 退部分押金
+				if *req.DepositAmount != depositOrder.Amount {
+					// 剩余金额
+					remainAmount = depositOrder.Amount - *req.DepositAmount
+					// 退款金额
+					depositOrder.Amount = *req.DepositAmount
+					reason = "人工退押，部分退押"
+				}
+			}
+
+			var or *ent.OrderRefund
+
+			outRefundNo := tools.NewUnique().NewSN28()
+			or, err = ent.Database.OrderRefund.Create().
+				SetOrderID(depositOrder.ID).
+				SetOutRefundNo(outRefundNo).
+				SetAmount(depositOrder.Amount).
+				SetReason(reason).
+				SetOrderID(depositOrder.ID).
+				SetStatus(model.RefundStatusPending).
+				SetRemainAmount(remainAmount).
+				SetNillableRemark(req.Remark).
+				Save(s.ctx)
+			if err != nil {
+				return err
+			}
+
+			// 更新订单状态
+			_, err = depositOrder.Update().SetStatus(model.OrderStatusRefundPending).Save(s.ctx)
+			if err != nil {
+				return err
+			}
+
+			prepay := &model.PaymentCache{
+				CacheType: model.PaymentCacheTypeRefund,
+				Refund: &model.PaymentRefund{
+					OrderID:      depositOrder.ID,
+					TradeNo:      depositOrder.TradeNo,
+					Total:        depositOrder.Total,
+					RefundAmount: or.Amount,
+					Reason:       or.Reason,
+					OutRefundNo:  or.OutRefundNo,
+				},
+			}
+
+			var no string
+			no = depositOrder.OutTradeNo
+
+			// 预支付订单号
+			if depositOrder.TradePayAt == nil && depositOrder.OutOrderNo != "" {
+				no = depositOrder.OutOrderNo
+			}
+
+			err = cache.Set(s.ctx, no, prepay, 20*time.Minute).Err()
+			if err != nil {
+				return err
+			}
+
+			// 当为支付押金时退款
+			if (depositOrder.Payway == model.OrderPaywayAlipay || depositOrder.Payway == model.OrderPaywayWechat) && *req.RefundDeposit {
+				switch depositOrder.Payway {
+				case model.OrderPaywayAlipay:
+					payment.NewAlipay().Refund(prepay.Refund)
+				case model.OrderPaywayWechat:
+					payment.NewWechat().Refund(prepay.Refund)
+				default:
+					return fmt.Errorf("不支持的支付方式")
+				}
+			}
+
+			// 预授权 退款未转支付的订单
+			if depositOrder.Payway == model.OrderPaywayAlipayAuthFreeze && depositOrder.TradePayAt == nil {
+				if *req.RefundDeposit {
+					// 退款 解冻押金
+					err = NewOrder().FandAuthUnfreeze(depositOrder)
+					// 如果退部分押金 还有部分要退的金额转支付
+					if remainAmount > 0 {
+						depositOrder.Amount = remainAmount
+						err = NewOrder().TradePay(depositOrder)
+					}
+				} else {
+					// 不退款 押金转支付
+					err = NewOrder().TradePay(depositOrder)
+				}
+
+				if err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
 	return nil
 }

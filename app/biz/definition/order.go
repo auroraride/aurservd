@@ -16,7 +16,7 @@ type OrderDepositCreditRes struct {
 
 // OrderCreateReq 订单创建请求
 type OrderCreateReq struct {
-	PlanID    uint64 `json:"planId" validate:"required" trans:"套餐ID"`
+	PlanID    uint64 `json:"planId" trans:"套餐ID"`
 	Payway    uint8  `json:"payway" validate:"required" trans:"支付方式" enums:"1,2,3"`            // 1支付宝 2微信 3支付宝预授权(仅限V2使用)
 	OrderType uint   `json:"orderType" validate:"required" trans:"订单类型" enums:"1,2,3,4,5,6,7"` // 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
 

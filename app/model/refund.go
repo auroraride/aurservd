@@ -13,14 +13,15 @@ const (
 )
 
 type Refund struct {
-	Status      uint8     `json:"status" enums:"0,1,2,3"` // 退款状态 0:处理中 1:已同意 2:已拒绝 3:已失败
-	Amount      float64   `json:"amount"`                 // 退款金额
-	OutRefundNo string    `json:"outRefundNo"`            // 退款单号
-	Reason      string    `json:"reason"`                 // 退款理由
-	RefundAt    string    `json:"refundAt"`               // 退款成功时间
-	CreatedAt   string    `json:"createdAt"`              // 申请退款时间
-	Remark      string    `json:"remark"`                 // 备注
-	Modifier    *Modifier `json:"modifier,omitempty"`     // 处理人 (可为空)
+	Status       uint8     `json:"status" enums:"0,1,2,3"` // 退款状态 0:处理中 1:已同意 2:已拒绝 3:已失败
+	Amount       float64   `json:"amount"`                 // 退款金额
+	OutRefundNo  string    `json:"outRefundNo"`            // 退款单号
+	Reason       string    `json:"reason"`                 // 退款理由
+	RefundAt     string    `json:"refundAt"`               // 退款成功时间
+	CreatedAt    string    `json:"createdAt"`              // 申请退款时间
+	Remark       string    `json:"remark"`                 // 备注
+	Modifier     *Modifier `json:"modifier,omitempty"`     // 处理人 (可为空)
+	RemainAmount float64   `json:"remainAmount"`           // 剩余金额
 }
 
 // RefundReq 退款申请

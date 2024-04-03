@@ -847,10 +847,16 @@ func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, a
 		info[k] = v
 	}
 	if req.TradeNo != nil {
+		info["平台订单号"] = *req.TradeNo
 		q.Where(order.TradeNo(*req.TradeNo))
 	}
-	if req.OutTradeNo != nil {
-		q.Where(order.OutTradeNo(*req.OutTradeNo))
+	if req.OutOrderNo != nil {
+		info["预支付订单号"] = *req.OutOrderNo
+		q.Where(order.OutOrderNo(*req.OutOrderNo))
+	}
+	if req.Status != nil && *req.Status != 0 {
+		info["订单状态"] = model.OrderStatuses[*req.Status]
+		q.Where(order.Status(*req.Status))
 	}
 
 	return q, info
@@ -882,6 +888,7 @@ func (s *orderService) Detail(item *ent.Order) model.Order {
 		CouponAmount:  item.CouponAmount,
 		Ebike:         NewEbike().Detail(item.Edges.Ebike, item.Edges.Brand),
 		OutOrderNo:    item.OutOrderNo,
+		CreatedAt:     item.CreatedAt.Format(carbon.DateTimeLayout),
 	}
 	rc := item.Edges.City
 	if rc != nil {
@@ -939,13 +946,14 @@ func (s *orderService) Detail(item *ent.Order) model.Order {
 	rf := item.Edges.Refund
 	if rf != nil {
 		res.Refund = &model.Refund{
-			Status:      rf.Status,
-			Amount:      rf.Amount,
-			OutRefundNo: rf.OutRefundNo,
-			Reason:      rf.Reason,
-			CreatedAt:   rf.CreatedAt.Format(carbon.DateTimeLayout),
-			Remark:      rf.Remark,
-			Modifier:    rf.LastModifier,
+			Status:       rf.Status,
+			Amount:       rf.Amount,
+			OutRefundNo:  rf.OutRefundNo,
+			Reason:       rf.Reason,
+			CreatedAt:    rf.CreatedAt.Format(carbon.DateTimeLayout),
+			Remark:       rf.Remark,
+			Modifier:     rf.LastModifier,
+			RemainAmount: rf.RemainAmount,
 		}
 		if rf.RefundAt != nil {
 			res.Refund.RefundAt = rf.RefundAt.Format(carbon.DateTimeLayout)

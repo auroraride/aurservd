@@ -79,6 +79,8 @@ const (
 	FieldOutOrderNo = "out_order_no"
 	// FieldOutRequestNo holds the string denoting the out_request_no field in the database.
 	FieldOutRequestNo = "out_request_no"
+	// FieldSubscribeEndAt holds the string denoting the subscribe_end_at field in the database.
+	FieldSubscribeEndAt = "subscribe_end_at"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -229,6 +231,7 @@ var Columns = []string{
 	FieldAuthNo,
 	FieldOutOrderNo,
 	FieldOutRequestNo,
+	FieldSubscribeEndAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -424,6 +427,11 @@ func ByOutOrderNo(opts ...sql.OrderTermOption) OrderOption {
 // ByOutRequestNo orders the results by the out_request_no field.
 func ByOutRequestNo(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOutRequestNo, opts...).ToFunc()
+}
+
+// BySubscribeEndAt orders the results by the subscribe_end_at field.
+func BySubscribeEndAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSubscribeEndAt, opts...).ToFunc()
 }
 
 // ByPlanField orders the results by plan field.
