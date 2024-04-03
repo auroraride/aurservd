@@ -230,6 +230,10 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
 		snag.Panic("骑士卡未在计费中")
 	}
 
+	if s.subscribe.Remaining < 1 {
+		snag.Panic("当前剩余时间不足, 无法寄存")
+	}
+
 	go func() {
 		err := snag.WithPanic(func() {
 			NewBusinessRider(s.rider).
