@@ -871,17 +871,23 @@ func (s *businessRiderService) ForceUnsubscribe(req *model.BusinessSubscribeReq,
 	// 处理押金退款
 	depositOrder := NewRider().DepositOrder(riderID)
 	if depositOrder != nil {
-
-		// 部分退款
 		var remainAmount float64
-		if req.DepositAmount != nil && *req.DepositAmount > 0 {
+		var reason string
+		reason = "拒绝退押"
+		// 退押金
+		if req.DepositAmount != nil {
 			if *req.DepositAmount > depositOrder.Amount {
 				return fmt.Errorf("退款金额超出押金金额")
 			}
-			// 剩余金额
-			remainAmount = depositOrder.Amount - *req.DepositAmount
-			// 退款金额
-			depositOrder.Amount = *req.DepositAmount
+			reason = "人工退押"
+			// 退部分押金
+			if *req.DepositAmount != depositOrder.Amount {
+				// 剩余金额
+				remainAmount = depositOrder.Amount - *req.DepositAmount
+				// 退款金额
+				depositOrder.Amount = *req.DepositAmount
+				reason = "人工退押，部分退押"
+			}
 		}
 
 		outRefundNo := tools.NewUnique().NewSN28()
@@ -889,7 +895,7 @@ func (s *businessRiderService) ForceUnsubscribe(req *model.BusinessSubscribeReq,
 			SetOrderID(depositOrder.ID).
 			SetOutRefundNo(outRefundNo).
 			SetAmount(depositOrder.Amount).
-			SetReason("强制退租,系统自动申请").
+			SetReason(reason).
 			SetOrderID(depositOrder.ID).
 			SetStatus(model.RefundStatusPending).
 			SetRemainAmount(remainAmount).
