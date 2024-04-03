@@ -5,9 +5,6 @@
 # Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
-workflow:
-  rules:
-  - if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
 stages:
 - lint
 - test
@@ -15,6 +12,8 @@ default:
   interruptible: false
 lint:
   stage: lint
+  rules:
+    - if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
   tags:
   - shell
   before_script:
