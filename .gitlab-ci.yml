@@ -1,3 +1,14 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    # - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+    #   variables:
+    #     DEPLOY_VARIABLE: "deploy-production"  # Override globally-defined DEPLOY_VARIABLE
+    # - if: $CI_COMMIT_REF_NAME =~ /feature/
+    #   variables:
+    #     IS_A_FEATURE: "true"                  # Define a new variable.
+    # - when: always                            # Run the pipeline in other cases
+
 # You can override the included template(s) by including variable overrides
 # SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
 # Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/pipeline/#customization
@@ -12,8 +23,6 @@ default:
   interruptible: false
 lint:
   stage: lint
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   tags:
   - shell
   before_script:
@@ -32,7 +41,5 @@ lint:
   - go clean -fuzzcache
 sast:
   stage: test
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 include:
 - template: Security/SAST.gitlab-ci.yml
