@@ -85,20 +85,21 @@ type OrderCreateRes struct {
 }
 
 type OrderListFilter struct {
-	RiderID    *uint64 `json:"riderId,omitempty" query:"riderId"`             // 骑手ID
-	Type       *uint   `json:"type,omitempty" query:"type"`                   // 订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金
-	CityID     *uint64 `json:"cityId,omitempty" query:"cityId"`               // 城市ID
-	Keyword    *string `json:"keyword,omitempty" query:"keyword"`             // 骑手姓名
-	Start      *string `json:"start,omitempty" query:"start"`                 // 时间起始, 格式为: 2022-01-01
-	End        *string `json:"end,omitempty" query:"end"`                     // 时间结束, 格式为: 2022-01-01
-	StoreName  *string `json:"storeName,omitempty" query:"storeName"`         // 门店名字
-	Model      *string `json:"model,omitempty" query:"model"`                 // 电池型号
-	Days       *int    `json:"days,omitempty" query:"days"`                   // 骑士卡时长(搜索大于等于)
-	Refund     *uint8  `json:"refund,omitempty" query:"refund"`               // 退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)
-	EmployeeID *uint64 `json:"employeeId,omitempty" query:"employeeId"`       // 店员ID筛选
-	Payway     *uint8  `json:"payway,omitempty" query:"payway" enums:"0,1,2"` // 支付方式 0:手动 1:支付宝 2:微信,3:支付宝预授权,4:微信支付分 不携带此参数为获取全部
-	TradeNo    *string `json:"tradeNo,omitempty" query:"tradeNo"`             // 平台单号
-	OutTradeNo *string `json:"outTradeNo,omitempty" query:"outTradeNo"`       // 预支付订单号
+	RiderID    *uint64 `json:"riderId,omitempty" query:"riderId"`                   // 骑手ID
+	Type       *uint   `json:"type,omitempty" query:"type"`                         // 订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金
+	CityID     *uint64 `json:"cityId,omitempty" query:"cityId"`                     // 城市ID
+	Keyword    *string `json:"keyword,omitempty" query:"keyword"`                   // 骑手姓名
+	Start      *string `json:"start,omitempty" query:"start"`                       // 时间起始, 格式为: 2022-01-01
+	End        *string `json:"end,omitempty" query:"end"`                           // 时间结束, 格式为: 2022-01-01
+	StoreName  *string `json:"storeName,omitempty" query:"storeName"`               // 门店名字
+	Model      *string `json:"model,omitempty" query:"model"`                       // 电池型号
+	Days       *int    `json:"days,omitempty" query:"days"`                         // 骑士卡时长(搜索大于等于)
+	Refund     *uint8  `json:"refund,omitempty" query:"refund"`                     // 退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)
+	EmployeeID *uint64 `json:"employeeId,omitempty" query:"employeeId"`             // 店员ID筛选
+	Payway     *uint8  `json:"payway,omitempty" query:"payway" enums:"0,1,2"`       // 支付方式 0:手动 1:支付宝 2:微信,3:支付宝预授权,4:微信支付分 不携带此参数为获取全部
+	TradeNo    *string `json:"tradeNo,omitempty" query:"tradeNo"`                   // 平台单号
+	OutOrderNo *string `json:"outOrderNo,omitempty" query:"outOrderNo"`             // 预授权订单号
+	Status     *uint8  `json:"status,omitempty" query:"status" enums:"0,1,2,3,4,5"` // 订单状态 0:待支付 1:已支付 2:申请退款 3:已退款 4:退款被拒绝 5:取消订单
 }
 
 // OrderListReq 订单列表请求
@@ -165,7 +166,7 @@ type Order struct {
 	Ebike         *Ebike        `json:"ebike"`              // 车辆详情
 	Agent         *OrderAgent   `json:"agent"`              // 代理信息
 	OutOrderNo    string        `json:"outOrderNo"`         // 预授权订单号
-
+	CreatedAt     string        `json:"createdAt"`          // 创建时间
 }
 
 type DepositType uint8

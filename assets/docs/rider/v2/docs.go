@@ -5951,6 +5951,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.CouponRider"
                     }
                 },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
                 "discountNewly": {
                     "description": "新签优惠",
                     "type": "number"
@@ -6423,6 +6427,10 @@ const docTemplate = `{
                 "refundAt": {
                     "description": "退款成功时间",
                     "type": "string"
+                },
+                "remainAmount": {
+                    "description": "剩余金额",
+                    "type": "number"
                 },
                 "remark": {
                     "description": "备注",
