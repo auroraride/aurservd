@@ -61670,6 +61670,7 @@ type OrderMutation struct {
 	auth_no           *string
 	out_order_no      *string
 	out_request_no    *string
+	subscribe_end_at  *time.Time
 	clearedFields     map[string]struct{}
 	plan              *uint64
 	clearedplan       bool
@@ -63449,6 +63450,55 @@ func (m *OrderMutation) ResetOutRequestNo() {
 	delete(m.clearedFields, order.FieldOutRequestNo)
 }
 
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (m *OrderMutation) SetSubscribeEndAt(t time.Time) {
+	m.subscribe_end_at = &t
+}
+
+// SubscribeEndAt returns the value of the "subscribe_end_at" field in the mutation.
+func (m *OrderMutation) SubscribeEndAt() (r time.Time, exists bool) {
+	v := m.subscribe_end_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscribeEndAt returns the old "subscribe_end_at" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldSubscribeEndAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscribeEndAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscribeEndAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscribeEndAt: %w", err)
+	}
+	return oldValue.SubscribeEndAt, nil
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (m *OrderMutation) ClearSubscribeEndAt() {
+	m.subscribe_end_at = nil
+	m.clearedFields[order.FieldSubscribeEndAt] = struct{}{}
+}
+
+// SubscribeEndAtCleared returns if the "subscribe_end_at" field was cleared in this mutation.
+func (m *OrderMutation) SubscribeEndAtCleared() bool {
+	_, ok := m.clearedFields[order.FieldSubscribeEndAt]
+	return ok
+}
+
+// ResetSubscribeEndAt resets all changes to the "subscribe_end_at" field.
+func (m *OrderMutation) ResetSubscribeEndAt() {
+	m.subscribe_end_at = nil
+	delete(m.clearedFields, order.FieldSubscribeEndAt)
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *OrderMutation) ClearPlan() {
 	m.clearedplan = true
@@ -63924,7 +63974,7 @@ func (m *OrderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OrderMutation) Fields() []string {
-	fields := make([]string, 0, 32)
+	fields := make([]string, 0, 33)
 	if m.created_at != nil {
 		fields = append(fields, order.FieldCreatedAt)
 	}
@@ -64021,6 +64071,9 @@ func (m *OrderMutation) Fields() []string {
 	if m.out_request_no != nil {
 		fields = append(fields, order.FieldOutRequestNo)
 	}
+	if m.subscribe_end_at != nil {
+		fields = append(fields, order.FieldSubscribeEndAt)
+	}
 	return fields
 }
 
@@ -64093,6 +64146,8 @@ func (m *OrderMutation) Field(name string) (ent.Value, bool) {
 		return m.OutOrderNo()
 	case order.FieldOutRequestNo:
 		return m.OutRequestNo()
+	case order.FieldSubscribeEndAt:
+		return m.SubscribeEndAt()
 	}
 	return nil, false
 }
@@ -64166,6 +64221,8 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldOutOrderNo(ctx)
 	case order.FieldOutRequestNo:
 		return m.OldOutRequestNo(ctx)
+	case order.FieldSubscribeEndAt:
+		return m.OldSubscribeEndAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Order field %s", name)
 }
@@ -64399,6 +64456,13 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetOutRequestNo(v)
 		return nil
+	case order.FieldSubscribeEndAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscribeEndAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)
 }
@@ -64627,6 +64691,9 @@ func (m *OrderMutation) ClearedFields() []string {
 	if m.FieldCleared(order.FieldOutRequestNo) {
 		fields = append(fields, order.FieldOutRequestNo)
 	}
+	if m.FieldCleared(order.FieldSubscribeEndAt) {
+		fields = append(fields, order.FieldSubscribeEndAt)
+	}
 	return fields
 }
 
@@ -64703,6 +64770,9 @@ func (m *OrderMutation) ClearField(name string) error {
 		return nil
 	case order.FieldOutRequestNo:
 		m.ClearOutRequestNo()
+		return nil
+	case order.FieldSubscribeEndAt:
+		m.ClearSubscribeEndAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Order nullable field %s", name)
@@ -64807,6 +64877,9 @@ func (m *OrderMutation) ResetField(name string) error {
 		return nil
 	case order.FieldOutRequestNo:
 		m.ResetOutRequestNo()
+		return nil
+	case order.FieldSubscribeEndAt:
+		m.ResetSubscribeEndAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)

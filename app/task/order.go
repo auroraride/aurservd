@@ -46,17 +46,20 @@ func (t *orderTask) Start() {
 // 假如当前订阅未到期 查询当前订阅时间是否超过360天 如果超过360天则自动发起预授权转支付
 func (t *orderTask) Do() {
 	ctx := context.Background()
-	// 查询订阅到期的
+	now := time.Now()
 	o, _ := ent.Database.Order.QueryNotDeleted().Where(
-		order.HasSubscribeWith(
-			// 未退款
-			subscribe.RefundAtIsNil(),
-			// 未结束
-			subscribe.EndAtIsNil(),
-			// 已开始
-			subscribe.StartAtNotNil(),
-			// 非企业
-			subscribe.EnterpriseIDIsNil(),
+		order.Or(
+			order.HasSubscribeWith(
+				// 未退款
+				subscribe.RefundAtIsNil(),
+				// 未结束
+				subscribe.EndAtIsNil(),
+				// 已开始
+				subscribe.StartAtNotNil(),
+				// 非企业
+				subscribe.EnterpriseIDIsNil(),
+			),
+			order.SubscribeEndAt(now),
 		),
 		order.TradePayAtIsNil(),
 		order.PaywayIn(model.OrderPaywayAlipayAuthFreeze),
@@ -70,10 +73,10 @@ func (t *orderTask) Do() {
 		return
 	}
 
-	now := time.Now()
 	for _, v := range o {
-		// 订阅到期时间为0  或者订阅开始时间到现在超过360天 (提前2天发起预授权转支付)
-		if v.Edges.Subscribe != nil && (v.Edges.Subscribe.Remaining == 0 || now.Sub(v.Edges.Subscribe.StartAt.Local()).Hours()/24 >= 358) {
+		// 如果订阅到期时间为当天
+		if v.SubscribeEndAt.Format("2006-01-02") == now.Format("2006-01-02") ||
+			v.Edges.Subscribe != nil && now.Sub(v.Edges.Subscribe.StartAt.Local()).Hours()/24 >= 358 {
 			err := service.NewOrder().TradePay(v)
 			if err != nil {
 				zap.L().Error(fmt.Sprintf("定时预授权转支付失败 订单ID: %d, 用户id: %d", v.ID, v.RiderID), zap.Error(err))

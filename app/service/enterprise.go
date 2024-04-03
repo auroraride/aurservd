@@ -211,7 +211,11 @@ func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRe
 
 	// 查询团签默认协议
 	var defaultAgreement *ent.Agreement
-	defaultAgreement, _ = ent.Database.Agreement.QueryNotDeleted().Where(agreement.UserType(2), agreement.IsDefault(true)).First(s.ctx)
+	defaultAgreement, _ = ent.Database.Agreement.QueryNotDeleted().
+		Where(
+			agreement.UserType(model.AgreementUserTypeEnterprise.Value()),
+			agreement.IsDefault(true),
+		).First(s.ctx)
 
 	prices := item.Edges.Prices
 	if prices != nil {

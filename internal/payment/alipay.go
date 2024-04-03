@@ -259,8 +259,6 @@ func (c *alipayClient) FandAuthFreeze(pc *model.PaymentCache) (string, error) {
 		trade.DepositProductMode = "DEPOSIT_ONLY"
 	} else if pc.CacheType == model.PaymentCacheTypeAlipayAuthFreeze {
 
-		// todo 这块没自测完
-
 		// 当有押金的时候
 		if pc.Subscribe.Deposit > 0 {
 			trade.DepositProductMode = "POSTPAY"

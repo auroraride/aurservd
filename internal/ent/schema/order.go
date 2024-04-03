@@ -81,6 +81,7 @@ func (Order) Fields() []ent.Field {
 		field.String("auth_no").Optional().Comment("支付宝授权资金订单号(预支付或者信用付)"),
 		field.String("out_order_no").Optional().Comment("商户端的唯一订单号(预支付或者信用付)"),
 		field.String("out_request_no").Optional().Comment("商户端的唯一请求流水号(预支付或者信用付)"),
+		field.Time("subscribe_end_at").Optional().Nillable().Comment("购买套餐订阅到期时间"),
 	}
 }
 

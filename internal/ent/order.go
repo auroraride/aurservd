@@ -93,6 +93,8 @@ type Order struct {
 	OutOrderNo string `json:"out_order_no,omitempty"`
 	// 商户端的唯一请求流水号(预支付或者信用付)
 	OutRequestNo string `json:"out_request_no,omitempty"`
+	// 购买套餐订阅到期时间
+	SubscribeEndAt *time.Time `json:"subscribe_end_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderQuery when eager-loading is set.
 	Edges        OrderEdges `json:"edges"`
@@ -284,7 +286,7 @@ func (*Order) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case order.FieldRemark, order.FieldOutTradeNo, order.FieldTradeNo, order.FieldAuthNo, order.FieldOutOrderNo, order.FieldOutRequestNo:
 			values[i] = new(sql.NullString)
-		case order.FieldCreatedAt, order.FieldUpdatedAt, order.FieldDeletedAt, order.FieldRefundAt, order.FieldTradePayAt:
+		case order.FieldCreatedAt, order.FieldUpdatedAt, order.FieldDeletedAt, order.FieldRefundAt, order.FieldTradePayAt, order.FieldSubscribeEndAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -511,6 +513,13 @@ func (o *Order) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				o.OutRequestNo = value.String
 			}
+		case order.FieldSubscribeEndAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field subscribe_end_at", values[i])
+			} else if value.Valid {
+				o.SubscribeEndAt = new(time.Time)
+				*o.SubscribeEndAt = value.Time
+			}
 		default:
 			o.selectValues.Set(columns[i], values[i])
 		}
@@ -723,6 +732,11 @@ func (o *Order) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("out_request_no=")
 	builder.WriteString(o.OutRequestNo)
+	builder.WriteString(", ")
+	if v := o.SubscribeEndAt; v != nil {
+		builder.WriteString("subscribe_end_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -1234,38 +1234,39 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Order",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			order.FieldCreatedAt:     {Type: field.TypeTime, Column: order.FieldCreatedAt},
-			order.FieldUpdatedAt:     {Type: field.TypeTime, Column: order.FieldUpdatedAt},
-			order.FieldDeletedAt:     {Type: field.TypeTime, Column: order.FieldDeletedAt},
-			order.FieldCreator:       {Type: field.TypeJSON, Column: order.FieldCreator},
-			order.FieldLastModifier:  {Type: field.TypeJSON, Column: order.FieldLastModifier},
-			order.FieldRemark:        {Type: field.TypeString, Column: order.FieldRemark},
-			order.FieldPlanID:        {Type: field.TypeUint64, Column: order.FieldPlanID},
-			order.FieldCityID:        {Type: field.TypeUint64, Column: order.FieldCityID},
-			order.FieldBrandID:       {Type: field.TypeUint64, Column: order.FieldBrandID},
-			order.FieldEbikeID:       {Type: field.TypeUint64, Column: order.FieldEbikeID},
-			order.FieldAgentID:       {Type: field.TypeUint64, Column: order.FieldAgentID},
-			order.FieldRiderID:       {Type: field.TypeUint64, Column: order.FieldRiderID},
-			order.FieldParentID:      {Type: field.TypeUint64, Column: order.FieldParentID},
-			order.FieldSubscribeID:   {Type: field.TypeUint64, Column: order.FieldSubscribeID},
-			order.FieldStatus:        {Type: field.TypeUint8, Column: order.FieldStatus},
-			order.FieldPayway:        {Type: field.TypeUint8, Column: order.FieldPayway},
-			order.FieldType:          {Type: field.TypeUint, Column: order.FieldType},
-			order.FieldOutTradeNo:    {Type: field.TypeString, Column: order.FieldOutTradeNo},
-			order.FieldTradeNo:       {Type: field.TypeString, Column: order.FieldTradeNo},
-			order.FieldAmount:        {Type: field.TypeFloat64, Column: order.FieldAmount},
-			order.FieldTotal:         {Type: field.TypeFloat64, Column: order.FieldTotal},
-			order.FieldRefundAt:      {Type: field.TypeTime, Column: order.FieldRefundAt},
-			order.FieldInitialDays:   {Type: field.TypeInt, Column: order.FieldInitialDays},
-			order.FieldPastDays:      {Type: field.TypeInt, Column: order.FieldPastDays},
-			order.FieldPoints:        {Type: field.TypeInt64, Column: order.FieldPoints},
-			order.FieldPointRatio:    {Type: field.TypeFloat64, Column: order.FieldPointRatio},
-			order.FieldCouponAmount:  {Type: field.TypeFloat64, Column: order.FieldCouponAmount},
-			order.FieldDiscountNewly: {Type: field.TypeFloat64, Column: order.FieldDiscountNewly},
-			order.FieldTradePayAt:    {Type: field.TypeTime, Column: order.FieldTradePayAt},
-			order.FieldAuthNo:        {Type: field.TypeString, Column: order.FieldAuthNo},
-			order.FieldOutOrderNo:    {Type: field.TypeString, Column: order.FieldOutOrderNo},
-			order.FieldOutRequestNo:  {Type: field.TypeString, Column: order.FieldOutRequestNo},
+			order.FieldCreatedAt:      {Type: field.TypeTime, Column: order.FieldCreatedAt},
+			order.FieldUpdatedAt:      {Type: field.TypeTime, Column: order.FieldUpdatedAt},
+			order.FieldDeletedAt:      {Type: field.TypeTime, Column: order.FieldDeletedAt},
+			order.FieldCreator:        {Type: field.TypeJSON, Column: order.FieldCreator},
+			order.FieldLastModifier:   {Type: field.TypeJSON, Column: order.FieldLastModifier},
+			order.FieldRemark:         {Type: field.TypeString, Column: order.FieldRemark},
+			order.FieldPlanID:         {Type: field.TypeUint64, Column: order.FieldPlanID},
+			order.FieldCityID:         {Type: field.TypeUint64, Column: order.FieldCityID},
+			order.FieldBrandID:        {Type: field.TypeUint64, Column: order.FieldBrandID},
+			order.FieldEbikeID:        {Type: field.TypeUint64, Column: order.FieldEbikeID},
+			order.FieldAgentID:        {Type: field.TypeUint64, Column: order.FieldAgentID},
+			order.FieldRiderID:        {Type: field.TypeUint64, Column: order.FieldRiderID},
+			order.FieldParentID:       {Type: field.TypeUint64, Column: order.FieldParentID},
+			order.FieldSubscribeID:    {Type: field.TypeUint64, Column: order.FieldSubscribeID},
+			order.FieldStatus:         {Type: field.TypeUint8, Column: order.FieldStatus},
+			order.FieldPayway:         {Type: field.TypeUint8, Column: order.FieldPayway},
+			order.FieldType:           {Type: field.TypeUint, Column: order.FieldType},
+			order.FieldOutTradeNo:     {Type: field.TypeString, Column: order.FieldOutTradeNo},
+			order.FieldTradeNo:        {Type: field.TypeString, Column: order.FieldTradeNo},
+			order.FieldAmount:         {Type: field.TypeFloat64, Column: order.FieldAmount},
+			order.FieldTotal:          {Type: field.TypeFloat64, Column: order.FieldTotal},
+			order.FieldRefundAt:       {Type: field.TypeTime, Column: order.FieldRefundAt},
+			order.FieldInitialDays:    {Type: field.TypeInt, Column: order.FieldInitialDays},
+			order.FieldPastDays:       {Type: field.TypeInt, Column: order.FieldPastDays},
+			order.FieldPoints:         {Type: field.TypeInt64, Column: order.FieldPoints},
+			order.FieldPointRatio:     {Type: field.TypeFloat64, Column: order.FieldPointRatio},
+			order.FieldCouponAmount:   {Type: field.TypeFloat64, Column: order.FieldCouponAmount},
+			order.FieldDiscountNewly:  {Type: field.TypeFloat64, Column: order.FieldDiscountNewly},
+			order.FieldTradePayAt:     {Type: field.TypeTime, Column: order.FieldTradePayAt},
+			order.FieldAuthNo:         {Type: field.TypeString, Column: order.FieldAuthNo},
+			order.FieldOutOrderNo:     {Type: field.TypeString, Column: order.FieldOutOrderNo},
+			order.FieldOutRequestNo:   {Type: field.TypeString, Column: order.FieldOutRequestNo},
+			order.FieldSubscribeEndAt: {Type: field.TypeTime, Column: order.FieldSubscribeEndAt},
 		},
 	}
 	graph.Nodes[42] = &sqlgraph.Node{
@@ -13098,6 +13099,11 @@ func (f *OrderFilter) WhereOutOrderNo(p entql.StringP) {
 // WhereOutRequestNo applies the entql string predicate on the out_request_no field.
 func (f *OrderFilter) WhereOutRequestNo(p entql.StringP) {
 	f.Where(p.Field(order.FieldOutRequestNo))
+}
+
+// WhereSubscribeEndAt applies the entql time.Time predicate on the subscribe_end_at field.
+func (f *OrderFilter) WhereSubscribeEndAt(p entql.TimeP) {
+	f.Where(p.Field(order.FieldSubscribeEndAt))
 }
 
 // WhereHasPlan applies a predicate to check if query has an edge plan.

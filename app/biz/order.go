@@ -202,10 +202,18 @@ func (s *orderBiz) DoPaymentFreezeToPay(req *definition.OrderDepositFreezeToPayR
 // Create 订单创建
 func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result *model.OrderCreateRes, err error) {
 	if req.OrderType == model.OrderTypeFee {
+		// 逾期费用不能使用预授权
+		if req.Payway == model.OrderPaywayAlipayAuthFreeze {
+			return nil, errors.New("逾期费用不能使用支付宝预授权")
+		}
 		return service.NewOrder().CreateFee(r.ID, req.Payway), nil
 	}
 
 	result = new(model.OrderCreateRes)
+
+	if req.PlanID == 0 {
+		return nil, errors.New("套餐ID不能为空")
+	}
 
 	// 查询套餐是否存在
 	p := service.NewPlan().QueryEffectiveWithID(req.PlanID)
@@ -473,7 +481,6 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 			SetOutOrderNo(trade.OutOrderNo).
 			SetAuthNo(trade.AuthNo).
 			SetOutRequestNo(trade.OutRequestNo)
-
 		if len(trade.Coupons) > 0 {
 			oc.AddCouponIDs(trade.Coupons...)
 			// 更新优惠券使用状态
@@ -654,6 +661,14 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 				Save(s.ctx)
 			if err != nil {
 				zap.L().Error("订单已支付, 但续签订阅更新失败: "+no, zap.Error(err))
+				return
+			}
+
+			entAt := tools.NewTime().WillEnd(sub.StartAt.Local(), sub.InitialDays)
+			// 更新订单中的到期订阅到期时间(新增这个时间是为了记录预支付转支付时间)
+			_, err = o.Update().SetSubscribeEndAt(entAt).Save(s.ctx)
+			if err != nil {
+				zap.L().Error("订单已支付,  但订单更新失败: "+no, zap.Error(err))
 				return
 			}
 		}

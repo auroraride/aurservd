@@ -558,6 +558,26 @@ func (ou *OrderUpdate) ClearOutRequestNo() *OrderUpdate {
 	return ou
 }
 
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (ou *OrderUpdate) SetSubscribeEndAt(t time.Time) *OrderUpdate {
+	ou.mutation.SetSubscribeEndAt(t)
+	return ou
+}
+
+// SetNillableSubscribeEndAt sets the "subscribe_end_at" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableSubscribeEndAt(t *time.Time) *OrderUpdate {
+	if t != nil {
+		ou.SetSubscribeEndAt(*t)
+	}
+	return ou
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (ou *OrderUpdate) ClearSubscribeEndAt() *OrderUpdate {
+	ou.mutation.ClearSubscribeEndAt()
+	return ou
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (ou *OrderUpdate) SetPlan(p *Plan) *OrderUpdate {
 	return ou.SetPlanID(p.ID)
@@ -968,6 +988,12 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if ou.mutation.OutRequestNoCleared() {
 		_spec.ClearField(order.FieldOutRequestNo, field.TypeString)
+	}
+	if value, ok := ou.mutation.SubscribeEndAt(); ok {
+		_spec.SetField(order.FieldSubscribeEndAt, field.TypeTime, value)
+	}
+	if ou.mutation.SubscribeEndAtCleared() {
+		_spec.ClearField(order.FieldSubscribeEndAt, field.TypeTime)
 	}
 	if ou.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1917,6 +1943,26 @@ func (ouo *OrderUpdateOne) ClearOutRequestNo() *OrderUpdateOne {
 	return ouo
 }
 
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (ouo *OrderUpdateOne) SetSubscribeEndAt(t time.Time) *OrderUpdateOne {
+	ouo.mutation.SetSubscribeEndAt(t)
+	return ouo
+}
+
+// SetNillableSubscribeEndAt sets the "subscribe_end_at" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableSubscribeEndAt(t *time.Time) *OrderUpdateOne {
+	if t != nil {
+		ouo.SetSubscribeEndAt(*t)
+	}
+	return ouo
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (ouo *OrderUpdateOne) ClearSubscribeEndAt() *OrderUpdateOne {
+	ouo.mutation.ClearSubscribeEndAt()
+	return ouo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (ouo *OrderUpdateOne) SetPlan(p *Plan) *OrderUpdateOne {
 	return ouo.SetPlanID(p.ID)
@@ -2357,6 +2403,12 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 	}
 	if ouo.mutation.OutRequestNoCleared() {
 		_spec.ClearField(order.FieldOutRequestNo, field.TypeString)
+	}
+	if value, ok := ouo.mutation.SubscribeEndAt(); ok {
+		_spec.SetField(order.FieldSubscribeEndAt, field.TypeTime, value)
+	}
+	if ouo.mutation.SubscribeEndAtCleared() {
+		_spec.ClearField(order.FieldSubscribeEndAt, field.TypeTime)
 	}
 	if ouo.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
