@@ -119,7 +119,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	// 骑手
 	g.GET("/profile", v1.Rider.Profile, logged())             // 获取用户信息
 	g.GET("/deposit", v1.Rider.Deposit, logged())             // 获取押金信息
-	g.GET("/deregister", v1.Rider.Deregister, logged())       // 注销账户
+	g.DELETE("/deregister", v1.Rider.Deregister, logged())    // 注销账户
 	g.POST("/change/phone", rapi.Rider.ChangePhone, logged()) // 修改手机号
 	g.POST("/contact", v1.Rider.Contact, logged())            // 编辑紧急联系人
 
@@ -192,7 +192,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 业务
 	business := g.Group("/business", person())
-	business.POST("/active", v1.Business.Active)                       // 激活骑士卡
+	business.POST("/active", rapi.Business.Active)                     // 激活骑士卡
 	business.POST("/unsubscribe", v1.Business.Unsubscribe)             // 退租
 	business.POST("/pause", v1.Business.Pause)                         // 寄存
 	business.POST("/continue", v1.Business.Continue)                   // 取消寄存

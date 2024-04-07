@@ -324,8 +324,8 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
 	return res, sub
 }
 
-// preprocess 预处理数据
-func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) {
+// Preprocess 预处理数据
+func (s *businessRiderService) Preprocess(bt business.Type, sub *ent.Subscribe) {
 	s.subscribe = sub
 
 	if sub.EnterpriseID != nil {
@@ -591,7 +591,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 	// 设置代理id
 	s.agentID = allo.AgentID
 
-	s.preprocess(business.TypeActive, sub)
+	s.Preprocess(business.TypeActive, sub)
 
 	if NewSubscribe().NeedContract(sub) {
 		snag.Panic("还未签约, 请签约")
@@ -691,7 +691,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 // 会抹去欠费情况
 func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns ...func(sub *ent.Subscribe)) {
 	// 预处理业务信息
-	s.preprocess(business.TypeUnsubscribe, s.QuerySubscribeWithRider(req.ID))
+	s.Preprocess(business.TypeUnsubscribe, s.QuerySubscribeWithRider(req.ID))
 
 	if len(fns) > 0 {
 		fns[0](s.subscribe)
@@ -791,7 +791,7 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 
 // Pause 寄存
 func (s *businessRiderService) Pause(subscribeID uint64) {
-	s.preprocess(business.TypePause, s.QuerySubscribeWithRider(subscribeID))
+	s.Preprocess(business.TypePause, s.QuerySubscribeWithRider(subscribeID))
 
 	if s.subscribe.Remaining < 1 {
 		snag.Panic("当前剩余时间不足, 无法寄存")
@@ -818,7 +818,7 @@ func (s *businessRiderService) Pause(subscribeID uint64) {
 
 // Continue 取消寄存
 func (s *businessRiderService) Continue(subscribeID uint64) {
-	s.preprocess(business.TypeContinue, s.QuerySubscribeWithRider(subscribeID))
+	s.Preprocess(business.TypeContinue, s.QuerySubscribeWithRider(subscribeID))
 
 	// 更新订阅信息
 	err := NewSubscribe().UpdateStatus(s.subscribe, false)

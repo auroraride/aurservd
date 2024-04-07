@@ -113,18 +113,6 @@ func (*Branch) Riding() {}
 // @Success	200				{object}	model.BranchFacilityRes	"请求成功"
 func (*Branch) Facility() {}
 
-// Active
-// @ID		BusinessActive
-// @Router	/rider/v2/business/active [POST]
-// @Summary	激活骑士卡
-// @Tags	Business - 业务
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string						true	"骑手校验token"
-// @Param	body			body		model.BusinessCabinetReq	true	"业务请求"
-// @Success	200				{object}	model.BusinessCabinetStatus	"请求成功"
-func (*business) Active() {}
-
 // Unsubscribe
 // @ID		BusinessUnsubscribe
 // @Router	/rider/v2/business/unsubscribe [POST]
