@@ -536,6 +536,37 @@ func (cq *ContractQuery) PaginationResult(req model.PaginationReq) model.Paginat
 	}
 }
 
+// Pagination returns pagination query builder for ContractTemplateQuery.
+func (ctq *ContractTemplateQuery) Pagination(req model.PaginationReq) *ContractTemplateQuery {
+	ctq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return ctq
+}
+
+// PaginationItems returns pagination query builder for ContractTemplateQuery.
+func (ctq *ContractTemplateQuery) PaginationItemsX(req model.PaginationReq) any {
+	return ctq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for ContractTemplateQuery.
+func (ctq *ContractTemplateQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := ctq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for CouponQuery.
 func (cq *CouponQuery) Pagination(req model.PaginationReq) *CouponQuery {
 	cq.Offset(req.GetOffset()).Limit(req.GetLimit())

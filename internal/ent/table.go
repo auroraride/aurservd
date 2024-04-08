@@ -196,6 +196,20 @@ func (c *Contract) GetID() uint64 {
 	return c.ID
 }
 
+// GetTableName returns table name for ContractTemplate.
+func (ct *ContractTemplate) GetTableName() string {
+	return "contract_template"
+}
+
+// GetID returns id for ContractTemplate.
+func (ct *ContractTemplate) GetID() uint64 {
+	return ct.ID
+}
+
+func (ct *ContractTemplate) GetName() string {
+	return ct.Name
+}
+
 // GetTableName returns table name for Coupon.
 func (c *Coupon) GetTableName() string {
 	return "coupon"

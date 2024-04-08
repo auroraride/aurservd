@@ -89,6 +89,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/allocated": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rider - 骑手"
+                ],
+                "summary": "手动分配物资",
+                "operationId": "RiderAllocated",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "phone",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "serial",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/assistance": {
             "get": {
                 "consumes": [
@@ -1204,45 +1248,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v2/constract/{sn}": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Contract - 合同"
-                ],
-                "summary": "合同签署结果",
-                "operationId": "ContractSignResult",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "合同编号",
-                        "name": "sn",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v2/contact": {
             "post": {
                 "consumes": [
@@ -1311,7 +1316,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.ContractSignReq"
+                            "$ref": "#/definitions/definition.ContractSignReq"
                         }
                     }
                 ],
@@ -3643,6 +3648,23 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.ContractSignReq": {
+            "type": "object",
+            "required": [
+                "seal",
+                "subscribeId"
+            ],
+            "properties": {
+                "seal": {
+                    "description": "签名Base64",
+                    "type": "string"
+                },
+                "subscribeId": {
+                    "description": "订阅ID",
+                    "type": "integer"
+                }
+            }
+        },
         "definition.Destination": {
             "type": "object",
             "properties": {
@@ -3802,8 +3824,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "orderType",
-                "payway",
-                "planId"
+                "payway"
             ],
             "properties": {
                 "agreementHash": {
@@ -5335,18 +5356,6 @@ const docTemplate = `{
                 "name": {
                     "description": "城市",
                     "type": "string"
-                }
-            }
-        },
-        "model.ContractSignReq": {
-            "type": "object",
-            "required": [
-                "subscribeId"
-            ],
-            "properties": {
-                "subscribeId": {
-                    "description": "订阅ID",
-                    "type": "integer"
                 }
             }
         },

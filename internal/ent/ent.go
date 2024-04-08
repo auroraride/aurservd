@@ -29,6 +29,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
@@ -168,6 +169,7 @@ func checkColumn(table, column string) error {
 			city.Table:                       city.ValidColumn,
 			commission.Table:                 commission.ValidColumn,
 			contract.Table:                   contract.ValidColumn,
+			contracttemplate.Table:           contracttemplate.ValidColumn,
 			coupon.Table:                     coupon.ValidColumn,
 			couponassembly.Table:             couponassembly.ValidColumn,
 			coupontemplate.Table:             coupontemplate.ValidColumn,

@@ -370,4 +370,11 @@ func loadManagerRoutes() {
 	agreement.PUT("/:id", mapi.Agreement.Modify)          // 修改协议
 	agreement.DELETE("/:id", mapi.Agreement.Delete)       // 删除协议
 	agreement.GET("/selection", mapi.Agreement.Selection) // 协议选择
+
+	// 合同模版
+	contractTemplate := g.Group("/contract/template")
+	contractTemplate.GET("", mapi.ContractTemplate.List) // 列表
+	contractTemplate.POST("", mapi.ContractTemplate.Create)
+	contractTemplate.PUT("/:id", mapi.ContractTemplate.Modify)
+
 }

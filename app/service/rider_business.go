@@ -114,7 +114,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 
 // Active 骑手自主激活
 // TODO 分配信息是否需要记录电池编号
-func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
+func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, doContract func() (*model.ContractSignRes, error)) model.BusinessCabinetStatus {
 	// 预处理
 	s.preprocess(req.Serial, business.TypeActive)
 
@@ -122,9 +122,17 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
 	if s.subscribe.Status != model.SubscribeStatusInactive {
 		snag.Panic("骑士卡状态错误")
 	}
+	var signRes *model.ContractSignRes
+	var err error
+	if doContract != nil {
+		signRes, err = doContract()
+		if err != nil {
+			snag.Panic(err)
+		}
+	}
 
 	// 检查是否需要签约
-	if NewSubscribe().NeedContract(s.subscribe) {
+	if NewSubscribe().NeedContract(s.subscribe) && signRes == nil {
 		// 查询分配信息是否存在, 如果存在则删除
 		NewAllocate().SubscribeDeleteIfExists(s.subscribe.ID)
 
@@ -149,6 +157,31 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
 		}))
 	}
 
+	if signRes != nil {
+		// 兼容V2版本无需签约激活逻辑
+		if !NewSubscribe().NeedContract(s.subscribe) {
+			// // 查询分配信息是否存在, 如果存在则删除
+			NewAllocate().SubscribeDeleteIfExists(s.subscribe.ID)
+			// 存储分配信息
+			err = ent.Database.Allocate.Create().
+				SetType(allocate.TypeBattery).
+				SetSubscribe(s.subscribe).
+				SetRider(s.rider).
+				SetStatus(model.AllocateStatusPending.Value()).
+				SetTime(time.Now()).
+				SetModel(s.subscribe.Model).
+				SetCabinetID(s.cabinet.ID).
+				SetRemark("无需签约,自动生成").
+				Exec(s.ctx)
+			if err != nil {
+				snag.Panic("请求失败")
+			}
+		} else {
+			// 返回签约URL
+			snag.Panic(snag.StatusRequireSign, signRes)
+		}
+	}
+
 	// 查找分配信息
 	allo, _ := ent.Database.Allocate.Query().Where(
 		allocate.SubscribeID(s.subscribe.ID),
@@ -168,7 +201,6 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
 			return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessActive, s.subscribe, nil, s.cabinet)
 		}).
 		Active(s.subscribe, allo)
-
 	return s.response
 }
 

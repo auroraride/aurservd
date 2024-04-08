@@ -57,6 +57,9 @@ type Commission func(*sql.Selector)
 // Contract is the predicate function for contract builders.
 type Contract func(*sql.Selector)
 
+// ContractTemplate is the predicate function for contracttemplate builders.
+type ContractTemplate func(*sql.Selector)
+
 // Coupon is the predicate function for coupon builders.
 type Coupon func(*sql.Selector)
 

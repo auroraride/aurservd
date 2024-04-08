@@ -37,14 +37,15 @@ func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 		WithStocks().
 		Modify(func(sel *sql.Selector) {
 			sel.
-				AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance( ST_SetSRID(ST_MakePoint(%s, %s), 4326), ST_SetSRID(ST_MakePoint(%f, %f), 4326))`, sel.C("lng"), sel.C("lat"), req.Lng, req.Lat)), "distance").
+				AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'))`, req.Lng, req.Lat)), "distance").
 				OrderBy(sql.Asc("distance"))
 			if req.Distance != nil {
 				if *req.Distance > 100000 {
 					*req.Distance = 100000
 				}
 				sel.Where(sql.P(func(b *sql.Builder) {
-					b.WriteString(fmt.Sprintf(`ST_DWithin(ST_SetSRID(ST_MakePoint(%s, %s), 4326), ST_SetSRID(ST_MakePoint(%f, %f), 4326), %f)`, sel.C("lng"), sel.C("lat"), req.Lng, req.Lat, *req.Distance))
+
+					b.WriteString(fmt.Sprintf(`ST_DWithin(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)')), %f)`, req.Lng, req.Lat, *req.Distance))
 				}))
 			}
 		})
@@ -91,9 +92,8 @@ func (s *storeBiz) Detail(req *definition.StoreDetailReq) (res *definition.Store
 		WithCity().
 		WithEmployee().
 		Modify(func(sel *sql.Selector) {
-			sel.AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance( ST_SetSRID(ST_MakePoint(%s, %s), 4326), ST_SetSRID(ST_MakePoint(%f, %f), 4326))`, sel.C("lng"), sel.C("lat"), req.Lng, req.Lat)), "distance").
+			sel.AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'))`, req.Lng, req.Lat)), "distance").
 				OrderBy(sql.Asc("distance"))
-
 		}).
 		First(s.ctx)
 	if q == nil {
