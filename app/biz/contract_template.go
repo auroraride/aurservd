@@ -25,10 +25,14 @@ func NewContractTemplate() *ContractTemplate {
 // Create 新增合同模板
 func (s *ContractTemplate) Create(req *definition.ContractTemplateCreateReq) error {
 	// 判断当前传入类型是否存在
-	temp, _ := s.orm.QueryNotDeleted().Where(contracttemplate.SubType(req.SubType), contracttemplate.UserType(req.UserType)).First(s.ctx)
+	temp, err := s.orm.QueryNotDeleted().Where(
+		contracttemplate.SubType(req.SubType),
+		contracttemplate.UserType(req.UserType),
+		contracttemplate.Enable(true),
+	).First(s.ctx)
 	// 如果存在并且需要开启
 	if temp != nil && req.Enable != nil && *req.Enable {
-		_, err := temp.Update().SetEnable(false).Save(s.ctx)
+		_, err = temp.Update().SetEnable(false).Save(s.ctx)
 		if err != nil {
 			return err
 		}
@@ -70,26 +74,21 @@ func (s *ContractTemplate) Create(req *definition.ContractTemplateCreateReq) err
 // Modify 编辑合同模板
 func (s *ContractTemplate) Modify(req *definition.ContractTemplateModifyReq) error {
 	// 判断当前传入类型是否存在
-	temp, err := s.orm.QueryNotDeleted().Where(contracttemplate.SubType(req.SubType), contracttemplate.UserType(req.UserType)).First(s.ctx)
-	if err != nil {
-		return err
-	}
+	temp, _ := s.orm.QueryNotDeleted().Where(
+		contracttemplate.SubType(req.SubType),
+		contracttemplate.UserType(req.UserType),
+		contracttemplate.Enable(true),
+	).First(s.ctx)
+
 	// 如果存在并且需要开启
 	if temp != nil && *req.Enable {
-		_, err = temp.Update().SetEnable(false).Save(s.ctx)
+		_, err := temp.Update().SetEnable(false).Save(s.ctx)
+		if err != nil {
+			return err
+		}
 	}
 
-	var fields []string
-
-	fields = append(fields, definition.ContractTemplateFields...)
-	if f, ok := definition.FieldsUserMap[req.UserType]; ok {
-		fields = append(fields, f...)
-	}
-	if f, ok := definition.FieldsSubMap[req.SubType]; ok {
-		fields = append(fields, f...)
-	}
-
-	_, err = s.orm.UpdateOneID(req.ID).
+	_, err := s.orm.UpdateOneID(req.ID).
 		SetName(req.Name).
 		SetUserType(req.UserType).
 		SetSubType(req.SubType).
