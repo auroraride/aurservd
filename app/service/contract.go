@@ -64,8 +64,8 @@ func NewContractWithRider(u *ent.Rider) *contractService {
 	return s
 }
 
-// planData 个签合同数据
-func (s *contractService) planData(sub *ent.Subscribe) *model.ContractSignUniversal {
+// PlanData 个签合同数据
+func (s *contractService) PlanData(sub *ent.Subscribe) *model.ContractSignUniversal {
 	p, _ := sub.QueryPlan().First(s.ctx)
 	if p == nil {
 		snag.Panic("未找到骑士卡信息")
@@ -84,8 +84,8 @@ func (s *contractService) planData(sub *ent.Subscribe) *model.ContractSignUniver
 	}
 }
 
-// enterpriseData 团签合同数据
-func (s *contractService) enterpriseData(m ar.Map, sub *ent.Subscribe) *model.ContractSignUniversal {
+// EnterpriseData 团签合同数据
+func (s *contractService) EnterpriseData(m ar.Map, sub *ent.Subscribe) *model.ContractSignUniversal {
 	// 查询团签
 	ee, _ := sub.QueryEnterprise().First(s.ctx)
 	if ee == nil {
@@ -254,12 +254,12 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 			templateId = cfg.Group.TemplateId
 			scene = cfg.Group.Scene
 			// 设置团签字段
-			un = s.enterpriseData(m, sub)
+			un = s.EnterpriseData(m, sub)
 			// 团签代缴
 			m["payEnt"] = true
 		} else {
 			// 个签骑士卡
-			un = s.planData(sub)
+			un = s.PlanData(sub)
 			// 骑手缴费
 			m["payRider"] = true
 		}
@@ -325,7 +325,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 
 		// 个签选项
 		if sub.PlanID != nil {
-			s.planData(sub)
+			s.PlanData(sub)
 		}
 
 		// 创建 / 获取 签约个人账号

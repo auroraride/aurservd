@@ -3127,6 +3127,119 @@
                 }
             }
         },
+      "/manager/v1/contract/template": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "合同"
+          ],
+          "summary": "合同模板列表",
+          "operationId": "ManagerContractTemplateList",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "管理员校验token",
+              "name": "X-Manager-Token",
+              "in": "header",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/definition.ContractTemplateListRes"
+                }
+              }
+            }
+          }
+        },
+        "put": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "合同"
+          ],
+          "summary": "修改合同模板",
+          "operationId": "ManagerContractTemplateModify",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "管理员校验token",
+              "name": "X-Manager-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "description": "desc",
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/definition.ContractTemplateModifyReq"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/model.StatusResponse"
+              }
+            }
+          }
+        },
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "合同"
+          ],
+          "summary": "创建合同模板",
+          "operationId": "ManagerContractTemplateCreate",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "管理员校验token",
+              "name": "X-Manager-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "description": "desc",
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/definition.ContractTemplateCreateReq"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/coupon": {
             "get": {
                 "consumes": [
@@ -13977,6 +14090,133 @@
                 "name": {
                     "description": "协议名称",
                     "type": "string"
+                }
+            }
+        },
+      "definition.ContractTemplateCreateReq": {
+        "type": "object",
+        "required": [
+          "name",
+          "subType",
+          "url",
+          "userType"
+        ],
+        "properties": {
+          "enable": {
+            "description": "是否启用",
+            "type": "boolean"
+          },
+          "name": {
+            "description": "合同名称",
+            "type": "string"
+          },
+          "remark": {
+            "description": "备注",
+            "type": "string"
+          },
+          "subType": {
+            "description": "订阅类型 1:单电 2:车电",
+            "type": "integer",
+            "enum": [
+              1,
+              2
+            ]
+          },
+          "url": {
+            "description": "合同链接",
+            "type": "string"
+          },
+          "userType": {
+            "description": "用户类型 1:个签 2:团签",
+            "type": "integer",
+            "enum": [
+              1,
+              2
+            ]
+          }
+        }
+      },
+      "definition.ContractTemplateListRes": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "description": "创建时间",
+            "type": "string"
+          },
+          "eanble": {
+            "description": "是否启用",
+            "type": "boolean"
+          },
+          "id": {
+            "description": "ID",
+            "type": "integer"
+          },
+          "name": {
+            "description": "合同名称",
+            "type": "string"
+          },
+          "remark": {
+            "description": "备注",
+            "type": "string"
+          },
+          "sn": {
+            "description": "合同编号",
+            "type": "string"
+          },
+          "subType": {
+            "description": "订阅类型 1:单电 2:车电",
+            "type": "integer"
+          },
+          "url": {
+            "description": "合同链接",
+            "type": "string"
+          },
+          "userType": {
+            "description": "用户类型 1:个签 2:团签",
+            "type": "integer"
+          }
+        }
+      },
+      "definition.ContractTemplateModifyReq": {
+        "type": "object",
+        "required": [
+          "name",
+          "subType",
+          "url",
+          "userType"
+        ],
+        "properties": {
+          "enable": {
+            "description": "是否启用",
+            "type": "boolean"
+          },
+          "name": {
+            "description": "合同名称",
+            "type": "string"
+          },
+          "remark": {
+            "description": "备注",
+            "type": "string"
+          },
+          "subType": {
+            "description": "订阅类型 1:单电 2:车电",
+            "type": "integer",
+            "enum": [
+              1,
+              2
+            ]
+          },
+          "url": {
+            "description": "合同链接",
+            "type": "string"
+          },
+          "userType": {
+            "description": "用户类型 1:个签 2:团签",
+            "type": "integer",
+            "enum": [
+              1,
+              2
+            ]
                 }
             }
         },

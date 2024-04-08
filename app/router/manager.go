@@ -288,6 +288,10 @@ func loadManagerRoutes() {
 
 	// 合同
 	g.GET("/contract", mapi.Contract.List)
+	// 合同模版
+	g.GET("/contract/template", mapi.ContractTemplate.List)
+	g.POST("/contract/template", mapi.ContractTemplate.Create)
+	g.PUT("/contract/template/:id", mapi.ContractTemplate.Modify)
 
 	// 反馈
 	g.GET("/enterprise/feedback", mapi.Enterprise.FeedbackList)
@@ -370,4 +374,9 @@ func loadManagerRoutes() {
 	agreement.PUT("/:id", mapi.Agreement.Modify)          // 修改协议
 	agreement.DELETE("/:id", mapi.Agreement.Delete)       // 删除协议
 	agreement.GET("/selection", mapi.Agreement.Selection) // 协议选择
+
+	// 合同模版
+	contractTemplate := g.Group("/contract/template")
+	contractTemplate.GET("", mapi.ContractTemplate.List) // 列表
+
 }

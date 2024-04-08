@@ -24,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
@@ -516,6 +517,27 @@ func init() {
 	contractDescEffective := contractFields[5].Descriptor()
 	// contract.DefaultEffective holds the default value on creation for the effective field.
 	contract.DefaultEffective = contractDescEffective.Default.(bool)
+	contracttemplateMixin := schema.ContractTemplate{}.Mixin()
+	contracttemplateMixinHooks2 := contracttemplateMixin[2].Hooks()
+	contracttemplate.Hooks[0] = contracttemplateMixinHooks2[0]
+	contracttemplateMixinFields0 := contracttemplateMixin[0].Fields()
+	_ = contracttemplateMixinFields0
+	contracttemplateFields := schema.ContractTemplate{}.Fields()
+	_ = contracttemplateFields
+	// contracttemplateDescCreatedAt is the schema descriptor for created_at field.
+	contracttemplateDescCreatedAt := contracttemplateMixinFields0[0].Descriptor()
+	// contracttemplate.DefaultCreatedAt holds the default value on creation for the created_at field.
+	contracttemplate.DefaultCreatedAt = contracttemplateDescCreatedAt.Default.(func() time.Time)
+	// contracttemplateDescUpdatedAt is the schema descriptor for updated_at field.
+	contracttemplateDescUpdatedAt := contracttemplateMixinFields0[1].Descriptor()
+	// contracttemplate.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	contracttemplate.DefaultUpdatedAt = contracttemplateDescUpdatedAt.Default.(func() time.Time)
+	// contracttemplate.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	contracttemplate.UpdateDefaultUpdatedAt = contracttemplateDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// contracttemplateDescEnable is the schema descriptor for enable field.
+	contracttemplateDescEnable := contracttemplateFields[5].Descriptor()
+	// contracttemplate.DefaultEnable holds the default value on creation for the enable field.
+	contracttemplate.DefaultEnable = contracttemplateDescEnable.Default.(bool)
 	couponMixin := schema.Coupon{}.Mixin()
 	couponMixinHooks1 := couponMixin[1].Hooks()
 	coupon.Hooks[0] = couponMixinHooks1[0]

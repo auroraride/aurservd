@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -615,6 +616,46 @@ func (c *ContractClient) GetNotDeleted(ctx context.Context, id uint64) (*Contrac
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *ContractClient) GetNotDeletedX(ctx context.Context, id uint64) *Contract {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for ContractTemplate.
+func (c *ContractTemplateClient) SoftDelete() *ContractTemplateUpdate {
+	mutation := newContractTemplateMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &ContractTemplateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *ContractTemplateClient) SoftDeleteOne(ct *ContractTemplate) *ContractTemplateUpdateOne {
+	mutation := newContractTemplateMutation(c.config, OpUpdateOne, withContractTemplate(ct))
+	mutation.SetDeletedAt(time.Now())
+	return &ContractTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *ContractTemplateClient) SoftDeleteOneID(id uint64) *ContractTemplateUpdateOne {
+	mutation := newContractTemplateMutation(c.config, OpUpdateOne, withContractTemplateID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &ContractTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for ContractTemplate.
+func (c *ContractTemplateClient) QueryNotDeleted() *ContractTemplateQuery {
+	return c.Query().Where(contracttemplate.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a ContractTemplate not deleted entity by its id.
+func (c *ContractTemplateClient) GetNotDeleted(ctx context.Context, id uint64) (*ContractTemplate, error) {
+	return c.Query().Where(contracttemplate.ID(id), contracttemplate.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *ContractTemplateClient) GetNotDeletedX(ctx context.Context, id uint64) *ContractTemplate {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

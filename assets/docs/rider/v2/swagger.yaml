@@ -165,6 +165,18 @@ definitions:
         description: 库存电池
         type: integer
     type: object
+  definition.ContractSignReq:
+    properties:
+      seal:
+        description: 签名Base64
+        type: string
+      subscribeId:
+        description: 订阅ID
+        type: integer
+    required:
+      - seal
+      - subscribeId
+    type: object
   definition.Destination:
     properties:
       area_id:
@@ -329,7 +341,6 @@ definitions:
     required:
     - orderType
     - payway
-    - planId
     type: object
   definition.OrderDepositCreditReq:
     properties:
@@ -1357,14 +1368,6 @@ definitions:
       name:
         description: 城市
         type: string
-    type: object
-  model.ContractSignReq:
-    properties:
-      subscribeId:
-        description: 订阅ID
-        type: integer
-    required:
-    - subscribeId
     type: object
   model.ContractSignRes:
     properties:
@@ -2750,6 +2753,35 @@ paths:
       summary: 根据企业价格ID查询协议
       tags:
       - Agreement - 协议
+  /rider/v2/allocated:
+    get:
+      consumes:
+        - application/json
+      operationId: RiderAllocated
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - in: query
+          name: phone
+          required: true
+          type: string
+        - in: query
+          name: serial
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 手动分配物资
+      tags:
+        - Rider - 骑手
   /rider/v2/assistance:
     get:
       consumes:
@@ -3487,32 +3519,6 @@ paths:
       summary: 获取已开通城市
       tags:
       - City - 城市
-  /rider/v2/constract/{sn}:
-    get:
-      consumes:
-      - application/json
-      operationId: ContractSignResult
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: 合同编号
-        in: path
-        name: sn
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 合同签署结果
-      tags:
-      - Contract - 合同
   /rider/v2/contact:
     post:
       consumes:
@@ -3556,7 +3562,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.ContractSignReq'
+          $ref: '#/definitions/definition.ContractSignReq'
       produces:
       - application/json
       responses:

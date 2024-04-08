@@ -32,6 +32,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
@@ -124,6 +125,7 @@ const (
 	TypeCity                       = "City"
 	TypeCommission                 = "Commission"
 	TypeContract                   = "Contract"
+	TypeContractTemplate           = "ContractTemplate"
 	TypeCoupon                     = "Coupon"
 	TypeCouponAssembly             = "CouponAssembly"
 	TypeCouponTemplate             = "CouponTemplate"
@@ -28760,6 +28762,1074 @@ func (m *ContractMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Contract edge %s", name)
+}
+
+// ContractTemplateMutation represents an operation that mutates the ContractTemplate nodes in the graph.
+type ContractTemplateMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uint64
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	creator       **model.Modifier
+	last_modifier **model.Modifier
+	remark        *string
+	name          *string
+	url           *string
+	user_type     *uint8
+	adduser_type  *int8
+	sub_type      *uint8
+	addsub_type   *int8
+	sn            *string
+	enable        *bool
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*ContractTemplate, error)
+	predicates    []predicate.ContractTemplate
+}
+
+var _ ent.Mutation = (*ContractTemplateMutation)(nil)
+
+// contracttemplateOption allows management of the mutation configuration using functional options.
+type contracttemplateOption func(*ContractTemplateMutation)
+
+// newContractTemplateMutation creates new mutation for the ContractTemplate entity.
+func newContractTemplateMutation(c config, op Op, opts ...contracttemplateOption) *ContractTemplateMutation {
+	m := &ContractTemplateMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeContractTemplate,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withContractTemplateID sets the ID field of the mutation.
+func withContractTemplateID(id uint64) contracttemplateOption {
+	return func(m *ContractTemplateMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ContractTemplate
+		)
+		m.oldValue = func(ctx context.Context) (*ContractTemplate, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ContractTemplate.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withContractTemplate sets the old ContractTemplate of the mutation.
+func withContractTemplate(node *ContractTemplate) contracttemplateOption {
+	return func(m *ContractTemplateMutation) {
+		m.oldValue = func(context.Context) (*ContractTemplate, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ContractTemplateMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ContractTemplateMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ContractTemplateMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ContractTemplateMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ContractTemplate.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ContractTemplateMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ContractTemplateMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ContractTemplate entity.
+// If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractTemplateMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ContractTemplateMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ContractTemplateMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ContractTemplateMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ContractTemplate entity.
+// If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractTemplateMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ContractTemplateMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *ContractTemplateMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *ContractTemplateMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the ContractTemplate entity.
+// If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractTemplateMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *ContractTemplateMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[contracttemplate.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *ContractTemplateMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[contracttemplate.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *ContractTemplateMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, contracttemplate.FieldDeletedAt)
+}
+
+// SetCreator sets the "creator" field.
+func (m *ContractTemplateMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *ContractTemplateMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the ContractTemplate entity.
+// If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractTemplateMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *ContractTemplateMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[contracttemplate.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *ContractTemplateMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[contracttemplate.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *ContractTemplateMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, contracttemplate.FieldCreator)
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (m *ContractTemplateMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
+}
+
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *ContractTemplateMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastModifier returns the old "last_modifier" field's value of the ContractTemplate entity.
+// If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractTemplateMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
+	}
+	return oldValue.LastModifier, nil
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *ContractTemplateMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[contracttemplate.FieldLastModifier] = struct{}{}
+}
+
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *ContractTemplateMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[contracttemplate.FieldLastModifier]
+	return ok
+}
+
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *ContractTemplateMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, contracttemplate.FieldLastModifier)
+}
+
+// SetRemark sets the "remark" field.
+func (m *ContractTemplateMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *ContractTemplateMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the ContractTemplate entity.
+// If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractTemplateMutation) OldRemark(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (m *ContractTemplateMutation) ClearRemark() {
+	m.remark = nil
+	m.clearedFields[contracttemplate.FieldRemark] = struct{}{}
+}
+
+// RemarkCleared returns if the "remark" field was cleared in this mutation.
+func (m *ContractTemplateMutation) RemarkCleared() bool {
+	_, ok := m.clearedFields[contracttemplate.FieldRemark]
+	return ok
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *ContractTemplateMutation) ResetRemark() {
+	m.remark = nil
+	delete(m.clearedFields, contracttemplate.FieldRemark)
+}
+
+// SetName sets the "name" field.
+func (m *ContractTemplateMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *ContractTemplateMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the ContractTemplate entity.
+// If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractTemplateMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *ContractTemplateMutation) ResetName() {
+	m.name = nil
+}
+
+// SetURL sets the "url" field.
+func (m *ContractTemplateMutation) SetURL(s string) {
+	m.url = &s
+}
+
+// URL returns the value of the "url" field in the mutation.
+func (m *ContractTemplateMutation) URL() (r string, exists bool) {
+	v := m.url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldURL returns the old "url" field's value of the ContractTemplate entity.
+// If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractTemplateMutation) OldURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldURL: %w", err)
+	}
+	return oldValue.URL, nil
+}
+
+// ResetURL resets all changes to the "url" field.
+func (m *ContractTemplateMutation) ResetURL() {
+	m.url = nil
+}
+
+// SetUserType sets the "user_type" field.
+func (m *ContractTemplateMutation) SetUserType(u uint8) {
+	m.user_type = &u
+	m.adduser_type = nil
+}
+
+// UserType returns the value of the "user_type" field in the mutation.
+func (m *ContractTemplateMutation) UserType() (r uint8, exists bool) {
+	v := m.user_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserType returns the old "user_type" field's value of the ContractTemplate entity.
+// If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractTemplateMutation) OldUserType(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserType: %w", err)
+	}
+	return oldValue.UserType, nil
+}
+
+// AddUserType adds u to the "user_type" field.
+func (m *ContractTemplateMutation) AddUserType(u int8) {
+	if m.adduser_type != nil {
+		*m.adduser_type += u
+	} else {
+		m.adduser_type = &u
+	}
+}
+
+// AddedUserType returns the value that was added to the "user_type" field in this mutation.
+func (m *ContractTemplateMutation) AddedUserType() (r int8, exists bool) {
+	v := m.adduser_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUserType resets all changes to the "user_type" field.
+func (m *ContractTemplateMutation) ResetUserType() {
+	m.user_type = nil
+	m.adduser_type = nil
+}
+
+// SetSubType sets the "sub_type" field.
+func (m *ContractTemplateMutation) SetSubType(u uint8) {
+	m.sub_type = &u
+	m.addsub_type = nil
+}
+
+// SubType returns the value of the "sub_type" field in the mutation.
+func (m *ContractTemplateMutation) SubType() (r uint8, exists bool) {
+	v := m.sub_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubType returns the old "sub_type" field's value of the ContractTemplate entity.
+// If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractTemplateMutation) OldSubType(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubType: %w", err)
+	}
+	return oldValue.SubType, nil
+}
+
+// AddSubType adds u to the "sub_type" field.
+func (m *ContractTemplateMutation) AddSubType(u int8) {
+	if m.addsub_type != nil {
+		*m.addsub_type += u
+	} else {
+		m.addsub_type = &u
+	}
+}
+
+// AddedSubType returns the value that was added to the "sub_type" field in this mutation.
+func (m *ContractTemplateMutation) AddedSubType() (r int8, exists bool) {
+	v := m.addsub_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSubType resets all changes to the "sub_type" field.
+func (m *ContractTemplateMutation) ResetSubType() {
+	m.sub_type = nil
+	m.addsub_type = nil
+}
+
+// SetSn sets the "sn" field.
+func (m *ContractTemplateMutation) SetSn(s string) {
+	m.sn = &s
+}
+
+// Sn returns the value of the "sn" field in the mutation.
+func (m *ContractTemplateMutation) Sn() (r string, exists bool) {
+	v := m.sn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSn returns the old "sn" field's value of the ContractTemplate entity.
+// If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractTemplateMutation) OldSn(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSn: %w", err)
+	}
+	return oldValue.Sn, nil
+}
+
+// ResetSn resets all changes to the "sn" field.
+func (m *ContractTemplateMutation) ResetSn() {
+	m.sn = nil
+}
+
+// SetEnable sets the "enable" field.
+func (m *ContractTemplateMutation) SetEnable(b bool) {
+	m.enable = &b
+}
+
+// Enable returns the value of the "enable" field in the mutation.
+func (m *ContractTemplateMutation) Enable() (r bool, exists bool) {
+	v := m.enable
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnable returns the old "enable" field's value of the ContractTemplate entity.
+// If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractTemplateMutation) OldEnable(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnable: %w", err)
+	}
+	return oldValue.Enable, nil
+}
+
+// ResetEnable resets all changes to the "enable" field.
+func (m *ContractTemplateMutation) ResetEnable() {
+	m.enable = nil
+}
+
+// Where appends a list predicates to the ContractTemplateMutation builder.
+func (m *ContractTemplateMutation) Where(ps ...predicate.ContractTemplate) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ContractTemplateMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ContractTemplateMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ContractTemplate, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ContractTemplateMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ContractTemplateMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ContractTemplate).
+func (m *ContractTemplateMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ContractTemplateMutation) Fields() []string {
+	fields := make([]string, 0, 12)
+	if m.created_at != nil {
+		fields = append(fields, contracttemplate.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, contracttemplate.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, contracttemplate.FieldDeletedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, contracttemplate.FieldCreator)
+	}
+	if m.last_modifier != nil {
+		fields = append(fields, contracttemplate.FieldLastModifier)
+	}
+	if m.remark != nil {
+		fields = append(fields, contracttemplate.FieldRemark)
+	}
+	if m.name != nil {
+		fields = append(fields, contracttemplate.FieldName)
+	}
+	if m.url != nil {
+		fields = append(fields, contracttemplate.FieldURL)
+	}
+	if m.user_type != nil {
+		fields = append(fields, contracttemplate.FieldUserType)
+	}
+	if m.sub_type != nil {
+		fields = append(fields, contracttemplate.FieldSubType)
+	}
+	if m.sn != nil {
+		fields = append(fields, contracttemplate.FieldSn)
+	}
+	if m.enable != nil {
+		fields = append(fields, contracttemplate.FieldEnable)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ContractTemplateMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case contracttemplate.FieldCreatedAt:
+		return m.CreatedAt()
+	case contracttemplate.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case contracttemplate.FieldDeletedAt:
+		return m.DeletedAt()
+	case contracttemplate.FieldCreator:
+		return m.Creator()
+	case contracttemplate.FieldLastModifier:
+		return m.LastModifier()
+	case contracttemplate.FieldRemark:
+		return m.Remark()
+	case contracttemplate.FieldName:
+		return m.Name()
+	case contracttemplate.FieldURL:
+		return m.URL()
+	case contracttemplate.FieldUserType:
+		return m.UserType()
+	case contracttemplate.FieldSubType:
+		return m.SubType()
+	case contracttemplate.FieldSn:
+		return m.Sn()
+	case contracttemplate.FieldEnable:
+		return m.Enable()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ContractTemplateMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case contracttemplate.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case contracttemplate.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case contracttemplate.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case contracttemplate.FieldCreator:
+		return m.OldCreator(ctx)
+	case contracttemplate.FieldLastModifier:
+		return m.OldLastModifier(ctx)
+	case contracttemplate.FieldRemark:
+		return m.OldRemark(ctx)
+	case contracttemplate.FieldName:
+		return m.OldName(ctx)
+	case contracttemplate.FieldURL:
+		return m.OldURL(ctx)
+	case contracttemplate.FieldUserType:
+		return m.OldUserType(ctx)
+	case contracttemplate.FieldSubType:
+		return m.OldSubType(ctx)
+	case contracttemplate.FieldSn:
+		return m.OldSn(ctx)
+	case contracttemplate.FieldEnable:
+		return m.OldEnable(ctx)
+	}
+	return nil, fmt.Errorf("unknown ContractTemplate field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ContractTemplateMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case contracttemplate.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case contracttemplate.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case contracttemplate.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case contracttemplate.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
+		return nil
+	case contracttemplate.FieldLastModifier:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastModifier(v)
+		return nil
+	case contracttemplate.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
+		return nil
+	case contracttemplate.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case contracttemplate.FieldURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetURL(v)
+		return nil
+	case contracttemplate.FieldUserType:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserType(v)
+		return nil
+	case contracttemplate.FieldSubType:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubType(v)
+		return nil
+	case contracttemplate.FieldSn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSn(v)
+		return nil
+	case contracttemplate.FieldEnable:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnable(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ContractTemplate field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ContractTemplateMutation) AddedFields() []string {
+	var fields []string
+	if m.adduser_type != nil {
+		fields = append(fields, contracttemplate.FieldUserType)
+	}
+	if m.addsub_type != nil {
+		fields = append(fields, contracttemplate.FieldSubType)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ContractTemplateMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case contracttemplate.FieldUserType:
+		return m.AddedUserType()
+	case contracttemplate.FieldSubType:
+		return m.AddedSubType()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ContractTemplateMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case contracttemplate.FieldUserType:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUserType(v)
+		return nil
+	case contracttemplate.FieldSubType:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSubType(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ContractTemplate numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ContractTemplateMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(contracttemplate.FieldDeletedAt) {
+		fields = append(fields, contracttemplate.FieldDeletedAt)
+	}
+	if m.FieldCleared(contracttemplate.FieldCreator) {
+		fields = append(fields, contracttemplate.FieldCreator)
+	}
+	if m.FieldCleared(contracttemplate.FieldLastModifier) {
+		fields = append(fields, contracttemplate.FieldLastModifier)
+	}
+	if m.FieldCleared(contracttemplate.FieldRemark) {
+		fields = append(fields, contracttemplate.FieldRemark)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ContractTemplateMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ContractTemplateMutation) ClearField(name string) error {
+	switch name {
+	case contracttemplate.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case contracttemplate.FieldCreator:
+		m.ClearCreator()
+		return nil
+	case contracttemplate.FieldLastModifier:
+		m.ClearLastModifier()
+		return nil
+	case contracttemplate.FieldRemark:
+		m.ClearRemark()
+		return nil
+	}
+	return fmt.Errorf("unknown ContractTemplate nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ContractTemplateMutation) ResetField(name string) error {
+	switch name {
+	case contracttemplate.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case contracttemplate.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case contracttemplate.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case contracttemplate.FieldCreator:
+		m.ResetCreator()
+		return nil
+	case contracttemplate.FieldLastModifier:
+		m.ResetLastModifier()
+		return nil
+	case contracttemplate.FieldRemark:
+		m.ResetRemark()
+		return nil
+	case contracttemplate.FieldName:
+		m.ResetName()
+		return nil
+	case contracttemplate.FieldURL:
+		m.ResetURL()
+		return nil
+	case contracttemplate.FieldUserType:
+		m.ResetUserType()
+		return nil
+	case contracttemplate.FieldSubType:
+		m.ResetSubType()
+		return nil
+	case contracttemplate.FieldSn:
+		m.ResetSn()
+		return nil
+	case contracttemplate.FieldEnable:
+		m.ResetEnable()
+		return nil
+	}
+	return fmt.Errorf("unknown ContractTemplate field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ContractTemplateMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ContractTemplateMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ContractTemplateMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ContractTemplateMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ContractTemplateMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ContractTemplateMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ContractTemplateMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ContractTemplate unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ContractTemplateMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ContractTemplate edge %s", name)
 }
 
 // CouponMutation represents an operation that mutates the Coupon nodes in the graph.

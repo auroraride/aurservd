@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/biz"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 )
@@ -28,5 +29,12 @@ var Business = new(business)
 // @Success	200				{object}	model.BusinessCabinetStatus	"请求成功"
 func (*business) Active(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
-	return ctx.SendResponse(service.NewRiderBusiness(ctx.Rider).Active(req, model.RouteVersionV2))
+	defer func() {
+		if r := recover(); r != nil {
+			c.Error(r.(error))
+		}
+	}()
+	return ctx.SendResponse(service.NewRiderBusiness(ctx.Rider).Active(req, func() (*model.ContractSignRes, error) {
+		return biz.NewContract().Create(ctx.Rider, req)
+	}))
 }

@@ -210,32 +210,6 @@ type City struct{}
 // @Success	200				{object}	[]model.CityWithLocation	"请求成功"
 func (*City) List() {}
 
-type Contract struct{}
-
-// Sign
-// @ID		ContractSign
-// @Router	/rider/v2/contract/sign [POST]
-// @Summary	签署合同
-// @Tags	Contract - 合同
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string					true	"骑手校验token"
-// @Param	body			body		model.ContractSignReq	true	"desc"
-// @Success	200				{object}	model.ContractSignRes	"请求成功"
-func (*Contract) Sign() {}
-
-// SignResult
-// @ID		ContractSignResult
-// @Router	/rider/v2/constract/{sn} [GET]
-// @Summary	合同签署结果
-// @Tags	Contract - 合同
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string					true	"骑手校验token"
-// @Param	sn				path		string					true	"合同编号"
-// @Success	200				{object}	model.StatusResponse	"请求成功"
-func (*Contract) SignResult() {}
-
 type Enterprise struct{}
 
 // Battery

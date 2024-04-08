@@ -32,6 +32,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
@@ -137,6 +138,8 @@ type Client struct {
 	Commission *CommissionClient
 	// Contract is the client for interacting with the Contract builders.
 	Contract *ContractClient
+	// ContractTemplate is the client for interacting with the ContractTemplate builders.
+	ContractTemplate *ContractTemplateClient
 	// Coupon is the client for interacting with the Coupon builders.
 	Coupon *CouponClient
 	// CouponAssembly is the client for interacting with the CouponAssembly builders.
@@ -289,6 +292,7 @@ func (c *Client) init() {
 	c.City = NewCityClient(c.config)
 	c.Commission = NewCommissionClient(c.config)
 	c.Contract = NewContractClient(c.config)
+	c.ContractTemplate = NewContractTemplateClient(c.config)
 	c.Coupon = NewCouponClient(c.config)
 	c.CouponAssembly = NewCouponAssemblyClient(c.config)
 	c.CouponTemplate = NewCouponTemplateClient(c.config)
@@ -460,6 +464,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		City:                       NewCityClient(cfg),
 		Commission:                 NewCommissionClient(cfg),
 		Contract:                   NewContractClient(cfg),
+		ContractTemplate:           NewContractTemplateClient(cfg),
 		Coupon:                     NewCouponClient(cfg),
 		CouponAssembly:             NewCouponAssemblyClient(cfg),
 		CouponTemplate:             NewCouponTemplateClient(cfg),
@@ -558,6 +563,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		City:                       NewCityClient(cfg),
 		Commission:                 NewCommissionClient(cfg),
 		Contract:                   NewContractClient(cfg),
+		ContractTemplate:           NewContractTemplateClient(cfg),
 		Coupon:                     NewCouponClient(cfg),
 		CouponAssembly:             NewCouponAssemblyClient(cfg),
 		CouponTemplate:             NewCouponTemplateClient(cfg),
@@ -652,15 +658,15 @@ func (c *Client) Use(hooks ...Hook) {
 		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Assistance, c.Attendance,
 		c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract,
 		c.Business, c.Cabinet, c.CabinetFault, c.City, c.Commission, c.Contract,
-		c.Coupon, c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand,
-		c.Employee, c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill,
-		c.EnterpriseContract, c.EnterprisePrepayment, c.EnterprisePrice,
-		c.EnterpriseStatement, c.EnterpriseStation, c.Exception, c.Exchange, c.Export,
-		c.Fault, c.Feedback, c.Guide, c.Instructions, c.Inventory, c.Maintainer,
-		c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce,
-		c.PointLog, c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
-		c.PromotionCommissionPlan, c.PromotionEarnings, c.PromotionGrowth,
-		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
+		c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate, c.Ebike,
+		c.EbikeBrand, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
+		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
+		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
+		c.Exchange, c.Export, c.Fault, c.Feedback, c.Guide, c.Instructions,
+		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
+		c.PlanIntroduce, c.PointLog, c.PromotionAchievement, c.PromotionBankCard,
+		c.PromotionCommission, c.PromotionCommissionPlan, c.PromotionEarnings,
+		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
@@ -679,15 +685,15 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Assistance, c.Attendance,
 		c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract,
 		c.Business, c.Cabinet, c.CabinetFault, c.City, c.Commission, c.Contract,
-		c.Coupon, c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand,
-		c.Employee, c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill,
-		c.EnterpriseContract, c.EnterprisePrepayment, c.EnterprisePrice,
-		c.EnterpriseStatement, c.EnterpriseStation, c.Exception, c.Exchange, c.Export,
-		c.Fault, c.Feedback, c.Guide, c.Instructions, c.Inventory, c.Maintainer,
-		c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce,
-		c.PointLog, c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
-		c.PromotionCommissionPlan, c.PromotionEarnings, c.PromotionGrowth,
-		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
+		c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate, c.Ebike,
+		c.EbikeBrand, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
+		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
+		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
+		c.Exchange, c.Export, c.Fault, c.Feedback, c.Guide, c.Instructions,
+		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
+		c.PlanIntroduce, c.PointLog, c.PromotionAchievement, c.PromotionBankCard,
+		c.PromotionCommission, c.PromotionCommissionPlan, c.PromotionEarnings,
+		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
@@ -736,6 +742,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Commission.mutate(ctx, m)
 	case *ContractMutation:
 		return c.Contract.mutate(ctx, m)
+	case *ContractTemplateMutation:
+		return c.ContractTemplate.mutate(ctx, m)
 	case *CouponMutation:
 		return c.Coupon.mutate(ctx, m)
 	case *CouponAssemblyMutation:
@@ -4385,6 +4393,140 @@ func (c *ContractClient) mutate(ctx context.Context, m *ContractMutation) (Value
 		return (&ContractDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Contract mutation op: %q", m.Op())
+	}
+}
+
+// ContractTemplateClient is a client for the ContractTemplate schema.
+type ContractTemplateClient struct {
+	config
+}
+
+// NewContractTemplateClient returns a client for the ContractTemplate from the given config.
+func NewContractTemplateClient(c config) *ContractTemplateClient {
+	return &ContractTemplateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `contracttemplate.Hooks(f(g(h())))`.
+func (c *ContractTemplateClient) Use(hooks ...Hook) {
+	c.hooks.ContractTemplate = append(c.hooks.ContractTemplate, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `contracttemplate.Intercept(f(g(h())))`.
+func (c *ContractTemplateClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ContractTemplate = append(c.inters.ContractTemplate, interceptors...)
+}
+
+// Create returns a builder for creating a ContractTemplate entity.
+func (c *ContractTemplateClient) Create() *ContractTemplateCreate {
+	mutation := newContractTemplateMutation(c.config, OpCreate)
+	return &ContractTemplateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ContractTemplate entities.
+func (c *ContractTemplateClient) CreateBulk(builders ...*ContractTemplateCreate) *ContractTemplateCreateBulk {
+	return &ContractTemplateCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ContractTemplateClient) MapCreateBulk(slice any, setFunc func(*ContractTemplateCreate, int)) *ContractTemplateCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ContractTemplateCreateBulk{err: fmt.Errorf("calling to ContractTemplateClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ContractTemplateCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ContractTemplateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ContractTemplate.
+func (c *ContractTemplateClient) Update() *ContractTemplateUpdate {
+	mutation := newContractTemplateMutation(c.config, OpUpdate)
+	return &ContractTemplateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ContractTemplateClient) UpdateOne(ct *ContractTemplate) *ContractTemplateUpdateOne {
+	mutation := newContractTemplateMutation(c.config, OpUpdateOne, withContractTemplate(ct))
+	return &ContractTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ContractTemplateClient) UpdateOneID(id uint64) *ContractTemplateUpdateOne {
+	mutation := newContractTemplateMutation(c.config, OpUpdateOne, withContractTemplateID(id))
+	return &ContractTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ContractTemplate.
+func (c *ContractTemplateClient) Delete() *ContractTemplateDelete {
+	mutation := newContractTemplateMutation(c.config, OpDelete)
+	return &ContractTemplateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ContractTemplateClient) DeleteOne(ct *ContractTemplate) *ContractTemplateDeleteOne {
+	return c.DeleteOneID(ct.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ContractTemplateClient) DeleteOneID(id uint64) *ContractTemplateDeleteOne {
+	builder := c.Delete().Where(contracttemplate.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ContractTemplateDeleteOne{builder}
+}
+
+// Query returns a query builder for ContractTemplate.
+func (c *ContractTemplateClient) Query() *ContractTemplateQuery {
+	return &ContractTemplateQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeContractTemplate},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ContractTemplate entity by its id.
+func (c *ContractTemplateClient) Get(ctx context.Context, id uint64) (*ContractTemplate, error) {
+	return c.Query().Where(contracttemplate.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ContractTemplateClient) GetX(ctx context.Context, id uint64) *ContractTemplate {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ContractTemplateClient) Hooks() []Hook {
+	hooks := c.hooks.ContractTemplate
+	return append(hooks[:len(hooks):len(hooks)], contracttemplate.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *ContractTemplateClient) Interceptors() []Interceptor {
+	return c.inters.ContractTemplate
+}
+
+func (c *ContractTemplateClient) mutate(ctx context.Context, m *ContractTemplateMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ContractTemplateCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ContractTemplateUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ContractTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ContractTemplateDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ContractTemplate mutation op: %q", m.Op())
 	}
 }
 
@@ -16385,38 +16527,38 @@ type (
 	hooks struct {
 		Activity, Agent, Agreement, Allocate, Assistance, Attendance, Battery,
 		BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
-		CabinetFault, City, Commission, Contract, Coupon, CouponAssembly,
-		CouponTemplate, Ebike, EbikeBrand, Employee, Enterprise, EnterpriseBatterySwap,
-		EnterpriseBill, EnterpriseContract, EnterprisePrepayment, EnterprisePrice,
-		EnterpriseStatement, EnterpriseStation, Exception, Exchange, Export, Fault,
-		Feedback, Guide, Instructions, Inventory, Maintainer, Manager, Order,
-		OrderRefund, Person, Plan, PlanIntroduce, PointLog, PromotionAchievement,
-		PromotionBankCard, PromotionCommission, PromotionCommissionPlan,
-		PromotionEarnings, PromotionGrowth, PromotionLevel, PromotionLevelTask,
-		PromotionMember, PromotionMemberCommission, PromotionPerson,
-		PromotionPrivilege, PromotionReferrals, PromotionReferralsProgress,
-		PromotionSetting, PromotionWithdrawal, Question, QuestionCategory, Reserve,
-		Rider, RiderFollowUp, Role, Setting, Stock, StockSummary, Store, Subscribe,
-		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
-		Version []ent.Hook
+		CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
+		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee, Enterprise,
+		EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
+		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
+		Exception, Exchange, Export, Fault, Feedback, Guide, Instructions, Inventory,
+		Maintainer, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce, PointLog,
+		PromotionAchievement, PromotionBankCard, PromotionCommission,
+		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
+		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
+		PromotionPerson, PromotionPrivilege, PromotionReferrals,
+		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
+		QuestionCategory, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
+		StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
+		SubscribeReminder, SubscribeSuspend, Version []ent.Hook
 	}
 	inters struct {
 		Activity, Agent, Agreement, Allocate, Assistance, Attendance, Battery,
 		BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
-		CabinetFault, City, Commission, Contract, Coupon, CouponAssembly,
-		CouponTemplate, Ebike, EbikeBrand, Employee, Enterprise, EnterpriseBatterySwap,
-		EnterpriseBill, EnterpriseContract, EnterprisePrepayment, EnterprisePrice,
-		EnterpriseStatement, EnterpriseStation, Exception, Exchange, Export, Fault,
-		Feedback, Guide, Instructions, Inventory, Maintainer, Manager, Order,
-		OrderRefund, Person, Plan, PlanIntroduce, PointLog, PromotionAchievement,
-		PromotionBankCard, PromotionCommission, PromotionCommissionPlan,
-		PromotionEarnings, PromotionGrowth, PromotionLevel, PromotionLevelTask,
-		PromotionMember, PromotionMemberCommission, PromotionPerson,
-		PromotionPrivilege, PromotionReferrals, PromotionReferralsProgress,
-		PromotionSetting, PromotionWithdrawal, Question, QuestionCategory, Reserve,
-		Rider, RiderFollowUp, Role, Setting, Stock, StockSummary, Store, Subscribe,
-		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
-		Version []ent.Interceptor
+		CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
+		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee, Enterprise,
+		EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
+		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
+		Exception, Exchange, Export, Fault, Feedback, Guide, Instructions, Inventory,
+		Maintainer, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce, PointLog,
+		PromotionAchievement, PromotionBankCard, PromotionCommission,
+		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
+		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
+		PromotionPerson, PromotionPrivilege, PromotionReferrals,
+		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
+		QuestionCategory, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
+		StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
+		SubscribeReminder, SubscribeSuspend, Version []ent.Interceptor
 	}
 )
 

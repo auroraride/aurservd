@@ -170,6 +170,13 @@ func (c *ContractClient) ModifyOne(old *Contract, data any) *ContractUpdateOne {
 	return EntitySetAttributes[ContractUpdateOne, Contract](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for ContractTemplate.
+func (c *ContractTemplateClient) ModifyOne(old *ContractTemplate, data any) *ContractTemplateUpdateOne {
+	mutation := newContractTemplateMutation(c.config, OpUpdateOne, withContractTemplate(old))
+	up := &ContractTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[ContractTemplateUpdateOne, ContractTemplate](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Coupon.
 func (c *CouponClient) ModifyOne(old *Coupon, data any) *CouponUpdateOne {
 	mutation := newCouponMutation(c.config, OpUpdateOne, withCoupon(old))

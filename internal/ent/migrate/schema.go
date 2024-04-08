@@ -1462,6 +1462,40 @@ var (
 			},
 		},
 	}
+	// ContractTemplateColumns holds the columns for the "contract_template" table.
+	ContractTemplateColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "name", Type: field.TypeString, Comment: "模板名称"},
+		{Name: "url", Type: field.TypeString, Comment: "模板文件地址"},
+		{Name: "user_type", Type: field.TypeUint8, Comment: "用户类型 1:个签 2:团签"},
+		{Name: "sub_type", Type: field.TypeUint8, Comment: "套餐类型 1:单电 2:车电"},
+		{Name: "sn", Type: field.TypeString, Comment: "合同编号"},
+		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: false},
+	}
+	// ContractTemplateTable holds the schema information for the "contract_template" table.
+	ContractTemplateTable = &schema.Table{
+		Name:       "contract_template",
+		Columns:    ContractTemplateColumns,
+		PrimaryKey: []*schema.Column{ContractTemplateColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "contracttemplate_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{ContractTemplateColumns[1]},
+			},
+			{
+				Name:    "contracttemplate_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{ContractTemplateColumns[3]},
+			},
+		},
+	}
 	// CouponColumns holds the columns for the "coupon" table.
 	CouponColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -6007,6 +6041,7 @@ var (
 		CityTable,
 		CommissionTable,
 		ContractTable,
+		ContractTemplateTable,
 		CouponTable,
 		CouponAssemblyTable,
 		CouponTemplateTable,
@@ -6189,6 +6224,9 @@ func init() {
 	ContractTable.ForeignKeys[3].RefTable = RiderTable
 	ContractTable.Annotation = &entsql.Annotation{
 		Table: "contract",
+	}
+	ContractTemplateTable.Annotation = &entsql.Annotation{
+		Table: "contract_template",
 	}
 	CouponTable.ForeignKeys[0].RefTable = RiderTable
 	CouponTable.ForeignKeys[1].RefTable = CouponAssemblyTable

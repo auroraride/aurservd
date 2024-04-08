@@ -48,6 +48,8 @@ type Tx struct {
 	Commission *CommissionClient
 	// Contract is the client for interacting with the Contract builders.
 	Contract *ContractClient
+	// ContractTemplate is the client for interacting with the ContractTemplate builders.
+	ContractTemplate *ContractTemplateClient
 	// Coupon is the client for interacting with the Coupon builders.
 	Coupon *CouponClient
 	// CouponAssembly is the client for interacting with the CouponAssembly builders.
@@ -320,6 +322,7 @@ func (tx *Tx) init() {
 	tx.City = NewCityClient(tx.config)
 	tx.Commission = NewCommissionClient(tx.config)
 	tx.Contract = NewContractClient(tx.config)
+	tx.ContractTemplate = NewContractTemplateClient(tx.config)
 	tx.Coupon = NewCouponClient(tx.config)
 	tx.CouponAssembly = NewCouponAssemblyClient(tx.config)
 	tx.CouponTemplate = NewCouponTemplateClient(tx.config)

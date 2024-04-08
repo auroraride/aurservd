@@ -254,6 +254,100 @@ definitions:
         description: 协议名称
         type: string
     type: object
+  definition.ContractTemplateCreateReq:
+    properties:
+      enable:
+        description: 是否启用
+        type: boolean
+      name:
+        description: 合同名称
+        type: string
+      remark:
+        description: 备注
+        type: string
+      subType:
+        description: 订阅类型 1:单电 2:车电
+        enum:
+          - 1
+          - 2
+        type: integer
+      url:
+        description: 合同链接
+        type: string
+      userType:
+        description: 用户类型 1:个签 2:团签
+        enum:
+          - 1
+          - 2
+        type: integer
+    required:
+      - name
+      - subType
+      - url
+      - userType
+    type: object
+  definition.ContractTemplateListRes:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      eanble:
+        description: 是否启用
+        type: boolean
+      id:
+        description: ID
+        type: integer
+      name:
+        description: 合同名称
+        type: string
+      remark:
+        description: 备注
+        type: string
+      sn:
+        description: 合同编号
+        type: string
+      subType:
+        description: 订阅类型 1:单电 2:车电
+        type: integer
+      url:
+        description: 合同链接
+        type: string
+      userType:
+        description: 用户类型 1:个签 2:团签
+        type: integer
+    type: object
+  definition.ContractTemplateModifyReq:
+    properties:
+      enable:
+        description: 是否启用
+        type: boolean
+      name:
+        description: 合同名称
+        type: string
+      remark:
+        description: 备注
+        type: string
+      subType:
+        description: 订阅类型 1:单电 2:车电
+        enum:
+          - 1
+          - 2
+        type: integer
+      url:
+        description: 合同链接
+        type: string
+      userType:
+        description: 用户类型 1:个签 2:团签
+        enum:
+          - 1
+          - 2
+        type: integer
+    required:
+      - name
+      - subType
+      - url
+      - userType
+    type: object
   definition.Fault:
     properties:
       attachments:
@@ -9280,6 +9374,81 @@ paths:
                   type: array
               type: object
       summary: 合同列表
+      tags:
+        - 合同
+  /manager/v1/contract/template:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerContractTemplateList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.ContractTemplateListRes'
+            type: array
+      summary: 合同模板列表
+      tags:
+        - 合同
+    post:
+      consumes:
+        - application/json
+      operationId: ManagerContractTemplateCreate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: desc
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.ContractTemplateCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建合同模板
+      tags:
+        - 合同
+    put:
+      consumes:
+        - application/json
+      operationId: ManagerContractTemplateModify
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: desc
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.ContractTemplateModifyReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改合同模板
       tags:
       - 合同
   /manager/v1/coupon:

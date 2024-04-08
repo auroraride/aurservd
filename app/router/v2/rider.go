@@ -187,7 +187,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 合同
 	contract := g.Group("/contract", person())
-	contract.POST("/sign", v1.Contract.Sign)     // 签署合同
+	contract.POST("/sign", rapi.Contract.Sign)   // 签署合同
 	contract.GET("/:sn", v1.Contract.SignResult) // 合同签署结果
 
 	// 业务

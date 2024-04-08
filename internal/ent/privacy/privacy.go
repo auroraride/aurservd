@@ -519,6 +519,30 @@ func (f ContractMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutati
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ContractMutation", m)
 }
 
+// The ContractTemplateQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type ContractTemplateQueryRuleFunc func(context.Context, *ent.ContractTemplateQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f ContractTemplateQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.ContractTemplateQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.ContractTemplateQuery", q)
+}
+
+// The ContractTemplateMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type ContractTemplateMutationRuleFunc func(context.Context, *ent.ContractTemplateMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f ContractTemplateMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.ContractTemplateMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ContractTemplateMutation", m)
+}
+
 // The CouponQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type CouponQueryRuleFunc func(context.Context, *ent.CouponQuery) error
@@ -2076,6 +2100,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.ContractQuery:
 		return q.Filter(), nil
+	case *ent.ContractTemplateQuery:
+		return q.Filter(), nil
 	case *ent.CouponQuery:
 		return q.Filter(), nil
 	case *ent.CouponAssemblyQuery:
@@ -2240,6 +2266,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.CommissionMutation:
 		return m.Filter(), nil
 	case *ent.ContractMutation:
+		return m.Filter(), nil
+	case *ent.ContractTemplateMutation:
 		return m.Filter(), nil
 	case *ent.CouponMutation:
 		return m.Filter(), nil

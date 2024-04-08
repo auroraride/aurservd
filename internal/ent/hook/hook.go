@@ -213,6 +213,18 @@ func (f ContractFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ContractMutation", m)
 }
 
+// The ContractTemplateFunc type is an adapter to allow the use of ordinary
+// function as ContractTemplate mutator.
+type ContractTemplateFunc func(context.Context, *ent.ContractTemplateMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ContractTemplateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ContractTemplateMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ContractTemplateMutation", m)
+}
+
 // The CouponFunc type is an adapter to allow the use of ordinary
 // function as Coupon mutator.
 type CouponFunc func(context.Context, *ent.CouponMutation) (ent.Value, error)
