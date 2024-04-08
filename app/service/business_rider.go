@@ -965,6 +965,10 @@ func (s *businessRiderService) ForceUnsubscribe(req *model.BusinessSubscribeReq,
 				default:
 					return fmt.Errorf("不支持的支付方式")
 				}
+
+				if prepay.Refund.Success { // 退款支付宝同步返回
+					NewOrder().RefundSuccess(prepay.Refund)
+				}
 			}
 
 			// 预授权 退款未转支付的订单
