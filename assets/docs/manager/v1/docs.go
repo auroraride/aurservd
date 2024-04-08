@@ -14150,7 +14150,7 @@ const docTemplate = `{
                     "description": "创建时间",
                     "type": "string"
                 },
-                "eanble": {
+                "enable": {
                     "description": "是否启用",
                     "type": "boolean"
                 },

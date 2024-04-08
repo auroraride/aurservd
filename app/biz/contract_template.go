@@ -25,13 +25,13 @@ func NewContractTemplate() *ContractTemplate {
 // Create 新增合同模板
 func (s *ContractTemplate) Create(req *definition.ContractTemplateCreateReq) error {
 	// 判断当前传入类型是否存在
-	temp, err := s.orm.QueryNotDeleted().Where(contracttemplate.SubType(req.SubType), contracttemplate.UserType(req.UserType)).First(s.ctx)
-	if err != nil {
-		return err
-	}
+	temp, _ := s.orm.QueryNotDeleted().Where(contracttemplate.SubType(req.SubType), contracttemplate.UserType(req.UserType)).First(s.ctx)
 	// 如果存在并且需要开启
-	if temp != nil && *req.Enable {
-		_, err = temp.Update().SetEnable(false).Save(s.ctx)
+	if temp != nil && req.Enable != nil && *req.Enable {
+		_, err := temp.Update().SetEnable(false).Save(s.ctx)
+		if err != nil {
+			return err
+		}
 	}
 
 	var fields []string
@@ -117,6 +117,7 @@ func (s *ContractTemplate) List() (res []*definition.ContractTemplateListRes) {
 				Sn:        v.Sn,
 				Enable:    v.Enable,
 				CreatedAt: v.CreatedAt.Format("2006-01-02 15:04:05"),
+				Remark:    v.Remark,
 			},
 		})
 	}

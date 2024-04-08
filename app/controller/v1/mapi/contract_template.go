@@ -43,7 +43,7 @@ func (*contractTemplate) Create(c echo.Context) (err error) {
 
 // Modify
 // @ID		ManagerContractTemplateModify
-// @Router	/manager/v1/contract/template [PUT]
+// @Router	/manager/v1/contract/template/{id} [PUT]
 // @Summary	修改合同模板
 // @Tags	合同
 // @Accept	json

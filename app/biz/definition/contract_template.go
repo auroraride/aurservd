@@ -27,7 +27,7 @@ type ContractTemplate struct {
 	Name      string `json:"name"`      // 合同名称
 	UserType  uint8  `json:"userType"`  // 用户类型 1:个签 2:团签
 	SubType   uint8  `json:"subType"`   // 订阅类型 1:单电 2:车电
-	Enable    bool   `json:"eanble"`    // 是否启用
+	Enable    bool   `json:"enable"`    // 是否启用
 	Sn        string `json:"sn"`        // 合同编号
 	Remark    string `json:"remark"`    // 备注
 	CreatedAt string `json:"createdAt"` // 创建时间
@@ -51,5 +51,9 @@ type ContractTemplateListRes struct {
 // ContractTemplateModifyReq 修改合同模板请求
 type ContractTemplateModifyReq struct {
 	model.IDParamReq
-	ContractTemplateCreateReq
+	Name     string  `json:"name" validate:"required" `                 // 合同名称
+	UserType uint8   `json:"userType" validate:"required" enums:"1,2" ` // 用户类型 1:个签 2:团签
+	SubType  uint8   `json:"subType" validate:"required" enums:"1,2"`   // 订阅类型 1:单电 2:车电
+	Remark   *string `json:"remark"`                                    // 备注
+	Enable   *bool   `json:"enable"`                                    // 是否启用
 }
