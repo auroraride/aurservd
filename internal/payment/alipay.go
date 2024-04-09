@@ -412,7 +412,7 @@ func (c *alipayClient) FandAuthUnfreeze(refund *model.PaymentRefund, req *defini
 
 	res, err := c.FundAuthOrderUnfreeze(trade)
 	if err != nil || !res.IsSuccess() {
-		zap.L().Error("资金授权解冻失败", zap.Error(err), zap.Error(res.Error))
+		zap.L().Error("资金授权解冻失败", zap.Error(err), zap.Error(res.Error), log.JsonData(trade))
 		return err
 	}
 
