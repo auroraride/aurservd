@@ -18,7 +18,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
-	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -70,6 +69,17 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignReq) (err erro
 		return errors.New("电车必须由门店或站点分配")
 	}
 
+	// 城市
+	ec := sub.Edges.City
+	if ec == nil {
+		return errors.New("未找到城市信息")
+	}
+
+	// 判定非智能套餐门店库存
+	if allo.StoreID != nil && allo.BatteryID == nil && !service.NewStock().CheckStore(*allo.StoreID, sub.Model, 1) {
+		return errors.New("库存不足")
+	}
+
 	person, _ := r.QueryPerson().First(s.ctx)
 	if person == nil {
 		return errors.New("未找到骑手信息")
@@ -107,16 +117,27 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignReq) (err erro
 		return err
 	}
 
+	var files []string
+	files = append(files, url)
 	//  更新合同状态
-	err = cont.Update().SetStatus(model.ContractStatusSuccess.Value()).SetLink(url).Exec(s.ctx)
+	err = cont.Update().SetStatus(model.ContractStatusSuccess.Value()).SetFiles(files).Exec(s.ctx)
+	if err != nil {
+		zap.L().Error("更新合同状态失败", zap.Error(err))
+		return err
+	}
 
+	err = service.NewContract().Update(cont)
+	if err != nil {
+		zap.L().Error("更新合同状态失败", zap.Error(err))
+		return err
+	}
 	return nil
 }
 
 // Create 骑手添加合同
-func (s *Contract) Create(r *ent.Rider, req *model.BusinessCabinetReq) (*model.ContractSignRes, error) {
+func (s *Contract) Create(r *ent.Rider, req *definition.CabinetCreateReq) (*model.ContractSignRes, error) {
 
-	sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.ID(req.ID), subscribe.Status(model.SubscribeStatusInactive)).WithCity().First(s.ctx)
+	sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.ID(req.SubscribeID), subscribe.Status(model.SubscribeStatusInactive)).WithCity().First(s.ctx)
 	if sub == nil {
 		return nil, errors.New("未找到骑士卡")
 	}
@@ -131,11 +152,10 @@ func (s *Contract) Create(r *ent.Rider, req *model.BusinessCabinetReq) (*model.C
 	}
 
 	// 查询电柜
-	cab, _ := ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.Serial(req.Serial)).First(s.ctx)
-	if cab == nil {
-		return nil, errors.New("未找到电柜")
-
-	}
+	// cab, _ := ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.Serial(req.Serial)).First(s.ctx)
+	// if cab == nil {
+	// 	return nil, errors.New("未找到电柜")
+	// }
 
 	var link, sn string
 	skip := false
@@ -153,30 +173,30 @@ func (s *Contract) Create(r *ent.Rider, req *model.BusinessCabinetReq) (*model.C
 		}
 	}
 
-	// 查询分配信息是否存在, 如果存在则删除
-	service.NewAllocate().SubscribeDeleteIfExists(sub.ID)
-	// 存储分配信息
-	allo, err := ent.Database.Allocate.Create().
-		SetType(allocate.TypeBattery).
-		SetSubscribe(sub).
-		SetRider(r).
-		SetStatus(model.AllocateStatusPending.Value()).
-		SetTime(time.Now()).
-		SetModel(sub.Model).
-		SetCabinetID(cab.ID).
-		SetRemark("骑手扫码").
-		Save(s.ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	if sub.BrandID != nil && allo.StoreID == nil && allo.StationID == nil {
-		return nil, errors.New("电车必须由门店或站点分配")
-	}
-
 	ec := sub.Edges.City
 
 	if !skip {
+
+		// 查询分配信息是否存在, 如果存在则删除
+		service.NewAllocate().SubscribeDeleteIfExists(sub.ID)
+		// 存储分配信息
+		allo, err := ent.Database.Allocate.Create().
+			SetType(allocate.TypeBattery).
+			SetSubscribe(sub).
+			SetRider(r).
+			SetStatus(model.AllocateStatusPending.Value()).
+			SetTime(time.Now()).
+			SetModel(sub.Model).
+			// SetCabinetID(cab.ID).
+			SetRemark("骑手自主激活").
+			Save(s.ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		if sub.BrandID != nil && allo.StoreID == nil && allo.StationID == nil {
+			return nil, errors.New("电车必须由门店或站点分配")
+		}
 
 		// 定义变量
 		var (
@@ -327,10 +347,10 @@ func (s *Contract) Create(r *ent.Rider, req *model.BusinessCabinetReq) (*model.C
 
 		link = contractCreateResponse.Url
 
+		// todo 生成合同流水号
+		flowId := tools.NewUnique().NewSN28()
 		// 存储合同信息
 		err = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-			// todo 生成合同流水号
-			flowId := tools.NewUnique().NewSN28()
 			expiresAt := time.Now().Add(model.ContractExpiration * time.Minute)
 			// 删除原有合同
 			_, _ = tx.Contract.Delete().Where(contract.AllocateID(allo.ID)).Exec(s.ctx)
@@ -358,6 +378,7 @@ func (s *Contract) Create(r *ent.Rider, req *model.BusinessCabinetReq) (*model.C
 		if err != nil {
 			return nil, err
 		}
+		go service.NewContract().CheckResult(flowId)
 	}
 
 	return &model.ContractSignRes{

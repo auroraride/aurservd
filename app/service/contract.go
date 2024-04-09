@@ -421,7 +421,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 		})
 
 		// 监听合同签署结果
-		go s.checkResult(flowId)
+		go s.CheckResult(flowId)
 	}
 
 	return model.ContractSignRes{
@@ -430,7 +430,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 	}
 }
 
-func (s *contractService) checkResult(flowID string) {
+func (s *contractService) CheckResult(flowID string) {
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 
@@ -511,7 +511,7 @@ func (s *contractService) doResult(flowID string) {
 
 	// 成功签署合同
 	if result.IsSuccessed() {
-		err := s.update(c)
+		err := s.Update(c)
 		if err != nil {
 			zap.L().Error("已成功签署合同, 但合同更新失败: "+idstr, zap.Error(err))
 		}
@@ -528,7 +528,7 @@ func (s *contractService) doResult(flowID string) {
 
 // 关联更新
 // 包含业务 [激活 / 业务 / 出入库]
-func (s *contractService) update(c *ent.Contract) (err error) {
+func (s *contractService) Update(c *ent.Contract) (err error) {
 	defer func() {
 		if v := recover(); v != nil {
 			err = fmt.Errorf("%v", v)

@@ -8,7 +8,6 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/auroraride/aurservd/app"
-	"github.com/auroraride/aurservd/app/biz"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 )
@@ -34,7 +33,5 @@ func (*business) Active(c echo.Context) (err error) {
 			c.Error(r.(error))
 		}
 	}()
-	return ctx.SendResponse(service.NewRiderBusiness(ctx.Rider).Active(req, func() (*model.ContractSignRes, error) {
-		return biz.NewContract().Create(ctx.Rider, req)
-	}))
+	return ctx.SendResponse(service.NewRiderBusiness(ctx.Rider).Active(req, model.RouteVersionV2))
 }

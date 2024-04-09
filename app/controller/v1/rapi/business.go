@@ -29,7 +29,7 @@ var Business = new(business)
 // @Success	200				{object}	model.BusinessCabinetStatus	"请求成功"
 func (*business) Active(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
-	return ctx.SendResponse(service.NewRiderBusiness(ctx.Rider).Active(req, nil))
+	return ctx.SendResponse(service.NewRiderBusiness(ctx.Rider).Active(req, model.RouteVersionV1))
 }
 
 // Unsubscribe

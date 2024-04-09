@@ -3168,45 +3168,6 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "合同"
-                ],
-                "summary": "修改合同模板",
-                "operationId": "ManagerContractTemplateModify",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "desc",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/definition.ContractTemplateModifyReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -3234,6 +3195,47 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/definition.ContractTemplateCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/contract/template/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "合同"
+                ],
+                "summary": "修改合同模板",
+                "operationId": "ManagerContractTemplateModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.ContractTemplateModifyReq"
                         }
                     }
                 ],
@@ -14189,7 +14191,6 @@ const docTemplate = `{
             "required": [
                 "name",
                 "subType",
-                "url",
                 "userType"
             ],
             "properties": {
@@ -14212,10 +14213,6 @@ const docTemplate = `{
                         1,
                         2
                     ]
-                },
-                "url": {
-                    "description": "合同链接",
-                    "type": "string"
                 },
                 "userType": {
                     "description": "用户类型 1:个签 2:团签",

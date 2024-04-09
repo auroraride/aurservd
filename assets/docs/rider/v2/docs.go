@@ -1289,6 +1289,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/contract/create": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Contract - 合同"
+                ],
+                "summary": "创建合同",
+                "operationId": "ContractCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.CabinetCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ContractSignRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/contract/sign": {
             "post": {
                 "consumes": [
@@ -1324,7 +1365,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.ContractSignRes"
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -3644,6 +3685,18 @@ const docTemplate = `{
                 },
                 "stockNum": {
                     "description": "库存电池",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.CabinetCreateReq": {
+            "type": "object",
+            "required": [
+                "subscribeId"
+            ],
+            "properties": {
+                "subscribeId": {
+                    "description": "订阅ID",
                     "type": "integer"
                 }
             }
