@@ -975,7 +975,7 @@ func (s *businessRiderService) ForceUnsubscribe(req *model.BusinessSubscribeReq,
 			if depositOrder.Payway == model.OrderPaywayAlipayAuthFreeze && depositOrder.TradePayAt == nil {
 				if *req.RefundDeposit {
 					// 退款 解冻押金
-					err = NewOrder().FandAuthUnfreeze(depositOrder)
+					err = NewOrder().FandAuthUnfreeze(prepay.Refund, depositOrder)
 					// 如果退部分押金 还有部分要退的金额转支付
 					if remainAmount > 0 {
 						depositOrder.Amount = remainAmount

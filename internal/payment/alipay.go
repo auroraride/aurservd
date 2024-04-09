@@ -397,7 +397,7 @@ func (c *alipayClient) DecodeFandAuthFreezeNotification(values url.Values) (noti
 }
 
 // FandAuthUnfreeze 资金授权解冻
-func (c *alipayClient) FandAuthUnfreeze(req *definition.FandAuthUnfreezeReq) error {
+func (c *alipayClient) FandAuthUnfreeze(refund *model.PaymentRefund, req *definition.FandAuthUnfreezeReq) error {
 	trade := alipay.FundAuthOrderUnfreeze{
 		AuthNo:       req.AuthNo,
 		OutRequestNo: tools.NewUnique().NewSN28(),
@@ -412,14 +412,20 @@ func (c *alipayClient) FandAuthUnfreeze(req *definition.FandAuthUnfreezeReq) err
 
 	res, err := c.FundAuthOrderUnfreeze(trade)
 	if err != nil || !res.IsSuccess() {
-		zap.L().Error("资金授权解冻失败", zap.Error(err))
+		zap.L().Error("资金授权解冻失败", zap.Error(err), zap.Error(res.Error))
 		return err
 	}
+
+	refund.Request = true
+	refund.Success = true
+	refund.Time = time.Now()
+
 	return nil
 }
 
 // NotificationFandAuthUnfreeze 解冻回调
 func (c *alipayClient) NotificationFandAuthUnfreeze(req *http.Request) (res *model.PaymentCache) {
+	res = new(model.PaymentCache)
 	err := req.ParseForm()
 	if err != nil {
 		zap.L().Error("资金授权解冻回调失败", zap.Error(err))

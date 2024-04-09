@@ -736,6 +736,10 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 
 // RefundSuccess 成功退款
 func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
+	if req == nil {
+		return
+	}
+
 	ctx := context.Background()
 
 	// 删除缓存
@@ -1180,7 +1184,7 @@ func (s *orderService) DepositPay(d *model.DepositCredit) {
 }
 
 // FandAuthUnfreeze 解冻资金
-func (s *orderService) FandAuthUnfreeze(o *ent.Order) error {
+func (s *orderService) FandAuthUnfreeze(refund *model.PaymentRefund, o *ent.Order) error {
 
 	fandAuthUnfreezeReq := &definition.FandAuthUnfreezeReq{
 		AuthNo:       o.AuthNo,
@@ -1214,5 +1218,5 @@ func (s *orderService) FandAuthUnfreeze(o *ent.Order) error {
 		return errors.New("解冻金额大于剩余金额")
 	}
 
-	return payment.NewAlipay().FandAuthUnfreeze(fandAuthUnfreezeReq)
+	return payment.NewAlipay().FandAuthUnfreeze(refund, fandAuthUnfreezeReq)
 }
