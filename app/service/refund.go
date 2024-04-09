@@ -222,7 +222,7 @@ func (s *refundService) DoRefund(o *ent.Order, or *ent.OrderRefund, status uint8
 				isDeposit = true
 			}
 			// 如果只是预支付直接解冻
-			err = payment.NewAlipay().FandAuthUnfreeze(&definition.FandAuthUnfreezeReq{
+			err = payment.NewAlipay().FandAuthUnfreeze(prepay.Refund, &definition.FandAuthUnfreezeReq{
 				AuthNo:       o.AuthNo,
 				Amount:       or.Amount,
 				OutRequestNo: or.OutRefundNo,
@@ -233,9 +233,6 @@ func (s *refundService) DoRefund(o *ent.Order, or *ent.OrderRefund, status uint8
 				snag.Panic("退款处理失败")
 			}
 		default:
-			snag.Panic("退款处理失败")
-		}
-		if err != nil {
 			snag.Panic("退款处理失败")
 		}
 
