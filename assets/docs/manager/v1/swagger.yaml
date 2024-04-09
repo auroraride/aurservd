@@ -333,9 +333,6 @@ definitions:
           - 1
           - 2
         type: integer
-      url:
-        description: 合同链接
-        type: string
       userType:
         description: 用户类型 1:个签 2:团签
         enum:
@@ -345,7 +342,6 @@ definitions:
     required:
       - name
       - subType
-      - url
       - userType
     type: object
   definition.Fault:
@@ -9425,6 +9421,7 @@ paths:
       summary: 创建合同模板
       tags:
         - 合同
+  /manager/v1/contract/template/{id}:
     put:
       consumes:
         - application/json

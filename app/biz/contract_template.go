@@ -2,10 +2,8 @@ package biz
 
 import (
 	"context"
-	"errors"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
-	"github.com/auroraride/aurservd/app/rpc"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
 )
@@ -38,23 +36,25 @@ func (s *ContractTemplate) Create(req *definition.ContractTemplateCreateReq) err
 		}
 	}
 
-	var fields []string
+	// var fields []string
 
-	fields = append(fields, definition.ContractTemplateFields...)
-	if f, ok := definition.FieldsUserMap[req.UserType]; ok {
-		fields = append(fields, f...)
-	}
-	if f, ok := definition.FieldsSubMap[req.SubType]; ok {
-		fields = append(fields, f...)
-	}
+	// fields = append(fields, definition.ContractTemplateFields...)
+	// if f, ok := definition.FieldsUserMap[req.UserType]; ok {
+	// 	fields = append(fields, f...)
+	// }
+	// if f, ok := definition.FieldsSubMap[req.SubType]; ok {
+	// 	fields = append(fields, f...)
+	// }
 
-	sn, err := rpc.AddContractTemplate(s.ctx, req.Url, fields)
-	if err != nil {
-		return err
-	}
-	if sn == "" {
-		return errors.New("请求失败")
-	}
+	// sn, err := rpc.AddContractTemplate(s.ctx, req.Url, fields)
+	// if err != nil {
+	// 	return err
+	// }
+	// if sn == "" {
+	// 	return errors.New("请求失败")
+	// }
+
+	sn := "123456"
 
 	_, err = s.orm.Create().
 		SetName(req.Name).

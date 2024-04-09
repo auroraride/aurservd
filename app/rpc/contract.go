@@ -62,7 +62,7 @@ func Create(ctx context.Context, template string, values map[string]string) (req
 		return nil, errors.New("rpc连接失败")
 	}
 	c := pb.NewContractClient(gc)
-	_, err = c.Create(ctx, &pb.ContractCreateRequest{
+	request, err = c.Create(ctx, &pb.ContractCreateRequest{
 		Template: template,
 		Values:   values,
 	})

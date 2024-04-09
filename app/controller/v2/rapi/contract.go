@@ -21,8 +21,23 @@ var Contract = new(contract)
 // @Produce	json
 // @Param	X-Rider-Token	header		string						true	"骑手校验token"
 // @Param	body			body		definition.ContractSignReq	true	"desc"
-// @Success	200				{object}	model.ContractSignRes		"请求成功"
+// @Success	200				{object}	model.StatusResponse		"请求成功"
 func (*contract) Sign(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.ContractSignReq](c)
 	return ctx.SendResponse(biz.NewContract().Sign(ctx.Rider, req))
+}
+
+// Create
+// @ID		ContractCreate
+// @Router	/rider/v2/contract/create [POST]
+// @Summary	创建合同
+// @Tags	Contract - 合同
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string						true	"骑手校验token"
+// @Param	body			body		definition.CabinetCreateReq	true	"desc"
+// @Success	200				{object}	model.ContractSignRes		"请求成功"
+func (*contract) Create(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.CabinetCreateReq](c)
+	return ctx.SendResponse(biz.NewContract().Create(ctx.Rider, req))
 }

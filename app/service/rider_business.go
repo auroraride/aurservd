@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/business"
+	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
@@ -105,16 +106,16 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 	s.battery = NewIntelligentCabinet(s.rider).BusinessCensorX(bus, sub, cab)
 
 	// 获取仓位信息
-	var err error
-	s.response.UUID, s.response.Index, err = NewIntelligentCabinet(s.rider).BusinessUsable(cab, bus, sub.Model)
-	if err != nil {
-		snag.Panic(err)
-	}
+	// var err error
+	// s.response.UUID, s.response.Index, err = NewIntelligentCabinet(s.rider).BusinessUsable(cab, bus, sub.Model)
+	// if err != nil {
+	// 	snag.Panic(err)
+	// }
 }
 
 // Active 骑手自主激活
 // TODO 分配信息是否需要记录电池编号
-func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, doContract func() (*model.ContractSignRes, error)) model.BusinessCabinetStatus {
+func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, version string) model.BusinessCabinetStatus {
 	// 预处理
 	s.preprocess(req.Serial, business.TypeActive)
 
@@ -122,17 +123,9 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, doContract 
 	if s.subscribe.Status != model.SubscribeStatusInactive {
 		snag.Panic("骑士卡状态错误")
 	}
-	var signRes *model.ContractSignRes
-	var err error
-	if doContract != nil {
-		signRes, err = doContract()
-		if err != nil {
-			snag.Panic(err)
-		}
-	}
 
 	// 检查是否需要签约
-	if NewSubscribe().NeedContract(s.subscribe) && signRes == nil {
+	if NewSubscribe().NeedContract(s.subscribe) && version == model.RouteVersionV1 {
 		// 查询分配信息是否存在, 如果存在则删除
 		NewAllocate().SubscribeDeleteIfExists(s.subscribe.ID)
 
@@ -157,13 +150,13 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, doContract 
 		}))
 	}
 
-	if signRes != nil {
+	if version == model.RouteVersionV2 {
 		// 兼容V2版本无需签约激活逻辑
-		if !NewSubscribe().NeedContract(s.subscribe) {
-			// // 查询分配信息是否存在, 如果存在则删除
+		if !s.subscribe.NeedContract {
+			// 查询分配信息是否存在, 如果存在则删除
 			NewAllocate().SubscribeDeleteIfExists(s.subscribe.ID)
 			// 存储分配信息
-			err = ent.Database.Allocate.Create().
+			err := ent.Database.Allocate.Create().
 				SetType(allocate.TypeBattery).
 				SetSubscribe(s.subscribe).
 				SetRider(s.rider).
@@ -177,8 +170,20 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, doContract 
 				snag.Panic("请求失败")
 			}
 		} else {
-			// 返回签约URL
-			snag.Panic(snag.StatusRequireSign, signRes)
+			// 因为V2 是在扫码之前签约 所以不知道电柜信息 这里更新一下电柜信息
+			cont, _ := ent.Database.Contract.Query().Where(
+				contract.Status(model.ContractStatusSuccess.Value()),
+				contract.Effective(true),
+				contract.SubscribeID(s.subscribe.ID),
+			).First(s.ctx)
+			if cont == nil {
+				snag.Panic("请签约后再进行激活")
+			}
+			// 查找分配信息
+			_, err := ent.Database.Allocate.Update().Where(allocate.ID(*cont.AllocateID)).SetCabinetID(s.cabinet.ID).Save(s.ctx)
+			if err != nil {
+				snag.Panic("请求失败", err)
+			}
 		}
 	}
 

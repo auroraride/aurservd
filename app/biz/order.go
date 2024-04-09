@@ -264,17 +264,19 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 	var deposit float64
 
 	if t == model.OrderTypeNewly || t == model.OrderTypeAgain {
-		// 车电套餐需要传入门店ID
-		if p.Type == model.PlanTypeEbikeWithBattery.Value() && req.StoreID == nil {
-			return nil, errors.New("车电套餐需要选择门店")
-		}
-		// 只有新签和重签才需要支付押金
-		// 当支付方式为支付宝或微信,并且套餐支持押金支付时 并且不是分开支付的押金订单
-		if (req.Payway == model.OrderPaywayAlipay || req.Payway == model.OrderPaywayWechat) && p.DepositPay && req.DepositOrderNo == nil ||
-			// 当选择支付宝预授权支付时, 且套餐支持押金支付时
-			req.Payway == model.OrderPaywayAlipayAuthFreeze && req.DepositAlipayAuthFreeze {
-			if p.Deposit && p.DepositAmount > 0 {
-				deposit = p.DepositAmount
+		if req.DepositType != nil && *req.DepositType == model.DepositTypePay {
+			// 车电套餐需要传入门店ID
+			if p.Type == model.PlanTypeEbikeWithBattery.Value() && req.StoreID == nil {
+				return nil, errors.New("车电套餐需要选择门店")
+			}
+			// 只有新签和重签才需要支付押金
+			// 当支付方式为支付宝或微信,并且套餐支持押金支付时 并且不是分开支付的押金订单
+			if (req.Payway == model.OrderPaywayAlipay || req.Payway == model.OrderPaywayWechat) && p.DepositPay && req.DepositOrderNo == nil ||
+				// 当选择支付宝预授权支付时, 且套餐支持押金支付时
+				req.Payway == model.OrderPaywayAlipayAuthFreeze && req.DepositAlipayAuthFreeze {
+				if p.Deposit && p.DepositAmount > 0 {
+					deposit = p.DepositAmount
+				}
 			}
 		}
 	}

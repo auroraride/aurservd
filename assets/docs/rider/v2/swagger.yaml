@@ -165,6 +165,14 @@ definitions:
         description: 库存电池
         type: integer
     type: object
+  definition.CabinetCreateReq:
+    properties:
+      subscribeId:
+        description: 订阅ID
+        type: integer
+    required:
+      - subscribeId
+    type: object
   definition.ContractSignReq:
     properties:
       seal:
@@ -3546,6 +3554,33 @@ paths:
       summary: 添加紧急联系人
       tags:
       - Rider - 骑手
+  /rider/v2/contract/create:
+    post:
+      consumes:
+        - application/json
+      operationId: ContractCreate
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: desc
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.CabinetCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ContractSignRes'
+      summary: 创建合同
+      tags:
+        - Contract - 合同
   /rider/v2/contract/sign:
     post:
       consumes:
@@ -3569,7 +3604,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.ContractSignRes'
+            $ref: '#/definitions/model.StatusResponse'
       summary: 签署合同
       tags:
       - Contract - 合同
