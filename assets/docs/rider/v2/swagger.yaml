@@ -489,6 +489,31 @@ definitions:
       version:
         type: string
     type: object
+  definition.PlanNewlyRes:
+    properties:
+      batteryDescription:
+        allOf:
+          - $ref: '#/definitions/model.SettingPlanDescription'
+        description: 单电介绍
+      brands:
+        description: 车电选项
+        items:
+          $ref: '#/definitions/model.PlanEbikeBrandOption'
+        type: array
+      configure:
+        allOf:
+          - $ref: '#/definitions/model.PaymentConfigure'
+        description: 支付配置
+      ebikeDescription:
+        allOf:
+          - $ref: '#/definitions/model.SettingPlanDescription'
+        description: 车电介绍
+      models:
+        description: 单电选项
+        items:
+          $ref: '#/definitions/model.PlanModelOption'
+        type: array
+    type: object
   definition.QuestionCategoryDetail:
     properties:
       id:
@@ -2025,34 +2050,6 @@ definitions:
         description: 购买须知
         items:
           type: string
-        type: array
-    type: object
-  model.PlanNewlyRes:
-    properties:
-      batteryDescription:
-        allOf:
-        - $ref: '#/definitions/model.SettingPlanDescription'
-        description: 单电介绍
-      brands:
-        description: 车电选项
-        items:
-          $ref: '#/definitions/model.PlanEbikeBrandOption'
-        type: array
-      configure:
-        allOf:
-        - $ref: '#/definitions/model.PaymentConfigure'
-        description: 支付配置
-      deposit:
-        description: 需缴纳押金
-        type: number
-      ebikeDescription:
-        allOf:
-        - $ref: '#/definitions/model.SettingPlanDescription'
-        description: 车电介绍
-      models:
-        description: 单电选项
-        items:
-          $ref: '#/definitions/model.PlanModelOption'
         type: array
     type: object
   model.PointLogListRes:
@@ -4478,7 +4475,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.PlanNewlyRes'
+            $ref: '#/definitions/definition.PlanNewlyRes'
       summary: 新购骑士卡
       tags:
       - Plan - 骑士卡

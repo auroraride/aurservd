@@ -398,6 +398,9 @@ func (c *alipayClient) DecodeFandAuthFreezeNotification(values url.Values) (noti
 
 // FandAuthUnfreeze 资金授权解冻
 func (c *alipayClient) FandAuthUnfreeze(refund *model.PaymentRefund, req *definition.FandAuthUnfreezeReq) error {
+	if req.Remark == "" {
+		req.Remark = "申请退款"
+	}
 	trade := alipay.FundAuthOrderUnfreeze{
 		AuthNo:       req.AuthNo,
 		OutRequestNo: tools.NewUnique().NewSN28(),

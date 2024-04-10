@@ -418,31 +418,6 @@ func (*order) Detail() {}
 // @Success	200				{object}	model.OrderStatusRes	"请求成功"
 func (*order) Status() {}
 
-type Plan struct{}
-
-// List
-// @ID		PlanList
-// @Router	/rider/v2/plan [GET]
-// @Summary	新购骑士卡
-// @Tags	Plan - 骑士卡
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string					true	"骑手校验token"
-// @Param	query			query		model.PlanListRiderReq	true	"骑士卡列表请求参数"
-// @Success	200				{object}	model.PlanNewlyRes		"请求成功"
-func (*Plan) List() {}
-
-// Renewly
-// @ID		PlanRenewly
-// @Router	/rider/v2/plan/renewly [GET]
-// @Summary	续费骑士卡
-// @Tags	Plan - 骑士卡
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string						true	"骑手校验token"
-// @Success	200				{object}	model.RiderPlanRenewalRes	"请求成功"
-func (*Plan) Renewly() {}
-
 type Reserve struct{}
 
 // Unfinished
