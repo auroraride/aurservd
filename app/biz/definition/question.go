@@ -6,7 +6,7 @@ import "github.com/auroraride/aurservd/app/model"
 type QuestionCommon struct {
 	Name         string `json:"name" validate:"required"`   // 问题名称
 	Sort         int    `json:"sort" validate:"required"`   // 排序
-	CategoryID   uint64 `json:"categoryId,omitempty"`       // 分类ID
+	CategoryID   uint64 `json:"categoryId"`                 // 分类ID
 	CategoryName string `json:"categoryName,omitempty"`     // 分类名称
 	Answer       string `json:"answer" validate:"required"` // 答案
 }

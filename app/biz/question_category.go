@@ -123,5 +123,14 @@ func (q *questionCategoryBiz) All() ([]*definition.QuestionCategoryDetail, error
 			},
 		})
 	}
+
+	res = append(res, &definition.QuestionCategoryDetail{
+		IDRes: model.IDRes{ID: 0},
+		QuestionCategoryCommon: definition.QuestionCategoryCommon{
+			Name: "其他",
+			Sort: 0,
+		},
+	})
+
 	return res, nil
 }

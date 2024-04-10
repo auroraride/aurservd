@@ -226,7 +226,7 @@ func (s *refundService) DoRefund(o *ent.Order, or *ent.OrderRefund, status uint8
 				AuthNo:       o.AuthNo,
 				Amount:       or.Amount,
 				OutRequestNo: or.OutRefundNo,
-				Remark:       remark,
+				Remark:       or.Reason,
 				IsDeposit:    isDeposit,
 			})
 			if err != nil {
