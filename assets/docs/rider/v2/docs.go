@@ -2702,7 +2702,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.PlanNewlyRes"
+                            "$ref": "#/definitions/definition.PlanNewlyRes"
                         }
                     }
                 }
@@ -4141,6 +4141,49 @@ const docTemplate = `{
                 },
                 "version": {
                     "type": "string"
+                }
+            }
+        },
+        "definition.PlanNewlyRes": {
+            "type": "object",
+            "properties": {
+                "batteryDescription": {
+                    "description": "单电介绍",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.SettingPlanDescription"
+                        }
+                    ]
+                },
+                "brands": {
+                    "description": "车电选项",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanEbikeBrandOption"
+                    }
+                },
+                "configure": {
+                    "description": "支付配置",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PaymentConfigure"
+                        }
+                    ]
+                },
+                "ebikeDescription": {
+                    "description": "车电介绍",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.SettingPlanDescription"
+                        }
+                    ]
+                },
+                "models": {
+                    "description": "单电选项",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanModelOption"
+                    }
                 }
             }
         },
@@ -6359,53 +6402,6 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
-                }
-            }
-        },
-        "model.PlanNewlyRes": {
-            "type": "object",
-            "properties": {
-                "batteryDescription": {
-                    "description": "单电介绍",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.SettingPlanDescription"
-                        }
-                    ]
-                },
-                "brands": {
-                    "description": "车电选项",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.PlanEbikeBrandOption"
-                    }
-                },
-                "configure": {
-                    "description": "支付配置",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.PaymentConfigure"
-                        }
-                    ]
-                },
-                "deposit": {
-                    "description": "需缴纳押金",
-                    "type": "number"
-                },
-                "ebikeDescription": {
-                    "description": "车电介绍",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.SettingPlanDescription"
-                        }
-                    ]
-                },
-                "models": {
-                    "description": "单电选项",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.PlanModelOption"
                     }
                 }
             }

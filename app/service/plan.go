@@ -550,28 +550,22 @@ func (s *planService) Key(model string, brandID *uint64) string {
 
 // RiderListNewly 获取新购骑士卡列表
 func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewlyRes {
-	// V2 当没有登录时候不做骑手校验
-	var state uint
-	var deposit float64
-	if s.rider != nil {
-		// 判断骑手是否个签
-		if s.rider.EnterpriseID != nil {
-			snag.Panic("仅个签骑手可购买")
-		}
-
-		// 判断骑手是否可以办理业务
-		NewRider().CheckForBusiness(s.rider)
-
-		// 判断是否有生效订阅
-		_, sub := NewSubscribe().RecentDetail(s.rider.ID)
-		if sub != nil && slices.Contains(model.SubscribeNotUnSubscribed(), sub.Status) {
-			snag.Panic("骑手当前有其他订阅, 无法新购")
-		}
-
-		state, _ = NewOrder().PreconditionNewly(sub)
-		// 需缴纳押金金额
-		deposit = NewRider().Deposit(s.rider.ID)
+	// 判断骑手是否个签
+	if s.rider.EnterpriseID != nil {
+		snag.Panic("仅个签骑手可购买")
 	}
+
+	// 判断骑手是否可以办理业务
+	NewRider().CheckForBusiness(s.rider)
+
+	// 判断是否有生效订阅
+	_, sub := NewSubscribe().RecentDetail(s.rider.ID)
+	if sub != nil && slices.Contains(model.SubscribeNotUnSubscribed(), sub.Status) {
+		snag.Panic("骑手当前有其他订阅, 无法新购")
+	}
+
+	// 需缴纳押金金额
+	deposit := NewRider().Deposit(s.rider.ID)
 
 	today := carbon.Now().StartOfDay().ToStdTime()
 
@@ -605,6 +599,8 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 			agreement.IsDefault(true),
 		).First(s.ctx)
 
+	t, _ := NewOrder().PreconditionNewly(sub)
+
 	for _, item := range items {
 		key := s.Key(item.Model, item.BrandID)
 		m, ok := mmap[key]
@@ -625,10 +621,8 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 		}
 
 		var ramount float64
-		if s.rider != nil {
-			if state == model.OrderTypeNewly && item.DiscountNewly > 0 {
-				ramount = item.DiscountNewly
-			}
+		if t == model.OrderTypeNewly && item.DiscountNewly > 0 {
+			ramount = item.DiscountNewly
 		}
 
 		planDaysPriceOption := model.PlanDaysPriceOption{
@@ -693,11 +687,8 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 	}
 
 	res := model.PlanNewlyRes{
-		Deposit: deposit,
-	}
-
-	if s.rider != nil {
-		res.Configure = NewPayment(s.rider).Configure()
+		Deposit:   deposit,
+		Configure: NewPayment(s.rider).Configure(),
 	}
 
 	settings, _ := ent.Database.Setting.Query().Where(setting.KeyIn(model.SettingPlanBatteryDescriptionKey, model.SettingPlanEbikeDescriptionKey)).All(context.Background())

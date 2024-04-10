@@ -1021,7 +1021,7 @@ func (s *riderService) DepositOrder(riderID uint64) *ent.Order {
 		order.Status(model.OrderStatusPaid),
 		order.Type(model.OrderTypeDeposit),
 		order.DeletedAtIsNil(),
-	).WithSubscribe().First(s.ctx)
+	).WithSubscribe().WithPlan().First(s.ctx)
 	return o
 }
 
