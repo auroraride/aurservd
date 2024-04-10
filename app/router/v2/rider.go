@@ -94,8 +94,6 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	g.GET("/instructions/:key", rapi.Instructions.Detail) // 买前必读 积分 优惠券使用说明
 
-	g.GET("/plan", rapi.Plan.List) // 套餐列表
-
 	// 电柜
 	cabinet := g.Group("/cabinet")
 	cabinet.GET("", rapi.Cabinet.List)           // 电柜列表
@@ -125,7 +123,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 骑士卡
 	plan := g.Group("/plan")
-	plan.GET("", v1.Plan.List)                      // 套餐列表
+	plan.GET("", rapi.Plan.List)                    // 套餐列表
 	plan.GET("/renewly", v1.Plan.Renewly, person()) // 续费列表
 
 	// 电池
