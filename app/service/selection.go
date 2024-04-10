@@ -564,5 +564,9 @@ func (s *selectionService) QuestionCategory() (items []model.SelectOption) {
 			Label: r.Name,
 		}
 	}
+	items = append(items, model.SelectOption{
+		Value: 0,
+		Label: "其他",
+	})
 	return
 }

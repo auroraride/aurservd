@@ -125,21 +125,24 @@ func (b *questionBiz) All() ([]*definition.QuestionDetail, error) {
 		},
 	).Order(ent.Desc(question.FieldSort))
 	items, err := query.All(b.ctx)
-	if err != nil {
+	if len(items) == 0 {
 		return nil, err
 	}
 	var res []*definition.QuestionDetail
 	for _, item := range items {
-		res = append(res, &definition.QuestionDetail{
+		data := &definition.QuestionDetail{
 			IDRes: model.IDRes{ID: item.ID},
 			QuestionCommon: definition.QuestionCommon{
-				Name:         item.Name,
-				Sort:         item.Sort,
-				CategoryID:   item.CategoryID,
-				CategoryName: item.Edges.Category.Name,
-				Answer:       item.Answer,
-			},
-		})
+				Name:   item.Name,
+				Sort:   item.Sort,
+				Answer: item.Answer,
+			}}
+		if item.Edges.Category != nil {
+			data.QuestionCommon.CategoryName = item.Edges.Category.Name
+			data.QuestionCommon.CategoryID = item.CategoryID
+		}
+		res = append(res, data)
+
 	}
 	return res, nil
 }
