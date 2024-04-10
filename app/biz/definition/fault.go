@@ -61,7 +61,7 @@ type FaultCreateReq struct {
 	FaultCause  []string  `json:"faultCause" validate:"required" trans:"故障"`    // 故障内容
 	Description string    `json:"description" validate:"required" trans:"故障描述"` // 故障描述
 	Type        FaultType `json:"type" validate:"required" trans:"故障类型"`        // 故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他
-	Attachments []string  `json:"attachments" validate:"max=3"`                 // 附件
+	Attachments []string  `json:"attachments" validate:"max=5"`                 // 附件
 	CityID      uint64    `json:"cityId" validate:"required"`                   // 城市ID
 }
 

@@ -267,8 +267,9 @@ func (c *alipayClient) FandAuthFreeze(pc *model.PaymentCache) (string, error) {
 				AssessmentAmount: fmt.Sprintf("%.2f", pc.Subscribe.Deposit),
 			}
 			postPayments := definition.PostPayments{
-				Name:   "租金",
-				Amount: fmt.Sprintf("%.2f", pc.Subscribe.Amount-pc.Subscribe.Deposit),
+				Name:        "租金",
+				Amount:      fmt.Sprintf("%.2f", pc.Subscribe.Amount-pc.Subscribe.Deposit),
+				Description: fmt.Sprintf("%.2f", pc.Subscribe.Amount-pc.Subscribe.Deposit) + "元/月",
 			}
 			postPaymentsString, err := json.Marshal(postPayments)
 			if err != nil {
@@ -337,10 +338,13 @@ func (c *alipayClient) NotificationFandAuthFreeze(req *http.Request) *model.Paym
 				return nil
 			}
 			switch pc.CacheType {
-			case model.PaymentCacheTypeAlipayAuthFreeze, model.PaymentCacheTypeDeposit:
+			case model.PaymentCacheTypeAlipayAuthFreeze:
 				// 预授权支付
 				pc.Subscribe.AuthNo = result.AuthNo
 				pc.Subscribe.OutRequestNo = result.OutRequestNo
+			case model.PaymentCacheTypeDeposit:
+				pc.DepositCredit.AuthNo = result.AuthNo
+				pc.DepositCredit.OutRequestNo = result.OutRequestNo
 			default:
 				return nil
 			}

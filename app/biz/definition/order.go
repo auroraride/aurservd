@@ -81,8 +81,9 @@ type CreditExtInfo struct {
 
 // PostPayments 后付费项目
 type PostPayments struct {
-	Name   string `json:"name"`   // 项目名称
-	Amount string `json:"amount"` // 项目金额
+	Name        string `json:"name"`        // 项目名称
+	Amount      string `json:"amount"`      // 项目金额
+	Description string `json:"description"` // 项目描述
 }
 
 // FundAuthOperationDetailReq 查询资金授权冻结订单
