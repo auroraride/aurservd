@@ -32,7 +32,7 @@ func NewActivity() *activityBiz {
 }
 
 func (a *activityBiz) Detail(id uint64) (*definition.ActivityDetail, error) {
-	item, err := a.orm.QueryNotDeleted().Where(activity.ID(id)).First(a.ctx)
+	item, err := a.orm.Query().Where(activity.ID(id)).First(a.ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (a *activityBiz) Modify(req *definition.ActivityModifyReq) error {
 }
 
 func (a *activityBiz) All() ([]*definition.ActivityDetail, error) {
-	items, err := a.orm.QueryNotDeleted().
+	items, err := a.orm.Query().
 		Where(activity.EnableEQ(true)).
 		Order(ent.Desc(activity.FieldSort)).All(a.ctx)
 	if err != nil {
@@ -97,7 +97,7 @@ func (a *activityBiz) All() ([]*definition.ActivityDetail, error) {
 }
 
 func (a *activityBiz) List(req *definition.ActivityListReq) *model.PaginationRes {
-	query := a.orm.QueryNotDeleted().Order(ent.Desc(activity.FieldSort))
+	query := a.orm.Query().Order(ent.Desc(activity.FieldSort))
 	if req.Keyword != nil {
 		query.Where(activity.NameContains(*req.Keyword))
 	}
