@@ -36,11 +36,11 @@ type ContractTemplate struct {
 	// 模板文件地址
 	URL string `json:"url,omitempty"`
 	// 用户类型 1:个签 2:团签
-	UserType uint8 `json:"user_type,omitempty"`
+	Aimed uint8 `json:"aimed,omitempty"`
 	// 套餐类型 1:单电 2:车电
-	SubType uint8 `json:"sub_type,omitempty"`
-	// 合同编号
-	Sn string `json:"sn,omitempty"`
+	PlanType uint8 `json:"plan_type,omitempty"`
+	// 模板hash
+	Hash string `json:"hash,omitempty"`
 	// 是否启用
 	Enable       bool `json:"enable,omitempty"`
 	selectValues sql.SelectValues
@@ -55,9 +55,9 @@ func (*ContractTemplate) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case contracttemplate.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case contracttemplate.FieldID, contracttemplate.FieldUserType, contracttemplate.FieldSubType:
+		case contracttemplate.FieldID, contracttemplate.FieldAimed, contracttemplate.FieldPlanType:
 			values[i] = new(sql.NullInt64)
-		case contracttemplate.FieldRemark, contracttemplate.FieldName, contracttemplate.FieldURL, contracttemplate.FieldSn:
+		case contracttemplate.FieldRemark, contracttemplate.FieldName, contracttemplate.FieldURL, contracttemplate.FieldHash:
 			values[i] = new(sql.NullString)
 		case contracttemplate.FieldCreatedAt, contracttemplate.FieldUpdatedAt, contracttemplate.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -135,23 +135,23 @@ func (ct *ContractTemplate) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ct.URL = value.String
 			}
-		case contracttemplate.FieldUserType:
+		case contracttemplate.FieldAimed:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field user_type", values[i])
+				return fmt.Errorf("unexpected type %T for field aimed", values[i])
 			} else if value.Valid {
-				ct.UserType = uint8(value.Int64)
+				ct.Aimed = uint8(value.Int64)
 			}
-		case contracttemplate.FieldSubType:
+		case contracttemplate.FieldPlanType:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field sub_type", values[i])
+				return fmt.Errorf("unexpected type %T for field plan_type", values[i])
 			} else if value.Valid {
-				ct.SubType = uint8(value.Int64)
+				ct.PlanType = uint8(value.Int64)
 			}
-		case contracttemplate.FieldSn:
+		case contracttemplate.FieldHash:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field sn", values[i])
+				return fmt.Errorf("unexpected type %T for field hash", values[i])
 			} else if value.Valid {
-				ct.Sn = value.String
+				ct.Hash = value.String
 			}
 		case contracttemplate.FieldEnable:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -221,14 +221,14 @@ func (ct *ContractTemplate) String() string {
 	builder.WriteString("url=")
 	builder.WriteString(ct.URL)
 	builder.WriteString(", ")
-	builder.WriteString("user_type=")
-	builder.WriteString(fmt.Sprintf("%v", ct.UserType))
+	builder.WriteString("aimed=")
+	builder.WriteString(fmt.Sprintf("%v", ct.Aimed))
 	builder.WriteString(", ")
-	builder.WriteString("sub_type=")
-	builder.WriteString(fmt.Sprintf("%v", ct.SubType))
+	builder.WriteString("plan_type=")
+	builder.WriteString(fmt.Sprintf("%v", ct.PlanType))
 	builder.WriteString(", ")
-	builder.WriteString("sn=")
-	builder.WriteString(ct.Sn)
+	builder.WriteString("hash=")
+	builder.WriteString(ct.Hash)
 	builder.WriteString(", ")
 	builder.WriteString("enable=")
 	builder.WriteString(fmt.Sprintf("%v", ct.Enable))

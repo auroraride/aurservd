@@ -30,12 +30,12 @@ const (
 	FieldName = "name"
 	// FieldURL holds the string denoting the url field in the database.
 	FieldURL = "url"
-	// FieldUserType holds the string denoting the user_type field in the database.
-	FieldUserType = "user_type"
-	// FieldSubType holds the string denoting the sub_type field in the database.
-	FieldSubType = "sub_type"
-	// FieldSn holds the string denoting the sn field in the database.
-	FieldSn = "sn"
+	// FieldAimed holds the string denoting the aimed field in the database.
+	FieldAimed = "aimed"
+	// FieldPlanType holds the string denoting the plan_type field in the database.
+	FieldPlanType = "plan_type"
+	// FieldHash holds the string denoting the hash field in the database.
+	FieldHash = "hash"
 	// FieldEnable holds the string denoting the enable field in the database.
 	FieldEnable = "enable"
 	// Table holds the table name of the contracttemplate in the database.
@@ -53,9 +53,9 @@ var Columns = []string{
 	FieldRemark,
 	FieldName,
 	FieldURL,
-	FieldUserType,
-	FieldSubType,
-	FieldSn,
+	FieldAimed,
+	FieldPlanType,
+	FieldHash,
 	FieldEnable,
 }
 
@@ -82,6 +82,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultAimed holds the default value on creation for the "aimed" field.
+	DefaultAimed uint8
+	// DefaultPlanType holds the default value on creation for the "plan_type" field.
+	DefaultPlanType uint8
 	// DefaultEnable holds the default value on creation for the "enable" field.
 	DefaultEnable bool
 )
@@ -124,19 +128,19 @@ func ByURL(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldURL, opts...).ToFunc()
 }
 
-// ByUserType orders the results by the user_type field.
-func ByUserType(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUserType, opts...).ToFunc()
+// ByAimed orders the results by the aimed field.
+func ByAimed(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAimed, opts...).ToFunc()
 }
 
-// BySubType orders the results by the sub_type field.
-func BySubType(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSubType, opts...).ToFunc()
+// ByPlanType orders the results by the plan_type field.
+func ByPlanType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPlanType, opts...).ToFunc()
 }
 
-// BySn orders the results by the sn field.
-func BySn(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSn, opts...).ToFunc()
+// ByHash orders the results by the hash field.
+func ByHash(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHash, opts...).ToFunc()
 }
 
 // ByEnable orders the results by the enable field.

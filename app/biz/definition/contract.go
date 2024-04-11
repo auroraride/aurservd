@@ -1,17 +1,18 @@
 package definition
 
-type ContractSignReq struct {
+// ContractSignNewReq 合同签署请求
+type ContractSignNewReq struct {
 	SubscribeID uint64 `json:"subscribeId" validate:"required"` // 订阅ID
 	Seal        string `json:"seal" validate:"required"`        // 签名Base64
+	DocId       string `json:"docId" validate:"required"`       // 合同ID
 }
 
-type CreateContractReq struct {
-	Url      string `json:"url"`      // 合同链接
-	Name     string `json:"name"`     // 合同名称
-	UserType uint8  `json:"userType"` // 用户类型 1:个签 2:团签
-	Remark   string `json:"remark"`   // 备注
+type ContractCreateRes struct {
+	Link      string `json:"link"`      // 合同链接
+	DocId     string `json:"docId"`     // 合同ID
+	Effective bool   `json:"effective"` // 是否存在生效中的合同, 若返回值为true则代表无需签合同
 }
 
-type CabinetCreateReq struct {
+type ContractCreateReq struct {
 	SubscribeID uint64 `json:"subscribeId" validate:"required"` // 订阅ID
 }

@@ -53,6 +53,8 @@ const (
 	FieldExpiresAt = "expires_at"
 	// FieldSignedAt holds the string denoting the signed_at field in the database.
 	FieldSignedAt = "signed_at"
+	// FieldDocID holds the string denoting the doc_id field in the database.
+	FieldDocID = "doc_id"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -115,6 +117,7 @@ var Columns = []string{
 	FieldLink,
 	FieldExpiresAt,
 	FieldSignedAt,
+	FieldDocID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -231,6 +234,11 @@ func ByExpiresAt(opts ...sql.OrderTermOption) OrderOption {
 // BySignedAt orders the results by the signed_at field.
 func BySignedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSignedAt, opts...).ToFunc()
+}
+
+// ByDocID orders the results by the doc_id field.
+func ByDocID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDocID, opts...).ToFunc()
 }
 
 // BySubscribeField orders the results by subscribe field.

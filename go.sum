@@ -103,6 +103,8 @@ github.com/alicebob/miniredis/v2 v2.30.0 h1:uA3uhDbCxfO9+DI/DuGeAMr9qI+noVWwGPNT
 github.com/alicebob/miniredis/v2 v2.30.0/go.mod h1:84TWKZlxYkfgMucPBf5SOQBYJceZeQRFIaQgNMiCX6Q=
 github.com/aliyun/alibaba-cloud-sdk-go v1.62.699 h1:pZYB2yktBFrfBPRWpZ5UhxpONx1KQ5a9zla5N/5pIQQ=
 github.com/aliyun/alibaba-cloud-sdk-go v1.62.699/go.mod h1:CJJYa1ZMxjlN/NbXEwmejEnBkhi0DV+Yb3B2lxf+74o=
+github.com/aliyun/alibaba-cloud-sdk-go v1.62.712 h1:lM7JnA9dEdDFH9XOgRNQMDTQnOjlLkDTNA7c0aWTQ30=
+github.com/aliyun/alibaba-cloud-sdk-go v1.62.712/go.mod h1:SOSDHfe1kX91v3W5QiBsWSLqeLxImobbMX1mxrFHsVQ=
 github.com/aliyun/aliyun-log-go-sdk v0.1.71 h1:0zC74BgKUhmCDrrUArsjQD/igfNyAnc2vyuu9zLNRAc=
 github.com/aliyun/aliyun-log-go-sdk v0.1.71/go.mod h1:FSKcIjukUy+LeUKhRk13PCO+9gPMTfGsYhFBHQbDqmM=
 github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible h1:8psS8a+wKfiLt1iVDX79F7Y6wUM49Lcha2FMXt4UM8g=
@@ -350,6 +352,8 @@ github.com/gorilla/websocket v1.5.1/go.mod h1:x3kM2JMyaluk02fnUJpQuwD2dCS5NDG2ZH
 github.com/grpc-ecosystem/go-grpc-middleware v1.0.1-0.20190118093823-f849b5445de4/go.mod h1:FiyG127CGDf3tlThmgyCl78X/SZQqEOJBCDaAfeWzPs=
 github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 h1:UH//fgunKIs4JdUbpDl1VZCDaL56wXCB/5+wF6uHfaI=
 github.com/grpc-ecosystem/go-grpc-middleware v1.4.0/go.mod h1:g5qyo/la0ALbONm6Vbp88Yd8NsDy6rZz+RcrMPxvld8=
+github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0 h1:pRhl55Yx1eC7BZ1N+BBWwnKaMyD8uC+34TLdndZMAKk=
+github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0/go.mod h1:XKMd7iuf/RGPSMJ/U4HP0zS2Z9Fh8Ps9a+6X26m/tmI=
 github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0/go.mod h1:8NvIoxWQoOIhqOTXgfV/d3M/q6VIi02HzZEHgUlZvzk=
 github.com/grpc-ecosystem/grpc-gateway v1.9.5/go.mod h1:vNeuVxBJEsws4ogUvrchl83t/GYV9WGTSLVdBhOQFDY=
 github.com/grpc-ecosystem/grpc-gateway v1.16.0/go.mod h1:BDjrQk3hbvj6Nolgz8mAMFbcEtjT1g+wF4CSlocrBnw=
@@ -526,6 +530,10 @@ github.com/liasica/edocseal v0.0.0-20240407094903-baf6eb2d58c6 h1:LX6veR0svxVd8Q
 github.com/liasica/edocseal v0.0.0-20240407094903-baf6eb2d58c6/go.mod h1:n9Y0DaQBGw5FA0ovVetwa3saqSmkPoGoAnDFD+NL+dU=
 github.com/liasica/edocseal v0.0.0-20240408021618-a499e3098081 h1:PQETNWSmQx7+P8RfzubNCiZlq/e7o7b7FKgK2W50kcQ=
 github.com/liasica/edocseal v0.0.0-20240408021618-a499e3098081/go.mod h1:n9Y0DaQBGw5FA0ovVetwa3saqSmkPoGoAnDFD+NL+dU=
+github.com/liasica/edocseal v0.0.0-20240411082624-c1327624823e h1:mXH3p9mSxGbXVnAL2e/9E9JVmX/271fadSVk1nZmU/U=
+github.com/liasica/edocseal v0.0.0-20240411082624-c1327624823e/go.mod h1:XqXHlukpFRke/+Pu4MVH/SWFZIDXUUk7KnCPCgmsVzg=
+github.com/liasica/edocseal v0.0.0-20240412032213-685a1d3ff64e h1:aTv7OAKSab0T7PwTHQadVgY/DTe0Movp8t77QLJ8gMI=
+github.com/liasica/edocseal v0.0.0-20240412032213-685a1d3ff64e/go.mod h1:GKKw8C2XWY2XgthsH3so4iTv+C6I9UAwhT1Ha7ENDUA=
 github.com/liasica/swag v1.16.2-adaptation h1:3sUO5/9SuLVc9X9M9Ky6THCHfAJNoF36ouDGuvtH9bY=
 github.com/liasica/swag v1.16.2-adaptation/go.mod h1:DImHIuOFXKpMFAQjcC7FG4m3Dg4+QuUgUzJmKjI/gRk=
 github.com/liasica/swag v1.16.3-0.20240305092534-ea9d354b2ef6 h1:XCjvEJWpoYFCAHpmOqOJKWpG4VK2YopBaAJmumk13LU=
@@ -1189,6 +1197,8 @@ google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013/go.mod h1:NbSheEEY
 google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c/go.mod h1:UODoCrxHCcBojKKwX1terBiRUaqAsFqJiF615XL43r0=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 h1:NnYq6UN9ReLM9/Y01KWNOWyI5xQ9kbIms5GGJVwS/Yc=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237/go.mod h1:WtryC6hu0hhx87FDGxWCDptyssuo68sk10vYjF+T9fY=
+google.golang.org/genproto/googleapis/rpc v0.0.0-20240401170217-c3f982113cda h1:LI5DOvAxUPMv/50agcLLoo+AdWc1irS9Rzz4vPuD1V4=
+google.golang.org/genproto/googleapis/rpc v0.0.0-20240401170217-c3f982113cda/go.mod h1:WtryC6hu0hhx87FDGxWCDptyssuo68sk10vYjF+T9fY=
 google.golang.org/grpc v1.14.0/go.mod h1:yo6s7OP7yaDglbqo1J04qKzAhqBH6lvTonzMVmEdcZw=
 google.golang.org/grpc v1.17.0/go.mod h1:6QZJwpn2B+Zp71q/5VxRsJ6NXXVCE5NRUHRo+f3cWCs=
 google.golang.org/grpc v1.19.0/go.mod h1:mqu4LbDTu4XGKhr4mRzUsmM4RtVoemTSY81AxZiDr8c=
@@ -1208,6 +1218,8 @@ google.golang.org/grpc v1.33.1/go.mod h1:fr5YgcSWrqhRRxogOsw7RzIpsmvOZ6IcH4kBYTp
 google.golang.org/grpc v1.38.0/go.mod h1:NREThFqKR1f3iQ6oBuvc5LadQuXVGo9rkm5ZGrQdJfM=
 google.golang.org/grpc v1.62.1 h1:B4n+nfKzOICUXMgyrNd19h/I9oH0L1pizfk1d4zSgTk=
 google.golang.org/grpc v1.62.1/go.mod h1:IWTG0VlJLCh1SkC58F7np9ka9mx/WNkjl4PGJaiq+QE=
+google.golang.org/grpc v1.63.2 h1:MUeiw1B2maTVZthpU5xvASfTh3LDbxHd6IJ6QQVU+xM=
+google.golang.org/grpc v1.63.2/go.mod h1:WAX/8DgncnokcFUldAxq7GeB5DXHDbMF+lLvDomNkRA=
 google.golang.org/protobuf v0.0.0-20200109180630-ec00e32a8dfd/go.mod h1:DFci5gLYBciE7Vtevhsrf46CRTquxDuWsQurQQe4oz8=
 google.golang.org/protobuf v0.0.0-20200221191635-4d8936d0db64/go.mod h1:kwYJMbMJ01Woi6D6+Kah6886xMZcty6N08ah7+eCXa0=
 google.golang.org/protobuf v0.0.0-20200228230310-ab0ca4ff8a60/go.mod h1:cfTl7dwQJ+fmap5saPgwCLgHXTUD7jkjRqWcaiX5VyM=

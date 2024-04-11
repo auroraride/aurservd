@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
 )
@@ -24,8 +25,8 @@ func NewContractTemplate() *ContractTemplate {
 func (s *ContractTemplate) Create(req *definition.ContractTemplateCreateReq) error {
 	// 判断当前传入类型是否存在
 	temp, err := s.orm.QueryNotDeleted().Where(
-		contracttemplate.SubType(req.SubType),
-		contracttemplate.UserType(req.UserType),
+		contracttemplate.Aimed(req.Aimed.Value()),
+		contracttemplate.PlanType(req.PlanType.Value()),
 		contracttemplate.Enable(true),
 	).First(s.ctx)
 	// 如果存在并且需要开启
@@ -36,32 +37,12 @@ func (s *ContractTemplate) Create(req *definition.ContractTemplateCreateReq) err
 		}
 	}
 
-	// var fields []string
-
-	// fields = append(fields, definition.ContractTemplateFields...)
-	// if f, ok := definition.FieldsUserMap[req.UserType]; ok {
-	// 	fields = append(fields, f...)
-	// }
-	// if f, ok := definition.FieldsSubMap[req.SubType]; ok {
-	// 	fields = append(fields, f...)
-	// }
-
-	// sn, err := rpc.AddContractTemplate(s.ctx, req.Url, fields)
-	// if err != nil {
-	// 	return err
-	// }
-	// if sn == "" {
-	// 	return errors.New("请求失败")
-	// }
-
-	sn := "123456"
-
 	_, err = s.orm.Create().
 		SetName(req.Name).
-		SetUserType(req.UserType).
-		SetSubType(req.SubType).
+		SetAimed(req.Aimed.Value()).
+		SetPlanType(req.PlanType.Value()).
 		SetURL(req.Url).
-		SetSn(sn).
+		SetHash(req.Hash).
 		SetNillableRemark(req.Remark).
 		SetNillableEnable(req.Enable).
 		Save(s.ctx)
@@ -75,8 +56,8 @@ func (s *ContractTemplate) Create(req *definition.ContractTemplateCreateReq) err
 func (s *ContractTemplate) Modify(req *definition.ContractTemplateModifyReq) error {
 	// 判断当前传入类型是否存在
 	temp, _ := s.orm.QueryNotDeleted().Where(
-		contracttemplate.SubType(req.SubType),
-		contracttemplate.UserType(req.UserType),
+		contracttemplate.PlanType(req.PlanType.Value()),
+		contracttemplate.Aimed(req.Aimed.Value()),
 		contracttemplate.Enable(true),
 	).First(s.ctx)
 
@@ -90,8 +71,8 @@ func (s *ContractTemplate) Modify(req *definition.ContractTemplateModifyReq) err
 
 	_, err := s.orm.UpdateOneID(req.ID).
 		SetName(req.Name).
-		SetUserType(req.UserType).
-		SetSubType(req.SubType).
+		SetAimed(req.Aimed.Value()).
+		SetPlanType(req.PlanType.Value()).
 		SetNillableEnable(req.Enable).
 		SetNillableRemark(req.Remark).
 		Save(s.ctx)
@@ -110,10 +91,10 @@ func (s *ContractTemplate) List() (res []*definition.ContractTemplateListRes) {
 			ContractTemplate: definition.ContractTemplate{
 				ID:        v.ID,
 				Name:      v.Name,
-				UserType:  v.UserType,
-				SubType:   v.SubType,
+				Aimed:     definition.ContractTemplateAimed(v.Aimed),
+				PlanType:  model.PlanType(v.PlanType),
 				Url:       v.URL,
-				Sn:        v.Sn,
+				Hash:      v.Hash,
 				Enable:    v.Enable,
 				CreatedAt: v.CreatedAt.Format("2006-01-02 15:04:05"),
 				Remark:    v.Remark,

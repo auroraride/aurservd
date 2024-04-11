@@ -116,58 +116,58 @@ func (ctu *ContractTemplateUpdate) SetNillableURL(s *string) *ContractTemplateUp
 	return ctu
 }
 
-// SetUserType sets the "user_type" field.
-func (ctu *ContractTemplateUpdate) SetUserType(u uint8) *ContractTemplateUpdate {
-	ctu.mutation.ResetUserType()
-	ctu.mutation.SetUserType(u)
+// SetAimed sets the "aimed" field.
+func (ctu *ContractTemplateUpdate) SetAimed(u uint8) *ContractTemplateUpdate {
+	ctu.mutation.ResetAimed()
+	ctu.mutation.SetAimed(u)
 	return ctu
 }
 
-// SetNillableUserType sets the "user_type" field if the given value is not nil.
-func (ctu *ContractTemplateUpdate) SetNillableUserType(u *uint8) *ContractTemplateUpdate {
+// SetNillableAimed sets the "aimed" field if the given value is not nil.
+func (ctu *ContractTemplateUpdate) SetNillableAimed(u *uint8) *ContractTemplateUpdate {
 	if u != nil {
-		ctu.SetUserType(*u)
+		ctu.SetAimed(*u)
 	}
 	return ctu
 }
 
-// AddUserType adds u to the "user_type" field.
-func (ctu *ContractTemplateUpdate) AddUserType(u int8) *ContractTemplateUpdate {
-	ctu.mutation.AddUserType(u)
+// AddAimed adds u to the "aimed" field.
+func (ctu *ContractTemplateUpdate) AddAimed(u int8) *ContractTemplateUpdate {
+	ctu.mutation.AddAimed(u)
 	return ctu
 }
 
-// SetSubType sets the "sub_type" field.
-func (ctu *ContractTemplateUpdate) SetSubType(u uint8) *ContractTemplateUpdate {
-	ctu.mutation.ResetSubType()
-	ctu.mutation.SetSubType(u)
+// SetPlanType sets the "plan_type" field.
+func (ctu *ContractTemplateUpdate) SetPlanType(u uint8) *ContractTemplateUpdate {
+	ctu.mutation.ResetPlanType()
+	ctu.mutation.SetPlanType(u)
 	return ctu
 }
 
-// SetNillableSubType sets the "sub_type" field if the given value is not nil.
-func (ctu *ContractTemplateUpdate) SetNillableSubType(u *uint8) *ContractTemplateUpdate {
+// SetNillablePlanType sets the "plan_type" field if the given value is not nil.
+func (ctu *ContractTemplateUpdate) SetNillablePlanType(u *uint8) *ContractTemplateUpdate {
 	if u != nil {
-		ctu.SetSubType(*u)
+		ctu.SetPlanType(*u)
 	}
 	return ctu
 }
 
-// AddSubType adds u to the "sub_type" field.
-func (ctu *ContractTemplateUpdate) AddSubType(u int8) *ContractTemplateUpdate {
-	ctu.mutation.AddSubType(u)
+// AddPlanType adds u to the "plan_type" field.
+func (ctu *ContractTemplateUpdate) AddPlanType(u int8) *ContractTemplateUpdate {
+	ctu.mutation.AddPlanType(u)
 	return ctu
 }
 
-// SetSn sets the "sn" field.
-func (ctu *ContractTemplateUpdate) SetSn(s string) *ContractTemplateUpdate {
-	ctu.mutation.SetSn(s)
+// SetHash sets the "hash" field.
+func (ctu *ContractTemplateUpdate) SetHash(s string) *ContractTemplateUpdate {
+	ctu.mutation.SetHash(s)
 	return ctu
 }
 
-// SetNillableSn sets the "sn" field if the given value is not nil.
-func (ctu *ContractTemplateUpdate) SetNillableSn(s *string) *ContractTemplateUpdate {
+// SetNillableHash sets the "hash" field if the given value is not nil.
+func (ctu *ContractTemplateUpdate) SetNillableHash(s *string) *ContractTemplateUpdate {
 	if s != nil {
-		ctu.SetSn(*s)
+		ctu.SetHash(*s)
 	}
 	return ctu
 }
@@ -278,20 +278,20 @@ func (ctu *ContractTemplateUpdate) sqlSave(ctx context.Context) (n int, err erro
 	if value, ok := ctu.mutation.URL(); ok {
 		_spec.SetField(contracttemplate.FieldURL, field.TypeString, value)
 	}
-	if value, ok := ctu.mutation.UserType(); ok {
-		_spec.SetField(contracttemplate.FieldUserType, field.TypeUint8, value)
+	if value, ok := ctu.mutation.Aimed(); ok {
+		_spec.SetField(contracttemplate.FieldAimed, field.TypeUint8, value)
 	}
-	if value, ok := ctu.mutation.AddedUserType(); ok {
-		_spec.AddField(contracttemplate.FieldUserType, field.TypeUint8, value)
+	if value, ok := ctu.mutation.AddedAimed(); ok {
+		_spec.AddField(contracttemplate.FieldAimed, field.TypeUint8, value)
 	}
-	if value, ok := ctu.mutation.SubType(); ok {
-		_spec.SetField(contracttemplate.FieldSubType, field.TypeUint8, value)
+	if value, ok := ctu.mutation.PlanType(); ok {
+		_spec.SetField(contracttemplate.FieldPlanType, field.TypeUint8, value)
 	}
-	if value, ok := ctu.mutation.AddedSubType(); ok {
-		_spec.AddField(contracttemplate.FieldSubType, field.TypeUint8, value)
+	if value, ok := ctu.mutation.AddedPlanType(); ok {
+		_spec.AddField(contracttemplate.FieldPlanType, field.TypeUint8, value)
 	}
-	if value, ok := ctu.mutation.Sn(); ok {
-		_spec.SetField(contracttemplate.FieldSn, field.TypeString, value)
+	if value, ok := ctu.mutation.Hash(); ok {
+		_spec.SetField(contracttemplate.FieldHash, field.TypeString, value)
 	}
 	if value, ok := ctu.mutation.Enable(); ok {
 		_spec.SetField(contracttemplate.FieldEnable, field.TypeBool, value)
@@ -404,58 +404,58 @@ func (ctuo *ContractTemplateUpdateOne) SetNillableURL(s *string) *ContractTempla
 	return ctuo
 }
 
-// SetUserType sets the "user_type" field.
-func (ctuo *ContractTemplateUpdateOne) SetUserType(u uint8) *ContractTemplateUpdateOne {
-	ctuo.mutation.ResetUserType()
-	ctuo.mutation.SetUserType(u)
+// SetAimed sets the "aimed" field.
+func (ctuo *ContractTemplateUpdateOne) SetAimed(u uint8) *ContractTemplateUpdateOne {
+	ctuo.mutation.ResetAimed()
+	ctuo.mutation.SetAimed(u)
 	return ctuo
 }
 
-// SetNillableUserType sets the "user_type" field if the given value is not nil.
-func (ctuo *ContractTemplateUpdateOne) SetNillableUserType(u *uint8) *ContractTemplateUpdateOne {
+// SetNillableAimed sets the "aimed" field if the given value is not nil.
+func (ctuo *ContractTemplateUpdateOne) SetNillableAimed(u *uint8) *ContractTemplateUpdateOne {
 	if u != nil {
-		ctuo.SetUserType(*u)
+		ctuo.SetAimed(*u)
 	}
 	return ctuo
 }
 
-// AddUserType adds u to the "user_type" field.
-func (ctuo *ContractTemplateUpdateOne) AddUserType(u int8) *ContractTemplateUpdateOne {
-	ctuo.mutation.AddUserType(u)
+// AddAimed adds u to the "aimed" field.
+func (ctuo *ContractTemplateUpdateOne) AddAimed(u int8) *ContractTemplateUpdateOne {
+	ctuo.mutation.AddAimed(u)
 	return ctuo
 }
 
-// SetSubType sets the "sub_type" field.
-func (ctuo *ContractTemplateUpdateOne) SetSubType(u uint8) *ContractTemplateUpdateOne {
-	ctuo.mutation.ResetSubType()
-	ctuo.mutation.SetSubType(u)
+// SetPlanType sets the "plan_type" field.
+func (ctuo *ContractTemplateUpdateOne) SetPlanType(u uint8) *ContractTemplateUpdateOne {
+	ctuo.mutation.ResetPlanType()
+	ctuo.mutation.SetPlanType(u)
 	return ctuo
 }
 
-// SetNillableSubType sets the "sub_type" field if the given value is not nil.
-func (ctuo *ContractTemplateUpdateOne) SetNillableSubType(u *uint8) *ContractTemplateUpdateOne {
+// SetNillablePlanType sets the "plan_type" field if the given value is not nil.
+func (ctuo *ContractTemplateUpdateOne) SetNillablePlanType(u *uint8) *ContractTemplateUpdateOne {
 	if u != nil {
-		ctuo.SetSubType(*u)
+		ctuo.SetPlanType(*u)
 	}
 	return ctuo
 }
 
-// AddSubType adds u to the "sub_type" field.
-func (ctuo *ContractTemplateUpdateOne) AddSubType(u int8) *ContractTemplateUpdateOne {
-	ctuo.mutation.AddSubType(u)
+// AddPlanType adds u to the "plan_type" field.
+func (ctuo *ContractTemplateUpdateOne) AddPlanType(u int8) *ContractTemplateUpdateOne {
+	ctuo.mutation.AddPlanType(u)
 	return ctuo
 }
 
-// SetSn sets the "sn" field.
-func (ctuo *ContractTemplateUpdateOne) SetSn(s string) *ContractTemplateUpdateOne {
-	ctuo.mutation.SetSn(s)
+// SetHash sets the "hash" field.
+func (ctuo *ContractTemplateUpdateOne) SetHash(s string) *ContractTemplateUpdateOne {
+	ctuo.mutation.SetHash(s)
 	return ctuo
 }
 
-// SetNillableSn sets the "sn" field if the given value is not nil.
-func (ctuo *ContractTemplateUpdateOne) SetNillableSn(s *string) *ContractTemplateUpdateOne {
+// SetNillableHash sets the "hash" field if the given value is not nil.
+func (ctuo *ContractTemplateUpdateOne) SetNillableHash(s *string) *ContractTemplateUpdateOne {
 	if s != nil {
-		ctuo.SetSn(*s)
+		ctuo.SetHash(*s)
 	}
 	return ctuo
 }
@@ -596,20 +596,20 @@ func (ctuo *ContractTemplateUpdateOne) sqlSave(ctx context.Context) (_node *Cont
 	if value, ok := ctuo.mutation.URL(); ok {
 		_spec.SetField(contracttemplate.FieldURL, field.TypeString, value)
 	}
-	if value, ok := ctuo.mutation.UserType(); ok {
-		_spec.SetField(contracttemplate.FieldUserType, field.TypeUint8, value)
+	if value, ok := ctuo.mutation.Aimed(); ok {
+		_spec.SetField(contracttemplate.FieldAimed, field.TypeUint8, value)
 	}
-	if value, ok := ctuo.mutation.AddedUserType(); ok {
-		_spec.AddField(contracttemplate.FieldUserType, field.TypeUint8, value)
+	if value, ok := ctuo.mutation.AddedAimed(); ok {
+		_spec.AddField(contracttemplate.FieldAimed, field.TypeUint8, value)
 	}
-	if value, ok := ctuo.mutation.SubType(); ok {
-		_spec.SetField(contracttemplate.FieldSubType, field.TypeUint8, value)
+	if value, ok := ctuo.mutation.PlanType(); ok {
+		_spec.SetField(contracttemplate.FieldPlanType, field.TypeUint8, value)
 	}
-	if value, ok := ctuo.mutation.AddedSubType(); ok {
-		_spec.AddField(contracttemplate.FieldSubType, field.TypeUint8, value)
+	if value, ok := ctuo.mutation.AddedPlanType(); ok {
+		_spec.AddField(contracttemplate.FieldPlanType, field.TypeUint8, value)
 	}
-	if value, ok := ctuo.mutation.Sn(); ok {
-		_spec.SetField(contracttemplate.FieldSn, field.TypeString, value)
+	if value, ok := ctuo.mutation.Hash(); ok {
+		_spec.SetField(contracttemplate.FieldHash, field.TypeString, value)
 	}
 	if value, ok := ctuo.mutation.Enable(); ok {
 		_spec.SetField(contracttemplate.FieldEnable, field.TypeBool, value)

@@ -103,21 +103,37 @@ func (ctc *ContractTemplateCreate) SetURL(s string) *ContractTemplateCreate {
 	return ctc
 }
 
-// SetUserType sets the "user_type" field.
-func (ctc *ContractTemplateCreate) SetUserType(u uint8) *ContractTemplateCreate {
-	ctc.mutation.SetUserType(u)
+// SetAimed sets the "aimed" field.
+func (ctc *ContractTemplateCreate) SetAimed(u uint8) *ContractTemplateCreate {
+	ctc.mutation.SetAimed(u)
 	return ctc
 }
 
-// SetSubType sets the "sub_type" field.
-func (ctc *ContractTemplateCreate) SetSubType(u uint8) *ContractTemplateCreate {
-	ctc.mutation.SetSubType(u)
+// SetNillableAimed sets the "aimed" field if the given value is not nil.
+func (ctc *ContractTemplateCreate) SetNillableAimed(u *uint8) *ContractTemplateCreate {
+	if u != nil {
+		ctc.SetAimed(*u)
+	}
 	return ctc
 }
 
-// SetSn sets the "sn" field.
-func (ctc *ContractTemplateCreate) SetSn(s string) *ContractTemplateCreate {
-	ctc.mutation.SetSn(s)
+// SetPlanType sets the "plan_type" field.
+func (ctc *ContractTemplateCreate) SetPlanType(u uint8) *ContractTemplateCreate {
+	ctc.mutation.SetPlanType(u)
+	return ctc
+}
+
+// SetNillablePlanType sets the "plan_type" field if the given value is not nil.
+func (ctc *ContractTemplateCreate) SetNillablePlanType(u *uint8) *ContractTemplateCreate {
+	if u != nil {
+		ctc.SetPlanType(*u)
+	}
+	return ctc
+}
+
+// SetHash sets the "hash" field.
+func (ctc *ContractTemplateCreate) SetHash(s string) *ContractTemplateCreate {
+	ctc.mutation.SetHash(s)
 	return ctc
 }
 
@@ -186,6 +202,14 @@ func (ctc *ContractTemplateCreate) defaults() error {
 		v := contracttemplate.DefaultUpdatedAt()
 		ctc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := ctc.mutation.Aimed(); !ok {
+		v := contracttemplate.DefaultAimed
+		ctc.mutation.SetAimed(v)
+	}
+	if _, ok := ctc.mutation.PlanType(); !ok {
+		v := contracttemplate.DefaultPlanType
+		ctc.mutation.SetPlanType(v)
+	}
 	if _, ok := ctc.mutation.Enable(); !ok {
 		v := contracttemplate.DefaultEnable
 		ctc.mutation.SetEnable(v)
@@ -207,14 +231,14 @@ func (ctc *ContractTemplateCreate) check() error {
 	if _, ok := ctc.mutation.URL(); !ok {
 		return &ValidationError{Name: "url", err: errors.New(`ent: missing required field "ContractTemplate.url"`)}
 	}
-	if _, ok := ctc.mutation.UserType(); !ok {
-		return &ValidationError{Name: "user_type", err: errors.New(`ent: missing required field "ContractTemplate.user_type"`)}
+	if _, ok := ctc.mutation.Aimed(); !ok {
+		return &ValidationError{Name: "aimed", err: errors.New(`ent: missing required field "ContractTemplate.aimed"`)}
 	}
-	if _, ok := ctc.mutation.SubType(); !ok {
-		return &ValidationError{Name: "sub_type", err: errors.New(`ent: missing required field "ContractTemplate.sub_type"`)}
+	if _, ok := ctc.mutation.PlanType(); !ok {
+		return &ValidationError{Name: "plan_type", err: errors.New(`ent: missing required field "ContractTemplate.plan_type"`)}
 	}
-	if _, ok := ctc.mutation.Sn(); !ok {
-		return &ValidationError{Name: "sn", err: errors.New(`ent: missing required field "ContractTemplate.sn"`)}
+	if _, ok := ctc.mutation.Hash(); !ok {
+		return &ValidationError{Name: "hash", err: errors.New(`ent: missing required field "ContractTemplate.hash"`)}
 	}
 	if _, ok := ctc.mutation.Enable(); !ok {
 		return &ValidationError{Name: "enable", err: errors.New(`ent: missing required field "ContractTemplate.enable"`)}
@@ -278,17 +302,17 @@ func (ctc *ContractTemplateCreate) createSpec() (*ContractTemplate, *sqlgraph.Cr
 		_spec.SetField(contracttemplate.FieldURL, field.TypeString, value)
 		_node.URL = value
 	}
-	if value, ok := ctc.mutation.UserType(); ok {
-		_spec.SetField(contracttemplate.FieldUserType, field.TypeUint8, value)
-		_node.UserType = value
+	if value, ok := ctc.mutation.Aimed(); ok {
+		_spec.SetField(contracttemplate.FieldAimed, field.TypeUint8, value)
+		_node.Aimed = value
 	}
-	if value, ok := ctc.mutation.SubType(); ok {
-		_spec.SetField(contracttemplate.FieldSubType, field.TypeUint8, value)
-		_node.SubType = value
+	if value, ok := ctc.mutation.PlanType(); ok {
+		_spec.SetField(contracttemplate.FieldPlanType, field.TypeUint8, value)
+		_node.PlanType = value
 	}
-	if value, ok := ctc.mutation.Sn(); ok {
-		_spec.SetField(contracttemplate.FieldSn, field.TypeString, value)
-		_node.Sn = value
+	if value, ok := ctc.mutation.Hash(); ok {
+		_spec.SetField(contracttemplate.FieldHash, field.TypeString, value)
+		_node.Hash = value
 	}
 	if value, ok := ctc.mutation.Enable(); ok {
 		_spec.SetField(contracttemplate.FieldEnable, field.TypeBool, value)
@@ -436,51 +460,51 @@ func (u *ContractTemplateUpsert) UpdateURL() *ContractTemplateUpsert {
 	return u
 }
 
-// SetUserType sets the "user_type" field.
-func (u *ContractTemplateUpsert) SetUserType(v uint8) *ContractTemplateUpsert {
-	u.Set(contracttemplate.FieldUserType, v)
+// SetAimed sets the "aimed" field.
+func (u *ContractTemplateUpsert) SetAimed(v uint8) *ContractTemplateUpsert {
+	u.Set(contracttemplate.FieldAimed, v)
 	return u
 }
 
-// UpdateUserType sets the "user_type" field to the value that was provided on create.
-func (u *ContractTemplateUpsert) UpdateUserType() *ContractTemplateUpsert {
-	u.SetExcluded(contracttemplate.FieldUserType)
+// UpdateAimed sets the "aimed" field to the value that was provided on create.
+func (u *ContractTemplateUpsert) UpdateAimed() *ContractTemplateUpsert {
+	u.SetExcluded(contracttemplate.FieldAimed)
 	return u
 }
 
-// AddUserType adds v to the "user_type" field.
-func (u *ContractTemplateUpsert) AddUserType(v uint8) *ContractTemplateUpsert {
-	u.Add(contracttemplate.FieldUserType, v)
+// AddAimed adds v to the "aimed" field.
+func (u *ContractTemplateUpsert) AddAimed(v uint8) *ContractTemplateUpsert {
+	u.Add(contracttemplate.FieldAimed, v)
 	return u
 }
 
-// SetSubType sets the "sub_type" field.
-func (u *ContractTemplateUpsert) SetSubType(v uint8) *ContractTemplateUpsert {
-	u.Set(contracttemplate.FieldSubType, v)
+// SetPlanType sets the "plan_type" field.
+func (u *ContractTemplateUpsert) SetPlanType(v uint8) *ContractTemplateUpsert {
+	u.Set(contracttemplate.FieldPlanType, v)
 	return u
 }
 
-// UpdateSubType sets the "sub_type" field to the value that was provided on create.
-func (u *ContractTemplateUpsert) UpdateSubType() *ContractTemplateUpsert {
-	u.SetExcluded(contracttemplate.FieldSubType)
+// UpdatePlanType sets the "plan_type" field to the value that was provided on create.
+func (u *ContractTemplateUpsert) UpdatePlanType() *ContractTemplateUpsert {
+	u.SetExcluded(contracttemplate.FieldPlanType)
 	return u
 }
 
-// AddSubType adds v to the "sub_type" field.
-func (u *ContractTemplateUpsert) AddSubType(v uint8) *ContractTemplateUpsert {
-	u.Add(contracttemplate.FieldSubType, v)
+// AddPlanType adds v to the "plan_type" field.
+func (u *ContractTemplateUpsert) AddPlanType(v uint8) *ContractTemplateUpsert {
+	u.Add(contracttemplate.FieldPlanType, v)
 	return u
 }
 
-// SetSn sets the "sn" field.
-func (u *ContractTemplateUpsert) SetSn(v string) *ContractTemplateUpsert {
-	u.Set(contracttemplate.FieldSn, v)
+// SetHash sets the "hash" field.
+func (u *ContractTemplateUpsert) SetHash(v string) *ContractTemplateUpsert {
+	u.Set(contracttemplate.FieldHash, v)
 	return u
 }
 
-// UpdateSn sets the "sn" field to the value that was provided on create.
-func (u *ContractTemplateUpsert) UpdateSn() *ContractTemplateUpsert {
-	u.SetExcluded(contracttemplate.FieldSn)
+// UpdateHash sets the "hash" field to the value that was provided on create.
+func (u *ContractTemplateUpsert) UpdateHash() *ContractTemplateUpsert {
+	u.SetExcluded(contracttemplate.FieldHash)
 	return u
 }
 
@@ -649,59 +673,59 @@ func (u *ContractTemplateUpsertOne) UpdateURL() *ContractTemplateUpsertOne {
 	})
 }
 
-// SetUserType sets the "user_type" field.
-func (u *ContractTemplateUpsertOne) SetUserType(v uint8) *ContractTemplateUpsertOne {
+// SetAimed sets the "aimed" field.
+func (u *ContractTemplateUpsertOne) SetAimed(v uint8) *ContractTemplateUpsertOne {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.SetUserType(v)
+		s.SetAimed(v)
 	})
 }
 
-// AddUserType adds v to the "user_type" field.
-func (u *ContractTemplateUpsertOne) AddUserType(v uint8) *ContractTemplateUpsertOne {
+// AddAimed adds v to the "aimed" field.
+func (u *ContractTemplateUpsertOne) AddAimed(v uint8) *ContractTemplateUpsertOne {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.AddUserType(v)
+		s.AddAimed(v)
 	})
 }
 
-// UpdateUserType sets the "user_type" field to the value that was provided on create.
-func (u *ContractTemplateUpsertOne) UpdateUserType() *ContractTemplateUpsertOne {
+// UpdateAimed sets the "aimed" field to the value that was provided on create.
+func (u *ContractTemplateUpsertOne) UpdateAimed() *ContractTemplateUpsertOne {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.UpdateUserType()
+		s.UpdateAimed()
 	})
 }
 
-// SetSubType sets the "sub_type" field.
-func (u *ContractTemplateUpsertOne) SetSubType(v uint8) *ContractTemplateUpsertOne {
+// SetPlanType sets the "plan_type" field.
+func (u *ContractTemplateUpsertOne) SetPlanType(v uint8) *ContractTemplateUpsertOne {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.SetSubType(v)
+		s.SetPlanType(v)
 	})
 }
 
-// AddSubType adds v to the "sub_type" field.
-func (u *ContractTemplateUpsertOne) AddSubType(v uint8) *ContractTemplateUpsertOne {
+// AddPlanType adds v to the "plan_type" field.
+func (u *ContractTemplateUpsertOne) AddPlanType(v uint8) *ContractTemplateUpsertOne {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.AddSubType(v)
+		s.AddPlanType(v)
 	})
 }
 
-// UpdateSubType sets the "sub_type" field to the value that was provided on create.
-func (u *ContractTemplateUpsertOne) UpdateSubType() *ContractTemplateUpsertOne {
+// UpdatePlanType sets the "plan_type" field to the value that was provided on create.
+func (u *ContractTemplateUpsertOne) UpdatePlanType() *ContractTemplateUpsertOne {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.UpdateSubType()
+		s.UpdatePlanType()
 	})
 }
 
-// SetSn sets the "sn" field.
-func (u *ContractTemplateUpsertOne) SetSn(v string) *ContractTemplateUpsertOne {
+// SetHash sets the "hash" field.
+func (u *ContractTemplateUpsertOne) SetHash(v string) *ContractTemplateUpsertOne {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.SetSn(v)
+		s.SetHash(v)
 	})
 }
 
-// UpdateSn sets the "sn" field to the value that was provided on create.
-func (u *ContractTemplateUpsertOne) UpdateSn() *ContractTemplateUpsertOne {
+// UpdateHash sets the "hash" field to the value that was provided on create.
+func (u *ContractTemplateUpsertOne) UpdateHash() *ContractTemplateUpsertOne {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.UpdateSn()
+		s.UpdateHash()
 	})
 }
 
@@ -1038,59 +1062,59 @@ func (u *ContractTemplateUpsertBulk) UpdateURL() *ContractTemplateUpsertBulk {
 	})
 }
 
-// SetUserType sets the "user_type" field.
-func (u *ContractTemplateUpsertBulk) SetUserType(v uint8) *ContractTemplateUpsertBulk {
+// SetAimed sets the "aimed" field.
+func (u *ContractTemplateUpsertBulk) SetAimed(v uint8) *ContractTemplateUpsertBulk {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.SetUserType(v)
+		s.SetAimed(v)
 	})
 }
 
-// AddUserType adds v to the "user_type" field.
-func (u *ContractTemplateUpsertBulk) AddUserType(v uint8) *ContractTemplateUpsertBulk {
+// AddAimed adds v to the "aimed" field.
+func (u *ContractTemplateUpsertBulk) AddAimed(v uint8) *ContractTemplateUpsertBulk {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.AddUserType(v)
+		s.AddAimed(v)
 	})
 }
 
-// UpdateUserType sets the "user_type" field to the value that was provided on create.
-func (u *ContractTemplateUpsertBulk) UpdateUserType() *ContractTemplateUpsertBulk {
+// UpdateAimed sets the "aimed" field to the value that was provided on create.
+func (u *ContractTemplateUpsertBulk) UpdateAimed() *ContractTemplateUpsertBulk {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.UpdateUserType()
+		s.UpdateAimed()
 	})
 }
 
-// SetSubType sets the "sub_type" field.
-func (u *ContractTemplateUpsertBulk) SetSubType(v uint8) *ContractTemplateUpsertBulk {
+// SetPlanType sets the "plan_type" field.
+func (u *ContractTemplateUpsertBulk) SetPlanType(v uint8) *ContractTemplateUpsertBulk {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.SetSubType(v)
+		s.SetPlanType(v)
 	})
 }
 
-// AddSubType adds v to the "sub_type" field.
-func (u *ContractTemplateUpsertBulk) AddSubType(v uint8) *ContractTemplateUpsertBulk {
+// AddPlanType adds v to the "plan_type" field.
+func (u *ContractTemplateUpsertBulk) AddPlanType(v uint8) *ContractTemplateUpsertBulk {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.AddSubType(v)
+		s.AddPlanType(v)
 	})
 }
 
-// UpdateSubType sets the "sub_type" field to the value that was provided on create.
-func (u *ContractTemplateUpsertBulk) UpdateSubType() *ContractTemplateUpsertBulk {
+// UpdatePlanType sets the "plan_type" field to the value that was provided on create.
+func (u *ContractTemplateUpsertBulk) UpdatePlanType() *ContractTemplateUpsertBulk {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.UpdateSubType()
+		s.UpdatePlanType()
 	})
 }
 
-// SetSn sets the "sn" field.
-func (u *ContractTemplateUpsertBulk) SetSn(v string) *ContractTemplateUpsertBulk {
+// SetHash sets the "hash" field.
+func (u *ContractTemplateUpsertBulk) SetHash(v string) *ContractTemplateUpsertBulk {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.SetSn(v)
+		s.SetHash(v)
 	})
 }
 
-// UpdateSn sets the "sn" field to the value that was provided on create.
-func (u *ContractTemplateUpsertBulk) UpdateSn() *ContractTemplateUpsertBulk {
+// UpdateHash sets the "hash" field to the value that was provided on create.
+func (u *ContractTemplateUpsertBulk) UpdateHash() *ContractTemplateUpsertBulk {
 	return u.Update(func(s *ContractTemplateUpsert) {
-		s.UpdateSn()
+		s.UpdateHash()
 	})
 }
 

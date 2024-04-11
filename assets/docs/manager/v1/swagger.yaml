@@ -254,95 +254,100 @@ definitions:
         description: 协议名称
         type: string
     type: object
+  definition.ContractTemplateAimed:
+    enum:
+      - 1
+      - 2
+    type: integer
+    x-enum-comments:
+      ContractTemplateAimedEnterprise: 团签
+      ContractTemplateAimedPersonal: 个签
+    x-enum-varnames:
+      - ContractTemplateAimedPersonal
+      - ContractTemplateAimedEnterprise
   definition.ContractTemplateCreateReq:
     properties:
+      aimed:
+        allOf:
+          - $ref: '#/definitions/definition.ContractTemplateAimed'
+        description: 用户类型 1:个签 2:团签
       enable:
         description: 是否启用
         type: boolean
+      hash:
+        description: 合同hash
+        type: string
       name:
         description: 合同名称
         type: string
+      planType:
+        allOf:
+          - $ref: '#/definitions/model.PlanType'
+        description: 订阅类型 1:单电 2:车电
       remark:
         description: 备注
         type: string
-      subType:
-        description: 订阅类型 1:单电 2:车电
-        enum:
-          - 1
-          - 2
-        type: integer
       url:
         description: 合同链接
         type: string
-      userType:
-        description: 用户类型 1:个签 2:团签
-        enum:
-          - 1
-          - 2
-        type: integer
     required:
+      - hash
       - name
-      - subType
       - url
-      - userType
     type: object
   definition.ContractTemplateListRes:
     properties:
+      aimed:
+        allOf:
+          - $ref: '#/definitions/definition.ContractTemplateAimed'
+        description: 用户类型 1:个签 2:团签
       createdAt:
         description: 创建时间
         type: string
       enable:
         description: 是否启用
         type: boolean
+      hash:
+        description: 合同hash
+        type: string
       id:
         description: ID
         type: integer
       name:
         description: 合同名称
         type: string
+      planType:
+        allOf:
+          - $ref: '#/definitions/model.PlanType'
+        description: 订阅类型 1:单电 2:车电
       remark:
         description: 备注
         type: string
-      sn:
-        description: 合同编号
-        type: string
-      subType:
-        description: 订阅类型 1:单电 2:车电
-        type: integer
       url:
         description: 合同链接
         type: string
-      userType:
-        description: 用户类型 1:个签 2:团签
-        type: integer
     type: object
   definition.ContractTemplateModifyReq:
     properties:
+      aimed:
+        allOf:
+          - $ref: '#/definitions/definition.ContractTemplateAimed'
+        description: 用户类型 1:个签 2:团签
       enable:
         description: 是否启用
         type: boolean
       name:
         description: 合同名称
         type: string
+      planType:
+        allOf:
+          - $ref: '#/definitions/model.PlanType'
+        description: 订阅类型 1:单电 2:车电
       remark:
         description: 备注
         type: string
-      subType:
-        description: 订阅类型 1:单电 2:车电
-        enum:
-          - 1
-          - 2
-        type: integer
-      userType:
-        description: 用户类型 1:个签 2:团签
-        enum:
-          - 1
-          - 2
-        type: integer
     required:
       - name
-      - subType
-      - userType
     type: object
   definition.Fault:
     properties:

@@ -534,6 +534,14 @@ func init() {
 	contracttemplate.DefaultUpdatedAt = contracttemplateDescUpdatedAt.Default.(func() time.Time)
 	// contracttemplate.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	contracttemplate.UpdateDefaultUpdatedAt = contracttemplateDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// contracttemplateDescAimed is the schema descriptor for aimed field.
+	contracttemplateDescAimed := contracttemplateFields[2].Descriptor()
+	// contracttemplate.DefaultAimed holds the default value on creation for the aimed field.
+	contracttemplate.DefaultAimed = contracttemplateDescAimed.Default.(uint8)
+	// contracttemplateDescPlanType is the schema descriptor for plan_type field.
+	contracttemplateDescPlanType := contracttemplateFields[3].Descriptor()
+	// contracttemplate.DefaultPlanType holds the default value on creation for the plan_type field.
+	contracttemplate.DefaultPlanType = contracttemplateDescPlanType.Default.(uint8)
 	// contracttemplateDescEnable is the schema descriptor for enable field.
 	contracttemplateDescEnable := contracttemplateFields[5].Descriptor()
 	// contracttemplate.DefaultEnable holds the default value on creation for the enable field.
