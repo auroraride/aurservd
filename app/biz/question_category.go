@@ -30,7 +30,7 @@ func NewQuestionCategoryBiz() *questionCategoryBiz {
 
 // Detail 详情
 func (q *questionCategoryBiz) Detail(id uint64) (*definition.QuestionCategoryDetail, error) {
-	item, err := q.orm.QueryNotDeleted().Where(questioncategory.ID(id)).First(q.ctx)
+	item, err := q.orm.Query().Where(questioncategory.ID(id)).First(q.ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -79,12 +79,11 @@ func (q *questionCategoryBiz) Modify(req *definition.QuestionCategoryModifyReq) 
 // Delete 删除
 func (q *questionCategoryBiz) Delete(id uint64) error {
 	// 删除分类要将分类下的问题移动到其他分类
-	err := ent.Database.Question.Update().Where(question.CategoryID(id)).
-		SetCategoryID(0).Exec(q.ctx)
+	err := ent.Database.Question.Update().Where(question.CategoryID(id)).SetCategoryID(0).Exec(q.ctx)
 	if err != nil {
 		return err
 	}
-	err = q.orm.SoftDeleteOneID(id).Exec(q.ctx)
+	err = q.orm.DeleteOneID(id).Exec(q.ctx)
 	if err != nil {
 		return err
 	}
@@ -93,7 +92,7 @@ func (q *questionCategoryBiz) Delete(id uint64) error {
 
 // List 列表
 func (q *questionCategoryBiz) List(req *definition.QuestionCategoryListReq) (*model.PaginationRes, error) {
-	query := q.orm.QueryNotDeleted().Order(ent.Desc(questioncategory.FieldSort))
+	query := q.orm.Query().Order(ent.Desc(questioncategory.FieldSort))
 	return model.ParsePaginationResponse(query, req.PaginationReq, func(item *ent.QuestionCategory) *definition.QuestionCategoryDetail {
 		return &definition.QuestionCategoryDetail{
 			IDRes: model.IDRes{ID: item.ID},
@@ -108,7 +107,7 @@ func (q *questionCategoryBiz) List(req *definition.QuestionCategoryListReq) (*mo
 
 // All 获取所有
 func (q *questionCategoryBiz) All() ([]*definition.QuestionCategoryDetail, error) {
-	items, err := q.orm.QueryNotDeleted().Order(ent.Desc(questioncategory.FieldSort)).All(q.ctx)
+	items, err := q.orm.Query().Order(ent.Desc(questioncategory.FieldSort)).All(q.ctx)
 	if err != nil {
 		return nil, err
 	}

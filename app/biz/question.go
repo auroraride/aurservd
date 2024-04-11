@@ -63,7 +63,7 @@ func (b *questionBiz) Modify(req *definition.QuestionModifyReq) error {
 
 // Delete 删除
 func (b *questionBiz) Delete(id uint64) error {
-	err := b.orm.SoftDeleteOneID(id).Exec(b.ctx)
+	err := b.orm.DeleteOneID(id).Exec(b.ctx)
 	if err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func (b *questionBiz) Delete(id uint64) error {
 
 // Detail 详情
 func (b *questionBiz) Detail(id uint64) (*definition.QuestionDetail, error) {
-	qs, err := b.orm.QueryNotDeleted().Where(question.ID(id)).First(b.ctx)
+	qs, err := b.orm.Query().Where(question.ID(id)).First(b.ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (b *questionBiz) Detail(id uint64) (*definition.QuestionDetail, error) {
 
 // List 列表
 func (b *questionBiz) List(req *definition.QuestionListReq) (*model.PaginationRes, error) {
-	query := b.orm.QueryNotDeleted().WithCategory(func(query *ent.QuestionCategoryQuery) {
+	query := b.orm.Query().WithCategory(func(query *ent.QuestionCategoryQuery) {
 		query.Order(ent.Desc(question.FieldSort))
 	}).Order(ent.Desc(question.FieldSort))
 	if req.Keyword != nil {
@@ -108,6 +108,8 @@ func (b *questionBiz) List(req *definition.QuestionListReq) (*model.PaginationRe
 		}
 		if item.Edges.Category != nil {
 			questionCommon.CategoryName = item.Edges.Category.Name
+		} else {
+			questionCommon.CategoryName = "其他"
 		}
 
 		return &definition.QuestionDetail{
@@ -119,7 +121,7 @@ func (b *questionBiz) List(req *definition.QuestionListReq) (*model.PaginationRe
 
 // All 全部
 func (b *questionBiz) All() ([]*definition.QuestionDetail, error) {
-	query := b.orm.QueryNotDeleted().WithCategory(
+	query := b.orm.Query().WithCategory(
 		func(query *ent.QuestionCategoryQuery) {
 			query.Order(ent.Desc(question.FieldSort))
 		},
