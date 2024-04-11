@@ -106,11 +106,11 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 	s.battery = NewIntelligentCabinet(s.rider).BusinessCensorX(bus, sub, cab)
 
 	// 获取仓位信息
-	// var err error
-	// s.response.UUID, s.response.Index, err = NewIntelligentCabinet(s.rider).BusinessUsable(cab, bus, sub.Model)
-	// if err != nil {
-	// 	snag.Panic(err)
-	// }
+	var err error
+	s.response.UUID, s.response.Index, err = NewIntelligentCabinet(s.rider).BusinessUsable(cab, bus, sub.Model)
+	if err != nil {
+		snag.Panic(err)
+	}
 }
 
 // Active 骑手自主激活
