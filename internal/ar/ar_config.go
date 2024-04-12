@@ -301,6 +301,13 @@ type config struct {
 			SecretKey string
 		}
 	}
+	Contract struct {
+		Address  string
+		Template struct {
+			Personal   string
+			Enterprise string
+		}
+	}
 }
 
 func LoadConfig() {

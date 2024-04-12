@@ -19,7 +19,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/contract"
-	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -98,7 +97,8 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (err e
 	if cont == nil {
 		return errors.New("未找到合同信息")
 	}
-
+	// 获取模版id
+	cfg := ar.Config.Contract
 	// 请求签署合同
 	url, err := rpc.Sgin(s.ctx, &pb.ContractSignRequest{
 		DocId:    req.DocId,
@@ -109,7 +109,7 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (err e
 		Address:  person.AuthResult.Address,
 		Phone:    r.Phone,
 		Idcard:   person.IDCardNumber,
-	})
+	}, cfg.Address)
 	if err != nil {
 		zap.L().Error("签署合同失败", zap.Error(err))
 		return err
@@ -295,21 +295,11 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 			m["batteryPayTotal"] = un.Total
 		}
 
-		// 查询模版
-		q := ent.Database.ContractTemplate.QueryNotDeleted()
-		q.Where(contracttemplate.Aimed(definition.ContractTemplateAimedPersonal.Value()))
+		// 获取模版id
+		cfg := ar.Config.Contract
+		templateID := cfg.Template.Personal
 		if isEnterprise {
-			q.Where(contracttemplate.Aimed(definition.ContractTemplateAimedEnterprise.Value()))
-		}
-
-		q.Where(contracttemplate.PlanType(model.PlanTypeBattery.Value()))
-		if sub.BrandID != nil {
-			q.Where(contracttemplate.PlanType(model.PlanTypeEbikeWithBattery.Value()))
-		}
-		temp, _ := q.Where(contracttemplate.Enable(true)).First(s.ctx)
-
-		if temp == nil {
-			return nil, errors.New("未找到合同模板")
+			templateID = cfg.Template.Enterprise
 		}
 
 		values := make(map[string]*pb.ContractFromField)
@@ -334,8 +324,7 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 				}
 			}
 		}
-
-		contractCreateResponse, err := rpc.Create(s.ctx, sn, values)
+		contractCreateResponse, err := rpc.Create(s.ctx, templateID, values, cfg.Address)
 		if err != nil {
 			return nil, err
 		}
