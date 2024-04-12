@@ -194,5 +194,7 @@ func (s *cabinetBiz) DetailBySerial(serial string) (res *model.CabinetDetailRes,
 	if item == nil {
 		return nil, errors.New("电柜不存在")
 	}
+	// 同步电柜并返回电柜详情
+	service.NewCabinet().Sync(item)
 	return service.NewCabinet().Detail(item), nil
 }
