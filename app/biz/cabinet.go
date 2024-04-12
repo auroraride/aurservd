@@ -54,9 +54,6 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 	var rev *model.ReserveUnfinishedRes
 	if rid != nil {
 		sub = service.NewSubscribeWithRider(rid).Recent(rid.ID)
-		if sub != nil {
-			req.Model = &sub.Model
-		}
 		// 预约
 		rev = service.NewReserveWithRider(rid).RiderUnfinishedDetail(rid.ID)
 	}
