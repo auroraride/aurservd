@@ -10,10 +10,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var addr = "10.10.10.240:1111"
-
 // Sgin 签约
-func Sgin(ctx context.Context, req *pb.ContractSignRequest) (string, error) {
+func Sgin(ctx context.Context, req *pb.ContractSignRequest, addr string) (string, error) {
 	gc, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		zap.L().Error("rpc连接失败", zap.Error(err))
@@ -35,7 +33,7 @@ func Sgin(ctx context.Context, req *pb.ContractSignRequest) (string, error) {
 }
 
 // Create 创建合同
-func Create(ctx context.Context, templateId string, values map[string]*pb.ContractFromField) (request *pb.ContractCreateResponse, err error) {
+func Create(ctx context.Context, templateId string, values map[string]*pb.ContractFromField, addr string) (request *pb.ContractCreateResponse, err error) {
 	gc, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		zap.L().Error("rpc连接失败", zap.Error(err))

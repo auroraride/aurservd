@@ -171,6 +171,8 @@ func (s *reserveService) Create(req *model.ReserveCreateReq) *model.ReserveUnfin
 
 	// 判断电柜是否可预约
 	cab := NewCabinet().QueryOne(req.CabinetID)
+	// 同步电柜并返回电柜详情
+	NewCabinet().Sync(cab)
 	m := s.CabinetCounts([]uint64{cab.ID}, typ)
 	if !cab.ReserveAble(typ, m[cab.ID]) {
 		snag.Panic("电柜无法预约")
