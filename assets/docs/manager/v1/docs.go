@@ -14102,52 +14102,78 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.ContractTemplateAimed": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "ContractTemplateAimedEnterprise": "团签",
+                "ContractTemplateAimedPersonal": "个签"
+            },
+            "x-enum-varnames": [
+                "ContractTemplateAimedPersonal",
+                "ContractTemplateAimedEnterprise"
+            ]
+        },
         "definition.ContractTemplateCreateReq": {
             "type": "object",
             "required": [
+                "hash",
                 "name",
-                "subType",
-                "url",
-                "userType"
+                "url"
             ],
             "properties": {
+                "aimed": {
+                    "description": "用户类型 1:个签 2:团签",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.ContractTemplateAimed"
+                        }
+                    ]
+                },
                 "enable": {
                     "description": "是否启用",
                     "type": "boolean"
+                },
+                "hash": {
+                    "description": "合同hash",
+                    "type": "string"
                 },
                 "name": {
                     "description": "合同名称",
                     "type": "string"
                 },
+                "planType": {
+                    "description": "订阅类型 1:单电 2:车电",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PlanType"
+                        }
+                    ]
+                },
                 "remark": {
                     "description": "备注",
                     "type": "string"
                 },
-                "subType": {
-                    "description": "订阅类型 1:单电 2:车电",
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
-                },
                 "url": {
                     "description": "合同链接",
                     "type": "string"
-                },
-                "userType": {
-                    "description": "用户类型 1:个签 2:团签",
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
                 }
             }
         },
         "definition.ContractTemplateListRes": {
             "type": "object",
             "properties": {
+                "aimed": {
+                    "description": "用户类型 1:个签 2:团签",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.ContractTemplateAimed"
+                        }
+                    ]
+                },
                 "createdAt": {
                     "description": "创建时间",
                     "type": "string"
@@ -14155,6 +14181,10 @@ const docTemplate = `{
                 "enable": {
                     "description": "是否启用",
                     "type": "boolean"
+                },
+                "hash": {
+                    "description": "合同hash",
+                    "type": "string"
                 },
                 "id": {
                     "description": "ID",
@@ -14164,36 +14194,38 @@ const docTemplate = `{
                     "description": "合同名称",
                     "type": "string"
                 },
+                "planType": {
+                    "description": "订阅类型 1:单电 2:车电",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PlanType"
+                        }
+                    ]
+                },
                 "remark": {
                     "description": "备注",
                     "type": "string"
                 },
-                "sn": {
-                    "description": "合同编号",
-                    "type": "string"
-                },
-                "subType": {
-                    "description": "订阅类型 1:单电 2:车电",
-                    "type": "integer"
-                },
                 "url": {
                     "description": "合同链接",
                     "type": "string"
-                },
-                "userType": {
-                    "description": "用户类型 1:个签 2:团签",
-                    "type": "integer"
                 }
             }
         },
         "definition.ContractTemplateModifyReq": {
             "type": "object",
             "required": [
-                "name",
-                "subType",
-                "userType"
+                "name"
             ],
             "properties": {
+                "aimed": {
+                    "description": "用户类型 1:个签 2:团签",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.ContractTemplateAimed"
+                        }
+                    ]
+                },
                 "enable": {
                     "description": "是否启用",
                     "type": "boolean"
@@ -14202,25 +14234,17 @@ const docTemplate = `{
                     "description": "合同名称",
                     "type": "string"
                 },
+                "planType": {
+                    "description": "订阅类型 1:单电 2:车电",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PlanType"
+                        }
+                    ]
+                },
                 "remark": {
                     "description": "备注",
                     "type": "string"
-                },
-                "subType": {
-                    "description": "订阅类型 1:单电 2:车电",
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
-                },
-                "userType": {
-                    "description": "用户类型 1:个签 2:团签",
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
                 }
             }
         },

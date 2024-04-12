@@ -84,19 +84,19 @@ func URL(v string) predicate.ContractTemplate {
 	return predicate.ContractTemplate(sql.FieldEQ(FieldURL, v))
 }
 
-// UserType applies equality check predicate on the "user_type" field. It's identical to UserTypeEQ.
-func UserType(v uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldEQ(FieldUserType, v))
+// Aimed applies equality check predicate on the "aimed" field. It's identical to AimedEQ.
+func Aimed(v uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldEQ(FieldAimed, v))
 }
 
-// SubType applies equality check predicate on the "sub_type" field. It's identical to SubTypeEQ.
-func SubType(v uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldEQ(FieldSubType, v))
+// PlanType applies equality check predicate on the "plan_type" field. It's identical to PlanTypeEQ.
+func PlanType(v uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldEQ(FieldPlanType, v))
 }
 
-// Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
-func Sn(v string) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldEQ(FieldSn, v))
+// Hash applies equality check predicate on the "hash" field. It's identical to HashEQ.
+func Hash(v string) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldEQ(FieldHash, v))
 }
 
 // Enable applies equality check predicate on the "enable" field. It's identical to EnableEQ.
@@ -459,149 +459,149 @@ func URLContainsFold(v string) predicate.ContractTemplate {
 	return predicate.ContractTemplate(sql.FieldContainsFold(FieldURL, v))
 }
 
-// UserTypeEQ applies the EQ predicate on the "user_type" field.
-func UserTypeEQ(v uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldEQ(FieldUserType, v))
+// AimedEQ applies the EQ predicate on the "aimed" field.
+func AimedEQ(v uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldEQ(FieldAimed, v))
 }
 
-// UserTypeNEQ applies the NEQ predicate on the "user_type" field.
-func UserTypeNEQ(v uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldNEQ(FieldUserType, v))
+// AimedNEQ applies the NEQ predicate on the "aimed" field.
+func AimedNEQ(v uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldNEQ(FieldAimed, v))
 }
 
-// UserTypeIn applies the In predicate on the "user_type" field.
-func UserTypeIn(vs ...uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldIn(FieldUserType, vs...))
+// AimedIn applies the In predicate on the "aimed" field.
+func AimedIn(vs ...uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldIn(FieldAimed, vs...))
 }
 
-// UserTypeNotIn applies the NotIn predicate on the "user_type" field.
-func UserTypeNotIn(vs ...uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldNotIn(FieldUserType, vs...))
+// AimedNotIn applies the NotIn predicate on the "aimed" field.
+func AimedNotIn(vs ...uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldNotIn(FieldAimed, vs...))
 }
 
-// UserTypeGT applies the GT predicate on the "user_type" field.
-func UserTypeGT(v uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldGT(FieldUserType, v))
+// AimedGT applies the GT predicate on the "aimed" field.
+func AimedGT(v uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldGT(FieldAimed, v))
 }
 
-// UserTypeGTE applies the GTE predicate on the "user_type" field.
-func UserTypeGTE(v uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldGTE(FieldUserType, v))
+// AimedGTE applies the GTE predicate on the "aimed" field.
+func AimedGTE(v uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldGTE(FieldAimed, v))
 }
 
-// UserTypeLT applies the LT predicate on the "user_type" field.
-func UserTypeLT(v uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldLT(FieldUserType, v))
+// AimedLT applies the LT predicate on the "aimed" field.
+func AimedLT(v uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldLT(FieldAimed, v))
 }
 
-// UserTypeLTE applies the LTE predicate on the "user_type" field.
-func UserTypeLTE(v uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldLTE(FieldUserType, v))
+// AimedLTE applies the LTE predicate on the "aimed" field.
+func AimedLTE(v uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldLTE(FieldAimed, v))
 }
 
-// SubTypeEQ applies the EQ predicate on the "sub_type" field.
-func SubTypeEQ(v uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldEQ(FieldSubType, v))
+// PlanTypeEQ applies the EQ predicate on the "plan_type" field.
+func PlanTypeEQ(v uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldEQ(FieldPlanType, v))
 }
 
-// SubTypeNEQ applies the NEQ predicate on the "sub_type" field.
-func SubTypeNEQ(v uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldNEQ(FieldSubType, v))
+// PlanTypeNEQ applies the NEQ predicate on the "plan_type" field.
+func PlanTypeNEQ(v uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldNEQ(FieldPlanType, v))
 }
 
-// SubTypeIn applies the In predicate on the "sub_type" field.
-func SubTypeIn(vs ...uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldIn(FieldSubType, vs...))
+// PlanTypeIn applies the In predicate on the "plan_type" field.
+func PlanTypeIn(vs ...uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldIn(FieldPlanType, vs...))
 }
 
-// SubTypeNotIn applies the NotIn predicate on the "sub_type" field.
-func SubTypeNotIn(vs ...uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldNotIn(FieldSubType, vs...))
+// PlanTypeNotIn applies the NotIn predicate on the "plan_type" field.
+func PlanTypeNotIn(vs ...uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldNotIn(FieldPlanType, vs...))
 }
 
-// SubTypeGT applies the GT predicate on the "sub_type" field.
-func SubTypeGT(v uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldGT(FieldSubType, v))
+// PlanTypeGT applies the GT predicate on the "plan_type" field.
+func PlanTypeGT(v uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldGT(FieldPlanType, v))
 }
 
-// SubTypeGTE applies the GTE predicate on the "sub_type" field.
-func SubTypeGTE(v uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldGTE(FieldSubType, v))
+// PlanTypeGTE applies the GTE predicate on the "plan_type" field.
+func PlanTypeGTE(v uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldGTE(FieldPlanType, v))
 }
 
-// SubTypeLT applies the LT predicate on the "sub_type" field.
-func SubTypeLT(v uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldLT(FieldSubType, v))
+// PlanTypeLT applies the LT predicate on the "plan_type" field.
+func PlanTypeLT(v uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldLT(FieldPlanType, v))
 }
 
-// SubTypeLTE applies the LTE predicate on the "sub_type" field.
-func SubTypeLTE(v uint8) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldLTE(FieldSubType, v))
+// PlanTypeLTE applies the LTE predicate on the "plan_type" field.
+func PlanTypeLTE(v uint8) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldLTE(FieldPlanType, v))
 }
 
-// SnEQ applies the EQ predicate on the "sn" field.
-func SnEQ(v string) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldEQ(FieldSn, v))
+// HashEQ applies the EQ predicate on the "hash" field.
+func HashEQ(v string) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldEQ(FieldHash, v))
 }
 
-// SnNEQ applies the NEQ predicate on the "sn" field.
-func SnNEQ(v string) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldNEQ(FieldSn, v))
+// HashNEQ applies the NEQ predicate on the "hash" field.
+func HashNEQ(v string) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldNEQ(FieldHash, v))
 }
 
-// SnIn applies the In predicate on the "sn" field.
-func SnIn(vs ...string) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldIn(FieldSn, vs...))
+// HashIn applies the In predicate on the "hash" field.
+func HashIn(vs ...string) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldIn(FieldHash, vs...))
 }
 
-// SnNotIn applies the NotIn predicate on the "sn" field.
-func SnNotIn(vs ...string) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldNotIn(FieldSn, vs...))
+// HashNotIn applies the NotIn predicate on the "hash" field.
+func HashNotIn(vs ...string) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldNotIn(FieldHash, vs...))
 }
 
-// SnGT applies the GT predicate on the "sn" field.
-func SnGT(v string) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldGT(FieldSn, v))
+// HashGT applies the GT predicate on the "hash" field.
+func HashGT(v string) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldGT(FieldHash, v))
 }
 
-// SnGTE applies the GTE predicate on the "sn" field.
-func SnGTE(v string) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldGTE(FieldSn, v))
+// HashGTE applies the GTE predicate on the "hash" field.
+func HashGTE(v string) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldGTE(FieldHash, v))
 }
 
-// SnLT applies the LT predicate on the "sn" field.
-func SnLT(v string) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldLT(FieldSn, v))
+// HashLT applies the LT predicate on the "hash" field.
+func HashLT(v string) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldLT(FieldHash, v))
 }
 
-// SnLTE applies the LTE predicate on the "sn" field.
-func SnLTE(v string) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldLTE(FieldSn, v))
+// HashLTE applies the LTE predicate on the "hash" field.
+func HashLTE(v string) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldLTE(FieldHash, v))
 }
 
-// SnContains applies the Contains predicate on the "sn" field.
-func SnContains(v string) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldContains(FieldSn, v))
+// HashContains applies the Contains predicate on the "hash" field.
+func HashContains(v string) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldContains(FieldHash, v))
 }
 
-// SnHasPrefix applies the HasPrefix predicate on the "sn" field.
-func SnHasPrefix(v string) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldHasPrefix(FieldSn, v))
+// HashHasPrefix applies the HasPrefix predicate on the "hash" field.
+func HashHasPrefix(v string) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldHasPrefix(FieldHash, v))
 }
 
-// SnHasSuffix applies the HasSuffix predicate on the "sn" field.
-func SnHasSuffix(v string) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldHasSuffix(FieldSn, v))
+// HashHasSuffix applies the HasSuffix predicate on the "hash" field.
+func HashHasSuffix(v string) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldHasSuffix(FieldHash, v))
 }
 
-// SnEqualFold applies the EqualFold predicate on the "sn" field.
-func SnEqualFold(v string) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldEqualFold(FieldSn, v))
+// HashEqualFold applies the EqualFold predicate on the "hash" field.
+func HashEqualFold(v string) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldEqualFold(FieldHash, v))
 }
 
-// SnContainsFold applies the ContainsFold predicate on the "sn" field.
-func SnContainsFold(v string) predicate.ContractTemplate {
-	return predicate.ContractTemplate(sql.FieldContainsFold(FieldSn, v))
+// HashContainsFold applies the ContainsFold predicate on the "hash" field.
+func HashContainsFold(v string) predicate.ContractTemplate {
+	return predicate.ContractTemplate(sql.FieldContainsFold(FieldHash, v))
 }
 
 // EnableEQ applies the EQ predicate on the "enable" field.

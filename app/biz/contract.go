@@ -37,7 +37,7 @@ func NewContract() *Contract {
 }
 
 // Sign 签约
-func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignReq) (err error) {
+func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (err error) {
 	// 查找订阅
 	sub, _ := ent.Database.Subscribe.QueryNotDeleted().
 		Where(
@@ -101,16 +101,14 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignReq) (err erro
 
 	// 请求签署合同
 	url, err := rpc.Sgin(s.ctx, &pb.ContractSignRequest{
-		Sn: cont.Sn,
-		Sign: &pb.ContractSignEntity{
-			Seal:     req.Seal,
-			Name:     person.Name,
-			Province: province,
-			City:     city,
-			Address:  person.AuthResult.Address,
-			Phone:    r.Phone,
-			Idcard:   person.IDCardNumber,
-		},
+		DocId:    req.DocId,
+		Image:    req.Seal,
+		Name:     person.Name,
+		Province: province,
+		City:     city,
+		Address:  person.AuthResult.Address,
+		Phone:    r.Phone,
+		Idcard:   person.IDCardNumber,
 	})
 	if err != nil {
 		zap.L().Error("签署合同失败", zap.Error(err))
@@ -135,8 +133,7 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignReq) (err erro
 }
 
 // Create 骑手添加合同
-func (s *Contract) Create(r *ent.Rider, req *definition.CabinetCreateReq) (*model.ContractSignRes, error) {
-
+func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*definition.ContractCreateRes, error) {
 	sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.ID(req.SubscribeID), subscribe.Status(model.SubscribeStatusInactive)).WithCity().First(s.ctx)
 	if sub == nil {
 		return nil, errors.New("未找到骑士卡")
@@ -144,20 +141,14 @@ func (s *Contract) Create(r *ent.Rider, req *definition.CabinetCreateReq) (*mode
 
 	// 是否免签或已签约
 	if !service.NewSubscribe().NeedContract(sub) {
-		return &model.ContractSignRes{Effective: true}, nil
+		return &definition.ContractCreateRes{Effective: true}, nil
 	}
 
 	if sub.BrandID == nil && sub.EbikeID != nil {
 		return nil, errors.New("当前订阅错误")
 	}
 
-	// 查询电柜
-	// cab, _ := ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.Serial(req.Serial)).First(s.ctx)
-	// if cab == nil {
-	// 	return nil, errors.New("未找到电柜")
-	// }
-
-	var link, sn string
+	var link, docId string
 	skip := false
 	co, _ := s.orm.QueryNotDeleted().Where(contract.SubscribeID(sub.ID), contract.LinkNotNil(), contract.Status(model.ContractStatusSigning.Value())).First(s.ctx)
 	// 判定是否生成过合同
@@ -166,7 +157,7 @@ func (s *Contract) Create(r *ent.Rider, req *definition.CabinetCreateReq) (*mode
 		if co.ExpiresAt != nil && co.ExpiresAt.After(time.Now()) {
 			skip = true
 			link = *co.Link
-			sn = co.Sn
+			docId = co.DocID
 		} else {
 			// 否则删除原合同重新生成
 			s.orm.DeleteOne(co).ExecX(s.ctx)
@@ -187,7 +178,6 @@ func (s *Contract) Create(r *ent.Rider, req *definition.CabinetCreateReq) (*mode
 			SetStatus(model.AllocateStatusPending.Value()).
 			SetTime(time.Now()).
 			SetModel(sub.Model).
-			// SetCabinetID(cab.ID).
 			SetRemark("骑手自主激活").
 			Save(s.ctx)
 		if err != nil {
@@ -209,7 +199,7 @@ func (s *Contract) Create(r *ent.Rider, req *definition.CabinetCreateReq) (*mode
 			// 当前日期
 			now = time.Now().Format("2006年01月02日")
 		)
-		sn = tools.NewUnique().NewSN()
+		sn := tools.NewUnique().NewSN()
 		// 填充公共变量
 		// 合同编号
 		m["sn"] = sn
@@ -307,15 +297,14 @@ func (s *Contract) Create(r *ent.Rider, req *definition.CabinetCreateReq) (*mode
 
 		// 查询模版
 		q := ent.Database.ContractTemplate.QueryNotDeleted()
+		q.Where(contracttemplate.Aimed(definition.ContractTemplateAimedPersonal.Value()))
 		if isEnterprise {
-			q.Where(contracttemplate.UserType(1))
-		} else {
-			q.Where(contracttemplate.UserType(2))
+			q.Where(contracttemplate.Aimed(definition.ContractTemplateAimedEnterprise.Value()))
 		}
+
+		q.Where(contracttemplate.PlanType(model.PlanTypeBattery.Value()))
 		if sub.BrandID != nil {
-			q.Where(contracttemplate.SubType(1))
-		} else {
-			q.Where(contracttemplate.SubType(2))
+			q.Where(contracttemplate.PlanType(model.PlanTypeEbikeWithBattery.Value()))
 		}
 		temp, _ := q.Where(contracttemplate.Enable(true)).First(s.ctx)
 
@@ -323,31 +312,37 @@ func (s *Contract) Create(r *ent.Rider, req *definition.CabinetCreateReq) (*mode
 			return nil, errors.New("未找到合同模板")
 		}
 
-		// 转换ar.Map 为 map[string]string
-		values := make(map[string]string)
+		values := make(map[string]*pb.ContractFromField)
+
 		for k, v := range m {
 			switch v.(type) {
 			case bool:
-				values[k] = "On"
+				values[k] = &pb.ContractFromField{
+					Value: &pb.ContractFromField_Checkbox{Checkbox: v.(bool)},
+				}
 			case string:
-				values[k] = v.(string)
+				values[k] = &pb.ContractFromField{
+					Value: &pb.ContractFromField_Text{Text: v.(string)},
+				}
 			case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64:
 				str, err := numberToString(v)
 				if err != nil {
 					return nil, err
 				}
-				values[k] = str
+				values[k] = &pb.ContractFromField{
+					Value: &pb.ContractFromField_Text{Text: str},
+				}
 			}
 		}
 
-		contractCreateResponse, err := rpc.Create(s.ctx, temp.Sn, values)
+		contractCreateResponse, err := rpc.Create(s.ctx, sn, values)
 		if err != nil {
 			return nil, err
 		}
 
 		link = contractCreateResponse.Url
+		docId = contractCreateResponse.DocId
 
-		// todo 生成合同流水号
 		flowId := tools.NewUnique().NewSN28()
 		// 存储合同信息
 		err = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
@@ -369,6 +364,7 @@ func (s *Contract) Create(r *ent.Rider, req *definition.CabinetCreateReq) (*mode
 				}).
 				SetLink(contractCreateResponse.Url).
 				SetExpiresAt(expiresAt).
+				SetDocID(docId).
 				Exec(context.Background())
 			if err != nil {
 				return err
@@ -381,9 +377,9 @@ func (s *Contract) Create(r *ent.Rider, req *definition.CabinetCreateReq) (*mode
 		go service.NewContract().CheckResult(flowId)
 	}
 
-	return &model.ContractSignRes{
-		Url: link,
-		Sn:  sn,
+	return &definition.ContractCreateRes{
+		Link:  link,
+		DocId: docId,
 	}, nil
 }
 

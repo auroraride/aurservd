@@ -1393,6 +1393,7 @@ var (
 		{Name: "link", Type: field.TypeString, Nullable: true, Comment: "跳转URL"},
 		{Name: "expires_at", Type: field.TypeTime, Nullable: true, Comment: "合同过期时间"},
 		{Name: "signed_at", Type: field.TypeTime, Nullable: true, Comment: "签约时间"},
+		{Name: "doc_id", Type: field.TypeString, Nullable: true, Comment: "合同文档ID"},
 		{Name: "allocate_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "电车分配ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true, Comment: "店员ID"},
@@ -1406,25 +1407,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "contract_allocate_contract",
-				Columns:    []*schema.Column{ContractColumns[16]},
+				Columns:    []*schema.Column{ContractColumns[17]},
 				RefColumns: []*schema.Column{AllocateColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "contract_subscribe_subscribe",
-				Columns:    []*schema.Column{ContractColumns[17]},
+				Columns:    []*schema.Column{ContractColumns[18]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "contract_employee_employee",
-				Columns:    []*schema.Column{ContractColumns[18]},
+				Columns:    []*schema.Column{ContractColumns[19]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "contract_rider_contracts",
-				Columns:    []*schema.Column{ContractColumns[19]},
+				Columns:    []*schema.Column{ContractColumns[20]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -1443,17 +1444,17 @@ var (
 			{
 				Name:    "contract_subscribe_id",
 				Unique:  false,
-				Columns: []*schema.Column{ContractColumns[17]},
+				Columns: []*schema.Column{ContractColumns[18]},
 			},
 			{
 				Name:    "contract_employee_id",
 				Unique:  false,
-				Columns: []*schema.Column{ContractColumns[18]},
+				Columns: []*schema.Column{ContractColumns[19]},
 			},
 			{
 				Name:    "contract_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{ContractColumns[19]},
+				Columns: []*schema.Column{ContractColumns[20]},
 			},
 			{
 				Name:    "contract_status_effective",
@@ -1473,9 +1474,9 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "name", Type: field.TypeString, Comment: "模板名称"},
 		{Name: "url", Type: field.TypeString, Comment: "模板文件地址"},
-		{Name: "user_type", Type: field.TypeUint8, Comment: "用户类型 1:个签 2:团签"},
-		{Name: "sub_type", Type: field.TypeUint8, Comment: "套餐类型 1:单电 2:车电"},
-		{Name: "sn", Type: field.TypeString, Comment: "合同编号"},
+		{Name: "aimed", Type: field.TypeUint8, Comment: "用户类型 1:个签 2:团签", Default: 1},
+		{Name: "plan_type", Type: field.TypeUint8, Comment: "套餐类型 1:单电 2:车电", Default: 1},
+		{Name: "hash", Type: field.TypeString, Comment: "模板hash"},
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: false},
 	}
 	// ContractTemplateTable holds the schema information for the "contract_template" table.

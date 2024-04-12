@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
@@ -68,6 +69,7 @@ func (Contract) Fields() []ent.Field {
 		field.String("link").Optional().Nillable().Comment("跳转URL"),
 		field.Time("expires_at").Optional().Nillable().Comment("合同过期时间"),
 		field.Time("signed_at").Optional().Nillable().Comment("签约时间"),
+		field.String("doc_id").Optional().Comment("合同文档ID"),
 	}
 }
 

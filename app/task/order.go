@@ -8,8 +8,8 @@ package task
 import (
 	"context"
 	"fmt"
-	"time"
 
+	"github.com/golang-module/carbon/v2"
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 
@@ -17,7 +17,6 @@ import (
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/order"
-	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 type orderTask struct {
@@ -42,25 +41,15 @@ func (t *orderTask) Start() {
 }
 
 // Do
-// 处理预授权订单 当订阅到期时间为0时，自动发起预授权转支付
-// 假如当前订阅未到期 查询当前订阅时间是否超过360天 如果超过360天则自动发起预授权转支付
+// 处理预授权订单 当订阅到期时间为,自动发起预授权转支付
+// 订单创建时间距离当前时间超过358天，自动发起预授权转支付
 func (t *orderTask) Do() {
 	ctx := context.Background()
-	now := time.Now()
+	now := carbon.Now().StdTime()
+	nextStart := carbon.Now().AddDay().StartOfDay().StdTime()
+
 	o, _ := ent.Database.Order.QueryNotDeleted().Where(
-		order.Or(
-			order.HasSubscribeWith(
-				// 未退款
-				subscribe.RefundAtIsNil(),
-				// 未结束
-				subscribe.EndAtIsNil(),
-				// 已开始
-				subscribe.StartAtNotNil(),
-				// 非企业
-				subscribe.EnterpriseIDIsNil(),
-			),
-			order.SubscribeEndAt(now),
-		),
+		order.SubscribeEndAtLTE(nextStart),
 		order.TradePayAtIsNil(),
 		order.PaywayIn(model.OrderPaywayAlipayAuthFreeze),
 		order.Status(model.OrderStatusPaid),
@@ -76,7 +65,8 @@ func (t *orderTask) Do() {
 	for _, v := range o {
 		// 如果订阅到期时间为当天
 		if v.SubscribeEndAt.Format("2006-01-02") == now.Format("2006-01-02") ||
-			v.Edges.Subscribe != nil && now.Sub(v.Edges.Subscribe.StartAt.Local()).Hours()/24 >= 358 {
+			// 如果订单创建时间距离当前时间超过358天
+			now.Sub(v.CreatedAt.Local()).Hours()/24 >= 358 {
 			err := service.NewOrder().TradePay(v)
 			if err != nil {
 				zap.L().Error(fmt.Sprintf("定时预授权转支付失败 订单ID: %d, 用户id: %d", v.ID, v.RiderID), zap.Error(err))

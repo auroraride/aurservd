@@ -594,6 +594,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			contract.FieldLink:         {Type: field.TypeString, Column: contract.FieldLink},
 			contract.FieldExpiresAt:    {Type: field.TypeTime, Column: contract.FieldExpiresAt},
 			contract.FieldSignedAt:     {Type: field.TypeTime, Column: contract.FieldSignedAt},
+			contract.FieldDocID:        {Type: field.TypeString, Column: contract.FieldDocID},
 		},
 	}
 	graph.Nodes[17] = &sqlgraph.Node{
@@ -615,9 +616,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			contracttemplate.FieldRemark:       {Type: field.TypeString, Column: contracttemplate.FieldRemark},
 			contracttemplate.FieldName:         {Type: field.TypeString, Column: contracttemplate.FieldName},
 			contracttemplate.FieldURL:          {Type: field.TypeString, Column: contracttemplate.FieldURL},
-			contracttemplate.FieldUserType:     {Type: field.TypeUint8, Column: contracttemplate.FieldUserType},
-			contracttemplate.FieldSubType:      {Type: field.TypeUint8, Column: contracttemplate.FieldSubType},
-			contracttemplate.FieldSn:           {Type: field.TypeString, Column: contracttemplate.FieldSn},
+			contracttemplate.FieldAimed:        {Type: field.TypeUint8, Column: contracttemplate.FieldAimed},
+			contracttemplate.FieldPlanType:     {Type: field.TypeUint8, Column: contracttemplate.FieldPlanType},
+			contracttemplate.FieldHash:         {Type: field.TypeString, Column: contracttemplate.FieldHash},
 			contracttemplate.FieldEnable:       {Type: field.TypeBool, Column: contracttemplate.FieldEnable},
 		},
 	}
@@ -9113,6 +9114,11 @@ func (f *ContractFilter) WhereSignedAt(p entql.TimeP) {
 	f.Where(p.Field(contract.FieldSignedAt))
 }
 
+// WhereDocID applies the entql string predicate on the doc_id field.
+func (f *ContractFilter) WhereDocID(p entql.StringP) {
+	f.Where(p.Field(contract.FieldDocID))
+}
+
 // WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
 func (f *ContractFilter) WhereHasSubscribe() {
 	f.Where(entql.HasEdge("subscribe"))
@@ -9249,19 +9255,19 @@ func (f *ContractTemplateFilter) WhereURL(p entql.StringP) {
 	f.Where(p.Field(contracttemplate.FieldURL))
 }
 
-// WhereUserType applies the entql uint8 predicate on the user_type field.
-func (f *ContractTemplateFilter) WhereUserType(p entql.Uint8P) {
-	f.Where(p.Field(contracttemplate.FieldUserType))
+// WhereAimed applies the entql uint8 predicate on the aimed field.
+func (f *ContractTemplateFilter) WhereAimed(p entql.Uint8P) {
+	f.Where(p.Field(contracttemplate.FieldAimed))
 }
 
-// WhereSubType applies the entql uint8 predicate on the sub_type field.
-func (f *ContractTemplateFilter) WhereSubType(p entql.Uint8P) {
-	f.Where(p.Field(contracttemplate.FieldSubType))
+// WherePlanType applies the entql uint8 predicate on the plan_type field.
+func (f *ContractTemplateFilter) WherePlanType(p entql.Uint8P) {
+	f.Where(p.Field(contracttemplate.FieldPlanType))
 }
 
-// WhereSn applies the entql string predicate on the sn field.
-func (f *ContractTemplateFilter) WhereSn(p entql.StringP) {
-	f.Where(p.Field(contracttemplate.FieldSn))
+// WhereHash applies the entql string predicate on the hash field.
+func (f *ContractTemplateFilter) WhereHash(p entql.StringP) {
+	f.Where(p.Field(contracttemplate.FieldHash))
 }
 
 // WhereEnable applies the entql bool predicate on the enable field.

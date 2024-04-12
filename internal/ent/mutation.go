@@ -27013,6 +27013,7 @@ type ContractMutation struct {
 	link             *string
 	expires_at       *time.Time
 	signed_at        *time.Time
+	doc_id           *string
 	clearedFields    map[string]struct{}
 	subscribe        *uint64
 	clearedsubscribe bool
@@ -28001,6 +28002,55 @@ func (m *ContractMutation) ResetSignedAt() {
 	delete(m.clearedFields, contract.FieldSignedAt)
 }
 
+// SetDocID sets the "doc_id" field.
+func (m *ContractMutation) SetDocID(s string) {
+	m.doc_id = &s
+}
+
+// DocID returns the value of the "doc_id" field in the mutation.
+func (m *ContractMutation) DocID() (r string, exists bool) {
+	v := m.doc_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDocID returns the old "doc_id" field's value of the Contract entity.
+// If the Contract object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractMutation) OldDocID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDocID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDocID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDocID: %w", err)
+	}
+	return oldValue.DocID, nil
+}
+
+// ClearDocID clears the value of the "doc_id" field.
+func (m *ContractMutation) ClearDocID() {
+	m.doc_id = nil
+	m.clearedFields[contract.FieldDocID] = struct{}{}
+}
+
+// DocIDCleared returns if the "doc_id" field was cleared in this mutation.
+func (m *ContractMutation) DocIDCleared() bool {
+	_, ok := m.clearedFields[contract.FieldDocID]
+	return ok
+}
+
+// ResetDocID resets all changes to the "doc_id" field.
+func (m *ContractMutation) ResetDocID() {
+	m.doc_id = nil
+	delete(m.clearedFields, contract.FieldDocID)
+}
+
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *ContractMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
@@ -28143,7 +28193,7 @@ func (m *ContractMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ContractMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, contract.FieldCreatedAt)
 	}
@@ -28201,6 +28251,9 @@ func (m *ContractMutation) Fields() []string {
 	if m.signed_at != nil {
 		fields = append(fields, contract.FieldSignedAt)
 	}
+	if m.doc_id != nil {
+		fields = append(fields, contract.FieldDocID)
+	}
 	return fields
 }
 
@@ -28247,6 +28300,8 @@ func (m *ContractMutation) Field(name string) (ent.Value, bool) {
 		return m.ExpiresAt()
 	case contract.FieldSignedAt:
 		return m.SignedAt()
+	case contract.FieldDocID:
+		return m.DocID()
 	}
 	return nil, false
 }
@@ -28294,6 +28349,8 @@ func (m *ContractMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldExpiresAt(ctx)
 	case contract.FieldSignedAt:
 		return m.OldSignedAt(ctx)
+	case contract.FieldDocID:
+		return m.OldDocID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Contract field %s", name)
 }
@@ -28436,6 +28493,13 @@ func (m *ContractMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetSignedAt(v)
 		return nil
+	case contract.FieldDocID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDocID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Contract field %s", name)
 }
@@ -28517,6 +28581,9 @@ func (m *ContractMutation) ClearedFields() []string {
 	if m.FieldCleared(contract.FieldSignedAt) {
 		fields = append(fields, contract.FieldSignedAt)
 	}
+	if m.FieldCleared(contract.FieldDocID) {
+		fields = append(fields, contract.FieldDocID)
+	}
 	return fields
 }
 
@@ -28566,6 +28633,9 @@ func (m *ContractMutation) ClearField(name string) error {
 		return nil
 	case contract.FieldSignedAt:
 		m.ClearSignedAt()
+		return nil
+	case contract.FieldDocID:
+		m.ClearDocID()
 		return nil
 	}
 	return fmt.Errorf("unknown Contract nullable field %s", name)
@@ -28631,6 +28701,9 @@ func (m *ContractMutation) ResetField(name string) error {
 		return nil
 	case contract.FieldSignedAt:
 		m.ResetSignedAt()
+		return nil
+	case contract.FieldDocID:
+		m.ResetDocID()
 		return nil
 	}
 	return fmt.Errorf("unknown Contract field %s", name)
@@ -28778,11 +28851,11 @@ type ContractTemplateMutation struct {
 	remark        *string
 	name          *string
 	url           *string
-	user_type     *uint8
-	adduser_type  *int8
-	sub_type      *uint8
-	addsub_type   *int8
-	sn            *string
+	aimed         *uint8
+	addaimed      *int8
+	plan_type     *uint8
+	addplan_type  *int8
+	hash          *string
 	enable        *bool
 	clearedFields map[string]struct{}
 	done          bool
@@ -29228,152 +29301,152 @@ func (m *ContractTemplateMutation) ResetURL() {
 	m.url = nil
 }
 
-// SetUserType sets the "user_type" field.
-func (m *ContractTemplateMutation) SetUserType(u uint8) {
-	m.user_type = &u
-	m.adduser_type = nil
+// SetAimed sets the "aimed" field.
+func (m *ContractTemplateMutation) SetAimed(u uint8) {
+	m.aimed = &u
+	m.addaimed = nil
 }
 
-// UserType returns the value of the "user_type" field in the mutation.
-func (m *ContractTemplateMutation) UserType() (r uint8, exists bool) {
-	v := m.user_type
+// Aimed returns the value of the "aimed" field in the mutation.
+func (m *ContractTemplateMutation) Aimed() (r uint8, exists bool) {
+	v := m.aimed
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldUserType returns the old "user_type" field's value of the ContractTemplate entity.
+// OldAimed returns the old "aimed" field's value of the ContractTemplate entity.
 // If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ContractTemplateMutation) OldUserType(ctx context.Context) (v uint8, err error) {
+func (m *ContractTemplateMutation) OldAimed(ctx context.Context) (v uint8, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUserType is only allowed on UpdateOne operations")
+		return v, errors.New("OldAimed is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUserType requires an ID field in the mutation")
+		return v, errors.New("OldAimed requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUserType: %w", err)
+		return v, fmt.Errorf("querying old value for OldAimed: %w", err)
 	}
-	return oldValue.UserType, nil
+	return oldValue.Aimed, nil
 }
 
-// AddUserType adds u to the "user_type" field.
-func (m *ContractTemplateMutation) AddUserType(u int8) {
-	if m.adduser_type != nil {
-		*m.adduser_type += u
+// AddAimed adds u to the "aimed" field.
+func (m *ContractTemplateMutation) AddAimed(u int8) {
+	if m.addaimed != nil {
+		*m.addaimed += u
 	} else {
-		m.adduser_type = &u
+		m.addaimed = &u
 	}
 }
 
-// AddedUserType returns the value that was added to the "user_type" field in this mutation.
-func (m *ContractTemplateMutation) AddedUserType() (r int8, exists bool) {
-	v := m.adduser_type
+// AddedAimed returns the value that was added to the "aimed" field in this mutation.
+func (m *ContractTemplateMutation) AddedAimed() (r int8, exists bool) {
+	v := m.addaimed
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetUserType resets all changes to the "user_type" field.
-func (m *ContractTemplateMutation) ResetUserType() {
-	m.user_type = nil
-	m.adduser_type = nil
+// ResetAimed resets all changes to the "aimed" field.
+func (m *ContractTemplateMutation) ResetAimed() {
+	m.aimed = nil
+	m.addaimed = nil
 }
 
-// SetSubType sets the "sub_type" field.
-func (m *ContractTemplateMutation) SetSubType(u uint8) {
-	m.sub_type = &u
-	m.addsub_type = nil
+// SetPlanType sets the "plan_type" field.
+func (m *ContractTemplateMutation) SetPlanType(u uint8) {
+	m.plan_type = &u
+	m.addplan_type = nil
 }
 
-// SubType returns the value of the "sub_type" field in the mutation.
-func (m *ContractTemplateMutation) SubType() (r uint8, exists bool) {
-	v := m.sub_type
+// PlanType returns the value of the "plan_type" field in the mutation.
+func (m *ContractTemplateMutation) PlanType() (r uint8, exists bool) {
+	v := m.plan_type
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldSubType returns the old "sub_type" field's value of the ContractTemplate entity.
+// OldPlanType returns the old "plan_type" field's value of the ContractTemplate entity.
 // If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ContractTemplateMutation) OldSubType(ctx context.Context) (v uint8, err error) {
+func (m *ContractTemplateMutation) OldPlanType(ctx context.Context) (v uint8, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSubType is only allowed on UpdateOne operations")
+		return v, errors.New("OldPlanType is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSubType requires an ID field in the mutation")
+		return v, errors.New("OldPlanType requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSubType: %w", err)
+		return v, fmt.Errorf("querying old value for OldPlanType: %w", err)
 	}
-	return oldValue.SubType, nil
+	return oldValue.PlanType, nil
 }
 
-// AddSubType adds u to the "sub_type" field.
-func (m *ContractTemplateMutation) AddSubType(u int8) {
-	if m.addsub_type != nil {
-		*m.addsub_type += u
+// AddPlanType adds u to the "plan_type" field.
+func (m *ContractTemplateMutation) AddPlanType(u int8) {
+	if m.addplan_type != nil {
+		*m.addplan_type += u
 	} else {
-		m.addsub_type = &u
+		m.addplan_type = &u
 	}
 }
 
-// AddedSubType returns the value that was added to the "sub_type" field in this mutation.
-func (m *ContractTemplateMutation) AddedSubType() (r int8, exists bool) {
-	v := m.addsub_type
+// AddedPlanType returns the value that was added to the "plan_type" field in this mutation.
+func (m *ContractTemplateMutation) AddedPlanType() (r int8, exists bool) {
+	v := m.addplan_type
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetSubType resets all changes to the "sub_type" field.
-func (m *ContractTemplateMutation) ResetSubType() {
-	m.sub_type = nil
-	m.addsub_type = nil
+// ResetPlanType resets all changes to the "plan_type" field.
+func (m *ContractTemplateMutation) ResetPlanType() {
+	m.plan_type = nil
+	m.addplan_type = nil
 }
 
-// SetSn sets the "sn" field.
-func (m *ContractTemplateMutation) SetSn(s string) {
-	m.sn = &s
+// SetHash sets the "hash" field.
+func (m *ContractTemplateMutation) SetHash(s string) {
+	m.hash = &s
 }
 
-// Sn returns the value of the "sn" field in the mutation.
-func (m *ContractTemplateMutation) Sn() (r string, exists bool) {
-	v := m.sn
+// Hash returns the value of the "hash" field in the mutation.
+func (m *ContractTemplateMutation) Hash() (r string, exists bool) {
+	v := m.hash
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldSn returns the old "sn" field's value of the ContractTemplate entity.
+// OldHash returns the old "hash" field's value of the ContractTemplate entity.
 // If the ContractTemplate object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ContractTemplateMutation) OldSn(ctx context.Context) (v string, err error) {
+func (m *ContractTemplateMutation) OldHash(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSn is only allowed on UpdateOne operations")
+		return v, errors.New("OldHash is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSn requires an ID field in the mutation")
+		return v, errors.New("OldHash requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSn: %w", err)
+		return v, fmt.Errorf("querying old value for OldHash: %w", err)
 	}
-	return oldValue.Sn, nil
+	return oldValue.Hash, nil
 }
 
-// ResetSn resets all changes to the "sn" field.
-func (m *ContractTemplateMutation) ResetSn() {
-	m.sn = nil
+// ResetHash resets all changes to the "hash" field.
+func (m *ContractTemplateMutation) ResetHash() {
+	m.hash = nil
 }
 
 // SetEnable sets the "enable" field.
@@ -29471,14 +29544,14 @@ func (m *ContractTemplateMutation) Fields() []string {
 	if m.url != nil {
 		fields = append(fields, contracttemplate.FieldURL)
 	}
-	if m.user_type != nil {
-		fields = append(fields, contracttemplate.FieldUserType)
+	if m.aimed != nil {
+		fields = append(fields, contracttemplate.FieldAimed)
 	}
-	if m.sub_type != nil {
-		fields = append(fields, contracttemplate.FieldSubType)
+	if m.plan_type != nil {
+		fields = append(fields, contracttemplate.FieldPlanType)
 	}
-	if m.sn != nil {
-		fields = append(fields, contracttemplate.FieldSn)
+	if m.hash != nil {
+		fields = append(fields, contracttemplate.FieldHash)
 	}
 	if m.enable != nil {
 		fields = append(fields, contracttemplate.FieldEnable)
@@ -29507,12 +29580,12 @@ func (m *ContractTemplateMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case contracttemplate.FieldURL:
 		return m.URL()
-	case contracttemplate.FieldUserType:
-		return m.UserType()
-	case contracttemplate.FieldSubType:
-		return m.SubType()
-	case contracttemplate.FieldSn:
-		return m.Sn()
+	case contracttemplate.FieldAimed:
+		return m.Aimed()
+	case contracttemplate.FieldPlanType:
+		return m.PlanType()
+	case contracttemplate.FieldHash:
+		return m.Hash()
 	case contracttemplate.FieldEnable:
 		return m.Enable()
 	}
@@ -29540,12 +29613,12 @@ func (m *ContractTemplateMutation) OldField(ctx context.Context, name string) (e
 		return m.OldName(ctx)
 	case contracttemplate.FieldURL:
 		return m.OldURL(ctx)
-	case contracttemplate.FieldUserType:
-		return m.OldUserType(ctx)
-	case contracttemplate.FieldSubType:
-		return m.OldSubType(ctx)
-	case contracttemplate.FieldSn:
-		return m.OldSn(ctx)
+	case contracttemplate.FieldAimed:
+		return m.OldAimed(ctx)
+	case contracttemplate.FieldPlanType:
+		return m.OldPlanType(ctx)
+	case contracttemplate.FieldHash:
+		return m.OldHash(ctx)
 	case contracttemplate.FieldEnable:
 		return m.OldEnable(ctx)
 	}
@@ -29613,26 +29686,26 @@ func (m *ContractTemplateMutation) SetField(name string, value ent.Value) error 
 		}
 		m.SetURL(v)
 		return nil
-	case contracttemplate.FieldUserType:
+	case contracttemplate.FieldAimed:
 		v, ok := value.(uint8)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetUserType(v)
+		m.SetAimed(v)
 		return nil
-	case contracttemplate.FieldSubType:
+	case contracttemplate.FieldPlanType:
 		v, ok := value.(uint8)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetSubType(v)
+		m.SetPlanType(v)
 		return nil
-	case contracttemplate.FieldSn:
+	case contracttemplate.FieldHash:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetSn(v)
+		m.SetHash(v)
 		return nil
 	case contracttemplate.FieldEnable:
 		v, ok := value.(bool)
@@ -29649,11 +29722,11 @@ func (m *ContractTemplateMutation) SetField(name string, value ent.Value) error 
 // this mutation.
 func (m *ContractTemplateMutation) AddedFields() []string {
 	var fields []string
-	if m.adduser_type != nil {
-		fields = append(fields, contracttemplate.FieldUserType)
+	if m.addaimed != nil {
+		fields = append(fields, contracttemplate.FieldAimed)
 	}
-	if m.addsub_type != nil {
-		fields = append(fields, contracttemplate.FieldSubType)
+	if m.addplan_type != nil {
+		fields = append(fields, contracttemplate.FieldPlanType)
 	}
 	return fields
 }
@@ -29663,10 +29736,10 @@ func (m *ContractTemplateMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *ContractTemplateMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case contracttemplate.FieldUserType:
-		return m.AddedUserType()
-	case contracttemplate.FieldSubType:
-		return m.AddedSubType()
+	case contracttemplate.FieldAimed:
+		return m.AddedAimed()
+	case contracttemplate.FieldPlanType:
+		return m.AddedPlanType()
 	}
 	return nil, false
 }
@@ -29676,19 +29749,19 @@ func (m *ContractTemplateMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *ContractTemplateMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case contracttemplate.FieldUserType:
+	case contracttemplate.FieldAimed:
 		v, ok := value.(int8)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddUserType(v)
+		m.AddAimed(v)
 		return nil
-	case contracttemplate.FieldSubType:
+	case contracttemplate.FieldPlanType:
 		v, ok := value.(int8)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddSubType(v)
+		m.AddPlanType(v)
 		return nil
 	}
 	return fmt.Errorf("unknown ContractTemplate numeric field %s", name)
@@ -29768,14 +29841,14 @@ func (m *ContractTemplateMutation) ResetField(name string) error {
 	case contracttemplate.FieldURL:
 		m.ResetURL()
 		return nil
-	case contracttemplate.FieldUserType:
-		m.ResetUserType()
+	case contracttemplate.FieldAimed:
+		m.ResetAimed()
 		return nil
-	case contracttemplate.FieldSubType:
-		m.ResetSubType()
+	case contracttemplate.FieldPlanType:
+		m.ResetPlanType()
 		return nil
-	case contracttemplate.FieldSn:
-		m.ResetSn()
+	case contracttemplate.FieldHash:
+		m.ResetHash()
 		return nil
 	case contracttemplate.FieldEnable:
 		m.ResetEnable()

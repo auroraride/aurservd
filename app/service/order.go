@@ -1057,19 +1057,11 @@ func (s *orderService) Export(req *model.OrderListExport) model.ExportRes {
 func (s *orderService) QueryStatus(req *model.OrderStatusReq) (res model.OrderStatusRes) {
 	now := time.Now()
 	res = model.OrderStatusRes{
-		OutTradeNo:  req.OutTradeNo,
-		OuthOrderNo: req.OuthOrderNo,
-		Paid:        false,
+		OutTradeNo: req.OutTradeNo,
+		Paid:       false,
 	}
 	for {
-		q := ent.Database.Order.QueryNotDeleted()
-		if req.OutTradeNo != "" {
-			q.Where(order.OutTradeNo(req.OutTradeNo))
-		}
-		if req.OuthOrderNo != "" {
-			q.Where(order.OutOrderNo(req.OuthOrderNo))
-		}
-		o, _ := q.First(s.ctx)
+		o, _ := ent.Database.Order.QueryNotDeleted().Where(order.OutTradeNo(req.OutTradeNo)).First(s.ctx)
 		if o != nil && o.Status == model.OrderStatusPaid {
 			res.Paid = true
 			return

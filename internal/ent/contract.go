@@ -61,6 +61,8 @@ type Contract struct {
 	ExpiresAt *time.Time `json:"expires_at,omitempty"`
 	// 签约时间
 	SignedAt *time.Time `json:"signed_at,omitempty"`
+	// 合同文档ID
+	DocID string `json:"doc_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ContractQuery when eager-loading is set.
 	Edges        ContractEdges `json:"edges"`
@@ -137,7 +139,7 @@ func (*Contract) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case contract.FieldID, contract.FieldSubscribeID, contract.FieldEmployeeID, contract.FieldStatus, contract.FieldRiderID, contract.FieldAllocateID:
 			values[i] = new(sql.NullInt64)
-		case contract.FieldRemark, contract.FieldFlowID, contract.FieldSn, contract.FieldLink:
+		case contract.FieldRemark, contract.FieldFlowID, contract.FieldSn, contract.FieldLink, contract.FieldDocID:
 			values[i] = new(sql.NullString)
 		case contract.FieldCreatedAt, contract.FieldUpdatedAt, contract.FieldDeletedAt, contract.FieldExpiresAt, contract.FieldSignedAt:
 			values[i] = new(sql.NullTime)
@@ -291,6 +293,12 @@ func (c *Contract) assignValues(columns []string, values []any) error {
 				c.SignedAt = new(time.Time)
 				*c.SignedAt = value.Time
 			}
+		case contract.FieldDocID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field doc_id", values[i])
+			} else if value.Valid {
+				c.DocID = value.String
+			}
 		default:
 			c.selectValues.Set(columns[i], values[i])
 		}
@@ -417,6 +425,9 @@ func (c *Contract) String() string {
 		builder.WriteString("signed_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("doc_id=")
+	builder.WriteString(c.DocID)
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -16,7 +16,7 @@ require (
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
 	github.com/alibabacloud-go/openapi-util v0.1.0
 	github.com/alibabacloud-go/tea v1.2.2
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.699
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.712
 	github.com/aliyun/aliyun-log-go-sdk v0.1.71
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
 	github.com/aliyun/credentials-go v1.3.2
@@ -37,7 +37,7 @@ require (
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/labstack/gommon v0.4.2
-	github.com/liasica/edocseal v0.0.0-20240408021618-a499e3098081
+	github.com/liasica/edocseal v0.0.0-20240412032213-685a1d3ff64e
 	github.com/liasica/swag v1.16.3-0.20240305092534-ea9d354b2ef6
 	github.com/lithammer/shortuuid/v4 v4.0.0
 	github.com/modern-go/reflect2 v1.0.2
@@ -66,7 +66,7 @@ require (
 	golang.org/x/exp v0.0.0-20240404231335-c0f41cb1a7a0
 	golang.org/x/time v0.5.0
 	golang.org/x/tools v0.20.0
-	google.golang.org/grpc v1.62.1
+	google.golang.org/grpc v1.63.2
 	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -116,6 +116,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
+	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.20.0 // indirect
 	github.com/hhrutter/lzw v1.0.0 // indirect
@@ -198,7 +199,7 @@ require (
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240401170217-c3f982113cda // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

@@ -1316,7 +1316,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/definition.CabinetCreateReq"
+                            "$ref": "#/definitions/definition.ContractCreateReq"
                         }
                     }
                 ],
@@ -1324,7 +1324,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.ContractSignRes"
+                            "$ref": "#/definitions/definition.ContractCreateRes"
                         }
                     }
                 }
@@ -1357,7 +1357,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/definition.ContractSignReq"
+                            "$ref": "#/definitions/definition.ContractSignNewReq"
                         }
                     }
                 ],
@@ -3689,7 +3689,7 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.CabinetCreateReq": {
+        "definition.ContractCreateReq": {
             "type": "object",
             "required": [
                 "subscribeId"
@@ -3701,13 +3701,35 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.ContractSignReq": {
+        "definition.ContractCreateRes": {
+            "type": "object",
+            "properties": {
+                "docId": {
+                    "description": "合同ID",
+                    "type": "string"
+                },
+                "effective": {
+                    "description": "是否存在生效中的合同, 若返回值为true则代表无需签合同",
+                    "type": "boolean"
+                },
+                "link": {
+                    "description": "合同链接",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.ContractSignNewReq": {
             "type": "object",
             "required": [
+                "docId",
                 "seal",
                 "subscribeId"
             ],
             "properties": {
+                "docId": {
+                    "description": "合同ID",
+                    "type": "string"
+                },
                 "seal": {
                     "description": "签名Base64",
                     "type": "string"
@@ -3782,7 +3804,7 @@ const docTemplate = `{
                 "attachments": {
                     "description": "附件",
                     "type": "array",
-                    "maxItems": 3,
+                    "maxItems": 5,
                     "items": {
                         "type": "string"
                     }
@@ -5451,23 +5473,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "城市",
-                    "type": "string"
-                }
-            }
-        },
-        "model.ContractSignRes": {
-            "type": "object",
-            "properties": {
-                "effective": {
-                    "description": "是否存在生效中的合同, 若返回值为true则代表无需签合同",
-                    "type": "boolean"
-                },
-                "sn": {
-                    "description": "签署识别码",
-                    "type": "string"
-                },
-                "url": {
-                    "description": "签署URL",
                     "type": "string"
                 }
             }
