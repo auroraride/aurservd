@@ -70,6 +70,6 @@ func Bootstrap() {
 	// 初始化腾讯人身核验
 	tencent.BootWbFace(ar.Redis)
 
-	// 初始化腾讯faceid
-	tencent.BootFaceId()
+	// // 初始化腾讯faceid
+	// tencent.BootFaceId()
 }
