@@ -227,13 +227,9 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 		if isEnterprise {
 			// 设置团签字段
 			un = service.NewContract().EnterpriseData(m, sub)
-			// 团签代缴
-			m["payEnt"] = true
 		} else {
 			// 个签骑士卡
 			un = service.NewContract().PlanData(sub)
-			// 骑手缴费
-			m["payRider"] = true
 		}
 
 		if un == nil {
