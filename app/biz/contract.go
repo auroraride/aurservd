@@ -199,6 +199,17 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 			// 当前日期
 			now = time.Now().Format("2006年01月02日")
 		)
+
+		// 判断是否需要补充身份信息
+		if p.AuthResult == nil {
+			return nil, errors.New("未找到骑手身份信息")
+		}
+
+		if p.AuthResult.Address == "" || p.Name == "" || p.IDCardNumber == "" || r.Phone == "" {
+			return nil, errors.New("骑手信息不完整")
+
+		}
+
 		sn := tools.NewUnique().NewSN()
 		// 填充公共变量
 		// 合同编号
@@ -227,6 +238,7 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 		if isEnterprise {
 			// 设置团签字段
 			un = service.NewContract().EnterpriseData(m, sub)
+			delete(m, "payerEnt")
 		} else {
 			// 个签骑士卡
 			un = service.NewContract().PlanData(sub)
