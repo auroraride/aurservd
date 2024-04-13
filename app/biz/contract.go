@@ -118,7 +118,7 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (err e
 	var files []string
 	files = append(files, url)
 	//  更新合同状态
-	err = cont.Update().SetStatus(model.ContractStatusSuccess.Value()).SetFiles(files).Exec(s.ctx)
+	err = cont.Update().SetStatus(model.ContractStatusSuccess.Value()).SetFiles(files).SetSignedAt(time.Now()).Exec(s.ctx)
 	if err != nil {
 		zap.L().Error("更新合同状态失败", zap.Error(err))
 		return err
