@@ -178,6 +178,9 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
 	// 从缓存中获取订单数据
 	pc := new(model.PaymentCache)
 	out := result.OutTradeNo
+	if result.OutRequestNo != "" {
+		out = result.OutRequestNo
+	}
 	err = cache.Get(context.Background(), out).Scan(pc)
 	if err != nil {
 		zap.L().Error("从缓存获取订单信息失败", zap.Error(err))
