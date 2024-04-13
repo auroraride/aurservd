@@ -943,7 +943,7 @@ func (s *businessRiderService) ForceUnsubscribe(req *model.BusinessSubscribeReq,
 			}
 
 			var no string
-			no = depositOrder.OutTradeNo
+			no = or.OutRefundNo
 
 			// 预支付订单号
 			if depositOrder.TradePayAt == nil && depositOrder.OutOrderNo != "" {
