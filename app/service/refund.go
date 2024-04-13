@@ -195,9 +195,9 @@ func (s *refundService) DoRefund(o *ent.Order, or *ent.OrderRefund, status uint8
 
 	if status == 1 {
 
-		// 订单缓存 (原始订单号key)
+		// 订单缓存key (退款单号)
 		var no string
-		no = o.OutTradeNo
+		no = or.OutRefundNo
 
 		// 预支付订单号
 		if o.TradePayAt == nil && o.OutOrderNo != "" {

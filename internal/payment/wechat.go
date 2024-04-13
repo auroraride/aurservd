@@ -8,6 +8,8 @@ package payment
 import (
 	"context"
 	"errors"
+	"github.com/auroraride/aurservd/pkg/snag"
+	"github.com/wechatpay-apiv3/wechatpay-go/services/refunddomestic"
 	"io"
 	"math"
 	"net/http"
@@ -24,14 +26,12 @@ import (
 	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/app"
 	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/jsapi"
 	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/native"
-	"github.com/wechatpay-apiv3/wechatpay-go/services/refunddomestic"
 	"github.com/wechatpay-apiv3/wechatpay-go/utils"
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/cache"
-	"github.com/auroraride/aurservd/pkg/snag"
 )
 
 const (
@@ -300,7 +300,7 @@ func (c *wechatClient) RefundNotification(req *http.Request) *model.PaymentCache
 	pc := new(model.PaymentCache)
 
 	// 从缓存中获取订单数据
-	err = cache.Get(context.Background(), transaction.OutTradeNo).Scan(pc)
+	err = cache.Get(context.Background(), transaction.OutRefundNo).Scan(pc)
 	if err != nil {
 		zap.L().Error("从缓存获取订单信息失败", zap.Error(err))
 		return nil
