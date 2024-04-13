@@ -326,7 +326,11 @@ func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertif
 	}
 
 	// 更新骑手表
-	err = r.Update().SetPersonID(id).SetIDCardNumber(identity.IdCardNumber).Exec(context.Background())
+	err = r.Update().
+		SetPersonID(id).
+		SetName(identity.Name).
+		SetIDCardNumber(identity.IdCardNumber).
+		Exec(context.Background())
 	if err != nil {
 		return
 	}
