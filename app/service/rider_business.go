@@ -369,8 +369,8 @@ func (s *riderBusinessService) PauseInfo() (res model.BusinessPauseInfoRes) {
 	res.End = now.ToStdTime().Format(carbon.DateLayout)
 
 	if p.Days < 1 {
-		res.Start = ""
-		res.End = ""
+		// res.Start = ""
+		// res.End = ""
 		p.Days = 0
 	}
 
