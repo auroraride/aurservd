@@ -169,6 +169,8 @@ func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreDetailReq
 			func(query *ent.StoreQuery) {
 				query.WithCity().WithEmployee()
 			}).Modify(func(sel *sql.Selector) {
+		t := sql.Table(store.Table).As("store")
+		sel.LeftJoin(t).On(t.C(store.FieldID), sel.C(subscribe.FieldStoreID))
 		sel.
 			AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'))`, req.Lng, req.Lat)), "distance").
 			OrderBy(sql.Asc("distance"))
@@ -176,5 +178,38 @@ func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreDetailReq
 	if q == nil || q.Edges.Store == nil {
 		return nil, errors.New("未找到门店")
 	}
-	return s.detail(q.Edges.Store), nil
+
+	if q.Edges.Store != nil {
+		item := q.Edges.Store
+		res = &definition.StoreDetail{
+			ID:            item.ID,
+			Name:          item.Name,
+			Status:        item.Status,
+			Lng:           item.Lng,
+			Lat:           item.Lat,
+			Address:       item.Address,
+			EbikeRepair:   item.EbikeRepair,
+			EbikeObtain:   item.EbikeObtain,
+			EbikeSale:     item.EbikeSale,
+			BusinessHours: item.BusinessHours,
+		}
+		if item.Edges.Employee != nil {
+			res.Employee = &model.Employee{
+				ID:    item.Edges.Employee.ID,
+				Name:  item.Edges.Employee.Name,
+				Phone: item.Edges.Employee.Phone,
+			}
+		}
+		if item.Edges.City != nil {
+			res.City = model.City{
+				ID:   item.Edges.City.ID,
+				Name: item.Edges.City.Name,
+			}
+		}
+	}
+	value, err := q.Value("distance")
+	if err == nil {
+		res.Distance = value.(float64)
+	}
+	return res, nil
 }
