@@ -36,7 +36,7 @@ func NewContract() *Contract {
 }
 
 // Sign 签约
-func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (err error) {
+func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (res *definition.ContractSignNewRes, err error) {
 	// 查找订阅
 	sub, _ := ent.Database.Subscribe.QueryNotDeleted().
 		Where(
@@ -46,42 +46,42 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (err e
 		query.WithParent()
 	}).First(s.ctx)
 	if sub == nil {
-		return errors.New("未找到骑士卡")
+		return nil, errors.New("未找到骑士卡")
 	}
 
 	// 是否免签或已签约
 	if !service.NewSubscribe().NeedContract(sub) {
-		return errors.New("当前订阅无需签约")
+		return nil, errors.New("当前订阅无需签约")
 	}
 
 	if sub.BrandID == nil && sub.EbikeID != nil {
-		return errors.New("当前订阅错误")
+		return nil, errors.New("当前订阅错误")
 	}
 
 	// 查找分配信息
 	allo := service.NewAllocate().QueryEffectiveSubscribeIDX(sub.ID)
 	if allo == nil {
-		return errors.New("未找到分配信息")
+		return nil, errors.New("未找到分配信息")
 	}
 
 	if sub.BrandID != nil && allo.StoreID == nil && allo.StationID == nil {
-		return errors.New("电车必须由门店或站点分配")
+		return nil, errors.New("电车必须由门店或站点分配")
 	}
 
 	// 城市
 	ec := sub.Edges.City
 	if ec == nil {
-		return errors.New("未找到城市信息")
+		return nil, errors.New("未找到城市信息")
 	}
 
 	// 判定非智能套餐门店库存
 	if allo.StoreID != nil && allo.BatteryID == nil && !service.NewStock().CheckStore(*allo.StoreID, sub.Model, 1) {
-		return errors.New("库存不足")
+		return nil, errors.New("库存不足")
 	}
 
 	person, _ := r.QueryPerson().First(s.ctx)
 	if person == nil {
-		return errors.New("未找到骑手信息")
+		return nil, errors.New("未找到骑手信息")
 	}
 
 	var city, province string
@@ -95,7 +95,7 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (err e
 
 	cont, _ := ent.Database.Contract.QueryNotDeleted().Where(contract.AllocateID(allo.ID), contract.SubscribeID(req.SubscribeID)).First(s.ctx)
 	if cont == nil {
-		return errors.New("未找到合同信息")
+		return nil, errors.New("未找到合同信息")
 	}
 	// 获取模版id
 	cfg := ar.Config.Contract
@@ -112,24 +112,36 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (err e
 	}, cfg.Address)
 	if err != nil {
 		zap.L().Error("签署合同失败", zap.Error(err))
-		return err
+		return nil, err
 	}
 
 	var files []string
 	files = append(files, url)
+
+	now := time.Now()
+
 	//  更新合同状态
-	err = cont.Update().SetStatus(model.ContractStatusSuccess.Value()).SetFiles(files).SetSignedAt(time.Now()).Exec(s.ctx)
+	err = cont.Update().SetStatus(model.ContractStatusSuccess.Value()).SetFiles(files).SetSignedAt(now).Exec(s.ctx)
 	if err != nil {
 		zap.L().Error("更新合同状态失败", zap.Error(err))
-		return err
+		return nil, err
 	}
 
 	err = service.NewContract().Update(cont)
 	if err != nil {
 		zap.L().Error("更新合同状态失败", zap.Error(err))
-		return err
+		return nil, err
 	}
-	return nil
+
+	// 发送短信
+	_, err = service.NewSms().SendSignSuccess(now, "时光驹电动车电池租赁合同", url, r.Phone)
+	if err != nil {
+		return nil, err
+	}
+
+	return &definition.ContractSignNewRes{
+		Link: url,
+	}, nil
 }
 
 // Create 骑手添加合同
@@ -337,7 +349,13 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 				}
 			}
 		}
-		contractCreateResponse, err := rpc.Create(s.ctx, templateID, values, cfg.Address)
+		expiresAt := time.Now().Add(model.ContractExpiration * time.Minute)
+		contractCreateResponse, err := rpc.Create(s.ctx, values, &definition.ContractCreateRPCReq{
+			TemplateId: templateID,
+			Addr:       cfg.Address,
+			ExpiresAt:  expiresAt.Unix(),
+			UserID:     strconv.FormatUint(r.ID, 10),
+		})
 		if err != nil {
 			return nil, err
 		}
@@ -348,7 +366,6 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 		flowId := tools.NewUnique().NewSN28()
 		// 存储合同信息
 		err = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-			expiresAt := time.Now().Add(model.ContractExpiration * time.Minute)
 			// 删除原有合同
 			_, _ = tx.Contract.Delete().Where(contract.AllocateID(allo.ID)).Exec(s.ctx)
 			err = tx.Contract.Create().

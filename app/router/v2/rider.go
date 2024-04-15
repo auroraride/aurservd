@@ -220,5 +220,4 @@ func LoadRiderV2Routes(root *echo.Group) {
 	agreement := g.Group("/agreement")
 	agreement.GET("/enterprise/price/:id", rapi.Agreement.QueryAgreementByEnterprisePriceID) // 根据企业价格ID查询协议
 
-	g.GET("/allocated", rapi.Rider.Allocated) // 手动分配物资 todo 记得删除 测试用
 }

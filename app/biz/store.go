@@ -162,13 +162,17 @@ func (s *storeBiz) queryStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, battery
 }
 
 // StoreBySubscribe 根据订阅查询门店
-func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreBySubscribeReq) (res *definition.StoreDetail, err error) {
+func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreDetailReq) (res *definition.StoreDetail, err error) {
 	q, _ := ent.Database.Subscribe.QueryNotDeleted().
 		Where(subscribe.ID(req.ID), subscribe.RiderID(r.ID)).
 		WithStore(
 			func(query *ent.StoreQuery) {
 				query.WithCity().WithEmployee()
-			}).First(s.ctx)
+			}).Modify(func(sel *sql.Selector) {
+		sel.
+			AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'))`, req.Lng, req.Lat)), "distance").
+			OrderBy(sql.Asc("distance"))
+	}).First(s.ctx)
 	if q == nil || q.Edges.Store == nil {
 		return nil, errors.New("未找到门店")
 	}

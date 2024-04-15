@@ -201,6 +201,12 @@ definitions:
       - seal
       - subscribeId
     type: object
+  definition.ContractSignNewRes:
+    properties:
+      link:
+        description: 合同链接
+        type: string
+    type: object
   definition.Destination:
     properties:
       area_id:
@@ -3605,7 +3611,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            $ref: '#/definitions/definition.ContractSignNewRes'
       summary: 签署合同
       tags:
       - Contract - 合同
@@ -4836,6 +4842,16 @@ paths:
         name: id
         required: true
         type: integer
+      - description: 纬度
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: 经度
+        in: query
+        name: lng
+        required: true
+        type: number
       produces:
       - application/json
       responses:

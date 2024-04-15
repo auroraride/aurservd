@@ -41,19 +41,3 @@ func (*rider) ChangePhone(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.RiderChangePhoneReq](c)
 	return ctx.SendResponse(biz.NewRiderBiz().ChangePhone(ctx.Rider, req))
 }
-
-// Allocated
-// @ID		RiderAllocated
-// @Router	/rider/v2/allocated [GET]
-// @Summary	手动分配物资
-// @Tags	Rider - 骑手
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string							true	"骑手校验token"
-// @Param	query			query		definition.RiderAllocatedReq	true	"请求参数"
-// @Success	200				{object}	model.StatusResponse			"请求成功"
-func (*rider) Allocated(c echo.Context) (err error) {
-	ctx, req := app.RiderContextAndBinding[definition.RiderAllocatedReq](c)
-	biz.NewRiderBiz().Allocated(req)
-	return ctx.SendResponse()
-}

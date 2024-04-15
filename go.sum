@@ -534,6 +534,10 @@ github.com/liasica/edocseal v0.0.0-20240411082624-c1327624823e h1:mXH3p9mSxGbXVn
 github.com/liasica/edocseal v0.0.0-20240411082624-c1327624823e/go.mod h1:XqXHlukpFRke/+Pu4MVH/SWFZIDXUUk7KnCPCgmsVzg=
 github.com/liasica/edocseal v0.0.0-20240412032213-685a1d3ff64e h1:aTv7OAKSab0T7PwTHQadVgY/DTe0Movp8t77QLJ8gMI=
 github.com/liasica/edocseal v0.0.0-20240412032213-685a1d3ff64e/go.mod h1:GKKw8C2XWY2XgthsH3so4iTv+C6I9UAwhT1Ha7ENDUA=
+github.com/liasica/edocseal v0.0.0-20240415075505-02e5034de56f h1:hk8ubJQ+oRN0kNa9xjR57W8cizlQs3FEPdrV+jifZaQ=
+github.com/liasica/edocseal v0.0.0-20240415075505-02e5034de56f/go.mod h1:MrS+vF+EmkRYOMaqxLiFu698G4DsJSPblw+Wf2eMJGg=
+github.com/liasica/edocseal v0.0.0-20240415080356-24a4b92ecfcc h1:b4jQ8NYC8BnIZaZkq7UMsj18ZlGEMR+XbpinJfAptTY=
+github.com/liasica/edocseal v0.0.0-20240415080356-24a4b92ecfcc/go.mod h1:MrS+vF+EmkRYOMaqxLiFu698G4DsJSPblw+Wf2eMJGg=
 github.com/liasica/swag v1.16.2-adaptation h1:3sUO5/9SuLVc9X9M9Ky6THCHfAJNoF36ouDGuvtH9bY=
 github.com/liasica/swag v1.16.2-adaptation/go.mod h1:DImHIuOFXKpMFAQjcC7FG4m3Dg4+QuUgUzJmKjI/gRk=
 github.com/liasica/swag v1.16.3-0.20240305092534-ea9d354b2ef6 h1:XCjvEJWpoYFCAHpmOqOJKWpG4VK2YopBaAJmumk13LU=
@@ -1199,6 +1203,8 @@ google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 h1:
 google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237/go.mod h1:WtryC6hu0hhx87FDGxWCDptyssuo68sk10vYjF+T9fY=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20240401170217-c3f982113cda h1:LI5DOvAxUPMv/50agcLLoo+AdWc1irS9Rzz4vPuD1V4=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20240401170217-c3f982113cda/go.mod h1:WtryC6hu0hhx87FDGxWCDptyssuo68sk10vYjF+T9fY=
+google.golang.org/genproto/googleapis/rpc v0.0.0-20240412170617-26222e5d3d56 h1:zviK8GX4VlMstrK3JkexM5UHjH1VOkRebH9y3jhSBGk=
+google.golang.org/genproto/googleapis/rpc v0.0.0-20240412170617-26222e5d3d56/go.mod h1:WtryC6hu0hhx87FDGxWCDptyssuo68sk10vYjF+T9fY=
 google.golang.org/grpc v1.14.0/go.mod h1:yo6s7OP7yaDglbqo1J04qKzAhqBH6lvTonzMVmEdcZw=
 google.golang.org/grpc v1.17.0/go.mod h1:6QZJwpn2B+Zp71q/5VxRsJ6NXXVCE5NRUHRo+f3cWCs=
 google.golang.org/grpc v1.19.0/go.mod h1:mqu4LbDTu4XGKhr4mRzUsmM4RtVoemTSY81AxZiDr8c=
