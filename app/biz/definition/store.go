@@ -27,11 +27,6 @@ type StoreDetail struct {
 	Address       string          `json:"address"`            // 地址
 }
 
-// StoreBySubscribeReq 根据订阅查询门店信息请求
-type StoreBySubscribeReq struct {
-	model.IDParamReq
-}
-
 // StoreDetailReq 门店详情请求
 type StoreDetailReq struct {
 	model.IDParamReq

@@ -37,7 +37,7 @@ require (
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/labstack/gommon v0.4.2
-	github.com/liasica/edocseal v0.0.0-20240412032213-685a1d3ff64e
+	github.com/liasica/edocseal v0.0.0-20240415080356-24a4b92ecfcc
 	github.com/liasica/swag v1.16.3-0.20240305092534-ea9d354b2ef6
 	github.com/lithammer/shortuuid/v4 v4.0.0
 	github.com/modern-go/reflect2 v1.0.2
@@ -199,7 +199,7 @@ require (
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240401170217-c3f982113cda // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240412170617-26222e5d3d56 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

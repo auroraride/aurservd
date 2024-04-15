@@ -1365,7 +1365,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "$ref": "#/definitions/definition.ContractSignNewRes"
                         }
                     }
                 }
@@ -3199,6 +3199,20 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "纬度",
+                        "name": "lat",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "经度",
+                        "name": "lng",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3737,6 +3751,15 @@ const docTemplate = `{
                 "subscribeId": {
                     "description": "订阅ID",
                     "type": "integer"
+                }
+            }
+        },
+        "definition.ContractSignNewRes": {
+            "type": "object",
+            "properties": {
+                "link": {
+                    "description": "合同链接",
+                    "type": "string"
                 }
             }
         },

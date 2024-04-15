@@ -173,6 +173,8 @@ type config struct {
 				Reminder string
 				// 逾期通知
 				Overdue string
+				// 签署合同成功通知
+				ContractSuccess string
 			}
 		}
 		Sls struct {

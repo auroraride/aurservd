@@ -21,7 +21,7 @@ var Contract = new(contract)
 // @Produce	json
 // @Param	X-Rider-Token	header		string							true	"骑手校验token"
 // @Param	body			body		definition.ContractSignNewReq	true	"desc"
-// @Success	200				{object}	model.StatusResponse			"请求成功"
+// @Success	200				{object}	definition.ContractSignNewRes	"请求成功"
 func (*contract) Sign(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.ContractSignNewReq](c)
 	return ctx.SendResponse(biz.NewContract().Sign(ctx.Rider, req))
