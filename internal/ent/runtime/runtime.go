@@ -1924,6 +1924,10 @@ func init() {
 	subscribeDescIntelligent := subscribeFields[24].Descriptor()
 	// subscribe.DefaultIntelligent holds the default value on creation for the intelligent field.
 	subscribe.DefaultIntelligent = subscribeDescIntelligent.Default.(bool)
+	// subscribeDescDepositType is the schema descriptor for deposit_type field.
+	subscribeDescDepositType := subscribeFields[27].Descriptor()
+	// subscribe.DefaultDepositType holds the default value on creation for the deposit_type field.
+	subscribe.DefaultDepositType = subscribeDescDepositType.Default.(uint8)
 	subscribealterMixin := schema.SubscribeAlter{}.Mixin()
 	subscribealterMixinHooks1 := subscribealterMixin[1].Hooks()
 	subscribealter.Hooks[0] = subscribealterMixinHooks1[0]

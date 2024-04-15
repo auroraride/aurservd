@@ -30,7 +30,7 @@ func (s *subscribeBiz) StoreModify(r *ent.Rider, req *definition.SubscribeStoreM
 			req.SubscribeID),
 			subscribe.RiderID(r.ID),
 		).WithPlan().First(s.ctx)
-	if sub == nil && sub.Edges.Plan == nil {
+	if sub == nil || sub.Edges.Plan == nil {
 		return errors.New("未找到订阅,或套餐不存在")
 	}
 

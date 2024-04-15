@@ -357,6 +357,8 @@ var (
 	DefaultNeedContract bool
 	// DefaultIntelligent holds the default value on creation for the "intelligent" field.
 	DefaultIntelligent bool
+	// DefaultDepositType holds the default value on creation for the "deposit_type" field.
+	DefaultDepositType uint8
 )
 
 // OrderOption defines the ordering options for the Subscribe queries.

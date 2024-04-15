@@ -5304,7 +5304,7 @@ var (
 		{Name: "need_contract", Type: field.TypeBool, Comment: "是否需要签约", Default: false},
 		{Name: "intelligent", Type: field.TypeBool, Comment: "是否智能柜套餐", Default: false},
 		{Name: "agreement_hash", Type: field.TypeString, Nullable: true, Comment: "签署协议hash"},
-		{Name: "deposit_type", Type: field.TypeUint8, Nullable: true, Comment: "押金类型 1:芝麻免押 2:微信支付分免押 3:合同免押 4:支付押金"},
+		{Name: "deposit_type", Type: field.TypeUint8, Nullable: true, Comment: "押金类型 1:芝麻免押 2:微信支付分免押 3:合同免押 4:支付押金", Default: 3},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "企业ID"},
 		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
