@@ -184,6 +184,9 @@ definitions:
       link:
         description: 合同链接
         type: string
+      needRealName:
+        description: 是否需要实名认证   true:需要  false:不需要
+        type: boolean
     type: object
   definition.ContractSignNewReq:
     properties:
@@ -511,6 +514,14 @@ definitions:
       version:
         type: string
     type: object
+  definition.PersonCertificationSupplementReq:
+    properties:
+      identity:
+        description: 加密身份信息，base64编码
+        type: string
+    required:
+      - identity
+    type: object
   definition.PlanNewlyRes:
     properties:
       batteryDescription:
@@ -827,12 +838,6 @@ definitions:
       url:
         description: URL
         type: string
-    type: object
-  model.AllocateRiderRes:
-    properties:
-      allocated:
-        description: 是否已分配
-        type: boolean
     type: object
   model.AppPlatform:
     enum:
@@ -2655,16 +2660,6 @@ definitions:
         description: 总支付金额, 总金额为 amount + deposit
         type: number
     type: object
-  model.SubscribeSigned:
-    properties:
-      signed:
-        description: 签约状态, 0:无签约信息(直接弹窗提示用户"未找到签约信息"并返回首页) 1:签署中(继续轮询) 2:签约成功(弹出扫码)
-        enum:
-        - 0
-        - 1
-        - 2
-        type: integer
-    type: object
   model.TaskStatus:
     enum:
     - 0
@@ -2768,35 +2763,6 @@ paths:
       summary: 根据企业价格ID查询协议
       tags:
       - Agreement - 协议
-  /rider/v2/allocated:
-    get:
-      consumes:
-        - application/json
-      operationId: RiderAllocated
-      parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - in: query
-          name: phone
-          required: true
-          type: string
-        - in: query
-          name: serial
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 手动分配物资
-      tags:
-        - Rider - 骑手
   /rider/v2/assistance:
     get:
       consumes:
@@ -3154,33 +3120,6 @@ paths:
       summary: 激活骑士卡
       tags:
       - Business - 业务
-  /rider/v2/business/allocated/{id}:
-    get:
-      consumes:
-      - application/json
-      description: 用以判定待激活骑士卡是否需要签约 (allocated = true)
-      operationId: BusinessAllocated
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: 订阅ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.AllocateRiderRes'
-      summary: 长连接轮询是否已分配
-      tags:
-      - Business - 业务
   /rider/v2/business/continue:
     post:
       consumes:
@@ -3280,32 +3219,6 @@ paths:
           schema:
             $ref: '#/definitions/model.BusinessCabinetStatusRes'
       summary: 业务状态
-      tags:
-      - Business - 业务
-  /rider/v2/business/subscribe/signed/{id}:
-    get:
-      consumes:
-      - application/json
-      operationId: BusinessSubscribeSigned
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: 订阅ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.SubscribeSigned'
-      summary: 长连接轮询是否已签约
       tags:
       - Business - 业务
   /rider/v2/business/unsubscribe:
@@ -3482,6 +3395,28 @@ paths:
           schema:
             $ref: '#/definitions/definition.PersonCertificationOcrCloudRes'
       summary: 获取云端OCR参数
+      tags:
+        - Person - 实人
+  /rider/v2/certification/supplement:
+    post:
+      consumes:
+        - application/json
+      operationId: PersonCertificationSupplement
+      parameters:
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.PersonCertificationSupplementReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 提交人脸核身补充信息
       tags:
       - Person - 实人
   /rider/v2/change/phone:
@@ -4862,6 +4797,32 @@ paths:
       summary: 根据订阅查询骑手激活门店信息
       tags:
       - Store - 门店
+  /rider/v2/subscribe/status:
+    get:
+      consumes:
+        - application/json
+      operationId: SubscribeStatus
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: 订阅ID
+          in: query
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: TRUE已激活, FALSE未激活
+          schema:
+            type: boolean
+      summary: 查询订阅是否激活
+      tags:
+        - Subscribe - 订阅
   /rider/v2/subscribe/store:
     put:
       consumes:

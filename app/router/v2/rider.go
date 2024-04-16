@@ -113,6 +113,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	certification.GET("/ocr/cloud", rapi.Person.CertificationOcrCloud)     // 获取阿里云OCR签名
 	certification.POST("/face", rapi.Person.CertificationFace)             // 提交身份信息并获取人脸核身参数
 	certification.GET("/face/result", rapi.Person.CertificationFaceResult) // 获取人脸核身结果
+	certification.POST("/supplement", rapi.Person.CertificationSupplement) // 补充实名信息
 
 	// 骑手
 	g.GET("/profile", v1.Rider.Profile, logged())             // 获取用户信息
@@ -189,14 +190,12 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 业务
 	business := g.Group("/business", person())
-	business.POST("/active", rapi.Business.Active)                     // 激活骑士卡
-	business.POST("/unsubscribe", v1.Business.Unsubscribe)             // 退租
-	business.POST("/pause", v1.Business.Pause)                         // 寄存
-	business.POST("/continue", v1.Business.Continue)                   // 取消寄存
-	business.GET("/status", v1.Business.Status)                        // 业务状态
-	business.GET("/pause/info", v1.Business.PauseInfo)                 // 寄存信息
-	business.GET("/allocated/:id", v1.Business.Allocated)              // 长连接轮询是否已分配
-	business.GET("/subscribe/signed/:id", v1.Business.SubscribeSigned) // 连接轮询是否已签约
+	business.POST("/active", rapi.Business.Active)         // 激活骑士卡
+	business.POST("/unsubscribe", v1.Business.Unsubscribe) // 退租
+	business.POST("/pause", v1.Business.Pause)             // 寄存
+	business.POST("/continue", v1.Business.Continue)       // 取消寄存
+	business.GET("/status", v1.Business.Status)            // 业务状态
+	business.GET("/pause/info", v1.Business.PauseInfo)     // 寄存信息
 
 	// 换电
 	g.GET("/exchange/overview", v1.Exchange.Overview, logged())           // 换电概览
@@ -214,7 +213,8 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 订阅
 	subscribe := g.Group("/subscribe", person())
-	subscribe.PUT("/store", rapi.Subscribe.StoreModify) // 车电套餐修改激活门店
+	subscribe.PUT("/store", rapi.Subscribe.StoreModify)      // 车电套餐修改激活门店
+	subscribe.GET("/status", rapi.Subscribe.SubscribeStatus) // 查询订阅是否激活
 
 	// 协议
 	agreement := g.Group("/agreement")

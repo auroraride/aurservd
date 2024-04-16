@@ -71,3 +71,17 @@ func (p *person) CertificationFaceResult(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.PersonCertificationFaceResultReq](c)
 	return ctx.SendResponse(biz.NewPerson().CertificationFaceResult(ctx.Rider, req))
 }
+
+// CertificationSupplement
+// @ID		PersonCertificationSupplement
+// @Router	/rider/v2/certification/supplement [POST]
+// @Summary	提交人脸核身补充信息
+// @Tags	Person - 实人
+// @Accept	json
+// @Produce	json
+// @Param	body	body		definition.PersonCertificationSupplementReq	true	"请求参数"
+// @Success	200		{object}	model.StatusResponse						"请求成功"
+func (*person) CertificationSupplement(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.PersonCertificationSupplementReq](c)
+	return ctx.SendResponse(biz.NewPerson().CertificationSupplement(ctx.Rider, req))
+}

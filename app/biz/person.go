@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/adapter/rpc/pb"
 	"github.com/golang-module/carbon/v2"
 	"github.com/lithammer/shortuuid/v4"
+	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
@@ -448,4 +449,80 @@ func (b *personBiz) CertificationOcrCloud(hash string) (res *definition.PersonCe
 		Authorization: params.Authorization,
 		Url:           params.Url,
 	}, nil
+}
+
+// CertificationSupplement 补充实名认证信息
+func (b *personBiz) CertificationSupplement(r *ent.Rider, req *definition.PersonCertificationSupplementReq) (err error) {
+	// 解密身份信息
+	var data []byte
+	data, err = base64.StdEncoding.DecodeString(req.Identity)
+	if err != nil {
+		zap.L().Info("解密身份信息失败", zap.Error(err))
+		return
+	}
+	result := new(pb.PersonIdentityOcrResult)
+	err = proto.Unmarshal(data, result)
+	if err != nil {
+		zap.L().Info("解析身份信息失败", zap.Error(err))
+		return
+	}
+
+	// 比对原信息是否和补充信息一致
+	per, _ := r.QueryPerson().First(context.Background())
+	if per == nil {
+		return errors.New("未找到实名信息")
+	}
+
+	if per.IDCardNumber != "" && per.IDCardNumber != result.IdCardNumber || per.Name != "" && per.Name != result.Name {
+		return errors.New("补充信息与原信息不一致")
+	}
+
+	faceVerify := new(model.PersonFaceVerifyResult)
+	if per.FaceVerifyResult != nil {
+		per.FaceVerifyResult.Name = result.Name
+		per.FaceVerifyResult.IDCardNumber = result.IdCardNumber
+		per.FaceVerifyResult.Birth = result.Birth
+		per.FaceVerifyResult.Address = result.Address
+		per.FaceVerifyResult.ValidStartDate = result.ValidStartDate
+		per.FaceVerifyResult.ValidExpireDate = result.ValidExpireDate
+		per.FaceVerifyResult.Authority = result.Authority
+		per.FaceVerifyResult.PortraitClarity = result.PortraitClarity
+		per.FaceVerifyResult.NationalClarity = result.NationalClarity
+		faceVerify = per.FaceVerifyResult
+	} else {
+		faceVerify = &model.PersonFaceVerifyResult{
+			Name:            result.Name,
+			Sex:             result.Sex,
+			Nation:          result.Nation,
+			Birth:           result.Birth,
+			Address:         result.Address,
+			IDCardNumber:    result.IdCardNumber,
+			ValidStartDate:  result.ValidStartDate,
+			ValidExpireDate: result.ValidExpireDate,
+			Authority:       result.Authority,
+			PortraitClarity: result.PortraitClarity,
+			NationalClarity: result.NationalClarity,
+		}
+	}
+
+	_, err = per.Update().
+		SetStatus(model.PersonAuthenticated.Value()).
+		SetIDCardNumber(result.IdCardNumber).
+		SetName(result.Name).
+		SetFaceVerifyResult(faceVerify).
+		Save(context.Background())
+	if err != nil {
+		return err
+	}
+
+	// 更新骑手表
+	err = r.Update().
+		SetPersonID(per.ID).
+		SetName(per.Name).
+		SetIDCardNumber(per.IDCardNumber).
+		Exec(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -172,31 +172,6 @@ func (*business) Status() {}
 // @Success	200				{object}	model.BusinessPauseInfoRes	"请求成功"
 func (*business) PauseInfo() {}
 
-// Allocated
-// @ID			BusinessAllocated
-// @Router		/rider/v2/business/allocated/{id} [GET]
-// @Summary		长连接轮询是否已分配
-// @Description	用以判定待激活骑士卡是否需要签约 (allocated = true)
-// @Tags		Business - 业务
-// @Accept		json
-// @Produce		json
-// @Param		X-Rider-Token	header		string					true	"骑手校验token"
-// @Param		id				path		uint64					true	"订阅ID"
-// @Success		200				{object}	model.AllocateRiderRes	"请求成功"
-func (*business) Allocated() {}
-
-// SubscribeSigned
-// @ID		BusinessSubscribeSigned
-// @Router	/rider/v2/business/subscribe/signed/{id} [GET]
-// @Summary	长连接轮询是否已签约
-// @Tags	Business - 业务
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string					true	"骑手校验token"
-// @Param	id				path		uint64					true	"订阅ID"
-// @Success	200				{object}	model.SubscribeSigned	"请求成功"
-func (*business) SubscribeSigned() {}
-
 type City struct{}
 
 // List

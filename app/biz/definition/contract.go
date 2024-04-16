@@ -14,9 +14,10 @@ type ContractSignNewRes struct {
 
 // ContractCreateRes 合同创建响应
 type ContractCreateRes struct {
-	Link      string `json:"link"`      // 合同链接
-	DocId     string `json:"docId"`     // 合同ID
-	Effective bool   `json:"effective"` // 是否存在生效中的合同, 若返回值为true则代表无需签合同
+	Link         string `json:"link"`         // 合同链接
+	DocId        string `json:"docId"`        // 合同ID
+	Effective    bool   `json:"effective"`    // 是否存在生效中的合同, 若返回值为true则代表无需签合同
+	NeedRealName bool   `json:"needRealName"` // 是否需要实名认证   true:需要  false:不需要
 }
 
 // ContractCreateReq 合同创建请求

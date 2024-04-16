@@ -89,50 +89,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v2/allocated": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Rider - 骑手"
-                ],
-                "summary": "手动分配物资",
-                "operationId": "RiderAllocated",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "phone",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "serial",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v2/assistance": {
             "get": {
                 "consumes": [
@@ -674,46 +630,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v2/business/allocated/{id}": {
-            "get": {
-                "description": "用以判定待激活骑士卡是否需要签约 (allocated = true)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Business - 业务"
-                ],
-                "summary": "长连接轮询是否已分配",
-                "operationId": "BusinessAllocated",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "订阅ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.AllocateRiderRes"
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v2/business/continue": {
             "post": {
                 "consumes": [
@@ -862,45 +778,6 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.BusinessCabinetStatusRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/rider/v2/business/subscribe/signed/{id}": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Business - 业务"
-                ],
-                "summary": "长连接轮询是否已签约",
-                "operationId": "BusinessSubscribeSigned",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "订阅ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.SubscribeSigned"
                         }
                     }
                 }
@@ -1167,6 +1044,40 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/definition.PersonCertificationOcrCloudRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/certification/supplement": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Person - 实人"
+                ],
+                "summary": "提交人脸核身补充信息",
+                "operationId": "PersonCertificationSupplement",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.PersonCertificationSupplementReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -3271,6 +3182,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/subscribe/status": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Subscribe - 订阅"
+                ],
+                "summary": "查询订阅是否激活",
+                "operationId": "SubscribeStatus",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "订阅ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "TRUE已激活, FALSE未激活",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/subscribe/store": {
             "put": {
                 "consumes": [
@@ -3729,6 +3679,10 @@ const docTemplate = `{
                 "link": {
                     "description": "合同链接",
                     "type": "string"
+                },
+                "needRealName": {
+                    "description": "是否需要实名认证   true:需要  false:不需要",
+                    "type": "boolean"
                 }
             }
         },
@@ -4185,6 +4139,18 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "definition.PersonCertificationSupplementReq": {
+            "type": "object",
+            "required": [
+                "identity"
+            ],
+            "properties": {
+                "identity": {
+                    "description": "加密身份信息，base64编码",
                     "type": "string"
                 }
             }
@@ -4647,15 +4613,6 @@ const docTemplate = `{
                 "url": {
                     "description": "URL",
                     "type": "string"
-                }
-            }
-        },
-        "model.AllocateRiderRes": {
-            "type": "object",
-            "properties": {
-                "allocated": {
-                    "description": "是否已分配",
-                    "type": "boolean"
                 }
             }
         },
@@ -7295,20 +7252,6 @@ const docTemplate = `{
                 "total": {
                     "description": "总支付金额, 总金额为 amount + deposit",
                     "type": "number"
-                }
-            }
-        },
-        "model.SubscribeSigned": {
-            "type": "object",
-            "properties": {
-                "signed": {
-                    "description": "签约状态, 0:无签约信息(直接弹窗提示用户\"未找到签约信息\"并返回首页) 1:签署中(继续轮询) 2:签约成功(弹出扫码)",
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1,
-                        2
-                    ]
                 }
             }
         },

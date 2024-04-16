@@ -228,12 +228,11 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 
 		// 判断是否需要补充身份信息
 		if p.AuthResult == nil {
-			return nil, errors.New("未找到骑手身份信息")
+			return &definition.ContractCreateRes{NeedRealName: true}, nil
 		}
 
 		if p.AuthResult.Address == "" || p.Name == "" || p.IDCardNumber == "" || r.Phone == "" {
-			return nil, errors.New("骑手信息不完整")
-
+			return &definition.ContractCreateRes{NeedRealName: true}, nil
 		}
 
 		sn := tools.NewUnique().NewSN()
