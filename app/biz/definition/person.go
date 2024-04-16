@@ -55,3 +55,8 @@ type PersonCertificationFaceResultReq struct {
 type PersonCertificationFaceResultRes struct {
 	Success bool `json:"success"` // 是否成功
 }
+
+// PersonCertificationSupplementReq 补充实名信息
+type PersonCertificationSupplementReq struct {
+	Identity string `json:"identity" validate:"required"` // 加密身份信息，base64编码
+}

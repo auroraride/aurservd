@@ -133,10 +133,18 @@ func (s *promotionEarningsService) Cancel(req *promotion.EarningsCancelReq) {
 	}
 
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-		// 取消后优先从用户可提现余额中扣除
-		// 可提现余额不足部分，从冻结余额扣除
-		// 冻结余额不足，将冻结余额扣为负数
-		balance, frozen := s.cancelIncome(m.Balance, m.Frozen, earning.Amount)
+
+		var balance, frozen float64
+		if earning.Status == promotion.EarningsStatusUnsettled.Value() {
+			// 如果收益未结算，取消后直接扣除
+			balance = m.Balance
+			frozen = m.Frozen - earning.Amount
+		} else {
+			// 取消后优先从用户可提现余额中扣除
+			// 可提现余额不足部分，从冻结余额扣除
+			// 冻结余额不足，将冻结余额扣为负数
+			balance, frozen = s.cancelIncome(m.Balance, m.Frozen, earning.Amount)
+		}
 
 		// 更新会员余额
 		_, err = tx.PromotionMember.UpdateOneID(earning.MemberID).SetBalance(balance).SetFrozen(frozen).Save(s.ctx)
