@@ -124,7 +124,7 @@ func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (
 	var u *ent.Rider
 	var err error
 
-	u, err = orm.QueryNotDeleted().Where(rider.Phone(req.Phone)).WithPerson().WithEnterprise().First(ctx)
+	u, err = orm.QueryNotDeleted().Where(rider.Phone(req.Phone)).WithPerson().WithEnterprise().WithStation().First(ctx)
 	if err != nil {
 		// 创建骑手
 		u, err = orm.Create().
