@@ -134,10 +134,13 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (res *
 		return nil, err
 	}
 
-	// 发送短信
-	_, err = service.NewSms().SendSignSuccess(now, "时光驹电动车电池租赁合同", url, r.Phone)
-	if err != nil {
-		return nil, err
+	if strings.HasPrefix(url, "https://c.auroraride.com/") {
+		url = strings.TrimPrefix(url, "https://c.auroraride.com/")
+		// 发送短信
+		_, err = service.NewSms().SendSignSuccess(now, "时光驹电动车电池租赁合同", url, r.Phone)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &definition.ContractSignNewRes{
