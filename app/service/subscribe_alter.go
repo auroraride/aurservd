@@ -47,7 +47,7 @@ func (s *subscribeAlterService) AlterDays(r *ent.Rider, req *model.SubscribeAlte
 
 	exists, _ := q.Exist(s.ctx)
 	if exists {
-		snag.Panic("存在未审批的申请")
+		snag.Panic("您有正在审核中的加时申请,不能重复提交")
 	}
 
 	// 增加记录

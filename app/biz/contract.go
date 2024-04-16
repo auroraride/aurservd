@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-module/carbon/v2"
 	"github.com/liasica/edocseal/pb"
 	"go.uber.org/zap"
 
@@ -357,8 +356,8 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 				}
 			}
 		}
-		// 获取第二天凌晨一点开始
-		expiresAt := carbon.Now().AddDays(1).StartOfDay().SetTime(1, 0, 0).StdTime()
+
+		expiresAt := time.Now().Add(model.ContractExpiration * time.Minute)
 		contractCreateResponse, err := rpc.Create(s.ctx, values, &definition.ContractCreateRPCReq{
 			TemplateId: templateID,
 			Addr:       cfg.Address,
@@ -402,6 +401,7 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 		if err != nil {
 			return nil, err
 		}
+		go service.NewContract().CheckResult(flowId)
 	}
 
 	return &definition.ContractCreateRes{
