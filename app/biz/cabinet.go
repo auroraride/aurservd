@@ -84,7 +84,7 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 	service.NewCabinet().SyncCabinets(cabinets)
 	res = make([]definition.CabinetByRiderRes, 0)
 	for _, c := range cabinets {
-		resvcheck := true
+		resvcheck := req.Business == nil
 		if req.Business != nil && c.ReserveAble(business.Type(*req.Business), rm[c.ID]) {
 			resvcheck = sub == nil || service.NewCabinet().ModelInclude(c, sub.Model)
 		}
