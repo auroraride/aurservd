@@ -29,5 +29,5 @@ type ContractCreateRPCReq struct {
 	TemplateId string // 合同模板ID
 	Addr       string // rpc地址
 	ExpiresAt  int64  // 过期时间
-	UserID     string // 用户ID
+	Idcard     string // 身份证
 }

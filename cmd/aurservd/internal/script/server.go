@@ -58,6 +58,9 @@ func serverCommand() *cobra.Command {
 			// 启动 order task
 			go task.NewOrder().Start()
 
+			// 合同定时过期
+			go task.NewContractTask().Start()
+
 			// 启动电柜任务
 			go ec.Start()
 

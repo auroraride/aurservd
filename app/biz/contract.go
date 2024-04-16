@@ -122,7 +122,12 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (res *
 	now := time.Now()
 
 	//  更新合同状态
-	err = cont.Update().SetStatus(model.ContractStatusSuccess.Value()).SetFiles(files).SetSignedAt(now).Exec(s.ctx)
+	err = cont.Update().
+		SetStatus(model.ContractStatusSuccess.Value()).
+		SetFiles(files).
+		SetSignedAt(now).
+		SetEffective(true).
+		Exec(s.ctx)
 	if err != nil {
 		zap.L().Error("更新合同状态失败", zap.Error(err))
 		return nil, err
@@ -135,9 +140,9 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (res *
 	}
 
 	if strings.HasPrefix(url, "https://c.auroraride.com/") {
-		url = strings.TrimPrefix(url, "https://c.auroraride.com/")
+		hash := strings.TrimPrefix(url, "https://c.auroraride.com/")
 		// 发送短信
-		_, err = service.NewSms().SendSignSuccess(now, "时光驹电动车电池租赁合同", url, r.Phone)
+		_, err = service.NewSms().SendSignSuccess(now, "时光驹电动车电池租赁合同", hash, r.Phone)
 		if err != nil {
 			return nil, err
 		}
@@ -353,13 +358,13 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 				}
 			}
 		}
-		// 获取第二天的开始
-		expiresAt := carbon.Now().AddDays(1).StartOfDay().StdTime()
+		// 获取第二天凌晨一点开始
+		expiresAt := carbon.Now().AddDays(1).StartOfDay().SetTime(1, 0, 0).StdTime()
 		contractCreateResponse, err := rpc.Create(s.ctx, values, &definition.ContractCreateRPCReq{
 			TemplateId: templateID,
 			Addr:       cfg.Address,
 			ExpiresAt:  expiresAt.Unix(),
-			UserID:     strconv.FormatUint(r.ID, 10),
+			Idcard:     r.IDCardNumber,
 		})
 		if err != nil {
 			return nil, err
