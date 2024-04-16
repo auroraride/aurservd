@@ -45,7 +45,7 @@ func Create(ctx context.Context, values map[string]*pb.ContractFromField, req *d
 	request, err = c.Create(ctx, &pb.ContractCreateRequest{
 		TemplateId: req.TemplateId,
 		Values:     values,
-		UserId:     req.UserID,
+		Idcard:     req.Idcard,
 		Expire:     req.ExpiresAt,
 	})
 	if err != nil {

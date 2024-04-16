@@ -359,18 +359,18 @@ func (s *riderBusinessService) PauseInfo() (res model.BusinessPauseInfoRes) {
 	start := p.StartAt
 	// 判断寄存开始日期
 	if carbon.CreateFromStdTime(start).Timestamp() != carbon.CreateFromStdTime(start).StartOfDay().Timestamp() {
-		start = carbon.CreateFromStdTime(start).Tomorrow().StartOfDay().ToStdTime()
+		start = carbon.CreateFromStdTime(start).Tomorrow().StartOfDay().StdTime()
 	}
 	res.Start = start.Format(carbon.DateLayout)
 	now := carbon.Now()
 	if now.Timestamp() != now.StartOfDay().Timestamp() {
 		now = now.Yesterday()
 	}
-	res.End = now.ToStdTime().Format(carbon.DateLayout)
+	// 获取最大寄存天数
+	suspend := ent.NewSubscribeAdditionalItem(p)
+	res.End = carbon.Now().AddDays(suspend.MaxDays).StdTime().Format(carbon.DateLayout)
 
 	if p.Days < 1 {
-		// res.Start = ""
-		// res.End = ""
 		p.Days = 0
 	}
 

@@ -119,6 +119,8 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 		snag.Panic("骑手未实名认证")
 	}
 
+	// todo v2版本合同 单电激活流程更新了（先分配在签约 所以后台激活走不通）
+
 	// 查询是否已签约
 	if exists, _ := ent.Database.Contract.QueryNotDeleted().Where(
 		contract.SubscribeID(sub.ID),
