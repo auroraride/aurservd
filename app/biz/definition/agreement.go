@@ -33,7 +33,7 @@ type AgreementModifyReq struct {
 type AgreementDetail struct {
 	ID            uint64 `json:"id"`                  // ID
 	Name          string `json:"name"`                // 协议名称
-	Content       string `json:"content"`             // 内容
+	Content       string `json:"content,omitempty"`   // 内容
 	UserType      uint8  `json:"userType,omitempty"`  // 用户类型 1:个签 2:团签
 	ForceReadTime uint8  `json:"forceReadTime"`       // 强制阅读时间
 	IsDefault     *bool  `json:"isDefault,omitempty"` // 是否为默认协议

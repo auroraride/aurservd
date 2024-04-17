@@ -97,6 +97,7 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 					Brand:      c.Brand,
 					BatteryNum: c.BatteryNum,
 					BinNum:     c.Doors,
+					Online:     c.Health == model.CabinetHealthStatusOnline,
 				},
 				Lng:        c.Lng,
 				Lat:        c.Lat,
