@@ -4290,6 +4290,10 @@ const docTemplate = `{
                     "description": "电柜ID",
                     "type": "integer"
                 },
+                "endTime": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
                 "fid": {
                     "description": "设施ID",
                     "type": "string"
