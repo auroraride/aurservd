@@ -110,6 +110,7 @@ func (s *reserveService) Detail(rev *ent.Reserve) *model.ReserveUnfinishedRes {
 		Time:      rev.CreatedAt.Format(carbon.DateTimeLayout),
 		Status:    model.ReserveStatus(rev.Status),
 		Fid:       NewBranch().EncodeCabinetID(rev.CabinetID),
+		EndTime:   rev.CreatedAt.Add(s.max * time.Minute).Format(carbon.DateTimeLayout),
 	}
 }
 
