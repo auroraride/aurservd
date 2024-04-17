@@ -7,7 +7,6 @@ import (
 	"github.com/auroraride/aurservd/app/biz"
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/app/service"
 )
 
 type subscribe struct{}
@@ -40,7 +39,5 @@ func (*subscribe) StoreModify(c echo.Context) (err error) {
 // @Success	200				{object}	bool	"TRUE已激活, FALSE未激活"
 func (*subscribe) SubscribeStatus(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.IDQueryReq](c)
-	return ctx.SendResponse(service.NewEnterpriseRiderWithRider(ctx.Rider).SubscribeStatus(&model.EnterpriseRiderSubscribeStatusReq{
-		ID: req.ID,
-	}))
+	return ctx.SendResponse(biz.NewSubscribe().SubscribeStatus(ctx.Rider, &model.EnterpriseRiderSubscribeStatusReq{ID: req.ID}))
 }
