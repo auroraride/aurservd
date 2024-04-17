@@ -59,7 +59,7 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (res *
 	}
 
 	// 查找分配信息
-	allo := service.NewAllocate().QueryEffectiveSubscribeIDX(sub.ID)
+	allo, _ := service.NewAllocate().QueryEffectiveSubscribeID(sub.ID)
 	if allo == nil {
 		return nil, errors.New("未找到分配信息")
 	}
@@ -113,6 +113,11 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (res *
 	if err != nil {
 		zap.L().Error("签署合同失败", zap.Error(err))
 		return nil, err
+	}
+
+	if url == "" {
+		zap.L().Error("签署合同失败", zap.String("url", url))
+		return nil, errors.New("签署合同失败")
 	}
 
 	var files []string
@@ -226,11 +231,7 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 		)
 
 		// 判断是否需要补充身份信息
-		if p.AuthResult == nil {
-			return &definition.ContractCreateRes{NeedRealName: true}, nil
-		}
-
-		if p.AuthResult.Address == "" || p.Name == "" || p.IDCardNumber == "" || r.Phone == "" {
+		if p.AuthResult == nil || p.AuthResult != nil && p.AuthResult.Address == "" || p.Name == "" || p.IDCardNumber == "" || r.Phone == "" {
 			return &definition.ContractCreateRes{NeedRealName: true}, nil
 		}
 

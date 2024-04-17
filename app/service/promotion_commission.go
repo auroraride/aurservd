@@ -781,6 +781,10 @@ func (s *promotionCommissionService) GetCommissionType(r *ent.Rider, current *en
 		return promotion.CommissionTypeNewlySigned, nil
 	}
 
+	if sub.EndAt == nil || sub.StartAt == nil {
+		return 0, errors.New("订阅时间异常")
+	}
+
 	// 若激活时间晚于或等于关系绑定时间，视为续签
 	if carbon.CreateFromStdTime(*sub.StartAt).Gte(carbon.CreateFromStdTime(mem.Edges.Referred.CreatedAt)) {
 		return promotion.CommissionTypeRenewal, nil
