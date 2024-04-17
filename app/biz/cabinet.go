@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 
@@ -147,11 +146,6 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 			bms := c.Edges.Models
 			if len(bms) > 0 {
 				cdr.Model = regexp.MustCompile(`(?m)(\d+)V\d+AH`).ReplaceAllString(bms[0].Model, "${1}V")
-			}
-
-			// 5分钟未更新视为离线
-			if c.Health == model.CabinetHealthStatusOnline && time.Since(c.UpdatedAt).Minutes() < 5 {
-				cdr.Online = true
 			}
 
 			cdr.Bins = make([]model.CabinetDataBin, len(c.Bin))
