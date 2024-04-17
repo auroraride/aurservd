@@ -268,6 +268,27 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		nm = oss.UploadBase64(prefix+"national.jpg", res.IdcardImages.BackBase64)
 	}
 
+	// 兼容v2 实名存一份到FaceVerifyResult
+	faceVerifyResult := &model.PersonFaceVerifyResult{
+		Name:            detail.Name,
+		IDCardNumber:    detail.IdCardNumber,
+		Birth:           detail.Birthday,
+		Nation:          detail.Nation,
+		Address:         detail.Address,
+		ValidStartDate:  detail.IssueTime,
+		ValidExpireDate: detail.ExpireTime,
+		Authority:       detail.IssueAuthority,
+		Head:            fm,
+		PortraitClarity: res.VerifyResult.LivenessScore,
+		NationalClarity: res.VerifyResult.Score,
+		OcrOrderNo:      "",
+		LiveRate:        res.VerifyResult.LivenessScore,
+		Similarity:      res.VerifyResult.Score,
+		Video:           "",
+		Photo:           fm,
+		FaceOrderNo:     "",
+	}
+
 	icNum := vr.IdCardNumber
 	var id uint64
 	id, err = ent.Database.Person.
@@ -285,6 +306,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		SetBaiduLogID(data.LogId).
 		SetBaiduVerifyToken(token).
 		SetRemark(remark).
+		SetFaceVerifyResult(faceVerifyResult).
 		ID(context.Background())
 	if err != nil {
 		snag.Panic(err)

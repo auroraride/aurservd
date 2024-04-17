@@ -171,10 +171,19 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 					p.AuthResult.Name = *req.Name
 					p.AuthResult.IdCardNumber = *req.IdCardNumber
 					p.AuthResult.Address = *req.Address
+
+					p.FaceVerifyResult.Name = *req.Name
+					p.FaceVerifyResult.IDCardNumber = *req.IdCardNumber
+					p.FaceVerifyResult.Address = *req.Address
 				} else {
 					p.AuthResult = &model.BaiduFaceVerifyResult{
 						Name:         *req.Name,
 						IdCardNumber: *req.IdCardNumber,
+						Address:      *req.Address,
+					}
+					p.FaceVerifyResult = &model.PersonFaceVerifyResult{
+						Name:         *req.Name,
+						IDCardNumber: *req.IdCardNumber,
 						Address:      *req.Address,
 					}
 				}
@@ -185,6 +194,7 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 					SetNillableIDCardNational(national).
 					SetStatus(req.AuthStatus.Value()).
 					SetAuthResult(p.AuthResult).
+					SetFaceVerifyResult(p.FaceVerifyResult).
 					SetNillableName(req.Name).
 					SaveX(s.ctx)
 			} else {
@@ -202,6 +212,11 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 					SetStatus(req.AuthStatus.Value()).
 					SetName(*req.Name).
 					SetAuthResult(baiduFaceVerifyResult).
+					SetFaceVerifyResult(&model.PersonFaceVerifyResult{
+						Name:         *req.Name,
+						IDCardNumber: *req.IdCardNumber,
+						Address:      *req.Address,
+					}).
 					SaveX(s.ctx)
 				// 更新骑手实名信息
 				ru.SetName(*req.Name).SetPersonID(p.ID).SetIDCardNumber(*req.IdCardNumber)

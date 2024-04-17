@@ -106,7 +106,7 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (res *
 		Name:     person.Name,
 		Province: province,
 		City:     city,
-		Address:  person.AuthResult.Address,
+		Address:  person.FaceVerifyResult.Address,
 		Phone:    r.Phone,
 		Idcard:   person.IDCardNumber,
 	}, cfg.Address)
@@ -229,9 +229,8 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 			// 当前日期
 			now = time.Now().Format("2006年01月02日")
 		)
-
 		// 判断是否需要补充身份信息
-		if p.AuthResult == nil || p.AuthResult != nil && p.AuthResult.Address == "" || p.Name == "" || p.IDCardNumber == "" || r.Phone == "" {
+		if p.FaceVerifyResult == nil || p.FaceVerifyResult != nil && p.FaceVerifyResult.Address == "" || p.Name == "" || p.IDCardNumber == "" || r.Phone == "" {
 			return &definition.ContractCreateRes{NeedRealName: true}, nil
 		}
 
@@ -244,7 +243,7 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 		// 身份证号
 		m["idcard"] = p.IDCardNumber
 		// 户口地址
-		m["address"] = p.AuthResult.Address
+		m["address"] = p.FaceVerifyResult.Address
 		// 骑手电话
 		m["phone"] = r.Phone
 		// 限制城市

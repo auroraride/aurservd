@@ -10,6 +10,7 @@ import (
 	"github.com/golang-module/carbon/v2"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/ali"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -217,16 +218,32 @@ func (a *agreementBiz) GenerateAgreementFile(title string, content string) (url 
 
 // QueryAgreementByEnterprisePriceID 通过价格ID获取协议信息
 func (a *agreementBiz) QueryAgreementByEnterprisePriceID(id uint64) *definition.AgreementDetail {
+	res := new(definition.AgreementDetail)
 	item, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.ID(id)).WithAgreement().First(a.ctx)
-	if item == nil || item.Edges.Agreement == nil {
-		return nil
+	if item == nil {
+		return res
 	}
-	return &definition.AgreementDetail{
-		ID:            item.Edges.Agreement.ID,
-		Hash:          item.Edges.Agreement.Hash,
-		Content:       item.Edges.Agreement.Content,
-		URL:           item.Edges.Agreement.URL,
-		Name:          item.Edges.Agreement.Name,
-		ForceReadTime: item.Edges.Agreement.ForceReadTime,
+
+	// 查询个签默认协议
+	var defaultAgreement *ent.Agreement
+	defaultAgreement, _ = ent.Database.Agreement.QueryNotDeleted().
+		Where(
+			agreement.UserType(model.AgreementUserTypePersonal.Value()),
+			agreement.IsDefault(true),
+		).First(a.ctx)
+
+	if item.Edges.Agreement != nil {
+		res.ID = item.Edges.Agreement.ID
+		res.Name = item.Edges.Agreement.Name
+		res.URL = item.Edges.Agreement.URL
+		res.Hash = item.Edges.Agreement.Hash
+		res.ForceReadTime = item.Edges.Agreement.ForceReadTime
+	} else if defaultAgreement != nil {
+		res.ID = defaultAgreement.ID
+		res.Name = defaultAgreement.Name
+		res.URL = defaultAgreement.URL
+		res.Hash = defaultAgreement.Hash
+		res.ForceReadTime = defaultAgreement.ForceReadTime
 	}
+	return res
 }
