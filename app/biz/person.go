@@ -506,7 +506,6 @@ func (b *personBiz) CertificationSupplement(r *ent.Rider, req *definition.Person
 	}
 
 	_, err = per.Update().
-		SetStatus(model.PersonAuthenticated.Value()).
 		SetIDCardNumber(result.IdCardNumber).
 		SetName(result.Name).
 		SetFaceVerifyResult(faceVerify).

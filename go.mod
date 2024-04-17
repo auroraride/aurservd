@@ -37,7 +37,7 @@ require (
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/labstack/gommon v0.4.2
-	github.com/liasica/edocseal v0.0.0-20240416052628-9df0006cc2de
+	github.com/liasica/edocseal v0.0.0-20240416140915-198a92ed6f23
 	github.com/liasica/swag v1.16.3-0.20240305092534-ea9d354b2ef6
 	github.com/lithammer/shortuuid/v4 v4.0.0
 	github.com/modern-go/reflect2 v1.0.2
@@ -88,8 +88,6 @@ require (
 	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
-	github.com/benoitkugler/pdf v0.0.9 // indirect
-	github.com/benoitkugler/pstokenizer v1.0.1 // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20230905024940-24af94b03874 // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -116,10 +114,8 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
-	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.20.0 // indirect
-	github.com/hhrutter/lzw v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/invopop/yaml v0.2.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
