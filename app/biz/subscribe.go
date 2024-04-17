@@ -69,33 +69,3 @@ func (s *subscribeBiz) SubscribeStatus(r *ent.Rider, req *model.EnterpriseRiderS
 	}
 	return false
 }
-
-// SubscribeStatus 查询订阅是否激活
-func (s *subscribeBiz) SubscribeStatus(r *ent.Rider, req *model.EnterpriseRiderSubscribeStatusReq) (res bool) {
-	sub, _ := s.orm.QueryNotDeleted().
-		Where(subscribe.ID(req.ID),
-			subscribe.RiderID(r.ID),
-		).First(s.ctx)
-	if sub == nil {
-		return false
-	}
-	if sub.StartAt != nil {
-		return true
-	}
-	return false
-}
-
-// SubscribeStatus 查询订阅是否激活
-func (s *subscribeBiz) SubscribeStatus(r *ent.Rider, req *model.EnterpriseRiderSubscribeStatusReq) (res bool) {
-	sub, _ := s.orm.QueryNotDeleted().
-		Where(subscribe.ID(req.ID),
-			subscribe.RiderID(r.ID),
-		).First(s.ctx)
-	if sub == nil {
-		return false
-	}
-	if sub.StartAt != nil {
-		return true
-	}
-	return false
-}
