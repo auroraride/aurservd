@@ -924,7 +924,7 @@ func (s *businessRiderService) ForceUnsubscribe(req *model.BusinessSubscribeReq,
 				// 退部分押金
 				if *req.DepositAmount != depositOrder.Amount {
 					// 剩余金额
-					remainAmount = depositOrder.Amount - *req.DepositAmount
+					remainAmount = tools.NewDecimal().Sub(depositOrder.Amount, *req.DepositAmount)
 					// 退款金额
 					depositOrder.Amount = *req.DepositAmount
 					reason = "人工退押，部分退押"
