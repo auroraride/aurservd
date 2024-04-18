@@ -8,12 +8,14 @@ package payment
 import (
 	"context"
 	"errors"
-	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/wechatpay-apiv3/wechatpay-go/services/refunddomestic"
 	"io"
 	"math"
 	"net/http"
 	"time"
+
+	"github.com/wechatpay-apiv3/wechatpay-go/services/refunddomestic"
+
+	"github.com/auroraride/aurservd/pkg/snag"
 
 	"github.com/auroraride/adapter/log"
 	jsoniter "github.com/json-iterator/go"
@@ -203,7 +205,7 @@ func (c *wechatClient) Refund(req *model.PaymentRefund) {
 	if err != nil {
 		b, _ := io.ReadAll(result.Response.Body)
 		zap.L().Error("微信退款调用失败", log.ResponseBody(b), zap.Error(err))
-		snag.Panic("退款处理失败")
+		snag.Panic("退款处理失败: " + err.Error())
 	}
 
 	req.Request = true
