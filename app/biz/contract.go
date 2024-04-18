@@ -192,28 +192,30 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 	ec := sub.Edges.City
 
 	if !skip {
-		var allo *ent.Allocate
 		var err error
+		// 查询是否分配
+		allo, _ := service.NewAllocate().QueryEffectiveSubscribeID(sub.ID)
+		// 个签单电
 		if sub.BrandID == nil && sub.EnterpriseID == nil {
-			// 查询分配信息是否存在, 如果存在则删除
-			service.NewAllocate().SubscribeDeleteIfExists(sub.ID)
-			// 存储分配信息
-			allo, err = ent.Database.Allocate.Create().
-				SetType(allocate.TypeBattery).
-				SetSubscribe(sub).
-				SetRider(r).
-				SetStatus(model.AllocateStatusPending.Value()).
-				SetTime(time.Now()).
-				SetModel(sub.Model).
-				SetRemark("骑手自主激活").
-				Save(s.ctx)
-			if err != nil {
-				return nil, err
+			if allo != nil {
+				// 查询分配信息是否存在, 如果存在则删除
+				service.NewAllocate().SubscribeDeleteIfExists(sub.ID)
+				// 存储分配信息
+				allo, err = ent.Database.Allocate.Create().
+					SetType(allocate.TypeBattery).
+					SetSubscribe(sub).
+					SetRider(r).
+					SetStatus(model.AllocateStatusPending.Value()).
+					SetTime(time.Now()).
+					SetModel(sub.Model).
+					SetRemark("骑手自主激活").
+					Save(s.ctx)
+				if err != nil {
+					return nil, err
+				}
 			}
 		} else {
-			// 查询是否分配
-			allo = service.NewAllocate().QueryEffectiveSubscribeIDX(sub.ID)
-			if sub.BrandID != nil && allo.StoreID == nil && allo.StationID == nil {
+			if allo != nil && sub.BrandID != nil && allo.StoreID == nil && allo.StationID == nil {
 				return nil, errors.New("电车必须由门店或站点分配")
 			}
 		}
