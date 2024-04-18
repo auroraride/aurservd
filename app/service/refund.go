@@ -158,7 +158,10 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
 	depositOrder := ent.Database.Order.
 		QueryNotDeleted().
 		Where(
-			order.ParentID(o.ID),
+			order.Or(
+				order.ParentID(o.ID),
+				order.ID(o.ID),
+			),
 			order.Type(model.OrderTypeDeposit),
 			order.Status(model.OrderStatusRefundPending),
 		).

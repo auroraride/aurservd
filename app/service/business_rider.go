@@ -879,16 +879,40 @@ func (s *businessRiderService) ForceUnsubscribe(req *model.BusinessSubscribeReq,
 			}
 		}
 
-		// 处理押金退款
-		depositOrder := NewRider().DepositOrder(riderID)
+		sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.ID(subscribeID)).WithInitialOrder().First(s.ctx)
+		if sub == nil || sub.Edges.InitialOrder == nil {
+			zap.L().Info("强制退租, 未找到订阅信息", zap.Uint64("subscribe_id", subscribeID))
+			return
+		}
+
+		var depositOrder *ent.Order
+		if sub.Edges.InitialOrder != nil {
+			depositOrder, _ = ent.Database.Order.Query().Where(
+				order.Or(
+					order.ParentID(sub.Edges.InitialOrder.ID),
+					order.ID(sub.Edges.InitialOrder.ID),
+				),
+				order.Status(model.OrderStatusPaid),
+				order.Type(model.OrderTypeDeposit)).First(s.ctx)
+			if depositOrder == nil {
+				zap.L().Info("强制退租, 未找到押金订单", zap.Uint64("orderId", sub.Edges.InitialOrder.ID))
+				return
+			}
+		}
+
 		if depositOrder != nil && req.RefundDeposit != nil {
 			var remainAmount float64
 			var reason string
+			var refundStatus, orderStatus uint8
 
 			if *req.RefundDeposit {
 				reason = "订阅已退订，系统自动退押"
+				refundStatus = model.RefundStatusPending
+				orderStatus = model.OrderStatusRefundPending
 			} else {
 				reason = "拒绝退押"
+				refundStatus = model.RefundStatusRefused
+				orderStatus = model.OrderStatusRefundRefused
 			}
 
 			// 如果没传押金金额 默认全退
@@ -916,7 +940,7 @@ func (s *businessRiderService) ForceUnsubscribe(req *model.BusinessSubscribeReq,
 				SetAmount(depositOrder.Amount).
 				SetReason(reason).
 				SetOrderID(depositOrder.ID).
-				SetStatus(model.RefundStatusPending).
+				SetStatus(refundStatus).
 				SetRemainAmount(remainAmount).
 				SetNillableRemark(req.Remark).
 				Save(s.ctx)
@@ -925,7 +949,7 @@ func (s *businessRiderService) ForceUnsubscribe(req *model.BusinessSubscribeReq,
 			}
 
 			// 更新订单状态
-			_, err = depositOrder.Update().SetStatus(model.OrderStatusRefundPending).Save(s.ctx)
+			_, err = depositOrder.Update().SetStatus(orderStatus).Save(s.ctx)
 			if err != nil {
 				return err
 			}

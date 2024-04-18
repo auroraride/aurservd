@@ -1038,12 +1038,26 @@ func (s *riderService) Block(req *model.RiderBlockReq) {
 
 // DepositOrder 获取骑手押金订单
 func (s *riderService) DepositOrder(riderID uint64) *ent.Order {
+	// 获取当前订阅有效订阅 原始订单的押金订单
+	effective, _ := NewSubscribe().QueryEffective(riderID)
+	if effective == nil {
+		return nil
+	}
+
+	or, _ := effective.QueryInitialOrder().First(s.ctx)
+	if or == nil {
+		return nil
+	}
+
 	o, _ := ent.Database.Order.QueryNotDeleted().Where(
 		order.RiderID(riderID),
 		order.Status(model.OrderStatusPaid),
 		order.Type(model.OrderTypeDeposit),
-		order.DeletedAtIsNil(),
-	).WithSubscribe().WithPlan().First(s.ctx)
+		order.Or(
+			order.ParentID(or.ID),
+			order.ID(or.ID),
+		),
+	).WithSubscribe().WithPlan().Order(ent.Desc(order.FieldCreatedAt)).First(s.ctx)
 	return o
 }
 
