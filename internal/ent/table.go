@@ -436,20 +436,6 @@ func (f *Feedback) GetName() string {
 	return f.Name
 }
 
-// GetTableName returns table name for Guide.
-func (gu *Guide) GetTableName() string {
-	return "guide"
-}
-
-// GetID returns id for Guide.
-func (gu *Guide) GetID() uint64 {
-	return gu.ID
-}
-
-func (gu *Guide) GetName() string {
-	return gu.Name
-}
-
 // GetTableName returns table name for Instructions.
 func (i *Instructions) GetTableName() string {
 	return "instructions"

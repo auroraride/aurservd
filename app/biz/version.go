@@ -16,8 +16,9 @@ import (
 )
 
 type versionBiz struct {
-	orm *ent.VersionClient
-	ctx context.Context
+	orm      *ent.VersionClient
+	ctx      context.Context
+	modifier *model.Modifier
 }
 
 func NewVersion() *versionBiz {
@@ -25,6 +26,15 @@ func NewVersion() *versionBiz {
 		orm: ent.Database.Version,
 		ctx: context.Background(),
 	}
+}
+
+func NewVersionWithModifierBiz(m *model.Modifier) *versionBiz {
+	s := NewVersion()
+	if m != nil {
+		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
+		s.modifier = m
+	}
+	return s
 }
 
 // Create 创建版本

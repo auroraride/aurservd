@@ -33,7 +33,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/fault"
-	"github.com/auroraride/aurservd/internal/ent/guide"
 	"github.com/auroraride/aurservd/internal/ent/instructions"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -1136,46 +1135,6 @@ func (c *FaultClient) GetNotDeleted(ctx context.Context, id uint64) (*Fault, err
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *FaultClient) GetNotDeletedX(ctx context.Context, id uint64) *Fault {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// SoftDelete returns an soft delete builder for Guide.
-func (c *GuideClient) SoftDelete() *GuideUpdate {
-	mutation := newGuideMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &GuideUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *GuideClient) SoftDeleteOne(gu *Guide) *GuideUpdateOne {
-	mutation := newGuideMutation(c.config, OpUpdateOne, withGuide(gu))
-	mutation.SetDeletedAt(time.Now())
-	return &GuideUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *GuideClient) SoftDeleteOneID(id uint64) *GuideUpdateOne {
-	mutation := newGuideMutation(c.config, OpUpdateOne, withGuideID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &GuideUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for Guide.
-func (c *GuideClient) QueryNotDeleted() *GuideQuery {
-	return c.Query().Where(guide.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a Guide not deleted entity by its id.
-func (c *GuideClient) GetNotDeleted(ctx context.Context, id uint64) (*Guide, error) {
-	return c.Query().Where(guide.ID(id), guide.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *GuideClient) GetNotDeletedX(ctx context.Context, id uint64) *Guide {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

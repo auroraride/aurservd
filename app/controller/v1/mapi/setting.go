@@ -81,81 +81,6 @@ func (*setting) LegalSave(c echo.Context) (err error) {
 	return ctx.SendResponse()
 }
 
-// GuideList
-// @ID		SettingGuideList
-// @Router	/manager/v1/setting/guide [GET]
-// @Summary	获取引导
-// @Tags	设置
-// @Accept	json
-// @Produce	json
-// @Param	X-Manager-Token	header		string						true	"管理员校验token"
-// @Param	query			query		definition.GuideListReq		true	"请求参数"
-// @Success	200				{object}	[]definition.GuideDetail	"请求成功"
-func (*setting) GuideList(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.GuideListReq](c)
-	return ctx.SendResponse(biz.NewGuide().List(req))
-}
-
-// GuideGet
-// @ID		SettingGuideGet
-// @Router	/manager/v1/setting/guide/{id} [GET]
-// @Summary	获取指定引导
-// @Tags	设置
-// @Accept	json
-// @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	id				path		string					true	"引导ID"
-// @Success	200				{object}	definition.GuideDetail	"请求成功"
-func (*setting) GuideGet(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-	return ctx.SendResponse(biz.NewGuide().Detail(req.ID))
-}
-
-// GuideCreate
-// @ID		SettingGuideCreate
-// @Router	/manager/v1/setting/guide [POST]
-// @Summary	保存引导
-// @Tags	设置
-// @Accept	json
-// @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	body			body		definition.GuideSaveReq	true	"请求参数"
-// @Success	200				{object}	model.StatusResponse	"请求成功"
-func (*setting) GuideCreate(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.GuideSaveReq](c)
-	return ctx.SendResponse(biz.NewGuide().Create(req))
-}
-
-// GuideDelete
-// @ID		SettingGuideDelete
-// @Router	/manager/v1/setting/guide/{id} [DELETE]
-// @Summary	删除引导
-// @Tags	设置
-// @Accept	json
-// @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	id				path		string					true	"引导ID"
-// @Success	200				{object}	model.StatusResponse	"请求成功"
-func (*setting) GuideDelete(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-	return ctx.SendResponse(biz.NewGuide().Delete(req.ID))
-}
-
-// GuideModify
-// @ID		SettingGuideModify
-// @Router	/manager/v1/setting/guide [PUT]
-// @Summary	修改引导
-// @Tags	设置
-// @Accept	json
-// @Produce	json
-// @Param	X-Manager-Token	header		string						true	"管理员校验token"
-// @Param	body			body		definition.GuideModifyReq	true	"请求参数"
-// @Success	200				{object}	model.StatusResponse		"请求成功"
-func (*setting) GuideModify(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.GuideModifyReq](c)
-	return ctx.SendResponse(biz.NewGuide().Modify(req))
-}
-
 // ActivityList
 // @ID		SettingActivityList
 // @Router	/manager/v1/setting/activity [GET]
@@ -198,7 +123,7 @@ func (*setting) ActivityDetail(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse			"请求成功"
 func (*setting) ActivityModify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.ActivityModifyReq](c)
-	return ctx.SendResponse(biz.NewActivity().Modify(req))
+	return ctx.SendResponse(biz.NewActivityWithModifierBiz(ctx.Modifier).Modify(req))
 }
 
 // ActivityCreate
@@ -213,7 +138,7 @@ func (*setting) ActivityModify(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse			"请求成功"
 func (*setting) ActivityCreate(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.ActivityCreateReq](c)
-	return ctx.SendResponse(biz.NewActivity().Create(req))
+	return ctx.SendResponse(biz.NewActivityWithModifierBiz(ctx.Modifier).Create(req))
 }
 
 // VersionCreate
@@ -228,7 +153,7 @@ func (*setting) ActivityCreate(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*setting) VersionCreate(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.VersionReq](c)
-	return ctx.SendResponse(biz.NewVersion().Create(req))
+	return ctx.SendResponse(biz.NewVersionWithModifierBiz(ctx.Modifier).Create(req))
 }
 
 // VersionModify
@@ -243,7 +168,7 @@ func (*setting) VersionCreate(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse		"请求成功"
 func (*setting) VersionModify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.VersionModifyReq](c)
-	return ctx.SendResponse(biz.NewVersion().Modify(req))
+	return ctx.SendResponse(biz.NewVersionWithModifierBiz(ctx.Modifier).Modify(req))
 }
 
 // VersionList
@@ -273,5 +198,5 @@ func (*setting) VersionList(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*setting) VersionDelete(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-	return ctx.SendResponse(biz.NewVersion().Delete(req.ID))
+	return ctx.SendResponse(biz.NewVersionWithModifierBiz(ctx.Modifier).Delete(req.ID))
 }

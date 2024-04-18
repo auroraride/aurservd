@@ -88,8 +88,6 @@ type Tx struct {
 	Fault *FaultClient
 	// Feedback is the client for interacting with the Feedback builders.
 	Feedback *FeedbackClient
-	// Guide is the client for interacting with the Guide builders.
-	Guide *GuideClient
 	// Instructions is the client for interacting with the Instructions builders.
 	Instructions *InstructionsClient
 	// Inventory is the client for interacting with the Inventory builders.
@@ -342,7 +340,6 @@ func (tx *Tx) init() {
 	tx.Export = NewExportClient(tx.config)
 	tx.Fault = NewFaultClient(tx.config)
 	tx.Feedback = NewFeedbackClient(tx.config)
-	tx.Guide = NewGuideClient(tx.config)
 	tx.Instructions = NewInstructionsClient(tx.config)
 	tx.Inventory = NewInventoryClient(tx.config)
 	tx.Maintainer = NewMaintainerClient(tx.config)

@@ -31,7 +31,7 @@ var QuestionCategory = new(questionCategory)
 // @Success	200				{object}	model.StatusResponse					"请求成功"
 func (*questionCategory) Create(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.QuestionCategoryCreateReq](c)
-	return ctx.SendResponse(biz.NewQuestionCategoryBiz().Create(req))
+	return ctx.SendResponse(biz.NewQuestionCategoryWithModifierBiz(ctx.Modifier).Create(req))
 }
 
 // Modify
@@ -46,7 +46,7 @@ func (*questionCategory) Create(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse					"请求成功"
 func (*questionCategory) Modify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.QuestionCategoryModifyReq](c)
-	return ctx.SendResponse(biz.NewQuestionCategoryBiz().Modify(req))
+	return ctx.SendResponse(biz.NewQuestionCategoryWithModifierBiz(ctx.Modifier).Modify(req))
 }
 
 // Detail
@@ -91,5 +91,5 @@ func (*questionCategory) List(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*questionCategory) Delete(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-	return ctx.SendResponse(biz.NewQuestionCategoryBiz().Delete(req.ID))
+	return ctx.SendResponse(biz.NewQuestionCategoryWithModifierBiz(ctx.Modifier).Delete(req.ID))
 }

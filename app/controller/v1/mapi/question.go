@@ -31,7 +31,7 @@ var Question = new(question)
 // @Success	200				{object}	model.StatusResponse			"请求成功"
 func (a *question) Create(c echo.Context) error {
 	ctx, req := app.ManagerContextAndBinding[definition.QuestionCreateReq](c)
-	return ctx.SendResponse(biz.NewQuestionBiz().Create(req))
+	return ctx.SendResponse(biz.NewQuestionWithModifierBiz(ctx.Modifier).Create(req))
 }
 
 // Modify
@@ -46,7 +46,7 @@ func (a *question) Create(c echo.Context) error {
 // @Success	200				{object}	model.StatusResponse			"请求成功"
 func (a *question) Modify(c echo.Context) error {
 	ctx, req := app.ManagerContextAndBinding[definition.QuestionModifyReq](c)
-	return ctx.SendResponse(biz.NewQuestionBiz().Modify(req))
+	return ctx.SendResponse(biz.NewQuestionWithModifierBiz(ctx.Modifier).Modify(req))
 }
 
 // Detail
@@ -91,5 +91,5 @@ func (a *question) List(c echo.Context) error {
 // @Success	200				{object}	model.StatusResponse	"请求成功"
 func (a *question) Delete(c echo.Context) error {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-	return ctx.SendResponse(biz.NewQuestionBiz().Delete(req.ID))
+	return ctx.SendResponse(biz.NewQuestionWithModifierBiz(ctx.Modifier).Delete(req.ID))
 }

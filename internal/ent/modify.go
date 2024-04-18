@@ -310,13 +310,6 @@ func (c *FeedbackClient) ModifyOne(old *Feedback, data any) *FeedbackUpdateOne {
 	return EntitySetAttributes[FeedbackUpdateOne, Feedback](up, old, data)
 }
 
-// ModifyOne returns an update with pointer struct builder for Guide.
-func (c *GuideClient) ModifyOne(old *Guide, data any) *GuideUpdateOne {
-	mutation := newGuideMutation(c.config, OpUpdateOne, withGuide(old))
-	up := &GuideUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-	return EntitySetAttributes[GuideUpdateOne, Guide](up, old, data)
-}
-
 // ModifyOne returns an update with pointer struct builder for Instructions.
 func (c *InstructionsClient) ModifyOne(old *Instructions, data any) *InstructionsUpdateOne {
 	mutation := newInstructionsMutation(c.config, OpUpdateOne, withInstructions(old))

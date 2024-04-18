@@ -453,18 +453,6 @@ func (f FeedbackFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FeedbackMutation", m)
 }
 
-// The GuideFunc type is an adapter to allow the use of ordinary
-// function as Guide mutator.
-type GuideFunc func(context.Context, *ent.GuideMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f GuideFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.GuideMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GuideMutation", m)
-}
-
 // The InstructionsFunc type is an adapter to allow the use of ordinary
 // function as Instructions mutator.
 type InstructionsFunc func(context.Context, *ent.InstructionsMutation) (ent.Value, error)

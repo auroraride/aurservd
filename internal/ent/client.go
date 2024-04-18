@@ -52,7 +52,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
-	"github.com/auroraride/aurservd/internal/ent/guide"
 	"github.com/auroraride/aurservd/internal/ent/instructions"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
@@ -178,8 +177,6 @@ type Client struct {
 	Fault *FaultClient
 	// Feedback is the client for interacting with the Feedback builders.
 	Feedback *FeedbackClient
-	// Guide is the client for interacting with the Guide builders.
-	Guide *GuideClient
 	// Instructions is the client for interacting with the Instructions builders.
 	Instructions *InstructionsClient
 	// Inventory is the client for interacting with the Inventory builders.
@@ -312,7 +309,6 @@ func (c *Client) init() {
 	c.Export = NewExportClient(c.config)
 	c.Fault = NewFaultClient(c.config)
 	c.Feedback = NewFeedbackClient(c.config)
-	c.Guide = NewGuideClient(c.config)
 	c.Instructions = NewInstructionsClient(c.config)
 	c.Inventory = NewInventoryClient(c.config)
 	c.Maintainer = NewMaintainerClient(c.config)
@@ -484,7 +480,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Export:                     NewExportClient(cfg),
 		Fault:                      NewFaultClient(cfg),
 		Feedback:                   NewFeedbackClient(cfg),
-		Guide:                      NewGuideClient(cfg),
 		Instructions:               NewInstructionsClient(cfg),
 		Inventory:                  NewInventoryClient(cfg),
 		Maintainer:                 NewMaintainerClient(cfg),
@@ -583,7 +578,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Export:                     NewExportClient(cfg),
 		Fault:                      NewFaultClient(cfg),
 		Feedback:                   NewFeedbackClient(cfg),
-		Guide:                      NewGuideClient(cfg),
 		Instructions:               NewInstructionsClient(cfg),
 		Inventory:                  NewInventoryClient(cfg),
 		Maintainer:                 NewMaintainerClient(cfg),
@@ -662,8 +656,8 @@ func (c *Client) Use(hooks ...Hook) {
 		c.EbikeBrand, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
 		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
 		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
-		c.Exchange, c.Export, c.Fault, c.Feedback, c.Guide, c.Instructions,
-		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
+		c.Exchange, c.Export, c.Fault, c.Feedback, c.Instructions, c.Inventory,
+		c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
 		c.PlanIntroduce, c.PointLog, c.PromotionAchievement, c.PromotionBankCard,
 		c.PromotionCommission, c.PromotionCommissionPlan, c.PromotionEarnings,
 		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
@@ -689,8 +683,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.EbikeBrand, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
 		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
 		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
-		c.Exchange, c.Export, c.Fault, c.Feedback, c.Guide, c.Instructions,
-		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
+		c.Exchange, c.Export, c.Fault, c.Feedback, c.Instructions, c.Inventory,
+		c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
 		c.PlanIntroduce, c.PointLog, c.PromotionAchievement, c.PromotionBankCard,
 		c.PromotionCommission, c.PromotionCommissionPlan, c.PromotionEarnings,
 		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
@@ -782,8 +776,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Fault.mutate(ctx, m)
 	case *FeedbackMutation:
 		return c.Feedback.mutate(ctx, m)
-	case *GuideMutation:
-		return c.Guide.mutate(ctx, m)
 	case *InstructionsMutation:
 		return c.Instructions.mutate(ctx, m)
 	case *InventoryMutation:
@@ -8430,140 +8422,6 @@ func (c *FeedbackClient) mutate(ctx context.Context, m *FeedbackMutation) (Value
 		return (&FeedbackDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Feedback mutation op: %q", m.Op())
-	}
-}
-
-// GuideClient is a client for the Guide schema.
-type GuideClient struct {
-	config
-}
-
-// NewGuideClient returns a client for the Guide from the given config.
-func NewGuideClient(c config) *GuideClient {
-	return &GuideClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `guide.Hooks(f(g(h())))`.
-func (c *GuideClient) Use(hooks ...Hook) {
-	c.hooks.Guide = append(c.hooks.Guide, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `guide.Intercept(f(g(h())))`.
-func (c *GuideClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Guide = append(c.inters.Guide, interceptors...)
-}
-
-// Create returns a builder for creating a Guide entity.
-func (c *GuideClient) Create() *GuideCreate {
-	mutation := newGuideMutation(c.config, OpCreate)
-	return &GuideCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Guide entities.
-func (c *GuideClient) CreateBulk(builders ...*GuideCreate) *GuideCreateBulk {
-	return &GuideCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *GuideClient) MapCreateBulk(slice any, setFunc func(*GuideCreate, int)) *GuideCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &GuideCreateBulk{err: fmt.Errorf("calling to GuideClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*GuideCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &GuideCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Guide.
-func (c *GuideClient) Update() *GuideUpdate {
-	mutation := newGuideMutation(c.config, OpUpdate)
-	return &GuideUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *GuideClient) UpdateOne(gu *Guide) *GuideUpdateOne {
-	mutation := newGuideMutation(c.config, OpUpdateOne, withGuide(gu))
-	return &GuideUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *GuideClient) UpdateOneID(id uint64) *GuideUpdateOne {
-	mutation := newGuideMutation(c.config, OpUpdateOne, withGuideID(id))
-	return &GuideUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Guide.
-func (c *GuideClient) Delete() *GuideDelete {
-	mutation := newGuideMutation(c.config, OpDelete)
-	return &GuideDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *GuideClient) DeleteOne(gu *Guide) *GuideDeleteOne {
-	return c.DeleteOneID(gu.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *GuideClient) DeleteOneID(id uint64) *GuideDeleteOne {
-	builder := c.Delete().Where(guide.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &GuideDeleteOne{builder}
-}
-
-// Query returns a query builder for Guide.
-func (c *GuideClient) Query() *GuideQuery {
-	return &GuideQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeGuide},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Guide entity by its id.
-func (c *GuideClient) Get(ctx context.Context, id uint64) (*Guide, error) {
-	return c.Query().Where(guide.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *GuideClient) GetX(ctx context.Context, id uint64) *Guide {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *GuideClient) Hooks() []Hook {
-	hooks := c.hooks.Guide
-	return append(hooks[:len(hooks):len(hooks)], guide.Hooks[:]...)
-}
-
-// Interceptors returns the client interceptors.
-func (c *GuideClient) Interceptors() []Interceptor {
-	return c.inters.Guide
-}
-
-func (c *GuideClient) mutate(ctx context.Context, m *GuideMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&GuideCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&GuideUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&GuideUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&GuideDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Guide mutation op: %q", m.Op())
 	}
 }
 
@@ -16531,7 +16389,7 @@ type (
 		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee, Enterprise,
 		EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
 		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
-		Exception, Exchange, Export, Fault, Feedback, Guide, Instructions, Inventory,
+		Exception, Exchange, Export, Fault, Feedback, Instructions, Inventory,
 		Maintainer, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce, PointLog,
 		PromotionAchievement, PromotionBankCard, PromotionCommission,
 		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
@@ -16549,7 +16407,7 @@ type (
 		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee, Enterprise,
 		EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
 		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
-		Exception, Exchange, Export, Fault, Feedback, Guide, Instructions, Inventory,
+		Exception, Exchange, Export, Fault, Feedback, Instructions, Inventory,
 		Maintainer, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce, PointLog,
 		PromotionAchievement, PromotionBankCard, PromotionCommission,
 		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,

@@ -20,8 +20,9 @@ import (
 )
 
 type activityBiz struct {
-	orm *ent.ActivityClient
-	ctx context.Context
+	orm      *ent.ActivityClient
+	ctx      context.Context
+	modifier *model.Modifier
 }
 
 func NewActivity() *activityBiz {
@@ -29,6 +30,15 @@ func NewActivity() *activityBiz {
 		orm: ent.Database.Activity,
 		ctx: context.Background(),
 	}
+}
+
+func NewActivityWithModifierBiz(m *model.Modifier) *activityBiz {
+	s := NewActivity()
+	if m != nil {
+		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
+		s.modifier = m
+	}
+	return s
 }
 
 func (a *activityBiz) Detail(id uint64) (*definition.ActivityDetail, error) {

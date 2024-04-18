@@ -20,8 +20,9 @@ import (
 )
 
 type agreementBiz struct {
-	orm *ent.AgreementClient
-	ctx context.Context
+	orm      *ent.AgreementClient
+	ctx      context.Context
+	modifier *model.Modifier
 }
 
 func NewAgreement() *agreementBiz {
@@ -29,6 +30,15 @@ func NewAgreement() *agreementBiz {
 		orm: ent.Database.Agreement,
 		ctx: context.Background(),
 	}
+}
+
+func NewAgreementWithModifierBiz(m *model.Modifier) *agreementBiz {
+	s := NewAgreement()
+	if m != nil {
+		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
+		s.modifier = m
+	}
+	return s
 }
 
 // Create 创建协议

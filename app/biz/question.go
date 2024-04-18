@@ -16,8 +16,9 @@ import (
 )
 
 type questionBiz struct {
-	orm *ent.QuestionClient
-	ctx context.Context
+	orm      *ent.QuestionClient
+	ctx      context.Context
+	modifier *model.Modifier
 }
 
 func NewQuestionBiz() *questionBiz {
@@ -25,6 +26,15 @@ func NewQuestionBiz() *questionBiz {
 		orm: ent.Database.Question,
 		ctx: context.Background(),
 	}
+}
+
+func NewQuestionWithModifierBiz(m *model.Modifier) *questionBiz {
+	s := NewQuestionBiz()
+	if m != nil {
+		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
+		s.modifier = m
+	}
+	return s
 }
 
 // Create 创建

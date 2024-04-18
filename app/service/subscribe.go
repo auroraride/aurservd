@@ -662,6 +662,7 @@ func (s *subscribeService) ReactiveSubscribe(ag *app.AgentContext, req *model.Re
 		SetCityID(ep.CityID).
 		SetNeedContract(ag.Enterprise.SignType.NeedSign()).
 		SetEnterpriseID(ag.Enterprise.ID).
+		SetEnterprisePriceID(ep.ID).
 		SetStationID(req.StationID).
 		Save(s.ctx)
 	if err != nil {
