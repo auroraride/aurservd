@@ -197,7 +197,7 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 		allo, _ := service.NewAllocate().QueryEffectiveSubscribeID(sub.ID)
 		// 个签单电
 		if sub.BrandID == nil && sub.EnterpriseID == nil {
-			if allo != nil {
+			if allo == nil {
 				// 查询分配信息是否存在, 如果存在则删除
 				service.NewAllocate().SubscribeDeleteIfExists(sub.ID)
 				// 存储分配信息
