@@ -105,9 +105,6 @@ func decryptPersonIdentity(str string) (identity *pb.PersonIdentity, err error) 
 
 // CertificationOcrClient 获取人身核验OCR参数
 func (b *personBiz) CertificationOcrClient(r *ent.Rider) (res *definition.PersonCertificationOcrClientRes, err error) {
-	if service.NewRider().IsAuthed(r) {
-		return nil, errors.New("当前已认证，无法重复认证")
-	}
 
 	w := tencent.NewWbFace()
 
@@ -457,7 +454,7 @@ func (b *personBiz) CertificationSupplement(r *ent.Rider, req *definition.Person
 	var data []byte
 	data, err = base64.StdEncoding.DecodeString(req.Identity)
 	if err != nil {
-		zap.L().Info("解密身份信息失败", zap.Error(err))
+		zap.L().Info("解析身份信息失败", zap.Error(err))
 		return
 	}
 	result := new(pb.PersonIdentityOcrResult)
@@ -476,12 +473,27 @@ func (b *personBiz) CertificationSupplement(r *ent.Rider, req *definition.Person
 	if per.IDCardNumber != "" && per.IDCardNumber != result.IdCardNumber || per.Name != "" && per.Name != result.Name {
 		return errors.New("补充信息与原信息不一致")
 	}
+	// 获取生日
+	birth := result.IdCardNumber[7:14]
+	// 判定证件有效期
+	if result.ValidExpireDate != "" {
+		expireDate := carbon.Parse(result.ValidExpireDate).StdTime()
+		if expireDate.Before(time.Now()) {
+			return errors.New("证件已过期")
+		}
+	}
+	birthday := carbon.Parse(birth).StdTime().AddDate(18, 0, 0)
+
+	// 未年满18岁认证标记为失败
+	if birthday.After(time.Now()) {
+		return errors.New("未年满18周岁")
+	}
 
 	faceVerify := new(model.PersonFaceVerifyResult)
 	if per.FaceVerifyResult != nil {
 		per.FaceVerifyResult.Name = result.Name
 		per.FaceVerifyResult.IDCardNumber = result.IdCardNumber
-		per.FaceVerifyResult.Birth = result.Birth
+		per.FaceVerifyResult.Birth = birth
 		per.FaceVerifyResult.Address = result.Address
 		per.FaceVerifyResult.ValidStartDate = result.ValidStartDate
 		per.FaceVerifyResult.ValidExpireDate = result.ValidExpireDate
@@ -494,7 +506,7 @@ func (b *personBiz) CertificationSupplement(r *ent.Rider, req *definition.Person
 			Name:            result.Name,
 			Sex:             result.Sex,
 			Nation:          result.Nation,
-			Birth:           result.Birth,
+			Birth:           birth,
 			Address:         result.Address,
 			IDCardNumber:    result.IdCardNumber,
 			ValidStartDate:  result.ValidStartDate,
