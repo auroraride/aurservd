@@ -273,6 +273,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		Name:            detail.Name,
 		IDCardNumber:    detail.IdCardNumber,
 		Birth:           detail.Birthday,
+		Sex:             detail.Gender,
 		Nation:          detail.Nation,
 		Address:         detail.Address,
 		ValidStartDate:  detail.IssueTime,
@@ -301,12 +302,12 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		SetIDCardPortrait(pm).
 		SetAuthResult(vr).
 		SetAuthAt(time.Now()).
+		SetFaceVerifyResult(faceVerifyResult).
 		OnConflictColumns(person.FieldIDCardNumber).
 		UpdateNewValues().
 		SetBaiduLogID(data.LogId).
 		SetBaiduVerifyToken(token).
 		SetRemark(remark).
-		SetFaceVerifyResult(faceVerifyResult).
 		ID(context.Background())
 	if err != nil {
 		snag.Panic(err)

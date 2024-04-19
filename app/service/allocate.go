@@ -247,6 +247,10 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 			snag.Panic("车辆站点归属不一致")
 		}
 
+		if bike == nil {
+			snag.Panic("未找到车辆信息")
+		}
+
 		// 比对型号
 		if bike.Brand.ID != *sub.BrandID {
 			snag.Panic("待分配车辆型号错误")
