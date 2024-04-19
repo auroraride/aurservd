@@ -117,9 +117,6 @@ type Fault func(*sql.Selector)
 // Feedback is the predicate function for feedback builders.
 type Feedback func(*sql.Selector)
 
-// Guide is the predicate function for guide builders.
-type Guide func(*sql.Selector)
-
 // Instructions is the predicate function for instructions builders.
 type Instructions func(*sql.Selector)
 

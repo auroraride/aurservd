@@ -54,7 +54,7 @@ func (*agreement) Detail(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse			"请求成功"
 func (*agreement) Create(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.AgreementCreateReq](c)
-	return ctx.SendResponse(biz.NewAgreement().Create(req))
+	return ctx.SendResponse(biz.NewAgreementWithModifierBiz(ctx.Modifier).Create(req))
 }
 
 // Modify
@@ -69,7 +69,7 @@ func (*agreement) Create(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse			"请求成功"
 func (*agreement) Modify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.AgreementModifyReq](c)
-	return ctx.SendResponse(biz.NewAgreement().Modify(req))
+	return ctx.SendResponse(biz.NewAgreementWithModifierBiz(ctx.Modifier).Modify(req))
 }
 
 // Delete
@@ -84,7 +84,7 @@ func (*agreement) Modify(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*agreement) Delete(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-	return ctx.SendResponse(biz.NewAgreement().Delete(req.ID))
+	return ctx.SendResponse(biz.NewAgreementWithModifierBiz(ctx.Modifier).Delete(req.ID))
 }
 
 // Selection

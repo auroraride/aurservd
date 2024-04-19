@@ -4,13 +4,15 @@ import (
 	"context"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/instructions"
 )
 
 type instructionsBiz struct {
-	orm *ent.InstructionsClient
-	ctx context.Context
+	orm      *ent.InstructionsClient
+	ctx      context.Context
+	modifier *model.Modifier
 }
 
 func NewInstructions() *instructionsBiz {
@@ -18,6 +20,15 @@ func NewInstructions() *instructionsBiz {
 		orm: ent.Database.Instructions,
 		ctx: context.Background(),
 	}
+}
+
+func NewInstructionsWithModifierBiz(m *model.Modifier) *instructionsBiz {
+	s := NewInstructions()
+	if m != nil {
+		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
+		s.modifier = m
+	}
+	return s
 }
 
 // InitInstructions 初始化

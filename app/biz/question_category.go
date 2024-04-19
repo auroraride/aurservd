@@ -17,8 +17,9 @@ import (
 )
 
 type questionCategoryBiz struct {
-	orm *ent.QuestionCategoryClient
-	ctx context.Context
+	orm      *ent.QuestionCategoryClient
+	ctx      context.Context
+	modifier *model.Modifier
 }
 
 func NewQuestionCategoryBiz() *questionCategoryBiz {
@@ -26,6 +27,15 @@ func NewQuestionCategoryBiz() *questionCategoryBiz {
 		orm: ent.Database.QuestionCategory,
 		ctx: context.Background(),
 	}
+}
+
+func NewQuestionCategoryWithModifierBiz(m *model.Modifier) *questionCategoryBiz {
+	s := NewQuestionCategoryBiz()
+	if m != nil {
+		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
+		s.modifier = m
+	}
+	return s
 }
 
 // Detail 详情

@@ -24,7 +24,7 @@ var Instructions = new(instructions)
 // @Success	200				{object}	model.StatusResponse				"请求成功"
 func (*instructions) Modify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.InstructionsCreateReq](c)
-	return ctx.SendResponse(biz.NewInstructions().Modify(req))
+	return ctx.SendResponse(biz.NewInstructionsWithModifierBiz(ctx.Modifier).Modify(req))
 }
 
 // Detail

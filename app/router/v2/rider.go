@@ -86,7 +86,6 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.GET("/setting/version", rapi.Setting.LatestVersion) // App最新版本
 	g.GET("/selection/model", rapi.Selection.Model)       // 电池型号选择
 
-	g.GET("/guide", rapi.Guide.List)       // 新手引导
 	g.GET("/activity", rapi.Activity.List) // 活动
 
 	g.GET("/question/category", rapi.QuestionCategory.All) // 问题分类

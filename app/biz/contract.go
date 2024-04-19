@@ -215,7 +215,10 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 				}
 			}
 		} else {
-			if allo != nil && sub.BrandID != nil && allo.StoreID == nil && allo.StationID == nil {
+			if allo == nil {
+				return nil, errors.New("请联系工作人员分配后再激活")
+			}
+			if sub.BrandID != nil && allo.StoreID == nil && allo.StationID == nil {
 				return nil, errors.New("电车必须由门店或站点分配")
 			}
 		}
