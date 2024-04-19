@@ -67,7 +67,7 @@ func (s *versionBiz) Modify(req *definition.VersionModifyReq) (err error) {
 
 // Delete 删除
 func (s *versionBiz) Delete(id uint64) (err error) {
-	_, err = s.orm.SoftDeleteOneID(id).Save(s.ctx)
+	err = s.orm.DeleteOneID(id).Exec(s.ctx)
 	if err != nil {
 		return err
 	}
