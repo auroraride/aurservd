@@ -105,6 +105,10 @@ func decryptPersonIdentity(str string) (identity *pb.PersonIdentity, err error) 
 
 // CertificationOcrClient 获取人身核验OCR参数
 func (b *personBiz) CertificationOcrClient(r *ent.Rider) (res *definition.PersonCertificationOcrClientRes, err error) {
+	// 判定是否已经实名并且有身份证照片
+	if service.NewRider().IsAuthed(r) && r.Edges.Person.IDCardPortrait != "" && r.Edges.Person.IDCardNational != "" {
+		return nil, errors.New("当前已认证，无法重复认证")
+	}
 
 	w := tencent.NewWbFace()
 
