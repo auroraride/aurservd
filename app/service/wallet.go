@@ -5,7 +5,9 @@
 
 package service
 
-import "github.com/auroraride/aurservd/app/model"
+import (
+	"github.com/auroraride/aurservd/app/model"
+)
 
 type walletService struct {
 	*BaseService
@@ -24,12 +26,11 @@ func (s *walletService) Overview() model.WalletOverview {
 	var depositType uint8
 	if or != nil {
 		deposit = or.Amount
-		if or.Edges.Subscribe != nil {
-			depositType = or.Edges.Subscribe.DepositType
-		}
-
 	}
-
+	effective, _ := NewSubscribe().QueryEffective(s.rider.ID)
+	if effective != nil {
+		depositType = effective.DepositType
+	}
 	return model.WalletOverview{
 		Balance:     0,
 		Points:      s.entRider.Points,
