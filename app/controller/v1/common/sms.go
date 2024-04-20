@@ -33,15 +33,18 @@ func SendSmsCode(c echo.Context) error {
 	id := ctx.Request().Header.Get(app.HeaderCaptchaID)
 	var smsId string
 	var err error
-	debugPhones := ar.Config.App.Debug.Phone
+	isDebugPhone := ar.Config.App.Debug.Phone[req.Phone]
+	isVaild := service.NewCaptcha().Verify(id, req.CaptchaCode, false)
 
-	if !debugPhones[req.Phone] && !service.NewCaptcha().Verify(id, req.CaptchaCode, false) {
+	if !isDebugPhone && !isVaild {
 		return errors.New("图形验证码校验失败")
 	}
-	if debugPhones[req.Phone] {
+
+	// 如果是测试手机号并且故意输错验证码，不发送短信
+	if isDebugPhone && !isVaild {
 		smsId = shortuuid.New()
 	} else {
-		// 发送短信
+		// 如果非测试手机号或输正确验证码，发送短信
 		smsId, err = service.NewSms().SendCode(req.Phone)
 		if err != nil {
 			return err
