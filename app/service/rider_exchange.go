@@ -263,6 +263,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
 
 	if cab == nil || cab.CityID == nil {
 		snag.Panic("未找到电柜信息, 请重试")
+		return
 	}
 
 	// 记录换电人

@@ -211,6 +211,8 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 		zap.L().Error("换电请求失败", zap.Error(err), user.ZapField(), zap.String("uuid", uid))
 		success = false
 	}
+
+	success = err == nil
 }
 
 // ExchangeResult 查询换电结果
