@@ -73,12 +73,10 @@ type PromotionWithdrawalEdges struct {
 // MemberOrErr returns the Member value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionWithdrawalEdges) MemberOrErr() (*PromotionMember, error) {
-	if e.loadedTypes[0] {
-		if e.Member == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: promotionmember.Label}
-		}
+	if e.Member != nil {
 		return e.Member, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: promotionmember.Label}
 	}
 	return nil, &NotLoadedError{edge: "member"}
 }
@@ -86,12 +84,10 @@ func (e PromotionWithdrawalEdges) MemberOrErr() (*PromotionMember, error) {
 // CardsOrErr returns the Cards value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionWithdrawalEdges) CardsOrErr() (*PromotionBankCard, error) {
-	if e.loadedTypes[1] {
-		if e.Cards == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: promotionbankcard.Label}
-		}
+	if e.Cards != nil {
 		return e.Cards, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: promotionbankcard.Label}
 	}
 	return nil, &NotLoadedError{edge: "cards"}
 }

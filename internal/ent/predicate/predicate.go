@@ -6,8 +6,14 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Activity is the predicate function for activity builders.
+type Activity func(*sql.Selector)
+
 // Agent is the predicate function for agent builders.
 type Agent func(*sql.Selector)
+
+// Agreement is the predicate function for agreement builders.
+type Agreement func(*sql.Selector)
 
 // Allocate is the predicate function for allocate builders.
 type Allocate func(*sql.Selector)
@@ -50,6 +56,9 @@ type Commission func(*sql.Selector)
 
 // Contract is the predicate function for contract builders.
 type Contract func(*sql.Selector)
+
+// ContractTemplate is the predicate function for contracttemplate builders.
+type ContractTemplate func(*sql.Selector)
 
 // Coupon is the predicate function for coupon builders.
 type Coupon func(*sql.Selector)
@@ -102,8 +111,14 @@ type Exchange func(*sql.Selector)
 // Export is the predicate function for export builders.
 type Export func(*sql.Selector)
 
+// Fault is the predicate function for fault builders.
+type Fault func(*sql.Selector)
+
 // Feedback is the predicate function for feedback builders.
 type Feedback func(*sql.Selector)
+
+// Instructions is the predicate function for instructions builders.
+type Instructions func(*sql.Selector)
 
 // Inventory is the predicate function for inventory builders.
 type Inventory func(*sql.Selector)
@@ -180,6 +195,12 @@ type PromotionSetting func(*sql.Selector)
 // PromotionWithdrawal is the predicate function for promotionwithdrawal builders.
 type PromotionWithdrawal func(*sql.Selector)
 
+// Question is the predicate function for question builders.
+type Question func(*sql.Selector)
+
+// QuestionCategory is the predicate function for questioncategory builders.
+type QuestionCategory func(*sql.Selector)
+
 // Reserve is the predicate function for reserve builders.
 type Reserve func(*sql.Selector)
 
@@ -218,3 +239,6 @@ type SubscribeReminder func(*sql.Selector)
 
 // SubscribeSuspend is the predicate function for subscribesuspend builders.
 type SubscribeSuspend func(*sql.Selector)
+
+// Version is the predicate function for version builders.
+type Version func(*sql.Selector)

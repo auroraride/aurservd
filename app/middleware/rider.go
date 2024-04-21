@@ -54,34 +54,31 @@ func init() {
 	}
 }
 
-// riderLogin 获取骑手
-func riderLogin(token, pushId string, needLogin bool) (u *ent.Rider) {
+// 获取骑手
+func getRider(token, pushId string) (u *ent.Rider) {
 	var err error
 	s := service.NewRider()
 	id, _ := cache.Get(context.Background(), token).Uint64()
 	u, err = s.GetRiderById(id)
-	// 判定是否需要登录
-	if needLogin && (err != nil || u == nil) {
-		snag.Panic(snag.StatusUnauthorized)
+	if err != nil || u == nil {
+		return nil
 	}
 
-	if u != nil {
-		// 延长token有效期
-		s.ExtendTokenTime(u.ID, token)
+	// 延长token有效期
+	s.ExtendTokenTime(u.ID, token)
 
-		// 获取与判定是否需要更新骑手推送ID
-		if u.PushID != pushId {
-			_ = ent.Database.Rider.UpdateOneID(u.ID).SetPushID(pushId).Exec(context.Background())
-		}
-
-		// 用户被封禁
-		if s.IsBanned(u) || s.IsBlocked(u) {
-			s.Signout(u)
-			snag.Panic(snag.StatusForbidden, ar.BannedMessage)
-		}
+	// 更新骑手推送ID
+	if u.PushID != pushId {
+		_ = ent.Database.Rider.UpdateOneID(u.ID).SetPushID(pushId).Exec(context.Background())
 	}
 
-	return u
+	// 用户被封禁
+	if s.IsBanned(u) || s.IsBlocked(u) {
+		s.Signout(u)
+		snag.Panic(snag.StatusForbidden, ar.BannedMessage)
+	}
+
+	return
 }
 
 // RiderMiddleware 骑手中间件
@@ -92,7 +89,13 @@ func RiderMiddleware() echo.MiddlewareFunc {
 			token := splitString(c.Request().Header.Get(app.HeaderRiderToken))
 			needLogin := !riderLoginSkipper[url]
 			pushId := c.Request().Header.Get(app.HeaderPushId)
-			u := riderLogin(token, pushId, needLogin)
+			u := getRider(token, pushId)
+
+			// 判定是否需要登录
+			if needLogin && u == nil {
+				snag.Panic(snag.StatusUnauthorized)
+			}
+
 			// 重载context
 			return next(app.NewRiderContext(c, u, token))
 		}
@@ -161,4 +164,51 @@ func RiderFaceMiddleware() echo.MiddlewareFunc {
 			return next(ctx)
 		}
 	}
+}
+
+// RiderMiddlewareV2 骑手v2接口中间件
+func RiderMiddlewareV2() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			token := splitString(c.Request().Header.Get(app.HeaderRiderToken))
+			pushId := c.Request().Header.Get(app.HeaderPushId)
+			// 重载context
+			return next(app.NewRiderContext(c, getRider(token, pushId), token))
+		}
+	}
+}
+
+type RiderAuthConfig struct {
+	Certification bool // 实名校验
+	Face          bool // TODO: 人脸校验，更换设备时需要
+}
+
+// RiderAuthMiddlewareV2WithConfig 骑手v2接口认证中间件
+func RiderAuthMiddlewareV2WithConfig(cfg RiderAuthConfig) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			ctx := c.(*app.RiderContext)
+			if ctx.Rider == nil {
+				snag.Panic(snag.StatusUnauthorized)
+			}
+
+			// 需要校验实名
+			if cfg.Certification && (ctx.Rider.Edges.Person == nil || ctx.Rider.Edges.Person.Status != model.PersonAuthenticated.Value()) {
+				snag.Panic(snag.StatusRequireAuth)
+			}
+
+			return next(ctx)
+		}
+	}
+}
+
+// RiderAuthMiddlewareV2 骑手v2接口认证中间件
+func RiderAuthMiddlewareV2() echo.MiddlewareFunc {
+	return RiderAuthMiddlewareV2WithConfig(RiderAuthConfig{Certification: false})
+}
+
+// RiderCertificationMiddlewareV2 骑手v2接口实名认证中间件
+// 该中间件中包含 RiderAuthMiddlewareV2
+func RiderCertificationMiddlewareV2() echo.MiddlewareFunc {
+	return RiderAuthMiddlewareV2WithConfig(RiderAuthConfig{Certification: true})
 }

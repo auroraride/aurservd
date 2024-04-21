@@ -58,12 +58,10 @@ type PromotionReferralsProgressEdges struct {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionReferralsProgressEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[0] {
-		if e.Rider == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: rider.Label}
-		}
+	if e.Rider != nil {
 		return e.Rider, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
 }

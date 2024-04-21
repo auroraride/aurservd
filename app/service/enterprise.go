@@ -21,6 +21,7 @@ import (
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
@@ -121,7 +122,7 @@ func (s *enterpriseService) PriceKey(cityID uint64, model string, brandID *uint6
 func (s *enterpriseService) DetailQuery() *ent.EnterpriseQuery {
 	return s.orm.QueryNotDeleted().WithCity().
 		WithPrices(func(ep *ent.EnterprisePriceQuery) {
-			ep.Where(enterpriseprice.DeletedAtIsNil()).WithCity().WithBrand()
+			ep.Where(enterpriseprice.DeletedAtIsNil()).WithCity().WithBrand().WithAgreement()
 		}).
 		WithContracts(func(ecq *ent.EnterpriseContractQuery) {
 			ecq.Where(enterprisecontract.DeletedAtIsNil()).Order(ent.Desc(enterprisecontract.FieldEnd))
@@ -208,6 +209,14 @@ func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRe
 		}
 	}
 
+	// 查询团签默认协议
+	var defaultAgreement *ent.Agreement
+	defaultAgreement, _ = ent.Database.Agreement.QueryNotDeleted().
+		Where(
+			agreement.UserType(model.AgreementUserTypeEnterprise.Value()),
+			agreement.IsDefault(true),
+		).First(s.ctx)
+
 	prices := item.Edges.Prices
 	if prices != nil {
 		res.Prices = make([]model.EnterprisePriceWithCity, len(prices))
@@ -231,6 +240,26 @@ func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRe
 					Name:  eb.Name,
 					Cover: eb.Cover,
 				}
+			}
+
+			if ep.Edges.Agreement != nil {
+				res.Prices[i].Agreement = &model.Agreement{
+					ID:            ep.Edges.Agreement.ID,
+					Name:          ep.Edges.Agreement.Name,
+					URL:           ep.Edges.Agreement.URL,
+					Hash:          ep.Edges.Agreement.Hash,
+					ForceReadTime: ep.Edges.Agreement.ForceReadTime,
+				}
+			} else if defaultAgreement != nil {
+				// 如果有默认协议并且未设置协议 使用默认协议
+				res.Prices[i].Agreement = &model.Agreement{
+					ID:            defaultAgreement.ID,
+					Name:          defaultAgreement.Name,
+					URL:           defaultAgreement.URL,
+					Hash:          defaultAgreement.Hash,
+					ForceReadTime: defaultAgreement.ForceReadTime,
+				}
+
 			}
 		}
 	}
@@ -580,6 +609,7 @@ func (s *enterpriseService) Price(req *model.EnterprisePriceReq) model.Enterpris
 			SetPrice(req.Price).
 			SetIntelligent(req.Intelligent).
 			SetNillableBrandID(req.BrandID).
+			SetNillableAgreementID(req.AgreementID).
 			Save(s.ctx)
 	} else {
 		p, err = s.PriceModify(req)

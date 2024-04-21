@@ -10,6 +10,3 @@ import "github.com/auroraride/aurservd/internal/ar"
 func serverAddress(key string) string {
 	return ar.Config.RpcServer[key]
 }
-
-func Run() {
-}

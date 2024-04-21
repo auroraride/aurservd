@@ -64,8 +64,8 @@ func NewContractWithRider(u *ent.Rider) *contractService {
 	return s
 }
 
-// planData 个签合同数据
-func (s *contractService) planData(sub *ent.Subscribe) *model.ContractSignUniversal {
+// PlanData 个签合同数据
+func (s *contractService) PlanData(sub *ent.Subscribe) *model.ContractSignUniversal {
 	p, _ := sub.QueryPlan().First(s.ctx)
 	if p == nil {
 		snag.Panic("未找到骑士卡信息")
@@ -84,8 +84,8 @@ func (s *contractService) planData(sub *ent.Subscribe) *model.ContractSignUniver
 	}
 }
 
-// enterpriseData 团签合同数据
-func (s *contractService) enterpriseData(m ar.Map, sub *ent.Subscribe) *model.ContractSignUniversal {
+// EnterpriseData 团签合同数据
+func (s *contractService) EnterpriseData(m ar.Map, sub *ent.Subscribe) *model.ContractSignUniversal {
 	// 查询团签
 	ee, _ := sub.QueryEnterprise().First(s.ctx)
 	if ee == nil {
@@ -254,12 +254,12 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 			templateId = cfg.Group.TemplateId
 			scene = cfg.Group.Scene
 			// 设置团签字段
-			un = s.enterpriseData(m, sub)
+			un = s.EnterpriseData(m, sub)
 			// 团签代缴
 			m["payEnt"] = true
 		} else {
 			// 个签骑士卡
-			un = s.planData(sub)
+			un = s.PlanData(sub)
 			// 骑手缴费
 			m["payRider"] = true
 		}
@@ -325,7 +325,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 
 		// 个签选项
 		if sub.PlanID != nil {
-			s.planData(sub)
+			s.PlanData(sub)
 		}
 
 		// 创建 / 获取 签约个人账号
@@ -421,7 +421,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 		})
 
 		// 监听合同签署结果
-		go s.checkResult(flowId)
+		go s.CheckResult(flowId)
 	}
 
 	return model.ContractSignRes{
@@ -430,7 +430,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 	}
 }
 
-func (s *contractService) checkResult(flowID string) {
+func (s *contractService) CheckResult(flowID string) {
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 
@@ -511,7 +511,7 @@ func (s *contractService) doResult(flowID string) {
 
 	// 成功签署合同
 	if result.IsSuccessed() {
-		err := s.update(c)
+		err := s.Update(c)
 		if err != nil {
 			zap.L().Error("已成功签署合同, 但合同更新失败: "+idstr, zap.Error(err))
 		}
@@ -528,7 +528,7 @@ func (s *contractService) doResult(flowID string) {
 
 // 关联更新
 // 包含业务 [激活 / 业务 / 出入库]
-func (s *contractService) update(c *ent.Contract) (err error) {
+func (s *contractService) Update(c *ent.Contract) (err error) {
 	defer func() {
 		if v := recover(); v != nil {
 			err = fmt.Errorf("%v", v)

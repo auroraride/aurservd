@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -34,28 +35,29 @@ import (
 // SubscribeQuery is the builder for querying Subscribe entities.
 type SubscribeQuery struct {
 	config
-	ctx              *QueryContext
-	order            []subscribe.OrderOption
-	inters           []Interceptor
-	predicates       []predicate.Subscribe
-	withPlan         *PlanQuery
-	withEmployee     *EmployeeQuery
-	withCity         *CityQuery
-	withStation      *EnterpriseStationQuery
-	withStore        *StoreQuery
-	withCabinet      *CabinetQuery
-	withBrand        *EbikeBrandQuery
-	withEbike        *EbikeQuery
-	withRider        *RiderQuery
-	withEnterprise   *EnterpriseQuery
-	withPauses       *SubscribePauseQuery
-	withSuspends     *SubscribeSuspendQuery
-	withAlters       *SubscribeAlterQuery
-	withOrders       *OrderQuery
-	withInitialOrder *OrderQuery
-	withBills        *EnterpriseBillQuery
-	withBattery      *BatteryQuery
-	modifiers        []func(*sql.Selector)
+	ctx                 *QueryContext
+	order               []subscribe.OrderOption
+	inters              []Interceptor
+	predicates          []predicate.Subscribe
+	withPlan            *PlanQuery
+	withEmployee        *EmployeeQuery
+	withCity            *CityQuery
+	withStation         *EnterpriseStationQuery
+	withStore           *StoreQuery
+	withCabinet         *CabinetQuery
+	withBrand           *EbikeBrandQuery
+	withEbike           *EbikeQuery
+	withRider           *RiderQuery
+	withEnterprise      *EnterpriseQuery
+	withPauses          *SubscribePauseQuery
+	withSuspends        *SubscribeSuspendQuery
+	withAlters          *SubscribeAlterQuery
+	withOrders          *OrderQuery
+	withInitialOrder    *OrderQuery
+	withBills           *EnterpriseBillQuery
+	withBattery         *BatteryQuery
+	withEnterprisePrice *EnterprisePriceQuery
+	modifiers           []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -466,6 +468,28 @@ func (sq *SubscribeQuery) QueryBattery() *BatteryQuery {
 	return query
 }
 
+// QueryEnterprisePrice chains the current query on the "enterprise_price" edge.
+func (sq *SubscribeQuery) QueryEnterprisePrice() *EnterprisePriceQuery {
+	query := (&EnterprisePriceClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
+			sqlgraph.To(enterpriseprice.Table, enterpriseprice.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.EnterprisePriceTable, subscribe.EnterprisePriceColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Subscribe entity from the query.
 // Returns a *NotFoundError when no Subscribe was found.
 func (sq *SubscribeQuery) First(ctx context.Context) (*Subscribe, error) {
@@ -653,28 +677,29 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 		return nil
 	}
 	return &SubscribeQuery{
-		config:           sq.config,
-		ctx:              sq.ctx.Clone(),
-		order:            append([]subscribe.OrderOption{}, sq.order...),
-		inters:           append([]Interceptor{}, sq.inters...),
-		predicates:       append([]predicate.Subscribe{}, sq.predicates...),
-		withPlan:         sq.withPlan.Clone(),
-		withEmployee:     sq.withEmployee.Clone(),
-		withCity:         sq.withCity.Clone(),
-		withStation:      sq.withStation.Clone(),
-		withStore:        sq.withStore.Clone(),
-		withCabinet:      sq.withCabinet.Clone(),
-		withBrand:        sq.withBrand.Clone(),
-		withEbike:        sq.withEbike.Clone(),
-		withRider:        sq.withRider.Clone(),
-		withEnterprise:   sq.withEnterprise.Clone(),
-		withPauses:       sq.withPauses.Clone(),
-		withSuspends:     sq.withSuspends.Clone(),
-		withAlters:       sq.withAlters.Clone(),
-		withOrders:       sq.withOrders.Clone(),
-		withInitialOrder: sq.withInitialOrder.Clone(),
-		withBills:        sq.withBills.Clone(),
-		withBattery:      sq.withBattery.Clone(),
+		config:              sq.config,
+		ctx:                 sq.ctx.Clone(),
+		order:               append([]subscribe.OrderOption{}, sq.order...),
+		inters:              append([]Interceptor{}, sq.inters...),
+		predicates:          append([]predicate.Subscribe{}, sq.predicates...),
+		withPlan:            sq.withPlan.Clone(),
+		withEmployee:        sq.withEmployee.Clone(),
+		withCity:            sq.withCity.Clone(),
+		withStation:         sq.withStation.Clone(),
+		withStore:           sq.withStore.Clone(),
+		withCabinet:         sq.withCabinet.Clone(),
+		withBrand:           sq.withBrand.Clone(),
+		withEbike:           sq.withEbike.Clone(),
+		withRider:           sq.withRider.Clone(),
+		withEnterprise:      sq.withEnterprise.Clone(),
+		withPauses:          sq.withPauses.Clone(),
+		withSuspends:        sq.withSuspends.Clone(),
+		withAlters:          sq.withAlters.Clone(),
+		withOrders:          sq.withOrders.Clone(),
+		withInitialOrder:    sq.withInitialOrder.Clone(),
+		withBills:           sq.withBills.Clone(),
+		withBattery:         sq.withBattery.Clone(),
+		withEnterprisePrice: sq.withEnterprisePrice.Clone(),
 		// clone intermediate query.
 		sql:  sq.sql.Clone(),
 		path: sq.path,
@@ -868,6 +893,17 @@ func (sq *SubscribeQuery) WithBattery(opts ...func(*BatteryQuery)) *SubscribeQue
 	return sq
 }
 
+// WithEnterprisePrice tells the query-builder to eager-load the nodes that are connected to
+// the "enterprise_price" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SubscribeQuery) WithEnterprisePrice(opts ...func(*EnterprisePriceQuery)) *SubscribeQuery {
+	query := (&EnterprisePriceClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withEnterprisePrice = query
+	return sq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -946,7 +982,7 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 	var (
 		nodes       = []*Subscribe{}
 		_spec       = sq.querySpec()
-		loadedTypes = [17]bool{
+		loadedTypes = [18]bool{
 			sq.withPlan != nil,
 			sq.withEmployee != nil,
 			sq.withCity != nil,
@@ -964,6 +1000,7 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			sq.withInitialOrder != nil,
 			sq.withBills != nil,
 			sq.withBattery != nil,
+			sq.withEnterprisePrice != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -1091,6 +1128,12 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 	if query := sq.withBattery; query != nil {
 		if err := sq.loadBattery(ctx, query, nodes, nil,
 			func(n *Subscribe, e *Battery) { n.Edges.Battery = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withEnterprisePrice; query != nil {
+		if err := sq.loadEnterprisePrice(ctx, query, nodes, nil,
+			func(n *Subscribe, e *EnterprisePrice) { n.Edges.EnterprisePrice = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1620,6 +1663,35 @@ func (sq *SubscribeQuery) loadBattery(ctx context.Context, query *BatteryQuery, 
 	}
 	return nil
 }
+func (sq *SubscribeQuery) loadEnterprisePrice(ctx context.Context, query *EnterprisePriceQuery, nodes []*Subscribe, init func(*Subscribe), assign func(*Subscribe, *EnterprisePrice)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Subscribe)
+	for i := range nodes {
+		fk := nodes[i].EnterprisePriceID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(enterpriseprice.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "enterprise_price_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (sq *SubscribeQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := sq.querySpec()
@@ -1681,6 +1753,9 @@ func (sq *SubscribeQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if sq.withInitialOrder != nil {
 			_spec.Node.AddColumnOnce(subscribe.FieldInitialOrderID)
+		}
+		if sq.withEnterprisePrice != nil {
+			_spec.Node.AddColumnOnce(subscribe.FieldEnterprisePriceID)
 		}
 	}
 	if ps := sq.predicates; len(ps) > 0 {
@@ -1750,23 +1825,24 @@ func (sq *SubscribeQuery) Modify(modifiers ...func(s *sql.Selector)) *SubscribeS
 type SubscribeQueryWith string
 
 var (
-	SubscribeQueryWithPlan         SubscribeQueryWith = "Plan"
-	SubscribeQueryWithEmployee     SubscribeQueryWith = "Employee"
-	SubscribeQueryWithCity         SubscribeQueryWith = "City"
-	SubscribeQueryWithStation      SubscribeQueryWith = "Station"
-	SubscribeQueryWithStore        SubscribeQueryWith = "Store"
-	SubscribeQueryWithCabinet      SubscribeQueryWith = "Cabinet"
-	SubscribeQueryWithBrand        SubscribeQueryWith = "Brand"
-	SubscribeQueryWithEbike        SubscribeQueryWith = "Ebike"
-	SubscribeQueryWithRider        SubscribeQueryWith = "Rider"
-	SubscribeQueryWithEnterprise   SubscribeQueryWith = "Enterprise"
-	SubscribeQueryWithPauses       SubscribeQueryWith = "Pauses"
-	SubscribeQueryWithSuspends     SubscribeQueryWith = "Suspends"
-	SubscribeQueryWithAlters       SubscribeQueryWith = "Alters"
-	SubscribeQueryWithOrders       SubscribeQueryWith = "Orders"
-	SubscribeQueryWithInitialOrder SubscribeQueryWith = "InitialOrder"
-	SubscribeQueryWithBills        SubscribeQueryWith = "Bills"
-	SubscribeQueryWithBattery      SubscribeQueryWith = "Battery"
+	SubscribeQueryWithPlan            SubscribeQueryWith = "Plan"
+	SubscribeQueryWithEmployee        SubscribeQueryWith = "Employee"
+	SubscribeQueryWithCity            SubscribeQueryWith = "City"
+	SubscribeQueryWithStation         SubscribeQueryWith = "Station"
+	SubscribeQueryWithStore           SubscribeQueryWith = "Store"
+	SubscribeQueryWithCabinet         SubscribeQueryWith = "Cabinet"
+	SubscribeQueryWithBrand           SubscribeQueryWith = "Brand"
+	SubscribeQueryWithEbike           SubscribeQueryWith = "Ebike"
+	SubscribeQueryWithRider           SubscribeQueryWith = "Rider"
+	SubscribeQueryWithEnterprise      SubscribeQueryWith = "Enterprise"
+	SubscribeQueryWithPauses          SubscribeQueryWith = "Pauses"
+	SubscribeQueryWithSuspends        SubscribeQueryWith = "Suspends"
+	SubscribeQueryWithAlters          SubscribeQueryWith = "Alters"
+	SubscribeQueryWithOrders          SubscribeQueryWith = "Orders"
+	SubscribeQueryWithInitialOrder    SubscribeQueryWith = "InitialOrder"
+	SubscribeQueryWithBills           SubscribeQueryWith = "Bills"
+	SubscribeQueryWithBattery         SubscribeQueryWith = "Battery"
+	SubscribeQueryWithEnterprisePrice SubscribeQueryWith = "EnterprisePrice"
 )
 
 func (sq *SubscribeQuery) With(withEdges ...SubscribeQueryWith) *SubscribeQuery {
@@ -1806,6 +1882,8 @@ func (sq *SubscribeQuery) With(withEdges ...SubscribeQueryWith) *SubscribeQuery 
 			sq.WithBills()
 		case SubscribeQueryWithBattery:
 			sq.WithBattery()
+		case SubscribeQueryWithEnterprisePrice:
+			sq.WithEnterprisePrice()
 		}
 	}
 	return sq

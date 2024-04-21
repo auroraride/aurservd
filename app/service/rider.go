@@ -53,6 +53,7 @@ type riderService struct {
 	orm      *ent.RiderClient
 	modifier *model.Modifier
 	rider    *ent.Rider
+	aes      *tools.AesCrypto
 }
 
 func NewRider() *riderService {
@@ -60,6 +61,10 @@ func NewRider() *riderService {
 		cacheKeyPrefix: "RIDER_",
 		ctx:            context.Background(),
 		orm:            ent.Database.Rider,
+		aes: tools.NewAesCrypto(
+			[]byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f},
+			[]byte("OSEriONseMISicolADhIcrinGtOPmoSp"),
+		),
 	}
 }
 
@@ -119,7 +124,7 @@ func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (
 	var u *ent.Rider
 	var err error
 
-	u, err = orm.QueryNotDeleted().Where(rider.Phone(req.Phone)).WithPerson().WithEnterprise().First(ctx)
+	u, err = orm.QueryNotDeleted().Where(rider.Phone(req.Phone)).WithPerson().WithEnterprise().WithStation().First(ctx)
 	if err != nil {
 		// 创建骑手
 		u, err = orm.Create().
@@ -204,6 +209,7 @@ func (s *riderService) GetFaceUrl(c *app.RiderContext) string {
 }
 
 // FaceAuthResult 获取并更新人脸实名验证结果
+// TODO 兼容v2 api
 func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (success bool) {
 	if !s.ComparePrivacy(c) {
 		snag.Panic("验证失败")
@@ -233,7 +239,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		status = model.PersonAuthenticationFailed.Value()
 	}
 
-	vr := &model.FaceVerifyResult{
+	vr := &model.BaiduFaceVerifyResult{
 		Birthday:       detail.Birthday,
 		IssueAuthority: detail.IssueAuthority,
 		Address:        detail.Address,
@@ -248,7 +254,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		Spoofing:       res.VerifyResult.Spoofing,
 	}
 
-	// 上传图片到七牛云
+	// 上传图片到阿里云OSS
 	var fm, pm, nm string
 	oss := ali.NewOss()
 	prefix := fmt.Sprintf("%s-%s/%s-", res.IdcardOcrResult.Name, res.IdcardOcrResult.IdCardNumber, time.Now().Format(carbon.ShortDateTimeLayout))
@@ -256,10 +262,32 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		fm = oss.UploadUrlFile(prefix+"face.jpg", res.FaceImg)
 	}
 	if res.IdcardImages.FrontBase64 != "" {
-		pm = oss.UploadBase64ImageJpeg(prefix+"portrait.jpg", res.IdcardImages.FrontBase64)
+		pm = oss.UploadBase64(prefix+"portrait.jpg", res.IdcardImages.FrontBase64)
 	}
 	if res.IdcardImages.BackBase64 != "" {
-		nm = oss.UploadBase64ImageJpeg(prefix+"national.jpg", res.IdcardImages.BackBase64)
+		nm = oss.UploadBase64(prefix+"national.jpg", res.IdcardImages.BackBase64)
+	}
+
+	// 兼容v2 实名存一份到FaceVerifyResult
+	faceVerifyResult := &model.PersonFaceVerifyResult{
+		Name:            detail.Name,
+		IDCardNumber:    detail.IdCardNumber,
+		Birth:           detail.Birthday,
+		Sex:             detail.Gender,
+		Nation:          detail.Nation,
+		Address:         detail.Address,
+		ValidStartDate:  detail.IssueTime,
+		ValidExpireDate: detail.ExpireTime,
+		Authority:       detail.IssueAuthority,
+		Head:            fm,
+		PortraitClarity: res.VerifyResult.LivenessScore,
+		NationalClarity: res.VerifyResult.Score,
+		OcrOrderNo:      "",
+		LiveRate:        res.VerifyResult.LivenessScore,
+		Similarity:      res.VerifyResult.Score,
+		Video:           "",
+		Photo:           fm,
+		FaceOrderNo:     "",
 	}
 
 	icNum := vr.IdCardNumber
@@ -274,6 +302,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		SetIDCardPortrait(pm).
 		SetAuthResult(vr).
 		SetAuthAt(time.Now()).
+		SetFaceVerifyResult(faceVerifyResult).
 		OnConflictColumns(person.FieldIDCardNumber).
 		UpdateNewValues().
 		SetBaiduLogID(data.LogId).
@@ -293,7 +322,6 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		ri, err := ent.Database.Rider.
 			UpdateOneID(u.ID).
 			SetPersonID(id).
-			SetLastFace(fm).
 			SetIsNewDevice(false).
 			SetName(vr.Name).
 			SetIDCardNumber(icNum).
@@ -325,10 +353,9 @@ func (s *riderService) FaceResult(c *app.RiderContext, token string) (success bo
 	}
 	// 上传人脸图
 	p := u.Edges.Person
-	fm := ali.NewOss().UploadUrlFile(fmt.Sprintf("%s-%s/face-%s.jpg", p.Name, p.IDCardNumber, u.LastDevice), res.Result.Image)
+	ali.NewOss().UploadUrlFile(fmt.Sprintf("%s-%s/face-%s.jpg", p.Name, p.IDCardNumber, u.LastDevice), res.Result.Image)
 	err = ent.Database.Rider.
 		UpdateOneID(u.ID).
-		SetLastFace(fm).
 		SetIsNewDevice(false).
 		Exec(context.Background())
 	if err != nil {
@@ -686,9 +713,7 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 		ri.Contract = contracts[0].Files[0]
 	}
 
-	if item.Edges.Orders != nil && len(item.Edges.Orders) > 0 {
-		ri.Deposit = item.Edges.Orders[0].Amount
-	}
+	ri.Deposit = NewRider().Deposit(item.ID)
 
 	if item.Edges.Subscribes != nil && len(item.Edges.Subscribes) > 0 {
 		sub := item.Edges.Subscribes[0]
@@ -1014,12 +1039,26 @@ func (s *riderService) Block(req *model.RiderBlockReq) {
 
 // DepositOrder 获取骑手押金订单
 func (s *riderService) DepositOrder(riderID uint64) *ent.Order {
+	// 获取当前订阅有效订阅 原始订单的押金订单
+	effective, _ := NewSubscribe().QueryEffective(riderID)
+	if effective == nil {
+		return nil
+	}
+
+	or, _ := effective.QueryInitialOrder().First(s.ctx)
+	if or == nil {
+		return nil
+	}
+
 	o, _ := ent.Database.Order.QueryNotDeleted().Where(
 		order.RiderID(riderID),
 		order.Status(model.OrderStatusPaid),
 		order.Type(model.OrderTypeDeposit),
-		order.DeletedAtIsNil(),
-	).First(s.ctx)
+		order.Or(
+			order.ParentID(or.ID),
+			order.ID(or.ID),
+		),
+	).WithSubscribe().WithPlan().Order(ent.Desc(order.FieldCreatedAt)).First(s.ctx)
 	return o
 }
 
@@ -1038,21 +1077,20 @@ func (s *riderService) DepositPaid(riderID uint64) model.RiderDepositRes {
 // Deposit 获取用户应交押金
 func (s *riderService) Deposit(riderID uint64) float64 {
 	o := s.DepositOrder(riderID)
-	if o != nil {
+	if o == nil {
 		return 0
 	}
-	f, _ := cache.Get(s.ctx, model.SettingDepositKey).Float64()
-	return f
+	return o.Amount
 }
 
 func (s *riderService) GetQrcode(id uint64) string {
-	b, _ := tools.NewAESCrypto().Encrypt([]byte(fmt.Sprintf("%d", id)))
+	b, _ := s.aes.CFBEncrypt([]byte(fmt.Sprintf("%d", id)))
 	return b
 }
 
 func (s *riderService) ParseQrcode(qrcode string) uint64 {
 	b, _ := base64.StdEncoding.DecodeString(qrcode)
-	str, _ := tools.NewAESCrypto().Decrypt(b)
+	str, _ := s.aes.CFBDecrypt(b)
 	id, _ := strconv.ParseUint(str, 10, 64)
 	return id
 }

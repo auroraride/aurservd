@@ -9,6 +9,37 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 )
 
+// Pagination returns pagination query builder for ActivityQuery.
+func (aq *ActivityQuery) Pagination(req model.PaginationReq) *ActivityQuery {
+	aq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return aq
+}
+
+// PaginationItems returns pagination query builder for ActivityQuery.
+func (aq *ActivityQuery) PaginationItemsX(req model.PaginationReq) any {
+	return aq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for ActivityQuery.
+func (aq *ActivityQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := aq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for AgentQuery.
 func (aq *AgentQuery) Pagination(req model.PaginationReq) *AgentQuery {
 	aq.Offset(req.GetOffset()).Limit(req.GetLimit())
@@ -22,6 +53,37 @@ func (aq *AgentQuery) PaginationItemsX(req model.PaginationReq) any {
 
 // PaginationResult returns pagination for AgentQuery.
 func (aq *AgentQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := aq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for AgreementQuery.
+func (aq *AgreementQuery) Pagination(req model.PaginationReq) *AgreementQuery {
+	aq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return aq
+}
+
+// PaginationItems returns pagination query builder for AgreementQuery.
+func (aq *AgreementQuery) PaginationItemsX(req model.PaginationReq) any {
+	return aq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for AgreementQuery.
+func (aq *AgreementQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := aq.Clone()
 	query.order = nil
 	query.ctx.Limit = nil
@@ -457,6 +519,37 @@ func (cq *ContractQuery) PaginationItemsX(req model.PaginationReq) any {
 // PaginationResult returns pagination for ContractQuery.
 func (cq *ContractQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := cq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for ContractTemplateQuery.
+func (ctq *ContractTemplateQuery) Pagination(req model.PaginationReq) *ContractTemplateQuery {
+	ctq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return ctq
+}
+
+// PaginationItems returns pagination query builder for ContractTemplateQuery.
+func (ctq *ContractTemplateQuery) PaginationItemsX(req model.PaginationReq) any {
+	return ctq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for ContractTemplateQuery.
+func (ctq *ContractTemplateQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := ctq.Clone()
 	query.order = nil
 	query.ctx.Limit = nil
 	query.ctx.Offset = nil
@@ -1001,6 +1094,37 @@ func (eq *ExportQuery) PaginationResult(req model.PaginationReq) model.Paginatio
 	}
 }
 
+// Pagination returns pagination query builder for FaultQuery.
+func (fq *FaultQuery) Pagination(req model.PaginationReq) *FaultQuery {
+	fq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return fq
+}
+
+// PaginationItems returns pagination query builder for FaultQuery.
+func (fq *FaultQuery) PaginationItemsX(req model.PaginationReq) any {
+	return fq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for FaultQuery.
+func (fq *FaultQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := fq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for FeedbackQuery.
 func (fq *FeedbackQuery) Pagination(req model.PaginationReq) *FeedbackQuery {
 	fq.Offset(req.GetOffset()).Limit(req.GetLimit())
@@ -1015,6 +1139,37 @@ func (fq *FeedbackQuery) PaginationItemsX(req model.PaginationReq) any {
 // PaginationResult returns pagination for FeedbackQuery.
 func (fq *FeedbackQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := fq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for InstructionsQuery.
+func (iq *InstructionsQuery) Pagination(req model.PaginationReq) *InstructionsQuery {
+	iq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return iq
+}
+
+// PaginationItems returns pagination query builder for InstructionsQuery.
+func (iq *InstructionsQuery) PaginationItemsX(req model.PaginationReq) any {
+	return iq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for InstructionsQuery.
+func (iq *InstructionsQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := iq.Clone()
 	query.order = nil
 	query.ctx.Limit = nil
 	query.ctx.Offset = nil
@@ -1807,6 +1962,68 @@ func (pwq *PromotionWithdrawalQuery) PaginationResult(req model.PaginationReq) m
 	}
 }
 
+// Pagination returns pagination query builder for QuestionQuery.
+func (qq *QuestionQuery) Pagination(req model.PaginationReq) *QuestionQuery {
+	qq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return qq
+}
+
+// PaginationItems returns pagination query builder for QuestionQuery.
+func (qq *QuestionQuery) PaginationItemsX(req model.PaginationReq) any {
+	return qq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for QuestionQuery.
+func (qq *QuestionQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := qq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for QuestionCategoryQuery.
+func (qcq *QuestionCategoryQuery) Pagination(req model.PaginationReq) *QuestionCategoryQuery {
+	qcq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return qcq
+}
+
+// PaginationItems returns pagination query builder for QuestionCategoryQuery.
+func (qcq *QuestionCategoryQuery) PaginationItemsX(req model.PaginationReq) any {
+	return qcq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for QuestionCategoryQuery.
+func (qcq *QuestionCategoryQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := qcq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for ReserveQuery.
 func (rq *ReserveQuery) Pagination(req model.PaginationReq) *ReserveQuery {
 	rq.Offset(req.GetOffset()).Limit(req.GetLimit())
@@ -2193,6 +2410,37 @@ func (ssq *SubscribeSuspendQuery) PaginationItemsX(req model.PaginationReq) any 
 // PaginationResult returns pagination for SubscribeSuspendQuery.
 func (ssq *SubscribeSuspendQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := ssq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for VersionQuery.
+func (vq *VersionQuery) Pagination(req model.PaginationReq) *VersionQuery {
+	vq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return vq
+}
+
+// PaginationItems returns pagination query builder for VersionQuery.
+func (vq *VersionQuery) PaginationItemsX(req model.PaginationReq) any {
+	return vq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for VersionQuery.
+func (vq *VersionQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := vq.Clone()
 	query.order = nil
 	query.ctx.Limit = nil
 	query.ctx.Offset = nil

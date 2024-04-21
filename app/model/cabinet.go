@@ -50,9 +50,9 @@ const (
 
 // Cabinet 电柜基础属性
 type Cabinet struct {
-	BranchID    *uint64              `json:"branchId,omitempty"`                                                  // 网点
-	Status      CabinetStatus        `json:"status" enums:"0,1,2"`                                                // 电柜状态 0未投放 1运营中 2维护中
-	Brand       adapter.CabinetBrand `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG,TUOBANG"` // KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
+	BranchID    *uint64              `json:"branchId,omitempty"`                   // 网点
+	Status      CabinetStatus        `json:"status" enums:"0,1,2"`                 // 电柜状态 0未投放 1运营中 2维护中
+	Brand       adapter.CabinetBrand `json:"brand" validate:"required" trans:"品牌"` // 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
 	Serial      string               `json:"serial" validate:"required" trans:"电柜编码"`
 	Name        string               `json:"name" validate:"required" trans:"电柜名称"`
 	Doors       int                  `json:"doors"` // 柜门数量
@@ -63,7 +63,7 @@ type Cabinet struct {
 
 type CabinetBasicInfo struct {
 	ID     uint64               `json:"id"`
-	Brand  adapter.CabinetBrand `json:"brand" enums:"KAIXIN,YUNDONG,TUOBANG"` // 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+	Brand  adapter.CabinetBrand `json:"brand" enums:"KAIXIN,YUNDONG,TUOBANG"` // 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
 	Serial string               `json:"serial"`                               // 电柜编码
 	Name   string               `json:"name"`                                 // 电柜名称
 }
@@ -110,7 +110,7 @@ type CabinetQueryReq struct {
 	Serial       *string               `json:"serial" query:"serial"`             // 电柜编号
 	Name         *string               `json:"name" query:"name"`                 // 电柜名称
 	CityID       *uint64               `json:"cityId" query:"cityId"`             // 城市ID
-	Brand        *adapter.CabinetBrand `json:"brand" query:"brand"`               // 电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+	Brand        *adapter.CabinetBrand `json:"brand" query:"brand"`               // 电柜型号 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
 	Status       *uint8                `json:"status" query:"status"`             // 电柜状态
 	Model        *string               `json:"model" query:"model"`               // 电池型号
 	Online       uint8                 `json:"online" query:"online"`             // 在线状态
@@ -124,9 +124,9 @@ type CabinetQueryReq struct {
 // CabinetModifyReq 电柜修改请求
 type CabinetModifyReq struct {
 	ID          uint64                `json:"id" param:"id"`
-	BranchID    *uint64               `json:"branchId"`                                // 网点
-	Status      *CabinetStatus        `json:"status" enums:"0,1,2"`                    // 电柜状态 0未投放 1运营中 2维护中
-	Brand       *adapter.CabinetBrand `json:"brand" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+	BranchID    *uint64               `json:"branchId"`             // 网点
+	Status      *CabinetStatus        `json:"status" enums:"0,1,2"` // 电柜状态 0未投放 1运营中 2维护中
+	Brand       *adapter.CabinetBrand `json:"brand" trans:"品牌"`     // 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
 	Serial      *string               `json:"serial" trans:"电柜原始编码"`
 	Name        *string               `json:"name" trans:"电柜名称"`
 	Doors       *uint                 `json:"doors" trans:"柜门数量"`
@@ -366,12 +366,12 @@ type YundongDeployInfo struct {
 type CabinetDataReq struct {
 	PaginationReq
 
-	Status uint8                `json:"status" enums:"0,1,2,3" query:"status"`      // 电柜状态 0:全部 1:在线 2:离线 3:锁仓
-	Votage float64              `json:"votage" query:"votage"`                      // 电压型号筛选
-	Name   string               `json:"name" query:"name"`                          // 电柜名称
-	Serial string               `json:"serial" query:"serial"`                      // 电柜编号
-	CityID uint64               `json:"cityId" query:"cityId"`                      // 城市
-	Brand  adapter.CabinetBrand `json:"brand" enums:"KAIXIN,YUNDONG" query:"brand"` // 品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+	Status uint8                `json:"status" enums:"0,1,2,3" query:"status"` // 电柜状态 0:全部 1:在线 2:离线 3:锁仓
+	Votage float64              `json:"votage" query:"votage"`                 // 电压型号筛选
+	Name   string               `json:"name" query:"name"`                     // 电柜名称
+	Serial string               `json:"serial" query:"serial"`                 // 电柜编号
+	CityID uint64               `json:"cityId" query:"cityId"`                 // 城市
+	Brand  adapter.CabinetBrand `json:"brand" query:"brand"`                   // 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
 }
 
 const (
@@ -391,7 +391,7 @@ type CabinetDataRes struct {
 	Name       string               `json:"name"`       // 名称
 	Serial     string               `json:"serial"`     // 编号
 	Model      string               `json:"model"`      // 型号
-	Brand      adapter.CabinetBrand `json:"brand"`      // 品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+	Brand      adapter.CabinetBrand `json:"brand"`      // 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
 	Online     bool                 `json:"online"`     // 是否在线
 	BinNum     int                  `json:"binNum"`     // 仓位数量
 	BatteryNum int                  `json:"batteryNum"` // 电池数量
@@ -445,22 +445,16 @@ type CabinetInterruptRequest struct {
 
 // EnterpriseBindCabinetReq 团签绑定电柜请求
 type EnterpriseBindCabinetReq struct {
-	// ID 电柜ID
-	ID uint64 `json:"id" validate:"required" param:"id"`
-	// 站点id
-	StationID uint64 `json:"stationID" validate:"required"`
-	// 团签ID
-	EnterpriseID uint64 `json:"enterpriseID" validate:"required"`
+	ID           uint64 `json:"id" validate:"required" param:"id"` // 电柜ID
+	StationID    uint64 `json:"stationID" validate:"required"`     // 站点ID
+	EnterpriseID uint64 `json:"enterpriseID" validate:"required"`  // 团签ID
 }
 
 // CabinetAgentEditReq 代理商电柜编辑请求
 type CabinetAgentEditReq struct {
-	// ID 电柜ID
-	ID uint64 `json:"id" validate:"required" param:"id"`
-	// 站点id
-	StationID uint64 `json:"stationID" validate:"required"`
-	// 电柜状态  0未投放 1运营中 2维护中
-	Status uint8 `json:"status" validate:"required,enums=0,1,2"`
+	ID        uint64 `json:"id" validate:"required" param:"id"`      // 电柜ID
+	StationID uint64 `json:"stationID" validate:"required"`          // 站点ID
+	Status    uint8  `json:"status" validate:"required,enums=0,1,2"` // 电柜状态 0:未投放 1:运营中 2:维护中
 }
 
 type CabinetSelectionReq struct {

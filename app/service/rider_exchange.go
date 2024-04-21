@@ -66,7 +66,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 
 	// 检查可用电池型号
 	if !cs.ModelInclude(cab, sub.Model) {
-		snag.Panic("电池型号不兼容")
+		snag.Panic("电池型号不匹配，请更换电柜重试")
 	}
 
 	var (
@@ -236,7 +236,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
 		cab = NewCabinet().QueryOneSerialX(t.Serial)
 		var be model.BatterySoc
 		if t.Exchange.Alternative && !req.Alternative {
-			snag.Panic("非满电换电取消")
+			snag.Panic("非满电，换电取消")
 		}
 
 		// 更新一次电柜状态
@@ -633,7 +633,7 @@ func (s *riderExchangeService) GetProcessStatus(req *model.RiderExchangeProcessS
 		cs := task.Exchange.CurrentStep()
 		res = &model.RiderExchangeProcessRes{
 			Step:    uint8(cs.Step),
-			Status:  uint8(cs.Status),
+			Status:  cs.Status,
 			Message: task.Message,
 			Stop:    task.StopAt != nil,
 		}

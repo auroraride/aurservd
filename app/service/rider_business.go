@@ -19,8 +19,10 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/business"
+	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/pkg/cache"
+	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
 
@@ -80,7 +82,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 
 	// 检查可用电池型号
 	if !cs.ModelInclude(cab, sub.Model) {
-		snag.Panic("电池型号不兼容")
+		snag.Panic("电池型号不匹配，请更换电柜重试")
 	}
 
 	// 查询电柜是否可使用
@@ -113,7 +115,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 
 // Active 骑手自主激活
 // TODO 分配信息是否需要记录电池编号
-func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
+func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, version string) model.BusinessCabinetStatus {
 	// 预处理
 	s.preprocess(req.Serial, business.TypeActive)
 
@@ -123,7 +125,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
 	}
 
 	// 检查是否需要签约
-	if NewSubscribe().NeedContract(s.subscribe) {
+	if NewSubscribe().NeedContract(s.subscribe) && version == model.RouteVersionV1 {
 		// 查询分配信息是否存在, 如果存在则删除
 		NewAllocate().SubscribeDeleteIfExists(s.subscribe.ID)
 
@@ -148,6 +150,43 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
 		}))
 	}
 
+	if version == model.RouteVersionV2 {
+		// 兼容V2版本无需签约激活逻辑
+		if !s.subscribe.NeedContract {
+			// 查询分配信息是否存在, 如果存在则删除
+			NewAllocate().SubscribeDeleteIfExists(s.subscribe.ID)
+			// 存储分配信息
+			err := ent.Database.Allocate.Create().
+				SetType(allocate.TypeBattery).
+				SetSubscribe(s.subscribe).
+				SetRider(s.rider).
+				SetStatus(model.AllocateStatusPending.Value()).
+				SetTime(time.Now()).
+				SetModel(s.subscribe.Model).
+				SetCabinetID(s.cabinet.ID).
+				SetRemark("无需签约,自动生成").
+				Exec(s.ctx)
+			if err != nil {
+				snag.Panic("请求失败")
+			}
+		} else {
+			// 因为V2 是在扫码之前签约 所以不知道电柜信息 这里更新一下电柜信息
+			cont, _ := ent.Database.Contract.Query().Where(
+				contract.Status(model.ContractStatusSuccess.Value()),
+				contract.Effective(true),
+				contract.SubscribeID(s.subscribe.ID),
+			).First(s.ctx)
+			if cont == nil {
+				snag.Panic("请签约后再进行激活")
+			}
+			// 查找分配信息
+			_, err := ent.Database.Allocate.Update().Where(allocate.ID(*cont.AllocateID)).SetCabinetID(s.cabinet.ID).Save(s.ctx)
+			if err != nil {
+				snag.Panic("请求失败", err)
+			}
+		}
+	}
+
 	// 查找分配信息
 	allo, _ := ent.Database.Allocate.Query().Where(
 		allocate.SubscribeID(s.subscribe.ID),
@@ -167,7 +206,6 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
 			return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessActive, s.subscribe, nil, s.cabinet)
 		}).
 		Active(s.subscribe, allo)
-
 	return s.response
 }
 
@@ -213,7 +251,7 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
 				SetCabinetTask(func() (*model.BinInfo, *model.Battery, error) {
 					return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessUnsubscribe, s.subscribe, s.battery, s.cabinet)
 				}).
-				UnSubscribe(&model.BusinessSubscribeReq{ID: req.ID})
+				UnSubscribe(&model.BusinessSubscribeReq{ID: req.ID, RefundDeposit: silk.Bool(true)})
 		})
 
 		if err != nil {
@@ -228,6 +266,10 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
 	s.preprocess(req.Serial, business.TypePause)
 	if s.subscribe.Status != model.SubscribeStatusUsing {
 		snag.Panic("骑士卡未在计费中")
+	}
+
+	if s.subscribe.Remaining < 1 {
+		snag.Panic("当前剩余时间不足, 无法寄存")
 	}
 
 	go func() {
@@ -317,18 +359,15 @@ func (s *riderBusinessService) PauseInfo() (res model.BusinessPauseInfoRes) {
 	start := p.StartAt
 	// 判断寄存开始日期
 	if carbon.CreateFromStdTime(start).Timestamp() != carbon.CreateFromStdTime(start).StartOfDay().Timestamp() {
-		start = carbon.CreateFromStdTime(start).Tomorrow().StartOfDay().ToStdTime()
+		start = carbon.CreateFromStdTime(start).Tomorrow().StartOfDay().StdTime()
 	}
 	res.Start = start.Format(carbon.DateLayout)
-	now := carbon.Now()
-	if now.Timestamp() != now.StartOfDay().Timestamp() {
-		now = now.Yesterday()
-	}
-	res.End = now.ToStdTime().Format(carbon.DateLayout)
+	// 获取最大寄存天数
+	suspend := ent.NewSubscribeAdditionalItem(p)
+	// 最大寄存时间
+	res.End = carbon.CreateFromStdTime(start).AddDays(suspend.MaxDays).StartOfDay().StdTime().Format(carbon.DateLayout)
 
 	if p.Days < 1 {
-		res.Start = ""
-		res.End = ""
 		p.Days = 0
 	}
 

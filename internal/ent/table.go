@@ -2,6 +2,20 @@
 
 package ent
 
+// GetTableName returns table name for Activity.
+func (a *Activity) GetTableName() string {
+	return "activity"
+}
+
+// GetID returns id for Activity.
+func (a *Activity) GetID() uint64 {
+	return a.ID
+}
+
+func (a *Activity) GetName() string {
+	return a.Name
+}
+
 // GetTableName returns table name for Agent.
 func (a *Agent) GetTableName() string {
 	return "agent"
@@ -13,6 +27,20 @@ func (a *Agent) GetID() uint64 {
 }
 
 func (a *Agent) GetName() string {
+	return a.Name
+}
+
+// GetTableName returns table name for Agreement.
+func (a *Agreement) GetTableName() string {
+	return "agreement"
+}
+
+// GetID returns id for Agreement.
+func (a *Agreement) GetID() uint64 {
+	return a.ID
+}
+
+func (a *Agreement) GetName() string {
 	return a.Name
 }
 
@@ -166,6 +194,20 @@ func (c *Contract) GetTableName() string {
 // GetID returns id for Contract.
 func (c *Contract) GetID() uint64 {
 	return c.ID
+}
+
+// GetTableName returns table name for ContractTemplate.
+func (ct *ContractTemplate) GetTableName() string {
+	return "contract_template"
+}
+
+// GetID returns id for ContractTemplate.
+func (ct *ContractTemplate) GetID() uint64 {
+	return ct.ID
+}
+
+func (ct *ContractTemplate) GetName() string {
+	return ct.Name
 }
 
 // GetTableName returns table name for Coupon.
@@ -370,6 +412,16 @@ func (e *Export) GetID() uint64 {
 	return e.ID
 }
 
+// GetTableName returns table name for Fault.
+func (f *Fault) GetTableName() string {
+	return "fault"
+}
+
+// GetID returns id for Fault.
+func (f *Fault) GetID() uint64 {
+	return f.ID
+}
+
 // GetTableName returns table name for Feedback.
 func (f *Feedback) GetTableName() string {
 	return "feedback"
@@ -382,6 +434,16 @@ func (f *Feedback) GetID() uint64 {
 
 func (f *Feedback) GetName() string {
 	return f.Name
+}
+
+// GetTableName returns table name for Instructions.
+func (i *Instructions) GetTableName() string {
+	return "instructions"
+}
+
+// GetID returns id for Instructions.
+func (i *Instructions) GetID() uint64 {
+	return i.ID
 }
 
 // GetTableName returns table name for Inventory.
@@ -682,6 +744,34 @@ func (pw *PromotionWithdrawal) GetID() uint64 {
 	return pw.ID
 }
 
+// GetTableName returns table name for Question.
+func (q *Question) GetTableName() string {
+	return "question"
+}
+
+// GetID returns id for Question.
+func (q *Question) GetID() uint64 {
+	return q.ID
+}
+
+func (q *Question) GetName() string {
+	return q.Name
+}
+
+// GetTableName returns table name for QuestionCategory.
+func (qc *QuestionCategory) GetTableName() string {
+	return "question_category"
+}
+
+// GetID returns id for QuestionCategory.
+func (qc *QuestionCategory) GetID() uint64 {
+	return qc.ID
+}
+
+func (qc *QuestionCategory) GetName() string {
+	return qc.Name
+}
+
 // GetTableName returns table name for Reserve.
 func (r *Reserve) GetTableName() string {
 	return "reserve"
@@ -830,4 +920,14 @@ func (ss *SubscribeSuspend) GetTableName() string {
 // GetID returns id for SubscribeSuspend.
 func (ss *SubscribeSuspend) GetID() uint64 {
 	return ss.ID
+}
+
+// GetTableName returns table name for Version.
+func (v *Version) GetTableName() string {
+	return "version"
+}
+
+// GetID returns id for Version.
+func (v *Version) GetID() uint64 {
+	return v.ID
 }

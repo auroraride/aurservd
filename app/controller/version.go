@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type version struct{}

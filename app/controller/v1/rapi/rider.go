@@ -21,14 +21,14 @@ type rider struct {
 }
 
 // Signin
-// @ID           Signin
-// @Router       /rider/v1/signin [POST]
-// @Summary      R1001 登录或注册
-// @Tags         Rider - 骑手
-// @Accept       json
-// @Produce      json
-// @Param        body  body     model.RiderSignupReq  true  "desc"
-// @Success      200  {object}  model.RiderSigninRes  "请求成功"
+// @ID		Signin
+// @Router	/rider/v1/signin [POST]
+// @Summary	R1001 登录或注册
+// @Tags	Rider - 骑手
+// @Accept	json
+// @Produce	json
+// @Param	body	body		model.RiderSignupReq	true	"desc"
+// @Success	200		{object}	model.RiderSigninRes	"请求成功"
 func (*rider) Signin(c echo.Context) (err error) {
 	ctx, req := app.ContextBinding[model.RiderSignupReq](c)
 
@@ -40,15 +40,15 @@ func (*rider) Signin(c echo.Context) (err error) {
 }
 
 // Contact
-// @ID           Contact
-// @Router       /rider/v1/contact [POST]
-// @Summary      R1002 添加紧急联系人
-// @Tags         Rider - 骑手
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        body  body  model.RiderContact  true  "desc"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @ID		Contact
+// @Router	/rider/v1/contact [POST]
+// @Summary	R1002 添加紧急联系人
+// @Tags	Rider - 骑手
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Param	body			body		model.RiderContact		true	"desc"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (r *rider) Contact(c echo.Context) error {
 	ctx, req := app.RiderContextAndBinding[model.RiderContact](c)
 	service.NewRider().UpdateContact(ctx.Rider, req)
@@ -56,15 +56,15 @@ func (r *rider) Contact(c echo.Context) error {
 }
 
 // Authenticator
-// @ID           Authenticator
-// @Router       /rider/v1/authenticator [POST]
-// @Summary      R1003 实名认证
-// @Tags         Rider - 骑手
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        body  body  model.RiderContact  true  "desc"
-// @Success      200  {object}  model.FaceAuthUrlResponse  "请求成功"
+// @ID		Authenticator
+// @Router	/rider/v1/authenticator [POST]
+// @Summary	R1003 实名认证
+// @Tags	Rider - 骑手
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string						true	"骑手校验token"
+// @Param	body			body		model.RiderContact			true	"desc"
+// @Success	200				{object}	model.FaceAuthUrlResponse	"请求成功"
 func (*rider) Authenticator(c echo.Context) error {
 	ctx, req := app.RiderContextAndBinding[model.RiderContact](c)
 	r := service.NewRider()
@@ -78,30 +78,30 @@ func (*rider) Authenticator(c echo.Context) error {
 
 // AuthResult
 // TODO 测试认证失败逻辑
-// @ID           AuthResult
-// @Router       /rider/v1/authenticator/{token} [GET]
-// @Summary      R1004 实名认证结果
-// @Tags         Rider - 骑手
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        token  path  string  true  "实名认证token"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @ID		AuthResult
+// @Router	/rider/v1/authenticator/{token} [GET]
+// @Summary	R1004 实名认证结果
+// @Tags	Rider - 骑手
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Param	token			path		string					true	"实名认证token"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (r *rider) AuthResult(c echo.Context) error {
 	ctx, req := app.RiderContextAndBinding[model.FaceResultReq](c)
 	return ctx.SendResponse(model.StatusResponse{Status: service.NewRider().FaceAuthResult(ctx, req.Token)})
 }
 
 // FaceResult
-// @ID           FaceResult
-// @Router       /rider/v1/face/{token} [GET]
-// @Summary      R1005 获取人脸校验结果
-// @Tags         Rider - 骑手
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        token  path  string  true  "人脸校验token"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @ID		FaceResult
+// @Router	/rider/v1/face/{token} [GET]
+// @Summary	R1005 获取人脸校验结果
+// @Tags	Rider - 骑手
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Param	token			path		string					true	"人脸校验token"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (r *rider) FaceResult(c echo.Context) error {
 	ctx, req := app.RiderContextAndBinding[model.FaceResultReq](c)
 	return ctx.SendResponse(model.StatusResponse{Status: service.NewRider().FaceResult(ctx, req.Token)})
@@ -113,14 +113,14 @@ func (r *rider) Demo(c echo.Context) error {
 }
 
 // Profile
-// @ID           Profile
-// @Router       /rider/v1/profile [GET]
-// @Summary      R1006 获取个人信息
-// @Tags         Rider - 骑手
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Success      200  {object}  model.RiderSigninRes  "请求成功"
+// @ID		Profile
+// @Router	/rider/v1/profile [GET]
+// @Summary	R1006 获取个人信息
+// @Tags	Rider - 骑手
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Success	200				{object}	model.RiderSigninRes	"请求成功"
 func (r *rider) Profile(c echo.Context) error {
 	ctx := c.(*app.RiderContext)
 	profile := service.NewRider().Profile(ctx.Rider, ctx.Device, ctx.Token)
@@ -129,28 +129,28 @@ func (r *rider) Profile(c echo.Context) error {
 }
 
 // Deposit
-// @ID           Deposit
-// @Router       /rider/v1/deposit [GET]
-// @Summary      R1007 获取已缴押金
-// @Tags         Rider - 骑手
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Success      200 {object}   model.RiderDepositRes  "请求成功"
+// @ID		Deposit
+// @Router	/rider/v1/deposit [GET]
+// @Summary	R1007 获取已缴押金
+// @Tags	Rider - 骑手
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Success	200				{object}	model.RiderDepositRes	"请求成功"
 func (*rider) Deposit(c echo.Context) (err error) {
 	ctx := app.ContextX[app.RiderContext](c)
 	return ctx.SendResponse(service.NewRider().DepositPaid(ctx.Rider.ID))
 }
 
 // Deregister
-// @ID           Deregister
-// @Router       /rider/v1/deregister [DELETE]
-// @Summary      R1008 注销账户
-// @Tags         Rider - 骑手
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Success      200 {object}  model.StatusResponse  "请求成功"
+// @ID		Deregister
+// @Router	/rider/v1/deregister [DELETE]
+// @Summary	R1008 注销账户
+// @Tags	Rider - 骑手
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*rider) Deregister(c echo.Context) (err error) {
 	ctx := app.ContextX[app.RiderContext](c)
 	service.NewRiderWithRider(ctx.Rider).Delete(&model.IDParamReq{ID: ctx.Rider.ID})

@@ -7,12 +7,15 @@ package tools
 
 import (
 	"fmt"
+	"math"
+	"strconv"
 	"strings"
 	"time"
 
-	"github.com/auroraride/aurservd/pkg/utils"
 	"github.com/golang-module/carbon/v2"
 	"github.com/sony/sonyflake"
+
+	"github.com/auroraride/aurservd/pkg/utils"
 )
 
 type unique struct {
@@ -34,11 +37,19 @@ func (u *unique) NewSN28() string {
 	if n > 0 {
 		str += strings.Repeat("0", n)
 	}
-	return fmt.Sprintf(
-		"%s%d",
-		str,
-		utils.RandomIntMaxMin(10000000, 99999999),
-	)
+	return str + strconv.FormatUint(uint64(utils.RandIntMaxMin(10000000, 99999999)), 10)
+}
+
+// Rand 生成指定长度字符串
+func (u *unique) Rand(n int) string {
+	str := strings.ReplaceAll(time.Now().Format(carbon.ShortDateTimeMicroLayout), ".", "")
+	x := n - len(str)
+
+	maxLimit := int(math.Pow10(x)) - 1
+	lowLimit := int(math.Pow10(x - 1))
+
+	str += strconv.FormatUint(uint64(utils.RandIntMaxMin(lowLimit, maxLimit)), 10)
+	return str
 }
 
 func (u *unique) NewSN() string {

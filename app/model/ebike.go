@@ -35,7 +35,7 @@ func (p *EbikeStatus) Scan(t interface{}) (err error) {
 }
 
 func (p EbikeStatus) Value() (driver.Value, error) {
-	return p.RawValue(), nil
+	return uint8(p), nil
 }
 
 func (p EbikeStatus) RawValue() any {

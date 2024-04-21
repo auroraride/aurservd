@@ -20,6 +20,7 @@ type RiderMgrModifyReq struct {
 	IdCardNumber   *string `json:"idCardNumber"`   // 身份证号
 	IdCardPortrait *string `json:"idCardPortrait"` // 身份证正面
 	IdCardNational *string `json:"idCardNational"` // 身份证国徽面
+	Address        *string `json:"address"`        // 详细地址
 }
 
 type RiderEmployeeSearchRes struct {

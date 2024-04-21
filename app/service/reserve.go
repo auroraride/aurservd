@@ -110,6 +110,7 @@ func (s *reserveService) Detail(rev *ent.Reserve) *model.ReserveUnfinishedRes {
 		Time:      rev.CreatedAt.Format(carbon.DateTimeLayout),
 		Status:    model.ReserveStatus(rev.Status),
 		Fid:       NewBranch().EncodeCabinetID(rev.CabinetID),
+		EndTime:   rev.CreatedAt.Add(s.max * time.Minute).Format(carbon.DateTimeLayout),
 	}
 }
 
@@ -171,6 +172,8 @@ func (s *reserveService) Create(req *model.ReserveCreateReq) *model.ReserveUnfin
 
 	// 判断电柜是否可预约
 	cab := NewCabinet().QueryOne(req.CabinetID)
+	// 同步电柜并返回电柜详情
+	NewCabinet().Sync(cab)
 	m := s.CabinetCounts([]uint64{cab.ID}, typ)
 	if !cab.ReserveAble(typ, m[cab.ID]) {
 		snag.Panic("电柜无法预约")
@@ -243,11 +246,12 @@ func (s *reserveService) List(req *model.ReserveListReq) *model.PaginationRes {
 
 func (s *reserveService) listDetail(item *ent.Reserve) (res model.ReserveListRes) {
 	res = model.ReserveListRes{
-		City:     item.Edges.City.Name,
-		Name:     item.Edges.Rider.Name,
-		Phone:    item.Edges.Rider.Phone,
-		Business: model.BusinessTypeText(item.Type),
-		Status:   model.ReserveStatus(item.Status).String(),
+		City:      item.Edges.City.Name,
+		Name:      item.Edges.Rider.Name,
+		Phone:     item.Edges.Rider.Phone,
+		Business:  model.BusinessTypeText(item.Type),
+		Status:    model.ReserveStatus(item.Status).String(),
+		CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
 	}
 	cab := item.Edges.Cabinet
 	if cab != nil {

@@ -42,7 +42,7 @@ func (s *sms) SendCode(phone string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	code := fmt.Sprintf("%06d", utils.RandomIntMaxMin(1000, 999999))
+	code := fmt.Sprintf("%06d", utils.RandIntMaxMin(1000, 999999))
 	var id string
 	// log.Info(*c.Endpoint)
 	// id = "test"
@@ -79,4 +79,23 @@ func (s *sms) VerifyCodeX(phone, id, code string) {
 		return
 	}
 	snag.Panic("短信验证码校验失败")
+}
+
+// SendSignSuccess 发送合同通知
+func (s *sms) SendSignSuccess(t time.Time, name, hash, phone string) (id string, err error) {
+	c, err := ali.NewSms()
+	if err != nil {
+		return "", err
+	}
+	cfg := ar.Config.Aliyun.Sms
+	id, err = c.SetTemplate(cfg.Template.ContractSuccess).
+		SetParam(map[string]string{
+			"time": t.Format("2006-01-02 15:04:05"),
+			"name": name,
+			"hash": hash,
+		}).SendCode(phone)
+	if err != nil {
+		return "", err
+	}
+	return id, nil
 }

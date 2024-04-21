@@ -32,6 +32,32 @@ func loadManagerRoutes() {
 	g.GET("/setting/legal/:name", mapi.Setting.LegalRead)
 	g.POST("/setting/legal", mapi.Setting.LegalSave)
 
+	// 设置-广告活动
+	g.GET("/setting/activity", mapi.Setting.ActivityList)       // 列表
+	g.GET("/setting/activity/:id", mapi.Setting.ActivityDetail) // 详情
+	g.POST("/setting/activity", mapi.Setting.ActivityCreate)    // 新增
+	g.PUT("/setting/activity/:id", mapi.Setting.ActivityModify) // 编辑
+
+	// 设置-版本
+	g.GET("/setting/version", mapi.Setting.VersionList)
+	g.POST("/setting/version", mapi.Setting.VersionCreate)
+	g.PUT("/setting/version/:id", mapi.Setting.VersionModify)
+	g.DELETE("/setting/version/:id", mapi.Setting.VersionDelete)
+
+	// 设置-问题分类
+	g.GET("/question/category", mapi.QuestionCategory.List) // 列表
+	g.POST("/question/category", mapi.QuestionCategory.Create)
+	g.PUT("/question/category/:id", mapi.QuestionCategory.Modify)
+	g.GET("/question/category/:id", mapi.QuestionCategory.Detail)
+	g.DELETE("/question/category/:id", mapi.QuestionCategory.Delete)
+
+	// 设置-常见问题
+	g.GET("/question", mapi.Question.List)
+	g.POST("/question", mapi.Question.Create)
+	g.PUT("/question/:id", mapi.Question.Modify)
+	g.GET("/question/:id", mapi.Question.Detail)
+	g.DELETE("/question/:id", mapi.Question.Delete)
+
 	// 城市
 	g.GET("/city", mapi.City.List)       // 城市列表
 	g.PUT("/city/:id", mapi.City.Modify) // 启用或关闭城市
@@ -197,6 +223,7 @@ func loadManagerRoutes() {
 	g.GET("/selection/ebike/brand", mapi.Selection.EbikeBrand)
 	g.GET("/selection/battery/serial", mapi.Selection.BatterySerial)
 	g.GET("/selection/commission/plan", mapi.Selection.CommissionPlan)
+	g.GET("/selection/question/category", mapi.Selection.QuestionCategory)
 
 	// 救援
 	g.GET("/assistance", mapi.Assistance.List)
@@ -263,6 +290,14 @@ func loadManagerRoutes() {
 	g.POST("/maintainer", mapi.Maintainer.Create)
 	g.PUT("/maintainer/:id", mapi.Maintainer.Modify)
 
+	// 说明
+	g.POST("/instructions", mapi.Instructions.Modify)     // 修改说明
+	g.GET("/instructions/:key", mapi.Instructions.Detail) // 说明详情
+
+	// 故障上报
+	g.GET("/fault", mapi.Fault.List)       // 故障列表
+	g.PUT("/fault/:id", mapi.Fault.Modify) // 故障更改状态
+
 	// 营销
 	// PM1 推广会员
 	g.GET("/promotion/member", mapi.Member.List)                         // 会员列表
@@ -319,5 +354,20 @@ func loadManagerRoutes() {
 
 	// PMA 推广关系
 	g.GET("/promotion/progress/list/:id", mapi.PromotionReferrals.ProgressList) // 推广关系列表
+
+	// 租赁协议
+	agreement := g.Group("/agreement")
+	agreement.GET("", mapi.Agreement.List)                // 协议列表
+	agreement.POST("", mapi.Agreement.Create)             // 创建协议
+	agreement.GET("/:id", mapi.Agreement.Detail)          // 协议详情
+	agreement.PUT("/:id", mapi.Agreement.Modify)          // 修改协议
+	agreement.DELETE("/:id", mapi.Agreement.Delete)       // 删除协议
+	agreement.GET("/selection", mapi.Agreement.Selection) // 协议选择
+
+	// 合同模版
+	contractTemplate := g.Group("/contract/template")
+	contractTemplate.GET("", mapi.ContractTemplate.List) // 列表
+	contractTemplate.POST("", mapi.ContractTemplate.Create)
+	contractTemplate.PUT("/:id", mapi.ContractTemplate.Modify)
 
 }

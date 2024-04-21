@@ -7,7 +7,9 @@ import (
 
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
@@ -22,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
@@ -39,7 +42,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/export"
+	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
+	"github.com/auroraride/aurservd/internal/ent/instructions"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -64,6 +69,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/question"
+	"github.com/auroraride/aurservd/internal/ent/questioncategory"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -78,12 +85,40 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
+	"github.com/auroraride/aurservd/internal/ent/version"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	activityMixin := schema.Activity{}.Mixin()
+	activityMixinFields0 := activityMixin[0].Fields()
+	_ = activityMixinFields0
+	activityFields := schema.Activity{}.Fields()
+	_ = activityFields
+	// activityDescCreatedAt is the schema descriptor for created_at field.
+	activityDescCreatedAt := activityMixinFields0[0].Descriptor()
+	// activity.DefaultCreatedAt holds the default value on creation for the created_at field.
+	activity.DefaultCreatedAt = activityDescCreatedAt.Default.(func() time.Time)
+	// activityDescUpdatedAt is the schema descriptor for updated_at field.
+	activityDescUpdatedAt := activityMixinFields0[1].Descriptor()
+	// activity.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	activity.DefaultUpdatedAt = activityDescUpdatedAt.Default.(func() time.Time)
+	// activity.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	activity.UpdateDefaultUpdatedAt = activityDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// activityDescEnable is the schema descriptor for enable field.
+	activityDescEnable := activityFields[3].Descriptor()
+	// activity.DefaultEnable holds the default value on creation for the enable field.
+	activity.DefaultEnable = activityDescEnable.Default.(bool)
+	// activityDescPopup is the schema descriptor for popup field.
+	activityDescPopup := activityFields[5].Descriptor()
+	// activity.DefaultPopup holds the default value on creation for the popup field.
+	activity.DefaultPopup = activityDescPopup.Default.(bool)
+	// activityDescHome is the schema descriptor for home field.
+	activityDescHome := activityFields[6].Descriptor()
+	// activity.DefaultHome holds the default value on creation for the home field.
+	activity.DefaultHome = activityDescHome.Default.(bool)
 	agentMixin := schema.Agent{}.Mixin()
 	agentMixinHooks2 := agentMixin[2].Hooks()
 	agent.Hooks[0] = agentMixinHooks2[0]
@@ -105,6 +140,35 @@ func init() {
 	agentDescSuper := agentFields[2].Descriptor()
 	// agent.DefaultSuper holds the default value on creation for the super field.
 	agent.DefaultSuper = agentDescSuper.Default.(bool)
+	agreementMixin := schema.Agreement{}.Mixin()
+	agreementMixinHooks2 := agreementMixin[2].Hooks()
+	agreement.Hooks[0] = agreementMixinHooks2[0]
+	agreementMixinFields0 := agreementMixin[0].Fields()
+	_ = agreementMixinFields0
+	agreementFields := schema.Agreement{}.Fields()
+	_ = agreementFields
+	// agreementDescCreatedAt is the schema descriptor for created_at field.
+	agreementDescCreatedAt := agreementMixinFields0[0].Descriptor()
+	// agreement.DefaultCreatedAt holds the default value on creation for the created_at field.
+	agreement.DefaultCreatedAt = agreementDescCreatedAt.Default.(func() time.Time)
+	// agreementDescUpdatedAt is the schema descriptor for updated_at field.
+	agreementDescUpdatedAt := agreementMixinFields0[1].Descriptor()
+	// agreement.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	agreement.DefaultUpdatedAt = agreementDescUpdatedAt.Default.(func() time.Time)
+	// agreement.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	agreement.UpdateDefaultUpdatedAt = agreementDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// agreementDescUserType is the schema descriptor for user_type field.
+	agreementDescUserType := agreementFields[2].Descriptor()
+	// agreement.DefaultUserType holds the default value on creation for the user_type field.
+	agreement.DefaultUserType = agreementDescUserType.Default.(uint8)
+	// agreementDescForceReadTime is the schema descriptor for force_read_time field.
+	agreementDescForceReadTime := agreementFields[3].Descriptor()
+	// agreement.DefaultForceReadTime holds the default value on creation for the force_read_time field.
+	agreement.DefaultForceReadTime = agreementDescForceReadTime.Default.(uint8)
+	// agreementDescIsDefault is the schema descriptor for is_default field.
+	agreementDescIsDefault := agreementFields[4].Descriptor()
+	// agreement.DefaultIsDefault holds the default value on creation for the is_default field.
+	agreement.DefaultIsDefault = agreementDescIsDefault.Default.(bool)
 	allocateMixin := schema.Allocate{}.Mixin()
 	allocateMixinHooks3 := allocateMixin[3].Hooks()
 	allocate.Hooks[0] = allocateMixinHooks3[0]
@@ -452,6 +516,35 @@ func init() {
 	contractDescEffective := contractFields[5].Descriptor()
 	// contract.DefaultEffective holds the default value on creation for the effective field.
 	contract.DefaultEffective = contractDescEffective.Default.(bool)
+	contracttemplateMixin := schema.ContractTemplate{}.Mixin()
+	contracttemplateMixinHooks2 := contracttemplateMixin[2].Hooks()
+	contracttemplate.Hooks[0] = contracttemplateMixinHooks2[0]
+	contracttemplateMixinFields0 := contracttemplateMixin[0].Fields()
+	_ = contracttemplateMixinFields0
+	contracttemplateFields := schema.ContractTemplate{}.Fields()
+	_ = contracttemplateFields
+	// contracttemplateDescCreatedAt is the schema descriptor for created_at field.
+	contracttemplateDescCreatedAt := contracttemplateMixinFields0[0].Descriptor()
+	// contracttemplate.DefaultCreatedAt holds the default value on creation for the created_at field.
+	contracttemplate.DefaultCreatedAt = contracttemplateDescCreatedAt.Default.(func() time.Time)
+	// contracttemplateDescUpdatedAt is the schema descriptor for updated_at field.
+	contracttemplateDescUpdatedAt := contracttemplateMixinFields0[1].Descriptor()
+	// contracttemplate.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	contracttemplate.DefaultUpdatedAt = contracttemplateDescUpdatedAt.Default.(func() time.Time)
+	// contracttemplate.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	contracttemplate.UpdateDefaultUpdatedAt = contracttemplateDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// contracttemplateDescAimed is the schema descriptor for aimed field.
+	contracttemplateDescAimed := contracttemplateFields[2].Descriptor()
+	// contracttemplate.DefaultAimed holds the default value on creation for the aimed field.
+	contracttemplate.DefaultAimed = contracttemplateDescAimed.Default.(uint8)
+	// contracttemplateDescPlanType is the schema descriptor for plan_type field.
+	contracttemplateDescPlanType := contracttemplateFields[3].Descriptor()
+	// contracttemplate.DefaultPlanType holds the default value on creation for the plan_type field.
+	contracttemplate.DefaultPlanType = contracttemplateDescPlanType.Default.(uint8)
+	// contracttemplateDescEnable is the schema descriptor for enable field.
+	contracttemplateDescEnable := contracttemplateFields[5].Descriptor()
+	// contracttemplate.DefaultEnable holds the default value on creation for the enable field.
+	contracttemplate.DefaultEnable = contracttemplateDescEnable.Default.(bool)
 	couponMixin := schema.Coupon{}.Mixin()
 	couponMixinHooks1 := couponMixin[1].Hooks()
 	coupon.Hooks[0] = couponMixinHooks1[0]
@@ -825,6 +918,31 @@ func init() {
 	exportDescStatus := exportFields[2].Descriptor()
 	// export.DefaultStatus holds the default value on creation for the status field.
 	export.DefaultStatus = exportDescStatus.Default.(uint8)
+	faultMixin := schema.Fault{}.Mixin()
+	faultMixinHooks2 := faultMixin[2].Hooks()
+	fault.Hooks[0] = faultMixinHooks2[0]
+	faultMixinFields0 := faultMixin[0].Fields()
+	_ = faultMixinFields0
+	faultFields := schema.Fault{}.Fields()
+	_ = faultFields
+	// faultDescCreatedAt is the schema descriptor for created_at field.
+	faultDescCreatedAt := faultMixinFields0[0].Descriptor()
+	// fault.DefaultCreatedAt holds the default value on creation for the created_at field.
+	fault.DefaultCreatedAt = faultDescCreatedAt.Default.(func() time.Time)
+	// faultDescUpdatedAt is the schema descriptor for updated_at field.
+	faultDescUpdatedAt := faultMixinFields0[1].Descriptor()
+	// fault.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	fault.DefaultUpdatedAt = faultDescUpdatedAt.Default.(func() time.Time)
+	// fault.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	fault.UpdateDefaultUpdatedAt = faultDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// faultDescStatus is the schema descriptor for status field.
+	faultDescStatus := faultFields[0].Descriptor()
+	// fault.DefaultStatus holds the default value on creation for the status field.
+	fault.DefaultStatus = faultDescStatus.Default.(uint8)
+	// faultDescType is the schema descriptor for type field.
+	faultDescType := faultFields[3].Descriptor()
+	// fault.DefaultType holds the default value on creation for the type field.
+	fault.DefaultType = faultDescType.Default.(uint8)
 	feedbackMixin := schema.Feedback{}.Mixin()
 	feedbackMixinFields0 := feedbackMixin[0].Fields()
 	_ = feedbackMixinFields0
@@ -844,6 +962,27 @@ func init() {
 	feedbackDescType := feedbackFields[1].Descriptor()
 	// feedback.DefaultType holds the default value on creation for the type field.
 	feedback.DefaultType = feedbackDescType.Default.(uint8)
+	// feedbackDescSource is the schema descriptor for source field.
+	feedbackDescSource := feedbackFields[2].Descriptor()
+	// feedback.DefaultSource holds the default value on creation for the source field.
+	feedback.DefaultSource = feedbackDescSource.Default.(uint8)
+	instructionsMixin := schema.Instructions{}.Mixin()
+	instructionsMixinHooks2 := instructionsMixin[2].Hooks()
+	instructions.Hooks[0] = instructionsMixinHooks2[0]
+	instructionsMixinFields0 := instructionsMixin[0].Fields()
+	_ = instructionsMixinFields0
+	instructionsFields := schema.Instructions{}.Fields()
+	_ = instructionsFields
+	// instructionsDescCreatedAt is the schema descriptor for created_at field.
+	instructionsDescCreatedAt := instructionsMixinFields0[0].Descriptor()
+	// instructions.DefaultCreatedAt holds the default value on creation for the created_at field.
+	instructions.DefaultCreatedAt = instructionsDescCreatedAt.Default.(func() time.Time)
+	// instructionsDescUpdatedAt is the schema descriptor for updated_at field.
+	instructionsDescUpdatedAt := instructionsMixinFields0[1].Descriptor()
+	// instructions.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	instructions.DefaultUpdatedAt = instructionsDescUpdatedAt.Default.(func() time.Time)
+	// instructions.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	instructions.UpdateDefaultUpdatedAt = instructionsDescUpdatedAt.UpdateDefault.(func() time.Time)
 	inventoryMixin := schema.Inventory{}.Mixin()
 	inventoryMixinHooks2 := inventoryMixin[2].Hooks()
 	inventory.Hooks[0] = inventoryMixinHooks2[0]
@@ -1012,6 +1151,26 @@ func init() {
 	planDescIntelligent := planFields[14].Descriptor()
 	// plan.DefaultIntelligent holds the default value on creation for the intelligent field.
 	plan.DefaultIntelligent = planDescIntelligent.Default.(bool)
+	// planDescDeposit is the schema descriptor for deposit field.
+	planDescDeposit := planFields[15].Descriptor()
+	// plan.DefaultDeposit holds the default value on creation for the deposit field.
+	plan.DefaultDeposit = planDescDeposit.Default.(bool)
+	// planDescDepositWechatPayscore is the schema descriptor for deposit_wechat_payscore field.
+	planDescDepositWechatPayscore := planFields[17].Descriptor()
+	// plan.DefaultDepositWechatPayscore holds the default value on creation for the deposit_wechat_payscore field.
+	plan.DefaultDepositWechatPayscore = planDescDepositWechatPayscore.Default.(bool)
+	// planDescDepositAlipayAuthFreeze is the schema descriptor for deposit_alipay_auth_freeze field.
+	planDescDepositAlipayAuthFreeze := planFields[18].Descriptor()
+	// plan.DefaultDepositAlipayAuthFreeze holds the default value on creation for the deposit_alipay_auth_freeze field.
+	plan.DefaultDepositAlipayAuthFreeze = planDescDepositAlipayAuthFreeze.Default.(bool)
+	// planDescDepositContract is the schema descriptor for deposit_contract field.
+	planDescDepositContract := planFields[19].Descriptor()
+	// plan.DefaultDepositContract holds the default value on creation for the deposit_contract field.
+	plan.DefaultDepositContract = planDescDepositContract.Default.(bool)
+	// planDescDepositPay is the schema descriptor for deposit_pay field.
+	planDescDepositPay := planFields[20].Descriptor()
+	// plan.DefaultDepositPay holds the default value on creation for the deposit_pay field.
+	plan.DefaultDepositPay = planDescDepositPay.Default.(bool)
 	planintroduceMixin := schema.PlanIntroduce{}.Mixin()
 	planintroduceMixinFields0 := planintroduceMixin[0].Fields()
 	_ = planintroduceMixinFields0
@@ -1450,6 +1609,40 @@ func init() {
 	promotionwithdrawalDescTex := promotionwithdrawalFields[4].Descriptor()
 	// promotionwithdrawal.DefaultTex holds the default value on creation for the tex field.
 	promotionwithdrawal.DefaultTex = promotionwithdrawalDescTex.Default.(float64)
+	questionMixin := schema.Question{}.Mixin()
+	questionMixinHooks2 := questionMixin[2].Hooks()
+	question.Hooks[0] = questionMixinHooks2[0]
+	questionMixinFields0 := questionMixin[0].Fields()
+	_ = questionMixinFields0
+	questionFields := schema.Question{}.Fields()
+	_ = questionFields
+	// questionDescCreatedAt is the schema descriptor for created_at field.
+	questionDescCreatedAt := questionMixinFields0[0].Descriptor()
+	// question.DefaultCreatedAt holds the default value on creation for the created_at field.
+	question.DefaultCreatedAt = questionDescCreatedAt.Default.(func() time.Time)
+	// questionDescUpdatedAt is the schema descriptor for updated_at field.
+	questionDescUpdatedAt := questionMixinFields0[1].Descriptor()
+	// question.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	question.DefaultUpdatedAt = questionDescUpdatedAt.Default.(func() time.Time)
+	// question.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	question.UpdateDefaultUpdatedAt = questionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	questioncategoryMixin := schema.QuestionCategory{}.Mixin()
+	questioncategoryMixinHooks2 := questioncategoryMixin[2].Hooks()
+	questioncategory.Hooks[0] = questioncategoryMixinHooks2[0]
+	questioncategoryMixinFields0 := questioncategoryMixin[0].Fields()
+	_ = questioncategoryMixinFields0
+	questioncategoryFields := schema.QuestionCategory{}.Fields()
+	_ = questioncategoryFields
+	// questioncategoryDescCreatedAt is the schema descriptor for created_at field.
+	questioncategoryDescCreatedAt := questioncategoryMixinFields0[0].Descriptor()
+	// questioncategory.DefaultCreatedAt holds the default value on creation for the created_at field.
+	questioncategory.DefaultCreatedAt = questioncategoryDescCreatedAt.Default.(func() time.Time)
+	// questioncategoryDescUpdatedAt is the schema descriptor for updated_at field.
+	questioncategoryDescUpdatedAt := questioncategoryMixinFields0[1].Descriptor()
+	// questioncategory.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	questioncategory.DefaultUpdatedAt = questioncategoryDescUpdatedAt.Default.(func() time.Time)
+	// questioncategory.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	questioncategory.UpdateDefaultUpdatedAt = questioncategoryDescUpdatedAt.UpdateDefault.(func() time.Time)
 	reserveMixin := schema.Reserve{}.Mixin()
 	reserveMixinHooks2 := reserveMixin[2].Hooks()
 	reserve.Hooks[0] = reserveMixinHooks2[0]
@@ -1501,15 +1694,15 @@ func init() {
 	// rider.DefaultIsNewDevice holds the default value on creation for the is_new_device field.
 	rider.DefaultIsNewDevice = riderDescIsNewDevice.Default.(bool)
 	// riderDescPushID is the schema descriptor for push_id field.
-	riderDescPushID := riderFields[10].Descriptor()
+	riderDescPushID := riderFields[9].Descriptor()
 	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	rider.PushIDValidator = riderDescPushID.Validators[0].(func(string) error)
 	// riderDescBlocked is the schema descriptor for blocked field.
-	riderDescBlocked := riderFields[12].Descriptor()
+	riderDescBlocked := riderFields[11].Descriptor()
 	// rider.DefaultBlocked holds the default value on creation for the blocked field.
 	rider.DefaultBlocked = riderDescBlocked.Default.(bool)
 	// riderDescPoints is the schema descriptor for points field.
-	riderDescPoints := riderFields[13].Descriptor()
+	riderDescPoints := riderFields[12].Descriptor()
 	// rider.DefaultPoints holds the default value on creation for the points field.
 	rider.DefaultPoints = riderDescPoints.Default.(int64)
 	riderfollowupMixin := schema.RiderFollowUp{}.Mixin()
@@ -1642,6 +1835,10 @@ func init() {
 	storeDescEbikeRepair := storeFields[9].Descriptor()
 	// store.DefaultEbikeRepair holds the default value on creation for the ebike_repair field.
 	store.DefaultEbikeRepair = storeDescEbikeRepair.Default.(bool)
+	// storeDescEbikeSale is the schema descriptor for ebike_sale field.
+	storeDescEbikeSale := storeFields[10].Descriptor()
+	// store.DefaultEbikeSale holds the default value on creation for the ebike_sale field.
+	store.DefaultEbikeSale = storeDescEbikeSale.Default.(bool)
 	subscribeMixin := schema.Subscribe{}.Mixin()
 	subscribeMixinHooks2 := subscribeMixin[2].Hooks()
 	subscribeHooks := schema.Subscribe{}.Hooks()
@@ -1705,6 +1902,10 @@ func init() {
 	subscribeDescIntelligent := subscribeFields[24].Descriptor()
 	// subscribe.DefaultIntelligent holds the default value on creation for the intelligent field.
 	subscribe.DefaultIntelligent = subscribeDescIntelligent.Default.(bool)
+	// subscribeDescDepositType is the schema descriptor for deposit_type field.
+	subscribeDescDepositType := subscribeFields[27].Descriptor()
+	// subscribe.DefaultDepositType holds the default value on creation for the deposit_type field.
+	subscribe.DefaultDepositType = subscribeDescDepositType.Default.(uint8)
 	subscribealterMixin := schema.SubscribeAlter{}.Mixin()
 	subscribealterMixinHooks1 := subscribealterMixin[1].Hooks()
 	subscribealter.Hooks[0] = subscribealterMixinHooks1[0]
@@ -1783,9 +1984,30 @@ func init() {
 	subscribesuspendDescDays := subscribesuspendFields[2].Descriptor()
 	// subscribesuspend.DefaultDays holds the default value on creation for the days field.
 	subscribesuspend.DefaultDays = subscribesuspendDescDays.Default.(int)
+	versionMixin := schema.Version{}.Mixin()
+	versionMixinHooks2 := versionMixin[2].Hooks()
+	version.Hooks[0] = versionMixinHooks2[0]
+	versionMixinFields0 := versionMixin[0].Fields()
+	_ = versionMixinFields0
+	versionFields := schema.Version{}.Fields()
+	_ = versionFields
+	// versionDescCreatedAt is the schema descriptor for created_at field.
+	versionDescCreatedAt := versionMixinFields0[0].Descriptor()
+	// version.DefaultCreatedAt holds the default value on creation for the created_at field.
+	version.DefaultCreatedAt = versionDescCreatedAt.Default.(func() time.Time)
+	// versionDescUpdatedAt is the schema descriptor for updated_at field.
+	versionDescUpdatedAt := versionMixinFields0[1].Descriptor()
+	// version.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	version.DefaultUpdatedAt = versionDescUpdatedAt.Default.(func() time.Time)
+	// version.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	version.UpdateDefaultUpdatedAt = versionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// versionDescPlatform is the schema descriptor for platform field.
+	versionDescPlatform := versionFields[0].Descriptor()
+	// version.DefaultPlatform holds the default value on creation for the platform field.
+	version.DefaultPlatform = versionDescPlatform.Default.(model.AppPlatform)
 }
 
 const (
-	Version = "v0.12.5"                                         // Version of ent codegen.
-	Sum     = "h1:KREM5E4CSoej4zeGa88Ou/gfturAnpUv0mzAjch1sj4=" // Sum of ent codegen.
+	Version = "v0.13.1"                                         // Version of ent codegen.
+	Sum     = "h1:uD8QwN1h6SNphdCCzmkMN3feSUzNnVvV/WIkHKMbzOE=" // Sum of ent codegen.
 )

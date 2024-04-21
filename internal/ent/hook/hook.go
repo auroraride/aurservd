@@ -9,6 +9,18 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 )
 
+// The ActivityFunc type is an adapter to allow the use of ordinary
+// function as Activity mutator.
+type ActivityFunc func(context.Context, *ent.ActivityMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ActivityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ActivityMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ActivityMutation", m)
+}
+
 // The AgentFunc type is an adapter to allow the use of ordinary
 // function as Agent mutator.
 type AgentFunc func(context.Context, *ent.AgentMutation) (ent.Value, error)
@@ -19,6 +31,18 @@ func (f AgentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AgentMutation", m)
+}
+
+// The AgreementFunc type is an adapter to allow the use of ordinary
+// function as Agreement mutator.
+type AgreementFunc func(context.Context, *ent.AgreementMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AgreementFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AgreementMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AgreementMutation", m)
 }
 
 // The AllocateFunc type is an adapter to allow the use of ordinary
@@ -187,6 +211,18 @@ func (f ContractFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ContractMutation", m)
+}
+
+// The ContractTemplateFunc type is an adapter to allow the use of ordinary
+// function as ContractTemplate mutator.
+type ContractTemplateFunc func(context.Context, *ent.ContractTemplateMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ContractTemplateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ContractTemplateMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ContractTemplateMutation", m)
 }
 
 // The CouponFunc type is an adapter to allow the use of ordinary
@@ -393,6 +429,18 @@ func (f ExportFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ExportMutation", m)
 }
 
+// The FaultFunc type is an adapter to allow the use of ordinary
+// function as Fault mutator.
+type FaultFunc func(context.Context, *ent.FaultMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FaultFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.FaultMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FaultMutation", m)
+}
+
 // The FeedbackFunc type is an adapter to allow the use of ordinary
 // function as Feedback mutator.
 type FeedbackFunc func(context.Context, *ent.FeedbackMutation) (ent.Value, error)
@@ -403,6 +451,18 @@ func (f FeedbackFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FeedbackMutation", m)
+}
+
+// The InstructionsFunc type is an adapter to allow the use of ordinary
+// function as Instructions mutator.
+type InstructionsFunc func(context.Context, *ent.InstructionsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f InstructionsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.InstructionsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.InstructionsMutation", m)
 }
 
 // The InventoryFunc type is an adapter to allow the use of ordinary
@@ -705,6 +765,30 @@ func (f PromotionWithdrawalFunc) Mutate(ctx context.Context, m ent.Mutation) (en
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionWithdrawalMutation", m)
 }
 
+// The QuestionFunc type is an adapter to allow the use of ordinary
+// function as Question mutator.
+type QuestionFunc func(context.Context, *ent.QuestionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f QuestionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.QuestionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.QuestionMutation", m)
+}
+
+// The QuestionCategoryFunc type is an adapter to allow the use of ordinary
+// function as QuestionCategory mutator.
+type QuestionCategoryFunc func(context.Context, *ent.QuestionCategoryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f QuestionCategoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.QuestionCategoryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.QuestionCategoryMutation", m)
+}
+
 // The ReserveFunc type is an adapter to allow the use of ordinary
 // function as Reserve mutator.
 type ReserveFunc func(context.Context, *ent.ReserveMutation) (ent.Value, error)
@@ -859,6 +943,18 @@ func (f SubscribeSuspendFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.V
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SubscribeSuspendMutation", m)
+}
+
+// The VersionFunc type is an adapter to allow the use of ordinary
+// function as Version mutator.
+type VersionFunc func(context.Context, *ent.VersionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f VersionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.VersionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.VersionMutation", m)
 }
 
 // Condition is a hook condition function.

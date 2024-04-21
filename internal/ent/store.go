@@ -52,10 +52,14 @@ type Store struct {
 	Lat float64 `json:"lat,omitempty"`
 	// 详细地址
 	Address string `json:"address,omitempty"`
-	// 是否可以领取车辆
+	// 是否可以领取车辆(租车)
 	EbikeObtain bool `json:"ebike_obtain,omitempty"`
 	// 是否可以维修车辆
 	EbikeRepair bool `json:"ebike_repair,omitempty"`
+	// 是否可以购买车辆
+	EbikeSale bool `json:"ebike_sale,omitempty"`
+	// 营业时间
+	BusinessHours string `json:"business_hours,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StoreQuery when eager-loading is set.
 	Edges        StoreEdges `json:"edges"`
@@ -84,12 +88,10 @@ type StoreEdges struct {
 // CityOrErr returns the City value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StoreEdges) CityOrErr() (*City, error) {
-	if e.loadedTypes[0] {
-		if e.City == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: city.Label}
-		}
+	if e.City != nil {
 		return e.City, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: city.Label}
 	}
 	return nil, &NotLoadedError{edge: "city"}
 }
@@ -97,12 +99,10 @@ func (e StoreEdges) CityOrErr() (*City, error) {
 // BranchOrErr returns the Branch value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StoreEdges) BranchOrErr() (*Branch, error) {
-	if e.loadedTypes[1] {
-		if e.Branch == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: branch.Label}
-		}
+	if e.Branch != nil {
 		return e.Branch, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: branch.Label}
 	}
 	return nil, &NotLoadedError{edge: "branch"}
 }
@@ -110,12 +110,10 @@ func (e StoreEdges) BranchOrErr() (*Branch, error) {
 // EmployeeOrErr returns the Employee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StoreEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[2] {
-		if e.Employee == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: employee.Label}
-		}
+	if e.Employee != nil {
 		return e.Employee, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: employee.Label}
 	}
 	return nil, &NotLoadedError{edge: "employee"}
 }
@@ -154,13 +152,13 @@ func (*Store) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case store.FieldCreator, store.FieldLastModifier:
 			values[i] = new([]byte)
-		case store.FieldEbikeObtain, store.FieldEbikeRepair:
+		case store.FieldEbikeObtain, store.FieldEbikeRepair, store.FieldEbikeSale:
 			values[i] = new(sql.NullBool)
 		case store.FieldLng, store.FieldLat:
 			values[i] = new(sql.NullFloat64)
 		case store.FieldID, store.FieldCityID, store.FieldEmployeeID, store.FieldBranchID, store.FieldStatus:
 			values[i] = new(sql.NullInt64)
-		case store.FieldRemark, store.FieldSn, store.FieldName, store.FieldAddress:
+		case store.FieldRemark, store.FieldSn, store.FieldName, store.FieldAddress, store.FieldBusinessHours:
 			values[i] = new(sql.NullString)
 		case store.FieldCreatedAt, store.FieldUpdatedAt, store.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -293,6 +291,18 @@ func (s *Store) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.EbikeRepair = value.Bool
 			}
+		case store.FieldEbikeSale:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field ebike_sale", values[i])
+			} else if value.Valid {
+				s.EbikeSale = value.Bool
+			}
+		case store.FieldBusinessHours:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field business_hours", values[i])
+			} else if value.Valid {
+				s.BusinessHours = value.String
+			}
 		default:
 			s.selectValues.Set(columns[i], values[i])
 		}
@@ -413,6 +423,12 @@ func (s *Store) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("ebike_repair=")
 	builder.WriteString(fmt.Sprintf("%v", s.EbikeRepair))
+	builder.WriteString(", ")
+	builder.WriteString("ebike_sale=")
+	builder.WriteString(fmt.Sprintf("%v", s.EbikeSale))
+	builder.WriteString(", ")
+	builder.WriteString("business_hours=")
+	builder.WriteString(s.BusinessHours)
 	builder.WriteByte(')')
 	return builder.String()
 }

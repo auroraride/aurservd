@@ -10,4 +10,6 @@ type WalletOverview struct {
 	Points  int64   `json:"points"`  // 积分数量
 	Coupons int     `json:"coupons"` // 可使用优惠券数量
 	Deposit float64 `json:"deposit"` // 已缴纳押金
+
+	DepositType DepositType `json:"depositType,omitempty"` // 押金类型  1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金
 }

@@ -12,13 +12,14 @@ import (
 	"github.com/auroraride/adapter"
 )
 
-const (
+var (
+	Config     *config
 	configFile = "./config/config.yaml"
 )
 
-var (
-	Config *config
-)
+func SetConfigFile(cfgFile string) {
+	configFile = cfgFile
+}
 
 type Wechat struct {
 	AppID     string `koanf:"appID"`
@@ -70,6 +71,10 @@ type config struct {
 		Captcha struct {
 			Names map[string]string
 		}
+	}
+
+	GRPC struct {
+		Business string // 业务grpc服务端口
 	}
 
 	Sync struct {
@@ -168,6 +173,8 @@ type config struct {
 				Reminder string
 				// 逾期通知
 				Overdue string
+				// 签署合同成功通知
+				ContractSuccess string
 			}
 		}
 		Sls struct {
@@ -186,8 +193,26 @@ type config struct {
 		IdVerify struct {
 			AppCode string
 		}
+
 		BankAddr struct {
 			AppCode string
+		}
+
+		FaceVerify struct {
+			AccessKeyId     string
+			AccessKeySecret string
+			Endpoint        string
+			SceneId         int64
+			Callback        string
+		}
+
+		Ocr struct {
+			AccessKeyId     string
+			AccessKeySecret string
+			Endpoint        string
+			Arn             string
+			RamRole         string
+			RegionId        string
 		}
 	}
 
@@ -240,6 +265,18 @@ type config struct {
 			PublicCert    string
 			NotifyUrl     string
 		}
+		AlipayAuthFreeze struct {
+			// 冻结回调通知
+			FreezeNotifyUrl string `koanf:"freezeNotifyUrl"`
+			// 解冻回调通知
+			UnfreezeNotifyUrl string `koanf:"unfreezeNotifyUrl"`
+			// 冻结转支付回调通知
+			TradePayNotifyUrl string `koanf:"tradePayNotifyUrl"`
+
+			// 芝麻信用免押金
+			Category  string // 芝麻免押的类目
+			ServiceId string // 芝麻免押的服务ID
+		}
 	}
 	RiderApp    AppVersion
 	EmployeeApp AppVersion
@@ -252,6 +289,27 @@ type config struct {
 		Agent     Wechat
 		Promotion Wechat
 	} `koanf:"wechatMiniprogram"`
+
+	Tencent struct {
+		WbFace struct {
+			AppId   string
+			Secret  string
+			Licence string
+		}
+		FaceId struct {
+			Id        string
+			Username  string
+			SecretId  string
+			SecretKey string
+		}
+	}
+	Contract struct {
+		Address  string
+		Template struct {
+			Personal   string
+			Enterprise string
+		}
+	}
 }
 
 func LoadConfig() {

@@ -10,7 +10,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"strings"
 
 	"github.com/povsister/scp"
@@ -35,7 +34,7 @@ func main() {
 	files, _ := os.ReadDir(d)
 	m := make(map[string]*permission.Group)
 	for _, f := range files {
-		if f.IsDir() {
+		if f.IsDir() || f.Name() == "mapi.go" {
 			continue
 		}
 		name := strings.TrimSuffix(f.Name(), filepath.Ext(f.Name()))
@@ -58,7 +57,7 @@ func main() {
 		}
 
 		doc, _ := os.ReadFile(filepath.Join(d, f.Name()))
-		re := regexp.MustCompile(`(?m)// @Router\s+(.*) \[(.*)][\S\s]*?@Summary\s+(.*)? (.*)`)
+		re := regexp.MustCompile(`(?m)// @Router\s+(.*) \[(.*)][\S\s]*?@Summary\s+(.*)\s+(.*)`)
 		bs := re.FindAllStringSubmatch(string(doc), -1)
 		for _, sub := range bs {
 			api := sub[1]
@@ -66,31 +65,32 @@ func main() {
 				continue
 			}
 			method := sub[2]
-			sn := sub[3]
-			desc := sub[4]
+			desc := sub[3]
 			pg.Permissions = append(pg.Permissions, permission.Item{
 				Key:    permission.GetKey(method, api),
 				Method: method,
 				Api:    api,
 				Desc:   desc,
-				SN:     sn,
 			})
 		}
-
-		sort.Slice(pg.Permissions, func(i, j int) bool {
-			return strings.Compare(pg.Permissions[i].SN, pg.Permissions[j].SN) < 0
-		})
 	}
 
 	permission.Save(m)
 
-	upload()
+	addrs := []string{
+		"118.116.4.16:26610",
+		"118.116.4.16:26611",
+	}
+
+	for _, addr := range addrs {
+		upload(addr)
+	}
 }
 
-func upload() {
-	privPEM, _ := os.ReadFile("/Users/liasica/.ssh/id_rsa")
+func upload(addr string) {
+	privPEM, _ := os.ReadFile("~/.ssh/id_rsa")
 	sshConf, _ := scp.NewSSHConfigFromPrivateKey("root", privPEM)
-	client, err := scp.NewClient("39.106.77.239", sshConf, &scp.ClientOption{})
+	client, err := scp.NewClient(addr, sshConf, &scp.ClientOption{})
 	if err != nil {
 		fmt.Println("ssh connect error ", err)
 		return
@@ -99,15 +99,9 @@ func upload() {
 		_ = client.Close()
 	}(client)
 
-	err = client.CopyFileToRemote(permission.PermFile, "/var/www/api.auroraride.com/config/permission.yaml", &scp.FileTransferOption{})
+	err = client.CopyFileToRemote(permission.PermFile, "/var/www/aurservd/config/permission.yaml", &scp.FileTransferOption{})
 	if err != nil {
 		fmt.Println("[api] Error while copying file ", err)
-		return
-	}
-
-	err = client.CopyFileToRemote(permission.PermFile, "/var/www/next-api.auroraride.com/config/permission.yaml", &scp.FileTransferOption{})
-	if err != nil {
-		fmt.Println("[next-api] Error while copying file ", err)
 		return
 	}
 }

@@ -320,6 +320,26 @@ func (cu *ContractUpdate) ClearSignedAt() *ContractUpdate {
 	return cu
 }
 
+// SetDocID sets the "doc_id" field.
+func (cu *ContractUpdate) SetDocID(s string) *ContractUpdate {
+	cu.mutation.SetDocID(s)
+	return cu
+}
+
+// SetNillableDocID sets the "doc_id" field if the given value is not nil.
+func (cu *ContractUpdate) SetNillableDocID(s *string) *ContractUpdate {
+	if s != nil {
+		cu.SetDocID(*s)
+	}
+	return cu
+}
+
+// ClearDocID clears the value of the "doc_id" field.
+func (cu *ContractUpdate) ClearDocID() *ContractUpdate {
+	cu.mutation.ClearDocID()
+	return cu
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (cu *ContractUpdate) SetSubscribe(s *Subscribe) *ContractUpdate {
 	return cu.SetSubscribeID(s.ID)
@@ -520,6 +540,12 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if cu.mutation.SignedAtCleared() {
 		_spec.ClearField(contract.FieldSignedAt, field.TypeTime)
+	}
+	if value, ok := cu.mutation.DocID(); ok {
+		_spec.SetField(contract.FieldDocID, field.TypeString, value)
+	}
+	if cu.mutation.DocIDCleared() {
+		_spec.ClearField(contract.FieldDocID, field.TypeString)
 	}
 	if cu.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -944,6 +970,26 @@ func (cuo *ContractUpdateOne) ClearSignedAt() *ContractUpdateOne {
 	return cuo
 }
 
+// SetDocID sets the "doc_id" field.
+func (cuo *ContractUpdateOne) SetDocID(s string) *ContractUpdateOne {
+	cuo.mutation.SetDocID(s)
+	return cuo
+}
+
+// SetNillableDocID sets the "doc_id" field if the given value is not nil.
+func (cuo *ContractUpdateOne) SetNillableDocID(s *string) *ContractUpdateOne {
+	if s != nil {
+		cuo.SetDocID(*s)
+	}
+	return cuo
+}
+
+// ClearDocID clears the value of the "doc_id" field.
+func (cuo *ContractUpdateOne) ClearDocID() *ContractUpdateOne {
+	cuo.mutation.ClearDocID()
+	return cuo
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (cuo *ContractUpdateOne) SetSubscribe(s *Subscribe) *ContractUpdateOne {
 	return cuo.SetSubscribeID(s.ID)
@@ -1174,6 +1220,12 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 	}
 	if cuo.mutation.SignedAtCleared() {
 		_spec.ClearField(contract.FieldSignedAt, field.TypeTime)
+	}
+	if value, ok := cuo.mutation.DocID(); ok {
+		_spec.SetField(contract.FieldDocID, field.TypeString, value)
+	}
+	if cuo.mutation.DocIDCleared() {
+		_spec.ClearField(contract.FieldDocID, field.TypeString)
 	}
 	if cuo.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{

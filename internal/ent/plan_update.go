@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -109,6 +110,26 @@ func (pu *PlanUpdate) SetNillableBrandID(u *uint64) *PlanUpdate {
 // ClearBrandID clears the value of the "brand_id" field.
 func (pu *PlanUpdate) ClearBrandID() *PlanUpdate {
 	pu.mutation.ClearBrandID()
+	return pu
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (pu *PlanUpdate) SetAgreementID(u uint64) *PlanUpdate {
+	pu.mutation.SetAgreementID(u)
+	return pu
+}
+
+// SetNillableAgreementID sets the "agreement_id" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableAgreementID(u *uint64) *PlanUpdate {
+	if u != nil {
+		pu.SetAgreementID(*u)
+	}
+	return pu
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (pu *PlanUpdate) ClearAgreementID() *PlanUpdate {
+	pu.mutation.ClearAgreementID()
 	return pu
 }
 
@@ -392,9 +413,135 @@ func (pu *PlanUpdate) SetNillableIntelligent(b *bool) *PlanUpdate {
 	return pu
 }
 
+// SetDeposit sets the "deposit" field.
+func (pu *PlanUpdate) SetDeposit(b bool) *PlanUpdate {
+	pu.mutation.SetDeposit(b)
+	return pu
+}
+
+// SetNillableDeposit sets the "deposit" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDeposit(b *bool) *PlanUpdate {
+	if b != nil {
+		pu.SetDeposit(*b)
+	}
+	return pu
+}
+
+// SetDepositAmount sets the "deposit_amount" field.
+func (pu *PlanUpdate) SetDepositAmount(f float64) *PlanUpdate {
+	pu.mutation.ResetDepositAmount()
+	pu.mutation.SetDepositAmount(f)
+	return pu
+}
+
+// SetNillableDepositAmount sets the "deposit_amount" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDepositAmount(f *float64) *PlanUpdate {
+	if f != nil {
+		pu.SetDepositAmount(*f)
+	}
+	return pu
+}
+
+// AddDepositAmount adds f to the "deposit_amount" field.
+func (pu *PlanUpdate) AddDepositAmount(f float64) *PlanUpdate {
+	pu.mutation.AddDepositAmount(f)
+	return pu
+}
+
+// ClearDepositAmount clears the value of the "deposit_amount" field.
+func (pu *PlanUpdate) ClearDepositAmount() *PlanUpdate {
+	pu.mutation.ClearDepositAmount()
+	return pu
+}
+
+// SetDepositWechatPayscore sets the "deposit_wechat_payscore" field.
+func (pu *PlanUpdate) SetDepositWechatPayscore(b bool) *PlanUpdate {
+	pu.mutation.SetDepositWechatPayscore(b)
+	return pu
+}
+
+// SetNillableDepositWechatPayscore sets the "deposit_wechat_payscore" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDepositWechatPayscore(b *bool) *PlanUpdate {
+	if b != nil {
+		pu.SetDepositWechatPayscore(*b)
+	}
+	return pu
+}
+
+// ClearDepositWechatPayscore clears the value of the "deposit_wechat_payscore" field.
+func (pu *PlanUpdate) ClearDepositWechatPayscore() *PlanUpdate {
+	pu.mutation.ClearDepositWechatPayscore()
+	return pu
+}
+
+// SetDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field.
+func (pu *PlanUpdate) SetDepositAlipayAuthFreeze(b bool) *PlanUpdate {
+	pu.mutation.SetDepositAlipayAuthFreeze(b)
+	return pu
+}
+
+// SetNillableDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDepositAlipayAuthFreeze(b *bool) *PlanUpdate {
+	if b != nil {
+		pu.SetDepositAlipayAuthFreeze(*b)
+	}
+	return pu
+}
+
+// ClearDepositAlipayAuthFreeze clears the value of the "deposit_alipay_auth_freeze" field.
+func (pu *PlanUpdate) ClearDepositAlipayAuthFreeze() *PlanUpdate {
+	pu.mutation.ClearDepositAlipayAuthFreeze()
+	return pu
+}
+
+// SetDepositContract sets the "deposit_contract" field.
+func (pu *PlanUpdate) SetDepositContract(b bool) *PlanUpdate {
+	pu.mutation.SetDepositContract(b)
+	return pu
+}
+
+// SetNillableDepositContract sets the "deposit_contract" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDepositContract(b *bool) *PlanUpdate {
+	if b != nil {
+		pu.SetDepositContract(*b)
+	}
+	return pu
+}
+
+// ClearDepositContract clears the value of the "deposit_contract" field.
+func (pu *PlanUpdate) ClearDepositContract() *PlanUpdate {
+	pu.mutation.ClearDepositContract()
+	return pu
+}
+
+// SetDepositPay sets the "deposit_pay" field.
+func (pu *PlanUpdate) SetDepositPay(b bool) *PlanUpdate {
+	pu.mutation.SetDepositPay(b)
+	return pu
+}
+
+// SetNillableDepositPay sets the "deposit_pay" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDepositPay(b *bool) *PlanUpdate {
+	if b != nil {
+		pu.SetDepositPay(*b)
+	}
+	return pu
+}
+
+// ClearDepositPay clears the value of the "deposit_pay" field.
+func (pu *PlanUpdate) ClearDepositPay() *PlanUpdate {
+	pu.mutation.ClearDepositPay()
+	return pu
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (pu *PlanUpdate) SetBrand(e *EbikeBrand) *PlanUpdate {
 	return pu.SetBrandID(e.ID)
+}
+
+// SetAgreement sets the "agreement" edge to the Agreement entity.
+func (pu *PlanUpdate) SetAgreement(a *Agreement) *PlanUpdate {
+	return pu.SetAgreementID(a.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -455,6 +602,12 @@ func (pu *PlanUpdate) Mutation() *PlanMutation {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (pu *PlanUpdate) ClearBrand() *PlanUpdate {
 	pu.mutation.ClearBrand()
+	return pu
+}
+
+// ClearAgreement clears the "agreement" edge to the Agreement entity.
+func (pu *PlanUpdate) ClearAgreement() *PlanUpdate {
+	pu.mutation.ClearAgreement()
 	return pu
 }
 
@@ -685,6 +838,42 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := pu.mutation.Intelligent(); ok {
 		_spec.SetField(plan.FieldIntelligent, field.TypeBool, value)
 	}
+	if value, ok := pu.mutation.Deposit(); ok {
+		_spec.SetField(plan.FieldDeposit, field.TypeBool, value)
+	}
+	if value, ok := pu.mutation.DepositAmount(); ok {
+		_spec.SetField(plan.FieldDepositAmount, field.TypeFloat64, value)
+	}
+	if value, ok := pu.mutation.AddedDepositAmount(); ok {
+		_spec.AddField(plan.FieldDepositAmount, field.TypeFloat64, value)
+	}
+	if pu.mutation.DepositAmountCleared() {
+		_spec.ClearField(plan.FieldDepositAmount, field.TypeFloat64)
+	}
+	if value, ok := pu.mutation.DepositWechatPayscore(); ok {
+		_spec.SetField(plan.FieldDepositWechatPayscore, field.TypeBool, value)
+	}
+	if pu.mutation.DepositWechatPayscoreCleared() {
+		_spec.ClearField(plan.FieldDepositWechatPayscore, field.TypeBool)
+	}
+	if value, ok := pu.mutation.DepositAlipayAuthFreeze(); ok {
+		_spec.SetField(plan.FieldDepositAlipayAuthFreeze, field.TypeBool, value)
+	}
+	if pu.mutation.DepositAlipayAuthFreezeCleared() {
+		_spec.ClearField(plan.FieldDepositAlipayAuthFreeze, field.TypeBool)
+	}
+	if value, ok := pu.mutation.DepositContract(); ok {
+		_spec.SetField(plan.FieldDepositContract, field.TypeBool, value)
+	}
+	if pu.mutation.DepositContractCleared() {
+		_spec.ClearField(plan.FieldDepositContract, field.TypeBool)
+	}
+	if value, ok := pu.mutation.DepositPay(); ok {
+		_spec.SetField(plan.FieldDepositPay, field.TypeBool, value)
+	}
+	if pu.mutation.DepositPayCleared() {
+		_spec.ClearField(plan.FieldDepositPay, field.TypeBool)
+	}
 	if pu.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -707,6 +896,35 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.AgreementCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.AgreementTable,
+			Columns: []string{plan.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.AgreementIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.AgreementTable,
+			Columns: []string{plan.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -975,6 +1193,26 @@ func (puo *PlanUpdateOne) SetNillableBrandID(u *uint64) *PlanUpdateOne {
 // ClearBrandID clears the value of the "brand_id" field.
 func (puo *PlanUpdateOne) ClearBrandID() *PlanUpdateOne {
 	puo.mutation.ClearBrandID()
+	return puo
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (puo *PlanUpdateOne) SetAgreementID(u uint64) *PlanUpdateOne {
+	puo.mutation.SetAgreementID(u)
+	return puo
+}
+
+// SetNillableAgreementID sets the "agreement_id" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableAgreementID(u *uint64) *PlanUpdateOne {
+	if u != nil {
+		puo.SetAgreementID(*u)
+	}
+	return puo
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (puo *PlanUpdateOne) ClearAgreementID() *PlanUpdateOne {
+	puo.mutation.ClearAgreementID()
 	return puo
 }
 
@@ -1258,9 +1496,135 @@ func (puo *PlanUpdateOne) SetNillableIntelligent(b *bool) *PlanUpdateOne {
 	return puo
 }
 
+// SetDeposit sets the "deposit" field.
+func (puo *PlanUpdateOne) SetDeposit(b bool) *PlanUpdateOne {
+	puo.mutation.SetDeposit(b)
+	return puo
+}
+
+// SetNillableDeposit sets the "deposit" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDeposit(b *bool) *PlanUpdateOne {
+	if b != nil {
+		puo.SetDeposit(*b)
+	}
+	return puo
+}
+
+// SetDepositAmount sets the "deposit_amount" field.
+func (puo *PlanUpdateOne) SetDepositAmount(f float64) *PlanUpdateOne {
+	puo.mutation.ResetDepositAmount()
+	puo.mutation.SetDepositAmount(f)
+	return puo
+}
+
+// SetNillableDepositAmount sets the "deposit_amount" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDepositAmount(f *float64) *PlanUpdateOne {
+	if f != nil {
+		puo.SetDepositAmount(*f)
+	}
+	return puo
+}
+
+// AddDepositAmount adds f to the "deposit_amount" field.
+func (puo *PlanUpdateOne) AddDepositAmount(f float64) *PlanUpdateOne {
+	puo.mutation.AddDepositAmount(f)
+	return puo
+}
+
+// ClearDepositAmount clears the value of the "deposit_amount" field.
+func (puo *PlanUpdateOne) ClearDepositAmount() *PlanUpdateOne {
+	puo.mutation.ClearDepositAmount()
+	return puo
+}
+
+// SetDepositWechatPayscore sets the "deposit_wechat_payscore" field.
+func (puo *PlanUpdateOne) SetDepositWechatPayscore(b bool) *PlanUpdateOne {
+	puo.mutation.SetDepositWechatPayscore(b)
+	return puo
+}
+
+// SetNillableDepositWechatPayscore sets the "deposit_wechat_payscore" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDepositWechatPayscore(b *bool) *PlanUpdateOne {
+	if b != nil {
+		puo.SetDepositWechatPayscore(*b)
+	}
+	return puo
+}
+
+// ClearDepositWechatPayscore clears the value of the "deposit_wechat_payscore" field.
+func (puo *PlanUpdateOne) ClearDepositWechatPayscore() *PlanUpdateOne {
+	puo.mutation.ClearDepositWechatPayscore()
+	return puo
+}
+
+// SetDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field.
+func (puo *PlanUpdateOne) SetDepositAlipayAuthFreeze(b bool) *PlanUpdateOne {
+	puo.mutation.SetDepositAlipayAuthFreeze(b)
+	return puo
+}
+
+// SetNillableDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDepositAlipayAuthFreeze(b *bool) *PlanUpdateOne {
+	if b != nil {
+		puo.SetDepositAlipayAuthFreeze(*b)
+	}
+	return puo
+}
+
+// ClearDepositAlipayAuthFreeze clears the value of the "deposit_alipay_auth_freeze" field.
+func (puo *PlanUpdateOne) ClearDepositAlipayAuthFreeze() *PlanUpdateOne {
+	puo.mutation.ClearDepositAlipayAuthFreeze()
+	return puo
+}
+
+// SetDepositContract sets the "deposit_contract" field.
+func (puo *PlanUpdateOne) SetDepositContract(b bool) *PlanUpdateOne {
+	puo.mutation.SetDepositContract(b)
+	return puo
+}
+
+// SetNillableDepositContract sets the "deposit_contract" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDepositContract(b *bool) *PlanUpdateOne {
+	if b != nil {
+		puo.SetDepositContract(*b)
+	}
+	return puo
+}
+
+// ClearDepositContract clears the value of the "deposit_contract" field.
+func (puo *PlanUpdateOne) ClearDepositContract() *PlanUpdateOne {
+	puo.mutation.ClearDepositContract()
+	return puo
+}
+
+// SetDepositPay sets the "deposit_pay" field.
+func (puo *PlanUpdateOne) SetDepositPay(b bool) *PlanUpdateOne {
+	puo.mutation.SetDepositPay(b)
+	return puo
+}
+
+// SetNillableDepositPay sets the "deposit_pay" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDepositPay(b *bool) *PlanUpdateOne {
+	if b != nil {
+		puo.SetDepositPay(*b)
+	}
+	return puo
+}
+
+// ClearDepositPay clears the value of the "deposit_pay" field.
+func (puo *PlanUpdateOne) ClearDepositPay() *PlanUpdateOne {
+	puo.mutation.ClearDepositPay()
+	return puo
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (puo *PlanUpdateOne) SetBrand(e *EbikeBrand) *PlanUpdateOne {
 	return puo.SetBrandID(e.ID)
+}
+
+// SetAgreement sets the "agreement" edge to the Agreement entity.
+func (puo *PlanUpdateOne) SetAgreement(a *Agreement) *PlanUpdateOne {
+	return puo.SetAgreementID(a.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -1321,6 +1685,12 @@ func (puo *PlanUpdateOne) Mutation() *PlanMutation {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (puo *PlanUpdateOne) ClearBrand() *PlanUpdateOne {
 	puo.mutation.ClearBrand()
+	return puo
+}
+
+// ClearAgreement clears the "agreement" edge to the Agreement entity.
+func (puo *PlanUpdateOne) ClearAgreement() *PlanUpdateOne {
+	puo.mutation.ClearAgreement()
 	return puo
 }
 
@@ -1581,6 +1951,42 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 	if value, ok := puo.mutation.Intelligent(); ok {
 		_spec.SetField(plan.FieldIntelligent, field.TypeBool, value)
 	}
+	if value, ok := puo.mutation.Deposit(); ok {
+		_spec.SetField(plan.FieldDeposit, field.TypeBool, value)
+	}
+	if value, ok := puo.mutation.DepositAmount(); ok {
+		_spec.SetField(plan.FieldDepositAmount, field.TypeFloat64, value)
+	}
+	if value, ok := puo.mutation.AddedDepositAmount(); ok {
+		_spec.AddField(plan.FieldDepositAmount, field.TypeFloat64, value)
+	}
+	if puo.mutation.DepositAmountCleared() {
+		_spec.ClearField(plan.FieldDepositAmount, field.TypeFloat64)
+	}
+	if value, ok := puo.mutation.DepositWechatPayscore(); ok {
+		_spec.SetField(plan.FieldDepositWechatPayscore, field.TypeBool, value)
+	}
+	if puo.mutation.DepositWechatPayscoreCleared() {
+		_spec.ClearField(plan.FieldDepositWechatPayscore, field.TypeBool)
+	}
+	if value, ok := puo.mutation.DepositAlipayAuthFreeze(); ok {
+		_spec.SetField(plan.FieldDepositAlipayAuthFreeze, field.TypeBool, value)
+	}
+	if puo.mutation.DepositAlipayAuthFreezeCleared() {
+		_spec.ClearField(plan.FieldDepositAlipayAuthFreeze, field.TypeBool)
+	}
+	if value, ok := puo.mutation.DepositContract(); ok {
+		_spec.SetField(plan.FieldDepositContract, field.TypeBool, value)
+	}
+	if puo.mutation.DepositContractCleared() {
+		_spec.ClearField(plan.FieldDepositContract, field.TypeBool)
+	}
+	if value, ok := puo.mutation.DepositPay(); ok {
+		_spec.SetField(plan.FieldDepositPay, field.TypeBool, value)
+	}
+	if puo.mutation.DepositPayCleared() {
+		_spec.ClearField(plan.FieldDepositPay, field.TypeBool)
+	}
 	if puo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1603,6 +2009,35 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.AgreementCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.AgreementTable,
+			Columns: []string{plan.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.AgreementIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.AgreementTable,
+			Columns: []string{plan.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

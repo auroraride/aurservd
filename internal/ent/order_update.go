@@ -280,6 +280,46 @@ func (ou *OrderUpdate) AddStatus(u int8) *OrderUpdate {
 	return ou
 }
 
+// SetOutTradeNo sets the "out_trade_no" field.
+func (ou *OrderUpdate) SetOutTradeNo(s string) *OrderUpdate {
+	ou.mutation.SetOutTradeNo(s)
+	return ou
+}
+
+// SetNillableOutTradeNo sets the "out_trade_no" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableOutTradeNo(s *string) *OrderUpdate {
+	if s != nil {
+		ou.SetOutTradeNo(*s)
+	}
+	return ou
+}
+
+// ClearOutTradeNo clears the value of the "out_trade_no" field.
+func (ou *OrderUpdate) ClearOutTradeNo() *OrderUpdate {
+	ou.mutation.ClearOutTradeNo()
+	return ou
+}
+
+// SetTradeNo sets the "trade_no" field.
+func (ou *OrderUpdate) SetTradeNo(s string) *OrderUpdate {
+	ou.mutation.SetTradeNo(s)
+	return ou
+}
+
+// SetNillableTradeNo sets the "trade_no" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableTradeNo(s *string) *OrderUpdate {
+	if s != nil {
+		ou.SetTradeNo(*s)
+	}
+	return ou
+}
+
+// ClearTradeNo clears the value of the "trade_no" field.
+func (ou *OrderUpdate) ClearTradeNo() *OrderUpdate {
+	ou.mutation.ClearTradeNo()
+	return ou
+}
+
 // SetRefundAt sets the "refund_at" field.
 func (ou *OrderUpdate) SetRefundAt(t time.Time) *OrderUpdate {
 	ou.mutation.SetRefundAt(t)
@@ -435,6 +475,106 @@ func (ou *OrderUpdate) SetNillableDiscountNewly(f *float64) *OrderUpdate {
 // AddDiscountNewly adds f to the "discount_newly" field.
 func (ou *OrderUpdate) AddDiscountNewly(f float64) *OrderUpdate {
 	ou.mutation.AddDiscountNewly(f)
+	return ou
+}
+
+// SetTradePayAt sets the "trade_pay_at" field.
+func (ou *OrderUpdate) SetTradePayAt(t time.Time) *OrderUpdate {
+	ou.mutation.SetTradePayAt(t)
+	return ou
+}
+
+// SetNillableTradePayAt sets the "trade_pay_at" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableTradePayAt(t *time.Time) *OrderUpdate {
+	if t != nil {
+		ou.SetTradePayAt(*t)
+	}
+	return ou
+}
+
+// ClearTradePayAt clears the value of the "trade_pay_at" field.
+func (ou *OrderUpdate) ClearTradePayAt() *OrderUpdate {
+	ou.mutation.ClearTradePayAt()
+	return ou
+}
+
+// SetAuthNo sets the "auth_no" field.
+func (ou *OrderUpdate) SetAuthNo(s string) *OrderUpdate {
+	ou.mutation.SetAuthNo(s)
+	return ou
+}
+
+// SetNillableAuthNo sets the "auth_no" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableAuthNo(s *string) *OrderUpdate {
+	if s != nil {
+		ou.SetAuthNo(*s)
+	}
+	return ou
+}
+
+// ClearAuthNo clears the value of the "auth_no" field.
+func (ou *OrderUpdate) ClearAuthNo() *OrderUpdate {
+	ou.mutation.ClearAuthNo()
+	return ou
+}
+
+// SetOutOrderNo sets the "out_order_no" field.
+func (ou *OrderUpdate) SetOutOrderNo(s string) *OrderUpdate {
+	ou.mutation.SetOutOrderNo(s)
+	return ou
+}
+
+// SetNillableOutOrderNo sets the "out_order_no" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableOutOrderNo(s *string) *OrderUpdate {
+	if s != nil {
+		ou.SetOutOrderNo(*s)
+	}
+	return ou
+}
+
+// ClearOutOrderNo clears the value of the "out_order_no" field.
+func (ou *OrderUpdate) ClearOutOrderNo() *OrderUpdate {
+	ou.mutation.ClearOutOrderNo()
+	return ou
+}
+
+// SetOutRequestNo sets the "out_request_no" field.
+func (ou *OrderUpdate) SetOutRequestNo(s string) *OrderUpdate {
+	ou.mutation.SetOutRequestNo(s)
+	return ou
+}
+
+// SetNillableOutRequestNo sets the "out_request_no" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableOutRequestNo(s *string) *OrderUpdate {
+	if s != nil {
+		ou.SetOutRequestNo(*s)
+	}
+	return ou
+}
+
+// ClearOutRequestNo clears the value of the "out_request_no" field.
+func (ou *OrderUpdate) ClearOutRequestNo() *OrderUpdate {
+	ou.mutation.ClearOutRequestNo()
+	return ou
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (ou *OrderUpdate) SetSubscribeEndAt(t time.Time) *OrderUpdate {
+	ou.mutation.SetSubscribeEndAt(t)
+	return ou
+}
+
+// SetNillableSubscribeEndAt sets the "subscribe_end_at" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableSubscribeEndAt(t *time.Time) *OrderUpdate {
+	if t != nil {
+		ou.SetSubscribeEndAt(*t)
+	}
+	return ou
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (ou *OrderUpdate) ClearSubscribeEndAt() *OrderUpdate {
+	ou.mutation.ClearSubscribeEndAt()
 	return ou
 }
 
@@ -765,6 +905,18 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ou.mutation.AddedStatus(); ok {
 		_spec.AddField(order.FieldStatus, field.TypeUint8, value)
 	}
+	if value, ok := ou.mutation.OutTradeNo(); ok {
+		_spec.SetField(order.FieldOutTradeNo, field.TypeString, value)
+	}
+	if ou.mutation.OutTradeNoCleared() {
+		_spec.ClearField(order.FieldOutTradeNo, field.TypeString)
+	}
+	if value, ok := ou.mutation.TradeNo(); ok {
+		_spec.SetField(order.FieldTradeNo, field.TypeString, value)
+	}
+	if ou.mutation.TradeNoCleared() {
+		_spec.ClearField(order.FieldTradeNo, field.TypeString)
+	}
 	if value, ok := ou.mutation.RefundAt(); ok {
 		_spec.SetField(order.FieldRefundAt, field.TypeTime, value)
 	}
@@ -812,6 +964,36 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ou.mutation.AddedDiscountNewly(); ok {
 		_spec.AddField(order.FieldDiscountNewly, field.TypeFloat64, value)
+	}
+	if value, ok := ou.mutation.TradePayAt(); ok {
+		_spec.SetField(order.FieldTradePayAt, field.TypeTime, value)
+	}
+	if ou.mutation.TradePayAtCleared() {
+		_spec.ClearField(order.FieldTradePayAt, field.TypeTime)
+	}
+	if value, ok := ou.mutation.AuthNo(); ok {
+		_spec.SetField(order.FieldAuthNo, field.TypeString, value)
+	}
+	if ou.mutation.AuthNoCleared() {
+		_spec.ClearField(order.FieldAuthNo, field.TypeString)
+	}
+	if value, ok := ou.mutation.OutOrderNo(); ok {
+		_spec.SetField(order.FieldOutOrderNo, field.TypeString, value)
+	}
+	if ou.mutation.OutOrderNoCleared() {
+		_spec.ClearField(order.FieldOutOrderNo, field.TypeString)
+	}
+	if value, ok := ou.mutation.OutRequestNo(); ok {
+		_spec.SetField(order.FieldOutRequestNo, field.TypeString, value)
+	}
+	if ou.mutation.OutRequestNoCleared() {
+		_spec.ClearField(order.FieldOutRequestNo, field.TypeString)
+	}
+	if value, ok := ou.mutation.SubscribeEndAt(); ok {
+		_spec.SetField(order.FieldSubscribeEndAt, field.TypeTime, value)
+	}
+	if ou.mutation.SubscribeEndAtCleared() {
+		_spec.ClearField(order.FieldSubscribeEndAt, field.TypeTime)
 	}
 	if ou.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1483,6 +1665,46 @@ func (ouo *OrderUpdateOne) AddStatus(u int8) *OrderUpdateOne {
 	return ouo
 }
 
+// SetOutTradeNo sets the "out_trade_no" field.
+func (ouo *OrderUpdateOne) SetOutTradeNo(s string) *OrderUpdateOne {
+	ouo.mutation.SetOutTradeNo(s)
+	return ouo
+}
+
+// SetNillableOutTradeNo sets the "out_trade_no" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableOutTradeNo(s *string) *OrderUpdateOne {
+	if s != nil {
+		ouo.SetOutTradeNo(*s)
+	}
+	return ouo
+}
+
+// ClearOutTradeNo clears the value of the "out_trade_no" field.
+func (ouo *OrderUpdateOne) ClearOutTradeNo() *OrderUpdateOne {
+	ouo.mutation.ClearOutTradeNo()
+	return ouo
+}
+
+// SetTradeNo sets the "trade_no" field.
+func (ouo *OrderUpdateOne) SetTradeNo(s string) *OrderUpdateOne {
+	ouo.mutation.SetTradeNo(s)
+	return ouo
+}
+
+// SetNillableTradeNo sets the "trade_no" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableTradeNo(s *string) *OrderUpdateOne {
+	if s != nil {
+		ouo.SetTradeNo(*s)
+	}
+	return ouo
+}
+
+// ClearTradeNo clears the value of the "trade_no" field.
+func (ouo *OrderUpdateOne) ClearTradeNo() *OrderUpdateOne {
+	ouo.mutation.ClearTradeNo()
+	return ouo
+}
+
 // SetRefundAt sets the "refund_at" field.
 func (ouo *OrderUpdateOne) SetRefundAt(t time.Time) *OrderUpdateOne {
 	ouo.mutation.SetRefundAt(t)
@@ -1638,6 +1860,106 @@ func (ouo *OrderUpdateOne) SetNillableDiscountNewly(f *float64) *OrderUpdateOne 
 // AddDiscountNewly adds f to the "discount_newly" field.
 func (ouo *OrderUpdateOne) AddDiscountNewly(f float64) *OrderUpdateOne {
 	ouo.mutation.AddDiscountNewly(f)
+	return ouo
+}
+
+// SetTradePayAt sets the "trade_pay_at" field.
+func (ouo *OrderUpdateOne) SetTradePayAt(t time.Time) *OrderUpdateOne {
+	ouo.mutation.SetTradePayAt(t)
+	return ouo
+}
+
+// SetNillableTradePayAt sets the "trade_pay_at" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableTradePayAt(t *time.Time) *OrderUpdateOne {
+	if t != nil {
+		ouo.SetTradePayAt(*t)
+	}
+	return ouo
+}
+
+// ClearTradePayAt clears the value of the "trade_pay_at" field.
+func (ouo *OrderUpdateOne) ClearTradePayAt() *OrderUpdateOne {
+	ouo.mutation.ClearTradePayAt()
+	return ouo
+}
+
+// SetAuthNo sets the "auth_no" field.
+func (ouo *OrderUpdateOne) SetAuthNo(s string) *OrderUpdateOne {
+	ouo.mutation.SetAuthNo(s)
+	return ouo
+}
+
+// SetNillableAuthNo sets the "auth_no" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableAuthNo(s *string) *OrderUpdateOne {
+	if s != nil {
+		ouo.SetAuthNo(*s)
+	}
+	return ouo
+}
+
+// ClearAuthNo clears the value of the "auth_no" field.
+func (ouo *OrderUpdateOne) ClearAuthNo() *OrderUpdateOne {
+	ouo.mutation.ClearAuthNo()
+	return ouo
+}
+
+// SetOutOrderNo sets the "out_order_no" field.
+func (ouo *OrderUpdateOne) SetOutOrderNo(s string) *OrderUpdateOne {
+	ouo.mutation.SetOutOrderNo(s)
+	return ouo
+}
+
+// SetNillableOutOrderNo sets the "out_order_no" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableOutOrderNo(s *string) *OrderUpdateOne {
+	if s != nil {
+		ouo.SetOutOrderNo(*s)
+	}
+	return ouo
+}
+
+// ClearOutOrderNo clears the value of the "out_order_no" field.
+func (ouo *OrderUpdateOne) ClearOutOrderNo() *OrderUpdateOne {
+	ouo.mutation.ClearOutOrderNo()
+	return ouo
+}
+
+// SetOutRequestNo sets the "out_request_no" field.
+func (ouo *OrderUpdateOne) SetOutRequestNo(s string) *OrderUpdateOne {
+	ouo.mutation.SetOutRequestNo(s)
+	return ouo
+}
+
+// SetNillableOutRequestNo sets the "out_request_no" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableOutRequestNo(s *string) *OrderUpdateOne {
+	if s != nil {
+		ouo.SetOutRequestNo(*s)
+	}
+	return ouo
+}
+
+// ClearOutRequestNo clears the value of the "out_request_no" field.
+func (ouo *OrderUpdateOne) ClearOutRequestNo() *OrderUpdateOne {
+	ouo.mutation.ClearOutRequestNo()
+	return ouo
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (ouo *OrderUpdateOne) SetSubscribeEndAt(t time.Time) *OrderUpdateOne {
+	ouo.mutation.SetSubscribeEndAt(t)
+	return ouo
+}
+
+// SetNillableSubscribeEndAt sets the "subscribe_end_at" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableSubscribeEndAt(t *time.Time) *OrderUpdateOne {
+	if t != nil {
+		ouo.SetSubscribeEndAt(*t)
+	}
+	return ouo
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (ouo *OrderUpdateOne) ClearSubscribeEndAt() *OrderUpdateOne {
+	ouo.mutation.ClearSubscribeEndAt()
 	return ouo
 }
 
@@ -1998,6 +2320,18 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 	if value, ok := ouo.mutation.AddedStatus(); ok {
 		_spec.AddField(order.FieldStatus, field.TypeUint8, value)
 	}
+	if value, ok := ouo.mutation.OutTradeNo(); ok {
+		_spec.SetField(order.FieldOutTradeNo, field.TypeString, value)
+	}
+	if ouo.mutation.OutTradeNoCleared() {
+		_spec.ClearField(order.FieldOutTradeNo, field.TypeString)
+	}
+	if value, ok := ouo.mutation.TradeNo(); ok {
+		_spec.SetField(order.FieldTradeNo, field.TypeString, value)
+	}
+	if ouo.mutation.TradeNoCleared() {
+		_spec.ClearField(order.FieldTradeNo, field.TypeString)
+	}
 	if value, ok := ouo.mutation.RefundAt(); ok {
 		_spec.SetField(order.FieldRefundAt, field.TypeTime, value)
 	}
@@ -2045,6 +2379,36 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 	}
 	if value, ok := ouo.mutation.AddedDiscountNewly(); ok {
 		_spec.AddField(order.FieldDiscountNewly, field.TypeFloat64, value)
+	}
+	if value, ok := ouo.mutation.TradePayAt(); ok {
+		_spec.SetField(order.FieldTradePayAt, field.TypeTime, value)
+	}
+	if ouo.mutation.TradePayAtCleared() {
+		_spec.ClearField(order.FieldTradePayAt, field.TypeTime)
+	}
+	if value, ok := ouo.mutation.AuthNo(); ok {
+		_spec.SetField(order.FieldAuthNo, field.TypeString, value)
+	}
+	if ouo.mutation.AuthNoCleared() {
+		_spec.ClearField(order.FieldAuthNo, field.TypeString)
+	}
+	if value, ok := ouo.mutation.OutOrderNo(); ok {
+		_spec.SetField(order.FieldOutOrderNo, field.TypeString, value)
+	}
+	if ouo.mutation.OutOrderNoCleared() {
+		_spec.ClearField(order.FieldOutOrderNo, field.TypeString)
+	}
+	if value, ok := ouo.mutation.OutRequestNo(); ok {
+		_spec.SetField(order.FieldOutRequestNo, field.TypeString, value)
+	}
+	if ouo.mutation.OutRequestNoCleared() {
+		_spec.ClearField(order.FieldOutRequestNo, field.TypeString)
+	}
+	if value, ok := ouo.mutation.SubscribeEndAt(); ok {
+		_spec.SetField(order.FieldSubscribeEndAt, field.TypeTime, value)
+	}
+	if ouo.mutation.SubscribeEndAtCleared() {
+		_spec.ClearField(order.FieldSubscribeEndAt, field.TypeTime)
 	}
 	if ouo.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{

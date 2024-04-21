@@ -246,9 +246,25 @@ func (oc *OrderCreate) SetOutTradeNo(s string) *OrderCreate {
 	return oc
 }
 
+// SetNillableOutTradeNo sets the "out_trade_no" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableOutTradeNo(s *string) *OrderCreate {
+	if s != nil {
+		oc.SetOutTradeNo(*s)
+	}
+	return oc
+}
+
 // SetTradeNo sets the "trade_no" field.
 func (oc *OrderCreate) SetTradeNo(s string) *OrderCreate {
 	oc.mutation.SetTradeNo(s)
+	return oc
+}
+
+// SetNillableTradeNo sets the "trade_no" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableTradeNo(s *string) *OrderCreate {
+	if s != nil {
+		oc.SetTradeNo(*s)
+	}
 	return oc
 }
 
@@ -366,6 +382,76 @@ func (oc *OrderCreate) SetDiscountNewly(f float64) *OrderCreate {
 func (oc *OrderCreate) SetNillableDiscountNewly(f *float64) *OrderCreate {
 	if f != nil {
 		oc.SetDiscountNewly(*f)
+	}
+	return oc
+}
+
+// SetTradePayAt sets the "trade_pay_at" field.
+func (oc *OrderCreate) SetTradePayAt(t time.Time) *OrderCreate {
+	oc.mutation.SetTradePayAt(t)
+	return oc
+}
+
+// SetNillableTradePayAt sets the "trade_pay_at" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableTradePayAt(t *time.Time) *OrderCreate {
+	if t != nil {
+		oc.SetTradePayAt(*t)
+	}
+	return oc
+}
+
+// SetAuthNo sets the "auth_no" field.
+func (oc *OrderCreate) SetAuthNo(s string) *OrderCreate {
+	oc.mutation.SetAuthNo(s)
+	return oc
+}
+
+// SetNillableAuthNo sets the "auth_no" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableAuthNo(s *string) *OrderCreate {
+	if s != nil {
+		oc.SetAuthNo(*s)
+	}
+	return oc
+}
+
+// SetOutOrderNo sets the "out_order_no" field.
+func (oc *OrderCreate) SetOutOrderNo(s string) *OrderCreate {
+	oc.mutation.SetOutOrderNo(s)
+	return oc
+}
+
+// SetNillableOutOrderNo sets the "out_order_no" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableOutOrderNo(s *string) *OrderCreate {
+	if s != nil {
+		oc.SetOutOrderNo(*s)
+	}
+	return oc
+}
+
+// SetOutRequestNo sets the "out_request_no" field.
+func (oc *OrderCreate) SetOutRequestNo(s string) *OrderCreate {
+	oc.mutation.SetOutRequestNo(s)
+	return oc
+}
+
+// SetNillableOutRequestNo sets the "out_request_no" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableOutRequestNo(s *string) *OrderCreate {
+	if s != nil {
+		oc.SetOutRequestNo(*s)
+	}
+	return oc
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (oc *OrderCreate) SetSubscribeEndAt(t time.Time) *OrderCreate {
+	oc.mutation.SetSubscribeEndAt(t)
+	return oc
+}
+
+// SetNillableSubscribeEndAt sets the "subscribe_end_at" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableSubscribeEndAt(t *time.Time) *OrderCreate {
+	if t != nil {
+		oc.SetSubscribeEndAt(*t)
 	}
 	return oc
 }
@@ -592,12 +678,6 @@ func (oc *OrderCreate) check() error {
 	if _, ok := oc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Order.type"`)}
 	}
-	if _, ok := oc.mutation.OutTradeNo(); !ok {
-		return &ValidationError{Name: "out_trade_no", err: errors.New(`ent: missing required field "Order.out_trade_no"`)}
-	}
-	if _, ok := oc.mutation.TradeNo(); !ok {
-		return &ValidationError{Name: "trade_no", err: errors.New(`ent: missing required field "Order.trade_no"`)}
-	}
 	if _, ok := oc.mutation.Amount(); !ok {
 		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "Order.amount"`)}
 	}
@@ -722,6 +802,26 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 	if value, ok := oc.mutation.DiscountNewly(); ok {
 		_spec.SetField(order.FieldDiscountNewly, field.TypeFloat64, value)
 		_node.DiscountNewly = value
+	}
+	if value, ok := oc.mutation.TradePayAt(); ok {
+		_spec.SetField(order.FieldTradePayAt, field.TypeTime, value)
+		_node.TradePayAt = &value
+	}
+	if value, ok := oc.mutation.AuthNo(); ok {
+		_spec.SetField(order.FieldAuthNo, field.TypeString, value)
+		_node.AuthNo = value
+	}
+	if value, ok := oc.mutation.OutOrderNo(); ok {
+		_spec.SetField(order.FieldOutOrderNo, field.TypeString, value)
+		_node.OutOrderNo = value
+	}
+	if value, ok := oc.mutation.OutRequestNo(); ok {
+		_spec.SetField(order.FieldOutRequestNo, field.TypeString, value)
+		_node.OutRequestNo = value
+	}
+	if value, ok := oc.mutation.SubscribeEndAt(); ok {
+		_spec.SetField(order.FieldSubscribeEndAt, field.TypeTime, value)
+		_node.SubscribeEndAt = &value
 	}
 	if nodes := oc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1219,6 +1319,42 @@ func (u *OrderUpsert) AddStatus(v uint8) *OrderUpsert {
 	return u
 }
 
+// SetOutTradeNo sets the "out_trade_no" field.
+func (u *OrderUpsert) SetOutTradeNo(v string) *OrderUpsert {
+	u.Set(order.FieldOutTradeNo, v)
+	return u
+}
+
+// UpdateOutTradeNo sets the "out_trade_no" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateOutTradeNo() *OrderUpsert {
+	u.SetExcluded(order.FieldOutTradeNo)
+	return u
+}
+
+// ClearOutTradeNo clears the value of the "out_trade_no" field.
+func (u *OrderUpsert) ClearOutTradeNo() *OrderUpsert {
+	u.SetNull(order.FieldOutTradeNo)
+	return u
+}
+
+// SetTradeNo sets the "trade_no" field.
+func (u *OrderUpsert) SetTradeNo(v string) *OrderUpsert {
+	u.Set(order.FieldTradeNo, v)
+	return u
+}
+
+// UpdateTradeNo sets the "trade_no" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateTradeNo() *OrderUpsert {
+	u.SetExcluded(order.FieldTradeNo)
+	return u
+}
+
+// ClearTradeNo clears the value of the "trade_no" field.
+func (u *OrderUpsert) ClearTradeNo() *OrderUpsert {
+	u.SetNull(order.FieldTradeNo)
+	return u
+}
+
 // SetRefundAt sets the "refund_at" field.
 func (u *OrderUpsert) SetRefundAt(v time.Time) *OrderUpsert {
 	u.Set(order.FieldRefundAt, v)
@@ -1357,6 +1493,96 @@ func (u *OrderUpsert) AddDiscountNewly(v float64) *OrderUpsert {
 	return u
 }
 
+// SetTradePayAt sets the "trade_pay_at" field.
+func (u *OrderUpsert) SetTradePayAt(v time.Time) *OrderUpsert {
+	u.Set(order.FieldTradePayAt, v)
+	return u
+}
+
+// UpdateTradePayAt sets the "trade_pay_at" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateTradePayAt() *OrderUpsert {
+	u.SetExcluded(order.FieldTradePayAt)
+	return u
+}
+
+// ClearTradePayAt clears the value of the "trade_pay_at" field.
+func (u *OrderUpsert) ClearTradePayAt() *OrderUpsert {
+	u.SetNull(order.FieldTradePayAt)
+	return u
+}
+
+// SetAuthNo sets the "auth_no" field.
+func (u *OrderUpsert) SetAuthNo(v string) *OrderUpsert {
+	u.Set(order.FieldAuthNo, v)
+	return u
+}
+
+// UpdateAuthNo sets the "auth_no" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateAuthNo() *OrderUpsert {
+	u.SetExcluded(order.FieldAuthNo)
+	return u
+}
+
+// ClearAuthNo clears the value of the "auth_no" field.
+func (u *OrderUpsert) ClearAuthNo() *OrderUpsert {
+	u.SetNull(order.FieldAuthNo)
+	return u
+}
+
+// SetOutOrderNo sets the "out_order_no" field.
+func (u *OrderUpsert) SetOutOrderNo(v string) *OrderUpsert {
+	u.Set(order.FieldOutOrderNo, v)
+	return u
+}
+
+// UpdateOutOrderNo sets the "out_order_no" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateOutOrderNo() *OrderUpsert {
+	u.SetExcluded(order.FieldOutOrderNo)
+	return u
+}
+
+// ClearOutOrderNo clears the value of the "out_order_no" field.
+func (u *OrderUpsert) ClearOutOrderNo() *OrderUpsert {
+	u.SetNull(order.FieldOutOrderNo)
+	return u
+}
+
+// SetOutRequestNo sets the "out_request_no" field.
+func (u *OrderUpsert) SetOutRequestNo(v string) *OrderUpsert {
+	u.Set(order.FieldOutRequestNo, v)
+	return u
+}
+
+// UpdateOutRequestNo sets the "out_request_no" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateOutRequestNo() *OrderUpsert {
+	u.SetExcluded(order.FieldOutRequestNo)
+	return u
+}
+
+// ClearOutRequestNo clears the value of the "out_request_no" field.
+func (u *OrderUpsert) ClearOutRequestNo() *OrderUpsert {
+	u.SetNull(order.FieldOutRequestNo)
+	return u
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (u *OrderUpsert) SetSubscribeEndAt(v time.Time) *OrderUpsert {
+	u.Set(order.FieldSubscribeEndAt, v)
+	return u
+}
+
+// UpdateSubscribeEndAt sets the "subscribe_end_at" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateSubscribeEndAt() *OrderUpsert {
+	u.SetExcluded(order.FieldSubscribeEndAt)
+	return u
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (u *OrderUpsert) ClearSubscribeEndAt() *OrderUpsert {
+	u.SetNull(order.FieldSubscribeEndAt)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1379,12 +1605,6 @@ func (u *OrderUpsertOne) UpdateNewValues() *OrderUpsertOne {
 		}
 		if _, exists := u.create.mutation.GetType(); exists {
 			s.SetIgnore(order.FieldType)
-		}
-		if _, exists := u.create.mutation.OutTradeNo(); exists {
-			s.SetIgnore(order.FieldOutTradeNo)
-		}
-		if _, exists := u.create.mutation.TradeNo(); exists {
-			s.SetIgnore(order.FieldTradeNo)
 		}
 		if _, exists := u.create.mutation.Amount(); exists {
 			s.SetIgnore(order.FieldAmount)
@@ -1689,6 +1909,48 @@ func (u *OrderUpsertOne) UpdateStatus() *OrderUpsertOne {
 	})
 }
 
+// SetOutTradeNo sets the "out_trade_no" field.
+func (u *OrderUpsertOne) SetOutTradeNo(v string) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetOutTradeNo(v)
+	})
+}
+
+// UpdateOutTradeNo sets the "out_trade_no" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateOutTradeNo() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateOutTradeNo()
+	})
+}
+
+// ClearOutTradeNo clears the value of the "out_trade_no" field.
+func (u *OrderUpsertOne) ClearOutTradeNo() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearOutTradeNo()
+	})
+}
+
+// SetTradeNo sets the "trade_no" field.
+func (u *OrderUpsertOne) SetTradeNo(v string) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetTradeNo(v)
+	})
+}
+
+// UpdateTradeNo sets the "trade_no" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateTradeNo() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateTradeNo()
+	})
+}
+
+// ClearTradeNo clears the value of the "trade_no" field.
+func (u *OrderUpsertOne) ClearTradeNo() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearTradeNo()
+	})
+}
+
 // SetRefundAt sets the "refund_at" field.
 func (u *OrderUpsertOne) SetRefundAt(v time.Time) *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
@@ -1847,6 +2109,111 @@ func (u *OrderUpsertOne) AddDiscountNewly(v float64) *OrderUpsertOne {
 func (u *OrderUpsertOne) UpdateDiscountNewly() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.UpdateDiscountNewly()
+	})
+}
+
+// SetTradePayAt sets the "trade_pay_at" field.
+func (u *OrderUpsertOne) SetTradePayAt(v time.Time) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetTradePayAt(v)
+	})
+}
+
+// UpdateTradePayAt sets the "trade_pay_at" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateTradePayAt() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateTradePayAt()
+	})
+}
+
+// ClearTradePayAt clears the value of the "trade_pay_at" field.
+func (u *OrderUpsertOne) ClearTradePayAt() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearTradePayAt()
+	})
+}
+
+// SetAuthNo sets the "auth_no" field.
+func (u *OrderUpsertOne) SetAuthNo(v string) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetAuthNo(v)
+	})
+}
+
+// UpdateAuthNo sets the "auth_no" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateAuthNo() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateAuthNo()
+	})
+}
+
+// ClearAuthNo clears the value of the "auth_no" field.
+func (u *OrderUpsertOne) ClearAuthNo() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearAuthNo()
+	})
+}
+
+// SetOutOrderNo sets the "out_order_no" field.
+func (u *OrderUpsertOne) SetOutOrderNo(v string) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetOutOrderNo(v)
+	})
+}
+
+// UpdateOutOrderNo sets the "out_order_no" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateOutOrderNo() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateOutOrderNo()
+	})
+}
+
+// ClearOutOrderNo clears the value of the "out_order_no" field.
+func (u *OrderUpsertOne) ClearOutOrderNo() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearOutOrderNo()
+	})
+}
+
+// SetOutRequestNo sets the "out_request_no" field.
+func (u *OrderUpsertOne) SetOutRequestNo(v string) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetOutRequestNo(v)
+	})
+}
+
+// UpdateOutRequestNo sets the "out_request_no" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateOutRequestNo() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateOutRequestNo()
+	})
+}
+
+// ClearOutRequestNo clears the value of the "out_request_no" field.
+func (u *OrderUpsertOne) ClearOutRequestNo() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearOutRequestNo()
+	})
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (u *OrderUpsertOne) SetSubscribeEndAt(v time.Time) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetSubscribeEndAt(v)
+	})
+}
+
+// UpdateSubscribeEndAt sets the "subscribe_end_at" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateSubscribeEndAt() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateSubscribeEndAt()
+	})
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (u *OrderUpsertOne) ClearSubscribeEndAt() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearSubscribeEndAt()
 	})
 }
 
@@ -2037,12 +2404,6 @@ func (u *OrderUpsertBulk) UpdateNewValues() *OrderUpsertBulk {
 			}
 			if _, exists := b.mutation.GetType(); exists {
 				s.SetIgnore(order.FieldType)
-			}
-			if _, exists := b.mutation.OutTradeNo(); exists {
-				s.SetIgnore(order.FieldOutTradeNo)
-			}
-			if _, exists := b.mutation.TradeNo(); exists {
-				s.SetIgnore(order.FieldTradeNo)
 			}
 			if _, exists := b.mutation.Amount(); exists {
 				s.SetIgnore(order.FieldAmount)
@@ -2348,6 +2709,48 @@ func (u *OrderUpsertBulk) UpdateStatus() *OrderUpsertBulk {
 	})
 }
 
+// SetOutTradeNo sets the "out_trade_no" field.
+func (u *OrderUpsertBulk) SetOutTradeNo(v string) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetOutTradeNo(v)
+	})
+}
+
+// UpdateOutTradeNo sets the "out_trade_no" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateOutTradeNo() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateOutTradeNo()
+	})
+}
+
+// ClearOutTradeNo clears the value of the "out_trade_no" field.
+func (u *OrderUpsertBulk) ClearOutTradeNo() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearOutTradeNo()
+	})
+}
+
+// SetTradeNo sets the "trade_no" field.
+func (u *OrderUpsertBulk) SetTradeNo(v string) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetTradeNo(v)
+	})
+}
+
+// UpdateTradeNo sets the "trade_no" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateTradeNo() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateTradeNo()
+	})
+}
+
+// ClearTradeNo clears the value of the "trade_no" field.
+func (u *OrderUpsertBulk) ClearTradeNo() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearTradeNo()
+	})
+}
+
 // SetRefundAt sets the "refund_at" field.
 func (u *OrderUpsertBulk) SetRefundAt(v time.Time) *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
@@ -2506,6 +2909,111 @@ func (u *OrderUpsertBulk) AddDiscountNewly(v float64) *OrderUpsertBulk {
 func (u *OrderUpsertBulk) UpdateDiscountNewly() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.UpdateDiscountNewly()
+	})
+}
+
+// SetTradePayAt sets the "trade_pay_at" field.
+func (u *OrderUpsertBulk) SetTradePayAt(v time.Time) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetTradePayAt(v)
+	})
+}
+
+// UpdateTradePayAt sets the "trade_pay_at" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateTradePayAt() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateTradePayAt()
+	})
+}
+
+// ClearTradePayAt clears the value of the "trade_pay_at" field.
+func (u *OrderUpsertBulk) ClearTradePayAt() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearTradePayAt()
+	})
+}
+
+// SetAuthNo sets the "auth_no" field.
+func (u *OrderUpsertBulk) SetAuthNo(v string) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetAuthNo(v)
+	})
+}
+
+// UpdateAuthNo sets the "auth_no" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateAuthNo() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateAuthNo()
+	})
+}
+
+// ClearAuthNo clears the value of the "auth_no" field.
+func (u *OrderUpsertBulk) ClearAuthNo() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearAuthNo()
+	})
+}
+
+// SetOutOrderNo sets the "out_order_no" field.
+func (u *OrderUpsertBulk) SetOutOrderNo(v string) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetOutOrderNo(v)
+	})
+}
+
+// UpdateOutOrderNo sets the "out_order_no" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateOutOrderNo() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateOutOrderNo()
+	})
+}
+
+// ClearOutOrderNo clears the value of the "out_order_no" field.
+func (u *OrderUpsertBulk) ClearOutOrderNo() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearOutOrderNo()
+	})
+}
+
+// SetOutRequestNo sets the "out_request_no" field.
+func (u *OrderUpsertBulk) SetOutRequestNo(v string) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetOutRequestNo(v)
+	})
+}
+
+// UpdateOutRequestNo sets the "out_request_no" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateOutRequestNo() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateOutRequestNo()
+	})
+}
+
+// ClearOutRequestNo clears the value of the "out_request_no" field.
+func (u *OrderUpsertBulk) ClearOutRequestNo() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearOutRequestNo()
+	})
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (u *OrderUpsertBulk) SetSubscribeEndAt(v time.Time) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetSubscribeEndAt(v)
+	})
+}
+
+// UpdateSubscribeEndAt sets the "subscribe_end_at" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateSubscribeEndAt() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateSubscribeEndAt()
+	})
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (u *OrderUpsertBulk) ClearSubscribeEndAt() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearSubscribeEndAt()
 	})
 }
 

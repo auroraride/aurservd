@@ -6,9 +6,10 @@
 package eapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/app/socket"
-	"github.com/labstack/echo/v4"
 )
 
 type socketapi struct{}

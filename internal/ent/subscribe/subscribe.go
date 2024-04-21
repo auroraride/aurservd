@@ -93,6 +93,12 @@ const (
 	FieldNeedContract = "need_contract"
 	// FieldIntelligent holds the string denoting the intelligent field in the database.
 	FieldIntelligent = "intelligent"
+	// FieldAgreementHash holds the string denoting the agreement_hash field in the database.
+	FieldAgreementHash = "agreement_hash"
+	// FieldEnterprisePriceID holds the string denoting the enterprise_price_id field in the database.
+	FieldEnterprisePriceID = "enterprise_price_id"
+	// FieldDepositType holds the string denoting the deposit_type field in the database.
+	FieldDepositType = "deposit_type"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -127,6 +133,8 @@ const (
 	EdgeBills = "bills"
 	// EdgeBattery holds the string denoting the battery edge name in mutations.
 	EdgeBattery = "battery"
+	// EdgeEnterprisePrice holds the string denoting the enterprise_price edge name in mutations.
+	EdgeEnterprisePrice = "enterprise_price"
 	// Table holds the table name of the subscribe in the database.
 	Table = "subscribe"
 	// PlanTable is the table that holds the plan relation/edge.
@@ -248,6 +256,13 @@ const (
 	BatteryInverseTable = "battery"
 	// BatteryColumn is the table column denoting the battery relation/edge.
 	BatteryColumn = "subscribe_id"
+	// EnterprisePriceTable is the table that holds the enterprise_price relation/edge.
+	EnterprisePriceTable = "subscribe"
+	// EnterprisePriceInverseTable is the table name for the EnterprisePrice entity.
+	// It exists in this package in order to avoid circular dependency with the "enterpriseprice" package.
+	EnterprisePriceInverseTable = "enterprise_price"
+	// EnterprisePriceColumn is the table column denoting the enterprise_price relation/edge.
+	EnterprisePriceColumn = "enterprise_price_id"
 )
 
 // Columns holds all SQL columns for subscribe fields.
@@ -292,6 +307,9 @@ var Columns = []string{
 	FieldFormula,
 	FieldNeedContract,
 	FieldIntelligent,
+	FieldAgreementHash,
+	FieldEnterprisePriceID,
+	FieldDepositType,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -339,6 +357,8 @@ var (
 	DefaultNeedContract bool
 	// DefaultIntelligent holds the default value on creation for the "intelligent" field.
 	DefaultIntelligent bool
+	// DefaultDepositType holds the default value on creation for the "deposit_type" field.
+	DefaultDepositType uint8
 )
 
 // OrderOption defines the ordering options for the Subscribe queries.
@@ -534,6 +554,21 @@ func ByIntelligent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIntelligent, opts...).ToFunc()
 }
 
+// ByAgreementHash orders the results by the agreement_hash field.
+func ByAgreementHash(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAgreementHash, opts...).ToFunc()
+}
+
+// ByEnterprisePriceID orders the results by the enterprise_price_id field.
+func ByEnterprisePriceID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEnterprisePriceID, opts...).ToFunc()
+}
+
+// ByDepositType orders the results by the deposit_type field.
+func ByDepositType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepositType, opts...).ToFunc()
+}
+
 // ByPlanField orders the results by plan field.
 func ByPlanField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -687,6 +722,13 @@ func ByBatteryField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newBatteryStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByEnterprisePriceField orders the results by enterprise_price field.
+func ByEnterprisePriceField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEnterprisePriceStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newPlanStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -804,5 +846,12 @@ func newBatteryStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BatteryInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2O, false, BatteryTable, BatteryColumn),
+	)
+}
+func newEnterprisePriceStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EnterprisePriceInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, EnterprisePriceTable, EnterprisePriceColumn),
 	)
 }

@@ -185,6 +185,31 @@ func DiscountNewly(v float64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldDiscountNewly, v))
 }
 
+// TradePayAt applies equality check predicate on the "trade_pay_at" field. It's identical to TradePayAtEQ.
+func TradePayAt(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldTradePayAt, v))
+}
+
+// AuthNo applies equality check predicate on the "auth_no" field. It's identical to AuthNoEQ.
+func AuthNo(v string) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldAuthNo, v))
+}
+
+// OutOrderNo applies equality check predicate on the "out_order_no" field. It's identical to OutOrderNoEQ.
+func OutOrderNo(v string) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldOutOrderNo, v))
+}
+
+// OutRequestNo applies equality check predicate on the "out_request_no" field. It's identical to OutRequestNoEQ.
+func OutRequestNo(v string) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldOutRequestNo, v))
+}
+
+// SubscribeEndAt applies equality check predicate on the "subscribe_end_at" field. It's identical to SubscribeEndAtEQ.
+func SubscribeEndAt(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldSubscribeEndAt, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldCreatedAt, v))
@@ -825,6 +850,16 @@ func OutTradeNoHasSuffix(v string) predicate.Order {
 	return predicate.Order(sql.FieldHasSuffix(FieldOutTradeNo, v))
 }
 
+// OutTradeNoIsNil applies the IsNil predicate on the "out_trade_no" field.
+func OutTradeNoIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldOutTradeNo))
+}
+
+// OutTradeNoNotNil applies the NotNil predicate on the "out_trade_no" field.
+func OutTradeNoNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldOutTradeNo))
+}
+
 // OutTradeNoEqualFold applies the EqualFold predicate on the "out_trade_no" field.
 func OutTradeNoEqualFold(v string) predicate.Order {
 	return predicate.Order(sql.FieldEqualFold(FieldOutTradeNo, v))
@@ -888,6 +923,16 @@ func TradeNoHasPrefix(v string) predicate.Order {
 // TradeNoHasSuffix applies the HasSuffix predicate on the "trade_no" field.
 func TradeNoHasSuffix(v string) predicate.Order {
 	return predicate.Order(sql.FieldHasSuffix(FieldTradeNo, v))
+}
+
+// TradeNoIsNil applies the IsNil predicate on the "trade_no" field.
+func TradeNoIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldTradeNo))
+}
+
+// TradeNoNotNil applies the NotNil predicate on the "trade_no" field.
+func TradeNoNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldTradeNo))
 }
 
 // TradeNoEqualFold applies the EqualFold predicate on the "trade_no" field.
@@ -1288,6 +1333,331 @@ func DiscountNewlyLT(v float64) predicate.Order {
 // DiscountNewlyLTE applies the LTE predicate on the "discount_newly" field.
 func DiscountNewlyLTE(v float64) predicate.Order {
 	return predicate.Order(sql.FieldLTE(FieldDiscountNewly, v))
+}
+
+// TradePayAtEQ applies the EQ predicate on the "trade_pay_at" field.
+func TradePayAtEQ(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldTradePayAt, v))
+}
+
+// TradePayAtNEQ applies the NEQ predicate on the "trade_pay_at" field.
+func TradePayAtNEQ(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldTradePayAt, v))
+}
+
+// TradePayAtIn applies the In predicate on the "trade_pay_at" field.
+func TradePayAtIn(vs ...time.Time) predicate.Order {
+	return predicate.Order(sql.FieldIn(FieldTradePayAt, vs...))
+}
+
+// TradePayAtNotIn applies the NotIn predicate on the "trade_pay_at" field.
+func TradePayAtNotIn(vs ...time.Time) predicate.Order {
+	return predicate.Order(sql.FieldNotIn(FieldTradePayAt, vs...))
+}
+
+// TradePayAtGT applies the GT predicate on the "trade_pay_at" field.
+func TradePayAtGT(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldGT(FieldTradePayAt, v))
+}
+
+// TradePayAtGTE applies the GTE predicate on the "trade_pay_at" field.
+func TradePayAtGTE(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldGTE(FieldTradePayAt, v))
+}
+
+// TradePayAtLT applies the LT predicate on the "trade_pay_at" field.
+func TradePayAtLT(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldLT(FieldTradePayAt, v))
+}
+
+// TradePayAtLTE applies the LTE predicate on the "trade_pay_at" field.
+func TradePayAtLTE(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldLTE(FieldTradePayAt, v))
+}
+
+// TradePayAtIsNil applies the IsNil predicate on the "trade_pay_at" field.
+func TradePayAtIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldTradePayAt))
+}
+
+// TradePayAtNotNil applies the NotNil predicate on the "trade_pay_at" field.
+func TradePayAtNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldTradePayAt))
+}
+
+// AuthNoEQ applies the EQ predicate on the "auth_no" field.
+func AuthNoEQ(v string) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldAuthNo, v))
+}
+
+// AuthNoNEQ applies the NEQ predicate on the "auth_no" field.
+func AuthNoNEQ(v string) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldAuthNo, v))
+}
+
+// AuthNoIn applies the In predicate on the "auth_no" field.
+func AuthNoIn(vs ...string) predicate.Order {
+	return predicate.Order(sql.FieldIn(FieldAuthNo, vs...))
+}
+
+// AuthNoNotIn applies the NotIn predicate on the "auth_no" field.
+func AuthNoNotIn(vs ...string) predicate.Order {
+	return predicate.Order(sql.FieldNotIn(FieldAuthNo, vs...))
+}
+
+// AuthNoGT applies the GT predicate on the "auth_no" field.
+func AuthNoGT(v string) predicate.Order {
+	return predicate.Order(sql.FieldGT(FieldAuthNo, v))
+}
+
+// AuthNoGTE applies the GTE predicate on the "auth_no" field.
+func AuthNoGTE(v string) predicate.Order {
+	return predicate.Order(sql.FieldGTE(FieldAuthNo, v))
+}
+
+// AuthNoLT applies the LT predicate on the "auth_no" field.
+func AuthNoLT(v string) predicate.Order {
+	return predicate.Order(sql.FieldLT(FieldAuthNo, v))
+}
+
+// AuthNoLTE applies the LTE predicate on the "auth_no" field.
+func AuthNoLTE(v string) predicate.Order {
+	return predicate.Order(sql.FieldLTE(FieldAuthNo, v))
+}
+
+// AuthNoContains applies the Contains predicate on the "auth_no" field.
+func AuthNoContains(v string) predicate.Order {
+	return predicate.Order(sql.FieldContains(FieldAuthNo, v))
+}
+
+// AuthNoHasPrefix applies the HasPrefix predicate on the "auth_no" field.
+func AuthNoHasPrefix(v string) predicate.Order {
+	return predicate.Order(sql.FieldHasPrefix(FieldAuthNo, v))
+}
+
+// AuthNoHasSuffix applies the HasSuffix predicate on the "auth_no" field.
+func AuthNoHasSuffix(v string) predicate.Order {
+	return predicate.Order(sql.FieldHasSuffix(FieldAuthNo, v))
+}
+
+// AuthNoIsNil applies the IsNil predicate on the "auth_no" field.
+func AuthNoIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldAuthNo))
+}
+
+// AuthNoNotNil applies the NotNil predicate on the "auth_no" field.
+func AuthNoNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldAuthNo))
+}
+
+// AuthNoEqualFold applies the EqualFold predicate on the "auth_no" field.
+func AuthNoEqualFold(v string) predicate.Order {
+	return predicate.Order(sql.FieldEqualFold(FieldAuthNo, v))
+}
+
+// AuthNoContainsFold applies the ContainsFold predicate on the "auth_no" field.
+func AuthNoContainsFold(v string) predicate.Order {
+	return predicate.Order(sql.FieldContainsFold(FieldAuthNo, v))
+}
+
+// OutOrderNoEQ applies the EQ predicate on the "out_order_no" field.
+func OutOrderNoEQ(v string) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldOutOrderNo, v))
+}
+
+// OutOrderNoNEQ applies the NEQ predicate on the "out_order_no" field.
+func OutOrderNoNEQ(v string) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldOutOrderNo, v))
+}
+
+// OutOrderNoIn applies the In predicate on the "out_order_no" field.
+func OutOrderNoIn(vs ...string) predicate.Order {
+	return predicate.Order(sql.FieldIn(FieldOutOrderNo, vs...))
+}
+
+// OutOrderNoNotIn applies the NotIn predicate on the "out_order_no" field.
+func OutOrderNoNotIn(vs ...string) predicate.Order {
+	return predicate.Order(sql.FieldNotIn(FieldOutOrderNo, vs...))
+}
+
+// OutOrderNoGT applies the GT predicate on the "out_order_no" field.
+func OutOrderNoGT(v string) predicate.Order {
+	return predicate.Order(sql.FieldGT(FieldOutOrderNo, v))
+}
+
+// OutOrderNoGTE applies the GTE predicate on the "out_order_no" field.
+func OutOrderNoGTE(v string) predicate.Order {
+	return predicate.Order(sql.FieldGTE(FieldOutOrderNo, v))
+}
+
+// OutOrderNoLT applies the LT predicate on the "out_order_no" field.
+func OutOrderNoLT(v string) predicate.Order {
+	return predicate.Order(sql.FieldLT(FieldOutOrderNo, v))
+}
+
+// OutOrderNoLTE applies the LTE predicate on the "out_order_no" field.
+func OutOrderNoLTE(v string) predicate.Order {
+	return predicate.Order(sql.FieldLTE(FieldOutOrderNo, v))
+}
+
+// OutOrderNoContains applies the Contains predicate on the "out_order_no" field.
+func OutOrderNoContains(v string) predicate.Order {
+	return predicate.Order(sql.FieldContains(FieldOutOrderNo, v))
+}
+
+// OutOrderNoHasPrefix applies the HasPrefix predicate on the "out_order_no" field.
+func OutOrderNoHasPrefix(v string) predicate.Order {
+	return predicate.Order(sql.FieldHasPrefix(FieldOutOrderNo, v))
+}
+
+// OutOrderNoHasSuffix applies the HasSuffix predicate on the "out_order_no" field.
+func OutOrderNoHasSuffix(v string) predicate.Order {
+	return predicate.Order(sql.FieldHasSuffix(FieldOutOrderNo, v))
+}
+
+// OutOrderNoIsNil applies the IsNil predicate on the "out_order_no" field.
+func OutOrderNoIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldOutOrderNo))
+}
+
+// OutOrderNoNotNil applies the NotNil predicate on the "out_order_no" field.
+func OutOrderNoNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldOutOrderNo))
+}
+
+// OutOrderNoEqualFold applies the EqualFold predicate on the "out_order_no" field.
+func OutOrderNoEqualFold(v string) predicate.Order {
+	return predicate.Order(sql.FieldEqualFold(FieldOutOrderNo, v))
+}
+
+// OutOrderNoContainsFold applies the ContainsFold predicate on the "out_order_no" field.
+func OutOrderNoContainsFold(v string) predicate.Order {
+	return predicate.Order(sql.FieldContainsFold(FieldOutOrderNo, v))
+}
+
+// OutRequestNoEQ applies the EQ predicate on the "out_request_no" field.
+func OutRequestNoEQ(v string) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldOutRequestNo, v))
+}
+
+// OutRequestNoNEQ applies the NEQ predicate on the "out_request_no" field.
+func OutRequestNoNEQ(v string) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldOutRequestNo, v))
+}
+
+// OutRequestNoIn applies the In predicate on the "out_request_no" field.
+func OutRequestNoIn(vs ...string) predicate.Order {
+	return predicate.Order(sql.FieldIn(FieldOutRequestNo, vs...))
+}
+
+// OutRequestNoNotIn applies the NotIn predicate on the "out_request_no" field.
+func OutRequestNoNotIn(vs ...string) predicate.Order {
+	return predicate.Order(sql.FieldNotIn(FieldOutRequestNo, vs...))
+}
+
+// OutRequestNoGT applies the GT predicate on the "out_request_no" field.
+func OutRequestNoGT(v string) predicate.Order {
+	return predicate.Order(sql.FieldGT(FieldOutRequestNo, v))
+}
+
+// OutRequestNoGTE applies the GTE predicate on the "out_request_no" field.
+func OutRequestNoGTE(v string) predicate.Order {
+	return predicate.Order(sql.FieldGTE(FieldOutRequestNo, v))
+}
+
+// OutRequestNoLT applies the LT predicate on the "out_request_no" field.
+func OutRequestNoLT(v string) predicate.Order {
+	return predicate.Order(sql.FieldLT(FieldOutRequestNo, v))
+}
+
+// OutRequestNoLTE applies the LTE predicate on the "out_request_no" field.
+func OutRequestNoLTE(v string) predicate.Order {
+	return predicate.Order(sql.FieldLTE(FieldOutRequestNo, v))
+}
+
+// OutRequestNoContains applies the Contains predicate on the "out_request_no" field.
+func OutRequestNoContains(v string) predicate.Order {
+	return predicate.Order(sql.FieldContains(FieldOutRequestNo, v))
+}
+
+// OutRequestNoHasPrefix applies the HasPrefix predicate on the "out_request_no" field.
+func OutRequestNoHasPrefix(v string) predicate.Order {
+	return predicate.Order(sql.FieldHasPrefix(FieldOutRequestNo, v))
+}
+
+// OutRequestNoHasSuffix applies the HasSuffix predicate on the "out_request_no" field.
+func OutRequestNoHasSuffix(v string) predicate.Order {
+	return predicate.Order(sql.FieldHasSuffix(FieldOutRequestNo, v))
+}
+
+// OutRequestNoIsNil applies the IsNil predicate on the "out_request_no" field.
+func OutRequestNoIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldOutRequestNo))
+}
+
+// OutRequestNoNotNil applies the NotNil predicate on the "out_request_no" field.
+func OutRequestNoNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldOutRequestNo))
+}
+
+// OutRequestNoEqualFold applies the EqualFold predicate on the "out_request_no" field.
+func OutRequestNoEqualFold(v string) predicate.Order {
+	return predicate.Order(sql.FieldEqualFold(FieldOutRequestNo, v))
+}
+
+// OutRequestNoContainsFold applies the ContainsFold predicate on the "out_request_no" field.
+func OutRequestNoContainsFold(v string) predicate.Order {
+	return predicate.Order(sql.FieldContainsFold(FieldOutRequestNo, v))
+}
+
+// SubscribeEndAtEQ applies the EQ predicate on the "subscribe_end_at" field.
+func SubscribeEndAtEQ(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldSubscribeEndAt, v))
+}
+
+// SubscribeEndAtNEQ applies the NEQ predicate on the "subscribe_end_at" field.
+func SubscribeEndAtNEQ(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldSubscribeEndAt, v))
+}
+
+// SubscribeEndAtIn applies the In predicate on the "subscribe_end_at" field.
+func SubscribeEndAtIn(vs ...time.Time) predicate.Order {
+	return predicate.Order(sql.FieldIn(FieldSubscribeEndAt, vs...))
+}
+
+// SubscribeEndAtNotIn applies the NotIn predicate on the "subscribe_end_at" field.
+func SubscribeEndAtNotIn(vs ...time.Time) predicate.Order {
+	return predicate.Order(sql.FieldNotIn(FieldSubscribeEndAt, vs...))
+}
+
+// SubscribeEndAtGT applies the GT predicate on the "subscribe_end_at" field.
+func SubscribeEndAtGT(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldGT(FieldSubscribeEndAt, v))
+}
+
+// SubscribeEndAtGTE applies the GTE predicate on the "subscribe_end_at" field.
+func SubscribeEndAtGTE(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldGTE(FieldSubscribeEndAt, v))
+}
+
+// SubscribeEndAtLT applies the LT predicate on the "subscribe_end_at" field.
+func SubscribeEndAtLT(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldLT(FieldSubscribeEndAt, v))
+}
+
+// SubscribeEndAtLTE applies the LTE predicate on the "subscribe_end_at" field.
+func SubscribeEndAtLTE(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldLTE(FieldSubscribeEndAt, v))
+}
+
+// SubscribeEndAtIsNil applies the IsNil predicate on the "subscribe_end_at" field.
+func SubscribeEndAtIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldSubscribeEndAt))
+}
+
+// SubscribeEndAtNotNil applies the NotNil predicate on the "subscribe_end_at" field.
+func SubscribeEndAtNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldSubscribeEndAt))
 }
 
 // HasPlan applies the HasEdge predicate on the "plan" edge.

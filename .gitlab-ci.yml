@@ -1,40 +1,41 @@
-stages:
-  - lint
-  # - build
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/pipeline/#customization
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 
+# container_scanning:
+#   variables:
+#     DOCKER_IMAGE: ...
+#     DOCKER_USER: ...
+#     DOCKER_PASSWORD: ...
+stages:
+- lint
+- test
 default:
   interruptible: false
-
 lint:
   stage: lint
   rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+  - if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
   tags:
-    - shell
+  - shell
   before_script:
-    - go env -w GO111MODULE=on
-    - go env -w GOPROXY=https://goproxy.cn,direct
-    - go mod tidy
-    - export CI_COMMIT=$(git rev-parse HEAD)
-    - export CI_REPO_OWNER=auroraride
-    - export CI_REPO_NAME=aurservd
-    - export REVIEWDOG_INSECURE_SKIP_VERIFY=true
-    - export GITLAB_API="https://gitlab.liasica.com/api/v4"
+  - go env -w GO111MODULE=on
+  - go env -w GOPROXY=https://goproxy.cn,direct
+  - go mod tidy
+  - export CI_COMMIT=$(git rev-parse HEAD)
+  - export CI_REPO_OWNER=auroraride
+  - export CI_REPO_NAME=aurservd
+  - export REVIEWDOG_INSECURE_SKIP_VERIFY=true
+  - export GITLAB_API="https://gitlab.liasica.com/api/v4"
   script:
-    - ls go.mod
-    - bash ./generate_doc.sh
-    - reviewdog -reporter=gitlab-mr-discussion
-  after_script:
-    - go clean -cache
-    - go clean -fuzzcache
-
-# build:
-#   stage: build
-#   needs:
-#     - lint
-#   only:
-#     - merge_requests
-#   tags:
-#     - shell
-#   script:
-#     - echo "TODO BUILD"
+  - reviewdog -reporter=gitlab-mr-discussion
+sast:
+  stage: test
+include:
+- template: Security/SAST.gitlab-ci.yml
+- template: Security/Dependency-Scanning.gitlab-ci.yml
+- template: Security/Secret-Detection.gitlab-ci.yml

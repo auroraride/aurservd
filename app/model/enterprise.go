@@ -61,7 +61,7 @@ func (s *EnterpriseSignType) Scan(src interface{}) error {
 }
 
 func (s EnterpriseSignType) Value() (driver.Value, error) {
-	return s, nil
+	return string(s), nil
 }
 
 const (
@@ -106,6 +106,7 @@ type EnterprisePriceReq struct {
 	EnterpriseID uint64  `json:"enterpriseId" validate:"required" trans:"企业ID"`
 	Intelligent  bool    `json:"intelligent"`       // 是否智能电池
 	BrandID      *uint64 `json:"brandId,omitempty"` // 电车型号
+	AgreementID  *uint64 `json:"agreementId"`       // 协议id
 }
 
 type EnterprisePriceWithCity struct {
@@ -116,6 +117,7 @@ type EnterprisePriceWithCity struct {
 	Intelligent bool    `json:"intelligent"` // 是否智能电池
 
 	EbikeBrand *EbikeBrand `json:"ebikeBrand,omitempty"` // 车辆型号
+	Agreement  *Agreement  `json:"agreement,omitempty"`  // 协议
 }
 
 // Enterprise 企业基础字段

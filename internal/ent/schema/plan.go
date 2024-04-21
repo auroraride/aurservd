@@ -75,6 +75,12 @@ func (Plan) Fields() []ent.Field {
 		field.Float("discount_newly").Default(0).Comment("新签减免"),
 		field.Strings("notes").Optional().Comment("购买须知"),
 		field.Bool("intelligent").Default(false).Comment("是否智能柜套餐"),
+		field.Bool("deposit").Default(false).Comment("是否开启押金(只对V2版本接口有用)"),
+		field.Float("deposit_amount").Optional().Comment("押金金额"),
+		field.Bool("deposit_wechat_payscore").Optional().Default(false).Comment("微信支付分免押金"),
+		field.Bool("deposit_alipay_auth_freeze").Optional().Default(false).Comment("预授权信用免押金"),
+		field.Bool("deposit_contract").Optional().Default(false).Comment("合同免押金"),
+		field.Bool("deposit_pay").Optional().Default(false).Comment("支付押金"),
 	}
 }
 
@@ -94,6 +100,7 @@ func (Plan) Mixin() []ent.Mixin {
 		internal.DeleteMixin{},
 		internal.Modifier{},
 		EbikeBrandMixin{Optional: true},
+		AgreementMixin{Optional: true},
 	}
 }
 

@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -722,6 +723,73 @@ func (su *SubscribeUpdate) SetNillableIntelligent(b *bool) *SubscribeUpdate {
 	return su
 }
 
+// SetAgreementHash sets the "agreement_hash" field.
+func (su *SubscribeUpdate) SetAgreementHash(s string) *SubscribeUpdate {
+	su.mutation.SetAgreementHash(s)
+	return su
+}
+
+// SetNillableAgreementHash sets the "agreement_hash" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableAgreementHash(s *string) *SubscribeUpdate {
+	if s != nil {
+		su.SetAgreementHash(*s)
+	}
+	return su
+}
+
+// ClearAgreementHash clears the value of the "agreement_hash" field.
+func (su *SubscribeUpdate) ClearAgreementHash() *SubscribeUpdate {
+	su.mutation.ClearAgreementHash()
+	return su
+}
+
+// SetEnterprisePriceID sets the "enterprise_price_id" field.
+func (su *SubscribeUpdate) SetEnterprisePriceID(u uint64) *SubscribeUpdate {
+	su.mutation.SetEnterprisePriceID(u)
+	return su
+}
+
+// SetNillableEnterprisePriceID sets the "enterprise_price_id" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableEnterprisePriceID(u *uint64) *SubscribeUpdate {
+	if u != nil {
+		su.SetEnterprisePriceID(*u)
+	}
+	return su
+}
+
+// ClearEnterprisePriceID clears the value of the "enterprise_price_id" field.
+func (su *SubscribeUpdate) ClearEnterprisePriceID() *SubscribeUpdate {
+	su.mutation.ClearEnterprisePriceID()
+	return su
+}
+
+// SetDepositType sets the "deposit_type" field.
+func (su *SubscribeUpdate) SetDepositType(u uint8) *SubscribeUpdate {
+	su.mutation.ResetDepositType()
+	su.mutation.SetDepositType(u)
+	return su
+}
+
+// SetNillableDepositType sets the "deposit_type" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableDepositType(u *uint8) *SubscribeUpdate {
+	if u != nil {
+		su.SetDepositType(*u)
+	}
+	return su
+}
+
+// AddDepositType adds u to the "deposit_type" field.
+func (su *SubscribeUpdate) AddDepositType(u int8) *SubscribeUpdate {
+	su.mutation.AddDepositType(u)
+	return su
+}
+
+// ClearDepositType clears the value of the "deposit_type" field.
+func (su *SubscribeUpdate) ClearDepositType() *SubscribeUpdate {
+	su.mutation.ClearDepositType()
+	return su
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (su *SubscribeUpdate) SetPlan(p *Plan) *SubscribeUpdate {
 	return su.SetPlanID(p.ID)
@@ -869,6 +937,11 @@ func (su *SubscribeUpdate) SetNillableBatteryID(id *uint64) *SubscribeUpdate {
 // SetBattery sets the "battery" edge to the Battery entity.
 func (su *SubscribeUpdate) SetBattery(b *Battery) *SubscribeUpdate {
 	return su.SetBatteryID(b.ID)
+}
+
+// SetEnterprisePrice sets the "enterprise_price" edge to the EnterprisePrice entity.
+func (su *SubscribeUpdate) SetEnterprisePrice(e *EnterprisePrice) *SubscribeUpdate {
+	return su.SetEnterprisePriceID(e.ID)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -1050,6 +1123,12 @@ func (su *SubscribeUpdate) RemoveBills(e ...*EnterpriseBill) *SubscribeUpdate {
 // ClearBattery clears the "battery" edge to the Battery entity.
 func (su *SubscribeUpdate) ClearBattery() *SubscribeUpdate {
 	su.mutation.ClearBattery()
+	return su
+}
+
+// ClearEnterprisePrice clears the "enterprise_price" edge to the EnterprisePrice entity.
+func (su *SubscribeUpdate) ClearEnterprisePrice() *SubscribeUpdate {
+	su.mutation.ClearEnterprisePrice()
 	return su
 }
 
@@ -1264,6 +1343,21 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.Intelligent(); ok {
 		_spec.SetField(subscribe.FieldIntelligent, field.TypeBool, value)
+	}
+	if value, ok := su.mutation.AgreementHash(); ok {
+		_spec.SetField(subscribe.FieldAgreementHash, field.TypeString, value)
+	}
+	if su.mutation.AgreementHashCleared() {
+		_spec.ClearField(subscribe.FieldAgreementHash, field.TypeString)
+	}
+	if value, ok := su.mutation.DepositType(); ok {
+		_spec.SetField(subscribe.FieldDepositType, field.TypeUint8, value)
+	}
+	if value, ok := su.mutation.AddedDepositType(); ok {
+		_spec.AddField(subscribe.FieldDepositType, field.TypeUint8, value)
+	}
+	if su.mutation.DepositTypeCleared() {
+		_spec.ClearField(subscribe.FieldDepositType, field.TypeUint8)
 	}
 	if su.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1831,6 +1925,35 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.EnterprisePriceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EnterprisePriceTable,
+			Columns: []string{subscribe.EnterprisePriceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprice.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.EnterprisePriceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EnterprisePriceTable,
+			Columns: []string{subscribe.EnterprisePriceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprice.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2536,6 +2659,73 @@ func (suo *SubscribeUpdateOne) SetNillableIntelligent(b *bool) *SubscribeUpdateO
 	return suo
 }
 
+// SetAgreementHash sets the "agreement_hash" field.
+func (suo *SubscribeUpdateOne) SetAgreementHash(s string) *SubscribeUpdateOne {
+	suo.mutation.SetAgreementHash(s)
+	return suo
+}
+
+// SetNillableAgreementHash sets the "agreement_hash" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableAgreementHash(s *string) *SubscribeUpdateOne {
+	if s != nil {
+		suo.SetAgreementHash(*s)
+	}
+	return suo
+}
+
+// ClearAgreementHash clears the value of the "agreement_hash" field.
+func (suo *SubscribeUpdateOne) ClearAgreementHash() *SubscribeUpdateOne {
+	suo.mutation.ClearAgreementHash()
+	return suo
+}
+
+// SetEnterprisePriceID sets the "enterprise_price_id" field.
+func (suo *SubscribeUpdateOne) SetEnterprisePriceID(u uint64) *SubscribeUpdateOne {
+	suo.mutation.SetEnterprisePriceID(u)
+	return suo
+}
+
+// SetNillableEnterprisePriceID sets the "enterprise_price_id" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableEnterprisePriceID(u *uint64) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetEnterprisePriceID(*u)
+	}
+	return suo
+}
+
+// ClearEnterprisePriceID clears the value of the "enterprise_price_id" field.
+func (suo *SubscribeUpdateOne) ClearEnterprisePriceID() *SubscribeUpdateOne {
+	suo.mutation.ClearEnterprisePriceID()
+	return suo
+}
+
+// SetDepositType sets the "deposit_type" field.
+func (suo *SubscribeUpdateOne) SetDepositType(u uint8) *SubscribeUpdateOne {
+	suo.mutation.ResetDepositType()
+	suo.mutation.SetDepositType(u)
+	return suo
+}
+
+// SetNillableDepositType sets the "deposit_type" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableDepositType(u *uint8) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetDepositType(*u)
+	}
+	return suo
+}
+
+// AddDepositType adds u to the "deposit_type" field.
+func (suo *SubscribeUpdateOne) AddDepositType(u int8) *SubscribeUpdateOne {
+	suo.mutation.AddDepositType(u)
+	return suo
+}
+
+// ClearDepositType clears the value of the "deposit_type" field.
+func (suo *SubscribeUpdateOne) ClearDepositType() *SubscribeUpdateOne {
+	suo.mutation.ClearDepositType()
+	return suo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (suo *SubscribeUpdateOne) SetPlan(p *Plan) *SubscribeUpdateOne {
 	return suo.SetPlanID(p.ID)
@@ -2683,6 +2873,11 @@ func (suo *SubscribeUpdateOne) SetNillableBatteryID(id *uint64) *SubscribeUpdate
 // SetBattery sets the "battery" edge to the Battery entity.
 func (suo *SubscribeUpdateOne) SetBattery(b *Battery) *SubscribeUpdateOne {
 	return suo.SetBatteryID(b.ID)
+}
+
+// SetEnterprisePrice sets the "enterprise_price" edge to the EnterprisePrice entity.
+func (suo *SubscribeUpdateOne) SetEnterprisePrice(e *EnterprisePrice) *SubscribeUpdateOne {
+	return suo.SetEnterprisePriceID(e.ID)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -2864,6 +3059,12 @@ func (suo *SubscribeUpdateOne) RemoveBills(e ...*EnterpriseBill) *SubscribeUpdat
 // ClearBattery clears the "battery" edge to the Battery entity.
 func (suo *SubscribeUpdateOne) ClearBattery() *SubscribeUpdateOne {
 	suo.mutation.ClearBattery()
+	return suo
+}
+
+// ClearEnterprisePrice clears the "enterprise_price" edge to the EnterprisePrice entity.
+func (suo *SubscribeUpdateOne) ClearEnterprisePrice() *SubscribeUpdateOne {
+	suo.mutation.ClearEnterprisePrice()
 	return suo
 }
 
@@ -3108,6 +3309,21 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 	}
 	if value, ok := suo.mutation.Intelligent(); ok {
 		_spec.SetField(subscribe.FieldIntelligent, field.TypeBool, value)
+	}
+	if value, ok := suo.mutation.AgreementHash(); ok {
+		_spec.SetField(subscribe.FieldAgreementHash, field.TypeString, value)
+	}
+	if suo.mutation.AgreementHashCleared() {
+		_spec.ClearField(subscribe.FieldAgreementHash, field.TypeString)
+	}
+	if value, ok := suo.mutation.DepositType(); ok {
+		_spec.SetField(subscribe.FieldDepositType, field.TypeUint8, value)
+	}
+	if value, ok := suo.mutation.AddedDepositType(); ok {
+		_spec.AddField(subscribe.FieldDepositType, field.TypeUint8, value)
+	}
+	if suo.mutation.DepositTypeCleared() {
+		_spec.ClearField(subscribe.FieldDepositType, field.TypeUint8)
 	}
 	if suo.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -3675,6 +3891,35 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.EnterprisePriceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EnterprisePriceTable,
+			Columns: []string{subscribe.EnterprisePriceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprice.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.EnterprisePriceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EnterprisePriceTable,
+			Columns: []string{subscribe.EnterprisePriceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprice.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

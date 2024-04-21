@@ -90,6 +90,8 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
 		SetAddress(b.Address).
 		SetEbikeRepair(req.EbikeRepair).
 		SetEbikeObtain(req.EbikeObtain).
+		SetEbikeSale(req.EbikeSale).
+		SetBusinessHours(req.BusinessHours).
 		SaveX(s.ctx)
 
 	if len(req.Materials) > 0 {
@@ -114,7 +116,10 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
 // Modify 修改门店
 func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
 	item := s.Query(req.ID)
-	q := s.orm.UpdateOne(item).SetNillableEbikeObtain(req.EbikeObtain).SetNillableEbikeRepair(req.EbikeRepair)
+	q := s.orm.UpdateOne(item).
+		SetNillableEbikeObtain(req.EbikeObtain).
+		SetNillableEbikeRepair(req.EbikeRepair).
+		SetNillableEbikeSale(req.EbikeSale)
 	if req.Status != nil {
 		q.SetStatus(*req.Status)
 	}
@@ -128,6 +133,9 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
 			SetAddress(b.Address).
 			SetBranchID(*req.BranchID).
 			SetCityID(b.CityID)
+	}
+	if req.BusinessHours != nil {
+		q.SetBusinessHours(*req.BusinessHours)
 	}
 	q.SaveX(s.ctx)
 	return s.Detail(item.ID)
@@ -145,12 +153,14 @@ func (s *storeService) Detail(id uint64) model.StoreItem {
 	}
 	city := item.Edges.City
 	res := model.StoreItem{
-		ID:          item.ID,
-		Name:        item.Name,
-		Status:      item.Status,
-		QRCode:      fmt.Sprintf("STORE:%s", item.Sn),
-		EbikeRepair: item.EbikeRepair,
-		EbikeObtain: item.EbikeObtain,
+		ID:            item.ID,
+		Name:          item.Name,
+		Status:        item.Status,
+		QRCode:        fmt.Sprintf("STORE:%s", item.Sn),
+		EbikeRepair:   item.EbikeRepair,
+		EbikeObtain:   item.EbikeObtain,
+		EbikeSale:     item.EbikeSale,
+		BusinessHours: item.BusinessHours,
 		City: model.City{
 			ID:   city.ID,
 			Name: city.Name,
@@ -186,12 +196,17 @@ func (s *storeService) List(req *model.StoreListReq) *model.PaginationRes {
 		q.Where(store.Status(*req.Status))
 	}
 
-	if req.EbikeObtain != nil {
-		q.Where(store.EbikeObtain(*req.EbikeObtain))
-	}
-
-	if req.EbikeRepair != nil {
-		q.Where(store.EbikeRepair(*req.EbikeRepair))
+	if req.BusinessType != nil {
+		switch *req.BusinessType {
+		case 1: // 租车
+			q.Where(store.EbikeObtain(true))
+		case 2:
+			// 维修
+			q.Where(store.EbikeRepair(true))
+		case 3:
+			// 买车
+			q.Where(store.EbikeSale(true))
+		}
 	}
 
 	return model.ParsePaginationResponse[model.StoreItem, ent.Store](q, req.PaginationReq, func(item *ent.Store) (res model.StoreItem) {

@@ -71,12 +71,10 @@ type ReserveEdges struct {
 // CabinetOrErr returns the Cabinet value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ReserveEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[0] {
-		if e.Cabinet == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: cabinet.Label}
-		}
+	if e.Cabinet != nil {
 		return e.Cabinet, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: cabinet.Label}
 	}
 	return nil, &NotLoadedError{edge: "cabinet"}
 }
@@ -84,12 +82,10 @@ func (e ReserveEdges) CabinetOrErr() (*Cabinet, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ReserveEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[1] {
-		if e.Rider == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: rider.Label}
-		}
+	if e.Rider != nil {
 		return e.Rider, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
 }
@@ -97,12 +93,10 @@ func (e ReserveEdges) RiderOrErr() (*Rider, error) {
 // CityOrErr returns the City value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ReserveEdges) CityOrErr() (*City, error) {
-	if e.loadedTypes[2] {
-		if e.City == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: city.Label}
-		}
+	if e.City != nil {
 		return e.City, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: city.Label}
 	}
 	return nil, &NotLoadedError{edge: "city"}
 }
@@ -110,12 +104,10 @@ func (e ReserveEdges) CityOrErr() (*City, error) {
 // BusinessOrErr returns the Business value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ReserveEdges) BusinessOrErr() (*Business, error) {
-	if e.loadedTypes[3] {
-		if e.Business == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: business.Label}
-		}
+	if e.Business != nil {
 		return e.Business, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: business.Label}
 	}
 	return nil, &NotLoadedError{edge: "business"}
 }

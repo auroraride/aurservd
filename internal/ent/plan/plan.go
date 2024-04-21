@@ -29,6 +29,8 @@ const (
 	FieldRemark = "remark"
 	// FieldBrandID holds the string denoting the brand_id field in the database.
 	FieldBrandID = "brand_id"
+	// FieldAgreementID holds the string denoting the agreement_id field in the database.
+	FieldAgreementID = "agreement_id"
 	// FieldModel holds the string denoting the model field in the database.
 	FieldModel = "model"
 	// FieldEnable holds the string denoting the enable field in the database.
@@ -59,8 +61,22 @@ const (
 	FieldNotes = "notes"
 	// FieldIntelligent holds the string denoting the intelligent field in the database.
 	FieldIntelligent = "intelligent"
+	// FieldDeposit holds the string denoting the deposit field in the database.
+	FieldDeposit = "deposit"
+	// FieldDepositAmount holds the string denoting the deposit_amount field in the database.
+	FieldDepositAmount = "deposit_amount"
+	// FieldDepositWechatPayscore holds the string denoting the deposit_wechat_payscore field in the database.
+	FieldDepositWechatPayscore = "deposit_wechat_payscore"
+	// FieldDepositAlipayAuthFreeze holds the string denoting the deposit_alipay_auth_freeze field in the database.
+	FieldDepositAlipayAuthFreeze = "deposit_alipay_auth_freeze"
+	// FieldDepositContract holds the string denoting the deposit_contract field in the database.
+	FieldDepositContract = "deposit_contract"
+	// FieldDepositPay holds the string denoting the deposit_pay field in the database.
+	FieldDepositPay = "deposit_pay"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
+	// EdgeAgreement holds the string denoting the agreement edge name in mutations.
+	EdgeAgreement = "agreement"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
 	EdgeCities = "cities"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
@@ -78,6 +94,13 @@ const (
 	BrandInverseTable = "ebike_brand"
 	// BrandColumn is the table column denoting the brand relation/edge.
 	BrandColumn = "brand_id"
+	// AgreementTable is the table that holds the agreement relation/edge.
+	AgreementTable = "plan"
+	// AgreementInverseTable is the table name for the Agreement entity.
+	// It exists in this package in order to avoid circular dependency with the "agreement" package.
+	AgreementInverseTable = "agreement"
+	// AgreementColumn is the table column denoting the agreement relation/edge.
+	AgreementColumn = "agreement_id"
 	// CitiesTable is the table that holds the cities relation/edge. The primary key declared below.
 	CitiesTable = "plan_cities"
 	// CitiesInverseTable is the table name for the City entity.
@@ -110,6 +133,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldBrandID,
+	FieldAgreementID,
 	FieldModel,
 	FieldEnable,
 	FieldType,
@@ -125,6 +149,12 @@ var Columns = []string{
 	FieldDiscountNewly,
 	FieldNotes,
 	FieldIntelligent,
+	FieldDeposit,
+	FieldDepositAmount,
+	FieldDepositWechatPayscore,
+	FieldDepositAlipayAuthFreeze,
+	FieldDepositContract,
+	FieldDepositPay,
 }
 
 var (
@@ -162,6 +192,16 @@ var (
 	DefaultDiscountNewly float64
 	// DefaultIntelligent holds the default value on creation for the "intelligent" field.
 	DefaultIntelligent bool
+	// DefaultDeposit holds the default value on creation for the "deposit" field.
+	DefaultDeposit bool
+	// DefaultDepositWechatPayscore holds the default value on creation for the "deposit_wechat_payscore" field.
+	DefaultDepositWechatPayscore bool
+	// DefaultDepositAlipayAuthFreeze holds the default value on creation for the "deposit_alipay_auth_freeze" field.
+	DefaultDepositAlipayAuthFreeze bool
+	// DefaultDepositContract holds the default value on creation for the "deposit_contract" field.
+	DefaultDepositContract bool
+	// DefaultDepositPay holds the default value on creation for the "deposit_pay" field.
+	DefaultDepositPay bool
 )
 
 // OrderOption defines the ordering options for the Plan queries.
@@ -195,6 +235,11 @@ func ByRemark(opts ...sql.OrderTermOption) OrderOption {
 // ByBrandID orders the results by the brand_id field.
 func ByBrandID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBrandID, opts...).ToFunc()
+}
+
+// ByAgreementID orders the results by the agreement_id field.
+func ByAgreementID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAgreementID, opts...).ToFunc()
 }
 
 // ByModel orders the results by the model field.
@@ -267,10 +312,47 @@ func ByIntelligent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIntelligent, opts...).ToFunc()
 }
 
+// ByDeposit orders the results by the deposit field.
+func ByDeposit(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeposit, opts...).ToFunc()
+}
+
+// ByDepositAmount orders the results by the deposit_amount field.
+func ByDepositAmount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepositAmount, opts...).ToFunc()
+}
+
+// ByDepositWechatPayscore orders the results by the deposit_wechat_payscore field.
+func ByDepositWechatPayscore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepositWechatPayscore, opts...).ToFunc()
+}
+
+// ByDepositAlipayAuthFreeze orders the results by the deposit_alipay_auth_freeze field.
+func ByDepositAlipayAuthFreeze(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepositAlipayAuthFreeze, opts...).ToFunc()
+}
+
+// ByDepositContract orders the results by the deposit_contract field.
+func ByDepositContract(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepositContract, opts...).ToFunc()
+}
+
+// ByDepositPay orders the results by the deposit_pay field.
+func ByDepositPay(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepositPay, opts...).ToFunc()
+}
+
 // ByBrandField orders the results by brand field.
 func ByBrandField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newBrandStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByAgreementField orders the results by agreement field.
+func ByAgreementField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAgreementStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -327,6 +409,13 @@ func newBrandStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BrandInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
+	)
+}
+func newAgreementStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AgreementInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, AgreementTable, AgreementColumn),
 	)
 }
 func newCitiesStep() *sqlgraph.Step {

@@ -53,6 +53,7 @@ func (EnterprisePrice) Mixin() []ent.Mixin {
 
 		CityMixin{Optional: false},
 		EbikeBrandMixin{Optional: true},
+		AgreementMixin{Optional: true},
 	}
 }
 

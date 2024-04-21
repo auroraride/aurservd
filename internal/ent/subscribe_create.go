@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -545,6 +546,48 @@ func (sc *SubscribeCreate) SetNillableIntelligent(b *bool) *SubscribeCreate {
 	return sc
 }
 
+// SetAgreementHash sets the "agreement_hash" field.
+func (sc *SubscribeCreate) SetAgreementHash(s string) *SubscribeCreate {
+	sc.mutation.SetAgreementHash(s)
+	return sc
+}
+
+// SetNillableAgreementHash sets the "agreement_hash" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableAgreementHash(s *string) *SubscribeCreate {
+	if s != nil {
+		sc.SetAgreementHash(*s)
+	}
+	return sc
+}
+
+// SetEnterprisePriceID sets the "enterprise_price_id" field.
+func (sc *SubscribeCreate) SetEnterprisePriceID(u uint64) *SubscribeCreate {
+	sc.mutation.SetEnterprisePriceID(u)
+	return sc
+}
+
+// SetNillableEnterprisePriceID sets the "enterprise_price_id" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableEnterprisePriceID(u *uint64) *SubscribeCreate {
+	if u != nil {
+		sc.SetEnterprisePriceID(*u)
+	}
+	return sc
+}
+
+// SetDepositType sets the "deposit_type" field.
+func (sc *SubscribeCreate) SetDepositType(u uint8) *SubscribeCreate {
+	sc.mutation.SetDepositType(u)
+	return sc
+}
+
+// SetNillableDepositType sets the "deposit_type" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableDepositType(u *uint8) *SubscribeCreate {
+	if u != nil {
+		sc.SetDepositType(*u)
+	}
+	return sc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (sc *SubscribeCreate) SetPlan(p *Plan) *SubscribeCreate {
 	return sc.SetPlanID(p.ID)
@@ -694,6 +737,11 @@ func (sc *SubscribeCreate) SetBattery(b *Battery) *SubscribeCreate {
 	return sc.SetBatteryID(b.ID)
 }
 
+// SetEnterprisePrice sets the "enterprise_price" edge to the EnterprisePrice entity.
+func (sc *SubscribeCreate) SetEnterprisePrice(e *EnterprisePrice) *SubscribeCreate {
+	return sc.SetEnterprisePriceID(e.ID)
+}
+
 // Mutation returns the SubscribeMutation object of the builder.
 func (sc *SubscribeCreate) Mutation() *SubscribeMutation {
 	return sc.mutation
@@ -788,6 +836,10 @@ func (sc *SubscribeCreate) defaults() error {
 	if _, ok := sc.mutation.Intelligent(); !ok {
 		v := subscribe.DefaultIntelligent
 		sc.mutation.SetIntelligent(v)
+	}
+	if _, ok := sc.mutation.DepositType(); !ok {
+		v := subscribe.DefaultDepositType
+		sc.mutation.SetDepositType(v)
 	}
 	return nil
 }
@@ -986,6 +1038,14 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.Intelligent(); ok {
 		_spec.SetField(subscribe.FieldIntelligent, field.TypeBool, value)
 		_node.Intelligent = value
+	}
+	if value, ok := sc.mutation.AgreementHash(); ok {
+		_spec.SetField(subscribe.FieldAgreementHash, field.TypeString, value)
+		_node.AgreementHash = value
+	}
+	if value, ok := sc.mutation.DepositType(); ok {
+		_spec.SetField(subscribe.FieldDepositType, field.TypeUint8, value)
+		_node.DepositType = value
 	}
 	if nodes := sc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1268,6 +1328,23 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.EnterprisePriceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EnterprisePriceTable,
+			Columns: []string{subscribe.EnterprisePriceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprice.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EnterprisePriceID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -1931,6 +2008,66 @@ func (u *SubscribeUpsert) SetIntelligent(v bool) *SubscribeUpsert {
 // UpdateIntelligent sets the "intelligent" field to the value that was provided on create.
 func (u *SubscribeUpsert) UpdateIntelligent() *SubscribeUpsert {
 	u.SetExcluded(subscribe.FieldIntelligent)
+	return u
+}
+
+// SetAgreementHash sets the "agreement_hash" field.
+func (u *SubscribeUpsert) SetAgreementHash(v string) *SubscribeUpsert {
+	u.Set(subscribe.FieldAgreementHash, v)
+	return u
+}
+
+// UpdateAgreementHash sets the "agreement_hash" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateAgreementHash() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldAgreementHash)
+	return u
+}
+
+// ClearAgreementHash clears the value of the "agreement_hash" field.
+func (u *SubscribeUpsert) ClearAgreementHash() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldAgreementHash)
+	return u
+}
+
+// SetEnterprisePriceID sets the "enterprise_price_id" field.
+func (u *SubscribeUpsert) SetEnterprisePriceID(v uint64) *SubscribeUpsert {
+	u.Set(subscribe.FieldEnterprisePriceID, v)
+	return u
+}
+
+// UpdateEnterprisePriceID sets the "enterprise_price_id" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateEnterprisePriceID() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldEnterprisePriceID)
+	return u
+}
+
+// ClearEnterprisePriceID clears the value of the "enterprise_price_id" field.
+func (u *SubscribeUpsert) ClearEnterprisePriceID() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldEnterprisePriceID)
+	return u
+}
+
+// SetDepositType sets the "deposit_type" field.
+func (u *SubscribeUpsert) SetDepositType(v uint8) *SubscribeUpsert {
+	u.Set(subscribe.FieldDepositType, v)
+	return u
+}
+
+// UpdateDepositType sets the "deposit_type" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateDepositType() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldDepositType)
+	return u
+}
+
+// AddDepositType adds v to the "deposit_type" field.
+func (u *SubscribeUpsert) AddDepositType(v uint8) *SubscribeUpsert {
+	u.Add(subscribe.FieldDepositType, v)
+	return u
+}
+
+// ClearDepositType clears the value of the "deposit_type" field.
+func (u *SubscribeUpsert) ClearDepositType() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldDepositType)
 	return u
 }
 
@@ -2696,6 +2833,76 @@ func (u *SubscribeUpsertOne) SetIntelligent(v bool) *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) UpdateIntelligent() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateIntelligent()
+	})
+}
+
+// SetAgreementHash sets the "agreement_hash" field.
+func (u *SubscribeUpsertOne) SetAgreementHash(v string) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetAgreementHash(v)
+	})
+}
+
+// UpdateAgreementHash sets the "agreement_hash" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateAgreementHash() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateAgreementHash()
+	})
+}
+
+// ClearAgreementHash clears the value of the "agreement_hash" field.
+func (u *SubscribeUpsertOne) ClearAgreementHash() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearAgreementHash()
+	})
+}
+
+// SetEnterprisePriceID sets the "enterprise_price_id" field.
+func (u *SubscribeUpsertOne) SetEnterprisePriceID(v uint64) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetEnterprisePriceID(v)
+	})
+}
+
+// UpdateEnterprisePriceID sets the "enterprise_price_id" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateEnterprisePriceID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateEnterprisePriceID()
+	})
+}
+
+// ClearEnterprisePriceID clears the value of the "enterprise_price_id" field.
+func (u *SubscribeUpsertOne) ClearEnterprisePriceID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearEnterprisePriceID()
+	})
+}
+
+// SetDepositType sets the "deposit_type" field.
+func (u *SubscribeUpsertOne) SetDepositType(v uint8) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetDepositType(v)
+	})
+}
+
+// AddDepositType adds v to the "deposit_type" field.
+func (u *SubscribeUpsertOne) AddDepositType(v uint8) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.AddDepositType(v)
+	})
+}
+
+// UpdateDepositType sets the "deposit_type" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateDepositType() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateDepositType()
+	})
+}
+
+// ClearDepositType clears the value of the "deposit_type" field.
+func (u *SubscribeUpsertOne) ClearDepositType() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearDepositType()
 	})
 }
 
@@ -3627,6 +3834,76 @@ func (u *SubscribeUpsertBulk) SetIntelligent(v bool) *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) UpdateIntelligent() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateIntelligent()
+	})
+}
+
+// SetAgreementHash sets the "agreement_hash" field.
+func (u *SubscribeUpsertBulk) SetAgreementHash(v string) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetAgreementHash(v)
+	})
+}
+
+// UpdateAgreementHash sets the "agreement_hash" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateAgreementHash() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateAgreementHash()
+	})
+}
+
+// ClearAgreementHash clears the value of the "agreement_hash" field.
+func (u *SubscribeUpsertBulk) ClearAgreementHash() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearAgreementHash()
+	})
+}
+
+// SetEnterprisePriceID sets the "enterprise_price_id" field.
+func (u *SubscribeUpsertBulk) SetEnterprisePriceID(v uint64) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetEnterprisePriceID(v)
+	})
+}
+
+// UpdateEnterprisePriceID sets the "enterprise_price_id" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateEnterprisePriceID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateEnterprisePriceID()
+	})
+}
+
+// ClearEnterprisePriceID clears the value of the "enterprise_price_id" field.
+func (u *SubscribeUpsertBulk) ClearEnterprisePriceID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearEnterprisePriceID()
+	})
+}
+
+// SetDepositType sets the "deposit_type" field.
+func (u *SubscribeUpsertBulk) SetDepositType(v uint8) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetDepositType(v)
+	})
+}
+
+// AddDepositType adds v to the "deposit_type" field.
+func (u *SubscribeUpsertBulk) AddDepositType(v uint8) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.AddDepositType(v)
+	})
+}
+
+// UpdateDepositType sets the "deposit_type" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateDepositType() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateDepositType()
+	})
+}
+
+// ClearDepositType clears the value of the "deposit_type" field.
+func (u *SubscribeUpsertBulk) ClearDepositType() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearDepositType()
 	})
 }
 

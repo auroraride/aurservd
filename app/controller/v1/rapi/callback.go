@@ -10,11 +10,12 @@ import (
 	"net/http"
 
 	"github.com/auroraride/adapter/log"
+	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/payment"
-	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 )
 
 type callback struct{}

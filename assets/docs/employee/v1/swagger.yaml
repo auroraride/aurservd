@@ -1,20 +1,5 @@
 basePath: /
 definitions:
-  model.AliyunOssStsRes:
-    properties:
-      accessKeyId:
-        type: string
-      accessKeySecret:
-        type: string
-      bucket:
-        type: string
-      expiration:
-        type: string
-      region:
-        type: string
-      stsToken:
-        type: string
-    type: object
   model.AllocateDetail:
     properties:
       ebike:
@@ -145,9 +130,10 @@ definitions:
   model.AssistancePayReq:
     properties:
       id:
+        description: 救援ID
         type: integer
       payway:
-        description: 1支付宝 2微信
+        description: 支付方式, 1支付宝 2微信
         enum:
         - 1
         - 2
@@ -258,6 +244,7 @@ definitions:
   model.AttendanceCreateReq:
     properties:
       address:
+        description: 详细地址
         type: string
       duty:
         description: 上下班 `true`上班 `false`下班
@@ -265,16 +252,19 @@ definitions:
       inventory:
         additionalProperties:
           type: integer
-        description: 格式为 [名称]:数量
+        description: 物资盘点清单, 格式为 [名称]:数量
         type: object
       lat:
+        description: 纬度
         type: number
       lng:
+        description: 经度
         type: number
       photo:
         description: 上班照片
         type: string
       sn:
+        description: 门店编号
         type: string
     required:
     - address
@@ -286,15 +276,19 @@ definitions:
   model.AttendancePrecheck:
     properties:
       address:
+        description: 详细地址
         type: string
       duty:
         description: 上下班 `true`上班 `false`下班
         type: boolean
       lat:
+        description: 纬度
         type: number
       lng:
+        description: 经度
         type: number
       sn:
+        description: 门店编号
         type: string
     required:
     - address
@@ -337,6 +331,7 @@ definitions:
   model.BusinessSubscribeID:
     properties:
       subscribeId:
+        description: 订阅ID
         type: integer
     required:
     - subscribeId
@@ -397,8 +392,10 @@ definitions:
         description: 电车ID
         type: integer
       qrcode:
+        description: 二维码
         type: string
       subscribeId:
+        description: 订阅ID
         type: integer
     type: object
   model.EmployeeProfile:
@@ -433,10 +430,13 @@ definitions:
   model.EmployeeSignReq:
     properties:
       phone:
+        description: 电话
         type: string
       smsCode:
+        description: 短信验证码
         type: string
       smsId:
+        description: 短信ID
         type: string
     required:
     - phone
@@ -448,20 +448,6 @@ definitions:
       agent:
         description: 是否代理商模式
         type: boolean
-      days:
-        description: 代理商时间选项
-        items:
-          type: integer
-        type: array
-      enterpriseContactName:
-        description: 团签联系人
-        type: string
-      enterpriseContactPhone:
-        description: 团签联系电话
-        type: string
-      enterpriseName:
-        description: 团签名称
-        type: string
       id:
         description: 企业ID
         type: integer
@@ -487,6 +473,7 @@ definitions:
         maxItems: 3
         type: array
       description:
+        description: 描述
         type: string
       model:
         description: 电池型号 (和`name`不能同时存在, 也不能同时为空)
@@ -495,10 +482,11 @@ definitions:
         description: 物资名称 (非电池物资, 和`model`不能同时存在, 也不能同时为空), 物资列表查看接口 `E3001 物资异常配置`
         type: string
       num:
+        description: 异常数量
         minimum: 1
         type: integer
       reason:
-        description: 异常原因查看接口 `E3001 物资异常配置`
+        description: 异常原因, 异常原因查看接口 `E3001 物资异常配置`
         type: string
     required:
     - description
@@ -606,6 +594,9 @@ definitions:
     type: object
   model.OrderStatusRes:
     properties:
+      outOrderNo:
+        description: 预授权订单号
+        type: string
       outTradeNo:
         description: 订单编号
         type: string
@@ -712,24 +703,6 @@ definitions:
       subscribeStatus:
         description: 骑手订阅状态
         type: integer
-    type: object
-  model.SmsReq:
-    properties:
-      captchaCode:
-        description: captcha 验证码
-        type: string
-      phone:
-        description: 手机号
-        type: string
-    required:
-    - captchaCode
-    - phone
-    type: object
-  model.SmsRes:
-    properties:
-      id:
-        description: 任务ID
-        type: string
     type: object
   model.StatusResponse:
     properties:
@@ -973,6 +946,7 @@ definitions:
         description: 二维码
         type: string
       subscribeId:
+        description: 订阅ID
         type: integer
     required:
     - subscribeId
@@ -1063,70 +1037,6 @@ info:
   title: 极光出行API - 代理端api
   version: "1.0"
 paths:
-  /common/captcha:
-    get:
-      consumes:
-      - image/png
-      description: 生成的图片验证码有效时间为10分钟
-      operationId: CaptchaGenerate
-      produces:
-      - image/png
-      responses:
-        "200":
-          description: ok
-          headers:
-            X-Captcha-Id  true:
-              description: Captcha验证码ID
-              type: string
-          schema:
-            type: string
-      summary: C1 生成图片验证码
-      tags:
-      - Communal - 公共接口
-  /common/oss/token:
-    get:
-      consumes:
-      - application/json
-      description: 上传文件必须，单次获取有效时间为1个小时
-      operationId: AliyunOssToken
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.AliyunOssStsRes'
-      summary: C3 获取阿里云oss临时凭证
-      tags:
-      - Communal - 公共接口
-  /common/sms:
-    post:
-      consumes:
-      - application/json
-      description: 上传文件必须，单次获取有效时间为1个小时
-      operationId: SendSmsCode
-      parameters:
-      - description: 请求参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.SmsReq'
-      - description: Captcha验证码ID
-        in: header
-        name: X-Captcha-Id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.SmsRes'
-      summary: C2 发送短信验证码
-      tags:
-      - Communal - 公共接口
   /employee/v1/allocate:
     get:
       consumes:
@@ -1855,7 +1765,8 @@ paths:
         in: query
         name: pageSize
         type: integer
-      - in: query
+      - description: 骑手ID
+        in: query
         name: riderId
         type: integer
       produces:

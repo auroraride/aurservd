@@ -60,10 +60,18 @@ type RiderExchangeProcessReq struct {
 
 // RiderExchangeProcessRes 换电操作步骤返回
 type RiderExchangeProcessRes struct {
-	Step    uint8  `json:"step"`    // 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
-	Status  uint8  `json:"status"`  // 状态 1:处理中 2:成功 3:失败
-	Message string `json:"message"` // 消息
-	Stop    bool   `json:"stop"`    // 步骤是否终止
+	Step    uint8      `json:"step"`    // 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
+	Status  TaskStatus `json:"status"`  // 状态 0:未开始 1:处理中 2:成功 3:失败
+	Message string     `json:"message"` // 消息
+	Stop    bool       `json:"stop"`    // 步骤是否终止，当该参数为true时，表示换电流程已结束
+}
+
+func (r *RiderExchangeProcessRes) MarshalBinary() ([]byte, error) {
+	return jsoniter.Marshal(r)
+}
+
+func (r *RiderExchangeProcessRes) UnmarshalBinary(data []byte) error {
+	return jsoniter.Unmarshal(data, r)
 }
 
 // RiderExchangeProcessStatusReq 获取操作状态

@@ -14,8 +14,12 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// Activity is the client for interacting with the Activity builders.
+	Activity *ActivityClient
 	// Agent is the client for interacting with the Agent builders.
 	Agent *AgentClient
+	// Agreement is the client for interacting with the Agreement builders.
+	Agreement *AgreementClient
 	// Allocate is the client for interacting with the Allocate builders.
 	Allocate *AllocateClient
 	// Assistance is the client for interacting with the Assistance builders.
@@ -44,6 +48,8 @@ type Tx struct {
 	Commission *CommissionClient
 	// Contract is the client for interacting with the Contract builders.
 	Contract *ContractClient
+	// ContractTemplate is the client for interacting with the ContractTemplate builders.
+	ContractTemplate *ContractTemplateClient
 	// Coupon is the client for interacting with the Coupon builders.
 	Coupon *CouponClient
 	// CouponAssembly is the client for interacting with the CouponAssembly builders.
@@ -78,8 +84,12 @@ type Tx struct {
 	Exchange *ExchangeClient
 	// Export is the client for interacting with the Export builders.
 	Export *ExportClient
+	// Fault is the client for interacting with the Fault builders.
+	Fault *FaultClient
 	// Feedback is the client for interacting with the Feedback builders.
 	Feedback *FeedbackClient
+	// Instructions is the client for interacting with the Instructions builders.
+	Instructions *InstructionsClient
 	// Inventory is the client for interacting with the Inventory builders.
 	Inventory *InventoryClient
 	// Maintainer is the client for interacting with the Maintainer builders.
@@ -130,6 +140,10 @@ type Tx struct {
 	PromotionSetting *PromotionSettingClient
 	// PromotionWithdrawal is the client for interacting with the PromotionWithdrawal builders.
 	PromotionWithdrawal *PromotionWithdrawalClient
+	// Question is the client for interacting with the Question builders.
+	Question *QuestionClient
+	// QuestionCategory is the client for interacting with the QuestionCategory builders.
+	QuestionCategory *QuestionCategoryClient
 	// Reserve is the client for interacting with the Reserve builders.
 	Reserve *ReserveClient
 	// Rider is the client for interacting with the Rider builders.
@@ -156,6 +170,8 @@ type Tx struct {
 	SubscribeReminder *SubscribeReminderClient
 	// SubscribeSuspend is the client for interacting with the SubscribeSuspend builders.
 	SubscribeSuspend *SubscribeSuspendClient
+	// Version is the client for interacting with the Version builders.
+	Version *VersionClient
 
 	// lazily loaded.
 	client     *Client
@@ -287,7 +303,9 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.Activity = NewActivityClient(tx.config)
 	tx.Agent = NewAgentClient(tx.config)
+	tx.Agreement = NewAgreementClient(tx.config)
 	tx.Allocate = NewAllocateClient(tx.config)
 	tx.Assistance = NewAssistanceClient(tx.config)
 	tx.Attendance = NewAttendanceClient(tx.config)
@@ -302,6 +320,7 @@ func (tx *Tx) init() {
 	tx.City = NewCityClient(tx.config)
 	tx.Commission = NewCommissionClient(tx.config)
 	tx.Contract = NewContractClient(tx.config)
+	tx.ContractTemplate = NewContractTemplateClient(tx.config)
 	tx.Coupon = NewCouponClient(tx.config)
 	tx.CouponAssembly = NewCouponAssemblyClient(tx.config)
 	tx.CouponTemplate = NewCouponTemplateClient(tx.config)
@@ -319,7 +338,9 @@ func (tx *Tx) init() {
 	tx.Exception = NewExceptionClient(tx.config)
 	tx.Exchange = NewExchangeClient(tx.config)
 	tx.Export = NewExportClient(tx.config)
+	tx.Fault = NewFaultClient(tx.config)
 	tx.Feedback = NewFeedbackClient(tx.config)
+	tx.Instructions = NewInstructionsClient(tx.config)
 	tx.Inventory = NewInventoryClient(tx.config)
 	tx.Maintainer = NewMaintainerClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)
@@ -345,6 +366,8 @@ func (tx *Tx) init() {
 	tx.PromotionReferralsProgress = NewPromotionReferralsProgressClient(tx.config)
 	tx.PromotionSetting = NewPromotionSettingClient(tx.config)
 	tx.PromotionWithdrawal = NewPromotionWithdrawalClient(tx.config)
+	tx.Question = NewQuestionClient(tx.config)
+	tx.QuestionCategory = NewQuestionCategoryClient(tx.config)
 	tx.Reserve = NewReserveClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)
 	tx.RiderFollowUp = NewRiderFollowUpClient(tx.config)
@@ -358,6 +381,7 @@ func (tx *Tx) init() {
 	tx.SubscribePause = NewSubscribePauseClient(tx.config)
 	tx.SubscribeReminder = NewSubscribeReminderClient(tx.config)
 	tx.SubscribeSuspend = NewSubscribeSuspendClient(tx.config)
+	tx.Version = NewVersionClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
@@ -367,7 +391,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Agent.QueryXXX(), the query will be executed
+// applies a query, for example: Activity.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

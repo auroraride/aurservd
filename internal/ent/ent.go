@@ -12,7 +12,9 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
@@ -27,6 +29,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
@@ -44,7 +47,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/export"
+	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
+	"github.com/auroraride/aurservd/internal/ent/instructions"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -70,6 +75,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/question"
+	"github.com/auroraride/aurservd/internal/ent/questioncategory"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -83,6 +90,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
+	"github.com/auroraride/aurservd/internal/ent/version"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -143,7 +151,9 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
+			activity.Table:                   activity.ValidColumn,
 			agent.Table:                      agent.ValidColumn,
+			agreement.Table:                  agreement.ValidColumn,
 			allocate.Table:                   allocate.ValidColumn,
 			assistance.Table:                 assistance.ValidColumn,
 			attendance.Table:                 attendance.ValidColumn,
@@ -158,6 +168,7 @@ func checkColumn(table, column string) error {
 			city.Table:                       city.ValidColumn,
 			commission.Table:                 commission.ValidColumn,
 			contract.Table:                   contract.ValidColumn,
+			contracttemplate.Table:           contracttemplate.ValidColumn,
 			coupon.Table:                     coupon.ValidColumn,
 			couponassembly.Table:             couponassembly.ValidColumn,
 			coupontemplate.Table:             coupontemplate.ValidColumn,
@@ -175,7 +186,9 @@ func checkColumn(table, column string) error {
 			exception.Table:                  exception.ValidColumn,
 			exchange.Table:                   exchange.ValidColumn,
 			export.Table:                     export.ValidColumn,
+			fault.Table:                      fault.ValidColumn,
 			feedback.Table:                   feedback.ValidColumn,
+			instructions.Table:               instructions.ValidColumn,
 			inventory.Table:                  inventory.ValidColumn,
 			maintainer.Table:                 maintainer.ValidColumn,
 			manager.Table:                    manager.ValidColumn,
@@ -201,6 +214,8 @@ func checkColumn(table, column string) error {
 			promotionreferralsprogress.Table: promotionreferralsprogress.ValidColumn,
 			promotionsetting.Table:           promotionsetting.ValidColumn,
 			promotionwithdrawal.Table:        promotionwithdrawal.ValidColumn,
+			question.Table:                   question.ValidColumn,
+			questioncategory.Table:           questioncategory.ValidColumn,
 			reserve.Table:                    reserve.ValidColumn,
 			rider.Table:                      rider.ValidColumn,
 			riderfollowup.Table:              riderfollowup.ValidColumn,
@@ -214,6 +229,7 @@ func checkColumn(table, column string) error {
 			subscribepause.Table:             subscribepause.ValidColumn,
 			subscribereminder.Table:          subscribereminder.ValidColumn,
 			subscribesuspend.Table:           subscribesuspend.ValidColumn,
+			version.Table:                    version.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

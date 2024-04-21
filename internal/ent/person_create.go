@@ -197,8 +197,8 @@ func (pc *PersonCreate) SetNillableAuthFace(s *string) *PersonCreate {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (pc *PersonCreate) SetAuthResult(mvr *model.FaceVerifyResult) *PersonCreate {
-	pc.mutation.SetAuthResult(mvr)
+func (pc *PersonCreate) SetAuthResult(mfvr *model.BaiduFaceVerifyResult) *PersonCreate {
+	pc.mutation.SetAuthResult(mfvr)
 	return pc
 }
 
@@ -258,14 +258,20 @@ func (pc *PersonCreate) SetNillableBaiduLogID(s *string) *PersonCreate {
 	return pc
 }
 
-// AddRiderIDs adds the "rider" edge to the Rider entity by IDs.
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (pc *PersonCreate) SetFaceVerifyResult(mfvr *model.PersonFaceVerifyResult) *PersonCreate {
+	pc.mutation.SetFaceVerifyResult(mfvr)
+	return pc
+}
+
+// AddRiderIDs adds the "riders" edge to the Rider entity by IDs.
 func (pc *PersonCreate) AddRiderIDs(ids ...uint64) *PersonCreate {
 	pc.mutation.AddRiderIDs(ids...)
 	return pc
 }
 
-// AddRider adds the "rider" edges to the Rider entity.
-func (pc *PersonCreate) AddRider(r ...*Rider) *PersonCreate {
+// AddRiders adds the "riders" edges to the Rider entity.
+func (pc *PersonCreate) AddRiders(r ...*Rider) *PersonCreate {
 	ids := make([]uint64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
@@ -472,12 +478,16 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 		_spec.SetField(person.FieldBaiduLogID, field.TypeString, value)
 		_node.BaiduLogID = value
 	}
-	if nodes := pc.mutation.RiderIDs(); len(nodes) > 0 {
+	if value, ok := pc.mutation.FaceVerifyResult(); ok {
+		_spec.SetField(person.FieldFaceVerifyResult, field.TypeJSON, value)
+		_node.FaceVerifyResult = value
+	}
+	if nodes := pc.mutation.RidersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   person.RiderTable,
-			Columns: []string{person.RiderColumn},
+			Table:   person.RidersTable,
+			Columns: []string{person.RidersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -739,7 +749,7 @@ func (u *PersonUpsert) ClearAuthFace() *PersonUpsert {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (u *PersonUpsert) SetAuthResult(v *model.FaceVerifyResult) *PersonUpsert {
+func (u *PersonUpsert) SetAuthResult(v *model.BaiduFaceVerifyResult) *PersonUpsert {
 	u.Set(person.FieldAuthResult, v)
 	return u
 }
@@ -825,6 +835,24 @@ func (u *PersonUpsert) UpdateBaiduLogID() *PersonUpsert {
 // ClearBaiduLogID clears the value of the "baidu_log_id" field.
 func (u *PersonUpsert) ClearBaiduLogID() *PersonUpsert {
 	u.SetNull(person.FieldBaiduLogID)
+	return u
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (u *PersonUpsert) SetFaceVerifyResult(v *model.PersonFaceVerifyResult) *PersonUpsert {
+	u.Set(person.FieldFaceVerifyResult, v)
+	return u
+}
+
+// UpdateFaceVerifyResult sets the "face_verify_result" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateFaceVerifyResult() *PersonUpsert {
+	u.SetExcluded(person.FieldFaceVerifyResult)
+	return u
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (u *PersonUpsert) ClearFaceVerifyResult() *PersonUpsert {
+	u.SetNull(person.FieldFaceVerifyResult)
 	return u
 }
 
@@ -1108,7 +1136,7 @@ func (u *PersonUpsertOne) ClearAuthFace() *PersonUpsertOne {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (u *PersonUpsertOne) SetAuthResult(v *model.FaceVerifyResult) *PersonUpsertOne {
+func (u *PersonUpsertOne) SetAuthResult(v *model.BaiduFaceVerifyResult) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
 		s.SetAuthResult(v)
 	})
@@ -1209,6 +1237,27 @@ func (u *PersonUpsertOne) UpdateBaiduLogID() *PersonUpsertOne {
 func (u *PersonUpsertOne) ClearBaiduLogID() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
 		s.ClearBaiduLogID()
+	})
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (u *PersonUpsertOne) SetFaceVerifyResult(v *model.PersonFaceVerifyResult) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetFaceVerifyResult(v)
+	})
+}
+
+// UpdateFaceVerifyResult sets the "face_verify_result" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateFaceVerifyResult() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateFaceVerifyResult()
+	})
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (u *PersonUpsertOne) ClearFaceVerifyResult() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearFaceVerifyResult()
 	})
 }
 
@@ -1658,7 +1707,7 @@ func (u *PersonUpsertBulk) ClearAuthFace() *PersonUpsertBulk {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (u *PersonUpsertBulk) SetAuthResult(v *model.FaceVerifyResult) *PersonUpsertBulk {
+func (u *PersonUpsertBulk) SetAuthResult(v *model.BaiduFaceVerifyResult) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
 		s.SetAuthResult(v)
 	})
@@ -1759,6 +1808,27 @@ func (u *PersonUpsertBulk) UpdateBaiduLogID() *PersonUpsertBulk {
 func (u *PersonUpsertBulk) ClearBaiduLogID() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
 		s.ClearBaiduLogID()
+	})
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (u *PersonUpsertBulk) SetFaceVerifyResult(v *model.PersonFaceVerifyResult) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetFaceVerifyResult(v)
+	})
+}
+
+// UpdateFaceVerifyResult sets the "face_verify_result" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateFaceVerifyResult() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateFaceVerifyResult()
+	})
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (u *PersonUpsertBulk) ClearFaceVerifyResult() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearFaceVerifyResult()
 	})
 }
 

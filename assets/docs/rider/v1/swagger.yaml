@@ -16,19 +16,22 @@ definitions:
     - CabinetBrandYundong
     - CabinetBrandTuobang
     - CabinetBrandXiliulouServer
-  model.AliyunOssStsRes:
+  model.Agreement:
     properties:
-      accessKeyId:
+      forceReadTime:
+        description: 强制阅读时间
+        type: integer
+      hash:
+        description: hash
         type: string
-      accessKeySecret:
+      id:
+        description: ID
+        type: integer
+      name:
+        description: 协议名称
         type: string
-      bucket:
-        type: string
-      expiration:
-        type: string
-      region:
-        type: string
-      stsToken:
+      url:
+        description: URL
         type: string
     type: object
   model.AllocateRiderRes:
@@ -43,8 +46,10 @@ definitions:
         description: 取消原因详细描述
         type: string
       id:
+        description: 救援ID
         type: integer
       reason:
+        description: 取消原因
         type: string
     required:
     - id
@@ -53,20 +58,26 @@ definitions:
   model.AssistanceCreateReq:
     properties:
       address:
+        description: 详细地址
         type: string
       breakdown:
+        description: 故障原因
         type: string
       breakdownDesc:
+        description: 故障描述
         type: string
       breakdownPhotos:
+        description: 故障图片
         items:
           type: string
         maxItems: 3
         minItems: 1
         type: array
       lat:
+        description: 纬度
         type: number
       lng:
+        description: 经度
         type: number
     required:
     - address
@@ -212,7 +223,12 @@ definitions:
           $ref: '#/definitions/model.BranchFacilityCabinetBin'
         type: array
       businesses:
-        description: 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        description: 骑手可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        items:
+          type: string
+        type: array
+      cabinetBusinesses:
+        description: 电柜可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
         items:
           type: string
         type: array
@@ -250,6 +266,9 @@ definitions:
     type: object
   model.BranchFacilityCabinetBin:
     properties:
+      batterySN:
+        description: 电池SN码 锁仓或空仓无此字段
+        type: string
       electricity:
         description: 当前电量 锁仓或空仓无此字段
         type: number
@@ -315,6 +334,11 @@ definitions:
       address:
         description: 网点地址
         type: string
+      businesses:
+        description: 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        items:
+          type: string
+        type: array
       distance:
         description: '距离(前端处理: 超过1000米显示nKM)'
         type: number
@@ -342,8 +366,10 @@ definitions:
   model.BusinessCabinetReq:
     properties:
       id:
+        description: 订阅ID
         type: integer
       serial:
+        description: 电柜编码
         type: string
     required:
     - id
@@ -397,10 +423,13 @@ definitions:
         maxItems: 3
         type: array
       cabinetId:
+        description: 电柜ID
         type: integer
       description:
+        description: 故障描述
         type: string
       fault:
+        description: 故障
         type: string
     required:
     - cabinetId
@@ -434,6 +463,7 @@ definitions:
   model.ContractSignReq:
     properties:
       subscribeId:
+        description: 订阅ID
         type: integer
     required:
     - subscribeId
@@ -491,19 +521,49 @@ definitions:
       amount:
         description: 金额
         type: number
+      cities:
+        description: 可用城市, 不存在此字段则不限制
+        items:
+          $ref: '#/definitions/model.City'
+        type: array
       code:
         description: 券码
         type: string
+      exclusive:
+        description: 与其他类型券是否互斥
+        type: boolean
       expiredAt:
         description: 到期时间
         type: string
       name:
         description: 名称
         type: string
+      plans:
+        description: 可用骑士卡, 不存在此字段则不限制
+        items:
+          $ref: '#/definitions/model.Plan'
+        type: array
       usedAt:
         description: 使用时间
         type: string
     type: object
+  model.DepositType:
+    enum:
+      - 1
+      - 2
+      - 3
+      - 4
+    type: integer
+    x-enum-comments:
+      DepositTypeAlipayAuthFreeze: 芝麻免押
+      DepositTypeContract: 合同押金
+      DepositTypePay: 支付押金
+      DepositTypeWechatDeposit: 微信支付分免押
+    x-enum-varnames:
+      - DepositTypeAlipayAuthFreeze
+      - DepositTypeWechatDeposit
+      - DepositTypeContract
+      - DepositTypePay
   model.Ebike:
     properties:
       brand:
@@ -558,20 +618,6 @@ definitions:
       agent:
         description: 是否代理商模式
         type: boolean
-      days:
-        description: 代理商时间选项
-        items:
-          type: integer
-        type: array
-      enterpriseContactName:
-        description: 团签联系人
-        type: string
-      enterpriseContactPhone:
-        description: 团签联系电话
-        type: string
-      enterpriseName:
-        description: 团签名称
-        type: string
       id:
         description: 企业ID
         type: integer
@@ -590,6 +636,10 @@ definitions:
     type: object
   model.EnterprisePriceWithCity:
     properties:
+      agreement:
+        allOf:
+        - $ref: '#/definitions/model.Agreement'
+        description: 协议
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -614,6 +664,7 @@ definitions:
   model.EnterpriseRiderSubscribeChooseReq:
     properties:
       model:
+        description: 电池型号
         type: string
     required:
     - model
@@ -778,6 +829,9 @@ definitions:
         items:
           $ref: '#/definitions/model.CouponRider'
         type: array
+      createdAt:
+        description: 创建时间
+        type: string
       discountNewly:
         description: 新签优惠
         type: number
@@ -795,6 +849,9 @@ definitions:
       model:
         description: 电池型号 (可为空)
         type: string
+      outOrderNo:
+        description: 预授权订单号
+        type: string
       outTradeNo:
         description: 订单编号
         type: string
@@ -802,7 +859,7 @@ definitions:
         description: 支付时间
         type: string
       payway:
-        description: 支付方式 1支付宝 2微信
+        description: 支付方式 1支付宝 2微信 3支付宝预授权
         type: integer
       plan:
         allOf:
@@ -862,7 +919,7 @@ definitions:
           type: integer
         type: array
       orderType:
-        description: 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
+        description: 订单类型, 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
         enum:
         - 1
         - 2
@@ -873,12 +930,13 @@ definitions:
         - 7
         type: integer
       payway:
-        description: 1支付宝 2微信
+        description: 支付方式, 1支付宝 2微信
         enum:
         - 1
         - 2
         type: integer
       planId:
+        description: 套餐ID
         type: integer
       point:
         description: 是否使用积分
@@ -890,6 +948,9 @@ definitions:
     type: object
   model.OrderCreateRes:
     properties:
+      outOrderNo:
+        description: 预授权订单号
+        type: string
       outTradeNo:
         description: 交易编码
         type: string
@@ -899,6 +960,9 @@ definitions:
     type: object
   model.OrderStatusRes:
     properties:
+      outOrderNo:
+        description: 预授权订单号
+        type: string
       outTradeNo:
         description: 订单编号
         type: string
@@ -964,9 +1028,31 @@ definitions:
     type: object
   model.PlanDaysPriceOption:
     properties:
+      agreement:
+        allOf:
+        - $ref: '#/definitions/model.Agreement'
+        description: 协议
       days:
         description: 天数
         type: integer
+      deposit:
+        description: 是否启用押金
+        type: boolean
+      depositAlipayAuthFreeze:
+        description: 是否支持预授权信用免押金
+        type: boolean
+      depositAmount:
+        description: 押金金额
+        type: number
+      depositContract:
+        description: 是否支持合同免押金
+        type: boolean
+      depositPay:
+        description: 是否支持支付押金
+        type: boolean
+      depositWechatPayscore:
+        description: 是否支持微信支付分免押金
+        type: boolean
       discountNewly:
         description: 新签优惠
         type: number
@@ -1102,6 +1188,9 @@ definitions:
       refundAt:
         description: 退款成功时间
         type: string
+      remainAmount:
+        description: 剩余金额
+        type: number
       remark:
         description: 备注
         type: string
@@ -1177,6 +1266,9 @@ definitions:
       cabinetId:
         description: 电柜ID
         type: integer
+      endTime:
+        description: 结束时间
+        type: string
       fid:
         description: 设施ID
         type: string
@@ -1205,10 +1297,13 @@ definitions:
   model.RiderContact:
     properties:
       name:
+        description: 联系人姓名
         type: string
       phone:
+        description: 联系人电话
         type: string
       relation:
+        description: 关系
         type: string
     required:
     - name
@@ -1289,13 +1384,14 @@ definitions:
         description: 消息
         type: string
       status:
-        description: 状态 1:处理中 2:成功 3:失败
-        type: integer
+        allOf:
+        - $ref: '#/definitions/model.TaskStatus'
+        description: 状态 0:未开始 1:处理中 2:成功 3:失败
       step:
         description: 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
         type: integer
       stop:
-        description: 步骤是否终止
+        description: 步骤是否终止，当该参数为true时，表示换电流程已结束
         type: boolean
     type: object
   model.RiderPlanItem:
@@ -1411,10 +1507,13 @@ definitions:
       cityId:
         type: integer
       phone:
+        description: 电话
         type: string
       smsCode:
+        description: 短信验证码
         type: string
       smsId:
+        description: 短信ID
         type: string
     required:
     - phone
@@ -1453,24 +1552,6 @@ definitions:
       reserveDuration:
         description: 预约最长时间(分钟)
         type: integer
-    type: object
-  model.SmsReq:
-    properties:
-      captchaCode:
-        description: captcha 验证码
-        type: string
-      phone:
-        description: 手机号
-        type: string
-    required:
-    - captchaCode
-    - phone
-    type: object
-  model.SmsRes:
-    properties:
-      id:
-        description: 任务ID
-        type: string
     type: object
   model.StatusResponse:
     properties:
@@ -1523,6 +1604,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Enterprise'
         description: 企业信息
+      enterprisePriceId:
+        description: 团签价格ID
+        type: integer
       id:
         description: 订阅ID
         type: integer
@@ -1610,6 +1694,7 @@ definitions:
   model.SubscribeAlterRiderReq:
     properties:
       days:
+        description: 天数
         type: integer
     required:
     - days
@@ -1648,6 +1733,23 @@ definitions:
         - 2
         type: integer
     type: object
+  model.TaskStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-comments:
+      TaskStatusFail: 失败
+      TaskStatusNotStart: 未开始
+      TaskStatusProcessing: 处理中
+      TaskStatusSuccess: 成功
+    x-enum-varnames:
+    - TaskStatusNotStart
+    - TaskStatusProcessing
+    - TaskStatusSuccess
+    - TaskStatusFail
   model.WalletOverview:
     properties:
       balance:
@@ -1659,6 +1761,10 @@ definitions:
       deposit:
         description: 已缴纳押金
         type: number
+      depositType:
+        allOf:
+          - $ref: '#/definitions/model.DepositType'
+        description: 押金类型  1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金
       points:
         description: 积分数量
         type: integer
@@ -1749,70 +1855,6 @@ info:
   title: 极光出行API - 骑手端api
   version: "1.0"
 paths:
-  /common/captcha:
-    get:
-      consumes:
-      - image/png
-      description: 生成的图片验证码有效时间为10分钟
-      operationId: CaptchaGenerate
-      produces:
-      - image/png
-      responses:
-        "200":
-          description: ok
-          headers:
-            X-Captcha-Id  true:
-              description: Captcha验证码ID
-              type: string
-          schema:
-            type: string
-      summary: C1 生成图片验证码
-      tags:
-      - Communal - 公共接口
-  /common/oss/token:
-    get:
-      consumes:
-      - application/json
-      description: 上传文件必须，单次获取有效时间为1个小时
-      operationId: AliyunOssToken
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.AliyunOssStsRes'
-      summary: C3 获取阿里云oss临时凭证
-      tags:
-      - Communal - 公共接口
-  /common/sms:
-    post:
-      consumes:
-      - application/json
-      description: 上传文件必须，单次获取有效时间为1个小时
-      operationId: SendSmsCode
-      parameters:
-      - description: 请求参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.SmsReq'
-      - description: Captcha验证码ID
-        in: header
-        name: X-Captcha-Id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.SmsRes'
-      summary: C2 发送短信验证码
-      tags:
-      - Communal - 公共接口
   /rider/v1/assistance:
     get:
       consumes:
@@ -1839,7 +1881,7 @@ paths:
           description: 请求成功
           schema:
             allOf:
-            - $ref: '#/definitions/model.Pagination'
+            - $ref: '#/definitions/model.PaginationRes'
             - properties:
                 items:
                   items:
@@ -2040,24 +2082,32 @@ paths:
         in: query
         name: business
         type: string
-      - in: query
+      - description: 城市ID
+        in: query
         name: cityId
         type: integer
-      - in: query
+      - description: 距离
+        in: query
         name: distance
         type: number
       - description: 额外筛选参数
         in: query
         name: filter
         type: string
-      - in: query
+      - description: 纬度
+        in: query
         name: lat
         required: true
         type: number
-      - in: query
+      - description: 经度
+        in: query
         name: lng
         required: true
         type: number
+      - description: 电池型号
+        in: query
+        name: model
+        type: string
       produces:
       - application/json
       responses:
@@ -2117,10 +2167,12 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
-      - in: query
+      - description: 结束坐标
+        in: query
         name: destination
         type: string
-      - in: query
+      - description: 开始坐标
+        in: query
         name: origin
         type: string
       produces:
@@ -2273,7 +2325,8 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
-      - in: query
+      - description: 操作ID
+        in: query
         name: uuid
         required: true
         type: string
@@ -2387,7 +2440,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R4002 操作换电
+      summary: 电柜换电 - 开始换电流程
       tags:
       - Cabinet - 电柜
   /rider/v1/cabinet/process/{serial}:
@@ -2413,13 +2466,14 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RiderExchangeInfo'
-      summary: R4001 获取换电信息
+      summary: 电柜换电 - 获取换电信息
       tags:
       - Cabinet - 电柜
   /rider/v1/cabinet/process/status:
     get:
       consumes:
       - application/json
+      description: 使用http长轮询，获取换电流程状态，每次轮询超时时间为30s
       operationId: CabinetProcessStatus
       parameters:
       - description: 骑手校验token
@@ -2427,7 +2481,8 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
-      - in: query
+      - description: 操作ID
+        in: query
         name: uuid
         type: string
       produces:
@@ -2437,7 +2492,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RiderExchangeProcessRes'
-      summary: R4003 换电状态
+      summary: 电柜换电 - 获取流程状态
       tags:
       - Cabinet - 电柜
   /rider/v1/cabinet/report:
@@ -3103,7 +3158,8 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
-      - in: query
+      - description: 城市ID
+        in: query
         name: cityId
         required: true
         type: integer
@@ -3310,10 +3366,6 @@ paths:
         required: true
         type: string
       - description: 查询类别 0:可使用 1:已使用 2:已过期
-        enum:
-        - 0
-        - 1
-        - 2
         in: query
         name: type
         type: integer

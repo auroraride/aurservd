@@ -8,102 +8,6 @@
     },
     "basePath": "/",
     "paths": {
-        "/common/captcha": {
-            "get": {
-                "description": "生成的图片验证码有效时间为10分钟",
-                "consumes": [
-                    "image/png"
-                ],
-                "produces": [
-                    "image/png"
-                ],
-                "tags": [
-                    "Communal - 公共接口"
-                ],
-                "summary": "C1 生成图片验证码",
-                "operationId": "CaptchaGenerate",
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "headers": {
-                            "X-Captcha-Id  true": {
-                                "type": "string",
-                                "description": "Captcha验证码ID"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/common/oss/token": {
-            "get": {
-                "description": "上传文件必须，单次获取有效时间为1个小时",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Communal - 公共接口"
-                ],
-                "summary": "C3 获取阿里云oss临时凭证",
-                "operationId": "AliyunOssToken",
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.AliyunOssStsRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/common/sms": {
-            "post": {
-                "description": "上传文件必须，单次获取有效时间为1个小时",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Communal - 公共接口"
-                ],
-                "summary": "C2 发送短信验证码",
-                "operationId": "SendSmsCode",
-                "parameters": [
-                    {
-                        "description": "请求参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.SmsReq"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Captcha验证码ID",
-                        "name": "X-Captcha-Id",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.SmsRes"
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v1/assistance": {
             "get": {
                 "consumes": [
@@ -144,7 +48,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/model.Pagination"
+                                    "$ref": "#/definitions/model.PaginationRes"
                                 },
                                 {
                                     "type": "object",
@@ -457,11 +361,13 @@
                     },
                     {
                         "type": "integer",
+                        "description": "城市ID",
                         "name": "cityId",
                         "in": "query"
                     },
                     {
                         "type": "number",
+                        "description": "距离",
                         "name": "distance",
                         "in": "query"
                     },
@@ -473,15 +379,23 @@
                     },
                     {
                         "type": "number",
+                        "description": "纬度",
                         "name": "lat",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "number",
+                        "description": "经度",
                         "name": "lng",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -573,11 +487,13 @@
                     },
                     {
                         "type": "string",
+                        "description": "结束坐标",
                         "name": "destination",
                         "in": "query"
                     },
                     {
                         "type": "string",
+                        "description": "开始坐标",
                         "name": "origin",
                         "in": "query"
                     }
@@ -810,6 +726,7 @@
                     },
                     {
                         "type": "string",
+                        "description": "操作ID",
                         "name": "uuid",
                         "in": "query",
                         "required": true
@@ -951,7 +868,7 @@
                 "tags": [
                     "Cabinet - 电柜"
                 ],
-                "summary": "R4002 操作换电",
+                "summary": "电柜换电 - 开始换电流程",
                 "operationId": "CabinetProcess",
                 "parameters": [
                     {
@@ -983,6 +900,7 @@
         },
         "/rider/v1/cabinet/process/status": {
             "get": {
+                "description": "使用http长轮询，获取换电流程状态，每次轮询超时时间为30s",
                 "consumes": [
                     "application/json"
                 ],
@@ -992,7 +910,7 @@
                 "tags": [
                     "Cabinet - 电柜"
                 ],
-                "summary": "R4003 换电状态",
+                "summary": "电柜换电 - 获取流程状态",
                 "operationId": "CabinetProcessStatus",
                 "parameters": [
                     {
@@ -1004,6 +922,7 @@
                     },
                     {
                         "type": "string",
+                        "description": "操作ID",
                         "name": "uuid",
                         "in": "query"
                     }
@@ -1029,7 +948,7 @@
                 "tags": [
                     "Cabinet - 电柜"
                 ],
-                "summary": "R4001 获取换电信息",
+                "summary": "电柜换电 - 获取换电信息",
                 "operationId": "CabinetGetProcess",
                 "parameters": [
                     {
@@ -2079,6 +1998,7 @@
                     },
                     {
                         "type": "integer",
+                        "description": "城市ID",
                         "name": "cityId",
                         "in": "query",
                         "required": true
@@ -2391,11 +2311,6 @@
                         "required": true
                     },
                     {
-                        "enum": [
-                            0,
-                            1,
-                            2
-                        ],
                         "type": "integer",
                         "description": "查询类别 0:可使用 1:已使用 2:已过期",
                         "name": "type",
@@ -2560,25 +2475,27 @@
                 "CabinetBrandXiliulouServer"
             ]
         },
-        "model.AliyunOssStsRes": {
+        "model.Agreement": {
             "type": "object",
             "properties": {
-                "accessKeyId": {
+                "forceReadTime": {
+                    "description": "强制阅读时间",
+                    "type": "integer"
+                },
+                "hash": {
+                    "description": "hash",
                     "type": "string"
                 },
-                "accessKeySecret": {
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "协议名称",
                     "type": "string"
                 },
-                "bucket": {
-                    "type": "string"
-                },
-                "expiration": {
-                    "type": "string"
-                },
-                "region": {
-                    "type": "string"
-                },
-                "stsToken": {
+                "url": {
+                    "description": "URL",
                     "type": "string"
                 }
             }
@@ -2604,9 +2521,11 @@
                     "type": "string"
                 },
                 "id": {
+                    "description": "救援ID",
                     "type": "integer"
                 },
                 "reason": {
+                    "description": "取消原因",
                     "type": "string"
                 }
             }
@@ -2623,15 +2542,19 @@
             ],
             "properties": {
                 "address": {
+                    "description": "详细地址",
                     "type": "string"
                 },
                 "breakdown": {
+                    "description": "故障原因",
                     "type": "string"
                 },
                 "breakdownDesc": {
+                    "description": "故障描述",
                     "type": "string"
                 },
                 "breakdownPhotos": {
+                    "description": "故障图片",
                     "type": "array",
                     "maxItems": 3,
                     "minItems": 1,
@@ -2640,9 +2563,11 @@
                     }
                 },
                 "lat": {
+                    "description": "纬度",
                     "type": "number"
                 },
                 "lng": {
+                    "description": "经度",
                     "type": "number"
                 }
             }
@@ -2851,7 +2776,14 @@
                     }
                 },
                 "businesses": {
-                    "description": "可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                    "description": "骑手可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "cabinetBusinesses": {
+                    "description": "电柜可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -2907,6 +2839,10 @@
         "model.BranchFacilityCabinetBin": {
             "type": "object",
             "properties": {
+                "batterySN": {
+                    "description": "电池SN码 锁仓或空仓无此字段",
+                    "type": "string"
+                },
                 "electricity": {
                     "description": "当前电量 锁仓或空仓无此字段",
                     "type": "number"
@@ -3001,6 +2937,13 @@
                     "description": "网点地址",
                     "type": "string"
                 },
+                "businesses": {
+                    "description": "可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "distance": {
                     "description": "距离(前端处理: 超过1000米显示nKM)",
                     "type": "number"
@@ -3042,9 +2985,11 @@
             ],
             "properties": {
                 "id": {
+                    "description": "订阅ID",
                     "type": "integer"
                 },
                 "serial": {
+                    "description": "电柜编码",
                     "type": "string"
                 }
             }
@@ -3121,12 +3066,15 @@
                     }
                 },
                 "cabinetId": {
+                    "description": "电柜ID",
                     "type": "integer"
                 },
                 "description": {
+                    "description": "故障描述",
                     "type": "string"
                 },
                 "fault": {
+                    "description": "故障",
                     "type": "string"
                 }
             }
@@ -3172,6 +3120,7 @@
             ],
             "properties": {
                 "subscribeId": {
+                    "description": "订阅ID",
                     "type": "integer"
                 }
             }
@@ -3250,9 +3199,20 @@
                     "description": "金额",
                     "type": "number"
                 },
+                "cities": {
+                    "description": "可用城市, 不存在此字段则不限制",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.City"
+                    }
+                },
                 "code": {
                     "description": "券码",
                     "type": "string"
+                },
+                "exclusive": {
+                    "description": "与其他类型券是否互斥",
+                    "type": "boolean"
                 },
                 "expiredAt": {
                     "description": "到期时间",
@@ -3262,12 +3222,40 @@
                     "description": "名称",
                     "type": "string"
                 },
+                "plans": {
+                    "description": "可用骑士卡, 不存在此字段则不限制",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Plan"
+                    }
+                },
                 "usedAt": {
                     "description": "使用时间",
                     "type": "string"
                 }
             }
         },
+      "model.DepositType": {
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "x-enum-comments": {
+          "DepositTypeAlipayAuthFreeze": "芝麻免押",
+          "DepositTypeContract": "合同押金",
+          "DepositTypePay": "支付押金",
+          "DepositTypeWechatDeposit": "微信支付分免押"
+        },
+        "x-enum-varnames": [
+          "DepositTypeAlipayAuthFreeze",
+          "DepositTypeWechatDeposit",
+          "DepositTypeContract",
+          "DepositTypePay"
+        ]
+      },
         "model.Ebike": {
             "type": "object",
             "properties": {
@@ -3347,25 +3335,6 @@
                     "description": "是否代理商模式",
                     "type": "boolean"
                 },
-                "days": {
-                    "description": "代理商时间选项",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "enterpriseContactName": {
-                    "description": "团签联系人",
-                    "type": "string"
-                },
-                "enterpriseContactPhone": {
-                    "description": "团签联系电话",
-                    "type": "string"
-                },
-                "enterpriseName": {
-                    "description": "团签名称",
-                    "type": "string"
-                },
                 "id": {
                     "description": "企业ID",
                     "type": "integer"
@@ -3392,6 +3361,14 @@
         "model.EnterprisePriceWithCity": {
             "type": "object",
             "properties": {
+                "agreement": {
+                    "description": "协议",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Agreement"
+                        }
+                    ]
+                },
                 "city": {
                     "description": "城市",
                     "allOf": [
@@ -3433,6 +3410,7 @@
             ],
             "properties": {
                 "model": {
+                    "description": "电池型号",
                     "type": "string"
                 }
             }
@@ -3676,6 +3654,10 @@
                         "$ref": "#/definitions/model.CouponRider"
                     }
                 },
+              "createdAt": {
+                "description": "创建时间",
+                "type": "string"
+              },
                 "discountNewly": {
                     "description": "新签优惠",
                     "type": "number"
@@ -3704,6 +3686,10 @@
                     "description": "电池型号 (可为空)",
                     "type": "string"
                 },
+                "outOrderNo": {
+                    "description": "预授权订单号",
+                    "type": "string"
+                },
                 "outTradeNo": {
                     "description": "订单编号",
                     "type": "string"
@@ -3713,7 +3699,7 @@
                     "type": "string"
                 },
                 "payway": {
-                    "description": "支付方式 1支付宝 2微信",
+                    "description": "支付方式 1支付宝 2微信 3支付宝预授权",
                     "type": "integer"
                 },
                 "plan": {
@@ -3811,7 +3797,7 @@
                     }
                 },
                 "orderType": {
-                    "description": "1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
+                    "description": "订单类型, 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
                     "type": "integer",
                     "enum": [
                         1,
@@ -3824,7 +3810,7 @@
                     ]
                 },
                 "payway": {
-                    "description": "1支付宝 2微信",
+                    "description": "支付方式, 1支付宝 2微信",
                     "type": "integer",
                     "enum": [
                         1,
@@ -3832,6 +3818,7 @@
                     ]
                 },
                 "planId": {
+                    "description": "套餐ID",
                     "type": "integer"
                 },
                 "point": {
@@ -3843,6 +3830,10 @@
         "model.OrderCreateRes": {
             "type": "object",
             "properties": {
+                "outOrderNo": {
+                    "description": "预授权订单号",
+                    "type": "string"
+                },
                 "outTradeNo": {
                     "description": "交易编码",
                     "type": "string"
@@ -3856,6 +3847,10 @@
         "model.OrderStatusRes": {
             "type": "object",
             "properties": {
+                "outOrderNo": {
+                    "description": "预授权订单号",
+                    "type": "string"
+                },
                 "outTradeNo": {
                     "description": "订单编号",
                     "type": "string"
@@ -3951,9 +3946,41 @@
         "model.PlanDaysPriceOption": {
             "type": "object",
             "properties": {
+                "agreement": {
+                    "description": "协议",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Agreement"
+                        }
+                    ]
+                },
                 "days": {
                     "description": "天数",
                     "type": "integer"
+                },
+                "deposit": {
+                    "description": "是否启用押金",
+                    "type": "boolean"
+                },
+                "depositAlipayAuthFreeze": {
+                    "description": "是否支持预授权信用免押金",
+                    "type": "boolean"
+                },
+                "depositAmount": {
+                    "description": "押金金额",
+                    "type": "number"
+                },
+                "depositContract": {
+                    "description": "是否支持合同免押金",
+                    "type": "boolean"
+                },
+                "depositPay": {
+                    "description": "是否支持支付押金",
+                    "type": "boolean"
+                },
+                "depositWechatPayscore": {
+                    "description": "是否支持微信支付分免押金",
+                    "type": "boolean"
                 },
                 "discountNewly": {
                     "description": "新签优惠",
@@ -4154,6 +4181,10 @@
                     "description": "退款成功时间",
                     "type": "string"
                 },
+              "remainAmount": {
+                "description": "剩余金额",
+                "type": "number"
+              },
                 "remark": {
                     "description": "备注",
                     "type": "string"
@@ -4252,6 +4283,10 @@
                     "description": "电柜ID",
                     "type": "integer"
                 },
+              "endTime": {
+                "description": "结束时间",
+                "type": "string"
+              },
                 "fid": {
                     "description": "设施ID",
                     "type": "string"
@@ -4299,12 +4334,15 @@
             ],
             "properties": {
                 "name": {
+                    "description": "联系人姓名",
                     "type": "string"
                 },
                 "phone": {
+                    "description": "联系人电话",
                     "type": "string"
                 },
                 "relation": {
+                    "description": "关系",
                     "type": "string"
                 }
             }
@@ -4422,15 +4460,19 @@
                     "type": "string"
                 },
                 "status": {
-                    "description": "状态 1:处理中 2:成功 3:失败",
-                    "type": "integer"
+                    "description": "状态 0:未开始 1:处理中 2:成功 3:失败",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.TaskStatus"
+                        }
+                    ]
                 },
                 "step": {
                     "description": "操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池",
                     "type": "integer"
                 },
                 "stop": {
-                    "description": "步骤是否终止",
+                    "description": "步骤是否终止，当该参数为true时，表示换电流程已结束",
                     "type": "boolean"
                 }
             }
@@ -4611,12 +4653,15 @@
                     "type": "integer"
                 },
                 "phone": {
+                    "description": "电话",
                     "type": "string"
                 },
                 "smsCode": {
+                    "description": "短信验证码",
                     "type": "string"
                 },
                 "smsId": {
+                    "description": "短信ID",
                     "type": "string"
                 }
             }
@@ -4665,32 +4710,6 @@
                 "reserveDuration": {
                     "description": "预约最长时间(分钟)",
                     "type": "integer"
-                }
-            }
-        },
-        "model.SmsReq": {
-            "type": "object",
-            "required": [
-                "captchaCode",
-                "phone"
-            ],
-            "properties": {
-                "captchaCode": {
-                    "description": "captcha 验证码",
-                    "type": "string"
-                },
-                "phone": {
-                    "description": "手机号",
-                    "type": "string"
-                }
-            }
-        },
-        "model.SmsRes": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "description": "任务ID",
-                    "type": "string"
                 }
             }
         },
@@ -4774,6 +4793,10 @@
                             "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
+                },
+                "enterprisePriceId": {
+                    "description": "团签价格ID",
+                    "type": "integer"
                 },
                 "id": {
                     "description": "订阅ID",
@@ -4903,6 +4926,7 @@
             ],
             "properties": {
                 "days": {
+                    "description": "天数",
                     "type": "integer"
                 }
             }
@@ -4954,6 +4978,27 @@
                 }
             }
         },
+        "model.TaskStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "TaskStatusFail": "失败",
+                "TaskStatusNotStart": "未开始",
+                "TaskStatusProcessing": "处理中",
+                "TaskStatusSuccess": "成功"
+            },
+            "x-enum-varnames": [
+                "TaskStatusNotStart",
+                "TaskStatusProcessing",
+                "TaskStatusSuccess",
+                "TaskStatusFail"
+            ]
+        },
         "model.WalletOverview": {
             "type": "object",
             "properties": {
@@ -4969,6 +5014,14 @@
                     "description": "已缴纳押金",
                     "type": "number"
                 },
+              "depositType": {
+                "description": "押金类型  1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金",
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/model.DepositType"
+                  }
+                ]
+              },
                 "points": {
                     "description": "积分数量",
                     "type": "integer"

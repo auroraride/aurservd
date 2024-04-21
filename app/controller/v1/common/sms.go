@@ -18,30 +18,33 @@ import (
 )
 
 // SendSmsCode
-// @ID           SendSmsCode
-// @Router       /common/sms [POST]
-// @Summary      C2 发送短信验证码
-// @Description  上传文件必须，单次获取有效时间为1个小时
-// @Tags         Communal - 公共接口
-// @Param        body  body  model.SmsReq  true  "请求参数"
-// @Param        X-Captcha-Id  header  string  true  "Captcha验证码ID"
-// @Accept       json
-// @Produce      json
-// @Success      200  {object}  model.SmsRes  "请求成功"
+// @ID			SendSmsCode
+// @Router		/common/sms [POST]
+// @Summary		C2 发送短信验证码
+// @Description	上传文件必须，单次获取有效时间为1个小时
+// @Tags		Communal - 公共接口
+// @Param		body			body	model.SmsReq	true	"请求参数"
+// @Param		X-Captcha-Id	header	string			true	"Captcha验证码ID"
+// @Accept		json
+// @Produce		json
+// @Success		200	{object}	model.SmsRes	"请求成功"
 func SendSmsCode(c echo.Context) error {
 	ctx, req := app.ContextBinding[model.SmsReq](c)
 	id := ctx.Request().Header.Get(app.HeaderCaptchaID)
 	var smsId string
 	var err error
-	debugPhones := ar.Config.App.Debug.Phone
+	isDebugPhone := ar.Config.App.Debug.Phone[req.Phone]
+	isVaild := service.NewCaptcha().Verify(id, req.CaptchaCode, false)
 
-	if !debugPhones[req.Phone] && !service.NewCaptcha().Verify(id, req.CaptchaCode, false) {
+	if !isDebugPhone && !isVaild {
 		return errors.New("图形验证码校验失败")
 	}
-	if debugPhones[req.Phone] {
+
+	// 如果是测试手机号并且故意输错验证码，不发送短信
+	if isDebugPhone && !isVaild {
 		smsId = shortuuid.New()
 	} else {
-		// 发送短信
+		// 如果非测试手机号或输正确验证码，发送短信
 		smsId, err = service.NewSms().SendCode(req.Phone)
 		if err != nil {
 			return err

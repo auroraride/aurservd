@@ -47,6 +47,7 @@ func (s *feedbackService) QueryX(id uint64) *ent.Feedback {
 func (s *feedbackService) Create(req *model.FeedbackReq, ag *ent.Agent) bool {
 	_, err := s.orm.Create().SetEnterpriseID(ag.EnterpriseID).
 		SetContent(req.Content).
+		SetSource(model.SourceAgent). // 反馈来源
 		SetType(req.Type).
 		SetURL(req.Url).
 		SetName(ag.Name).
@@ -60,7 +61,7 @@ func (s *feedbackService) Create(req *model.FeedbackReq, ag *ent.Agent) bool {
 
 // FeedbackList List 反馈列表
 func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.PaginationRes {
-	q := s.orm.Query().WithEnterprise().Order(ent.Desc(feedback.FieldCreatedAt))
+	q := s.orm.Query().WithEnterprise().WithRider().Order(ent.Desc(feedback.FieldCreatedAt))
 	// 筛选条件
 	if req.Keyword != "" {
 		q.Where(
@@ -74,6 +75,27 @@ func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.Pagina
 	if req.Type != nil {
 		q.Where(feedback.TypeEQ(*req.Type))
 	}
+
+	// 是否团签, 0:全部 1:团签 2:个签
+	if req.Enterprise != nil && *req.Enterprise != 0 {
+		if *req.Enterprise == 1 {
+			// 未传企业ID时，默认查询所有带有团签的反馈（企业ID不为空）
+			if req.EnterpriseID == nil || *req.EnterpriseID == 0 {
+				q.Where(feedback.EnterpriseIDNotNil())
+			} else {
+				q.Where(feedback.EnterpriseID(*req.EnterpriseID))
+			}
+		} else {
+			// 个签
+			q.Where(feedback.EnterpriseIDIsNil())
+		}
+	}
+
+	// 反馈来源，1:骑手 2:代理
+	if req.Source != nil {
+		q.Where(feedback.SourceEQ(*req.Source))
+	}
+
 	if req.Start != nil {
 		q.Where(feedback.CreatedAtGTE(tools.NewTime().ParseDateStringX(*req.Start)))
 	}
@@ -81,21 +103,22 @@ func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.Pagina
 		q.Where(feedback.CreatedAtLT(tools.NewTime().ParseNextDateStringX(*req.End)))
 	}
 
-	if req.EnterpriseID != nil {
-		q.Where(feedback.EnterpriseID(*req.EnterpriseID))
-	}
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Feedback) model.FeedbackDetail {
-		rsp := model.FeedbackDetail{
-			ID:                     item.ID,
-			Content:                item.Content,
-			Url:                    item.URL,
-			Type:                   item.Type,
-			EnterpriseName:         item.Edges.Enterprise.Name,
-			EnterpriseContactName:  item.Name,
-			EnterpriseContactPhone: item.Phone,
-			CreatedAt:              item.CreatedAt.Format(carbon.DateTimeLayout),
+		res := model.FeedbackDetail{
+			ID:        item.ID,
+			Content:   item.Content,
+			Url:       item.URL,
+			Type:      item.Type,
+			Source:    item.Source,
+			CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
 		}
-		return rsp
+		if item.Edges.Enterprise != nil {
+			res.EnterpriseID = item.Edges.Enterprise.ID
+			res.EnterpriseName = item.Edges.Enterprise.Name
+		}
+		res.Name = item.Name
+		res.Phone = item.Phone
+		return res
 	})
 
 }

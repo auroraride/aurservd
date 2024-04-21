@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -26,6 +27,7 @@ type EnterprisePriceQuery struct {
 	predicates     []predicate.EnterprisePrice
 	withCity       *CityQuery
 	withBrand      *EbikeBrandQuery
+	withAgreement  *AgreementQuery
 	withEnterprise *EnterpriseQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -101,6 +103,28 @@ func (epq *EnterprisePriceQuery) QueryBrand() *EbikeBrandQuery {
 			sqlgraph.From(enterpriseprice.Table, enterpriseprice.FieldID, selector),
 			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, enterpriseprice.BrandTable, enterpriseprice.BrandColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(epq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAgreement chains the current query on the "agreement" edge.
+func (epq *EnterprisePriceQuery) QueryAgreement() *AgreementQuery {
+	query := (&AgreementClient{config: epq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := epq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := epq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterpriseprice.Table, enterpriseprice.FieldID, selector),
+			sqlgraph.To(agreement.Table, agreement.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterpriseprice.AgreementTable, enterpriseprice.AgreementColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(epq.driver.Dialect(), step)
 		return fromU, nil
@@ -324,6 +348,7 @@ func (epq *EnterprisePriceQuery) Clone() *EnterprisePriceQuery {
 		predicates:     append([]predicate.EnterprisePrice{}, epq.predicates...),
 		withCity:       epq.withCity.Clone(),
 		withBrand:      epq.withBrand.Clone(),
+		withAgreement:  epq.withAgreement.Clone(),
 		withEnterprise: epq.withEnterprise.Clone(),
 		// clone intermediate query.
 		sql:  epq.sql.Clone(),
@@ -350,6 +375,17 @@ func (epq *EnterprisePriceQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *Ente
 		opt(query)
 	}
 	epq.withBrand = query
+	return epq
+}
+
+// WithAgreement tells the query-builder to eager-load the nodes that are connected to
+// the "agreement" edge. The optional arguments are used to configure the query builder of the edge.
+func (epq *EnterprisePriceQuery) WithAgreement(opts ...func(*AgreementQuery)) *EnterprisePriceQuery {
+	query := (&AgreementClient{config: epq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	epq.withAgreement = query
 	return epq
 }
 
@@ -442,9 +478,10 @@ func (epq *EnterprisePriceQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	var (
 		nodes       = []*EnterprisePrice{}
 		_spec       = epq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			epq.withCity != nil,
 			epq.withBrand != nil,
+			epq.withAgreement != nil,
 			epq.withEnterprise != nil,
 		}
 	)
@@ -478,6 +515,12 @@ func (epq *EnterprisePriceQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	if query := epq.withBrand; query != nil {
 		if err := epq.loadBrand(ctx, query, nodes, nil,
 			func(n *EnterprisePrice, e *EbikeBrand) { n.Edges.Brand = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := epq.withAgreement; query != nil {
+		if err := epq.loadAgreement(ctx, query, nodes, nil,
+			func(n *EnterprisePrice, e *Agreement) { n.Edges.Agreement = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -551,6 +594,38 @@ func (epq *EnterprisePriceQuery) loadBrand(ctx context.Context, query *EbikeBran
 	}
 	return nil
 }
+func (epq *EnterprisePriceQuery) loadAgreement(ctx context.Context, query *AgreementQuery, nodes []*EnterprisePrice, init func(*EnterprisePrice), assign func(*EnterprisePrice, *Agreement)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*EnterprisePrice)
+	for i := range nodes {
+		if nodes[i].AgreementID == nil {
+			continue
+		}
+		fk := *nodes[i].AgreementID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(agreement.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "agreement_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (epq *EnterprisePriceQuery) loadEnterprise(ctx context.Context, query *EnterpriseQuery, nodes []*EnterprisePrice, init func(*EnterprisePrice), assign func(*EnterprisePrice, *Enterprise)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*EnterprisePrice)
@@ -614,6 +689,9 @@ func (epq *EnterprisePriceQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if epq.withBrand != nil {
 			_spec.Node.AddColumnOnce(enterpriseprice.FieldBrandID)
+		}
+		if epq.withAgreement != nil {
+			_spec.Node.AddColumnOnce(enterpriseprice.FieldAgreementID)
 		}
 		if epq.withEnterprise != nil {
 			_spec.Node.AddColumnOnce(enterpriseprice.FieldEnterpriseID)
@@ -688,6 +766,7 @@ type EnterprisePriceQueryWith string
 var (
 	EnterprisePriceQueryWithCity       EnterprisePriceQueryWith = "City"
 	EnterprisePriceQueryWithBrand      EnterprisePriceQueryWith = "Brand"
+	EnterprisePriceQueryWithAgreement  EnterprisePriceQueryWith = "Agreement"
 	EnterprisePriceQueryWithEnterprise EnterprisePriceQueryWith = "Enterprise"
 )
 
@@ -698,6 +777,8 @@ func (epq *EnterprisePriceQuery) With(withEdges ...EnterprisePriceQueryWith) *En
 			epq.WithCity()
 		case EnterprisePriceQueryWithBrand:
 			epq.WithBrand()
+		case EnterprisePriceQueryWithAgreement:
+			epq.WithAgreement()
 		case EnterprisePriceQueryWithEnterprise:
 			epq.WithEnterprise()
 		}

@@ -67,7 +67,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 		if req.Days == 0 || req.PriceID == 0 {
 			snag.Panic("代理商必选骑士卡信息")
 		}
-		ep, _ = ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(e.ID), enterpriseprice.ID(req.PriceID)).First(s.ctx)
+		ep, _ = ent.Database.EnterprisePrice.QueryNotDeleted().WithAgreement().Where(enterpriseprice.EnterpriseID(e.ID), enterpriseprice.ID(req.PriceID)).First(s.ctx)
 		if ep == nil {
 			snag.Panic("未找到价格信息")
 		}
@@ -142,6 +142,11 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 				return err
 			}
 		}
+		var hash *string
+		if ep.Edges.Agreement != nil {
+			hash = &ep.Edges.Agreement.Hash
+		}
+
 		// 创建订阅信息
 		err = tx.Subscribe.Create().
 			SetRiderID(r.ID).
@@ -155,6 +160,8 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			SetNeedContract(e.SignType.NeedSign()).
 			SetEnterpriseID(req.EnterpriseID).
 			SetStationID(req.StationID).
+			SetEnterprisePriceID(ep.ID).
+			SetNillableAgreementHash(hash).
 			Exec(s.ctx)
 		return
 	})
@@ -441,7 +448,7 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 		snag.Panic("有未完成的订单")
 	}
 
-	ep, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(req.EnterpriseId), enterpriseprice.ID(req.PriceID)).First(s.ctx)
+	ep, _ := ent.Database.EnterprisePrice.QueryNotDeleted().WithAgreement().Where(enterpriseprice.EnterpriseID(req.EnterpriseId), enterpriseprice.ID(req.PriceID)).First(s.ctx)
 	if ep == nil {
 		snag.Panic("未找到价格信息")
 	}
@@ -464,6 +471,11 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 			snag.Panic("加入团签失败")
 		}
 
+		var hash *string
+		if ep.Edges.Agreement != nil {
+			hash = &ep.Edges.Agreement.Hash
+		}
+
 		return tx.Subscribe.Create().
 			SetRiderID(rid.ID).
 			SetModel(ep.Model).
@@ -476,6 +488,8 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 			SetNeedContract(e.SignType.NeedSign()).
 			SetEnterpriseID(req.EnterpriseId).
 			SetStationID(req.StationId).
+			SetEnterprisePriceID(ep.ID).
+			SetNillableAgreementHash(hash).
 			Exec(s.ctx)
 	})
 
@@ -535,7 +549,6 @@ func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, r *ent.Rider, pa
 		SetDeviceType(r.DeviceType).
 		SetLastDevice(r.LastDevice).
 		SetIsNewDevice(r.IsNewDevice).
-		SetNillableLastFace(r.LastFace).
 		SetPushID(r.PushID).
 		SetNillableLastSigninAt(r.LastSigninAt).
 		SetBlocked(r.Blocked).

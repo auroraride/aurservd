@@ -75,6 +75,11 @@ func AgentID(v uint64) predicate.Feedback {
 	return predicate.Feedback(sql.FieldEQ(FieldAgentID, v))
 }
 
+// RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
+func RiderID(v uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldEQ(FieldRiderID, v))
+}
+
 // Content applies equality check predicate on the "content" field. It's identical to ContentEQ.
 func Content(v string) predicate.Feedback {
 	return predicate.Feedback(sql.FieldEQ(FieldContent, v))
@@ -83,6 +88,11 @@ func Content(v string) predicate.Feedback {
 // Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
 func Type(v uint8) predicate.Feedback {
 	return predicate.Feedback(sql.FieldEQ(FieldType, v))
+}
+
+// Source applies equality check predicate on the "source" field. It's identical to SourceEQ.
+func Source(v uint8) predicate.Feedback {
+	return predicate.Feedback(sql.FieldEQ(FieldSource, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
@@ -235,6 +245,36 @@ func AgentIDNotNil() predicate.Feedback {
 	return predicate.Feedback(sql.FieldNotNull(FieldAgentID))
 }
 
+// RiderIDEQ applies the EQ predicate on the "rider_id" field.
+func RiderIDEQ(v uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldEQ(FieldRiderID, v))
+}
+
+// RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
+func RiderIDNEQ(v uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldNEQ(FieldRiderID, v))
+}
+
+// RiderIDIn applies the In predicate on the "rider_id" field.
+func RiderIDIn(vs ...uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldIn(FieldRiderID, vs...))
+}
+
+// RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
+func RiderIDNotIn(vs ...uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldNotIn(FieldRiderID, vs...))
+}
+
+// RiderIDIsNil applies the IsNil predicate on the "rider_id" field.
+func RiderIDIsNil() predicate.Feedback {
+	return predicate.Feedback(sql.FieldIsNull(FieldRiderID))
+}
+
+// RiderIDNotNil applies the NotNil predicate on the "rider_id" field.
+func RiderIDNotNil() predicate.Feedback {
+	return predicate.Feedback(sql.FieldNotNull(FieldRiderID))
+}
+
 // ContentEQ applies the EQ predicate on the "content" field.
 func ContentEQ(v string) predicate.Feedback {
 	return predicate.Feedback(sql.FieldEQ(FieldContent, v))
@@ -338,6 +378,46 @@ func TypeLT(v uint8) predicate.Feedback {
 // TypeLTE applies the LTE predicate on the "type" field.
 func TypeLTE(v uint8) predicate.Feedback {
 	return predicate.Feedback(sql.FieldLTE(FieldType, v))
+}
+
+// SourceEQ applies the EQ predicate on the "source" field.
+func SourceEQ(v uint8) predicate.Feedback {
+	return predicate.Feedback(sql.FieldEQ(FieldSource, v))
+}
+
+// SourceNEQ applies the NEQ predicate on the "source" field.
+func SourceNEQ(v uint8) predicate.Feedback {
+	return predicate.Feedback(sql.FieldNEQ(FieldSource, v))
+}
+
+// SourceIn applies the In predicate on the "source" field.
+func SourceIn(vs ...uint8) predicate.Feedback {
+	return predicate.Feedback(sql.FieldIn(FieldSource, vs...))
+}
+
+// SourceNotIn applies the NotIn predicate on the "source" field.
+func SourceNotIn(vs ...uint8) predicate.Feedback {
+	return predicate.Feedback(sql.FieldNotIn(FieldSource, vs...))
+}
+
+// SourceGT applies the GT predicate on the "source" field.
+func SourceGT(v uint8) predicate.Feedback {
+	return predicate.Feedback(sql.FieldGT(FieldSource, v))
+}
+
+// SourceGTE applies the GTE predicate on the "source" field.
+func SourceGTE(v uint8) predicate.Feedback {
+	return predicate.Feedback(sql.FieldGTE(FieldSource, v))
+}
+
+// SourceLT applies the LT predicate on the "source" field.
+func SourceLT(v uint8) predicate.Feedback {
+	return predicate.Feedback(sql.FieldLT(FieldSource, v))
+}
+
+// SourceLTE applies the LTE predicate on the "source" field.
+func SourceLTE(v uint8) predicate.Feedback {
+	return predicate.Feedback(sql.FieldLTE(FieldSource, v))
 }
 
 // URLIsNil applies the IsNil predicate on the "url" field.
@@ -538,6 +618,29 @@ func HasAgent() predicate.Feedback {
 func HasAgentWith(preds ...predicate.Agent) predicate.Feedback {
 	return predicate.Feedback(func(s *sql.Selector) {
 		step := newAgentStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRider applies the HasEdge predicate on the "rider" edge.
+func HasRider() predicate.Feedback {
+	return predicate.Feedback(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
+func HasRiderWith(preds ...predicate.Rider) predicate.Feedback {
+	return predicate.Feedback(func(s *sql.Selector) {
+		step := newRiderStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

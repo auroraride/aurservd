@@ -230,7 +230,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 	if req.Distance == nil && req.CityID == nil {
 		snag.Panic("距离和城市不能同时为空")
 	}
-	err := s.orm.QueryNotDeleted().
+	q := s.orm.QueryNotDeleted().
 		Modify(func(sel *sql.Selector) {
 			bt := sql.Table(branch.Table)
 			sel.Select(bt.C(branch.FieldID), bt.C(branch.FieldName), bt.C(branch.FieldAddress), bt.C(branch.FieldLat), bt.C(branch.FieldLng)).
@@ -248,8 +248,11 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 			} else if req.CityID != nil {
 				sel.Where(sql.EQ(sel.C(branch.FieldCityID), *req.CityID))
 			}
-		}).
-		Scan(s.ctx, &temps)
+		})
+	if req.Model != nil {
+		q.Where(branch.HasCabinetsWith(cabinet.HasModelsWith(batterymodel.Model(*req.Model))))
+	}
+	err := q.Scan(s.ctx, &temps)
 	if err != nil || len(temps) == 0 {
 		return
 	}
@@ -410,6 +413,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 			Address:     temp.Address,
 			Facility:    make([]*model.BranchFacility, 0),
 			FacilityMap: make(map[string]*model.BranchFacility),
+			Businesses:  make([]string, 0),
 		}
 	}
 
@@ -434,6 +438,9 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 	var cabIDs []uint64
 	// 预约数量map
 	var rm map[uint64]int
+
+	// 每个网点可用业务
+	branchBusinessesMap := make(map[uint64]map[uint64][]string)
 
 	if req.Business != "" {
 		for _, c := range cabinets {
@@ -490,7 +497,59 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 			}
 
 			s.facility(itemsMap[*c.BranchID].FacilityMap, fa)
+
+			// 电柜可办理业务
+			if branchBusinessesMap[*c.BranchID] == nil {
+				branchBusinessesMap[*c.BranchID] = make(map[uint64][]string)
+			}
+
+			// active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+			// 查询激活预约数
+			reserveActiveNum := NewReserve().CabinetCounts([]uint64{c.ID}, "active")
+			// 查询结束寄存
+			reserveContinueNum := NewReserve().CabinetCounts([]uint64{c.ID}, "continue")
+			// 查询寄存
+			reservePauseNum := NewReserve().CabinetCounts([]uint64{c.ID}, "pause")
+			// 查询退租
+			reserveUnsubscribeNum := NewReserve().CabinetCounts([]uint64{c.ID}, "unsubscribe")
+
+			var batteryFullNum, emptyBinNum int
+
+			// 可用电池数
+			batteryFullNum = c.BatteryFullNum - reserveActiveNum[c.ID] - reserveContinueNum[c.ID]
+			// 可用空仓数
+			emptyBinNum = c.EmptyBinNum - reservePauseNum[c.ID] - reserveUnsubscribeNum[c.ID]
+
+			// 电柜可办业务展示规则：
+			//  1）激活：电柜可用电池数 ≥ 2
+			//  2）退租：电柜空仓数 ≥ 2
+			//  3）寄存：电柜空仓数 ≥ 2
+			//  4）结束寄存：电柜可用电池数 ≥ 2
+			if batteryFullNum >= 2 {
+				branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], business.TypeActive.String(), business.TypeContinue.String())
+			}
+			if emptyBinNum >= 2 {
+				branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], business.TypePause.String(), business.TypeUnsubscribe.String())
+			}
 		}
+	}
+
+	// 网点业务
+	for k, businessesMap := range branchBusinessesMap {
+		added := make(map[string]bool)
+		businesses := make([]string, 0)
+		// 遍历 businessesMap
+		for _, b := range businessesMap {
+			// 遍历每个切片中的元素
+			for _, item := range b {
+				// 如果元素不在 added map 中，则添加到 businesses 切片中，并将其标记为已添加
+				if !added[item] {
+					businesses = append(businesses, item)
+					added[item] = true
+				}
+			}
+		}
+		itemsMap[k].Businesses = businesses
 	}
 
 	for _, m := range itemsMap {
@@ -592,7 +651,8 @@ func (s *branchService) DecodeFacility(fid string) (b *ent.Branch, sto *ent.Stor
 				cabinet.BranchID(b.ID),
 				cabinet.IDNEQ(cab.ID),
 				cabinet.Status(model.CabinetStatusNormal.Value()),
-				cabinet.Health(model.CabinetHealthStatusOnline),
+				// 离线也展示
+				// cabinet.Health(model.CabinetHealthStatusOnline),
 			).
 			All(s.ctx)
 		cabs = append([]*ent.Cabinet{cab}, items...)
@@ -660,12 +720,13 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 				Capacity: bm.Capacity,
 			}
 			c := model.BranchFacilityCabinet{
-				ID:         cab.ID,
-				Name:       cab.Name,
-				Serial:     cab.Serial,
-				Reserve:    nil,
-				Bins:       make([]model.BranchFacilityCabinetBin, len(cab.Bin)),
-				Businesses: make([]string, 0),
+				ID:                cab.ID,
+				Name:              cab.Name,
+				Serial:            cab.Serial,
+				Reserve:           nil,
+				Bins:              make([]model.BranchFacilityCabinetBin, len(cab.Bin)),
+				Businesses:        make([]string, 0),
+				CabinetBusinesses: make([]string, 0),
 			}
 
 			// 获取电柜状态
@@ -703,6 +764,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 						}
 					}
 				}
+				c.Bins[bi].BatterySN = bin.BatterySN
 			}
 
 			c.Batteries = []model.BranchFacilityCabinetBattery{batInfo}
@@ -726,6 +788,29 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 					// 使用中可办理寄存和退租业务
 					c.Businesses = []string{business.TypePause.String(), business.TypeUnsubscribe.String()}
 				}
+			}
+
+			// 电柜可办理业务
+			reserveActiveNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "active")
+			// 查询结束寄存
+			reserveContinueNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "continue")
+			// 查询寄存
+			reservePauseNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "pause")
+			// 查询退租
+			reserveUnsubscribeNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "unsubscribe")
+
+			var batteryFullNum, emptyBinNum int
+
+			// 可用电池数
+			batteryFullNum = cab.BatteryFullNum - reserveActiveNum[c.ID] - reserveContinueNum[c.ID]
+			// 可用空仓数
+			emptyBinNum = cab.EmptyBinNum - reservePauseNum[c.ID] - reserveUnsubscribeNum[c.ID]
+
+			if batteryFullNum >= 2 {
+				c.CabinetBusinesses = append(c.CabinetBusinesses, business.TypeActive.String(), business.TypeContinue.String())
+			}
+			if emptyBinNum >= 2 {
+				c.CabinetBusinesses = append(c.CabinetBusinesses, business.TypePause.String(), business.TypeUnsubscribe.String())
 			}
 
 			data.Cabinet = append(data.Cabinet, c)

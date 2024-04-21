@@ -97,6 +97,9 @@ func (Subscribe) Fields() []ent.Field {
 		field.String("formula").Optional().Nillable().Comment("计算公式"),
 		field.Bool("need_contract").Default(false).Comment("是否需要签约"),
 		field.Bool("intelligent").Default(false).Comment("是否智能柜套餐"),
+		field.String("agreement_hash").Optional().Comment("签署协议hash"),
+		field.Uint64("enterprise_price_id").Optional().Comment("团签价格ID"),
+		field.Uint8("deposit_type").Default(3).Optional().Comment("押金类型 1:芝麻免押 2:微信支付分免押 3:合同免押 4:支付押金"),
 	}
 }
 
@@ -116,6 +119,8 @@ func (Subscribe) Edges() []ent.Edge {
 		edge.To("bills", EnterpriseBill.Type),
 
 		edge.To("battery", Battery.Type).Unique(),
+
+		edge.To("enterprise_price", EnterprisePrice.Type).Unique().Field("enterprise_price_id"),
 	}
 }
 

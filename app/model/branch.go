@@ -113,6 +113,7 @@ type BranchWithDistanceReq struct {
 	CityID   *uint64  `json:"cityId" query:"cityId" trans:"城市ID"`
 	Business string   `json:"business" query:"business" enums:"active,pause,continue,unsubscribe"` // 业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
 	Filter   string   `json:"filter" query:"filter"`                                               // 额外筛选参数
+	Model    *string  `json:"model" query:"model"`                                                 // 电池型号
 }
 
 type BranchDistanceListReq struct {
@@ -156,6 +157,7 @@ type BranchWithDistanceRes struct {
 	Address     string                     `json:"address"`  // 网点地址
 	Facility    []*BranchFacility          `json:"facility"` // 网点设施
 	FacilityMap map[string]*BranchFacility `json:"-" swaggerignore:"true"`
+	Businesses  []string                   `json:"businesses"` // 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
 }
 
 // BranchRidingReq 骑行规划时间请求
@@ -199,14 +201,15 @@ type BranchFacilityStore struct {
 }
 
 type BranchFacilityCabinet struct {
-	ID         uint64                         `json:"id"`                // 电柜ID
-	Status     uint8                          `json:"status"`            // 电柜状态 0:离线 1:在线 2:维护中
-	Name       string                         `json:"name"`              // 电柜名称
-	Serial     string                         `json:"serial"`            // 电柜编号
-	Batteries  []BranchFacilityCabinetBattery `json:"batteries"`         // 电池情况
-	Reserve    *ReserveUnfinishedRes          `json:"reserve,omitempty"` // 当前预约, 预约不存在时无此字段
-	Bins       []BranchFacilityCabinetBin     `json:"bins"`              // 仓位详情
-	Businesses []string                       `json:"businesses"`        // 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+	ID                uint64                         `json:"id"`                // 电柜ID
+	Status            uint8                          `json:"status"`            // 电柜状态 0:离线 1:在线 2:维护中
+	Name              string                         `json:"name"`              // 电柜名称
+	Serial            string                         `json:"serial"`            // 电柜编号
+	Batteries         []BranchFacilityCabinetBattery `json:"batteries"`         // 电池情况
+	Reserve           *ReserveUnfinishedRes          `json:"reserve,omitempty"` // 当前预约, 预约不存在时无此字段
+	Bins              []BranchFacilityCabinetBin     `json:"bins"`              // 仓位详情
+	Businesses        []string                       `json:"businesses"`        // 骑手可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+	CabinetBusinesses []string                       `json:"cabinetBusinesses"` // 电柜可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
 }
 
 type BranchFacilityCabinetBattery struct {
@@ -219,4 +222,5 @@ type BranchFacilityCabinetBattery struct {
 type BranchFacilityCabinetBin struct {
 	Status      uint8       `json:"status"`                // 状态 0:空仓 1:充电 2:可用 3:锁仓
 	Electricity *BatterySoc `json:"electricity,omitempty"` // 当前电量 锁仓或空仓无此字段
+	BatterySN   string      `json:"batterySN,omitempty"`   // 电池SN码 锁仓或空仓无此字段
 }

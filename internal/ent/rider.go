@@ -55,8 +55,6 @@ type Rider struct {
 	LastDevice string `json:"last_device,omitempty"`
 	// 是否新设备
 	IsNewDevice bool `json:"is_new_device,omitempty"`
-	// 上次登录人脸
-	LastFace *string `json:"last_face,omitempty"`
 	// 推送ID
 	PushID string `json:"push_id,omitempty"`
 	// 最后登录时间
@@ -111,12 +109,10 @@ type RiderEdges struct {
 // StationOrErr returns the Station value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e RiderEdges) StationOrErr() (*EnterpriseStation, error) {
-	if e.loadedTypes[0] {
-		if e.Station == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprisestation.Label}
-		}
+	if e.Station != nil {
 		return e.Station, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: enterprisestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "station"}
 }
@@ -124,12 +120,10 @@ func (e RiderEdges) StationOrErr() (*EnterpriseStation, error) {
 // PersonOrErr returns the Person value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e RiderEdges) PersonOrErr() (*Person, error) {
-	if e.loadedTypes[1] {
-		if e.Person == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: person.Label}
-		}
+	if e.Person != nil {
 		return e.Person, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: person.Label}
 	}
 	return nil, &NotLoadedError{edge: "person"}
 }
@@ -137,12 +131,10 @@ func (e RiderEdges) PersonOrErr() (*Person, error) {
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e RiderEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[2] {
-		if e.Enterprise == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprise.Label}
-		}
+	if e.Enterprise != nil {
 		return e.Enterprise, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
 }
@@ -213,12 +205,10 @@ func (e RiderEdges) FollowupsOrErr() ([]*RiderFollowUp, error) {
 // BatteryOrErr returns the Battery value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e RiderEdges) BatteryOrErr() (*Battery, error) {
-	if e.loadedTypes[10] {
-		if e.Battery == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: battery.Label}
-		}
+	if e.Battery != nil {
 		return e.Battery, nil
+	} else if e.loadedTypes[10] {
+		return nil, &NotFoundError{label: battery.Label}
 	}
 	return nil, &NotLoadedError{edge: "battery"}
 }
@@ -243,7 +233,7 @@ func (*Rider) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case rider.FieldID, rider.FieldStationID, rider.FieldPersonID, rider.FieldEnterpriseID, rider.FieldDeviceType, rider.FieldPoints:
 			values[i] = new(sql.NullInt64)
-		case rider.FieldRemark, rider.FieldName, rider.FieldIDCardNumber, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID:
+		case rider.FieldRemark, rider.FieldName, rider.FieldIDCardNumber, rider.FieldPhone, rider.FieldLastDevice, rider.FieldPushID:
 			values[i] = new(sql.NullString)
 		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt, rider.FieldJoinEnterpriseAt:
 			values[i] = new(sql.NullTime)
@@ -373,13 +363,6 @@ func (r *Rider) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field is_new_device", values[i])
 			} else if value.Valid {
 				r.IsNewDevice = value.Bool
-			}
-		case rider.FieldLastFace:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field last_face", values[i])
-			} else if value.Valid {
-				r.LastFace = new(string)
-				*r.LastFace = value.String
 			}
 		case rider.FieldPushID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -580,11 +563,6 @@ func (r *Rider) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_new_device=")
 	builder.WriteString(fmt.Sprintf("%v", r.IsNewDevice))
-	builder.WriteString(", ")
-	if v := r.LastFace; v != nil {
-		builder.WriteString("last_face=")
-		builder.WriteString(*v)
-	}
 	builder.WriteString(", ")
 	builder.WriteString("push_id=")
 	builder.WriteString(r.PushID)

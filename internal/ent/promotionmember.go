@@ -96,12 +96,10 @@ type PromotionMemberEdges struct {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionMemberEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[0] {
-		if e.Rider == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: rider.Label}
-		}
+	if e.Rider != nil {
 		return e.Rider, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
 }
@@ -109,12 +107,10 @@ func (e PromotionMemberEdges) RiderOrErr() (*Rider, error) {
 // SubscribeOrErr returns the Subscribe value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionMemberEdges) SubscribeOrErr() (*Subscribe, error) {
-	if e.loadedTypes[1] {
-		if e.Subscribe == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: subscribe.Label}
-		}
+	if e.Subscribe != nil {
 		return e.Subscribe, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: subscribe.Label}
 	}
 	return nil, &NotLoadedError{edge: "subscribe"}
 }
@@ -122,12 +118,10 @@ func (e PromotionMemberEdges) SubscribeOrErr() (*Subscribe, error) {
 // LevelOrErr returns the Level value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionMemberEdges) LevelOrErr() (*PromotionLevel, error) {
-	if e.loadedTypes[2] {
-		if e.Level == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: promotionlevel.Label}
-		}
+	if e.Level != nil {
 		return e.Level, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: promotionlevel.Label}
 	}
 	return nil, &NotLoadedError{edge: "level"}
 }
@@ -144,12 +138,10 @@ func (e PromotionMemberEdges) ReferralsOrErr() ([]*PromotionReferrals, error) {
 // ReferredOrErr returns the Referred value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionMemberEdges) ReferredOrErr() (*PromotionReferrals, error) {
-	if e.loadedTypes[4] {
-		if e.Referred == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: promotionreferrals.Label}
-		}
+	if e.Referred != nil {
 		return e.Referred, nil
+	} else if e.loadedTypes[4] {
+		return nil, &NotFoundError{label: promotionreferrals.Label}
 	}
 	return nil, &NotLoadedError{edge: "referred"}
 }
@@ -157,12 +149,10 @@ func (e PromotionMemberEdges) ReferredOrErr() (*PromotionReferrals, error) {
 // PersonOrErr returns the Person value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionMemberEdges) PersonOrErr() (*PromotionPerson, error) {
-	if e.loadedTypes[5] {
-		if e.Person == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: promotionperson.Label}
-		}
+	if e.Person != nil {
 		return e.Person, nil
+	} else if e.loadedTypes[5] {
+		return nil, &NotFoundError{label: promotionperson.Label}
 	}
 	return nil, &NotLoadedError{edge: "person"}
 }

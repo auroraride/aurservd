@@ -47,8 +47,6 @@ const (
 	FieldLastDevice = "last_device"
 	// FieldIsNewDevice holds the string denoting the is_new_device field in the database.
 	FieldIsNewDevice = "is_new_device"
-	// FieldLastFace holds the string denoting the last_face field in the database.
-	FieldLastFace = "last_face"
 	// FieldPushID holds the string denoting the push_id field in the database.
 	FieldPushID = "push_id"
 	// FieldLastSigninAt holds the string denoting the last_signin_at field in the database.
@@ -194,7 +192,6 @@ var Columns = []string{
 	FieldDeviceType,
 	FieldLastDevice,
 	FieldIsNewDevice,
-	FieldLastFace,
 	FieldPushID,
 	FieldLastSigninAt,
 	FieldBlocked,
@@ -312,11 +309,6 @@ func ByLastDevice(opts ...sql.OrderTermOption) OrderOption {
 // ByIsNewDevice orders the results by the is_new_device field.
 func ByIsNewDevice(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsNewDevice, opts...).ToFunc()
-}
-
-// ByLastFace orders the results by the last_face field.
-func ByLastFace(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLastFace, opts...).ToFunc()
 }
 
 // ByPushID orders the results by the push_id field.

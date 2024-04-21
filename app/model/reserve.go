@@ -52,6 +52,7 @@ type ReserveUnfinishedRes struct {
 	Business  string        `json:"business"`  // 预约业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
 	Time      string        `json:"time"`      // 预约时间
 	Status    ReserveStatus `json:"status"`    // 状态 0:已预约 1:进行中
+	EndTime   string        `json:"endTime"`   // 结束时间
 }
 
 type ReserveListReq struct {
@@ -77,6 +78,7 @@ type ReserveListRes struct {
 	Status      string `json:"status"`      // 状态
 	CabinetName string `json:"cabinetName"` // 电柜名称
 	Serial      string `json:"serial"`      // 电柜编号
+	CreatedAt   string `json:"createdAt"`   // 创建时间
 }
 
 type ReserveCabinetItem struct {

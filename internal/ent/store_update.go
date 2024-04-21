@@ -261,6 +261,40 @@ func (su *StoreUpdate) SetNillableEbikeRepair(b *bool) *StoreUpdate {
 	return su
 }
 
+// SetEbikeSale sets the "ebike_sale" field.
+func (su *StoreUpdate) SetEbikeSale(b bool) *StoreUpdate {
+	su.mutation.SetEbikeSale(b)
+	return su
+}
+
+// SetNillableEbikeSale sets the "ebike_sale" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableEbikeSale(b *bool) *StoreUpdate {
+	if b != nil {
+		su.SetEbikeSale(*b)
+	}
+	return su
+}
+
+// SetBusinessHours sets the "business_hours" field.
+func (su *StoreUpdate) SetBusinessHours(s string) *StoreUpdate {
+	su.mutation.SetBusinessHours(s)
+	return su
+}
+
+// SetNillableBusinessHours sets the "business_hours" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableBusinessHours(s *string) *StoreUpdate {
+	if s != nil {
+		su.SetBusinessHours(*s)
+	}
+	return su
+}
+
+// ClearBusinessHours clears the value of the "business_hours" field.
+func (su *StoreUpdate) ClearBusinessHours() *StoreUpdate {
+	su.mutation.ClearBusinessHours()
+	return su
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (su *StoreUpdate) SetCity(c *City) *StoreUpdate {
 	return su.SetCityID(c.ID)
@@ -531,6 +565,15 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.EbikeRepair(); ok {
 		_spec.SetField(store.FieldEbikeRepair, field.TypeBool, value)
+	}
+	if value, ok := su.mutation.EbikeSale(); ok {
+		_spec.SetField(store.FieldEbikeSale, field.TypeBool, value)
+	}
+	if value, ok := su.mutation.BusinessHours(); ok {
+		_spec.SetField(store.FieldBusinessHours, field.TypeString, value)
+	}
+	if su.mutation.BusinessHoursCleared() {
+		_spec.ClearField(store.FieldBusinessHours, field.TypeString)
 	}
 	if su.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1001,6 +1044,40 @@ func (suo *StoreUpdateOne) SetNillableEbikeRepair(b *bool) *StoreUpdateOne {
 	return suo
 }
 
+// SetEbikeSale sets the "ebike_sale" field.
+func (suo *StoreUpdateOne) SetEbikeSale(b bool) *StoreUpdateOne {
+	suo.mutation.SetEbikeSale(b)
+	return suo
+}
+
+// SetNillableEbikeSale sets the "ebike_sale" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableEbikeSale(b *bool) *StoreUpdateOne {
+	if b != nil {
+		suo.SetEbikeSale(*b)
+	}
+	return suo
+}
+
+// SetBusinessHours sets the "business_hours" field.
+func (suo *StoreUpdateOne) SetBusinessHours(s string) *StoreUpdateOne {
+	suo.mutation.SetBusinessHours(s)
+	return suo
+}
+
+// SetNillableBusinessHours sets the "business_hours" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableBusinessHours(s *string) *StoreUpdateOne {
+	if s != nil {
+		suo.SetBusinessHours(*s)
+	}
+	return suo
+}
+
+// ClearBusinessHours clears the value of the "business_hours" field.
+func (suo *StoreUpdateOne) ClearBusinessHours() *StoreUpdateOne {
+	suo.mutation.ClearBusinessHours()
+	return suo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (suo *StoreUpdateOne) SetCity(c *City) *StoreUpdateOne {
 	return suo.SetCityID(c.ID)
@@ -1301,6 +1378,15 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 	}
 	if value, ok := suo.mutation.EbikeRepair(); ok {
 		_spec.SetField(store.FieldEbikeRepair, field.TypeBool, value)
+	}
+	if value, ok := suo.mutation.EbikeSale(); ok {
+		_spec.SetField(store.FieldEbikeSale, field.TypeBool, value)
+	}
+	if value, ok := suo.mutation.BusinessHours(); ok {
+		_spec.SetField(store.FieldBusinessHours, field.TypeString, value)
+	}
+	if suo.mutation.BusinessHoursCleared() {
+		_spec.ClearField(store.FieldBusinessHours, field.TypeString)
 	}
 	if suo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -15,44 +15,44 @@ type promotionCommission struct {
 var PromotionCommission = new(promotionCommission)
 
 // List
-// @ID           ManagerPromotionCommissionList
-// @Router       /manager/v1/promotion/commission [GET]
-// @Summary      PM8001 推广返佣方案列表
-// @Tags         [PM]推广管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Success      200  {object}  []promotion.CommissionDetail  "请求成功"
+// @ID		ManagerPromotionCommissionList
+// @Router	/manager/v1/promotion/commission [GET]
+// @Summary	推广返佣方案列表
+// @Tags	[PM]推广管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string							true	"管理员校验token"
+// @Success	200				{object}	[]promotion.CommissionDetail	"请求成功"
 func (p *promotionCommission) List(c echo.Context) (err error) {
 	ctx := app.ContextX[app.ManagerContext](c)
 	return ctx.SendResponse(service.NewPromotionCommissionService().List())
 }
 
 // Detail
-// @ID           ManagerPromotionCommissionDetail
-// @Router       /manager/v1/promotion/commission/{id} [GET]
-// @Summary      PM8002 推广返佣方案详情
-// @Tags         [PM]推广管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        id  path  int  true  "推广返佣方案ID"
-// @Success      200  {object}  promotion.CommissionDetail
+// @ID		ManagerPromotionCommissionDetail
+// @Router	/manager/v1/promotion/commission/{id} [GET]
+// @Summary	推广返佣方案详情
+// @Tags	[PM]推广管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string	true	"管理员校验token"
+// @Param	id				path		int		true	"推广返佣方案ID"
+// @Success	200				{object}	promotion.CommissionDetail
 func (p *promotionCommission) Detail(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(service.NewPromotionCommissionService().Detail(req.ID))
 }
 
 // Create
-// @ID           ManagerPromotionCommissionCreate
-// @Router       /manager/v1/promotion/commission [POST]
-// @Summary      PM8003 创建推广返佣方案
-// @Tags         [PM]推广管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  promotion.CommissionCreateReq  true  "创建请求"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @ID		ManagerPromotionCommissionCreate
+// @Router	/manager/v1/promotion/commission [POST]
+// @Summary	创建推广返佣方案
+// @Tags	[PM]推广管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string							true	"管理员校验token"
+// @Param	body			body		promotion.CommissionCreateReq	true	"创建请求"
+// @Success	200				{object}	model.StatusResponse			"请求成功"
 func (p *promotionCommission) Create(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.CommissionCreateReq](c)
 	service.NewPromotionCommissionService(ctx.Modifier).Create(req)
@@ -60,15 +60,15 @@ func (p *promotionCommission) Create(c echo.Context) (err error) {
 }
 
 // Update
-// @ID           ManagerPromotionCommissionUpdate
-// @Router       /manager/v1/promotion/commission [PUT]
-// @Summary      PM8004 更新推广返佣方案
-// @Tags         [PM]推广管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body promotion.CommissionCreateReq  true  "修改请求"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @ID		ManagerPromotionCommissionUpdate
+// @Router	/manager/v1/promotion/commission [PUT]
+// @Summary	更新推广返佣方案
+// @Tags	[PM]推广管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string							true	"管理员校验token"
+// @Param	body			body		promotion.CommissionCreateReq	true	"修改请求"
+// @Success	200				{object}	model.StatusResponse			"请求成功"
 func (p *promotionCommission) Update(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.CommissionCreateReq](c)
 	service.NewPromotionCommissionService(ctx.Modifier).Update(req)
@@ -76,15 +76,15 @@ func (p *promotionCommission) Update(c echo.Context) (err error) {
 }
 
 // Delete
-// @ID           ManagerPromotionCommissionDelete
-// @Router       /manager/v1/promotion/commission/{id} [DELETE]
-// @Summary      PM8005 删除推广返佣方案
-// @Tags         [PM]推广管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        id  path  int  true  "推广返佣方案ID"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @ID		ManagerPromotionCommissionDelete
+// @Router	/manager/v1/promotion/commission/{id} [DELETE]
+// @Summary	删除推广返佣方案
+// @Tags	[PM]推广管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	id				path		int						true	"推广返佣方案ID"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (p *promotionCommission) Delete(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
 	service.NewPromotionCommissionService(ctx.Modifier).Delete(req.ID)
@@ -92,15 +92,15 @@ func (p *promotionCommission) Delete(c echo.Context) (err error) {
 }
 
 // Enable
-// @ID           ManagerPromotionCommissionUpdateEnable
-// @Router       /manager/v1/promotion/commission/enable [POST]
-// @Summary      PM8006 更新推广返佣方案状态
-// @Tags         [PM]推广管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body     promotion.CommissionEnableReq  true  "修改请求"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @ID		ManagerPromotionCommissionUpdateEnable
+// @Router	/manager/v1/promotion/commission/enable [POST]
+// @Summary	更新推广返佣方案状态
+// @Tags	[PM]推广管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string							true	"管理员校验token"
+// @Param	body			body		promotion.CommissionEnableReq	true	"修改请求"
+// @Success	200				{object}	model.StatusResponse			"请求成功"
 func (p *promotionCommission) Enable(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.CommissionEnableReq](c)
 	service.NewPromotionCommissionService(ctx.Modifier).StatusUpdate(req)
@@ -108,58 +108,58 @@ func (p *promotionCommission) Enable(c echo.Context) (err error) {
 }
 
 // HistoryList
-// @ID           ManagerPromotionCommissionHistoryList
-// @Router       /manager/v1/promotion/commission/history/{id} [GET]
-// @Summary      PM8007 推广返佣方案历史列表
-// @Tags         [PM]推广管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        id  path  int  true  "推广返佣方案ID"
-// @Success      200  {object}  []promotion.CommissionDetail "请求成功"
+// @ID		ManagerPromotionCommissionHistoryList
+// @Router	/manager/v1/promotion/commission/history/{id} [GET]
+// @Summary	推广返佣方案历史列表
+// @Tags	[PM]推广管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string							true	"管理员校验token"
+// @Param	id				path		int								true	"推广返佣方案ID"
+// @Success	200				{object}	[]promotion.CommissionDetail	"请求成功"
 func (p *promotionCommission) HistoryList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(service.NewPromotionCommissionService().HistoryList(req.ID))
 }
 
 // Selection
-// @ID           ManagerPromotionCommissionSelection
-// @Router       /manager/v1/promotion/commission/selection [GET]
-// @Summary      PM8008 推广返佣方案选择
-// @Tags         [PM]推广管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Success      200  {object}  []promotion.CommissionSelection
+// @ID		ManagerPromotionCommissionSelection
+// @Router	/manager/v1/promotion/commission/selection [GET]
+// @Summary	推广返佣方案选择
+// @Tags	[PM]推广管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string	true	"管理员校验token"
+// @Success	200				{object}	[]promotion.CommissionSelection
 func (p *promotionCommission) Selection(c echo.Context) (err error) {
 	ctx := app.ContextX[app.ManagerContext](c)
 	return ctx.SendResponse(service.NewPromotionCommissionService().Selection())
 }
 
 // TaskSelection
-// @ID           ManagerPromotionCommissionTaskSelection
-// @Router       /manager/v1/promotion/commission/task/selection [GET]
-// @Summary      PM8009 返佣方案任务选择
-// @Tags         [PM]推广管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Success      200  {object}  []promotion.CommissionTaskSelect
+// @ID		ManagerPromotionCommissionTaskSelection
+// @Router	/manager/v1/promotion/commission/task/selection [GET]
+// @Summary	返佣方案任务选择
+// @Tags	[PM]推广管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string	true	"管理员校验token"
+// @Success	200				{object}	[]promotion.CommissionTaskSelect
 func (p *promotionCommission) TaskSelection(c echo.Context) (err error) {
 	ctx := app.ContextX[app.ManagerContext](c)
 	return ctx.SendResponse(service.NewPromotionCommissionService().CommissionTaskSelection())
 }
 
 // CommissionPlanList
-// @ID           ManagerPromotionCommissionPlanList
-// @Router       /manager/v1/promotion/commission/plan/list/{:id} [GET]
-// @Summary      PM8010 返佣方案骑士卡列表
-// @Tags         [PM]推广管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string   true  "管理员校验token"
-// @Param        id  path  int  true  "会员id"
-// @Success      200  {object}  []promotion.CommissionPlanListRes
+// @ID		ManagerPromotionCommissionPlanList
+// @Router	/manager/v1/promotion/commission/plan/list/{:id} [GET]
+// @Summary	返佣方案骑士卡列表
+// @Tags	[PM]推广管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string	true	"管理员校验token"
+// @Param	id				path		int		true	"会员id"
+// @Success	200				{object}	[]promotion.CommissionPlanListRes
 func (p *promotionCommission) CommissionPlanList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(service.NewPromotionCommissionService().CommissionPlanList(req))

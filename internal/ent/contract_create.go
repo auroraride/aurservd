@@ -237,6 +237,20 @@ func (cc *ContractCreate) SetNillableSignedAt(t *time.Time) *ContractCreate {
 	return cc
 }
 
+// SetDocID sets the "doc_id" field.
+func (cc *ContractCreate) SetDocID(s string) *ContractCreate {
+	cc.mutation.SetDocID(s)
+	return cc
+}
+
+// SetNillableDocID sets the "doc_id" field if the given value is not nil.
+func (cc *ContractCreate) SetNillableDocID(s *string) *ContractCreate {
+	if s != nil {
+		cc.SetDocID(*s)
+	}
+	return cc
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (cc *ContractCreate) SetSubscribe(s *Subscribe) *ContractCreate {
 	return cc.SetSubscribeID(s.ID)
@@ -441,6 +455,10 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.SignedAt(); ok {
 		_spec.SetField(contract.FieldSignedAt, field.TypeTime, value)
 		_node.SignedAt = &value
+	}
+	if value, ok := cc.mutation.DocID(); ok {
+		_spec.SetField(contract.FieldDocID, field.TypeString, value)
+		_node.DocID = value
 	}
 	if nodes := cc.mutation.SubscribeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -838,6 +856,24 @@ func (u *ContractUpsert) ClearSignedAt() *ContractUpsert {
 	return u
 }
 
+// SetDocID sets the "doc_id" field.
+func (u *ContractUpsert) SetDocID(v string) *ContractUpsert {
+	u.Set(contract.FieldDocID, v)
+	return u
+}
+
+// UpdateDocID sets the "doc_id" field to the value that was provided on create.
+func (u *ContractUpsert) UpdateDocID() *ContractUpsert {
+	u.SetExcluded(contract.FieldDocID)
+	return u
+}
+
+// ClearDocID clears the value of the "doc_id" field.
+func (u *ContractUpsert) ClearDocID() *ContractUpsert {
+	u.SetNull(contract.FieldDocID)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1205,6 +1241,27 @@ func (u *ContractUpsertOne) UpdateSignedAt() *ContractUpsertOne {
 func (u *ContractUpsertOne) ClearSignedAt() *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearSignedAt()
+	})
+}
+
+// SetDocID sets the "doc_id" field.
+func (u *ContractUpsertOne) SetDocID(v string) *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetDocID(v)
+	})
+}
+
+// UpdateDocID sets the "doc_id" field to the value that was provided on create.
+func (u *ContractUpsertOne) UpdateDocID() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateDocID()
+	})
+}
+
+// ClearDocID clears the value of the "doc_id" field.
+func (u *ContractUpsertOne) ClearDocID() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearDocID()
 	})
 }
 
@@ -1741,6 +1798,27 @@ func (u *ContractUpsertBulk) UpdateSignedAt() *ContractUpsertBulk {
 func (u *ContractUpsertBulk) ClearSignedAt() *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearSignedAt()
+	})
+}
+
+// SetDocID sets the "doc_id" field.
+func (u *ContractUpsertBulk) SetDocID(v string) *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetDocID(v)
+	})
+}
+
+// UpdateDocID sets the "doc_id" field to the value that was provided on create.
+func (u *ContractUpsertBulk) UpdateDocID() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateDocID()
+	})
+}
+
+// ClearDocID clears the value of the "doc_id" field.
+func (u *ContractUpsertBulk) ClearDocID() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearDocID()
 	})
 }
 

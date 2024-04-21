@@ -240,8 +240,8 @@ func (pu *PersonUpdate) ClearAuthFace() *PersonUpdate {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (pu *PersonUpdate) SetAuthResult(mvr *model.FaceVerifyResult) *PersonUpdate {
-	pu.mutation.SetAuthResult(mvr)
+func (pu *PersonUpdate) SetAuthResult(mfvr *model.BaiduFaceVerifyResult) *PersonUpdate {
+	pu.mutation.SetAuthResult(mfvr)
 	return pu
 }
 
@@ -331,14 +331,26 @@ func (pu *PersonUpdate) ClearBaiduLogID() *PersonUpdate {
 	return pu
 }
 
-// AddRiderIDs adds the "rider" edge to the Rider entity by IDs.
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (pu *PersonUpdate) SetFaceVerifyResult(mfvr *model.PersonFaceVerifyResult) *PersonUpdate {
+	pu.mutation.SetFaceVerifyResult(mfvr)
+	return pu
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (pu *PersonUpdate) ClearFaceVerifyResult() *PersonUpdate {
+	pu.mutation.ClearFaceVerifyResult()
+	return pu
+}
+
+// AddRiderIDs adds the "riders" edge to the Rider entity by IDs.
 func (pu *PersonUpdate) AddRiderIDs(ids ...uint64) *PersonUpdate {
 	pu.mutation.AddRiderIDs(ids...)
 	return pu
 }
 
-// AddRider adds the "rider" edges to the Rider entity.
-func (pu *PersonUpdate) AddRider(r ...*Rider) *PersonUpdate {
+// AddRiders adds the "riders" edges to the Rider entity.
+func (pu *PersonUpdate) AddRiders(r ...*Rider) *PersonUpdate {
 	ids := make([]uint64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
@@ -351,20 +363,20 @@ func (pu *PersonUpdate) Mutation() *PersonMutation {
 	return pu.mutation
 }
 
-// ClearRider clears all "rider" edges to the Rider entity.
-func (pu *PersonUpdate) ClearRider() *PersonUpdate {
-	pu.mutation.ClearRider()
+// ClearRiders clears all "riders" edges to the Rider entity.
+func (pu *PersonUpdate) ClearRiders() *PersonUpdate {
+	pu.mutation.ClearRiders()
 	return pu
 }
 
-// RemoveRiderIDs removes the "rider" edge to Rider entities by IDs.
+// RemoveRiderIDs removes the "riders" edge to Rider entities by IDs.
 func (pu *PersonUpdate) RemoveRiderIDs(ids ...uint64) *PersonUpdate {
 	pu.mutation.RemoveRiderIDs(ids...)
 	return pu
 }
 
-// RemoveRider removes "rider" edges to Rider entities.
-func (pu *PersonUpdate) RemoveRider(r ...*Rider) *PersonUpdate {
+// RemoveRiders removes "riders" edges to Rider entities.
+func (pu *PersonUpdate) RemoveRiders(r ...*Rider) *PersonUpdate {
 	ids := make([]uint64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
@@ -543,12 +555,18 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if pu.mutation.BaiduLogIDCleared() {
 		_spec.ClearField(person.FieldBaiduLogID, field.TypeString)
 	}
-	if pu.mutation.RiderCleared() {
+	if value, ok := pu.mutation.FaceVerifyResult(); ok {
+		_spec.SetField(person.FieldFaceVerifyResult, field.TypeJSON, value)
+	}
+	if pu.mutation.FaceVerifyResultCleared() {
+		_spec.ClearField(person.FieldFaceVerifyResult, field.TypeJSON)
+	}
+	if pu.mutation.RidersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   person.RiderTable,
-			Columns: []string{person.RiderColumn},
+			Table:   person.RidersTable,
+			Columns: []string{person.RidersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -556,12 +574,12 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pu.mutation.RemovedRiderIDs(); len(nodes) > 0 && !pu.mutation.RiderCleared() {
+	if nodes := pu.mutation.RemovedRidersIDs(); len(nodes) > 0 && !pu.mutation.RidersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   person.RiderTable,
-			Columns: []string{person.RiderColumn},
+			Table:   person.RidersTable,
+			Columns: []string{person.RidersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -572,12 +590,12 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pu.mutation.RiderIDs(); len(nodes) > 0 {
+	if nodes := pu.mutation.RidersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   person.RiderTable,
-			Columns: []string{person.RiderColumn},
+			Table:   person.RidersTable,
+			Columns: []string{person.RidersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -819,8 +837,8 @@ func (puo *PersonUpdateOne) ClearAuthFace() *PersonUpdateOne {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (puo *PersonUpdateOne) SetAuthResult(mvr *model.FaceVerifyResult) *PersonUpdateOne {
-	puo.mutation.SetAuthResult(mvr)
+func (puo *PersonUpdateOne) SetAuthResult(mfvr *model.BaiduFaceVerifyResult) *PersonUpdateOne {
+	puo.mutation.SetAuthResult(mfvr)
 	return puo
 }
 
@@ -910,14 +928,26 @@ func (puo *PersonUpdateOne) ClearBaiduLogID() *PersonUpdateOne {
 	return puo
 }
 
-// AddRiderIDs adds the "rider" edge to the Rider entity by IDs.
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (puo *PersonUpdateOne) SetFaceVerifyResult(mfvr *model.PersonFaceVerifyResult) *PersonUpdateOne {
+	puo.mutation.SetFaceVerifyResult(mfvr)
+	return puo
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (puo *PersonUpdateOne) ClearFaceVerifyResult() *PersonUpdateOne {
+	puo.mutation.ClearFaceVerifyResult()
+	return puo
+}
+
+// AddRiderIDs adds the "riders" edge to the Rider entity by IDs.
 func (puo *PersonUpdateOne) AddRiderIDs(ids ...uint64) *PersonUpdateOne {
 	puo.mutation.AddRiderIDs(ids...)
 	return puo
 }
 
-// AddRider adds the "rider" edges to the Rider entity.
-func (puo *PersonUpdateOne) AddRider(r ...*Rider) *PersonUpdateOne {
+// AddRiders adds the "riders" edges to the Rider entity.
+func (puo *PersonUpdateOne) AddRiders(r ...*Rider) *PersonUpdateOne {
 	ids := make([]uint64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
@@ -930,20 +960,20 @@ func (puo *PersonUpdateOne) Mutation() *PersonMutation {
 	return puo.mutation
 }
 
-// ClearRider clears all "rider" edges to the Rider entity.
-func (puo *PersonUpdateOne) ClearRider() *PersonUpdateOne {
-	puo.mutation.ClearRider()
+// ClearRiders clears all "riders" edges to the Rider entity.
+func (puo *PersonUpdateOne) ClearRiders() *PersonUpdateOne {
+	puo.mutation.ClearRiders()
 	return puo
 }
 
-// RemoveRiderIDs removes the "rider" edge to Rider entities by IDs.
+// RemoveRiderIDs removes the "riders" edge to Rider entities by IDs.
 func (puo *PersonUpdateOne) RemoveRiderIDs(ids ...uint64) *PersonUpdateOne {
 	puo.mutation.RemoveRiderIDs(ids...)
 	return puo
 }
 
-// RemoveRider removes "rider" edges to Rider entities.
-func (puo *PersonUpdateOne) RemoveRider(r ...*Rider) *PersonUpdateOne {
+// RemoveRiders removes "riders" edges to Rider entities.
+func (puo *PersonUpdateOne) RemoveRiders(r ...*Rider) *PersonUpdateOne {
 	ids := make([]uint64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
@@ -1152,12 +1182,18 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 	if puo.mutation.BaiduLogIDCleared() {
 		_spec.ClearField(person.FieldBaiduLogID, field.TypeString)
 	}
-	if puo.mutation.RiderCleared() {
+	if value, ok := puo.mutation.FaceVerifyResult(); ok {
+		_spec.SetField(person.FieldFaceVerifyResult, field.TypeJSON, value)
+	}
+	if puo.mutation.FaceVerifyResultCleared() {
+		_spec.ClearField(person.FieldFaceVerifyResult, field.TypeJSON)
+	}
+	if puo.mutation.RidersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   person.RiderTable,
-			Columns: []string{person.RiderColumn},
+			Table:   person.RidersTable,
+			Columns: []string{person.RidersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -1165,12 +1201,12 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := puo.mutation.RemovedRiderIDs(); len(nodes) > 0 && !puo.mutation.RiderCleared() {
+	if nodes := puo.mutation.RemovedRidersIDs(); len(nodes) > 0 && !puo.mutation.RidersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   person.RiderTable,
-			Columns: []string{person.RiderColumn},
+			Table:   person.RidersTable,
+			Columns: []string{person.RidersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -1181,12 +1217,12 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := puo.mutation.RiderIDs(); len(nodes) > 0 {
+	if nodes := puo.mutation.RidersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   person.RiderTable,
-			Columns: []string{person.RiderColumn},
+			Table:   person.RidersTable,
+			Columns: []string{person.RidersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),

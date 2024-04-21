@@ -274,7 +274,7 @@ func (s *couponService) List(req *model.CouponListReq) *model.PaginationRes {
 		// 使用
 		ep := item.Edges.Plan
 		eo := item.Edges.Order
-		var usedAt, expiredAt, uo, up string
+		var usedAt, expiredAt, uo, up, outOrderNo string
 		if item.UsedAt != nil {
 			usedAt = item.UsedAt.Format(carbon.DateTimeLayout)
 			if ep != nil {
@@ -282,6 +282,7 @@ func (s *couponService) List(req *model.CouponListReq) *model.PaginationRes {
 			}
 			if eo != nil {
 				uo = eo.TradeNo
+				outOrderNo = eo.OutOrderNo
 			}
 		}
 		if item.ExpiresAt.IsZero() {
@@ -293,23 +294,24 @@ func (s *couponService) List(req *model.CouponListReq) *model.PaginationRes {
 			}
 		}
 		res = model.CouponListRes{
-			ID:         item.ID,
-			Amount:     item.Amount,
-			Name:       item.Name,
-			Code:       model.CouponCode(item.Code).Humanity(),
-			TemplateID: item.TemplateID,
-			AssemblyID: item.AssemblyID,
-			Creator:    item.Creator.Name + " - " + item.Creator.Phone,
-			Time:       item.CreatedAt.Format(carbon.DateTimeLayout),
-			Rider:      rn,
-			Phone:      rp,
-			Status:     s.Status(item),
-			Cities:     cities,
-			Plans:      plans,
-			UsedAt:     usedAt,
-			ExpiredAt:  expiredAt,
-			TradeNo:    uo,
-			Plan:       up,
+			ID:          item.ID,
+			Amount:      item.Amount,
+			Name:        item.Name,
+			Code:        model.CouponCode(item.Code).Humanity(),
+			TemplateID:  item.TemplateID,
+			AssemblyID:  item.AssemblyID,
+			Creator:     item.Creator.Name + " - " + item.Creator.Phone,
+			Time:        item.CreatedAt.Format(carbon.DateTimeLayout),
+			Rider:       rn,
+			Phone:       rp,
+			Status:      s.Status(item),
+			Cities:      cities,
+			Plans:       plans,
+			UsedAt:      usedAt,
+			ExpiredAt:   expiredAt,
+			TradeNo:     uo,
+			Plan:        up,
+			OuthOrderNo: outOrderNo,
 		}
 		return
 	})
@@ -335,11 +337,17 @@ func (s *couponService) RiderDetail(item *ent.Coupon) (res model.CouponRider) {
 	if item.UsedAt != nil {
 		res.UsedAt = item.UsedAt.Format("2006.1.2 15:04:05")
 	}
+
+	isExclusive := item.Rule == model.CouponRuleExclusive.Value()
+	res.Exclusive = isExclusive
+	res.Plans = item.Plans
+	res.Cities = item.Cities
+
 	return
 }
 
 func (s *couponService) RiderList(req *model.CouponRiderListReq) (res []model.CouponRider) {
-	q := s.orm.Query().Where(coupon.RiderID(s.rider.ID)).Order(ent.Desc(coupon.FieldCreatedAt))
+	q := s.orm.Query().Where(coupon.RiderID(s.rider.ID)).Order(ent.Desc(coupon.FieldCreatedAt)).WithTemplate()
 	switch req.Type {
 	case 0:
 		q.Where(
@@ -372,6 +380,11 @@ func (s *couponService) RiderList(req *model.CouponRiderListReq) (res []model.Co
 				contains = true
 				break
 			}
+		}
+
+		// 优惠券模版如果绑定是城市也需要显示 具体使用还要在订单去判定
+		if item.Edges.Template != nil && item.Edges.Template.Meta != nil && len(item.Edges.Template.Meta.Cities) > 0 {
+			contains = true
 		}
 
 		if contains {

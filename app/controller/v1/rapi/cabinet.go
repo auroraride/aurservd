@@ -18,30 +18,30 @@ type cabinet struct{}
 var Cabinet = new(cabinet)
 
 // GetProcess
-// @ID           CabinetGetProcess
-// @Router       /rider/v1/cabinet/process/{serial} [GET]
-// @Summary      R4001 获取换电信息
-// @Tags         Cabinet - 电柜
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        serial  path  string  true  "电柜二维码"
-// @Success      200  {object}  model.RiderExchangeInfo  "请求成功"
+// @ID		CabinetGetProcess
+// @Router	/rider/v1/cabinet/process/{serial} [GET]
+// @Summary	电柜换电 - 获取换电信息
+// @Tags	Cabinet - 电柜
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Param	serial			path		string					true	"电柜二维码"
+// @Success	200				{object}	model.RiderExchangeInfo	"请求成功"
 func (*cabinet) GetProcess(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateInfoReq](c)
 	return ctx.SendResponse(service.NewRiderExchange(ctx.Rider).GetProcess(req))
 }
 
 // Process
-// @ID           CabinetProcess
-// @Router       /rider/v1/cabinet/process [POST]
-// @Summary      R4002 操作换电
-// @Tags         Cabinet - 电柜
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        body  body  model.RiderExchangeProcessReq  true  "desc"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @ID		CabinetProcess
+// @Router	/rider/v1/cabinet/process [POST]
+// @Summary	电柜换电 - 开始换电流程
+// @Tags	Cabinet - 电柜
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string							true	"骑手校验token"
+// @Param	body			body		model.RiderExchangeProcessReq	true	"desc"
+// @Success	200				{object}	model.StatusResponse			"请求成功"
 func (*cabinet) Process(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.RiderExchangeProcessReq](c)
 	service.NewRiderExchange(ctx.Rider).Start(req)
@@ -49,33 +49,31 @@ func (*cabinet) Process(c echo.Context) (err error) {
 }
 
 // ProcessStatus
-// @ID           CabinetProcessStatus
-// @Router       /rider/v1/cabinet/process/status [GET]
-// @Summary      R4003 换电状态
-// @Tags         Cabinet - 电柜
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        query  query  model.RiderExchangeProcessStatusReq  true  "desc"
-// @Success      200  {object}  model.RiderExchangeProcessRes  "请求成功"
+// @ID			CabinetProcessStatus
+// @Router		/rider/v1/cabinet/process/status [GET]
+// @Summary		电柜换电 - 获取流程状态
+// @Description	使用http长轮询，获取换电流程状态，每次轮询超时时间为30s
+// @Tags		Cabinet - 电柜
+// @Accept		json
+// @Produce		json
+// @Param		X-Rider-Token	header		string								true	"骑手校验token"
+// @Param		query			query		model.RiderExchangeProcessStatusReq	true	"desc"
+// @Success		200				{object}	model.RiderExchangeProcessRes		"请求成功"
 func (*cabinet) ProcessStatus(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.RiderExchangeProcessStatusReq](c)
-
-	return ctx.SendResponse(
-		service.NewRiderExchange(ctx.Rider).GetProcessStatus(req),
-	)
+	return ctx.SendResponse(service.NewRiderExchange(ctx.Rider).GetProcessStatus(req))
 }
 
 // Report
-// @ID           CabinetReport
-// @Router       /rider/v1/cabinet/report [POST]
-// @Summary      R4004 电柜故障上报
-// @Tags         Cabinet - 电柜
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        body  body     model.CabinetFaultReportReq  true  "desc"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @ID		CabinetReport
+// @Router	/rider/v1/cabinet/report [POST]
+// @Summary	R4004 电柜故障上报
+// @Tags	Cabinet - 电柜
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string						true	"骑手校验token"
+// @Param	body			body		model.CabinetFaultReportReq	true	"desc"
+// @Success	200				{object}	model.StatusResponse		"请求成功"
 func (*cabinet) Report(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.CabinetFaultReportReq](c)
 	return ctx.SendResponse(
@@ -84,14 +82,14 @@ func (*cabinet) Report(c echo.Context) (err error) {
 }
 
 // Fault
-// @ID           CabinetFault
-// @Router       /rider/v1/cabinet/fault [GET]
-// @Summary      R4008 电柜故障列表
-// @Tags         Cabinet - 电柜
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Success      200 {object}  []string  "请求成功"
+// @ID		CabinetFault
+// @Router	/rider/v1/cabinet/fault [GET]
+// @Summary	R4008 电柜故障列表
+// @Tags	Cabinet - 电柜
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string		true	"骑手校验token"
+// @Success	200				{object}	[]string	"请求成功"
 func (*cabinet) Fault(c echo.Context) (err error) {
 	ctx := app.ContextX[app.RiderContext](c)
 	return ctx.SendResponse(service.NewSetting().GetSetting(model.SettingCabinetFaultKey))

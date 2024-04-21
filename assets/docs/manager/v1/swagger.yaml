@@ -37,13 +37,657 @@ definitions:
       lng:
         type: number
     type: object
-  model.AgentCreateReq:
+  definition.ActivityCreateReq:
     properties:
-      enterpriseId:
+      enable:
+        description: 是否启用 true:是 false:否
+        type: boolean
+      home:
+        description: 首页icon true:是 false:否
+        type: boolean
+      image:
+        allOf:
+        - $ref: '#/definitions/definition.ActivityImage'
+        description: 图片, 图片
+      introduction:
+        description: 活动简介
+        type: string
+      link:
+        description: 链接, 链接
+        type: string
+      name:
+        description: 名称, 名称
+        type: string
+      popup:
+        description: 弹窗 true:是 false:否
+        type: boolean
+      remark:
+        description: 备注
+        type: string
+      sort:
+        description: 排序, 排序
+        type: integer
+    required:
+    - enable
+    - image
+    - introduction
+    - link
+    - name
+    - sort
+    type: object
+  definition.ActivityDetail:
+    properties:
+      enable:
+        description: 是否启用 true:是 false:否
+        type: boolean
+      home:
+        description: 首页icon true:是 false:否
+        type: boolean
+      id:
+        type: integer
+      image:
+        allOf:
+        - $ref: '#/definitions/definition.ActivityImage'
+        description: 图片
+      introduction:
+        description: 活动简介
+        type: string
+      link:
+        description: 链接
+        type: string
+      name:
+        description: 名称
+        type: string
+      popup:
+        description: 弹窗 true:是 false:否
+        type: boolean
+      remark:
+        description: 备注
+        type: string
+      sort:
+        description: 排序
+        type: integer
+      updatedAt:
+        description: 更新时间
+        type: string
+    type: object
+  definition.ActivityImage:
+    properties:
+      home:
+        description: 首页icon图片
+        type: string
+      list:
+        description: 列表图片
+        type: string
+      popup:
+        description: 弹窗图片
+        type: string
+    type: object
+  definition.ActivityModifyReq:
+    properties:
+      enable:
+        description: 是否启用 true:是 false:否
+        type: boolean
+      home:
+        description: 首页icon true:是 false:否
+        type: boolean
+      image:
+        allOf:
+        - $ref: '#/definitions/definition.ActivityImage'
+        description: 图片, 图片
+      introduction:
+        description: 活动简介
+        type: string
+      link:
+        description: 链接, 链接
+        type: string
+      name:
+        description: 名称, 名称
+        type: string
+      popup:
+        description: 弹窗 true:是 false:否
+        type: boolean
+      remark:
+        description: 备注
+        type: string
+      sort:
+        description: 排序, 排序
+        type: integer
+    required:
+    - enable
+    - image
+    - introduction
+    - link
+    - name
+    - sort
+    type: object
+  definition.AgreementCreateReq:
+    properties:
+      content:
+        description: 内容
+        type: string
+      forceReadTime:
+        description: 强制阅读时间
+        type: integer
+      isDefault:
+        description: 是否为默认协议
+        type: boolean
+      name:
+        description: 协议名称
+        type: string
+      userType:
+        description: 用户类型 1:个签 2:团签
+        type: integer
+    required:
+    - content
+    - forceReadTime
+    - isDefault
+    - name
+    - userType
+    type: object
+  definition.AgreementDetail:
+    properties:
+      content:
+        description: 内容
+        type: string
+      createdAt:
+        description: 创建时间
+        type: string
+      forceReadTime:
+        description: 强制阅读时间
+        type: integer
+      hash:
+        description: Hash
+        type: string
+      id:
+        description: ID
+        type: integer
+      isDefault:
+        description: 是否为默认协议
+        type: boolean
+      name:
+        description: 协议名称
+        type: string
+      url:
+        description: URL
+        type: string
+      userType:
+        description: 用户类型 1:个签 2:团签
+        type: integer
+    type: object
+  definition.AgreementModifyReq:
+    properties:
+      content:
+        description: 内容
+        type: string
+      forceReadTime:
+        description: 强制阅读时间
+        type: integer
+      isDefault:
+        description: 是否为默认协议
+        type: boolean
+      name:
+        description: 协议名称
+        type: string
+      userType:
+        description: 用户类型 1:个签 2:团签
+        type: integer
+    required:
+    - content
+    - forceReadTime
+    - isDefault
+    - name
+    - userType
+    type: object
+  definition.AgreementSelectionRes:
+    properties:
+      hash:
+        description: Hash
+        type: string
+      id:
+        description: ID
+        type: integer
+      isDefault:
+        description: 是否为默认协议 true:是 false:否
+        type: boolean
+      name:
+        description: 协议名称
+        type: string
+    type: object
+  definition.ContractTemplateAimed:
+    enum:
+      - 1
+      - 2
+    type: integer
+    x-enum-comments:
+      ContractTemplateAimedEnterprise: 团签
+      ContractTemplateAimedPersonal: 个签
+    x-enum-varnames:
+      - ContractTemplateAimedPersonal
+      - ContractTemplateAimedEnterprise
+  definition.ContractTemplateCreateReq:
+    properties:
+      aimed:
+        allOf:
+          - $ref: '#/definitions/definition.ContractTemplateAimed'
+        description: 用户类型 1:个签 2:团签
+      enable:
+        description: 是否启用
+        type: boolean
+      hash:
+        description: 合同hash
+        type: string
+      name:
+        description: 合同名称
+        type: string
+      planType:
+        allOf:
+          - $ref: '#/definitions/model.PlanType'
+        description: 订阅类型 1:单电 2:车电
+      remark:
+        description: 备注
+        type: string
+      url:
+        description: 合同链接
+        type: string
+    required:
+      - hash
+      - name
+      - url
+    type: object
+  definition.ContractTemplateListRes:
+    properties:
+      aimed:
+        allOf:
+          - $ref: '#/definitions/definition.ContractTemplateAimed'
+        description: 用户类型 1:个签 2:团签
+      createdAt:
+        description: 创建时间
+        type: string
+      enable:
+        description: 是否启用
+        type: boolean
+      hash:
+        description: 合同hash
+        type: string
+      id:
+        description: ID
+        type: integer
+      name:
+        description: 合同名称
+        type: string
+      planType:
+        allOf:
+          - $ref: '#/definitions/model.PlanType'
+        description: 订阅类型 1:单电 2:车电
+      remark:
+        description: 备注
+        type: string
+      url:
+        description: 合同链接
+        type: string
+    type: object
+  definition.ContractTemplateModifyReq:
+    properties:
+      aimed:
+        allOf:
+          - $ref: '#/definitions/definition.ContractTemplateAimed'
+        description: 用户类型 1:个签 2:团签
+      enable:
+        description: 是否启用
+        type: boolean
+      name:
+        description: 合同名称
+        type: string
+      planType:
+        allOf:
+          - $ref: '#/definitions/model.PlanType'
+        description: 订阅类型 1:单电 2:车电
+      remark:
+        description: 备注
+        type: string
+    required:
+      - name
+    type: object
+  definition.Fault:
+    properties:
+      attachments:
+        description: 附件
+        items:
+          type: string
+        type: array
+      city:
+        description: 城市
+        type: string
+      createdAt:
+        description: 创建时间
+        type: string
+      description:
+        description: 故障描述
+        type: string
+      deviceNo:
+        description: 设备编号
+        type: string
+      faultCause:
+        description: 故障原因
+        items:
+          type: string
+        type: array
+      id:
+        description: 故障ID
+        type: integer
+      remark:
+        description: 备注
+        type: string
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.Rider'
+        description: 骑手
+      status:
+        description: 故障状态 0未处理 1已处理
+        type: integer
+      type:
+        allOf:
+        - $ref: '#/definitions/definition.FaultType'
+        description: 故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他
+    type: object
+  definition.FaultModifyStatusReq:
+    properties:
+      remark:
+        description: 备注
+        type: string
+      status:
+        description: 故障状态 0未处理 1已处理
+        type: integer
+    type: object
+  definition.FaultType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
+    x-enum-comments:
+      FaultTypeBattery: 电池故障
+      FaultTypeCabinet: 电柜故障
+      FaultTypeEbike: 车辆故障
+      FaultTypeOther: 其他
+    x-enum-varnames:
+    - FaultTypeCabinet
+    - FaultTypeBattery
+    - FaultTypeEbike
+    - FaultTypeOther
+  definition.GuideDetail:
+    properties:
+      answer:
+        type: string
+      id:
         type: integer
       name:
         type: string
+      remark:
+        type: string
+      sort:
+        type: integer
+    type: object
+  definition.GuideModifyReq:
+    properties:
+      answer:
+        description: 答案
+        type: string
+      name:
+        description: 名称
+        type: string
+      remark:
+        description: 备注
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - answer
+    - name
+    - sort
+    type: object
+  definition.GuideSaveReq:
+    properties:
+      answer:
+        description: 答案
+        type: string
+      name:
+        description: 名称
+        type: string
+      remark:
+        description: 备注
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - answer
+    - name
+    - sort
+    type: object
+  definition.InstructionsCreateReq:
+    properties:
+      content:
+        description: 内容
+      key:
+        description: 键
+        type: string
+      title:
+        description: 标题
+        type: string
+    required:
+    - content
+    - key
+    - title
+    type: object
+  definition.InstructionsRes:
+    properties:
+      content:
+        description: 内容
+      key:
+        description: 键  rent 租电买前必读 rentCar 租车买前必读 buyCar 买车买前必读 coupon 优惠券使用说明 point
+          积分使用说明 deposit 押金规则说明
+        type: string
+      title:
+        description: 标题
+        type: string
+    type: object
+  definition.QuestionCategoryCreateReq:
+    properties:
+      name:
+        description: 分类名称
+        type: string
+      remark:
+        description: 备注
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - name
+    - sort
+    type: object
+  definition.QuestionCategoryDetail:
+    properties:
+      id:
+        type: integer
+      name:
+        description: 分类名称
+        type: string
+      remark:
+        description: 备注
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - name
+    - sort
+    type: object
+  definition.QuestionCategoryModifyReq:
+    properties:
+      name:
+        description: 分类名称
+        type: string
+      remark:
+        description: 备注
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - name
+    - sort
+    type: object
+  definition.QuestionCreateReq:
+    properties:
+      answer:
+        description: 答案
+        type: string
+      categoryId:
+        description: 分类ID
+        type: integer
+      categoryName:
+        description: 分类名称
+        type: string
+      name:
+        description: 问题名称
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - answer
+    - name
+    - sort
+    type: object
+  definition.QuestionDetail:
+    properties:
+      answer:
+        description: 答案
+        type: string
+      categoryId:
+        description: 分类ID
+        type: integer
+      categoryName:
+        description: 分类名称
+        type: string
+      id:
+        type: integer
+      name:
+        description: 问题名称
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - answer
+    - name
+    - sort
+    type: object
+  definition.QuestionModifyReq:
+    properties:
+      answer:
+        description: 答案
+        type: string
+      categoryId:
+        description: 分类ID
+        type: integer
+      categoryName:
+        description: 分类名称
+        type: string
+      name:
+        description: 问题名称
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - answer
+    - name
+    - sort
+    type: object
+  definition.Version:
+    properties:
+      appPlatform:
+        allOf:
+        - $ref: '#/definitions/model.AppPlatform'
+        description: 平台
+      content:
+        description: 更新内容
+        type: string
+      createdAt:
+        description: 创建时间
+        type: string
+      force:
+        description: 是否强制更新
+        type: boolean
+      id:
+        description: ID
+        type: integer
+      version:
+        description: 版本号
+        type: string
+    type: object
+  definition.VersionModifyReq:
+    properties:
+      appPlatform:
+        allOf:
+        - $ref: '#/definitions/model.AppPlatform'
+        description: 平台
+        enum:
+        - android
+        - ios
+      content:
+        description: 更新内容
+        type: string
+      force:
+        description: 是否强制更新
+        type: boolean
+      version:
+        description: 版本号
+        type: string
+    required:
+    - appPlatform
+    - content
+    - version
+    type: object
+  definition.VersionReq:
+    properties:
+      appPlatform:
+        allOf:
+        - $ref: '#/definitions/model.AppPlatform'
+        description: 平台
+        enum:
+        - android
+        - ios
+      content:
+        description: 更新内容
+        type: string
+      force:
+        description: 是否强制更新
+        type: boolean
+      version:
+        description: 版本号
+        type: string
+    required:
+    - appPlatform
+    - content
+    - version
+    type: object
+  model.AgentCreateReq:
+    properties:
+      enterpriseId:
+        description: 团签ID
+        type: integer
+      name:
+        description: 姓名
+        type: string
       phone:
+        description: 电话
         type: string
     required:
     - enterpriseId
@@ -68,19 +712,22 @@ definitions:
         description: 电话
         type: string
     type: object
-  model.AliyunOssStsRes:
+  model.Agreement:
     properties:
-      accessKeyId:
+      forceReadTime:
+        description: 强制阅读时间
+        type: integer
+      hash:
+        description: hash
         type: string
-      accessKeySecret:
+      id:
+        description: ID
+        type: integer
+      name:
+        description: 协议名称
         type: string
-      bucket:
-        type: string
-      expiration:
-        type: string
-      region:
-        type: string
-      stsToken:
+      url:
+        description: URL
         type: string
     type: object
   model.AllocateCreateRes:
@@ -90,11 +737,21 @@ definitions:
       needContract:
         type: boolean
     type: object
+  model.AppPlatform:
+    enum:
+    - android
+    - ios
+    type: string
+    x-enum-varnames:
+    - AppPlatformAndroid
+    - AppPlatformIOS
   model.AssistanceAllocateReq:
     properties:
       id:
+        description: 救援ID
         type: integer
       storeId:
+        description: 门店ID
         type: integer
     required:
     - id
@@ -187,8 +844,10 @@ definitions:
   model.AssistanceFreeReq:
     properties:
       id:
+        description: 救援ID
         type: integer
       reason:
+        description: 免费理由
         type: string
     required:
     - id
@@ -259,8 +918,10 @@ definitions:
   model.AssistanceRefuseReq:
     properties:
       id:
+        description: 救援ID
         type: integer
       reason:
+        description: 拒绝原因
         type: string
     required:
     - id
@@ -491,11 +1152,13 @@ definitions:
   model.BatteryCreateReq:
     properties:
       cityId:
+        description: 城市
         type: integer
       enable:
         description: 是否启用, 需默认为`true`
         type: boolean
       sn:
+        description: 电池编号
         type: string
     required:
     - cityId
@@ -773,34 +1436,48 @@ definitions:
   model.BranchContract:
     properties:
       area:
+        description: 网点面积
         type: number
       bankNumber:
+        description: 房东银行卡号
         type: string
       electricity:
+        description: 电费单价
         type: string
       electricityPledge:
+        description: 电费押金
         type: number
       endTime:
+        description: 租期结束时间
         type: string
       file:
+        description: 合同文件
         type: string
       idCardNumber:
+        description: 房东身份证
         type: string
       landlordName:
+        description: 房东姓名
         type: string
       lease:
+        description: 租期月数
         type: integer
       phone:
+        description: 房东手机号
         type: string
       pledge:
+        description: 押金
         type: number
       rent:
+        description: 租金
         type: number
       sheets:
+        description: 底单
         items:
           type: string
         type: array
       startTime:
+        description: 租期开始时间
         type: string
     required:
     - electricity
@@ -817,6 +1494,7 @@ definitions:
   model.BranchContractSheetReq:
     properties:
       id:
+        description: 合同ID
         type: integer
       sheets:
         description: 底单, 需携带所有`未删除`的底单
@@ -829,20 +1507,26 @@ definitions:
   model.BranchCreateReq:
     properties:
       address:
+        description: 详细地址
         type: string
       cityId:
+        description: 城市
         type: integer
       contracts:
         items:
           $ref: '#/definitions/model.BranchContract'
         type: array
       lat:
+        description: 纬度
         type: number
       lng:
+        description: 经度
         type: number
       name:
+        description: 网点名称
         type: string
       photos:
+        description: 网点照片
         items:
           type: string
         type: array
@@ -923,20 +1607,26 @@ definitions:
   model.BranchModifyReq:
     properties:
       address:
+        description: 详细地址
         type: string
       cityId:
+        description: 城市
         type: integer
       contracts:
         items:
           $ref: '#/definitions/model.BranchContract'
         type: array
       lat:
+        description: 纬度
         type: number
       lng:
+        description: 经度
         type: number
       name:
+        description: 网点名称
         type: string
       photos:
+        description: 网点照片
         items:
           type: string
         type: array
@@ -980,6 +1670,7 @@ definitions:
         description: 筛选骑手姓名或电话
         type: string
       remark:
+        description: 备注
         type: string
       start:
         description: '筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
@@ -1023,6 +1714,9 @@ definitions:
         type: integer
       name:
         description: 骑手姓名
+        type: string
+      operator:
+        description: 操作人
         type: string
       phone:
         description: 骑手电话
@@ -1102,10 +1796,22 @@ definitions:
         description: 代理商ID
         type: integer
       cabinetId:
+        description: 电柜ID
         type: integer
+      depositAmount:
+        description: 退押金金额(后台使用)
+        type: number
       id:
+        description: 订阅ID
         type: integer
+      refundDeposit:
+        description: 是否退押金, 是否退押金(后台使用)
+        type: boolean
+      remark:
+        description: 备注
+        type: string
       storeId:
+        description: 门店ID
         type: integer
     required:
     - id
@@ -1115,7 +1821,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)'
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
         enum:
         - KAIXIN
         - YUNDONG
@@ -1223,11 +1929,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
-        enum:
-        - KAIXIN
-        - YUNDONG
-        - TUOBANG
+        description: '品牌, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
       doors:
         description: 柜门数量
         type: integer
@@ -1238,14 +1940,18 @@ definitions:
         description: 是否智能柜
         type: boolean
       models:
+        description: 电池型号
         items:
           type: string
         type: array
       name:
+        description: 电柜名称
         type: string
       remark:
+        description: 备注
         type: string
       serial:
+        description: 电柜编码
         type: string
       simDate:
         description: 'SIM卡到期日期, 例: 2022-06-01'
@@ -1297,7 +2003,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: 品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
       emptyNum:
         description: 空仓数量
         type: integer
@@ -1346,11 +2052,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
-        enum:
-        - KAIXIN
-        - YUNDONG
-        - TUOBANG
+        description: '品牌, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -1388,8 +2090,10 @@ definitions:
           type: string
         type: array
       name:
+        description: 电柜名称
         type: string
       remark:
+        description: 备注
         type: string
       reserves:
         description: 当前预约
@@ -1397,6 +2101,7 @@ definitions:
           $ref: '#/definitions/model.ReserveCabinetItem'
         type: array
       serial:
+        description: 电柜编码
         type: string
       simDate:
         description: 'SIM卡到期日期, 例: 2022-06-01'
@@ -1489,9 +2194,10 @@ definitions:
   model.CabinetFaultDealReq:
     properties:
       remark:
+        description: 备注
         type: string
       status:
-        description: 0未处理 1已处理
+        description: 故障状态, 0未处理 1已处理
         enum:
         - 0
         - 1
@@ -1559,11 +2265,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
-        enum:
-        - KAIXIN
-        - YUNDONG
-        - TUOBANG
+        description: '品牌, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -1601,10 +2303,13 @@ definitions:
           type: string
         type: array
       name:
+        description: 电柜名称
         type: string
       remark:
+        description: 备注
         type: string
       serial:
+        description: 电柜编码
         type: string
       simDate:
         description: 'SIM卡到期日期, 例: 2022-06-01'
@@ -1642,7 +2347,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)'
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
         enum:
         - KAIXIN
         - YUNDONG
@@ -1677,15 +2382,19 @@ definitions:
   model.CabinetOpenBindReq:
     properties:
       batterySn:
+        description: 电池编码
         type: string
       id:
+        description: 电柜ID
         type: integer
       index:
+        description: 仓门序号
         type: integer
       phone:
+        description: 骑手电话
         type: string
       remark:
-        description: '可手动输入, 预留项: `吞电池` `柜门未关好` `仓位不足`'
+        description: '操作原因, 可手动输入, 预留项: `吞电池` `柜门未关好` `仓位不足`'
         type: string
     required:
     - batterySn
@@ -1711,10 +2420,13 @@ definitions:
   model.CabinetTransferReq:
     properties:
       cabinetId:
+        description: 电柜ID
         type: integer
       model:
+        description: 型号
         type: string
       num:
+        description: 数量
         type: integer
     required:
     - cabinetId
@@ -1784,6 +2496,7 @@ definitions:
   model.CityModifyReq:
     properties:
       open:
+        description: 状态
         type: boolean
     required:
     - open
@@ -1875,16 +2588,21 @@ definitions:
   model.CouponGenerateReq:
     properties:
       amount:
+        description: 金额
         type: number
       number:
+        description: 生成数量
         type: integer
       phones:
+        description: 骑手电话
         items:
           type: string
         type: array
       remark:
+        description: 备注
         type: string
       templateId:
+        description: 优惠券模板
         type: integer
     required:
     - amount
@@ -1917,6 +2635,9 @@ definitions:
         type: integer
       name:
         description: 名称
+        type: string
+      outOrderNo:
+        description: 预授权订单号
         type: string
       outTradeNo:
         description: 使用订单编号
@@ -1954,15 +2675,28 @@ definitions:
       amount:
         description: 金额
         type: number
+      cities:
+        description: 可用城市, 不存在此字段则不限制
+        items:
+          $ref: '#/definitions/model.City'
+        type: array
       code:
         description: 券码
         type: string
+      exclusive:
+        description: 与其他类型券是否互斥
+        type: boolean
       expiredAt:
         description: 到期时间
         type: string
       name:
         description: 名称
         type: string
+      plans:
+        description: 可用骑士卡, 不存在此字段则不限制
+        items:
+          $ref: '#/definitions/model.Plan'
+        type: array
       usedAt:
         description: 使用时间
         type: string
@@ -2009,41 +2743,42 @@ definitions:
   model.CouponTemplateCreateReq:
     properties:
       cityIds:
-        description: 和`plans`不能同时为空也不能同时存在
+        description: 可用城市, 和`plans`不能同时为空也不能同时存在
         items:
           type: integer
         type: array
       durationDays:
-        description: '`durationRule=2`必填'
+        description: 相对天数, `durationRule=2`必填
         type: integer
       durationRule:
         allOf:
         - $ref: '#/definitions/model.CouponDurationRule'
-        description: 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
+        description: 有效期规则, 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
         enum:
         - 1
         - 2
       durationTime:
-        description: '`durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25'
+        description: 过期时间, `durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25
         type: string
       multiple:
         description: 重复使用(该券是否可叠加使用)
         type: boolean
       name:
+        description: 名称
         type: string
       planIds:
-        description: 和`cities`不能同时为空也不能同时存在
+        description: 绑定骑士卡, 和`cities`不能同时为空也不能同时存在
         items:
           type: integer
         type: array
       remark:
-        description: 10字以内, 需要显示在优惠券列表中
+        description: 备注信息, 10字以内, 需要显示在优惠券列表中
         maxLength: 10
         type: string
       rule:
         allOf:
         - $ref: '#/definitions/model.CouponRule'
-        description: 1:互斥 2:可叠加
+        description: 使用规则, 1:互斥 2:可叠加
         enum:
         - 1
         - 2
@@ -2061,22 +2796,22 @@ definitions:
           $ref: '#/definitions/model.City'
         type: array
       cityIds:
-        description: 和`plans`不能同时为空也不能同时存在
+        description: 可用城市, 和`plans`不能同时为空也不能同时存在
         items:
           type: integer
         type: array
       durationDays:
-        description: '`durationRule=2`必填'
+        description: 相对天数, `durationRule=2`必填
         type: integer
       durationRule:
         allOf:
         - $ref: '#/definitions/model.CouponDurationRule'
-        description: 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
+        description: 有效期规则, 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
         enum:
         - 1
         - 2
       durationTime:
-        description: '`durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25'
+        description: 过期时间, `durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25
         type: string
       enable:
         type: boolean
@@ -2094,7 +2829,7 @@ definitions:
       name:
         type: string
       planIds:
-        description: 和`cities`不能同时为空也不能同时存在
+        description: 绑定骑士卡, 和`cities`不能同时为空也不能同时存在
         items:
           type: integer
         type: array
@@ -2108,7 +2843,7 @@ definitions:
       rule:
         allOf:
         - $ref: '#/definitions/model.CouponRule'
-        description: 1:互斥 2:可叠加
+        description: 使用规则, 1:互斥 2:可叠加
         enum:
         - 1
         - 2
@@ -2136,28 +2871,28 @@ definitions:
           $ref: '#/definitions/model.City'
         type: array
       cityIds:
-        description: 和`plans`不能同时为空也不能同时存在
+        description: 可用城市, 和`plans`不能同时为空也不能同时存在
         items:
           type: integer
         type: array
       durationDays:
-        description: '`durationRule=2`必填'
+        description: 相对天数, `durationRule=2`必填
         type: integer
       durationRule:
         allOf:
         - $ref: '#/definitions/model.CouponDurationRule'
-        description: 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
+        description: 有效期规则, 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)
         enum:
         - 1
         - 2
       durationTime:
-        description: '`durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25'
+        description: 过期时间, `durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25
         type: string
       multiple:
         description: 重复使用(该券是否可叠加使用)
         type: boolean
       planIds:
-        description: 和`cities`不能同时为空也不能同时存在
+        description: 绑定骑士卡, 和`cities`不能同时为空也不能同时存在
         items:
           type: integer
         type: array
@@ -2169,7 +2904,7 @@ definitions:
       rule:
         allOf:
         - $ref: '#/definitions/model.CouponRule'
-        description: 1:互斥 2:可叠加
+        description: 使用规则, 1:互斥 2:可叠加
         enum:
         - 1
         - 2
@@ -2248,7 +2983,7 @@ definitions:
   model.EbikeCreateReq:
     properties:
       brandId:
-        description: '关联: `MB015 车辆型号列表`'
+        description: '型号, 关联: `MB015 车辆型号列表`'
         type: integer
       color:
         description: '颜色, 默认`橘黄`, 创建或编辑时用选择列表, 选项为: `橘黄` / `红` / `白` / `黑`'
@@ -2257,6 +2992,7 @@ definitions:
         description: 是否启用, 默认要启用
         type: boolean
       exFactory:
+        description: 生产批次
         type: string
       machine:
         description: 终端编号
@@ -2268,6 +3004,7 @@ definitions:
         description: SIM卡号
         type: string
       sn:
+        description: 车架号
         type: string
     required:
     - brandId
@@ -2398,6 +3135,7 @@ definitions:
         description: 查询店员电话或姓名
         type: string
       remark:
+        description: 备注
         type: string
       start:
         description: 业绩统计开始时间
@@ -2411,10 +3149,13 @@ definitions:
   model.EmployeeCreateReq:
     properties:
       cityId:
+        description: 城市ID
         type: integer
       name:
+        description: 姓名
         type: string
       phone:
+        description: 手机号
         type: string
     required:
     - cityId
@@ -2427,6 +3168,7 @@ definitions:
         description: 修改店员启用状态 true:启用 false:禁用
         type: boolean
       id:
+        description: 店员ID
         type: integer
     required:
     - id
@@ -2458,20 +3200,6 @@ definitions:
       agent:
         description: 是否代理商模式
         type: boolean
-      days:
-        description: 代理商时间选项
-        items:
-          type: integer
-        type: array
-      enterpriseContactName:
-        description: 团签联系人
-        type: string
-      enterpriseContactPhone:
-        description: 团签联系电话
-        type: string
-      enterpriseName:
-        description: 团签名称
-        type: string
       id:
         description: 企业ID
         type: integer
@@ -2485,7 +3213,7 @@ definitions:
         description: 团签ID
         type: integer
       stationID:
-        description: 站点id
+        description: 站点ID
         type: integer
     required:
     - enterpriseID
@@ -2494,13 +3222,16 @@ definitions:
   model.EnterpriseContract:
     properties:
       end:
+        description: 合同结束日期
         type: string
       file:
+        description: 合同文件
         type: string
       id:
         description: 合同ID, 请求`M9018 编辑合同`时携带此字段为编辑, 不携带为新增
         type: integer
       start:
+        description: 合同开始日期
         type: string
     required:
     - end
@@ -2510,15 +3241,19 @@ definitions:
   model.EnterpriseContractModifyReq:
     properties:
       end:
+        description: 合同结束日期
         type: string
       enterpriseId:
+        description: 企业ID
         type: integer
       file:
+        description: 合同文件
         type: string
       id:
         description: 合同ID, 请求`M9018 编辑合同`时携带此字段为编辑, 不携带为新增
         type: integer
       start:
+        description: 合同开始日期
         type: string
     required:
     - end
@@ -2529,17 +3264,22 @@ definitions:
   model.EnterpriseDetail:
     properties:
       address:
+        description: 企业地址
         type: string
       agent:
         description: 代理商 `true`是 `false`否
         type: boolean
       cityId:
+        description: 所在城市
         type: integer
       companyName:
+        description: 企业全称
         type: string
       contactName:
+        description: 联系人
         type: string
       contactPhone:
+        description: 联系电话
         type: string
       days:
         description: 代理商时间选项
@@ -2547,16 +3287,19 @@ definitions:
           type: integer
         type: array
       deposit:
+        description: 押金
         type: number
       distance:
         description: 可控制电柜距离（米）
         type: number
       idcardNumber:
+        description: 身份证号
         type: string
       name:
+        description: 团签名称
         type: string
       payment:
-        description: 1:预付费 2:后付费
+        description: 付费方式, 1:预付费 2:后付费
         enum:
         - 1
         - 2
@@ -2573,7 +3316,7 @@ definitions:
         - $ref: '#/definitions/model.EnterpriseSignType'
         description: 签约类型 without:无需签约（默认） rider:骑手签约 tripartite:三方签约（前端选项暂时不显示）
       status:
-        description: 0:未合作 1:合作中 2:已暂停
+        description: 合作状态, 0:未合作 1:合作中 2:已暂停
         enum:
         - 0
         - 1
@@ -2599,17 +3342,22 @@ definitions:
   model.EnterpriseDetailWithID:
     properties:
       address:
+        description: 企业地址
         type: string
       agent:
         description: 代理商 `true`是 `false`否
         type: boolean
       cityId:
+        description: 所在城市
         type: integer
       companyName:
+        description: 企业全称
         type: string
       contactName:
+        description: 联系人
         type: string
       contactPhone:
+        description: 联系电话
         type: string
       days:
         description: 代理商时间选项
@@ -2617,16 +3365,19 @@ definitions:
           type: integer
         type: array
       deposit:
+        description: 押金
         type: number
       distance:
         description: 可控制电柜距离（米）
         type: number
       idcardNumber:
+        description: 身份证号
         type: string
       name:
+        description: 团签名称
         type: string
       payment:
-        description: 1:预付费 2:后付费
+        description: 付费方式, 1:预付费 2:后付费
         enum:
         - 1
         - 2
@@ -2643,7 +3394,7 @@ definitions:
         - $ref: '#/definitions/model.EnterpriseSignType'
         description: 签约类型 without:无需签约（默认） rider:骑手签约 tripartite:三方签约（前端选项暂时不显示）
       status:
-        description: 0:未合作 1:合作中 2:已暂停
+        description: 合作状态, 0:未合作 1:合作中 2:已暂停
         enum:
         - 0
         - 1
@@ -2669,8 +3420,10 @@ definitions:
   model.EnterprisePrepaymentReq:
     properties:
       amount:
+        description: 金额
         type: number
       remark:
+        description: 备注
         type: string
     required:
     - amount
@@ -2678,12 +3431,17 @@ definitions:
     type: object
   model.EnterprisePriceReq:
     properties:
+      agreementId:
+        description: 协议id
+        type: integer
       brandId:
         description: 电车型号
         type: integer
       cityId:
+        description: 城市
         type: integer
       enterpriseId:
+        description: 企业ID
         type: integer
       id:
         description: 价格ID, 请求`M9016 编辑价格`时携带此字段为编辑, 不携带为新增
@@ -2692,8 +3450,10 @@ definitions:
         description: 是否智能电池
         type: boolean
       model:
+        description: 电池型号
         type: string
       price:
+        description: 单价(元/天)
         type: number
     required:
     - cityId
@@ -2703,6 +3463,10 @@ definitions:
     type: object
   model.EnterprisePriceWithCity:
     properties:
+      agreement:
+        allOf:
+        - $ref: '#/definitions/model.Agreement'
+        description: 协议
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -2849,15 +3613,19 @@ definitions:
         description: 天数, 仅代理商需要
         type: integer
       enterpriseId:
+        description: 企业ID
         type: integer
       name:
+        description: 姓名
         type: string
       phone:
+        description: 电话号
         type: string
       priceId:
         description: 价格ID, 仅代理商需要
         type: integer
       stationId:
+        description: 站点ID
         type: integer
     required:
     - enterpriseId
@@ -2891,10 +3659,13 @@ definitions:
   model.EnterpriseStationCreateReq:
     properties:
       cityId:
+        description: 城市ID
         type: integer
       enterpriseId:
+        description: 企业ID
         type: integer
       name:
+        description: 站点名称
         type: string
     required:
     - cityId
@@ -2917,8 +3688,10 @@ definitions:
   model.EnterpriseStationModifyReq:
     properties:
       cityId:
+        description: 城市ID
         type: integer
       name:
+        description: 站点名称
         type: string
     required:
     - cityId
@@ -2963,11 +3736,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: 电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
-        enum:
-        - KAIXIN
-        - YUNDONG
-        - TUOBANG
+        description: '电柜类型, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
       cabinetId:
         description: 选择电柜ID
         type: integer
@@ -2990,6 +3759,7 @@ definitions:
         description: 电池型号
         type: string
       remark:
+        description: 备注
         type: string
       serial:
         description: 电柜编号
@@ -3115,13 +3885,7 @@ definitions:
       createdAt:
         description: 反馈时间
         type: string
-      enterpriseContactName:
-        description: 反馈用户团签联系人
-        type: string
-      enterpriseContactPhone:
-        description: 反馈用户团签联系电话
-        type: string
-      enterpriseID:
+      enterpriseId:
         description: 反馈用户团签id
         type: integer
       enterpriseName:
@@ -3129,6 +3893,15 @@ definitions:
         type: string
       id:
         description: 反馈ID
+        type: integer
+      name:
+        description: 反馈用户名称
+        type: string
+      phone:
+        description: 反馈用户电话
+        type: string
+      source:
+        description: 反馈来源
         type: integer
       type:
         description: 反馈类型
@@ -3147,14 +3920,20 @@ definitions:
       end:
         description: 反馈结束时间
         type: string
+      enterprise:
+        description: 是否团签, 0:全部 1:团签 2:个签
+        type: integer
       enterpriseID:
-        description: 反馈用户团签id
+        description: 团签企业ID, `enterprise = 1`时才会生效
         type: integer
       keyword:
         description: 关键词
         type: string
       pageSize:
         description: 每页数据, 默认20
+        type: integer
+      source:
+        description: 反馈来源 1:骑手 2:代理
         type: integer
       start:
         description: 反馈开始时间
@@ -3175,21 +3954,28 @@ definitions:
   model.ImportRiderCreateReq:
     properties:
       cityId:
+        description: 城市ID
         type: integer
       ebikeSn:
         description: 车架号
         type: string
       employeeId:
+        description: 店员ID
         type: integer
       end:
+        description: 结束日期
         type: string
       name:
+        description: 姓名
         type: string
       phone:
+        description: 电话
         type: string
       planId:
+        description: 骑行卡ID
         type: integer
       storeId:
+        description: 门店ID
         type: integer
     required:
     - cityId
@@ -3203,12 +3989,16 @@ definitions:
   model.Inventory:
     properties:
       count:
+        description: 是否需要盘点
         type: boolean
       name:
+        description: 物资名称
         type: string
       purchase:
+        description: 是否可采购
         type: boolean
       transfer:
+        description: 是否可调拨
         type: boolean
     required:
     - name
@@ -3216,7 +4006,7 @@ definitions:
   model.InventoryDelete:
     properties:
       name:
-        description: '*POST参数*'
+        description: 物资名称, *POST参数*
         type: string
     required:
     - name
@@ -3258,6 +4048,7 @@ definitions:
   model.LegalSaveReq:
     properties:
       content:
+        description: 政策内容
         type: string
     required:
     - content
@@ -3305,6 +4096,7 @@ definitions:
   model.MaintainerCreateReq:
     properties:
       cityIds:
+        description: 城市列表
         items:
           type: integer
         type: array
@@ -3312,10 +4104,13 @@ definitions:
         description: 是否启用，默认`true`
         type: boolean
       name:
+        description: 姓名
         type: string
       password:
+        description: 密码
         type: string
       phone:
+        description: 电话
         type: string
     required:
     - cityIds
@@ -3326,12 +4121,16 @@ definitions:
   model.ManagerCreateReq:
     properties:
       name:
+        description: 姓名
         type: string
       password:
+        description: 密码
         type: string
       phone:
+        description: 手机号
         type: string
       roleId:
+        description: 角色ID
         type: integer
     required:
     - name
@@ -3382,6 +4181,7 @@ definitions:
         description: 车架号或车牌号
         type: string
       id:
+        description: 订阅ID
         type: integer
       storeId:
         description: 门店ID
@@ -3392,11 +4192,13 @@ definitions:
   model.ManagerSubscribeChangeEbike:
     properties:
       ebikeKeyword:
+        description: 车架号或车牌号
         type: string
       id:
+        description: 订阅ID
         type: integer
       storeId:
-        description: 旧车入库至门店
+        description: 门店ID, 旧车入库至门店
         type: integer
     required:
     - ebikeKeyword
@@ -3405,9 +4207,10 @@ definitions:
   model.ManagerSubscribeUnbindEbike:
     properties:
       id:
+        description: 订阅ID
         type: integer
       storeId:
-        description: 旧车入库至门店
+        description: 门店ID, 旧车入库至门店
         type: integer
     required:
     - id
@@ -3443,6 +4246,9 @@ definitions:
         items:
           $ref: '#/definitions/model.CouponRider'
         type: array
+      createdAt:
+        description: 创建时间
+        type: string
       discountNewly:
         description: 新签优惠
         type: number
@@ -3460,6 +4266,9 @@ definitions:
       model:
         description: 电池型号 (可为空)
         type: string
+      outOrderNo:
+        description: 预授权订单号
+        type: string
       outTradeNo:
         description: 订单编号
         type: string
@@ -3467,7 +4276,7 @@ definitions:
         description: 支付时间
         type: string
       payway:
-        description: 支付方式 1支付宝 2微信
+        description: 支付方式 1支付宝 2微信 3支付宝预授权
         type: integer
       plan:
         allOf:
@@ -3536,8 +4345,11 @@ definitions:
       model:
         description: 电池型号
         type: string
+      outOrderNo:
+        description: 预授权订单号
+        type: string
       payway:
-        description: 支付方式 0:手动 1:支付宝 2:微信, 不携带此参数为获取全部
+        description: 支付方式 0:手动 1:支付宝 2:微信,3:支付宝预授权,4:微信支付分 不携带此参数为获取全部
         enum:
         - 0
         - 1
@@ -3547,6 +4359,7 @@ definitions:
         description: 退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)
         type: integer
       remark:
+        description: 备注
         type: string
       riderId:
         description: 骑手ID
@@ -3554,6 +4367,16 @@ definitions:
       start:
         description: '时间起始, 格式为: 2022-01-01'
         type: string
+      status:
+        description: 订单状态 0:待支付 1:已支付 2:申请退款 3:已退款 4:退款被拒绝 5:取消订单
+        enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+        type: integer
       storeName:
         description: 门店名字
         type: string
@@ -3603,16 +4426,16 @@ definitions:
     - PaywayAgentWxMiniprogram
   model.Person:
     properties:
-      auth_face:
+      authFace:
         description: 实名认证人脸照片
         type: string
-      id_card_national:
+      idCardNational:
         description: 证件国徽面
         type: string
-      id_card_number:
+      idCardNumber:
         description: 证件号码
         type: string
-      id_card_portrait:
+      idCardPortrait:
         description: 证件人像面
         type: string
     type: object
@@ -3672,6 +4495,7 @@ definitions:
         description: 佣金方案名称
         type: string
       days:
+        description: 有效天数
         minimum: 1
         type: integer
       desc:
@@ -3690,6 +4514,7 @@ definitions:
         description: 原价
         type: number
       price:
+        description: 价格
         type: number
     required:
     - days
@@ -3698,28 +4523,53 @@ definitions:
     type: object
   model.PlanCreateReq:
     properties:
+      agreementId:
+        description: 协议ID
+        type: integer
       brandId:
-        description: 车加电必填
+        description: 电车型号, 车加电必填
         type: integer
       cities:
+        description: 启用城市
         items:
           type: integer
         minItems: 1
         type: array
       complexes:
+        description: 骑士卡详细信息
         items:
           $ref: '#/definitions/model.PlanComplex'
         minItems: 1
         type: array
+      deposit:
+        description: 是否开启押金
+        type: boolean
+      depositAlipayAuthFreeze:
+        description: 是否支持预授权信用免押金 true:支持 false:不支持
+        type: boolean
+      depositAmount:
+        description: 押金金额
+        type: number
+      depositContract:
+        description: 是否支持合同免押金 true:支持 false:不支持
+        type: boolean
+      depositPay:
+        description: 是否支持支付押金 true:支持 false:不支持
+        type: boolean
+      depositWechatPayscore:
+        description: 是否支持微信支付分免押金 true:支持 false:不支持
+        type: boolean
       enable:
         description: 是否启用
         type: boolean
       end:
+        description: 结束日期
         type: string
       intelligent:
         description: 是否智能柜套餐
         type: boolean
       name:
+        description: 骑士卡名称
         type: string
       notes:
         description: 购买须知
@@ -3727,12 +4577,15 @@ definitions:
           type: string
         type: array
       start:
+        description: 开始日期
         type: string
       type:
         $ref: '#/definitions/model.PlanType'
+        description: 骑士卡类别
     required:
     - cities
     - complexes
+    - deposit
     - end
     - intelligent
     - name
@@ -3789,6 +4642,10 @@ definitions:
     type: object
   model.PlanListRes:
     properties:
+      agreement:
+        allOf:
+        - $ref: '#/definitions/model.Agreement'
+        description: 协议
       brand:
         allOf:
         - $ref: '#/definitions/model.EbikeBrand'
@@ -3805,6 +4662,24 @@ definitions:
             $ref: '#/definitions/model.PlanComplex'
           type: array
         type: array
+      deposit:
+        description: 是否开启押金 fales:未开启 true:开启
+        type: boolean
+      depositAlipayAuthFreeze:
+        description: 是否支持预授权信用免押金 true:支持 false:不支持
+        type: boolean
+      depositAmount:
+        description: 押金金额
+        type: number
+      depositContract:
+        description: 是否支持合同免押金 true:支持 false:不支持
+        type: boolean
+      depositPay:
+        description: 是否支持支付押金 true:支持 false:不支持
+        type: boolean
+      depositWechatPayscore:
+        description: 是否支持微信支付分免押金 true:支持 false:不支持
+        type: boolean
       enable:
         description: 是否启用
         type: boolean
@@ -3843,11 +4718,13 @@ definitions:
   model.PlanModifyTimeReq:
     properties:
       end:
+        description: 结束日期
         type: string
       id:
-        description: 使用items[n].id
+        description: 骑士卡ID, 使用items[n].id
         type: integer
       start:
+        description: 开始日期
         type: string
     required:
     - end
@@ -3882,18 +4759,21 @@ definitions:
   model.PointBatchReq:
     properties:
       phones:
+        description: 电话
         items:
           type: string
         minItems: 1
         type: array
       points:
+        description: 积分
         type: integer
       reason:
+        description: 原因
         type: string
       type:
         allOf:
         - $ref: '#/definitions/model.PointLogType'
-        description: 1:消费 2:奖励
+        description: 类别, 1:消费 2:奖励
         enum:
         - 1
         - 2
@@ -3943,15 +4823,18 @@ definitions:
   model.PointModifyReq:
     properties:
       points:
+        description: 积分
         type: integer
       reason:
+        description: 原因
         type: string
       riderId:
+        description: 骑手
         type: integer
       type:
         allOf:
         - $ref: '#/definitions/model.PointLogType'
-        description: 1:消费 2:奖励
+        description: 类别, 1:消费 2:奖励
         enum:
         - 1
         - 2
@@ -4009,6 +4892,9 @@ definitions:
       refundAt:
         description: 退款成功时间
         type: string
+      remainAmount:
+        description: 剩余金额
+        type: number
       remark:
         description: 备注
         type: string
@@ -4024,6 +4910,7 @@ definitions:
   model.RefundAuditReq:
     properties:
       outRefundNo:
+        description: 退款单号
         type: string
       remark:
         description: 操作备注
@@ -4101,6 +4988,9 @@ definitions:
       city:
         description: 城市
         type: string
+      createdAt:
+        description: 创建时间
+        type: string
       name:
         description: 姓名
         type: string
@@ -4137,10 +5027,13 @@ definitions:
   model.RiderContact:
     properties:
       name:
+        description: 联系人姓名
         type: string
       phone:
+        description: 联系人电话
         type: string
       relation:
+        description: 关系
         type: string
     required:
     - name
@@ -4172,8 +5065,10 @@ definitions:
   model.RiderFollowUpCreateReq:
     properties:
       remark:
+        description: 跟进信息
         type: string
       riderId:
+        description: 骑手ID
         type: integer
     required:
     - remark
@@ -4350,10 +5245,14 @@ definitions:
       planId:
         description: 骑士卡
         type: integer
+      planType:
+        description: 骑士卡类别 1:单电 2:车加电
+        type: integer
       remaining:
         description: 订阅剩余天数区间, 逗号分隔, 例如 `0,7`
         type: string
       remark:
+        description: 备注
         type: string
       start:
         description: '注册开始时间, 格式为: 2022-01-01'
@@ -4391,12 +5290,16 @@ definitions:
         description: 押金金额
         type: number
       id:
+        description: 骑手ID
         type: integer
     required:
     - id
     type: object
   model.RiderMgrModifyReq:
     properties:
+      address:
+        description: 详细地址
+        type: string
       authStatus:
         allOf:
         - $ref: '#/definitions/model.PersonAuthStatus'
@@ -4411,7 +5314,20 @@ definitions:
         - $ref: '#/definitions/model.RiderContact'
         description: 联系人
       id:
+        description: 骑手ID
         type: integer
+      idCardNational:
+        description: 身份证国徽面
+        type: string
+      idCardNumber:
+        description: 身份证号
+        type: string
+      idCardPortrait:
+        description: 身份证正面
+        type: string
+      name:
+        description: 骑手姓名
+        type: string
       phone:
         description: 手机号
         type: string
@@ -4452,6 +5368,7 @@ definitions:
   model.RoleCreateReq:
     properties:
       name:
+        description: 角色名称
         type: string
       permissions:
         description: 权限列表, 可以创建之后编辑再添加权限
@@ -4498,6 +5415,7 @@ definitions:
   model.SettingReq:
     properties:
       content:
+        description: 值
         type: string
     required:
     - content
@@ -4523,24 +5441,6 @@ definitions:
         items:
           $ref: '#/definitions/model.ShiguangjuIVRItem'
         type: array
-    type: object
-  model.SmsReq:
-    properties:
-      captchaCode:
-        description: captcha 验证码
-        type: string
-      phone:
-        description: 手机号
-        type: string
-    required:
-    - captchaCode
-    - phone
-    type: object
-  model.SmsRes:
-    properties:
-      id:
-        description: 任务ID
-        type: string
     type: object
   model.StatementBillData:
     properties:
@@ -4588,8 +5488,10 @@ definitions:
   model.StatementBillDetailExport:
     properties:
       id:
+        description: 账单ID
         type: integer
       remark:
+        description: 备注
         type: string
     required:
     - id
@@ -4669,8 +5571,10 @@ definitions:
   model.StatementClearBillReq:
     properties:
       remark:
+        description: 备注信息
         type: string
       uuid:
+        description: 账单编码
         type: string
     required:
     - remark
@@ -4715,8 +5619,10 @@ definitions:
         description: 结束时间
         type: string
       id:
+        description: 企业ID
         type: integer
       remark:
+        description: 备注
         type: string
       start:
         description: 开始时间
@@ -4891,6 +5797,7 @@ definitions:
         description: 是否正序(默认倒序)
         type: boolean
       remark:
+        description: 备注
         type: string
       serial:
         description: 电柜编号
@@ -5071,6 +5978,7 @@ definitions:
         - 2
         type: integer
       remark:
+        description: 备注
         type: string
     required:
     - remark
@@ -5098,12 +6006,19 @@ definitions:
   model.StoreCreateReq:
     properties:
       branchId:
+        description: 网点
         type: integer
+      businessHours:
+        description: 营业时间
+        type: string
       ebikeObtain:
         description: 是否可以领取车辆
         type: boolean
       ebikeRepair:
         description: 是否可以维修车辆
+        type: boolean
+      ebikeSale:
+        description: 是否可以买车
         type: boolean
       materials:
         description: 门店物资
@@ -5111,6 +6026,7 @@ definitions:
           $ref: '#/definitions/model.StockStoreMaterial'
         type: array
       name:
+        description: 门店名称
         type: string
       status:
         description: 门店状态 0维护 1营业 2休息 3隐藏
@@ -5132,6 +6048,9 @@ definitions:
       branchId:
         description: 网点ID
         type: integer
+      businessHours:
+        description: 营业时间
+        type: string
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -5141,6 +6060,9 @@ definitions:
         type: boolean
       ebikeRepair:
         description: 是否可以维修车辆
+        type: boolean
+      ebikeSale:
+        description: 是否可以买车
         type: boolean
       employee:
         allOf:
@@ -5161,14 +6083,22 @@ definitions:
   model.StoreModifyReq:
     properties:
       branchId:
+        description: 网点
         type: integer
+      businessHours:
+        description: 营业时间
+        type: string
       ebikeObtain:
         description: 是否可以领取车辆
         type: boolean
       ebikeRepair:
         description: 是否可以维修车辆
         type: boolean
+      ebikeSale:
+        description: 是否可以买车
+        type: boolean
       name:
+        description: 门店名称
         type: string
       status:
         description: 门店状态 0维护 1营业 2休息 3隐藏
@@ -5242,7 +6172,7 @@ definitions:
           type: integer
         type: array
       status:
-        description: 1:通过 2:拒绝
+        description: 审批状态, 1:通过 2:拒绝
         enum:
         - 1
         - 2
@@ -5295,8 +6225,10 @@ definitions:
   model.SuspendReq:
     properties:
       id:
+        description: 订阅ID
         type: integer
       remark:
+        description: 备注
         type: string
     required:
     - id
@@ -5400,9 +6332,6 @@ definitions:
         type: string
       method:
         description: api请求method
-        type: string
-      sn:
-        description: 接口编号
         type: string
     type: object
   promotion.Achievement:
@@ -6363,70 +7292,6 @@ info:
   title: 极光出行API - 代理端api
   version: "1.0"
 paths:
-  /common/captcha:
-    get:
-      consumes:
-      - image/png
-      description: 生成的图片验证码有效时间为10分钟
-      operationId: CaptchaGenerate
-      produces:
-      - image/png
-      responses:
-        "200":
-          description: ok
-          headers:
-            X-Captcha-Id  true:
-              description: Captcha验证码ID
-              type: string
-          schema:
-            type: string
-      summary: C1 生成图片验证码
-      tags:
-      - Communal - 公共接口
-  /common/oss/token:
-    get:
-      consumes:
-      - application/json
-      description: 上传文件必须，单次获取有效时间为1个小时
-      operationId: AliyunOssToken
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.AliyunOssStsRes'
-      summary: C3 获取阿里云oss临时凭证
-      tags:
-      - Communal - 公共接口
-  /common/sms:
-    post:
-      consumes:
-      - application/json
-      description: 上传文件必须，单次获取有效时间为1个小时
-      operationId: SendSmsCode
-      parameters:
-      - description: 请求参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.SmsReq'
-      - description: Captcha验证码ID
-        in: header
-        name: X-Captcha-Id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.SmsRes'
-      summary: C2 发送短信验证码
-      tags:
-      - Communal - 公共接口
   /manager/v1/{id}/contract:
     post:
       consumes:
@@ -6456,9 +7321,158 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M3004 新增合同
+      summary: 新增合同
       tags:
-      - '[M]管理接口'
+      - 网点
+  /manager/v1/agreement:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerAgreementList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.AgreementDetail'
+            type: array
+      summary: 协议列表
+      tags:
+      - 协议
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerAgreementCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 创建协议请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.AgreementCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建协议
+      tags:
+      - 协议
+  /manager/v1/agreement/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: ManagerAgreementDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 协议ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 删除协议
+      tags:
+      - 协议
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerAgreementDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 协议ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.AgreementDetail'
+      summary: 协议详情
+      tags:
+      - 协议
+    put:
+      consumes:
+      - application/json
+      operationId: ManagerAgreementModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 修改协议请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.AgreementModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改协议
+      tags:
+      - 协议
+  /manager/v1/agreement/selection:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerAgreementSelection
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.AgreementSelectionRes'
+            type: array
+      summary: 协议下拉列表
+      tags:
+      - 协议
   /manager/v1/assistance:
     get:
       consumes:
@@ -6519,9 +7533,9 @@ paths:
                     $ref: '#/definitions/model.AssistanceListRes'
                   type: array
               type: object
-      summary: MC001 救援列表
+      summary: 救援列表
       tags:
-      - '[M]管理接口'
+      - 救援
   /manager/v1/assistance/{id}:
     get:
       consumes:
@@ -6545,9 +7559,9 @@ paths:
           description: 救援详情
           schema:
             $ref: '#/definitions/model.AssistanceDetail'
-      summary: MC002 救援详情
+      summary: 救援详情
       tags:
-      - '[M]管理接口'
+      - 救援
   /manager/v1/assistance/allocate:
     post:
       consumes:
@@ -6572,9 +7586,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MC004 分配救援任务
+      summary: 分配救援任务
       tags:
-      - '[M]管理接口'
+      - 救援
   /manager/v1/assistance/free:
     post:
       consumes:
@@ -6599,9 +7613,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MC005 救援免费
+      summary: 救援免费
       tags:
-      - '[M]管理接口'
+      - 救援
   /manager/v1/assistance/nearby:
     get:
       consumes:
@@ -6627,9 +7641,9 @@ paths:
             items:
               $ref: '#/definitions/model.AssistanceNearbyRes'
             type: array
-      summary: MC003 附近门店
+      summary: 附近门店
       tags:
-      - '[M]管理接口'
+      - 救援
   /manager/v1/assistance/refuse:
     post:
       consumes:
@@ -6654,9 +7668,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MC006 拒绝救援
+      summary: 拒绝救援
       tags:
-      - '[M]管理接口'
+      - 救援
   /manager/v1/battery:
     get:
       consumes:
@@ -6751,9 +7765,9 @@ paths:
                     $ref: '#/definitions/model.BatteryListRes'
                   type: array
               type: object
-      summary: M4004 电池列表
+      summary: 电池列表
       tags:
-      - '[M]管理接口'
+      - 电池
     post:
       consumes:
       - application/json
@@ -6777,9 +7791,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M4005 添加电池
+      summary: 添加电池
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/{id}:
     put:
       consumes:
@@ -6809,9 +7823,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M4007 修改电池
+      summary: 修改电池
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/batch:
     post:
       consumes:
@@ -6836,9 +7850,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M4006 批量导入电池
+      summary: 批量导入电池
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/bind:
     post:
       consumes:
@@ -6863,9 +7877,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M4008 绑定骑手
+      summary: 绑定骑手
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/model:
     delete:
       consumes:
@@ -6890,9 +7904,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M4003 删除电池型号
+      summary: 删除电池型号
       tags:
-      - '[M]管理接口'
+      - 电池
     get:
       consumes:
       - application/json
@@ -6917,9 +7931,9 @@ paths:
                     $ref: '#/definitions/model.BatteryModel'
                   type: array
               type: object
-      summary: M4001 获取电池型号
+      summary: 获取电池型号
       tags:
-      - '[M]管理接口'
+      - 电池
     post:
       consumes:
       - application/json
@@ -6948,9 +7962,9 @@ paths:
                 item:
                   $ref: '#/definitions/model.BatteryModel'
               type: object
-      summary: M4002 创建电池型号
+      summary: 创建电池型号
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/unbind:
     post:
       consumes:
@@ -6975,9 +7989,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M4009 解绑骑手
+      summary: 解绑骑手
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/xc/{sn}:
     get:
       consumes:
@@ -7001,9 +8015,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BatteryBmsDetail'
-      summary: M4010 电池详情
+      summary: 电池详情
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/xc/fault:
     get:
       consumes:
@@ -7096,9 +8110,9 @@ paths:
                     $ref: '#/definitions/model.BatteryFaultRes'
                   type: array
               type: object
-      summary: M4013 电池故障列表
+      summary: 电池故障列表
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/xc/position/{sn}:
     get:
       consumes:
@@ -7130,9 +8144,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BatteryPositionRes'
-      summary: M4012 电池位置
+      summary: 电池位置
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/battery/xc/statistics/{sn}:
     get:
       consumes:
@@ -7156,9 +8170,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BatteryStatistics'
-      summary: M4011 电池数据
+      summary: 电池数据
       tags:
-      - '[M]管理接口'
+      - 电池
   /manager/v1/branch:
     get:
       consumes:
@@ -7200,9 +8214,9 @@ paths:
                     $ref: '#/definitions/model.BranchItem'
                   type: array
               type: object
-      summary: M3001 网点列表
+      summary: 网点列表
       tags:
-      - '[M]管理接口'
+      - 网点
     post:
       consumes:
       - application/json
@@ -7226,9 +8240,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M3002 新增网点
+      summary: 新增网点
       tags:
-      - '[M]管理接口'
+      - 网点
   /manager/v1/branch/{id}:
     put:
       consumes:
@@ -7258,9 +8272,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M3003 编辑网点
+      summary: 编辑网点
       tags:
-      - '[M]管理接口'
+      - 网点
   /manager/v1/branch/contract/sheet:
     post:
       consumes:
@@ -7285,9 +8299,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M3010 修改合同底单
+      summary: 修改合同底单
       tags:
-      - '[M]管理接口'
+      - 网点
   /manager/v1/branch/nearby:
     get:
       consumes:
@@ -7333,9 +8347,9 @@ paths:
             items:
               $ref: '#/definitions/model.BranchDistanceListRes'
             type: array
-      summary: M3011 查找附近的网点
+      summary: 查找附近的网点
       tags:
-      - '[M]管理接口'
+      - 网点
   /manager/v1/branch/selector:
     get:
       consumes:
@@ -7361,9 +8375,9 @@ paths:
                     $ref: '#/definitions/model.BranchSampleItem'
                   type: array
               type: object
-      summary: M3005 网点选择列表
+      summary: 网点选择列表
       tags:
-      - '[M]管理接口'
+      - 网点
   /manager/v1/business:
     get:
       consumes:
@@ -7456,9 +8470,9 @@ paths:
                     $ref: '#/definitions/model.BusinessListRes'
                   type: array
               type: object
-      summary: MG001 骑手业务记录
+      summary: 骑手业务记录
       tags:
-      - '[M]管理接口'
+      - 业务
   /manager/v1/business/pause:
     get:
       consumes:
@@ -7548,9 +8562,9 @@ paths:
                     $ref: '#/definitions/model.BusinessPauseListRes'
                   type: array
               type: object
-      summary: MG002 寄存记录
+      summary: 寄存记录
       tags:
-      - '[M]管理接口'
+      - 业务
   /manager/v1/business/reserve:
     get:
       consumes:
@@ -7617,9 +8631,9 @@ paths:
                     $ref: '#/definitions/model.ReserveListRes'
                   type: array
               type: object
-      summary: MG004 预约记录
+      summary: 预约记录
       tags:
-      - '[M]管理接口'
+      - 业务
   /manager/v1/business/suspend:
     get:
       consumes:
@@ -7669,9 +8683,9 @@ paths:
                     $ref: '#/definitions/model.SuspendListRes'
                   type: array
               type: object
-      summary: MG005 暂停记录
+      summary: 暂停记录
       tags:
-      - '[M]管理接口'
+      - 业务
   /manager/v1/cabinet:
     get:
       consumes:
@@ -7683,7 +8697,7 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+      - description: '电柜型号 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
         enum:
         - UNKNOWN
         - KAIXIN
@@ -7767,9 +8781,9 @@ paths:
                     $ref: '#/definitions/model.CabinetItem'
                   type: array
               type: object
-      summary: M5002 查询电柜
+      summary: 查询电柜
       tags:
-      - '[M]管理接口'
+      - 电柜
     post:
       consumes:
       - application/json
@@ -7798,9 +8812,9 @@ paths:
                 item:
                   $ref: '#/definitions/model.CabinetItem'
               type: object
-      summary: M5001 创建电柜
+      summary: 创建电柜
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/{id}:
     delete:
       consumes:
@@ -7824,9 +8838,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5004 删除电柜
+      summary: 删除电柜
       tags:
-      - '[M]管理接口'
+      - 电柜
     get:
       consumes:
       - application/json
@@ -7849,9 +8863,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.CabinetDetailRes'
-      summary: M5005 获取并更新电柜详细信息
+      summary: 获取并更新电柜详细信息
       tags:
-      - '[M]管理接口'
+      - 电柜
     put:
       consumes:
       - application/json
@@ -7880,9 +8894,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5003 编辑电柜
+      summary: 编辑电柜
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/bin/deactivate:
     post:
       consumes:
@@ -7907,9 +8921,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5014 仓位逻辑禁用/启用
+      summary: 仓位逻辑禁用/启用
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/data:
     get:
       consumes:
@@ -7921,7 +8935,7 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+      - description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
         enum:
         - UNKNOWN
         - KAIXIN
@@ -7986,9 +9000,9 @@ paths:
                     $ref: '#/definitions/model.CabinetDataRes'
                   type: array
               type: object
-      summary: M5010 电柜数据表
+      summary: 电柜数据表
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/door-operate:
     post:
       consumes:
@@ -8013,9 +9027,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5006 仓位操作
+      summary: 仓位操作
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/fault:
     get:
       consumes:
@@ -8067,9 +9081,9 @@ paths:
                     $ref: '#/definitions/model.CabinetFaultItem'
                   type: array
               type: object
-      summary: M5008 故障列表
+      summary: 故障列表
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/interrupt:
     post:
       consumes:
@@ -8094,9 +9108,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/pb.CabinetBizResponse'
-      summary: M5015 中断电柜业务
+      summary: 中断电柜业务
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/maintain:
     post:
       consumes:
@@ -8121,9 +9135,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.CabinetDetailRes'
-      summary: M5012 电柜操作维护
+      summary: 电柜操作维护
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/openbind:
     post:
       consumes:
@@ -8149,9 +9163,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5013 开仓取电池并绑定骑手
+      summary: 开仓取电池并绑定骑手
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/reboot:
     post:
       consumes:
@@ -8176,9 +9190,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5007 重启电柜
+      summary: 重启电柜
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabinet/transfer:
     post:
       consumes:
@@ -8203,9 +9217,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5011 初始化电柜调拨
+      summary: 初始化电柜调拨
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/cabint/fault/{id}:
     put:
       consumes:
@@ -8235,9 +9249,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5009 处理故障
+      summary: 处理故障
       tags:
-      - '[M]管理接口'
+      - 电柜
   /manager/v1/city:
     get:
       consumes:
@@ -8263,9 +9277,9 @@ paths:
             items:
               $ref: '#/definitions/model.CityItem'
             type: array
-      summary: M2001 城市列表
+      summary: 城市列表
       tags:
-      - '[M]管理接口'
+      - 城市
   /manager/v1/city/{id}:
     put:
       consumes:
@@ -8296,9 +9310,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M2002 修改城市
+      summary: 修改城市
       tags:
-      - '[M]管理接口'
+      - 城市
   /manager/v1/contract:
     get:
       consumes:
@@ -8360,9 +9374,85 @@ paths:
                     $ref: '#/definitions/model.ContractListRes'
                   type: array
               type: object
-      summary: M7022 合同列表
+      summary: 合同列表
       tags:
-      - '[M]管理接口'
+        - 合同
+  /manager/v1/contract/template:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerContractTemplateList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.ContractTemplateListRes'
+            type: array
+      summary: 合同模板列表
+      tags:
+        - 合同
+    post:
+      consumes:
+        - application/json
+      operationId: ManagerContractTemplateCreate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: desc
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.ContractTemplateCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建合同模板
+      tags:
+        - 合同
+  /manager/v1/contract/template/{id}:
+    put:
+      consumes:
+        - application/json
+      operationId: ManagerContractTemplateModify
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: desc
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.ContractTemplateModifyReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改合同模板
+      tags:
+      - 合同
   /manager/v1/coupon:
     get:
       consumes:
@@ -8439,9 +9529,9 @@ paths:
                     $ref: '#/definitions/model.CouponListRes'
                   type: array
               type: object
-      summary: MH006 优惠券列表
+      summary: 优惠券列表
       tags:
-      - '[M]管理接口'
+      - 优惠券
   /manager/v1/coupon/allocate:
     post:
       consumes:
@@ -8466,9 +9556,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MH007 分配优惠券
+      summary: 分配优惠券
       tags:
-      - '[M]管理接口'
+      - 优惠券
   /manager/v1/coupon/assembly:
     get:
       consumes:
@@ -8506,9 +9596,9 @@ paths:
                     $ref: '#/definitions/model.CouponAssembly'
                   type: array
               type: object
-      summary: MH005 发券记录
+      summary: 发券记录
       tags:
-      - '[M]管理接口'
+      - 优惠券
   /manager/v1/coupon/generate:
     post:
       consumes:
@@ -8535,9 +9625,9 @@ paths:
             items:
               type: string
             type: array
-      summary: MH004 生成优惠券
+      summary: 生成优惠券
       tags:
-      - '[M]管理接口'
+      - 优惠券
   /manager/v1/coupon/template:
     get:
       consumes:
@@ -8575,9 +9665,9 @@ paths:
                     $ref: '#/definitions/model.CouponTemplateListRes'
                   type: array
               type: object
-      summary: MH001 模板列表
+      summary: 模板列表
       tags:
-      - '[M]管理接口'
+      - 优惠券
     post:
       consumes:
       - application/json
@@ -8601,9 +9691,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MH002 创建模板
+      summary: 创建模板
       tags:
-      - '[M]管理接口'
+      - 优惠券
   /manager/v1/coupon/template/status:
     post:
       consumes:
@@ -8628,9 +9718,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MH003 模板启用/禁用
+      summary: 模板启用/禁用
       tags:
-      - '[M]管理接口'
+      - 优惠券
   /manager/v1/csc/irv:
     post:
       consumes:
@@ -8654,9 +9744,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ShiguangjuIVRRes'
-      summary: MT1001 时光驹催费工具
+      summary: 时光驹催费工具
       tags:
-      - '[M]管理接口'
+      - 催费
   /manager/v1/deposit:
     post:
       consumes:
@@ -8681,9 +9771,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7019 修改押金
+      summary: 修改押金
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/ebike:
     get:
       consumes:
@@ -8787,9 +9877,9 @@ paths:
                     $ref: '#/definitions/model.EbikeListRes'
                   type: array
               type: object
-      summary: MI004 电车列表
+      summary: 电车列表
       tags:
-      - '[M]管理接口'
+      - 电车
     post:
       consumes:
       - application/json
@@ -8813,9 +9903,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MI005 添加电车
+      summary: 添加电车
       tags:
-      - '[M]管理接口'
+      - 电车
   /manager/v1/ebike/:id:
     put:
       consumes:
@@ -8840,9 +9930,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MI006 修改电车
+      summary: 修改电车
       tags:
-      - '[M]管理接口'
+      - 电车
   /manager/v1/ebike/batch:
     post:
       consumes:
@@ -8868,9 +9958,9 @@ paths:
             items:
               type: string
             type: array
-      summary: MI007 批量导入电车
+      summary: 批量导入电车
       tags:
-      - '[M]管理接口'
+      - 电车
   /manager/v1/ebike/brand:
     get:
       consumes:
@@ -8891,9 +9981,9 @@ paths:
             items:
               $ref: '#/definitions/model.EbikeBrand'
             type: array
-      summary: MI001 品牌列表
+      summary: 品牌列表
       tags:
-      - '[M]管理接口'
+      - 电车
     post:
       consumes:
       - application/json
@@ -8917,9 +10007,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MI002 创建品牌
+      summary: 创建品牌
       tags:
-      - '[M]管理接口'
+      - 电车
   /manager/v1/ebike/brand/:id:
     put:
       consumes:
@@ -8949,9 +10039,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MI003 修改品牌
+      summary: 修改品牌
       tags:
-      - '[M]管理接口'
+      - 电车
   /manager/v1/emoloyee/enable:
     post:
       consumes:
@@ -8976,9 +10066,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MA015 启用/禁用店员
+      summary: 启用/禁用店员
       tags:
-      - '[M]管理接口'
+      - 店员
   /manager/v1/employee:
     get:
       consumes:
@@ -9028,9 +10118,9 @@ paths:
                     $ref: '#/definitions/model.EmployeeListRes'
                   type: array
               type: object
-      summary: MA012 列举店员
+      summary: 列举店员
       tags:
-      - '[M]管理接口'
+      - 店员
     post:
       consumes:
       - application/json
@@ -9054,9 +10144,9 @@ paths:
           description: 请求成功
           schema:
             type: integer
-      summary: MA010 新增店员
+      summary: 新增店员
       tags:
-      - '[M]管理接口'
+      - 店员
   /manager/v1/employee/{id}:
     delete:
       consumes:
@@ -9080,9 +10170,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MA013 删除店员
+      summary: 删除店员
       tags:
-      - '[M]管理接口'
+      - 店员
     put:
       consumes:
       - application/json
@@ -9105,9 +10195,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MA011 修改店员
+      summary: 修改店员
       tags:
-      - '[M]管理接口'
+      - 店员
   /manager/v1/employee/activity:
     get:
       consumes:
@@ -9154,9 +10244,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MA014 店员业绩
+      summary: 店员业绩
       tags:
-      - '[M]管理接口'
+      - 店员
   /manager/v1/employee/attendance:
     get:
       consumes:
@@ -9218,9 +10308,9 @@ paths:
                     $ref: '#/definitions/model.AttendanceListRes'
                   type: array
               type: object
-      summary: MA016 工作流
+      summary: 工作流
       tags:
-      - '[M]管理接口'
+      - 工作流
   /manager/v1/employee/offwork:
     post:
       consumes:
@@ -9245,9 +10335,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MA017 强制下班
+      summary: 强制下班
       tags:
-      - '[M]管理接口'
+      - 店员
   /manager/v1/enterprise:
     get:
       consumes:
@@ -9318,9 +10408,9 @@ paths:
                     $ref: '#/definitions/model.EnterpriseRes'
                   type: array
               type: object
-      summary: M9003 列举企业
+      summary: 列举企业
       tags:
-      - '[M]管理接口'
+      - 企业
     post:
       consumes:
       - application/json
@@ -9344,9 +10434,9 @@ paths:
           description: 请求成功
           schema:
             type: integer
-      summary: M9001 创建企业
+      summary: 创建企业
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/{id}:
     get:
       consumes:
@@ -9370,9 +10460,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.EnterpriseRes'
-      summary: M9004 企业详情
+      summary: 企业详情
       tags:
-      - '[M]管理接口'
+      - 企业
     put:
       consumes:
       - application/json
@@ -9396,9 +10486,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9002 修改企业
+      summary: 修改企业
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/{id}/prepayment:
     post:
       consumes:
@@ -9423,9 +10513,9 @@ paths:
           description: 当前余额
           schema:
             type: number
-      summary: M9005 企业预付费
+      summary: 企业预付费
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/agent:
     get:
       consumes:
@@ -9451,9 +10541,9 @@ paths:
             items:
               $ref: '#/definitions/model.AgentMeta'
             type: array
-      summary: M9020 代理账号列表
+      summary: 代理账号列表
       tags:
-      - '[M]管理接口'
+      - 企业
     post:
       consumes:
       - application/json
@@ -9477,9 +10567,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9021 创建代理账号
+      summary: 创建代理账号
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/agent/{id}:
     put:
       consumes:
@@ -9509,9 +10599,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9022 修改代理账号
+      summary: 修改代理账号
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/agent{id}:
     delete:
       consumes:
@@ -9535,9 +10625,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9023 删除代理账号
+      summary: 删除代理账号
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/bill:
     get:
       consumes:
@@ -9549,11 +10639,13 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - in: query
+      - description: 账单截止日期
+        in: query
         name: end
         required: true
         type: string
-      - in: query
+      - description: 企业ID
+        in: query
         name: id
         required: true
         type: integer
@@ -9564,9 +10656,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatementBillRes'
-      summary: M9011 获取账单
+      summary: 获取账单
       tags:
-      - '[M]管理接口'
+      - 账单
     post:
       consumes:
       - application/json
@@ -9590,9 +10682,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9012 结账
+      summary: 结账
       tags:
-      - '[M]管理接口'
+      - 账单
   /manager/v1/enterprise/bill/historical:
     get:
       consumes:
@@ -9612,7 +10704,8 @@ paths:
         in: query
         name: end
         type: string
-      - in: query
+      - description: 企业ID
+        in: query
         name: enterpriseId
         type: integer
       - description: 每页数据, 默认20
@@ -9637,9 +10730,9 @@ paths:
                     $ref: '#/definitions/model.StatementBillHistoricalListRes'
                   type: array
               type: object
-      summary: M9013 历史账单
+      summary: 历史账单
       tags:
-      - '[M]管理接口'
+      - 账单
   /manager/v1/enterprise/bill/statement:
     get:
       consumes:
@@ -9651,7 +10744,8 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - in: query
+      - description: 账单ID
+        in: query
         name: id
         required: true
         type: integer
@@ -9662,9 +10756,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatementDetail'
-      summary: M9014 结账明细
+      summary: 结账明细
       tags:
-      - '[M]管理接口'
+      - 账单
   /manager/v1/enterprise/bill/usage:
     get:
       consumes:
@@ -9726,9 +10820,9 @@ paths:
                     $ref: '#/definitions/model.StatementUsageRes'
                   type: array
               type: object
-      summary: M9015 使用明细
+      summary: 使用明细
       tags:
-      - '[M]管理接口'
+      - 账单
   /manager/v1/enterprise/bind/cabinet:
     post:
       consumes:
@@ -9748,9 +10842,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9024 团签绑定电柜
+      summary: 团签绑定电柜
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/contract:
     post:
       consumes:
@@ -9775,9 +10869,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9018 编辑合同
+      summary: 编辑合同
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/contract/{id}:
     delete:
       consumes:
@@ -9801,9 +10895,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9019 删除合同
+      summary: 删除合同
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/feedback:
     get:
       consumes:
@@ -9830,9 +10924,9 @@ paths:
                     $ref: '#/definitions/model.FeedbackDetail'
                   type: array
               type: object
-      summary: M9030 反馈列表
+      summary: 反馈列表
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/prepayment:
     get:
       consumes:
@@ -9891,9 +10985,9 @@ paths:
                     $ref: '#/definitions/model.PrepaymentListRes'
                   type: array
               type: object
-      summary: M9026 充值记录
+      summary: 充值记录
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/price:
     post:
       consumes:
@@ -9918,9 +11012,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.EnterprisePriceWithCity'
-      summary: M9016 团签单价设定
+      summary: 团签单价设定
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/price/{id}:
     post:
       consumes:
@@ -9944,9 +11038,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9017 删除价格
+      summary: 删除价格
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/rider:
     get:
       consumes:
@@ -9974,7 +11068,8 @@ paths:
         in: query
         name: end
         type: string
-      - in: query
+      - description: 企业ID
+        in: query
         name: enterpriseId
         required: true
         type: integer
@@ -10013,9 +11108,9 @@ paths:
                     $ref: '#/definitions/model.EnterpriseRider'
                   type: array
               type: object
-      summary: M9010 列举骑手
+      summary: 列举骑手
       tags:
-      - '[M]管理接口'
+      - 企业
     post:
       consumes:
       - application/json
@@ -10039,9 +11134,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.EnterpriseRider'
-      summary: M9009 添加骑手
+      summary: 添加骑手
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/station:
     get:
       consumes:
@@ -10067,9 +11162,9 @@ paths:
             items:
               $ref: '#/definitions/model.EnterpriseStationListRes'
             type: array
-      summary: M9008 列举站点
+      summary: 列举站点
       tags:
-      - '[M]管理接口'
+      - 企业
     post:
       consumes:
       - application/json
@@ -10093,9 +11188,9 @@ paths:
           description: 请求成功
           schema:
             type: integer
-      summary: M9006 创建站点
+      summary: 创建站点
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/station/{id}:
     put:
       consumes:
@@ -10125,9 +11220,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9007 编辑站点
+      summary: 编辑站点
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/subscribe/alter:
     post:
       consumes:
@@ -10147,9 +11242,9 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9028 审批订阅申请
+      summary: 审批订阅申请
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/subscribe/alter/{enterpriseId}:
     get:
       consumes:
@@ -10198,9 +11293,9 @@ paths:
                     $ref: '#/definitions/model.SubscribeAlterApplyListRes'
                   type: array
               type: object
-      summary: M9027 加时申请列表
+      summary: 加时申请列表
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/enterprise/unbind/cabinet/{id}:
     get:
       consumes:
@@ -10220,9 +11315,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9025 团签解绑电柜
+      summary: 团签解绑电柜
       tags:
-      - '[M]管理接口'
+      - 企业
   /manager/v1/exchange:
     get:
       consumes:
@@ -10250,7 +11345,7 @@ paths:
         in: query
         name: batterySn
         type: string
-      - description: 电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+      - description: '电柜类型, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
         enum:
         - UNKNOWN
         - KAIXIN
@@ -10346,9 +11441,9 @@ paths:
                     $ref: '#/definitions/model.ExchangeManagerListRes'
                   type: array
               type: object
-      summary: MG003 换电记录
+      summary: 换电记录
       tags:
-      - '[M]管理接口'
+      - 换电
   /manager/v1/export:
     get:
       consumes:
@@ -10386,9 +11481,9 @@ paths:
                     $ref: '#/definitions/model.ExportListRes'
                   type: array
               type: object
-      summary: MF001 导出列表
+      summary: 导出列表
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/business:
     post:
       consumes:
@@ -10413,9 +11508,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF008 导出业务记录
+      summary: 导出业务记录
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/commission:
     post:
       consumes:
@@ -10440,9 +11535,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF007 导出业绩
+      summary: 导出业绩
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/download/{sn}:
     get:
       consumes:
@@ -10466,9 +11561,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MF002 下载文件
+      summary: 下载文件
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/exchange:
     post:
       consumes:
@@ -10493,9 +11588,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF010 导出换电明细
+      summary: 导出换电明细
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/order:
     post:
       consumes:
@@ -10520,9 +11615,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF006 导出订单
+      summary: 导出订单
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/rider:
     post:
       consumes:
@@ -10546,9 +11641,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF003 导出骑手
+      summary: 导出骑手
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/statement/detail:
     post:
       consumes:
@@ -10573,9 +11668,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF004 导出企业账单
+      summary: 导出企业账单
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/statement/usage:
     post:
       consumes:
@@ -10600,9 +11695,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF005 导出企业使用明细
+      summary: 导出企业使用明细
       tags:
-      - '[M]管理接口'
+      - 导出
   /manager/v1/export/stock-detail:
     post:
       consumes:
@@ -10627,9 +11722,105 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExportRes'
-      summary: MF009 导出出入库明细
+      summary: 导出出入库明细
       tags:
-      - '[M]管理接口'
+      - 导出
+  /manager/v1/fault:
+    get:
+      consumes:
+      - application/json
+      operationId: FaultList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 设备编号
+        in: query
+        name: deviceNo
+        type: string
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 关键字 用户姓名、手机号
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 故障状态 0未处理 1已处理
+        in: query
+        name: status
+        type: integer
+      - description: 故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他
+        in: query
+        name: type
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/definition.Fault'
+                  type: array
+              type: object
+      summary: 故障列表
+      tags:
+      - 故障上报
+  /manager/v1/fault/:id:
+    put:
+      consumes:
+      - application/json
+      operationId: FaultModify
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 故障ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 故障修改请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.FaultModifyStatusReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 故障更改状态
+      tags:
+      - 故障上报
   /manager/v1/import/rider:
     post:
       consumes:
@@ -10654,9 +11845,57 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: ME001 单个导入骑手
+      summary: 导入单个骑手
       tags:
-      - '[M]管理接口'
+      - 导入
+  /manager/v1/instructions:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerInstructionsModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.InstructionsCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改说明
+      tags:
+      - 说明
+  /manager/v1/instructions/:key:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerInstructionsDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.InstructionsRes'
+      summary: 说明详情
+      tags:
+      - 说明
   /manager/v1/inventory:
     delete:
       consumes:
@@ -10681,9 +11920,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1014 删除物资设定
+      summary: 删除物资设定
       tags:
-      - '[M]管理接口'
+      - 物资
     get:
       consumes:
       - application/json
@@ -10701,9 +11940,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.Inventory'
-      summary: M1013 列举物资设定
+      summary: 列举物资设定
       tags:
-      - '[M]管理接口'
+      - 物资
     post:
       consumes:
       - application/json
@@ -10727,9 +11966,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1012 物资设定创建或更新
+      summary: 物资设定创建或更新
       tags:
-      - '[M]管理接口'
+      - 物资
   /manager/v1/inventory/transferable:
     get:
       consumes:
@@ -10750,9 +11989,9 @@ paths:
             items:
               $ref: '#/definitions/model.InventoryItem'
             type: array
-      summary: M1015 可调拨物资清单
+      summary: 可调拨物资清单
       tags:
-      - '[M]管理接口'
+      - 物资
   /manager/v1/maintainer:
     get:
       consumes:
@@ -10794,9 +12033,9 @@ paths:
                     $ref: '#/definitions/model.Maintainer'
                   type: array
               type: object
-      summary: MJ001 运维人员列表
+      summary: 运维人员列表
       tags:
-      - '[M]管理接口'
+      - 运维
     post:
       consumes:
       - application/json
@@ -10820,9 +12059,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MJ002 创建运维人员
+      summary: 创建运维人员
       tags:
-      - '[M]管理接口'
+      - 运维
   /manager/v1/maintainer/{id}:
     put:
       consumes:
@@ -10847,9 +12086,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MJ003 修改运维人员信息
+      summary: 修改运维人员信息
       tags:
-      - '[M]管理接口'
+      - 运维
   /manager/v1/order:
     get:
       consumes:
@@ -10889,11 +12128,15 @@ paths:
         in: query
         name: model
         type: string
+      - description: 预授权订单号
+        in: query
+        name: outOrderNo
+        type: string
       - description: 每页数据, 默认20
         in: query
         name: pageSize
         type: integer
-      - description: 支付方式 0:手动 1:支付宝 2:微信, 不携带此参数为获取全部
+      - description: 支付方式 0:手动 1:支付宝 2:微信,3:支付宝预授权,4:微信支付分 不携带此参数为获取全部
         enum:
         - 0
         - 1
@@ -10913,6 +12156,17 @@ paths:
         in: query
         name: start
         type: string
+      - description: 订单状态 0:待支付 1:已支付 2:申请退款 3:已退款 4:退款被拒绝 5:取消订单
+        enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+        in: query
+        name: status
+        type: integer
       - description: 门店名字
         in: query
         name: storeName
@@ -10939,9 +12193,9 @@ paths:
                     $ref: '#/definitions/model.Order'
                   type: array
               type: object
-      summary: M8001 订单列表
+      summary: 订单列表
       tags:
-      - '[M]管理接口'
+      - 订单
   /manager/v1/order/refund:
     post:
       consumes:
@@ -10966,9 +12220,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M8002 退款审核
+      summary: 退款审核
       tags:
-      - '[M]管理接口'
+      - 订单
   /manager/v1/permission:
     get:
       consumes:
@@ -10989,9 +12243,9 @@ paths:
             items:
               $ref: '#/definitions/permission.Group'
             type: array
-      summary: MD001 权限列表
+      summary: 权限列表
       tags:
-      - '[M]管理接口'
+      - 权限
   /manager/v1/permission/role:
     get:
       consumes:
@@ -11012,9 +12266,9 @@ paths:
             items:
               $ref: '#/definitions/model.Role'
             type: array
-      summary: MD002 角色列表
+      summary: 角色列表
       tags:
-      - '[M]管理接口'
+      - 权限
     post:
       consumes:
       - application/json
@@ -11038,9 +12292,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.Role'
-      summary: MD003 创建角色
+      summary: 创建角色
       tags:
-      - '[M]管理接口'
+      - 权限
   /manager/v1/permission/role/{id}:
     delete:
       consumes:
@@ -11064,9 +12318,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: MD005 删除角色
+      summary: 删除角色
       tags:
-      - '[M]管理接口'
+      - 权限
     put:
       consumes:
       - application/json
@@ -11095,9 +12349,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.Role'
-      summary: MD004 修改角色
+      summary: 修改角色
       tags:
-      - '[M]管理接口'
+      - 权限
   /manager/v1/plan:
     get:
       consumes:
@@ -11121,6 +12375,10 @@ paths:
         in: query
         name: current
         type: integer
+      - description: 是否开启押金 fales:未开启 true:开启
+        in: query
+        name: deposit
+        type: boolean
       - description: 启用状态
         in: query
         name: enable
@@ -11168,9 +12426,9 @@ paths:
                     $ref: '#/definitions/model.PlanListRes'
                   type: array
               type: object
-      summary: M6004 列举骑士卡
+      summary: 列举骑士卡
       tags:
-      - '[M]管理接口'
+      - 骑士卡
     post:
       consumes:
       - application/json
@@ -11194,9 +12452,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.PlanListRes'
-      summary: M6001 创建骑士卡
+      summary: 创建骑士卡
       tags:
-      - '[M]管理接口'
+      - 骑士卡
   /manager/v1/plan/{id}:
     delete:
       consumes:
@@ -11220,9 +12478,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M6003 删除骑士卡
+      summary: 删除骑士卡
       tags:
-      - '[M]管理接口'
+      - 骑士卡
     put:
       consumes:
       - application/json
@@ -11251,9 +12509,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M6002 上下架骑士卡
+      summary: 上下架骑士卡
       tags:
-      - '[M]管理接口'
+      - 骑士卡
   /manager/v1/plan/introduce:
     get:
       consumes:
@@ -11274,9 +12532,9 @@ paths:
             items:
               $ref: '#/definitions/model.PlanIntroduce'
             type: array
-      summary: M6006 获取车电介绍
+      summary: 获取车电介绍
       tags:
-      - '[M]管理接口'
+      - 骑士卡
     post:
       consumes:
       - application/json
@@ -11300,9 +12558,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M6007 创建车电介绍
+      summary: 创建车电介绍
       tags:
-      - '[M]管理接口'
+      - 骑士卡
     put:
       consumes:
       - application/json
@@ -11331,9 +12589,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M6008 修改车电介绍
+      summary: 修改车电介绍
       tags:
-      - '[M]管理接口'
+      - 骑士卡
   /manager/v1/plan/introduce/notset:
     get:
       consumes:
@@ -11355,9 +12613,9 @@ paths:
             items:
               $ref: '#/definitions/model.PlanIntroduceOption'
             type: array
-      summary: M6005 获取未设定介绍的车电型号
+      summary: 获取未设定介绍的车电型号
       tags:
-      - '[M]管理接口'
+      - 骑士卡
   /manager/v1/plan/time:
     post:
       consumes:
@@ -11382,9 +12640,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M6009 修改骑士卡有效期
+      summary: 修改骑士卡有效期
       tags:
-      - '[M]管理接口'
+      - 骑士卡
   /manager/v1/point/batch:
     post:
       consumes:
@@ -11411,9 +12669,9 @@ paths:
             items:
               type: string
             type: array
-      summary: M7018 批量变动积分
+      summary: 批量变动积分
       tags:
-      - '[M]管理接口'
+      - 积分
   /manager/v1/point/log:
     get:
       consumes:
@@ -11468,9 +12726,9 @@ paths:
                     $ref: '#/definitions/model.PointLogListRes'
                   type: array
               type: object
-      summary: M7017 积分变动日志
+      summary: 积分变动日志
       tags:
-      - '[M]管理接口'
+      - 积分
   /manager/v1/point/modify:
     post:
       consumes:
@@ -11495,9 +12753,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7016 修改骑手积分
+      summary: 修改骑手积分
       tags:
-      - '[M]管理接口'
+      - 积分
   /manager/v1/promotion/achievement:
     delete:
       consumes:
@@ -11521,7 +12779,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM7004 删除会员成就
+      summary: 删除会员成就
       tags:
       - '[PM]推广管理接口'
     get:
@@ -11543,7 +12801,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.Achievement'
             type: array
-      summary: PM7001 会员成就列表
+      summary: 会员成就列表
       tags:
       - '[PM]推广管理接口'
     post:
@@ -11569,7 +12827,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM7002 创建会员成就
+      summary: 创建会员成就
       tags:
       - '[PM]推广管理接口'
     put:
@@ -11595,7 +12853,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM7003 更新会员成就
+      summary: 更新会员成就
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/achievement/icon:
@@ -11621,7 +12879,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/promotion.UploadIcon'
-      summary: PM7005 上传会员成就图标
+      summary: 上传会员成就图标
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission:
@@ -11644,7 +12902,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.CommissionDetail'
             type: array
-      summary: PM8001 推广返佣方案列表
+      summary: 推广返佣方案列表
       tags:
       - '[PM]推广管理接口'
     post:
@@ -11670,7 +12928,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM8003 创建推广返佣方案
+      summary: 创建推广返佣方案
       tags:
       - '[PM]推广管理接口'
     put:
@@ -11696,7 +12954,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM8004 更新推广返佣方案
+      summary: 更新推广返佣方案
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission/{id}:
@@ -11722,7 +12980,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM8005 删除推广返佣方案
+      summary: 删除推广返佣方案
       tags:
       - '[PM]推广管理接口'
     get:
@@ -11747,7 +13005,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/promotion.CommissionDetail'
-      summary: PM8002 推广返佣方案详情
+      summary: 推广返佣方案详情
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission/enable:
@@ -11774,7 +13032,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM8006 更新推广返佣方案状态
+      summary: 更新推广返佣方案状态
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission/history/{id}:
@@ -11802,7 +13060,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.CommissionDetail'
             type: array
-      summary: PM8007 推广返佣方案历史列表
+      summary: 推广返佣方案历史列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission/plan/list/{:id}:
@@ -11830,7 +13088,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.CommissionPlanListRes'
             type: array
-      summary: PM8010 返佣方案骑士卡列表
+      summary: 返佣方案骑士卡列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission/selection:
@@ -11853,7 +13111,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.CommissionSelection'
             type: array
-      summary: PM8008 推广返佣方案选择
+      summary: 推广返佣方案选择
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission/task/selection:
@@ -11876,7 +13134,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.CommissionTaskSelect'
             type: array
-      summary: PM8009 返佣方案任务选择
+      summary: 返佣方案任务选择
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/earnings/{id}:
@@ -11905,7 +13163,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.EarningsRes'
             type: array
-      summary: PM2001 会员收益列表
+      summary: 会员收益列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/earnings/cancel:
@@ -11931,7 +13189,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM2002 取消会员收益
+      summary: 取消会员收益
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/growth/{id}:
@@ -11960,7 +13218,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.GrowthRes'
             type: array
-      summary: PM5001 会员成长值列表
+      summary: 会员成长值列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/level:
@@ -11986,7 +13244,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM4004 删除会员等级配置
+      summary: 删除会员等级配置
       tags:
       - '[PM]推广管理接口'
     get:
@@ -12008,7 +13266,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.Level'
             type: array
-      summary: PM4001 会员等级配置列表
+      summary: 会员等级配置列表
       tags:
       - '[PM]推广管理接口'
     post:
@@ -12034,7 +13292,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM4003 创建会员等级配置
+      summary: 创建会员等级配置
       tags:
       - '[PM]推广管理接口'
     put:
@@ -12060,7 +13318,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM4002 更新会员等级配置
+      summary: 更新会员等级配置
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/level/selection:
@@ -12083,7 +13341,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.Level'
             type: array
-      summary: PM4005 会员等级配置下拉选择列表
+      summary: 会员等级配置下拉选择列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/member:
@@ -12112,7 +13370,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.MemberRes'
             type: array
-      summary: PM1001 会员列表
+      summary: 会员列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/member/{id}:
@@ -12138,7 +13396,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/promotion.MemberRes'
-      summary: PM1002 会员详情
+      summary: 会员详情
       tags:
       - '[PM]推广管理接口'
     put:
@@ -12164,7 +13422,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM1003 更新会员信息
+      summary: 更新会员信息
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/member/setcommission:
@@ -12191,7 +13449,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM1005 设置会员佣金方案
+      summary: 设置会员佣金方案
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/member/team/{id}:
@@ -12225,7 +13483,7 @@ paths:
                     $ref: '#/definitions/promotion.MemberTeamRes'
                   type: array
               type: object
-      summary: PM1004 会员团队列表
+      summary: 会员团队列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/progress/list:
@@ -12254,7 +13512,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.ReferralsProgressRes'
             type: array
-      summary: PMA001  会员推荐进度列表
+      summary: 会员推荐进度列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/setting/{key}:
@@ -12283,7 +13541,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.Setting'
             type: array
-      summary: PM9001 获取推广配置
+      summary: 获取推广配置
       tags:
       - '[PM]推广管理接口'
     put:
@@ -12309,7 +13567,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM9002 更新推广配置
+      summary: 更新推广配置
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/task:
@@ -12332,7 +13590,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.LevelTask'
             type: array
-      summary: PM6001 会员任务列表
+      summary: 会员任务列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/task/{id}:
@@ -12359,7 +13617,7 @@ paths:
           description: OK
           schema:
             type: string
-      summary: PM6002 更新会员任务
+      summary: 更新会员任务
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/withdrawal:
@@ -12388,7 +13646,7 @@ paths:
             items:
               $ref: '#/definitions/promotion.WithdrawalListRes'
             type: array
-      summary: PM3001 会员提现列表
+      summary: 会员提现列表
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/withdrawal/alter/review:
@@ -12415,7 +13673,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: PM3002  审批提现
+      summary: 审批提现
       tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/withdrawal/export:
@@ -12442,9 +13700,281 @@ paths:
           description: OK
           schema:
             type: string
-      summary: PM3003  导出提现列表
+      summary: 导出提现列表
       tags:
       - '[PM]推广管理接口'
+  /manager/v1/question:
+    get:
+      consumes:
+      - application/json
+      operationId: QuestionList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 分类ID,0表示其他，不传表示全部, 分类ID
+        in: query
+        name: categoryId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.QuestionDetail'
+            type: array
+      summary: 常见问题分页列表
+      tags:
+      - 设置
+    post:
+      consumes:
+      - application/json
+      operationId: QuestionCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.QuestionCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建常见问题
+      tags:
+      - 设置
+  /manager/v1/question/:id:
+    put:
+      consumes:
+      - application/json
+      operationId: QuestionModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.QuestionModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改常见问题
+      tags:
+      - 设置
+  /manager/v1/question/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: QuestionDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 分类ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 删除常见问题
+      tags:
+      - 设置
+    get:
+      consumes:
+      - application/json
+      operationId: QuestionDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 分类ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.QuestionDetail'
+      summary: 常见问题详情
+      tags:
+      - 设置
+  /manager/v1/question/category:
+    get:
+      consumes:
+      - application/json
+      operationId: Question_categoryList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.QuestionCategoryDetail'
+            type: array
+      summary: 问题分类分页列表
+      tags:
+      - 设置
+    post:
+      consumes:
+      - application/json
+      operationId: Question_categoryCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.QuestionCategoryCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建问题分类
+      tags:
+      - 设置
+    put:
+      consumes:
+      - application/json
+      operationId: Question_categoryModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.QuestionCategoryModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改问题分类
+      tags:
+      - 设置
+  /manager/v1/question/category/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: Question_categoryDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 删除问题分类
+      tags:
+      - 设置
+    get:
+      consumes:
+      - application/json
+      operationId: Question_categoryDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 分类ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 问题分类详情
+      tags:
+      - 设置
   /manager/v1/rider:
     get:
       consumes:
@@ -12523,6 +14053,10 @@ paths:
         in: query
         name: planId
         type: integer
+      - description: 骑士卡类别 1:单电 2:车加电
+        in: query
+        name: planType
+        type: integer
       - description: 订阅剩余天数区间, 逗号分隔, 例如 `0,7`
         in: query
         name: remaining
@@ -12572,9 +14106,9 @@ paths:
                     $ref: '#/definitions/model.RiderItem'
                   type: array
               type: object
-      summary: M7001 列举骑手
+      summary: 列举骑手
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/{id}:
     delete:
       consumes:
@@ -12598,9 +14132,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7011 删除骑手
+      summary: 删除骑手
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/ban:
     post:
       consumes:
@@ -12625,9 +14159,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7002 封禁/解除封禁身份
+      summary: 封禁/解除封禁身份
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/block:
     post:
       consumes:
@@ -12652,9 +14186,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7003 封禁/解除封禁骑手账户
+      summary: 封禁/解除封禁骑手账户
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/exchange-frequency:
     post:
       consumes:
@@ -12679,9 +14213,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7024 设置骑手换电频次
+      summary: 设置骑手换电频次
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/exchange-limit:
     post:
       consumes:
@@ -12706,9 +14240,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7023 设置骑手换电限制
+      summary: 设置骑手换电限制
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/followup:
     get:
       consumes:
@@ -12728,7 +14262,8 @@ paths:
         in: query
         name: pageSize
         type: integer
-      - in: query
+      - description: 骑手ID
+        in: query
         name: riderId
         required: true
         type: integer
@@ -12746,9 +14281,9 @@ paths:
                     $ref: '#/definitions/model.RiderFollowUpListRes'
                   type: array
               type: object
-      summary: M7013 获取骑手跟进
+      summary: 获取骑手跟进
       tags:
-      - '[M]管理接口'
+      - 骑手
     post:
       consumes:
       - application/json
@@ -12772,9 +14307,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7012 创建骑手跟进
+      summary: 创建骑手跟进
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/log:
     get:
       consumes:
@@ -12790,7 +14325,8 @@ paths:
         in: query
         name: current
         type: integer
-      - in: query
+      - description: 骑手ID
+        in: query
         name: id
         required: true
         type: integer
@@ -12822,9 +14358,9 @@ paths:
                     $ref: '#/definitions/model.LogOperate'
                   type: array
               type: object
-      summary: M7005 查看骑手操作日志
+      summary: 查看骑手操作日志
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/rider/modify:
     post:
       consumes:
@@ -12849,9 +14385,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7010 修改骑手资料
+      summary: 修改骑手资料
       tags:
-      - '[M]管理接口'
+      - 骑手
   /manager/v1/selection/battery/serial:
     get:
       consumes:
@@ -12867,7 +14403,8 @@ paths:
         in: query
         name: enterpriseId
         type: integer
-      - in: query
+      - description: 流水号
+        in: query
         minLength: 4
         name: serial
         required: true
@@ -12885,9 +14422,9 @@ paths:
             items:
               $ref: '#/definitions/model.Battery'
             type: array
-      summary: MB016 按流水号搜索电池
+      summary: 按流水号搜索电池
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/branch:
     get:
       consumes:
@@ -12908,9 +14445,9 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: MB006 筛选网点
+      summary: 筛选网点
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/cabinet:
     get:
       consumes:
@@ -12939,9 +14476,9 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: MB008 筛选电柜
+      summary: 筛选电柜
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/cabinetmodel:
     get:
       consumes:
@@ -12953,7 +14490,8 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - in: query
+      - description: 电柜ID
+        in: query
         name: cabinetId
         required: true
         type: integer
@@ -12966,9 +14504,9 @@ paths:
             items:
               type: string
             type: array
-      summary: MB012 筛选电柜电池
+      summary: 筛选电柜电池
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/city:
     get:
       consumes:
@@ -12989,9 +14527,9 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: MB005 筛选启用的城市
+      summary: 筛选启用的城市
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/commission/plan:
     get:
       consumes:
@@ -13011,9 +14549,9 @@ paths:
             items:
               $ref: '#/definitions/model.SelectOption'
             type: array
-      summary: MB017 返佣方案筛选骑士卡
+      summary: 返佣方案筛选骑士卡
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/coupon/template:
     get:
       consumes:
@@ -13038,7 +14576,7 @@ paths:
             type: array
       summary: MB014 筛选优惠券模板
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/ebike/brand:
     get:
       consumes:
@@ -13059,9 +14597,9 @@ paths:
             items:
               $ref: '#/definitions/model.SelectOption'
             type: array
-      summary: MB015 车辆型号列表
+      summary: 车辆型号列表
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/employee:
     get:
       consumes:
@@ -13082,9 +14620,9 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: MB004 筛选店员
+      summary: 筛选店员
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/enterprise:
     get:
       consumes:
@@ -13105,9 +14643,9 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: MB007 筛选企业
+      summary: 筛选企业
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/model:
     get:
       consumes:
@@ -13128,9 +14666,9 @@ paths:
             items:
               type: string
             type: array
-      summary: MB013 筛选电池型号
+      summary: 筛选电池型号
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/plan:
     get:
       consumes:
@@ -13167,9 +14705,9 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel3'
             type: array
-      summary: MB001 筛选骑士卡
+      summary: 筛选骑士卡
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/planmodel:
     get:
       consumes:
@@ -13181,7 +14719,8 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - in: query
+      - description: 骑行卡ID
+        in: query
         name: planId
         required: true
         type: integer
@@ -13194,9 +14733,32 @@ paths:
             items:
               type: string
             type: array
-      summary: MB011 筛选骑行卡电池
+      summary: 筛选骑行卡电池
       tags:
-      - '[M]管理接口'
+      - 筛选
+  /manager/v1/selection/question/category:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionQuestionCategory
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: 问题分类
+      tags:
+      - 筛选
   /manager/v1/selection/rider:
     get:
       consumes:
@@ -13221,9 +14783,9 @@ paths:
             items:
               $ref: '#/definitions/model.SelectOption'
             type: array
-      summary: MB002 筛选骑手
+      summary: 筛选骑手
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/role:
     get:
       consumes:
@@ -13244,9 +14806,9 @@ paths:
             items:
               $ref: '#/definitions/model.SelectOption'
             type: array
-      summary: MB009 筛选角色
+      summary: 筛选角色
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/store:
     get:
       consumes:
@@ -13267,9 +14829,9 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: MB003 筛选门店
+      summary: 筛选门店
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/selection/wxemployee:
     get:
       consumes:
@@ -13291,9 +14853,9 @@ paths:
               additionalProperties: true
               type: object
             type: array
-      summary: MB010 筛选企业微信成员
+      summary: 筛选企业微信成员
       tags:
-      - '[M]管理接口'
+      - 筛选
   /manager/v1/setting:
     get:
       consumes:
@@ -13314,9 +14876,9 @@ paths:
             items:
               $ref: '#/definitions/model.SettingReq'
             type: array
-      summary: M1010 列举设置
+      summary: 列举设置
       tags:
-      - '[M]管理接口'
+      - 设置
   /manager/v1/setting/{key}:
     put:
       consumes:
@@ -13346,9 +14908,268 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1011 调整设置
+      summary: 调整设置
       tags:
-      - '[M]管理接口'
+      - 设置
+  /manager/v1/setting/activity:
+    get:
+      consumes:
+      - application/json
+      operationId: SettingActivityList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 是否启用
+        in: query
+        name: enable
+        type: boolean
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.ActivityDetail'
+            type: array
+      summary: 获取活动列表
+      tags:
+      - 设置
+    post:
+      consumes:
+      - application/json
+      operationId: SettingActivityCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.ActivityCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建活动
+      tags:
+      - 设置
+    put:
+      consumes:
+      - application/json
+      operationId: SettingActivityModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.ActivityModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改活动
+      tags:
+      - 设置
+  /manager/v1/setting/activity/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: SettingActivityDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 活动ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.ActivityDetail'
+      summary: 获取指定活动
+      tags:
+      - 设置
+  /manager/v1/setting/guide:
+    get:
+      consumes:
+      - application/json
+      operationId: SettingGuideList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.GuideDetail'
+            type: array
+      summary: 获取引导
+      tags:
+      - 设置
+    post:
+      consumes:
+      - application/json
+      operationId: SettingGuideCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.GuideSaveReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 保存引导
+      tags:
+      - 设置
+    put:
+      consumes:
+      - application/json
+      operationId: SettingGuideModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.GuideModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改引导
+      tags:
+      - 设置
+  /manager/v1/setting/guide/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: SettingGuideDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 引导ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 删除引导
+      tags:
+      - 设置
+    get:
+      consumes:
+      - application/json
+      operationId: SettingGuideGet
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 引导ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.GuideDetail'
+      summary: 获取指定引导
+      tags:
+      - 设置
   /manager/v1/setting/legal:
     post:
       consumes:
@@ -13373,9 +15194,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1017 保存法规
+      summary: 保存法规
       tags:
-      - '[M]管理接口'
+      - 设置
   /manager/v1/setting/legal/{name}:
     get:
       consumes:
@@ -13401,9 +15222,118 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.LegalRes'
-      summary: M1016 获取法规
+      summary: 获取法规
       tags:
-      - '[M]管理接口'
+      - 设置
+  /manager/v1/setting/version:
+    get:
+      consumes:
+      - application/json
+      operationId: SettingVersionList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.Version'
+            type: array
+      summary: 获取版本列表
+      tags:
+      - 设置
+    post:
+      consumes:
+      - application/json
+      operationId: SettingVersionCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.VersionReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建版本
+      tags:
+      - 设置
+  /manager/v1/setting/version/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: SettingVersionDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 版本ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 删除版本
+      tags:
+      - 设置
+    put:
+      consumes:
+      - application/json
+      operationId: SettingVersionModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.VersionModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改版本
+      tags:
+      - 设置
   /manager/v1/stock:
     post:
       consumes:
@@ -13430,9 +15360,9 @@ paths:
             items:
               type: string
             type: array
-      summary: ME001 调拨物资
+      summary: 调拨物资
       tags:
-      - '[M]管理接口'
+      - 库存
   /manager/v1/stock/battery/overview:
     get:
       consumes:
@@ -13485,9 +15415,9 @@ paths:
           description: 使用中数量 = 激活 + 结束寄存 - 寄存 - 退租
           schema:
             $ref: '#/definitions/model.StockBatteryOverviewRes'
-      summary: ME002 电池概览
+      summary: 电池概览
       tags:
-      - '[M]管理接口'
+      - 库存
   /manager/v1/stock/cabinet:
     get:
       consumes:
@@ -13541,9 +15471,9 @@ paths:
                     $ref: '#/definitions/model.StockCabinetListRes'
                   type: array
               type: object
-      summary: ME004 电柜物资列表
+      summary: 电柜物资列表
       tags:
-      - '[M]管理接口'
+      - 库存
   /manager/v1/stock/detail:
     get:
       consumes:
@@ -13657,9 +15587,9 @@ paths:
                     $ref: '#/definitions/model.StockDetailRes'
                   type: array
               type: object
-      summary: ME005 出入库明细
+      summary: 出入库明细
       tags:
-      - '[M]管理接口'
+      - 库存
   /manager/v1/stock/enterprise/list:
     get:
       consumes:
@@ -13733,9 +15663,9 @@ paths:
                     $ref: '#/definitions/model.StockListRes'
                   type: array
               type: object
-      summary: ME006 团签物资列表
+      summary: 团签物资列表
       tags:
-      - '[M]管理接口'
+      - 库存
   /manager/v1/stock/store:
     get:
       consumes:
@@ -13809,9 +15739,9 @@ paths:
                     $ref: '#/definitions/model.StockListRes'
                   type: array
               type: object
-      summary: ME003 门店物资列表
+      summary: 门店物资列表
       tags:
-      - '[M]管理接口'
+      - 库存
   /manager/v1/store:
     get:
       consumes:
@@ -13823,6 +15753,10 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 业务类型 1:领取车辆(租车) 2:维修车辆 3:买车
+        in: query
+        name: businessType
+        type: integer
       - description: 城市
         in: query
         name: cityId
@@ -13831,14 +15765,6 @@ paths:
         in: query
         name: current
         type: integer
-      - description: 是否可以领取车辆, 不携带即为查询所有
-        in: query
-        name: ebikeObtain
-        type: boolean
-      - description: 是否可以维修车辆, 不携带即为查询所有
-        in: query
-        name: ebikeRepair
-        type: boolean
       - description: 门店名称
         in: query
         name: name
@@ -13865,9 +15791,9 @@ paths:
                     $ref: '#/definitions/model.StoreItem'
                   type: array
               type: object
-      summary: M3006 列举门店
+      summary: 列举门店
       tags:
-      - '[M]管理接口'
+      - 门店
     post:
       consumes:
       - application/json
@@ -13891,9 +15817,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StoreItem'
-      summary: M3007 创建门店
+      summary: 创建门店
       tags:
-      - '[M]管理接口'
+      - 门店
   /manager/v1/store/{id}:
     delete:
       consumes:
@@ -13917,9 +15843,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M3009 删除门店
+      summary: 删除门店
       tags:
-      - '[M]管理接口'
+      - 门店
     put:
       consumes:
       - application/json
@@ -13948,9 +15874,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StoreItem'
-      summary: M3008 修改门店
+      summary: 修改门店
       tags:
-      - '[M]管理接口'
+      - 门店
   /manager/v1/subscribe/active:
     post:
       consumes:
@@ -13975,9 +15901,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.AllocateCreateRes'
-      summary: M7009 激活订阅
+      summary: 激活订阅
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/alter:
     post:
       consumes:
@@ -14002,9 +15928,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7004 修改订阅时间
+      summary: 修改订阅时间
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/continue:
     post:
       consumes:
@@ -14029,9 +15955,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7007 继续计费
+      summary: 继续计费
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/ebike/change:
     post:
       consumes:
@@ -14056,9 +15982,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7020 修改订阅车辆
+      summary: 修改订阅车辆
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/ebike/unbind:
     post:
       consumes:
@@ -14083,9 +16009,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7025 解绑骑手电车
+      summary: 解绑骑手电车
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/halt:
     post:
       consumes:
@@ -14110,9 +16036,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7008 强制退租
+      summary: 强制退租
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/pause:
     post:
       consumes:
@@ -14137,9 +16063,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7006 暂停计费
+      summary: 暂停计费
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/reminder:
     get:
       consumes:
@@ -14200,9 +16126,9 @@ paths:
                     $ref: '#/definitions/model.ReminderListRes'
                   type: array
               type: object
-      summary: M7021 催费记录
+      summary: 催费记录
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/suspend:
     post:
       consumes:
@@ -14227,9 +16153,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7014 暂停扣费
+      summary: 暂停扣费
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/subscribe/unsuspend:
     post:
       consumes:
@@ -14254,9 +16180,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7015 继续扣费
+      summary: 继续扣费
       tags:
-      - '[M]管理接口'
+      - 订阅
   /manager/v1/user:
     get:
       consumes:
@@ -14287,9 +16213,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1003 列举管理员
+      summary: 列举管理员
       tags:
-      - '[M]管理接口'
+      - 管理
     post:
       consumes:
       - application/json
@@ -14313,9 +16239,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1002 新增管理员
+      summary: 新增管理员
       tags:
-      - '[M]管理接口'
+      - 管理
   /manager/v1/user/{id}:
     delete:
       consumes:
@@ -14339,9 +16265,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1004 删除管理员
+      summary: 删除管理员
       tags:
-      - '[M]管理接口'
+      - 管理
     put:
       consumes:
       - application/json
@@ -14370,9 +16296,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1005 编辑管理员
+      summary: 编辑管理员
       tags:
-      - '[M]管理接口'
+      - 管理
   /manager/v1/user/profile:
     get:
       consumes:
@@ -14391,9 +16317,9 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.ManagerSigninRes'
-      summary: M1006 管理员信息
+      summary: 管理员信息
       tags:
-      - '[M]管理接口'
+      - 管理
   /manager/v1/user/signin:
     post:
       consumes:
@@ -14409,5 +16335,5 @@ paths:
             $ref: '#/definitions/model.ManagerSigninRes'
       summary: M1001 用户登录
       tags:
-      - '[M]管理接口'
+      - 管理
 swagger: "2.0"

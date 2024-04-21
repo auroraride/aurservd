@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -104,6 +105,20 @@ func (pc *PlanCreate) SetBrandID(u uint64) *PlanCreate {
 func (pc *PlanCreate) SetNillableBrandID(u *uint64) *PlanCreate {
 	if u != nil {
 		pc.SetBrandID(*u)
+	}
+	return pc
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (pc *PlanCreate) SetAgreementID(u uint64) *PlanCreate {
+	pc.mutation.SetAgreementID(u)
+	return pc
+}
+
+// SetNillableAgreementID sets the "agreement_id" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableAgreementID(u *uint64) *PlanCreate {
+	if u != nil {
+		pc.SetAgreementID(*u)
 	}
 	return pc
 }
@@ -254,9 +269,98 @@ func (pc *PlanCreate) SetNillableIntelligent(b *bool) *PlanCreate {
 	return pc
 }
 
+// SetDeposit sets the "deposit" field.
+func (pc *PlanCreate) SetDeposit(b bool) *PlanCreate {
+	pc.mutation.SetDeposit(b)
+	return pc
+}
+
+// SetNillableDeposit sets the "deposit" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableDeposit(b *bool) *PlanCreate {
+	if b != nil {
+		pc.SetDeposit(*b)
+	}
+	return pc
+}
+
+// SetDepositAmount sets the "deposit_amount" field.
+func (pc *PlanCreate) SetDepositAmount(f float64) *PlanCreate {
+	pc.mutation.SetDepositAmount(f)
+	return pc
+}
+
+// SetNillableDepositAmount sets the "deposit_amount" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableDepositAmount(f *float64) *PlanCreate {
+	if f != nil {
+		pc.SetDepositAmount(*f)
+	}
+	return pc
+}
+
+// SetDepositWechatPayscore sets the "deposit_wechat_payscore" field.
+func (pc *PlanCreate) SetDepositWechatPayscore(b bool) *PlanCreate {
+	pc.mutation.SetDepositWechatPayscore(b)
+	return pc
+}
+
+// SetNillableDepositWechatPayscore sets the "deposit_wechat_payscore" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableDepositWechatPayscore(b *bool) *PlanCreate {
+	if b != nil {
+		pc.SetDepositWechatPayscore(*b)
+	}
+	return pc
+}
+
+// SetDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field.
+func (pc *PlanCreate) SetDepositAlipayAuthFreeze(b bool) *PlanCreate {
+	pc.mutation.SetDepositAlipayAuthFreeze(b)
+	return pc
+}
+
+// SetNillableDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableDepositAlipayAuthFreeze(b *bool) *PlanCreate {
+	if b != nil {
+		pc.SetDepositAlipayAuthFreeze(*b)
+	}
+	return pc
+}
+
+// SetDepositContract sets the "deposit_contract" field.
+func (pc *PlanCreate) SetDepositContract(b bool) *PlanCreate {
+	pc.mutation.SetDepositContract(b)
+	return pc
+}
+
+// SetNillableDepositContract sets the "deposit_contract" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableDepositContract(b *bool) *PlanCreate {
+	if b != nil {
+		pc.SetDepositContract(*b)
+	}
+	return pc
+}
+
+// SetDepositPay sets the "deposit_pay" field.
+func (pc *PlanCreate) SetDepositPay(b bool) *PlanCreate {
+	pc.mutation.SetDepositPay(b)
+	return pc
+}
+
+// SetNillableDepositPay sets the "deposit_pay" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableDepositPay(b *bool) *PlanCreate {
+	if b != nil {
+		pc.SetDepositPay(*b)
+	}
+	return pc
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (pc *PlanCreate) SetBrand(e *EbikeBrand) *PlanCreate {
 	return pc.SetBrandID(e.ID)
+}
+
+// SetAgreement sets the "agreement" edge to the Agreement entity.
+func (pc *PlanCreate) SetAgreement(a *Agreement) *PlanCreate {
+	return pc.SetAgreementID(a.ID)
 }
 
 // AddCityIDs adds the "cities" edge to the City entity by IDs.
@@ -372,6 +476,26 @@ func (pc *PlanCreate) defaults() error {
 		v := plan.DefaultIntelligent
 		pc.mutation.SetIntelligent(v)
 	}
+	if _, ok := pc.mutation.Deposit(); !ok {
+		v := plan.DefaultDeposit
+		pc.mutation.SetDeposit(v)
+	}
+	if _, ok := pc.mutation.DepositWechatPayscore(); !ok {
+		v := plan.DefaultDepositWechatPayscore
+		pc.mutation.SetDepositWechatPayscore(v)
+	}
+	if _, ok := pc.mutation.DepositAlipayAuthFreeze(); !ok {
+		v := plan.DefaultDepositAlipayAuthFreeze
+		pc.mutation.SetDepositAlipayAuthFreeze(v)
+	}
+	if _, ok := pc.mutation.DepositContract(); !ok {
+		v := plan.DefaultDepositContract
+		pc.mutation.SetDepositContract(v)
+	}
+	if _, ok := pc.mutation.DepositPay(); !ok {
+		v := plan.DefaultDepositPay
+		pc.mutation.SetDepositPay(v)
+	}
 	return nil
 }
 
@@ -412,6 +536,9 @@ func (pc *PlanCreate) check() error {
 	}
 	if _, ok := pc.mutation.Intelligent(); !ok {
 		return &ValidationError{Name: "intelligent", err: errors.New(`ent: missing required field "Plan.intelligent"`)}
+	}
+	if _, ok := pc.mutation.Deposit(); !ok {
+		return &ValidationError{Name: "deposit", err: errors.New(`ent: missing required field "Plan.deposit"`)}
 	}
 	return nil
 }
@@ -520,6 +647,30 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 		_spec.SetField(plan.FieldIntelligent, field.TypeBool, value)
 		_node.Intelligent = value
 	}
+	if value, ok := pc.mutation.Deposit(); ok {
+		_spec.SetField(plan.FieldDeposit, field.TypeBool, value)
+		_node.Deposit = value
+	}
+	if value, ok := pc.mutation.DepositAmount(); ok {
+		_spec.SetField(plan.FieldDepositAmount, field.TypeFloat64, value)
+		_node.DepositAmount = value
+	}
+	if value, ok := pc.mutation.DepositWechatPayscore(); ok {
+		_spec.SetField(plan.FieldDepositWechatPayscore, field.TypeBool, value)
+		_node.DepositWechatPayscore = value
+	}
+	if value, ok := pc.mutation.DepositAlipayAuthFreeze(); ok {
+		_spec.SetField(plan.FieldDepositAlipayAuthFreeze, field.TypeBool, value)
+		_node.DepositAlipayAuthFreeze = value
+	}
+	if value, ok := pc.mutation.DepositContract(); ok {
+		_spec.SetField(plan.FieldDepositContract, field.TypeBool, value)
+		_node.DepositContract = value
+	}
+	if value, ok := pc.mutation.DepositPay(); ok {
+		_spec.SetField(plan.FieldDepositPay, field.TypeBool, value)
+		_node.DepositPay = value
+	}
 	if nodes := pc.mutation.BrandIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -535,6 +686,23 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.BrandID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.AgreementIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   plan.AgreementTable,
+			Columns: []string{plan.AgreementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agreement.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AgreementID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := pc.mutation.CitiesIDs(); len(nodes) > 0 {
@@ -735,6 +903,24 @@ func (u *PlanUpsert) UpdateBrandID() *PlanUpsert {
 // ClearBrandID clears the value of the "brand_id" field.
 func (u *PlanUpsert) ClearBrandID() *PlanUpsert {
 	u.SetNull(plan.FieldBrandID)
+	return u
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (u *PlanUpsert) SetAgreementID(v uint64) *PlanUpsert {
+	u.Set(plan.FieldAgreementID, v)
+	return u
+}
+
+// UpdateAgreementID sets the "agreement_id" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateAgreementID() *PlanUpsert {
+	u.SetExcluded(plan.FieldAgreementID)
+	return u
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (u *PlanUpsert) ClearAgreementID() *PlanUpsert {
+	u.SetNull(plan.FieldAgreementID)
 	return u
 }
 
@@ -984,6 +1170,114 @@ func (u *PlanUpsert) UpdateIntelligent() *PlanUpsert {
 	return u
 }
 
+// SetDeposit sets the "deposit" field.
+func (u *PlanUpsert) SetDeposit(v bool) *PlanUpsert {
+	u.Set(plan.FieldDeposit, v)
+	return u
+}
+
+// UpdateDeposit sets the "deposit" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateDeposit() *PlanUpsert {
+	u.SetExcluded(plan.FieldDeposit)
+	return u
+}
+
+// SetDepositAmount sets the "deposit_amount" field.
+func (u *PlanUpsert) SetDepositAmount(v float64) *PlanUpsert {
+	u.Set(plan.FieldDepositAmount, v)
+	return u
+}
+
+// UpdateDepositAmount sets the "deposit_amount" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateDepositAmount() *PlanUpsert {
+	u.SetExcluded(plan.FieldDepositAmount)
+	return u
+}
+
+// AddDepositAmount adds v to the "deposit_amount" field.
+func (u *PlanUpsert) AddDepositAmount(v float64) *PlanUpsert {
+	u.Add(plan.FieldDepositAmount, v)
+	return u
+}
+
+// ClearDepositAmount clears the value of the "deposit_amount" field.
+func (u *PlanUpsert) ClearDepositAmount() *PlanUpsert {
+	u.SetNull(plan.FieldDepositAmount)
+	return u
+}
+
+// SetDepositWechatPayscore sets the "deposit_wechat_payscore" field.
+func (u *PlanUpsert) SetDepositWechatPayscore(v bool) *PlanUpsert {
+	u.Set(plan.FieldDepositWechatPayscore, v)
+	return u
+}
+
+// UpdateDepositWechatPayscore sets the "deposit_wechat_payscore" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateDepositWechatPayscore() *PlanUpsert {
+	u.SetExcluded(plan.FieldDepositWechatPayscore)
+	return u
+}
+
+// ClearDepositWechatPayscore clears the value of the "deposit_wechat_payscore" field.
+func (u *PlanUpsert) ClearDepositWechatPayscore() *PlanUpsert {
+	u.SetNull(plan.FieldDepositWechatPayscore)
+	return u
+}
+
+// SetDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field.
+func (u *PlanUpsert) SetDepositAlipayAuthFreeze(v bool) *PlanUpsert {
+	u.Set(plan.FieldDepositAlipayAuthFreeze, v)
+	return u
+}
+
+// UpdateDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateDepositAlipayAuthFreeze() *PlanUpsert {
+	u.SetExcluded(plan.FieldDepositAlipayAuthFreeze)
+	return u
+}
+
+// ClearDepositAlipayAuthFreeze clears the value of the "deposit_alipay_auth_freeze" field.
+func (u *PlanUpsert) ClearDepositAlipayAuthFreeze() *PlanUpsert {
+	u.SetNull(plan.FieldDepositAlipayAuthFreeze)
+	return u
+}
+
+// SetDepositContract sets the "deposit_contract" field.
+func (u *PlanUpsert) SetDepositContract(v bool) *PlanUpsert {
+	u.Set(plan.FieldDepositContract, v)
+	return u
+}
+
+// UpdateDepositContract sets the "deposit_contract" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateDepositContract() *PlanUpsert {
+	u.SetExcluded(plan.FieldDepositContract)
+	return u
+}
+
+// ClearDepositContract clears the value of the "deposit_contract" field.
+func (u *PlanUpsert) ClearDepositContract() *PlanUpsert {
+	u.SetNull(plan.FieldDepositContract)
+	return u
+}
+
+// SetDepositPay sets the "deposit_pay" field.
+func (u *PlanUpsert) SetDepositPay(v bool) *PlanUpsert {
+	u.Set(plan.FieldDepositPay, v)
+	return u
+}
+
+// UpdateDepositPay sets the "deposit_pay" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateDepositPay() *PlanUpsert {
+	u.SetExcluded(plan.FieldDepositPay)
+	return u
+}
+
+// ClearDepositPay clears the value of the "deposit_pay" field.
+func (u *PlanUpsert) ClearDepositPay() *PlanUpsert {
+	u.SetNull(plan.FieldDepositPay)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1127,6 +1421,27 @@ func (u *PlanUpsertOne) UpdateBrandID() *PlanUpsertOne {
 func (u *PlanUpsertOne) ClearBrandID() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearBrandID()
+	})
+}
+
+// SetAgreementID sets the "agreement_id" field.
+func (u *PlanUpsertOne) SetAgreementID(v uint64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetAgreementID(v)
+	})
+}
+
+// UpdateAgreementID sets the "agreement_id" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateAgreementID() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateAgreementID()
+	})
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (u *PlanUpsertOne) ClearAgreementID() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearAgreementID()
 	})
 }
 
@@ -1414,6 +1729,132 @@ func (u *PlanUpsertOne) SetIntelligent(v bool) *PlanUpsertOne {
 func (u *PlanUpsertOne) UpdateIntelligent() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateIntelligent()
+	})
+}
+
+// SetDeposit sets the "deposit" field.
+func (u *PlanUpsertOne) SetDeposit(v bool) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDeposit(v)
+	})
+}
+
+// UpdateDeposit sets the "deposit" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateDeposit() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDeposit()
+	})
+}
+
+// SetDepositAmount sets the "deposit_amount" field.
+func (u *PlanUpsertOne) SetDepositAmount(v float64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDepositAmount(v)
+	})
+}
+
+// AddDepositAmount adds v to the "deposit_amount" field.
+func (u *PlanUpsertOne) AddDepositAmount(v float64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.AddDepositAmount(v)
+	})
+}
+
+// UpdateDepositAmount sets the "deposit_amount" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateDepositAmount() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDepositAmount()
+	})
+}
+
+// ClearDepositAmount clears the value of the "deposit_amount" field.
+func (u *PlanUpsertOne) ClearDepositAmount() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDepositAmount()
+	})
+}
+
+// SetDepositWechatPayscore sets the "deposit_wechat_payscore" field.
+func (u *PlanUpsertOne) SetDepositWechatPayscore(v bool) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDepositWechatPayscore(v)
+	})
+}
+
+// UpdateDepositWechatPayscore sets the "deposit_wechat_payscore" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateDepositWechatPayscore() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDepositWechatPayscore()
+	})
+}
+
+// ClearDepositWechatPayscore clears the value of the "deposit_wechat_payscore" field.
+func (u *PlanUpsertOne) ClearDepositWechatPayscore() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDepositWechatPayscore()
+	})
+}
+
+// SetDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field.
+func (u *PlanUpsertOne) SetDepositAlipayAuthFreeze(v bool) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDepositAlipayAuthFreeze(v)
+	})
+}
+
+// UpdateDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateDepositAlipayAuthFreeze() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDepositAlipayAuthFreeze()
+	})
+}
+
+// ClearDepositAlipayAuthFreeze clears the value of the "deposit_alipay_auth_freeze" field.
+func (u *PlanUpsertOne) ClearDepositAlipayAuthFreeze() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDepositAlipayAuthFreeze()
+	})
+}
+
+// SetDepositContract sets the "deposit_contract" field.
+func (u *PlanUpsertOne) SetDepositContract(v bool) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDepositContract(v)
+	})
+}
+
+// UpdateDepositContract sets the "deposit_contract" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateDepositContract() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDepositContract()
+	})
+}
+
+// ClearDepositContract clears the value of the "deposit_contract" field.
+func (u *PlanUpsertOne) ClearDepositContract() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDepositContract()
+	})
+}
+
+// SetDepositPay sets the "deposit_pay" field.
+func (u *PlanUpsertOne) SetDepositPay(v bool) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDepositPay(v)
+	})
+}
+
+// UpdateDepositPay sets the "deposit_pay" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateDepositPay() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDepositPay()
+	})
+}
+
+// ClearDepositPay clears the value of the "deposit_pay" field.
+func (u *PlanUpsertOne) ClearDepositPay() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDepositPay()
 	})
 }
 
@@ -1729,6 +2170,27 @@ func (u *PlanUpsertBulk) ClearBrandID() *PlanUpsertBulk {
 	})
 }
 
+// SetAgreementID sets the "agreement_id" field.
+func (u *PlanUpsertBulk) SetAgreementID(v uint64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetAgreementID(v)
+	})
+}
+
+// UpdateAgreementID sets the "agreement_id" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateAgreementID() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateAgreementID()
+	})
+}
+
+// ClearAgreementID clears the value of the "agreement_id" field.
+func (u *PlanUpsertBulk) ClearAgreementID() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearAgreementID()
+	})
+}
+
 // SetModel sets the "model" field.
 func (u *PlanUpsertBulk) SetModel(v string) *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
@@ -2013,6 +2475,132 @@ func (u *PlanUpsertBulk) SetIntelligent(v bool) *PlanUpsertBulk {
 func (u *PlanUpsertBulk) UpdateIntelligent() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateIntelligent()
+	})
+}
+
+// SetDeposit sets the "deposit" field.
+func (u *PlanUpsertBulk) SetDeposit(v bool) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDeposit(v)
+	})
+}
+
+// UpdateDeposit sets the "deposit" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateDeposit() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDeposit()
+	})
+}
+
+// SetDepositAmount sets the "deposit_amount" field.
+func (u *PlanUpsertBulk) SetDepositAmount(v float64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDepositAmount(v)
+	})
+}
+
+// AddDepositAmount adds v to the "deposit_amount" field.
+func (u *PlanUpsertBulk) AddDepositAmount(v float64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.AddDepositAmount(v)
+	})
+}
+
+// UpdateDepositAmount sets the "deposit_amount" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateDepositAmount() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDepositAmount()
+	})
+}
+
+// ClearDepositAmount clears the value of the "deposit_amount" field.
+func (u *PlanUpsertBulk) ClearDepositAmount() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDepositAmount()
+	})
+}
+
+// SetDepositWechatPayscore sets the "deposit_wechat_payscore" field.
+func (u *PlanUpsertBulk) SetDepositWechatPayscore(v bool) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDepositWechatPayscore(v)
+	})
+}
+
+// UpdateDepositWechatPayscore sets the "deposit_wechat_payscore" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateDepositWechatPayscore() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDepositWechatPayscore()
+	})
+}
+
+// ClearDepositWechatPayscore clears the value of the "deposit_wechat_payscore" field.
+func (u *PlanUpsertBulk) ClearDepositWechatPayscore() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDepositWechatPayscore()
+	})
+}
+
+// SetDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field.
+func (u *PlanUpsertBulk) SetDepositAlipayAuthFreeze(v bool) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDepositAlipayAuthFreeze(v)
+	})
+}
+
+// UpdateDepositAlipayAuthFreeze sets the "deposit_alipay_auth_freeze" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateDepositAlipayAuthFreeze() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDepositAlipayAuthFreeze()
+	})
+}
+
+// ClearDepositAlipayAuthFreeze clears the value of the "deposit_alipay_auth_freeze" field.
+func (u *PlanUpsertBulk) ClearDepositAlipayAuthFreeze() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDepositAlipayAuthFreeze()
+	})
+}
+
+// SetDepositContract sets the "deposit_contract" field.
+func (u *PlanUpsertBulk) SetDepositContract(v bool) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDepositContract(v)
+	})
+}
+
+// UpdateDepositContract sets the "deposit_contract" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateDepositContract() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDepositContract()
+	})
+}
+
+// ClearDepositContract clears the value of the "deposit_contract" field.
+func (u *PlanUpsertBulk) ClearDepositContract() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDepositContract()
+	})
+}
+
+// SetDepositPay sets the "deposit_pay" field.
+func (u *PlanUpsertBulk) SetDepositPay(v bool) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDepositPay(v)
+	})
+}
+
+// UpdateDepositPay sets the "deposit_pay" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateDepositPay() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDepositPay()
+	})
+}
+
+// ClearDepositPay clears the value of the "deposit_pay" field.
+func (u *PlanUpsertBulk) ClearDepositPay() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDepositPay()
 	})
 }
 

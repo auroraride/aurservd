@@ -122,12 +122,10 @@ type CabinetEdges struct {
 // CityOrErr returns the City value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CabinetEdges) CityOrErr() (*City, error) {
-	if e.loadedTypes[0] {
-		if e.City == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: city.Label}
-		}
+	if e.City != nil {
 		return e.City, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: city.Label}
 	}
 	return nil, &NotLoadedError{edge: "city"}
 }
@@ -135,12 +133,10 @@ func (e CabinetEdges) CityOrErr() (*City, error) {
 // BranchOrErr returns the Branch value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CabinetEdges) BranchOrErr() (*Branch, error) {
-	if e.loadedTypes[1] {
-		if e.Branch == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: branch.Label}
-		}
+	if e.Branch != nil {
 		return e.Branch, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: branch.Label}
 	}
 	return nil, &NotLoadedError{edge: "branch"}
 }
@@ -202,12 +198,10 @@ func (e CabinetEdges) BatteryFlowsOrErr() ([]*BatteryFlow, error) {
 // StationOrErr returns the Station value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CabinetEdges) StationOrErr() (*EnterpriseStation, error) {
-	if e.loadedTypes[8] {
-		if e.Station == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprisestation.Label}
-		}
+	if e.Station != nil {
 		return e.Station, nil
+	} else if e.loadedTypes[8] {
+		return nil, &NotFoundError{label: enterprisestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "station"}
 }
@@ -215,12 +209,10 @@ func (e CabinetEdges) StationOrErr() (*EnterpriseStation, error) {
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CabinetEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[9] {
-		if e.Enterprise == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprise.Label}
-		}
+	if e.Enterprise != nil {
 		return e.Enterprise, nil
+	} else if e.loadedTypes[9] {
+		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
 }

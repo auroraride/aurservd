@@ -39,18 +39,19 @@ func (Person) Fields() []ent.Field {
 		field.String("id_card_portrait").Optional().Comment("证件人像面"),
 		field.String("id_card_national").Optional().Comment("证件国徽面"),
 		field.String("auth_face").Optional().Comment("实名认证人脸照片"),
-		field.JSON("auth_result", &model.FaceVerifyResult{}).Optional().Comment("实名认证结果详情"),
-		field.Time("auth_at").Nillable().Optional().Comment("实名认证结果获取时间"),
+		field.JSON("auth_result", &model.BaiduFaceVerifyResult{}).Optional().Comment("百度实名认证结果详情"),
+		field.Time("auth_at").Nillable().Optional().Comment("百度实名认证结果获取时间"),
 		field.String("esign_account_id").Optional().Comment("E签宝账户ID"),
 		field.String("baidu_verify_token").Optional().Comment("百度人脸verify_token"),
 		field.String("baidu_log_id").Optional().Comment("百度人脸log_id"),
+		field.JSON("face_verify_result", &model.PersonFaceVerifyResult{}).Optional().Comment("人身核验核验结果"),
 	}
 }
 
 // Edges of the Person.
 func (Person) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("rider", Rider.Type),
+		edge.To("riders", Rider.Type),
 	}
 }
 

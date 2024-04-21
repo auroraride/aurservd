@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
@@ -191,7 +192,14 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 			SetNotes(req.Notes).
 			SetNillableBrandID(brandID).
 			SetType(req.Type.Value()).
-			SetIntelligent(*req.Intelligent)
+			SetIntelligent(*req.Intelligent).
+			SetNillableDeposit(req.Deposit).
+			SetNillableDepositAmount(req.DepositAmount).
+			SetNillableDepositWechatPayscore(req.DepositWechatPayscore).
+			SetNillableDepositAlipayAuthFreeze(req.DepositAlipayAuthFreeze).
+			SetNillableDepositContract(req.DepositContract).
+			SetNillableDepositPay(req.DepositPay).
+			SetNillableAgreementID(req.AgreementID)
 
 		for i, cl := range req.Complexes {
 			c := creator.Clone().
@@ -315,17 +323,50 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 	})
 
 	res = model.PlanListRes{
-		ID:          item.ID,
-		Type:        model.PlanType(item.Type),
-		Name:        item.Name,
-		Enable:      item.Enable,
-		Start:       item.Start.Format(carbon.DateLayout),
-		End:         item.End.Format(carbon.DateLayout),
-		Cities:      make([]model.City, len(item.Edges.Cities)),
-		Complexes:   make([]*model.PlanComplexes, 0),
-		Notes:       item.Notes,
-		Intelligent: item.Intelligent,
-		Model:       item.Model,
+		ID:                      item.ID,
+		Type:                    model.PlanType(item.Type),
+		Name:                    item.Name,
+		Enable:                  item.Enable,
+		Start:                   item.Start.Format(carbon.DateLayout),
+		End:                     item.End.Format(carbon.DateLayout),
+		Cities:                  make([]model.City, len(item.Edges.Cities)),
+		Complexes:               make([]*model.PlanComplexes, 0),
+		Notes:                   item.Notes,
+		Intelligent:             item.Intelligent,
+		Model:                   item.Model,
+		DepositAlipayAuthFreeze: item.DepositAlipayAuthFreeze,
+		DepositWechatPayscore:   item.DepositWechatPayscore,
+		DepositPay:              item.DepositPay,
+		DepositContract:         item.DepositContract,
+		Deposit:                 item.Deposit,
+		DepositAmount:           item.DepositAmount,
+	}
+
+	// 查询个签默认协议
+	var defaultAgreement *ent.Agreement
+	defaultAgreement, _ = ent.Database.Agreement.QueryNotDeleted().
+		Where(
+			agreement.UserType(model.AgreementUserTypePersonal.Value()),
+			agreement.IsDefault(true),
+		).First(s.ctx)
+
+	if item.Edges.Agreement != nil {
+		res.Agreement = &model.Agreement{
+			ID:            item.Edges.Agreement.ID,
+			Name:          item.Edges.Agreement.Name,
+			URL:           item.Edges.Agreement.URL,
+			Hash:          item.Edges.Agreement.Hash,
+			ForceReadTime: item.Edges.Agreement.ForceReadTime,
+		}
+	} else if defaultAgreement != nil {
+		// 如果没有设置协议, 则使用默认协议
+		res.Agreement = &model.Agreement{
+			ID:            defaultAgreement.ID,
+			Name:          defaultAgreement.Name,
+			URL:           defaultAgreement.URL,
+			Hash:          defaultAgreement.Hash,
+			ForceReadTime: defaultAgreement.ForceReadTime,
+		}
 	}
 
 	// 电车型号
@@ -409,6 +450,7 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
 			})
 		}).
 		WithBrand().
+		WithAgreement().
 		Order(ent.Desc(plan.FieldStart), ent.Asc(plan.FieldEnd))
 
 	if req.Intelligent != nil {
@@ -431,6 +473,10 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
 	}
 	if req.BrandID != nil {
 		q.Where(plan.BrandID(*req.BrandID))
+	}
+
+	if req.Deposit != nil {
+		q.Where(plan.Deposit(*req.Deposit))
 	}
 
 	return model.ParsePaginationResponse(
@@ -520,6 +566,7 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 
 	// 需缴纳押金金额
 	deposit := NewRider().Deposit(s.rider.ID)
+
 	today := carbon.Now().StartOfDay().ToStdTime()
 
 	items := s.orm.QueryNotDeleted().
@@ -533,6 +580,7 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 		).
 		WithBrand().
 		WithCities().
+		WithAgreement().
 		Order(ent.Asc(plan.FieldDays)).
 		AllX(s.ctx)
 
@@ -542,6 +590,14 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 
 	serv := NewPlanIntroduce()
 	intro := serv.QueryMap()
+
+	// 查询个签默认协议
+	var defaultAgreement *ent.Agreement
+	defaultAgreement, _ = ent.Database.Agreement.QueryNotDeleted().
+		Where(
+			agreement.UserType(model.AgreementUserTypePersonal.Value()),
+			agreement.IsDefault(true),
+		).First(s.ctx)
 
 	t, _ := NewOrder().PreconditionNewly(sub)
 
@@ -569,15 +625,40 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 			ramount = item.DiscountNewly
 		}
 
-		*m.Children = append(*m.Children, model.PlanDaysPriceOption{
-			ID:            item.ID,
-			Name:          item.Name,
-			Price:         item.Price,
-			Days:          item.Days,
-			Original:      item.Original,
-			DiscountNewly: ramount,
-			HasEbike:      item.BrandID != nil,
-		})
+		planDaysPriceOption := model.PlanDaysPriceOption{
+			ID:                      item.ID,
+			Name:                    item.Name,
+			Price:                   item.Price,
+			Days:                    item.Days,
+			Original:                item.Original,
+			DiscountNewly:           ramount,
+			HasEbike:                item.BrandID != nil,
+			Deposit:                 item.Deposit,
+			DepositAmount:           item.DepositAmount,
+			DepositWechatPayscore:   item.DepositWechatPayscore,
+			DepositAlipayAuthFreeze: item.DepositAlipayAuthFreeze,
+			DepositContract:         item.DepositContract,
+			DepositPay:              item.DepositPay,
+		}
+		if item.Edges.Agreement != nil {
+			planDaysPriceOption.Agreement = &model.Agreement{
+				ID:            item.Edges.Agreement.ID,
+				Name:          item.Edges.Agreement.Name,
+				URL:           item.Edges.Agreement.URL,
+				Hash:          item.Edges.Agreement.Hash,
+				ForceReadTime: item.Edges.Agreement.ForceReadTime,
+			}
+		} else if defaultAgreement != nil {
+			planDaysPriceOption.Agreement = &model.Agreement{
+				ID:            defaultAgreement.ID,
+				Name:          defaultAgreement.Name,
+				URL:           defaultAgreement.URL,
+				Hash:          defaultAgreement.Hash,
+				ForceReadTime: defaultAgreement.ForceReadTime,
+			}
+		}
+
+		*m.Children = append(*m.Children, planDaysPriceOption)
 
 		if item.BrandID != nil {
 			var b *model.PlanEbikeBrandOption

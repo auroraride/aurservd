@@ -260,6 +260,15 @@ definitions:
       balance:
         description: 可用余额
         type: number
+      companyName:
+        description: 公司名称
+        type: string
+      contactName:
+        description: 企业联系人
+        type: string
+      contactPhone:
+        description: 企业联系人电话
+        type: string
       contract:
         description: 合同URL, 可能为空
         type: string
@@ -373,8 +382,10 @@ definitions:
   model.AgentSigninReq:
     properties:
       code:
+        description: 验证码
         type: string
       phone:
+        description: 电话
         type: string
       signinType:
         enum:
@@ -382,6 +393,7 @@ definitions:
         - 2
         type: integer
       smsId:
+        description: 短信ID
         type: string
     required:
     - signinType
@@ -452,23 +464,27 @@ definitions:
         description: 电车ID
         type: integer
       id:
+        description: 订阅ID
         type: integer
     required:
     - id
     type: object
-  model.AliyunOssStsRes:
+  model.Agreement:
     properties:
-      accessKeyId:
+      forceReadTime:
+        description: 强制阅读时间
+        type: integer
+      hash:
+        description: hash
         type: string
-      accessKeySecret:
+      id:
+        description: ID
+        type: integer
+      name:
+        description: 协议名称
         type: string
-      bucket:
-        type: string
-      expiration:
-        type: string
-      region:
-        type: string
-      stsToken:
+      url:
+        description: URL
         type: string
     type: object
   model.AllocateCreateRes:
@@ -643,6 +659,9 @@ definitions:
       name:
         description: 骑手姓名
         type: string
+      operator:
+        description: 操作人
+        type: string
       phone:
         description: 骑手电话
         type: string
@@ -667,10 +686,22 @@ definitions:
         description: 代理商ID
         type: integer
       cabinetId:
+        description: 电柜ID
         type: integer
+      depositAmount:
+        description: 退押金金额(后台使用)
+        type: number
       id:
+        description: 订阅ID
         type: integer
+      refundDeposit:
+        description: 是否退押金, 是否退押金(后台使用)
+        type: boolean
+      remark:
+        description: 备注
+        type: string
       storeId:
+        description: 门店ID
         type: integer
     required:
     - id
@@ -680,7 +711,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)'
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
         enum:
         - KAIXIN
         - YUNDONG
@@ -892,20 +923,6 @@ definitions:
       agent:
         description: 是否代理商模式
         type: boolean
-      days:
-        description: 代理商时间选项
-        items:
-          type: integer
-        type: array
-      enterpriseContactName:
-        description: 团签联系人
-        type: string
-      enterpriseContactPhone:
-        description: 团签联系电话
-        type: string
-      enterpriseName:
-        description: 团签名称
-        type: string
       id:
         description: 企业ID
         type: integer
@@ -937,6 +954,10 @@ definitions:
     type: object
   model.EnterprisePriceWithCity:
     properties:
+      agreement:
+        allOf:
+        - $ref: '#/definitions/model.Agreement'
+        description: 协议
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -997,15 +1018,19 @@ definitions:
         description: 天数, 仅代理商需要
         type: integer
       enterpriseId:
+        description: 企业ID
         type: integer
       name:
+        description: 姓名
         type: string
       phone:
+        description: 电话号
         type: string
       priceId:
         description: 价格ID, 仅代理商需要
         type: integer
       stationId:
+        description: 站点ID
         type: integer
     required:
     - enterpriseId
@@ -1083,9 +1108,6 @@ definitions:
       content:
         description: 反馈内容
         type: string
-      enterpriseID:
-        description: 反馈用户团签id
-        type: integer
       type:
         description: 反馈类型
         type: integer
@@ -1094,6 +1116,9 @@ definitions:
         items:
           type: string
         type: array
+    required:
+    - content
+    - type
     type: object
   model.ItemListRes:
     properties:
@@ -1298,24 +1323,6 @@ definitions:
         description: 选择项值 (ID)
         type: integer
     type: object
-  model.SmsReq:
-    properties:
-      captchaCode:
-        description: captcha 验证码
-        type: string
-      phone:
-        description: 手机号
-        type: string
-    required:
-    - captchaCode
-    - phone
-    type: object
-  model.SmsRes:
-    properties:
-      id:
-        description: 任务ID
-        type: string
-    type: object
   model.StatementBillHistoricalListRes:
     properties:
       cost:
@@ -1506,7 +1513,7 @@ definitions:
           type: integer
         type: array
       status:
-        description: 1:通过 2:拒绝
+        description: 审批状态, 1:通过 2:拒绝
         enum:
         - 1
         - 2
@@ -1728,7 +1735,8 @@ paths:
         in: query
         name: enterpriseId
         type: integer
-      - in: query
+      - description: 流水号
+        in: query
         minLength: 4
         name: serial
         required: true
@@ -1861,11 +1869,13 @@ paths:
         name: X-Agent-Token
         required: true
         type: string
-      - in: query
+      - description: 车辆关键词 (编码或牌照)
+        in: query
         name: keyword
         required: true
         type: string
-      - in: query
+      - description: 站点ID (一般是subscribe.stationId)
+        in: query
         name: stationId
         required: true
         type: integer
@@ -1900,7 +1910,8 @@ paths:
         in: query
         name: end
         type: string
-      - in: query
+      - description: 企业ID
+        in: query
         name: enterpriseId
         type: integer
       - description: 每页数据, 默认20
@@ -2228,19 +2239,22 @@ paths:
         name: X-Agent-Token
         required: true
         type: string
-      - in: query
+      - description: 电柜ID
+        in: query
         name: id
         required: true
         type: integer
-      - in: query
+      - description: 纬度
+        in: query
         name: lat
         required: true
         type: number
-      - in: query
+      - description: 经度
+        in: query
         name: lng
         required: true
         type: number
-      - description: 从`1`开始
+      - description: 仓位序号, 从`1`开始
         in: query
         name: ordinal
         required: true
@@ -2302,19 +2316,23 @@ paths:
         name: X-Agent-Token
         required: true
         type: string
-      - in: query
+      - description: 电柜ID
+        in: query
         name: id
         required: true
         type: integer
-      - in: query
+      - description: 纬度
+        in: query
         name: lat
         required: true
         type: number
-      - in: query
+      - description: 经度
+        in: query
         name: lng
         required: true
         type: number
-      - in: query
+      - description: 是否维护
+        in: query
         name: maintain
         required: true
         type: boolean
@@ -3128,68 +3146,4 @@ paths:
       summary: A7004 强制退租
       tags:
       - '[A]代理接口'
-  /common/captcha:
-    get:
-      consumes:
-      - image/png
-      description: 生成的图片验证码有效时间为10分钟
-      operationId: CaptchaGenerate
-      produces:
-      - image/png
-      responses:
-        "200":
-          description: ok
-          headers:
-            X-Captcha-Id  true:
-              description: Captcha验证码ID
-              type: string
-          schema:
-            type: string
-      summary: C1 生成图片验证码
-      tags:
-      - Communal - 公共接口
-  /common/oss/token:
-    get:
-      consumes:
-      - application/json
-      description: 上传文件必须，单次获取有效时间为1个小时
-      operationId: AliyunOssToken
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.AliyunOssStsRes'
-      summary: C3 获取阿里云oss临时凭证
-      tags:
-      - Communal - 公共接口
-  /common/sms:
-    post:
-      consumes:
-      - application/json
-      description: 上传文件必须，单次获取有效时间为1个小时
-      operationId: SendSmsCode
-      parameters:
-      - description: 请求参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.SmsReq'
-      - description: Captcha验证码ID
-        in: header
-        name: X-Captcha-Id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.SmsRes'
-      summary: C2 发送短信验证码
-      tags:
-      - Communal - 公共接口
 swagger: "2.0"

@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/questioncategory"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -43,7 +44,8 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
 			pq.Where(plan.DeletedAtIsNil())
 		}).
 		WithCities().
-		WithBrand()
+		WithBrand().
+		WithAgreement()
 
 	if req.Effect != nil && *req.Effect != 0 {
 		now := time.Now()
@@ -549,5 +551,22 @@ func (s *selectionService) BatterySerialSearch(req *model.BatterySearchReq) (res
 		})
 	}
 
+	return
+}
+
+// QuestionCategory 筛选问题分类
+func (s *selectionService) QuestionCategory() (items []model.SelectOption) {
+	res, _ := ent.Database.QuestionCategory.QueryNotDeleted().Order(ent.Desc(questioncategory.FieldSort)).All(s.ctx)
+	items = make([]model.SelectOption, len(res))
+	for i, r := range res {
+		items[i] = model.SelectOption{
+			Value: r.ID,
+			Label: r.Name,
+		}
+	}
+	items = append(items, model.SelectOption{
+		Value: 0,
+		Label: "其他",
+	})
 	return
 }

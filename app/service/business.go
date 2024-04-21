@@ -365,7 +365,7 @@ func (s *businessService) detailInfo(item *ent.Business) model.BusinessListRes {
 // ListManager 业务列表 - 后台
 func (s *businessService) ListManager(req *model.BusinessListReq) *model.PaginationRes {
 	q, _ := s.listFilter(req.BusinessFilter)
-	q.WithEmployee().WithCabinet().WithStore().WithAgent()
+	q.WithEmployee().WithCabinet().WithStore().WithAgent().WithPlan()
 
 	return model.ParsePaginationResponse(
 		q,
@@ -589,6 +589,7 @@ func (s *businessService) Export(req *model.BusinessExportReq) model.ExportRes {
 			"骑手",
 			"电话",
 			"骑士卡",
+			"骑士卡类型",
 			"骑士卡天数",
 			"团签",
 			"时间",
@@ -596,7 +597,7 @@ func (s *businessService) Export(req *model.BusinessExportReq) model.ExportRes {
 		rows = append(rows, title)
 		for _, item := range items {
 			detail := s.detailInfo(item)
-			var cab, sto, emp, pla, en string
+			var cab, sto, emp, pla, en, palnType string
 			var days uint
 			if detail.Cabinet != nil {
 				cab = detail.Cabinet.Serial
@@ -607,6 +608,7 @@ func (s *businessService) Export(req *model.BusinessExportReq) model.ExportRes {
 			if detail.Plan != nil {
 				pla = detail.Plan.Name
 				days = detail.Plan.Days
+				palnType = detail.Plan.Type.String()
 			}
 			if detail.Enterprise != nil {
 				en = detail.Enterprise.Name
@@ -623,6 +625,7 @@ func (s *businessService) Export(req *model.BusinessExportReq) model.ExportRes {
 				detail.Name,
 				detail.Phone,
 				pla,
+				palnType,
 				days,
 				en,
 				detail.Time,

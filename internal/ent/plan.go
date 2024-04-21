@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 )
@@ -34,6 +35,8 @@ type Plan struct {
 	Remark string `json:"remark,omitempty"`
 	// BrandID holds the value of the "brand_id" field.
 	BrandID *uint64 `json:"brand_id,omitempty"`
+	// AgreementID holds the value of the "agreement_id" field.
+	AgreementID *uint64 `json:"agreement_id,omitempty"`
 	// 电池型号
 	Model string `json:"model,omitempty"`
 	// 是否启用
@@ -64,6 +67,18 @@ type Plan struct {
 	Notes []string `json:"notes,omitempty"`
 	// 是否智能柜套餐
 	Intelligent bool `json:"intelligent,omitempty"`
+	// 是否开启押金(只对V2版本接口有用)
+	Deposit bool `json:"deposit,omitempty"`
+	// 押金金额
+	DepositAmount float64 `json:"deposit_amount,omitempty"`
+	// 微信支付分免押金
+	DepositWechatPayscore bool `json:"deposit_wechat_payscore,omitempty"`
+	// 预授权信用免押金
+	DepositAlipayAuthFreeze bool `json:"deposit_alipay_auth_freeze,omitempty"`
+	// 合同免押金
+	DepositContract bool `json:"deposit_contract,omitempty"`
+	// 支付押金
+	DepositPay bool `json:"deposit_pay,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlanQuery when eager-loading is set.
 	Edges        PlanEdges `json:"edges"`
@@ -74,6 +89,8 @@ type Plan struct {
 type PlanEdges struct {
 	// Brand holds the value of the brand edge.
 	Brand *EbikeBrand `json:"brand,omitempty"`
+	// Agreement holds the value of the agreement edge.
+	Agreement *Agreement `json:"agreement,omitempty"`
 	// Cities holds the value of the cities edge.
 	Cities []*City `json:"cities,omitempty"`
 	// Parent holds the value of the parent edge.
@@ -84,26 +101,35 @@ type PlanEdges struct {
 	Commissions []*PromotionCommissionPlan `json:"commissions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PlanEdges) BrandOrErr() (*EbikeBrand, error) {
-	if e.loadedTypes[0] {
-		if e.Brand == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: ebikebrand.Label}
-		}
+	if e.Brand != nil {
 		return e.Brand, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: ebikebrand.Label}
 	}
 	return nil, &NotLoadedError{edge: "brand"}
+}
+
+// AgreementOrErr returns the Agreement value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PlanEdges) AgreementOrErr() (*Agreement, error) {
+	if e.Agreement != nil {
+		return e.Agreement, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: agreement.Label}
+	}
+	return nil, &NotLoadedError{edge: "agreement"}
 }
 
 // CitiesOrErr returns the Cities value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlanEdges) CitiesOrErr() ([]*City, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Cities, nil
 	}
 	return nil, &NotLoadedError{edge: "cities"}
@@ -112,12 +138,10 @@ func (e PlanEdges) CitiesOrErr() ([]*City, error) {
 // ParentOrErr returns the Parent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PlanEdges) ParentOrErr() (*Plan, error) {
-	if e.loadedTypes[2] {
-		if e.Parent == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: plan.Label}
-		}
+	if e.Parent != nil {
 		return e.Parent, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: plan.Label}
 	}
 	return nil, &NotLoadedError{edge: "parent"}
 }
@@ -125,7 +149,7 @@ func (e PlanEdges) ParentOrErr() (*Plan, error) {
 // ComplexesOrErr returns the Complexes value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlanEdges) ComplexesOrErr() ([]*Plan, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.Complexes, nil
 	}
 	return nil, &NotLoadedError{edge: "complexes"}
@@ -134,7 +158,7 @@ func (e PlanEdges) ComplexesOrErr() ([]*Plan, error) {
 // CommissionsOrErr returns the Commissions value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlanEdges) CommissionsOrErr() ([]*PromotionCommissionPlan, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.Commissions, nil
 	}
 	return nil, &NotLoadedError{edge: "commissions"}
@@ -147,11 +171,11 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case plan.FieldCreator, plan.FieldLastModifier, plan.FieldNotes:
 			values[i] = new([]byte)
-		case plan.FieldEnable, plan.FieldIntelligent:
+		case plan.FieldEnable, plan.FieldIntelligent, plan.FieldDeposit, plan.FieldDepositWechatPayscore, plan.FieldDepositAlipayAuthFreeze, plan.FieldDepositContract, plan.FieldDepositPay:
 			values[i] = new(sql.NullBool)
-		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal, plan.FieldDiscountNewly:
+		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal, plan.FieldDiscountNewly, plan.FieldDepositAmount:
 			values[i] = new(sql.NullFloat64)
-		case plan.FieldID, plan.FieldBrandID, plan.FieldType, plan.FieldDays, plan.FieldParentID:
+		case plan.FieldID, plan.FieldBrandID, plan.FieldAgreementID, plan.FieldType, plan.FieldDays, plan.FieldParentID:
 			values[i] = new(sql.NullInt64)
 		case plan.FieldRemark, plan.FieldModel, plan.FieldName, plan.FieldDesc:
 			values[i] = new(sql.NullString)
@@ -225,6 +249,13 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.BrandID = new(uint64)
 				*pl.BrandID = uint64(value.Int64)
+			}
+		case plan.FieldAgreementID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field agreement_id", values[i])
+			} else if value.Valid {
+				pl.AgreementID = new(uint64)
+				*pl.AgreementID = uint64(value.Int64)
 			}
 		case plan.FieldModel:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -319,6 +350,42 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.Intelligent = value.Bool
 			}
+		case plan.FieldDeposit:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit", values[i])
+			} else if value.Valid {
+				pl.Deposit = value.Bool
+			}
+		case plan.FieldDepositAmount:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_amount", values[i])
+			} else if value.Valid {
+				pl.DepositAmount = value.Float64
+			}
+		case plan.FieldDepositWechatPayscore:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_wechat_payscore", values[i])
+			} else if value.Valid {
+				pl.DepositWechatPayscore = value.Bool
+			}
+		case plan.FieldDepositAlipayAuthFreeze:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_alipay_auth_freeze", values[i])
+			} else if value.Valid {
+				pl.DepositAlipayAuthFreeze = value.Bool
+			}
+		case plan.FieldDepositContract:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_contract", values[i])
+			} else if value.Valid {
+				pl.DepositContract = value.Bool
+			}
+		case plan.FieldDepositPay:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_pay", values[i])
+			} else if value.Valid {
+				pl.DepositPay = value.Bool
+			}
 		default:
 			pl.selectValues.Set(columns[i], values[i])
 		}
@@ -335,6 +402,11 @@ func (pl *Plan) Value(name string) (ent.Value, error) {
 // QueryBrand queries the "brand" edge of the Plan entity.
 func (pl *Plan) QueryBrand() *EbikeBrandQuery {
 	return NewPlanClient(pl.config).QueryBrand(pl)
+}
+
+// QueryAgreement queries the "agreement" edge of the Plan entity.
+func (pl *Plan) QueryAgreement() *AgreementQuery {
+	return NewPlanClient(pl.config).QueryAgreement(pl)
 }
 
 // QueryCities queries the "cities" edge of the Plan entity.
@@ -405,6 +477,11 @@ func (pl *Plan) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
+	if v := pl.AgreementID; v != nil {
+		builder.WriteString("agreement_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("model=")
 	builder.WriteString(pl.Model)
 	builder.WriteString(", ")
@@ -451,6 +528,24 @@ func (pl *Plan) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("intelligent=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Intelligent))
+	builder.WriteString(", ")
+	builder.WriteString("deposit=")
+	builder.WriteString(fmt.Sprintf("%v", pl.Deposit))
+	builder.WriteString(", ")
+	builder.WriteString("deposit_amount=")
+	builder.WriteString(fmt.Sprintf("%v", pl.DepositAmount))
+	builder.WriteString(", ")
+	builder.WriteString("deposit_wechat_payscore=")
+	builder.WriteString(fmt.Sprintf("%v", pl.DepositWechatPayscore))
+	builder.WriteString(", ")
+	builder.WriteString("deposit_alipay_auth_freeze=")
+	builder.WriteString(fmt.Sprintf("%v", pl.DepositAlipayAuthFreeze))
+	builder.WriteString(", ")
+	builder.WriteString("deposit_contract=")
+	builder.WriteString(fmt.Sprintf("%v", pl.DepositContract))
+	builder.WriteString(", ")
+	builder.WriteString("deposit_pay=")
+	builder.WriteString(fmt.Sprintf("%v", pl.DepositPay))
 	builder.WriteByte(')')
 	return builder.String()
 }

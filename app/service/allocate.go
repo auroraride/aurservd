@@ -94,6 +94,15 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 		snag.Panic("门店和站点不能同时存在")
 	}
 
+	// 车电套餐(V2) 只能由骑手选择的当前门店激活
+	// 后台激活不受限制
+	if s.modifier == nil {
+		if sub.Edges.Plan != nil && sub.Edges.Plan.Type == model.PlanTypeEbikeWithBattery.Value() &&
+			sub.StoreID != nil && params.StoreID != nil && *sub.StoreID != *params.StoreID {
+			snag.Panic("请前往App选择的门店激活或者更改门店")
+		}
+	}
+
 	// 是否需要分配电车
 	if sub.BrandID != nil && !params.EbikeParam.Exists() {
 		snag.Panic("需要分配电车")
@@ -109,6 +118,8 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 	if exists, _ := r.QueryPerson().Where(person.Status(model.PersonAuthenticated.Value())).Exist(s.ctx); !exists {
 		snag.Panic("骑手未实名认证")
 	}
+
+	// todo v2版本合同 单电激活流程更新了（先分配在签约 所以后台激活走不通）
 
 	// 查询是否已签约
 	if exists, _ := ent.Database.Contract.QueryNotDeleted().Where(
@@ -234,6 +245,10 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 
 		if sub.StationID != nil && bike.EbikeInfo.StationID != nil && *sub.StationID != *bike.EbikeInfo.StationID {
 			snag.Panic("车辆站点归属不一致")
+		}
+
+		if bike == nil {
+			snag.Panic("未找到车辆信息")
 		}
 
 		// 比对型号

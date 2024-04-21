@@ -9,9 +9,43 @@ dir() {
 
 ADAPTER="$(dir github.com/auroraride/adapter)"
 
-swag init -g controller/v1/rapi/rapi.go -d ./app,"$ADAPTER" --exclude ./app/service,./app/router,./app/middleware,./app/request,./app/controller/v1/aapi,./app/controller/v1/eapi,./app/controller/v1/mapi,./app/controller/v1/oapi,./app/controller/v1/papi -o ./assets/docs/rider/v1 --md ./wiki
-swag init -g controller/v1/aapi/aapi.go -d ./app,"$ADAPTER" --exclude ./app/service,./app/router,./app/middleware,./app/request,./app/controller/v1/rapi,./app/controller/v1/eapi,./app/controller/v1/mapi,./app/controller/v1/oapi,./app/controller/v1/papi -o ./assets/docs/agent/v1 --md ./wiki
-swag init -g controller/v1/eapi/eapi.go -d ./app,"$ADAPTER" --exclude ./app/service,./app/router,./app/middleware,./app/request,./app/controller/v1/aapi,./app/controller/v1/rapi,./app/controller/v1/mapi,./app/controller/v1/oapi,./app/controller/v1/papi -o ./assets/docs/employee/v1 --md ./wiki
-swag init -g controller/v1/mapi/mapi.go -d ./app,"$ADAPTER" --exclude ./app/service,./app/router,./app/middleware,./app/request,./app/controller/v1/aapi,./app/controller/v1/eapi,./app/controller/v1/rapi,./app/controller/v1/oapi,./app/controller/v1/papi -o ./assets/docs/manager/v1 --md ./wiki
-swag init -g controller/v1/oapi/oapi.go -d ./app,"$ADAPTER" --exclude ./app/service,./app/router,./app/middleware,./app/request,./app/controller/v1/aapi,./app/controller/v1/eapi,./app/controller/v1/mapi,./app/controller/v1/rapi,./app/controller/v1/papi -o ./assets/docs/operator/v1 --md ./wiki
-swag init -g controller/v1/papi/papi.go -d ./app,"$ADAPTER" --exclude ./app/service,./app/router,./app/middleware,./app/request,./app/controller/v1/aapi,./app/controller/v1/eapi,./app/controller/v1/mapi,./app/controller/v1/oapi,./app/controller/v1/rapi -o ./assets/docs/promotion/v1 --md ./wiki
+APIS=(
+  'controller/v1/common/common.go'
+  'controller/v1/rapi/rapi.go'
+  'controller/v2/rapi/rapi.go'
+  'controller/v1/aapi/aapi.go'
+  'controller/v1/eapi/eapi.go'
+  'controller/v1/mapi/mapi.go'
+  'controller/v1/oapi/oapi.go'
+  'controller/v1/papi/papi.go'
+)
+
+OUTPUTS=(
+  './assets/docs/common/v1'
+  './assets/docs/rider/v1'
+  './assets/docs/rider/v2'
+  './assets/docs/agent/v1'
+  './assets/docs/employee/v1'
+  './assets/docs/manager/v1'
+  './assets/docs/operator/v1'
+  './assets/docs/promotion/v1'
+)
+
+function exclude() {
+  OUTPUT=''
+  for API in "${APIS[@]}" ; do
+    FOLDER_PATH=${API%/*}
+    if [ "$1" != "$FOLDER_PATH" ]; then
+      OUTPUT+=",./app/$FOLDER_PATH"
+    fi
+  done
+  echo "$OUTPUT"
+}
+
+for i in "${!APIS[@]}" ; do
+  API=${APIS[i]}
+  FOLDER_PATH=${API%/*}
+  TARGET_FILE=${API##*/}
+  eval "swag fmt $TARGET_FILE"
+  eval "swag init -g $TARGET_FILE -d ./app/$FOLDER_PATH,./app/model,./app/biz/definition,./app/permission,$ADAPTER -o ${OUTPUTS[i]} --md ./wiki"
+done

@@ -163,21 +163,21 @@ func (s *stockService) StoreList(req *model.StockListReq) *model.PaginationRes {
 				switch true {
 				case st.Model != nil:
 					// 电池
-					s.calculate(batteries, st)
+					s.Calculate(batteries, st)
 				case st.BrandID != nil:
 					// 电车
-					s.calculate(bikes, st)
+					s.Calculate(bikes, st)
 				default:
 					// 其他物资
-					s.calculate(materials, st)
+					s.Calculate(materials, st)
 				}
 			}
 
 			for _, ex := range item.Edges.Exceptions {
 				if ex.Model != nil {
-					s.calculateException(batteries, ex)
+					s.CalculateException(batteries, ex)
 				} else {
-					s.calculateException(materials, ex)
+					s.CalculateException(materials, ex)
 				}
 			}
 
@@ -275,10 +275,10 @@ func (s *stockService) EnterpriseList(req *model.StockListReq) *model.Pagination
 				switch true {
 				case st.Model != nil:
 					// 电池
-					s.calculate(batteries, st)
+					s.Calculate(batteries, st)
 				case st.BrandID != nil:
 					// 电车
-					s.calculate(bikes, st)
+					s.Calculate(bikes, st)
 				}
 			}
 			for _, bat := range batteries {
@@ -295,7 +295,7 @@ func (s *stockService) EnterpriseList(req *model.StockListReq) *model.Pagination
 }
 
 // TODO 统计故障电车
-func (s *stockService) calculateException(items map[string]*model.StockMaterial, ex *ent.Exception) {
+func (s *stockService) CalculateException(items map[string]*model.StockMaterial, ex *ent.Exception) {
 	name := ex.Name
 	if _, ok := items[name]; !ok {
 		items[name] = &model.StockMaterial{
@@ -315,7 +315,7 @@ func (s *stockService) getKey(st *ent.Stock) string {
 	return st.Name
 }
 
-func (s *stockService) calculate(items map[string]*model.StockMaterial, st *ent.Stock) {
+func (s *stockService) Calculate(items map[string]*model.StockMaterial, st *ent.Stock) {
 	key := s.getKey(st)
 	if _, ok := items[key]; !ok {
 		items[key] = &model.StockMaterial{
@@ -668,7 +668,7 @@ func (s *stockService) CabinetList(req *model.StockCabinetListReq) *model.Pagina
 
 		// 出入库
 		for _, st := range item.Edges.Stocks {
-			s.calculate(batteries, st)
+			s.Calculate(batteries, st)
 		}
 
 		for _, battery := range batteries {

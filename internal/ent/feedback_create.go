@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
 // FeedbackCreate is the builder for creating a Feedback entity.
@@ -80,6 +81,20 @@ func (fc *FeedbackCreate) SetNillableAgentID(u *uint64) *FeedbackCreate {
 	return fc
 }
 
+// SetRiderID sets the "rider_id" field.
+func (fc *FeedbackCreate) SetRiderID(u uint64) *FeedbackCreate {
+	fc.mutation.SetRiderID(u)
+	return fc
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (fc *FeedbackCreate) SetNillableRiderID(u *uint64) *FeedbackCreate {
+	if u != nil {
+		fc.SetRiderID(*u)
+	}
+	return fc
+}
+
 // SetContent sets the "content" field.
 func (fc *FeedbackCreate) SetContent(s string) *FeedbackCreate {
 	fc.mutation.SetContent(s)
@@ -96,6 +111,20 @@ func (fc *FeedbackCreate) SetType(u uint8) *FeedbackCreate {
 func (fc *FeedbackCreate) SetNillableType(u *uint8) *FeedbackCreate {
 	if u != nil {
 		fc.SetType(*u)
+	}
+	return fc
+}
+
+// SetSource sets the "source" field.
+func (fc *FeedbackCreate) SetSource(u uint8) *FeedbackCreate {
+	fc.mutation.SetSource(u)
+	return fc
+}
+
+// SetNillableSource sets the "source" field if the given value is not nil.
+func (fc *FeedbackCreate) SetNillableSource(u *uint8) *FeedbackCreate {
+	if u != nil {
+		fc.SetSource(*u)
 	}
 	return fc
 }
@@ -142,6 +171,11 @@ func (fc *FeedbackCreate) SetEnterprise(e *Enterprise) *FeedbackCreate {
 // SetAgent sets the "agent" edge to the Agent entity.
 func (fc *FeedbackCreate) SetAgent(a *Agent) *FeedbackCreate {
 	return fc.SetAgentID(a.ID)
+}
+
+// SetRider sets the "rider" edge to the Rider entity.
+func (fc *FeedbackCreate) SetRider(r *Rider) *FeedbackCreate {
+	return fc.SetRiderID(r.ID)
 }
 
 // Mutation returns the FeedbackMutation object of the builder.
@@ -191,6 +225,10 @@ func (fc *FeedbackCreate) defaults() {
 		v := feedback.DefaultType
 		fc.mutation.SetType(v)
 	}
+	if _, ok := fc.mutation.Source(); !ok {
+		v := feedback.DefaultSource
+		fc.mutation.SetSource(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -206,6 +244,9 @@ func (fc *FeedbackCreate) check() error {
 	}
 	if _, ok := fc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Feedback.type"`)}
+	}
+	if _, ok := fc.mutation.Source(); !ok {
+		return &ValidationError{Name: "source", err: errors.New(`ent: missing required field "Feedback.source"`)}
 	}
 	return nil
 }
@@ -249,6 +290,10 @@ func (fc *FeedbackCreate) createSpec() (*Feedback, *sqlgraph.CreateSpec) {
 	if value, ok := fc.mutation.GetType(); ok {
 		_spec.SetField(feedback.FieldType, field.TypeUint8, value)
 		_node.Type = value
+	}
+	if value, ok := fc.mutation.Source(); ok {
+		_spec.SetField(feedback.FieldSource, field.TypeUint8, value)
+		_node.Source = value
 	}
 	if value, ok := fc.mutation.URL(); ok {
 		_spec.SetField(feedback.FieldURL, field.TypeJSON, value)
@@ -294,6 +339,23 @@ func (fc *FeedbackCreate) createSpec() (*Feedback, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.AgentID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := fc.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.RiderTable,
+			Columns: []string{feedback.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RiderID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -396,6 +458,24 @@ func (u *FeedbackUpsert) ClearAgentID() *FeedbackUpsert {
 	return u
 }
 
+// SetRiderID sets the "rider_id" field.
+func (u *FeedbackUpsert) SetRiderID(v uint64) *FeedbackUpsert {
+	u.Set(feedback.FieldRiderID, v)
+	return u
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *FeedbackUpsert) UpdateRiderID() *FeedbackUpsert {
+	u.SetExcluded(feedback.FieldRiderID)
+	return u
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *FeedbackUpsert) ClearRiderID() *FeedbackUpsert {
+	u.SetNull(feedback.FieldRiderID)
+	return u
+}
+
 // SetContent sets the "content" field.
 func (u *FeedbackUpsert) SetContent(v string) *FeedbackUpsert {
 	u.Set(feedback.FieldContent, v)
@@ -423,6 +503,24 @@ func (u *FeedbackUpsert) UpdateType() *FeedbackUpsert {
 // AddType adds v to the "type" field.
 func (u *FeedbackUpsert) AddType(v uint8) *FeedbackUpsert {
 	u.Add(feedback.FieldType, v)
+	return u
+}
+
+// SetSource sets the "source" field.
+func (u *FeedbackUpsert) SetSource(v uint8) *FeedbackUpsert {
+	u.Set(feedback.FieldSource, v)
+	return u
+}
+
+// UpdateSource sets the "source" field to the value that was provided on create.
+func (u *FeedbackUpsert) UpdateSource() *FeedbackUpsert {
+	u.SetExcluded(feedback.FieldSource)
+	return u
+}
+
+// AddSource adds v to the "source" field.
+func (u *FeedbackUpsert) AddSource(v uint8) *FeedbackUpsert {
+	u.Add(feedback.FieldSource, v)
 	return u
 }
 
@@ -581,6 +679,27 @@ func (u *FeedbackUpsertOne) ClearAgentID() *FeedbackUpsertOne {
 	})
 }
 
+// SetRiderID sets the "rider_id" field.
+func (u *FeedbackUpsertOne) SetRiderID(v uint64) *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.SetRiderID(v)
+	})
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *FeedbackUpsertOne) UpdateRiderID() *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.UpdateRiderID()
+	})
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *FeedbackUpsertOne) ClearRiderID() *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.ClearRiderID()
+	})
+}
+
 // SetContent sets the "content" field.
 func (u *FeedbackUpsertOne) SetContent(v string) *FeedbackUpsertOne {
 	return u.Update(func(s *FeedbackUpsert) {
@@ -613,6 +732,27 @@ func (u *FeedbackUpsertOne) AddType(v uint8) *FeedbackUpsertOne {
 func (u *FeedbackUpsertOne) UpdateType() *FeedbackUpsertOne {
 	return u.Update(func(s *FeedbackUpsert) {
 		s.UpdateType()
+	})
+}
+
+// SetSource sets the "source" field.
+func (u *FeedbackUpsertOne) SetSource(v uint8) *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.SetSource(v)
+	})
+}
+
+// AddSource adds v to the "source" field.
+func (u *FeedbackUpsertOne) AddSource(v uint8) *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.AddSource(v)
+	})
+}
+
+// UpdateSource sets the "source" field to the value that was provided on create.
+func (u *FeedbackUpsertOne) UpdateSource() *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.UpdateSource()
 	})
 }
 
@@ -946,6 +1086,27 @@ func (u *FeedbackUpsertBulk) ClearAgentID() *FeedbackUpsertBulk {
 	})
 }
 
+// SetRiderID sets the "rider_id" field.
+func (u *FeedbackUpsertBulk) SetRiderID(v uint64) *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.SetRiderID(v)
+	})
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *FeedbackUpsertBulk) UpdateRiderID() *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.UpdateRiderID()
+	})
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *FeedbackUpsertBulk) ClearRiderID() *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.ClearRiderID()
+	})
+}
+
 // SetContent sets the "content" field.
 func (u *FeedbackUpsertBulk) SetContent(v string) *FeedbackUpsertBulk {
 	return u.Update(func(s *FeedbackUpsert) {
@@ -978,6 +1139,27 @@ func (u *FeedbackUpsertBulk) AddType(v uint8) *FeedbackUpsertBulk {
 func (u *FeedbackUpsertBulk) UpdateType() *FeedbackUpsertBulk {
 	return u.Update(func(s *FeedbackUpsert) {
 		s.UpdateType()
+	})
+}
+
+// SetSource sets the "source" field.
+func (u *FeedbackUpsertBulk) SetSource(v uint8) *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.SetSource(v)
+	})
+}
+
+// AddSource adds v to the "source" field.
+func (u *FeedbackUpsertBulk) AddSource(v uint8) *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.AddSource(v)
+	})
+}
+
+// UpdateSource sets the "source" field to the value that was provided on create.
+func (u *FeedbackUpsertBulk) UpdateSource() *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.UpdateSource()
 	})
 }
 
