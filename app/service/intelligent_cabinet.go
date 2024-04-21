@@ -102,6 +102,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 	)
 
 	success := silk.Bool(false)
+	message := silk.String("")
 
 	defer func() {
 		updater := ex.Update()
@@ -120,6 +121,10 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 			// ex.Info.Empty = empty
 		}
 
+		if *message == "" {
+			message = nil
+		}
+
 		// 保存数据库
 		_ = updater.
 			SetSuccess(*success).
@@ -127,6 +132,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 			SetDuration(int(duration)).
 			SetPutoutBattery(putout).
 			SetPutinBattery(putin).
+			SetNillableMessage(message).
 			// SetInfo(ex.Info).
 			Exec(s.ctx)
 	}()
@@ -159,6 +165,9 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 			Minsoc:  cache.Float64(model.SettingExchangeMinBatteryKey),
 		}, func(result *pb.CabinetExchangeResponse, stop bool) {
 			zap.L().Info("换电步骤记录回调", log.Payload(result))
+			if result.Message != "" {
+				*message = result.Message
+			}
 
 			*success = result.Success
 
@@ -209,6 +218,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
 	if err != nil {
 		zap.L().Error("换电请求失败", zap.Error(err), user.ZapField(), zap.String("uuid", uid))
+		*message = err.Error()
 		*success = false
 	}
 }
