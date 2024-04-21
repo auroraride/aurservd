@@ -837,10 +837,6 @@ func (sc *SubscribeCreate) defaults() error {
 		v := subscribe.DefaultIntelligent
 		sc.mutation.SetIntelligent(v)
 	}
-	if _, ok := sc.mutation.DepositType(); !ok {
-		v := subscribe.DefaultDepositType
-		sc.mutation.SetDepositType(v)
-	}
 	return nil
 }
 
