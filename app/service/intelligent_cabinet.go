@@ -158,6 +158,8 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 			Timeout: model.CabinetBusinessStepTimeout,
 			Minsoc:  cache.Float64(model.SettingExchangeMinBatteryKey),
 		}, func(result *pb.CabinetExchangeResponse, stop bool) {
+			zap.L().Info("换电步骤记录回调", log.Payload(result))
+
 			*success = result.Success
 
 			duration += result.Duration
