@@ -94,13 +94,14 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 		err      error
 		stopAt   *time.Time
 		duration float64
-		success  bool
 		putout   string
 		putin    string
 		empty    *model.BinInfo
 		bs       = NewBattery()
 		key      = s.exchangeCacheKey(uid)
 	)
+
+	success := silk.Bool(false)
 
 	defer func() {
 		updater := ex.Update()
@@ -121,7 +122,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
 		// 保存数据库
 		_ = updater.
-			SetSuccess(success).
+			SetSuccess(*success).
 			SetFinishAt(*stopAt).
 			SetDuration(int(duration)).
 			SetPutoutBattery(putout).
@@ -157,6 +158,8 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 			Timeout: model.CabinetBusinessStepTimeout,
 			Minsoc:  cache.Float64(model.SettingExchangeMinBatteryKey),
 		}, func(result *pb.CabinetExchangeResponse, stop bool) {
+			*success = result.Success
+
 			duration += result.Duration
 			stopAt = silk.Pointer(result.StopAt.AsTime())
 
@@ -199,20 +202,13 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
 			// 缓存结果
 			ar.Redis.RPush(s.ctx, key, result)
-
-			// 判定是否终止
-			if stop {
-				success = result.Success
-			}
 		},
 	)
 
 	if err != nil {
 		zap.L().Error("换电请求失败", zap.Error(err), user.ZapField(), zap.String("uuid", uid))
-		success = false
+		*success = false
 	}
-
-	success = err == nil
 }
 
 // ExchangeResult 查询换电结果
