@@ -137,12 +137,15 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 				cdr.BranchID = c.Edges.Branch.ID
 				cdr.Fid = service.NewBranch().EncodeFacility(nil, c)
 			}
-			var distance interface{}
+
+			var distance ent.Value
 			distance, err = c.Value("distance")
-			if err != nil {
-				return nil, err
+			if distance != nil || err == nil {
+				distanceFloat, ok := distance.(float64)
+				if ok {
+					cdr.Distance = distanceFloat
+				}
 			}
-			cdr.Distance = distance.(float64)
 
 			bms := c.Edges.Models
 			if len(bms) > 0 {
