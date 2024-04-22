@@ -240,7 +240,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 				OrderBy(sql.Asc("distance"))
 			if req.Distance != nil {
 				if *req.Distance > 100000 {
-					snag.Panic("请求距离太远")
+					*req.Distance = 100000
 				}
 				sel.Where(sql.P(func(b *sql.Builder) {
 					b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, branch.FieldGeom, *req.Lng, *req.Lat, *req.Distance))
