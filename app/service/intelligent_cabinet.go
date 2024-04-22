@@ -165,6 +165,10 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 			Minsoc:  cache.Float64(model.SettingExchangeMinBatteryKey),
 		}, func(result *pb.CabinetExchangeResponse, stop bool) {
 			zap.L().Info("换电步骤记录回调", log.Payload(result))
+			if result == nil {
+				return
+			}
+
 			if result.Message != "" {
 				*message = result.Message
 			}
