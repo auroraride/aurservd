@@ -12,6 +12,7 @@ import (
 	"github.com/auroraride/adapter/log"
 	"github.com/golang-module/carbon/v2"
 	"github.com/redis/go-redis/v9"
+	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/logging"
 	_ "github.com/auroraride/aurservd/app/permission"
@@ -51,6 +52,9 @@ func Bootstrap() {
 		logcfg.Writers = append(logcfg.Writers, log.NewRedisWriter(ar.Redis))
 	}
 	log.New(logcfg)
+
+	// 打印启动日志
+	zap.L().Info("服务启动")
 
 	// 初始化RSA
 	ar.LoadRsa()
