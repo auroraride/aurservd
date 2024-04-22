@@ -18,6 +18,7 @@ import (
 	"github.com/golang-module/carbon/v2"
 	"github.com/google/uuid"
 	"github.com/lithammer/shortuuid/v4"
+	"go.uber.org/atomic"
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/logging"
@@ -101,8 +102,10 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 		key      = s.exchangeCacheKey(uid)
 	)
 
-	success := silk.Bool(false)
-	message := silk.String("")
+	// success := silk.Bool(false)
+	// message := silk.String("")
+	success := atomic.NewBool(false)
+	message := atomic.NewString("")
 
 	defer func() {
 		updater := ex.Update()
@@ -121,18 +124,20 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 			// ex.Info.Empty = empty
 		}
 
-		if *message == "" {
-			message = nil
+		var msg *string
+
+		if message.Load() != "" {
+			msg = silk.Pointer(message.Load())
 		}
 
 		// 保存数据库
 		_ = updater.
-			SetSuccess(*success).
+			SetSuccess(success.Load()).
 			SetFinishAt(*stopAt).
 			SetDuration(int(duration)).
 			SetPutoutBattery(putout).
 			SetPutinBattery(putin).
-			SetNillableMessage(message).
+			SetNillableMessage(msg).
 			// SetInfo(ex.Info).
 			Exec(s.ctx)
 	}()
@@ -169,11 +174,8 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 				return
 			}
 
-			if result.Message != "" {
-				*message = result.Message
-			}
-
-			*success = result.Success
+			message.Store(result.Message)
+			success.Store(result.Success)
 
 			duration += result.Duration
 			stopAt = silk.Pointer(result.StopAt.AsTime())
@@ -222,8 +224,8 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
 	if err != nil {
 		zap.L().Error("换电请求失败", zap.Error(err), user.ZapField(), zap.String("uuid", uid))
-		*message = err.Error()
-		*success = false
+		message.Store(err.Error())
+		success.Store(false)
 	}
 }
 
