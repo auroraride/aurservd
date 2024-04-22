@@ -18,11 +18,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/auroraride/adapter/rpc/pb"
 	"github.com/golang-module/carbon/v2"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/internal/ar"
 )
 
@@ -30,10 +30,10 @@ func TestPersonIdentity(t *testing.T) {
 	// 初始化实名认证rsa客户端
 	ar.LoadRsa()
 
-	identity := &definition.PersonIdentity{
+	identity := &pb.PersonIdentity{
 		IdCardNumber: "111222198612123333",
 		Name:         "张三",
-		OcrResult: &definition.PersonIdentityOcrResult{
+		OcrResult: &pb.PersonIdentityOcrResult{
 			Name:            "张三",
 			Sex:             "男",
 			Nation:          "汉",
@@ -93,7 +93,7 @@ func TestRSAReadPrivateKeyFromFile(t *testing.T) {
 }
 
 func TestProto(t *testing.T) {
-	identity := &definition.PersonIdentityOcrResult{
+	identity := &pb.PersonIdentityOcrResult{
 		Name:            "张三",
 		Sex:             "男",
 		Nation:          "汉",

@@ -342,17 +342,18 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 		values := make(map[string]*pb.ContractFromField)
 
 		for k, v := range m {
-			switch v.(type) {
+			switch value := v.(type) {
 			case bool:
 				values[k] = &pb.ContractFromField{
-					Value: &pb.ContractFromField_Checkbox{Checkbox: v.(bool)},
+					Value: &pb.ContractFromField_Checkbox{Checkbox: value},
 				}
 			case string:
 				values[k] = &pb.ContractFromField{
-					Value: &pb.ContractFromField_Text{Text: v.(string)},
+					Value: &pb.ContractFromField_Text{Text: value},
 				}
 			case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64:
-				str, err := numberToString(v)
+				var str string
+				str, err = numberToString(value)
 				if err != nil {
 					return nil, err
 				}

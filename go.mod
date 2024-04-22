@@ -37,7 +37,7 @@ require (
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/labstack/gommon v0.4.2
-	github.com/liasica/edocseal v0.0.0-20240418084534-9bde7e12f84e
+	github.com/liasica/edocseal v0.0.0-20240421025742-95c18b2a38cc
 	github.com/liasica/swag v1.16.3-0.20240305092534-ea9d354b2ef6
 	github.com/lithammer/shortuuid/v4 v4.0.0
 	github.com/modern-go/reflect2 v1.0.2

@@ -156,6 +156,9 @@ func (a *agreementBiz) Delete(id uint64) (err error) {
 	} else {
 		exist, err = ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.AgreementID(id)).Exist(a.ctx)
 	}
+	if err != nil {
+		return err
+	}
 
 	if exist {
 		return errors.New("该协议正在使用中，无法删除")

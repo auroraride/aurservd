@@ -94,7 +94,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 
 			// 若原有团签订阅未激活，直接删除
 			if sub != nil && sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
-				err = tx.Subscribe.DeleteOne(sub).Exec(s.ctx)
+				err = tx.Subscribe.SoftDeleteOne(sub).Exec(s.ctx)
 				if err != nil {
 					return errors.New("原未激活订阅处理失败")
 				}
@@ -456,7 +456,7 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 		// 若原有团签订阅未激活，直接删除
 		if sub != nil && sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
-			err = tx.Subscribe.DeleteOne(sub).Exec(s.ctx)
+			err = tx.Subscribe.SoftDeleteOne(sub).Exec(s.ctx)
 			if err != nil {
 				return errors.New("原未激活订阅处理失败")
 			}
@@ -526,7 +526,7 @@ func (s *enterpriseRiderService) ExitEnterprise(r *ent.Rider) {
 
 		// 删除未激活的订阅信息
 		if sub != nil {
-			err = tx.Subscribe.DeleteOne(sub).Exec(s.ctx)
+			err = tx.Subscribe.SoftDeleteOne(sub).Exec(s.ctx)
 		}
 
 		return

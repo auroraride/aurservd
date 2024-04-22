@@ -440,8 +440,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 	var rm map[uint64]int
 
 	// 每个网点可用业务
-	var branchBusinessesMap map[uint64]map[uint64][]string
-	branchBusinessesMap = make(map[uint64]map[uint64][]string)
+	branchBusinessesMap := make(map[uint64]map[uint64][]string)
 
 	if req.Business != "" {
 		for _, c := range cabinets {

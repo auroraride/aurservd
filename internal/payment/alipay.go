@@ -535,10 +535,19 @@ func (c *alipayClient) AlipayFundAuthOperationDetailQuery(req definition.FundAut
 		OutRequestNo: req.OutRequestNo,
 	}
 	result, err = c.FundAuthOperationDetailQuery(trade)
+	if err != nil {
+		zap.L().Error("查询预授权订单失败", zap.Error(err), log.Payload(req))
+		return nil, err
+	}
+	if result == nil {
+		zap.L().Error("查询预授权订单失败，返回结果为空", log.Payload(req))
+		return nil, errors.New("查询预授权订单失败")
+	}
 	if !result.Error.IsSuccess() {
-		zap.L().Error("查询预授权订单失败", zap.Error(result.Error))
+		zap.L().Error("查询预授权订单失败", zap.Error(result.Error), log.Payload(req))
 		return nil, result.Error
 	}
+
 	zap.L().Info("查询预授权订单成功", log.JsonData(result))
 	return result, nil
 }

@@ -73,6 +73,9 @@ func (s *refundBiz) Refund(rId uint64, req *definition.RefundReq) (err error) {
 				if or != nil {
 					// 修改退款订单状态
 					_, err = tx.OrderRefund.UpdateOneID(or.ID).SetStatus(model.RefundStatusPending).SetUpdatedAt(time.Now()).Save(s.ctx)
+					if err != nil {
+						return err
+					}
 				} else {
 					no := tools.NewUnique().NewSN28()
 					orc := tx.OrderRefund.Create().SetOutRefundNo(no).SetStatus(model.RefundStatusPending)

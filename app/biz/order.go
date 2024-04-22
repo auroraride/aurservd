@@ -169,6 +169,10 @@ func (s *orderBiz) CancelDeposit(req *definition.OrderDepositCancelReq) error {
 		}
 		// 更新订单状态
 		_, err = o.Update().SetStatus(model.OrderStatusCanceled).Save(s.ctx)
+		if err != nil {
+			zap.L().Error("更新订单状态失败", zap.Error(err), log.Payload(req))
+			return err
+		}
 	}
 	return nil
 }

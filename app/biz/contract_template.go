@@ -29,6 +29,9 @@ func (s *ContractTemplate) Create(req *definition.ContractTemplateCreateReq) err
 		contracttemplate.PlanType(req.PlanType.Value()),
 		contracttemplate.Enable(true),
 	).First(s.ctx)
+	if err != nil {
+		return err
+	}
 	// 如果存在并且需要开启
 	if temp != nil && req.Enable != nil && *req.Enable {
 		_, err = temp.Update().SetEnable(false).Save(s.ctx)

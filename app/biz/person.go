@@ -493,7 +493,8 @@ func (b *personBiz) CertificationSupplement(r *ent.Rider, req *definition.Person
 		return errors.New("未年满18周岁")
 	}
 
-	faceVerify := new(model.PersonFaceVerifyResult)
+	var faceVerify *model.PersonFaceVerifyResult
+
 	if per.FaceVerifyResult != nil {
 		per.FaceVerifyResult.Name = result.Name
 		per.FaceVerifyResult.IDCardNumber = result.IdCardNumber
