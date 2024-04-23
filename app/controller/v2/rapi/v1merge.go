@@ -1,5 +1,13 @@
 package rapi
 
+import (
+	"github.com/labstack/echo/v4"
+
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+)
+
 type Assistance struct{}
 
 // Breakdown
@@ -73,7 +81,9 @@ type Battery struct{}
 // @Success	200				{object}	model.BatteryDetail	"请求成功"
 func (*Battery) Detail() {}
 
-type Branch struct{}
+type branch struct{}
+
+var Branch = new(branch)
 
 // List
 // @ID		BranchList
@@ -85,7 +95,10 @@ type Branch struct{}
 // @Param	X-Rider-Token	header		string							true	"骑手校验token"
 // @Param	query			query		model.BranchWithDistanceReq		true	"根据距离获取网点请求参数"
 // @Success	200				{object}	[]model.BranchWithDistanceRes	"请求成功"
-func (*Branch) List() {}
+func (*branch) List(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[model.BranchWithDistanceReq](c)
+	return ctx.SendResponse(service.NewBranchWithRider(ctx.Rider).ListByDistanceRider(req, true))
+}
 
 // Riding
 // @ID		BranchRiding
@@ -97,7 +110,7 @@ func (*Branch) List() {}
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"
 // @Param	query			query		model.BranchRidingReq	true	"desc"
 // @Success	200				{object}	model.BranchRidingRes	"请求成功"
-func (*Branch) Riding() {}
+func (*branch) Riding() {}
 
 // Facility
 // @ID		BranchFacility
@@ -111,7 +124,7 @@ func (*Branch) Riding() {}
 // @Param	lng				query		float64					true	"经度"
 // @Param	lat				query		float64					true	"纬度"
 // @Success	200				{object}	model.BranchFacilityRes	"请求成功"
-func (*Branch) Facility() {}
+func (*branch) Facility() {}
 
 // Unsubscribe
 // @ID		BusinessUnsubscribe

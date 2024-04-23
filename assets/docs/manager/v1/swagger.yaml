@@ -417,57 +417,6 @@ definitions:
     - FaultTypeBattery
     - FaultTypeEbike
     - FaultTypeOther
-  definition.GuideDetail:
-    properties:
-      answer:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      remark:
-        type: string
-      sort:
-        type: integer
-    type: object
-  definition.GuideModifyReq:
-    properties:
-      answer:
-        description: 答案
-        type: string
-      name:
-        description: 名称
-        type: string
-      remark:
-        description: 备注
-        type: string
-      sort:
-        description: 排序
-        type: integer
-    required:
-    - answer
-    - name
-    - sort
-    type: object
-  definition.GuideSaveReq:
-    properties:
-      answer:
-        description: 答案
-        type: string
-      name:
-        description: 名称
-        type: string
-      remark:
-        description: 备注
-        type: string
-      sort:
-        description: 排序
-        type: integer
-    required:
-    - answer
-    - name
-    - sort
-    type: object
   definition.InstructionsCreateReq:
     properties:
       content:
@@ -4482,6 +4431,10 @@ definitions:
       price:
         description: 售价
         type: number
+      type:
+        allOf:
+          - $ref: '#/definitions/model.PlanType'
+        description: 类别
     type: object
   model.PlanComplex:
     properties:
@@ -15034,140 +14987,6 @@ paths:
           schema:
             $ref: '#/definitions/definition.ActivityDetail'
       summary: 获取指定活动
-      tags:
-      - 设置
-  /manager/v1/setting/guide:
-    get:
-      consumes:
-      - application/json
-      operationId: SettingGuideList
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 当前页, 从1开始, 默认1
-        in: query
-        name: current
-        type: integer
-      - description: 每页数据, 默认20
-        in: query
-        name: pageSize
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            items:
-              $ref: '#/definitions/definition.GuideDetail'
-            type: array
-      summary: 获取引导
-      tags:
-      - 设置
-    post:
-      consumes:
-      - application/json
-      operationId: SettingGuideCreate
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/definition.GuideSaveReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 保存引导
-      tags:
-      - 设置
-    put:
-      consumes:
-      - application/json
-      operationId: SettingGuideModify
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/definition.GuideModifyReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 修改引导
-      tags:
-      - 设置
-  /manager/v1/setting/guide/{id}:
-    delete:
-      consumes:
-      - application/json
-      operationId: SettingGuideDelete
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 引导ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 删除引导
-      tags:
-      - 设置
-    get:
-      consumes:
-      - application/json
-      operationId: SettingGuideGet
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 引导ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/definition.GuideDetail'
-      summary: 获取指定引导
       tags:
       - 设置
   /manager/v1/setting/legal:

@@ -80,7 +80,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.POST("/signin", v1.Rider.Signin) // 登录
 	g.GET("/city", v1.City.List)       // 已开通城市
 
-	g.GET("/branch", v1.Branch.List)                   // 网点列表
+	g.GET("/branch", rapi.Branch.List)                 // 网点列表
 	g.GET("/branch/facility/:fid", v1.Branch.Facility) // 网点设施
 
 	g.GET("/setting/version", rapi.Setting.LatestVersion) // App最新版本
