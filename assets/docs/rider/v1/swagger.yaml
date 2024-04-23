@@ -186,6 +186,12 @@ definitions:
     type: object
   model.BranchFacility:
     properties:
+      batteryNum:
+        description: 电池数量
+        type: integer
+      cabinetNumm:
+        description: 电柜数量
+        type: integer
       fid:
         description: 设施标识
         type: string
@@ -204,7 +210,7 @@ definitions:
         description: 状态 0不可用 1可用
         type: integer
       total:
-        description: 总电池
+        description: 仓位数量
         type: integer
       type:
         description: 类别
@@ -1025,6 +1031,10 @@ definitions:
       price:
         description: 售价
         type: number
+      type:
+        allOf:
+          - $ref: '#/definitions/model.PlanType'
+        description: 类别
     type: object
   model.PlanDaysPriceOption:
     properties:
@@ -1132,6 +1142,17 @@ definitions:
           $ref: '#/definitions/model.PlanModelOption'
         type: array
     type: object
+  model.PlanType:
+    enum:
+      - 1
+      - 2
+    type: integer
+    x-enum-comments:
+      PlanTypeBattery: 单电
+      PlanTypeEbikeWithBattery: 车加电
+    x-enum-varnames:
+      - PlanTypeBattery
+      - PlanTypeEbikeWithBattery
   model.PointLogListRes:
     properties:
       after:
