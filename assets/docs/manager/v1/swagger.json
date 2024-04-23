@@ -3127,116 +3127,116 @@
                 }
             }
         },
-      "/manager/v1/contract/template": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "合同"
-          ],
-          "summary": "合同模板列表",
-          "operationId": "ManagerContractTemplateList",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/definition.ContractTemplateListRes"
+        "/manager/v1/contract/template": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "合同"
+                ],
+                "summary": "合同模板列表",
+                "operationId": "ManagerContractTemplateList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.ContractTemplateListRes"
+                            }
+                        }
+                    }
                 }
-              }
-            }
-          }
-        },
-        "post": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "合同"
-          ],
-          "summary": "创建合同模板",
-          "operationId": "ManagerContractTemplateCreate",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
             },
-            {
-              "description": "desc",
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/definition.ContractTemplateCreateReq"
-              }
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "合同"
+                ],
+                "summary": "创建合同模板",
+                "operationId": "ManagerContractTemplateCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.ContractTemplateCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
             }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
-              }
-            }
-          }
-        }
         },
-      "/manager/v1/contract/template/{id}": {
-        "put": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "合同"
-          ],
-          "summary": "修改合同模板",
-          "operationId": "ManagerContractTemplateModify",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "description": "desc",
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/definition.ContractTemplateModifyReq"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
+        "/manager/v1/contract/template/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "合同"
+                ],
+                "summary": "修改合同模板",
+                "operationId": "ManagerContractTemplateModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.ContractTemplateModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -7332,8 +7332,8 @@
                     },
                     {
                         "type": "string",
-                      "description": "预授权订单号",
-                      "name": "outOrderNo",
+                        "description": "预授权订单号",
+                        "name": "outOrderNo",
                         "in": "query"
                     },
                     {
@@ -7372,20 +7372,20 @@
                         "in": "query"
                     },
                     {
-                      "enum": [
-                        0,
-                        1,
-                        2,
-                        3,
-                        4,
-                        5
-                      ],
-                      "type": "integer",
-                      "description": "订单状态 0:待支付 1:已支付 2:申请退款 3:已退款 4:退款被拒绝 5:取消订单",
-                      "name": "status",
-                      "in": "query"
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5
+                        ],
+                        "type": "integer",
+                        "description": "订单状态 0:待支付 1:已支付 2:申请退款 3:已退款 4:退款被拒绝 5:取消订单",
+                        "name": "status",
+                        "in": "query"
                     },
-                  {
+                    {
                         "type": "string",
                         "description": "门店名字",
                         "name": "storeName",
@@ -13894,149 +13894,149 @@
                 }
             }
         },
-      "definition.ContractTemplateAimed": {
-        "type": "integer",
-        "enum": [
-          1,
-          2
-        ],
-        "x-enum-comments": {
-          "ContractTemplateAimedEnterprise": "团签",
-          "ContractTemplateAimedPersonal": "个签"
+        "definition.ContractTemplateAimed": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "ContractTemplateAimedEnterprise": "团签",
+                "ContractTemplateAimedPersonal": "个签"
+            },
+            "x-enum-varnames": [
+                "ContractTemplateAimedPersonal",
+                "ContractTemplateAimedEnterprise"
+            ]
         },
-        "x-enum-varnames": [
-          "ContractTemplateAimedPersonal",
-          "ContractTemplateAimedEnterprise"
-        ]
-      },
-      "definition.ContractTemplateCreateReq": {
-        "type": "object",
-        "required": [
-          "hash",
-          "name",
-          "url"
-        ],
-        "properties": {
-          "aimed": {
-            "description": "用户类型 1:个签 2:团签",
-            "allOf": [
-              {
-                "$ref": "#/definitions/definition.ContractTemplateAimed"
-              }
-            ]
-          },
-          "enable": {
-            "description": "是否启用",
-            "type": "boolean"
-          },
-          "hash": {
-            "description": "合同hash",
-            "type": "string"
-          },
-          "name": {
-            "description": "合同名称",
-            "type": "string"
-          },
-          "planType": {
-            "description": "订阅类型 1:单电 2:车电",
-            "allOf": [
-              {
-                "$ref": "#/definitions/model.PlanType"
-              }
-            ]
-          },
-          "remark": {
-            "description": "备注",
-            "type": "string"
-          },
-          "url": {
-            "description": "合同链接",
-            "type": "string"
-          }
-        }
-      },
-      "definition.ContractTemplateListRes": {
-        "type": "object",
-        "properties": {
-          "aimed": {
-            "description": "用户类型 1:个签 2:团签",
-            "allOf": [
-              {
-                "$ref": "#/definitions/definition.ContractTemplateAimed"
-              }
-            ]
-          },
-          "createdAt": {
-            "description": "创建时间",
-            "type": "string"
-          },
-          "enable": {
-            "description": "是否启用",
-            "type": "boolean"
-          },
-          "hash": {
-            "description": "合同hash",
-            "type": "string"
-          },
-          "id": {
-            "description": "ID",
-            "type": "integer"
-          },
-          "name": {
-            "description": "合同名称",
-            "type": "string"
-          },
-          "planType": {
-            "description": "订阅类型 1:单电 2:车电",
-            "allOf": [
-              {
-                "$ref": "#/definitions/model.PlanType"
-              }
-            ]
-          },
-          "remark": {
-            "description": "备注",
-            "type": "string"
-          },
-          "url": {
-            "description": "合同链接",
-            "type": "string"
-          }
-        }
-      },
-      "definition.ContractTemplateModifyReq": {
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "properties": {
-          "aimed": {
-            "description": "用户类型 1:个签 2:团签",
-            "allOf": [
-              {
-                "$ref": "#/definitions/definition.ContractTemplateAimed"
-              }
-            ]
-          },
-          "enable": {
-            "description": "是否启用",
-            "type": "boolean"
-          },
-          "name": {
-            "description": "合同名称",
-            "type": "string"
-          },
-          "planType": {
-            "description": "订阅类型 1:单电 2:车电",
-            "allOf": [
-              {
-                "$ref": "#/definitions/model.PlanType"
-              }
-            ]
-          },
-          "remark": {
-            "description": "备注",
-            "type": "string"
+        "definition.ContractTemplateCreateReq": {
+            "type": "object",
+            "required": [
+                "hash",
+                "name",
+                "url"
+            ],
+            "properties": {
+                "aimed": {
+                    "description": "用户类型 1:个签 2:团签",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.ContractTemplateAimed"
+                        }
+                    ]
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "hash": {
+                    "description": "合同hash",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "合同名称",
+                    "type": "string"
+                },
+                "planType": {
+                    "description": "订阅类型 1:单电 2:车电",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PlanType"
+                        }
+                    ]
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "合同链接",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.ContractTemplateListRes": {
+            "type": "object",
+            "properties": {
+                "aimed": {
+                    "description": "用户类型 1:个签 2:团签",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.ContractTemplateAimed"
+                        }
+                    ]
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "hash": {
+                    "description": "合同hash",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "合同名称",
+                    "type": "string"
+                },
+                "planType": {
+                    "description": "订阅类型 1:单电 2:车电",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PlanType"
+                        }
+                    ]
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "合同链接",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.ContractTemplateModifyReq": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "aimed": {
+                    "description": "用户类型 1:个签 2:团签",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.ContractTemplateAimed"
+                        }
+                    ]
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "合同名称",
+                    "type": "string"
+                },
+                "planType": {
+                    "description": "订阅类型 1:单电 2:车电",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PlanType"
+                        }
+                    ]
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
                 }
             }
         },
@@ -16046,22 +16046,22 @@
                     "description": "电柜ID",
                     "type": "integer"
                 },
-              "depositAmount": {
-                "description": "退押金金额(后台使用)",
-                "type": "number"
-              },
+                "depositAmount": {
+                    "description": "退押金金额(后台使用)",
+                    "type": "number"
+                },
                 "id": {
                     "description": "订阅ID",
                     "type": "integer"
                 },
-              "refundDeposit": {
-                "description": "是否退押金, 是否退押金(后台使用)",
-                "type": "boolean"
-              },
-              "remark": {
-                "description": "备注",
-                "type": "string"
-              },
+                "refundDeposit": {
+                    "description": "是否退押金, 是否退押金(后台使用)",
+                    "type": "boolean"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
                 "storeId": {
                     "description": "门店ID",
                     "type": "integer"
@@ -19510,10 +19510,10 @@
                         "$ref": "#/definitions/model.CouponRider"
                     }
                 },
-              "createdAt": {
-                "description": "创建时间",
-                "type": "string"
-              },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
                 "discountNewly": {
                     "description": "新签优惠",
                     "type": "number"
@@ -19663,8 +19663,8 @@
                     "description": "电池型号",
                     "type": "string"
                 },
-              "outOrderNo": {
-                "description": "预授权订单号",
+                "outOrderNo": {
+                    "description": "预授权订单号",
                     "type": "string"
                 },
                 "payway": {
@@ -19692,18 +19692,18 @@
                     "description": "时间起始, 格式为: 2022-01-01",
                     "type": "string"
                 },
-              "status": {
-                "description": "订单状态 0:待支付 1:已支付 2:申请退款 3:已退款 4:退款被拒绝 5:取消订单",
-                "type": "integer",
-                "enum": [
-                  0,
-                  1,
-                  2,
-                  3,
-                  4,
-                  5
-                ]
-              },
+                "status": {
+                    "description": "订单状态 0:待支付 1:已支付 2:申请退款 3:已退款 4:退款被拒绝 5:取消订单",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                },
                 "storeName": {
                     "description": "门店名字",
                     "type": "string"
@@ -19847,13 +19847,13 @@
                     "description": "售价",
                     "type": "number"
                 },
-              "type": {
-                "description": "类别",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/model.PlanType"
-                  }
-                ]
+                "type": {
+                    "description": "类别",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PlanType"
+                        }
+                    ]
                 }
             }
         },
@@ -20440,10 +20440,10 @@
                     "description": "退款成功时间",
                     "type": "string"
                 },
-              "remainAmount": {
-                "description": "剩余金额",
-                "type": "number"
-              },
+                "remainAmount": {
+                    "description": "剩余金额",
+                    "type": "number"
+                },
                 "remark": {
                     "description": "备注",
                     "type": "string"
@@ -21026,10 +21026,10 @@
                 "id"
             ],
             "properties": {
-              "address": {
-                "description": "详细地址",
-                "type": "string"
-              },
+                "address": {
+                    "description": "详细地址",
+                    "type": "string"
+                },
                 "authStatus": {
                     "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
                     "enum": [

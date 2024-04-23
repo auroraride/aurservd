@@ -661,20 +661,20 @@ definitions:
         type: number
       type:
         allOf:
-          - $ref: '#/definitions/model.PlanType'
+        - $ref: '#/definitions/model.PlanType'
         description: 类别
     type: object
   model.PlanType:
     enum:
-      - 1
-      - 2
+    - 1
+    - 2
     type: integer
     x-enum-comments:
       PlanTypeBattery: 单电
       PlanTypeEbikeWithBattery: 车加电
     x-enum-varnames:
-      - PlanTypeBattery
-      - PlanTypeEbikeWithBattery
+    - PlanTypeBattery
+    - PlanTypeEbikeWithBattery
   model.Rider:
     properties:
       id:

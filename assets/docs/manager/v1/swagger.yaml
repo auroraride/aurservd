@@ -256,20 +256,20 @@ definitions:
     type: object
   definition.ContractTemplateAimed:
     enum:
-      - 1
-      - 2
+    - 1
+    - 2
     type: integer
     x-enum-comments:
       ContractTemplateAimedEnterprise: 团签
       ContractTemplateAimedPersonal: 个签
     x-enum-varnames:
-      - ContractTemplateAimedPersonal
-      - ContractTemplateAimedEnterprise
+    - ContractTemplateAimedPersonal
+    - ContractTemplateAimedEnterprise
   definition.ContractTemplateCreateReq:
     properties:
       aimed:
         allOf:
-          - $ref: '#/definitions/definition.ContractTemplateAimed'
+        - $ref: '#/definitions/definition.ContractTemplateAimed'
         description: 用户类型 1:个签 2:团签
       enable:
         description: 是否启用
@@ -282,7 +282,7 @@ definitions:
         type: string
       planType:
         allOf:
-          - $ref: '#/definitions/model.PlanType'
+        - $ref: '#/definitions/model.PlanType'
         description: 订阅类型 1:单电 2:车电
       remark:
         description: 备注
@@ -291,15 +291,15 @@ definitions:
         description: 合同链接
         type: string
     required:
-      - hash
-      - name
-      - url
+    - hash
+    - name
+    - url
     type: object
   definition.ContractTemplateListRes:
     properties:
       aimed:
         allOf:
-          - $ref: '#/definitions/definition.ContractTemplateAimed'
+        - $ref: '#/definitions/definition.ContractTemplateAimed'
         description: 用户类型 1:个签 2:团签
       createdAt:
         description: 创建时间
@@ -318,7 +318,7 @@ definitions:
         type: string
       planType:
         allOf:
-          - $ref: '#/definitions/model.PlanType'
+        - $ref: '#/definitions/model.PlanType'
         description: 订阅类型 1:单电 2:车电
       remark:
         description: 备注
@@ -331,7 +331,7 @@ definitions:
     properties:
       aimed:
         allOf:
-          - $ref: '#/definitions/definition.ContractTemplateAimed'
+        - $ref: '#/definitions/definition.ContractTemplateAimed'
         description: 用户类型 1:个签 2:团签
       enable:
         description: 是否启用
@@ -341,13 +341,13 @@ definitions:
         type: string
       planType:
         allOf:
-          - $ref: '#/definitions/model.PlanType'
+        - $ref: '#/definitions/model.PlanType'
         description: 订阅类型 1:单电 2:车电
       remark:
         description: 备注
         type: string
     required:
-      - name
+    - name
     type: object
   definition.Fault:
     properties:
@@ -4319,12 +4319,12 @@ definitions:
       status:
         description: 订单状态 0:待支付 1:已支付 2:申请退款 3:已退款 4:退款被拒绝 5:取消订单
         enum:
-          - 0
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
         type: integer
       storeName:
         description: 门店名字
@@ -4433,7 +4433,7 @@ definitions:
         type: number
       type:
         allOf:
-          - $ref: '#/definitions/model.PlanType'
+        - $ref: '#/definitions/model.PlanType'
         description: 类别
     type: object
   model.PlanComplex:
@@ -9329,20 +9329,20 @@ paths:
               type: object
       summary: 合同列表
       tags:
-        - 合同
+      - 合同
   /manager/v1/contract/template:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerContractTemplateList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -9352,25 +9352,25 @@ paths:
             type: array
       summary: 合同模板列表
       tags:
-        - 合同
+      - 合同
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerContractTemplateCreate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.ContractTemplateCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.ContractTemplateCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -9378,26 +9378,26 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建合同模板
       tags:
-        - 合同
+      - 合同
   /manager/v1/contract/template/{id}:
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerContractTemplateModify
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.ContractTemplateModifyReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.ContractTemplateModifyReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -12111,12 +12111,12 @@ paths:
         type: string
       - description: 订单状态 0:待支付 1:已支付 2:申请退款 3:已退款 4:退款被拒绝 5:取消订单
         enum:
-          - 0
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
         in: query
         name: status
         type: integer

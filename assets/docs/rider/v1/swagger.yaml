@@ -189,7 +189,7 @@ definitions:
       batteryNum:
         description: 电池数量
         type: integer
-      cabinetNumm:
+      cabinetNum:
         description: 电柜数量
         type: integer
       fid:
@@ -307,6 +307,11 @@ definitions:
       name:
         description: 网点名称
         type: string
+      photos:
+        description: 网点图片(V2)
+        items:
+          type: string
+        type: array
       store:
         allOf:
         - $ref: '#/definitions/model.BranchFacilityStore'
@@ -368,6 +373,11 @@ definitions:
       name:
         description: 网点名称
         type: string
+      photos:
+        description: 网点图片(V2)
+        items:
+          type: string
+        type: array
     type: object
   model.BusinessCabinetReq:
     properties:
@@ -555,10 +565,10 @@ definitions:
     type: object
   model.DepositType:
     enum:
-      - 1
-      - 2
-      - 3
-      - 4
+    - 1
+    - 2
+    - 3
+    - 4
     type: integer
     x-enum-comments:
       DepositTypeAlipayAuthFreeze: 芝麻免押
@@ -566,10 +576,10 @@ definitions:
       DepositTypePay: 支付押金
       DepositTypeWechatDeposit: 微信支付分免押
     x-enum-varnames:
-      - DepositTypeAlipayAuthFreeze
-      - DepositTypeWechatDeposit
-      - DepositTypeContract
-      - DepositTypePay
+    - DepositTypeAlipayAuthFreeze
+    - DepositTypeWechatDeposit
+    - DepositTypeContract
+    - DepositTypePay
   model.Ebike:
     properties:
       brand:
@@ -1033,7 +1043,7 @@ definitions:
         type: number
       type:
         allOf:
-          - $ref: '#/definitions/model.PlanType'
+        - $ref: '#/definitions/model.PlanType'
         description: 类别
     type: object
   model.PlanDaysPriceOption:
@@ -1144,15 +1154,15 @@ definitions:
     type: object
   model.PlanType:
     enum:
-      - 1
-      - 2
+    - 1
+    - 2
     type: integer
     x-enum-comments:
       PlanTypeBattery: 单电
       PlanTypeEbikeWithBattery: 车加电
     x-enum-varnames:
-      - PlanTypeBattery
-      - PlanTypeEbikeWithBattery
+    - PlanTypeBattery
+    - PlanTypeEbikeWithBattery
   model.PointLogListRes:
     properties:
       after:
@@ -1784,7 +1794,7 @@ definitions:
         type: number
       depositType:
         allOf:
-          - $ref: '#/definitions/model.DepositType'
+        - $ref: '#/definitions/model.DepositType'
         description: 押金类型  1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金
       points:
         description: 积分数量
