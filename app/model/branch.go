@@ -144,7 +144,7 @@ type BranchFacility struct {
 	Num        int    `json:"num"`             // 满电数量
 	Phone      string `json:"phone,omitempty"` // 联系电话
 	Total      int    `json:"total"`           // 仓位数量
-	CabinetNum int    `json:"cabinetNumm"`     // 电柜数量
+	CabinetNum int    `json:"cabinetNum"`      // 电柜数量
 	BatteryNum int    `json:"batteryNum"`      // 电池数量
 }
 

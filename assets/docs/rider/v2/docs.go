@@ -4792,7 +4792,7 @@ const docTemplate = `{
                     "description": "电池数量",
                     "type": "integer"
                 },
-                "cabinetNumm": {
+                "cabinetNum": {
                     "description": "电柜数量",
                     "type": "integer"
                 },
