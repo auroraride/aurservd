@@ -136,14 +136,16 @@ type BranchDistanceListRes struct {
 
 // BranchFacility 网点设施
 type BranchFacility struct {
-	ID    uint64 `json:"id"`
-	Type  string `json:"type"`            // 类别
-	Name  string `json:"name"`            // 名称
-	State uint   `json:"state"`           // 状态 0不可用 1可用
-	Num   int    `json:"num"`             // 满电数量
-	Total int    `json:"total"`           // 总电池
-	Fid   string `json:"fid"`             // 设施标识
-	Phone string `json:"phone,omitempty"` // 联系电话
+	ID         uint64 `json:"id"`
+	Fid        string `json:"fid"`             // 设施标识
+	Type       string `json:"type"`            // 类别
+	Name       string `json:"name"`            // 名称
+	State      uint   `json:"state"`           // 状态 0不可用 1可用
+	Num        int    `json:"num"`             // 满电数量
+	Phone      string `json:"phone,omitempty"` // 联系电话
+	Total      int    `json:"total"`           // 仓位数量
+	CabinetNum int    `json:"cabinetNumm"`     // 电柜数量
+	BatteryNum int    `json:"batteryNum"`      // 电池数量
 }
 
 // BranchWithDistanceRes 根据距离获取网点结果

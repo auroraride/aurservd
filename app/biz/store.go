@@ -128,9 +128,13 @@ func (s *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 			Name: item.Edges.City.Name,
 		}
 	}
-	value, err := item.Value("distance")
-	if err == nil {
-		res.Distance = value.(float64)
+
+	distance, err := item.Value("distance")
+	if distance != nil || err == nil {
+		distanceFloat, ok := distance.(float64)
+		if ok {
+			res.Distance = distanceFloat
+		}
 	}
 
 	return
@@ -207,9 +211,13 @@ func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreDetailReq
 			}
 		}
 	}
-	value, err := q.Value("distance")
-	if err == nil {
-		res.Distance = value.(float64)
+	var distance ent.Value
+	distance, err = q.Value("distance")
+	if distance != nil || err == nil {
+		distanceFloat, ok := distance.(float64)
+		if ok {
+			res.Distance = distanceFloat
+		}
 	}
 	return res, nil
 }

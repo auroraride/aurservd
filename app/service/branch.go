@@ -383,7 +383,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 }
 
 // ListByDistanceRider 根据距离列出所有网点和电柜
-func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (items []*model.BranchWithDistanceRes) {
+func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2 bool) (items []*model.BranchWithDistanceRes) {
 	var sub *ent.Subscribe
 	if s.rider != nil {
 		sub, _ = NewSubscribeWithRider(s.rider).QueryEffective(s.rider.ID)
@@ -463,11 +463,12 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 
 		if model.CabinetStatus(c.Status) == model.CabinetStatusNormal && resvcheck {
 			fa := model.BranchFacility{
-				ID:    c.ID,
-				Name:  c.Name,
-				State: model.BranchFacilityStateOffline,
-				Type:  model.BranchFacilityTypeV72,
-				Fid:   s.EncodeFacility(nil, c),
+				ID:         c.ID,
+				Name:       c.Name,
+				State:      model.BranchFacilityStateOffline,
+				Type:       model.BranchFacilityTypeV72,
+				Fid:        s.EncodeFacility(nil, c),
+				CabinetNum: 1,
 			}
 			// 获取健康状态
 			// 5分钟未更新视为离线
@@ -480,6 +481,9 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 				// TODO 替换
 				if bin.Electricity.IsBatteryFull() {
 					fa.Num += 1
+				}
+				if bin.Battery {
+					fa.BatteryNum += 1
 				}
 			}
 
@@ -555,7 +559,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 	for _, m := range itemsMap {
 		for _, fa := range m.FacilityMap {
 			// TODO 最多显示电池数量
-			if fa.Num >= 19 {
+			if fa.Num >= 19 && !v2 {
 				fa.Num = 19
 			}
 			m.Facility = append(m.Facility, fa)
@@ -578,6 +582,7 @@ func (s *branchService) facility(mp map[string]*model.BranchFacility, info model
 		if info.Type != model.BranchFacilityTypeStore {
 			fa.Num += info.Num
 			fa.Total += info.Total
+			fa.CabinetNum += info.CabinetNum
 		}
 	} else {
 		fa = &info

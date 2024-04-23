@@ -696,8 +696,8 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 		if p.Banned {
 			ri.Status = model.RiderStatusBanned
 		}
-		if p.AuthResult != nil {
-			ri.Address = p.AuthResult.Address
+		if p.FaceVerifyResult != nil {
+			ri.Address = p.FaceVerifyResult.Address
 		}
 		ri.Person = &model.Person{
 			IDCardNumber:   p.IDCardNumber,

@@ -2732,6 +2732,14 @@ const docTemplate = `{
         "model.BranchFacility": {
             "type": "object",
             "properties": {
+                "batteryNum": {
+                    "description": "电池数量",
+                    "type": "integer"
+                },
+                "cabinetNumm": {
+                    "description": "电柜数量",
+                    "type": "integer"
+                },
                 "fid": {
                     "description": "设施标识",
                     "type": "string"
@@ -2756,7 +2764,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "total": {
-                    "description": "总电池",
+                    "description": "仓位数量",
                     "type": "integer"
                 },
                 "type": {
@@ -3947,6 +3955,14 @@ const docTemplate = `{
                 "price": {
                     "description": "售价",
                     "type": "number"
+                },
+                "type": {
+                    "description": "类别",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PlanType"
+                        }
+                    ]
                 }
             }
         },
@@ -4107,6 +4123,21 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "model.PlanType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "PlanTypeBattery": "单电",
+                "PlanTypeEbikeWithBattery": "车加电"
+            },
+            "x-enum-varnames": [
+                "PlanTypeBattery",
+                "PlanTypeEbikeWithBattery"
+            ]
         },
         "model.PointLogListRes": {
             "type": "object",

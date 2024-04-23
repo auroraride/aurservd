@@ -2394,8 +2394,31 @@ const docTemplate = `{
                 "price": {
                     "description": "售价",
                     "type": "number"
+                },
+                "type": {
+                    "description": "类别",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PlanType"
+                        }
+                    ]
                 }
             }
+        },
+        "model.PlanType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "PlanTypeBattery": "单电",
+                "PlanTypeEbikeWithBattery": "车加电"
+            },
+            "x-enum-varnames": [
+                "PlanTypeBattery",
+                "PlanTypeEbikeWithBattery"
+            ]
         },
         "model.Rider": {
             "type": "object",

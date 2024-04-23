@@ -2248,41 +2248,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v2/guide": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Guide - 新手引导"
-                ],
-                "summary": "新手指引列表",
-                "operationId": "GuideList",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/definition.GuideDetail"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v2/instructions/{key}": {
             "get": {
                 "consumes": [
@@ -3836,26 +3801,6 @@ const docTemplate = `{
                 "FaultTypeOther"
             ]
         },
-        "definition.GuideDetail": {
-            "type": "object",
-            "properties": {
-                "answer": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "remark": {
-                    "type": "string"
-                },
-                "sort": {
-                    "type": "integer"
-                }
-            }
-        },
         "definition.InstructionsRes": {
             "type": "object",
             "properties": {
@@ -4843,6 +4788,14 @@ const docTemplate = `{
         "model.BranchFacility": {
             "type": "object",
             "properties": {
+                "batteryNum": {
+                    "description": "电池数量",
+                    "type": "integer"
+                },
+                "cabinetNumm": {
+                    "description": "电柜数量",
+                    "type": "integer"
+                },
                 "fid": {
                     "description": "设施标识",
                     "type": "string"
@@ -4867,7 +4820,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "total": {
-                    "description": "总电池",
+                    "description": "仓位数量",
                     "type": "integer"
                 },
                 "type": {
@@ -6277,6 +6230,14 @@ const docTemplate = `{
                 "price": {
                     "description": "售价",
                     "type": "number"
+                },
+                "type": {
+                    "description": "类别",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PlanType"
+                        }
+                    ]
                 }
             }
         },
@@ -6390,6 +6351,21 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "model.PlanType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "PlanTypeBattery": "单电",
+                "PlanTypeEbikeWithBattery": "车加电"
+            },
+            "x-enum-varnames": [
+                "PlanTypeBattery",
+                "PlanTypeEbikeWithBattery"
+            ]
         },
         "model.PointLogListRes": {
             "type": "object",
