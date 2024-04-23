@@ -1041,40 +1041,40 @@
                 }
             }
         },
-        "/rider/v2/certification/supplement": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Person - 实人"
-                ],
-                "summary": "提交人脸核身补充信息",
-                "operationId": "PersonCertificationSupplement",
-                "parameters": [
-                    {
-                        "description": "请求参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/definition.PersonCertificationSupplementReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
+      "/rider/v2/certification/supplement": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "Person - 实人"
+          ],
+          "summary": "提交人脸核身补充信息",
+          "operationId": "PersonCertificationSupplement",
+          "parameters": [
+            {
+              "description": "请求参数",
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/definition.PersonCertificationSupplementReq"
+              }
             }
-        },
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/model.StatusResponse"
+              }
+            }
+          }
+        }
+      },
         "/rider/v2/change/phone": {
             "post": {
                 "consumes": [
@@ -1192,47 +1192,47 @@
                 }
             }
         },
-        "/rider/v2/contract/create": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Contract - 合同"
-                ],
-                "summary": "创建合同",
-                "operationId": "ContractCreate",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "desc",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/definition.ContractCreateReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/definition.ContractCreateRes"
-                        }
-                    }
-                }
+      "/rider/v2/contract/create": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "Contract - 合同"
+          ],
+          "summary": "创建合同",
+          "operationId": "ContractCreate",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "骑手校验token",
+              "name": "X-Rider-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "description": "desc",
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/definition.ContractCreateReq"
+              }
             }
-        },
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/definition.ContractCreateRes"
+              }
+            }
+          }
+        }
+      },
         "/rider/v2/contract/sign": {
             "post": {
                 "consumes": [
@@ -1260,7 +1260,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/definition.ContractSignNewReq"
+                          "$ref": "#/definitions/definition.ContractSignNewReq"
                         }
                     }
                 ],
@@ -1268,7 +1268,7 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.ContractSignNewRes"
+                          "$ref": "#/definitions/definition.ContractSignNewRes"
                         }
                     }
                 }
@@ -2427,7 +2427,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Order - 订单"
+                  "Order - 订单"
                 ],
                 "summary": "申请退款",
                 "operationId": "OrderRefund",
@@ -2570,7 +2570,7 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.PlanNewlyRes"
+                          "$ref": "#/definitions/definition.PlanNewlyRes"
                         }
                     }
                 }
@@ -3068,19 +3068,19 @@
                         "in": "path",
                         "required": true
                     },
-                    {
-                        "type": "number",
-                        "description": "纬度",
-                        "name": "lat",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "number",
-                        "description": "经度",
-                        "name": "lng",
-                        "in": "query",
-                        "required": true
+                  {
+                    "type": "number",
+                    "description": "纬度",
+                    "name": "lat",
+                    "in": "query",
+                    "required": true
+                  },
+                  {
+                    "type": "number",
+                    "description": "经度",
+                    "name": "lng",
+                    "in": "query",
+                    "required": true
                     }
                 ],
                 "responses": {
@@ -3139,45 +3139,45 @@
                 }
             }
         },
-        "/rider/v2/subscribe/status": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Subscribe - 订阅"
-                ],
-                "summary": "查询订阅是否激活",
-                "operationId": "SubscribeStatus",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "订阅ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "TRUE已激活, FALSE未激活",
-                        "schema": {
-                            "type": "boolean"
-                        }
-                    }
-                }
+      "/rider/v2/subscribe/status": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "Subscribe - 订阅"
+          ],
+          "summary": "查询订阅是否激活",
+          "operationId": "SubscribeStatus",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "骑手校验token",
+              "name": "X-Rider-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "integer",
+              "description": "订阅ID",
+              "name": "id",
+              "in": "query",
+              "required": true
             }
-        },
+          ],
+          "responses": {
+            "200": {
+              "description": "TRUE已激活, FALSE未激活",
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
         "/rider/v2/subscribe/store": {
             "put": {
                 "consumes": [
@@ -3610,70 +3610,70 @@
                 }
             }
         },
-        "definition.ContractCreateReq": {
-            "type": "object",
-            "required": [
-                "subscribeId"
-            ],
-            "properties": {
-                "subscribeId": {
-                    "description": "订阅ID",
-                    "type": "integer"
+      "definition.ContractCreateReq": {
+        "type": "object",
+        "required": [
+          "subscribeId"
+        ],
+        "properties": {
+          "subscribeId": {
+            "description": "订阅ID",
+            "type": "integer"
                 }
             }
         },
-        "definition.ContractCreateRes": {
-            "type": "object",
-            "properties": {
-                "docId": {
-                    "description": "合同ID",
-                    "type": "string"
-                },
-                "effective": {
-                    "description": "是否存在生效中的合同, 若返回值为true则代表无需签合同",
-                    "type": "boolean"
-                },
-                "link": {
-                    "description": "合同链接",
-                    "type": "string"
-                },
-                "needRealName": {
-                    "description": "是否需要实名认证   true:需要  false:不需要",
-                    "type": "boolean"
-                }
-            }
-        },
-        "definition.ContractSignNewReq": {
-            "type": "object",
-            "required": [
-                "docId",
-                "seal",
-                "subscribeId"
-            ],
-            "properties": {
-                "docId": {
-                    "description": "合同ID",
-                    "type": "string"
-                },
-                "seal": {
-                    "description": "签名Base64",
-                    "type": "string"
-                },
-                "subscribeId": {
-                    "description": "订阅ID",
-                    "type": "integer"
-                }
-            }
-        },
-        "definition.ContractSignNewRes": {
-            "type": "object",
-            "properties": {
-                "link": {
-                    "description": "合同链接",
-                    "type": "string"
-                }
-            }
-        },
+      "definition.ContractCreateRes": {
+        "type": "object",
+        "properties": {
+          "docId": {
+            "description": "合同ID",
+            "type": "string"
+          },
+          "effective": {
+            "description": "是否存在生效中的合同, 若返回值为true则代表无需签合同",
+            "type": "boolean"
+          },
+          "link": {
+            "description": "合同链接",
+            "type": "string"
+          },
+          "needRealName": {
+            "description": "是否需要实名认证   true:需要  false:不需要",
+            "type": "boolean"
+          }
+        }
+      },
+      "definition.ContractSignNewReq": {
+        "type": "object",
+        "required": [
+          "docId",
+          "seal",
+          "subscribeId"
+        ],
+        "properties": {
+          "docId": {
+            "description": "合同ID",
+            "type": "string"
+          },
+          "seal": {
+            "description": "签名Base64",
+            "type": "string"
+          },
+          "subscribeId": {
+            "description": "订阅ID",
+            "type": "integer"
+          }
+        }
+      },
+      "definition.ContractSignNewRes": {
+        "type": "object",
+        "properties": {
+          "link": {
+            "description": "合同链接",
+            "type": "string"
+          }
+        }
+      },
         "definition.Destination": {
             "type": "object",
             "properties": {
@@ -3738,7 +3738,7 @@
                 "attachments": {
                     "description": "附件",
                     "type": "array",
-                    "maxItems": 5,
+                  "maxItems": 5,
                     "items": {
                         "type": "string"
                     }
@@ -3813,7 +3813,7 @@
             "type": "object",
             "required": [
                 "orderType",
-                "payway"
+              "payway"
             ],
             "properties": {
                 "agreementHash": {
@@ -3839,13 +3839,13 @@
                     "description": "押金订单编号 (如果分开支付的押金此参必填 例如 选择了信用免押,支付为支付宝,则此参数必填)",
                     "type": "string"
                 },
-                "depositType": {
-                    "description": "押金类型 1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.DepositType"
-                        }
-                    ]
+              "depositType": {
+                "description": "押金类型 1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金",
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/model.DepositType"
+                  }
+                ]
                 },
                 "orderType": {
                     "description": "订单类型, 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
@@ -4080,61 +4080,61 @@
                 }
             }
         },
-        "definition.PersonCertificationSupplementReq": {
-            "type": "object",
-            "required": [
-                "identity"
-            ],
-            "properties": {
-                "identity": {
-                    "description": "加密身份信息，base64编码",
-                    "type": "string"
+      "definition.PersonCertificationSupplementReq": {
+        "type": "object",
+        "required": [
+          "identity"
+        ],
+        "properties": {
+          "identity": {
+            "description": "加密身份信息，base64编码",
+            "type": "string"
                 }
             }
         },
-        "definition.PlanNewlyRes": {
-            "type": "object",
-            "properties": {
-                "batteryDescription": {
-                    "description": "单电介绍",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.SettingPlanDescription"
-                        }
-                    ]
-                },
-                "brands": {
-                    "description": "车电选项",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.PlanEbikeBrandOption"
-                    }
-                },
-                "configure": {
-                    "description": "支付配置",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.PaymentConfigure"
-                        }
-                    ]
-                },
-                "ebikeDescription": {
-                    "description": "车电介绍",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.SettingPlanDescription"
-                        }
-                    ]
-                },
-                "models": {
-                    "description": "单电选项",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.PlanModelOption"
-                    }
-                }
+      "definition.PlanNewlyRes": {
+        "type": "object",
+        "properties": {
+          "batteryDescription": {
+            "description": "单电介绍",
+            "allOf": [
+              {
+                "$ref": "#/definitions/model.SettingPlanDescription"
+              }
+            ]
+          },
+          "brands": {
+            "description": "车电选项",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/model.PlanEbikeBrandOption"
             }
-        },
+          },
+          "configure": {
+            "description": "支付配置",
+            "allOf": [
+              {
+                "$ref": "#/definitions/model.PaymentConfigure"
+              }
+            ]
+          },
+          "ebikeDescription": {
+            "description": "车电介绍",
+            "allOf": [
+              {
+                "$ref": "#/definitions/model.SettingPlanDescription"
+              }
+            ]
+          },
+          "models": {
+            "description": "单电选项",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/model.PlanModelOption"
+            }
+          }
+        }
+      },
         "definition.QuestionCategoryDetail": {
             "type": "object",
             "required": [
@@ -4780,14 +4780,14 @@
         "model.BranchFacility": {
             "type": "object",
             "properties": {
-                "batteryNum": {
-                    "description": "电池数量",
-                    "type": "integer"
-                },
-                "cabinetNum": {
-                    "description": "电柜数量",
-                    "type": "integer"
-                },
+              "batteryNum": {
+                "description": "电池数量",
+                "type": "integer"
+              },
+              "cabinetNum": {
+                "description": "电柜数量",
+                "type": "integer"
+              },
                 "fid": {
                     "description": "设施标识",
                     "type": "string"
@@ -4812,7 +4812,7 @@
                     "type": "integer"
                 },
                 "total": {
-                    "description": "仓位数量",
+                  "description": "仓位数量",
                     "type": "integer"
                 },
                 "type": {
@@ -4950,6 +4950,13 @@
                     "description": "网点名称",
                     "type": "string"
                 },
+              "photos": {
+                "description": "网点图片(V2)",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
                 "store": {
                     "description": "门店, 当type=store时存在",
                     "allOf": [
@@ -5037,6 +5044,13 @@
                 "name": {
                     "description": "网点名称",
                     "type": "string"
+                },
+              "photos": {
+                "description": "网点图片(V2)",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
                 }
             }
         },
@@ -5495,27 +5509,27 @@
                 }
             }
         },
-        "model.DepositType": {
-            "type": "integer",
-            "enum": [
-                1,
-                2,
-                3,
-                4
-            ],
-            "x-enum-comments": {
-                "DepositTypeAlipayAuthFreeze": "芝麻免押",
-                "DepositTypeContract": "合同押金",
-                "DepositTypePay": "支付押金",
-                "DepositTypeWechatDeposit": "微信支付分免押"
-            },
-            "x-enum-varnames": [
-                "DepositTypeAlipayAuthFreeze",
-                "DepositTypeWechatDeposit",
-                "DepositTypeContract",
-                "DepositTypePay"
-            ]
+      "model.DepositType": {
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "x-enum-comments": {
+          "DepositTypeAlipayAuthFreeze": "芝麻免押",
+          "DepositTypeContract": "合同押金",
+          "DepositTypePay": "支付押金",
+          "DepositTypeWechatDeposit": "微信支付分免押"
         },
+        "x-enum-varnames": [
+          "DepositTypeAlipayAuthFreeze",
+          "DepositTypeWechatDeposit",
+          "DepositTypeContract",
+          "DepositTypePay"
+        ]
+      },
         "model.Ebike": {
             "type": "object",
             "properties": {
@@ -5986,10 +6000,10 @@
                         "$ref": "#/definitions/model.CouponRider"
                     }
                 },
-                "createdAt": {
-                    "description": "创建时间",
-                    "type": "string"
-                },
+              "createdAt": {
+                "description": "创建时间",
+                "type": "string"
+              },
                 "discountNewly": {
                     "description": "新签优惠",
                     "type": "number"
@@ -6223,13 +6237,13 @@
                     "description": "售价",
                     "type": "number"
                 },
-                "type": {
-                    "description": "类别",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.PlanType"
-                        }
-                    ]
+              "type": {
+                "description": "类别",
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/model.PlanType"
+                  }
+                ]
                 }
             }
         },
@@ -6344,21 +6358,21 @@
                 }
             }
         },
-        "model.PlanType": {
-            "type": "integer",
-            "enum": [
-                1,
-                2
-            ],
-            "x-enum-comments": {
-                "PlanTypeBattery": "单电",
-                "PlanTypeEbikeWithBattery": "车加电"
-            },
-            "x-enum-varnames": [
-                "PlanTypeBattery",
-                "PlanTypeEbikeWithBattery"
-            ]
+      "model.PlanType": {
+        "type": "integer",
+        "enum": [
+          1,
+          2
+        ],
+        "x-enum-comments": {
+          "PlanTypeBattery": "单电",
+          "PlanTypeEbikeWithBattery": "车加电"
         },
+        "x-enum-varnames": [
+          "PlanTypeBattery",
+          "PlanTypeEbikeWithBattery"
+        ]
+      },
         "model.PointLogListRes": {
             "type": "object",
             "properties": {
@@ -6439,10 +6453,10 @@
                     "description": "退款成功时间",
                     "type": "string"
                 },
-                "remainAmount": {
-                    "description": "剩余金额",
-                    "type": "number"
-                },
+              "remainAmount": {
+                "description": "剩余金额",
+                "type": "number"
+              },
                 "remark": {
                     "description": "备注",
                     "type": "string"
@@ -6546,10 +6560,10 @@
                     "description": "电柜ID",
                     "type": "integer"
                 },
-                "endTime": {
-                    "description": "结束时间",
-                    "type": "string"
-                },
+              "endTime": {
+                "description": "结束时间",
+                "type": "string"
+              },
                 "fid": {
                     "description": "设施ID",
                     "type": "string"
@@ -7263,14 +7277,14 @@
                     "description": "已缴纳押金",
                     "type": "number"
                 },
-                "depositType": {
-                    "description": "押金类型  1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.DepositType"
-                        }
-                    ]
-                },
+              "depositType": {
+                "description": "押金类型  1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金",
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/model.DepositType"
+                  }
+                ]
+              },
                 "points": {
                     "description": "积分数量",
                     "type": "integer"

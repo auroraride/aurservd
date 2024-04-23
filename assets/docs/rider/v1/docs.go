@@ -2902,6 +2902,13 @@ const docTemplate = `{
                     "description": "网点名称",
                     "type": "string"
                 },
+                "photos": {
+                    "description": "网点图片(V2)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "store": {
                     "description": "门店, 当type=store时存在",
                     "allOf": [
@@ -2989,6 +2996,13 @@ const docTemplate = `{
                 "name": {
                     "description": "网点名称",
                     "type": "string"
+                },
+                "photos": {
+                    "description": "网点图片(V2)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

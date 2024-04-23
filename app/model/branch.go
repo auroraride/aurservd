@@ -156,6 +156,7 @@ type BranchWithDistanceRes struct {
 	Lng         float64                    `json:"lng"`      // 经度
 	Lat         float64                    `json:"lat"`      // 纬度
 	Image       string                     `json:"image"`    // 网点图片
+	Photos      []string                   `json:"photos"`   // 网点图片(V2)
 	Address     string                     `json:"address"`  // 网点地址
 	Facility    []*BranchFacility          `json:"facility"` // 网点设施
 	FacilityMap map[string]*BranchFacility `json:"-" swaggerignore:"true"`
@@ -193,6 +194,7 @@ type BranchFacilityRes struct {
 	Distance float64                 `json:"distance"`                   // 距离(前端处理: 超过1000米显示nKM)
 	Type     string                  `json:"type" enums:"store,cabinet"` // 设施类型 store:门店 cabinet:电柜(此时cabinet字段为数组)
 	Image    string                  `json:"image"`                      // 网点图片
+	Photos   []string                `json:"photos"`                     // 网点图片(V2)
 	Store    *BranchFacilityStore    `json:"store,omitempty"`            // 门店, 当type=store时存在
 	Cabinet  []BranchFacilityCabinet `json:"cabinet,omitempty"`          // 电柜, 当type=cabinet时存在, 根据序号显示 1号柜/2号柜 等, 当仅有一个电柜时, 电柜切换tab隐藏
 }

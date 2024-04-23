@@ -217,13 +217,14 @@ func (s *branchService) Selector() *model.ItemListRes {
 }
 
 type branchListTemp struct {
-	ID       uint64  `json:"id"`
-	Distance float64 `json:"distance"`
-	Name     string  `json:"name"`
-	Lng      float64 `json:"lng"`
-	Lat      float64 `json:"lat"`
-	Image    string  `json:"image"`
-	Address  string  `json:"address"`
+	ID       uint64   `json:"id"`
+	Distance float64  `json:"distance"`
+	Name     string   `json:"name"`
+	Lng      float64  `json:"lng"`
+	Lat      float64  `json:"lat"`
+	Image    string   `json:"image"`
+	Photos   []string `json:"photos"`
+	Address  string   `json:"address"`
 }
 
 func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *ent.Subscribe) (temps []branchListTemp, stores []*ent.Store, cabinets []*ent.Cabinet) {
@@ -233,7 +234,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 	q := s.orm.QueryNotDeleted().
 		Modify(func(sel *sql.Selector) {
 			bt := sql.Table(branch.Table)
-			sel.Select(bt.C(branch.FieldID), bt.C(branch.FieldName), bt.C(branch.FieldAddress), bt.C(branch.FieldLat), bt.C(branch.FieldLng)).
+			sel.Select(bt.C(branch.FieldID), bt.C(branch.FieldName), bt.C(branch.FieldAddress), bt.C(branch.FieldLat), bt.C(branch.FieldLng), bt.C(branch.FieldPhotos)).
 				AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(%s, ST_GeogFromText('POINT(%f %f)'))`, branch.FieldGeom, *req.Lng, *req.Lat)), "distance").
 				AppendSelectExprAs(sql.Raw(fmt.Sprintf(`TRIM('"' FROM %s[0]::TEXT)`, branch.FieldPhotos)), "image").
 				GroupBy(bt.C(branch.FieldID)).
@@ -410,6 +411,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 			Lng:         temp.Lng,
 			Lat:         temp.Lat,
 			Image:       temp.Image,
+			Photos:      temp.Photos,
 			Address:     temp.Address,
 			Facility:    make([]*model.BranchFacility, 0),
 			FacilityMap: make(map[string]*model.BranchFacility),
@@ -452,7 +454,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 
 	// 电柜
 	// 同步电柜信息
-	NewCabinet().SyncCabinets(cabinets)
+	// NewCabinet().SyncCabinets(cabinets)
 	for _, c := range cabinets {
 		// 预约检查 = 非预约筛选 或 电柜可满足预约并且如果订阅非空则电柜电池型号满足订阅型号
 		// resvcheck := req.Business == "" || (c.ReserveAble(business.Type(req.Business), rm[c.ID]) && (sub == nil || NewCabinet().ModelInclude(c, sub.Model)))
@@ -679,6 +681,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 		Lat:      b.Lat,
 		Distance: distance.Kilometers() * 1000.0,
 		Image:    b.Photos[0],
+		Photos:   b.Photos,
 	}
 	if sto != nil {
 		data.Type = "store"

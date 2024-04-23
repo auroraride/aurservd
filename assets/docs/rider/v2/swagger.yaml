@@ -1101,6 +1101,11 @@ definitions:
       name:
         description: 网点名称
         type: string
+      photos:
+        description: 网点图片(V2)
+        items:
+          type: string
+        type: array
       store:
         allOf:
         - $ref: '#/definitions/model.BranchFacilityStore'
@@ -1162,6 +1167,11 @@ definitions:
       name:
         description: 网点名称
         type: string
+      photos:
+        description: 网点图片(V2)
+        items:
+          type: string
+        type: array
     type: object
   model.BusinessCabinetReq:
     properties:
