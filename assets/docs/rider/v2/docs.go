@@ -3885,6 +3885,10 @@ const docTemplate = `{
                     "description": "是否使用积分",
                     "type": "boolean"
                 },
+                "pointNum": {
+                    "description": "积分数量",
+                    "type": "integer"
+                },
                 "storeId": {
                     "description": "门店ID",
                     "type": "integer"
