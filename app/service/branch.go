@@ -227,7 +227,7 @@ type branchListTemp struct {
 	Address  string   `json:"address"`
 }
 
-func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *ent.Subscribe) (temps []branchListTemp, stores []*ent.Store, cabinets []*ent.Cabinet) {
+func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *ent.Subscribe, v2 bool) (temps []branchListTemp, stores []*ent.Store, cabinets []*ent.Cabinet) {
 	if req.Distance == nil && req.CityID == nil {
 		snag.Panic("距离和城市不能同时为空")
 	}
@@ -280,8 +280,11 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 		)
 	default:
 		cabQuery := ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithModels()
-		if sub != nil {
+		if sub != nil && !v2 {
 			cabQuery.Where(cabinet.Intelligent(sub.Intelligent), cabinet.HasModelsWith(batterymodel.Model(sub.Model)))
+		}
+		if v2 && req.Model != nil {
+			cabQuery.Where(cabinet.HasModelsWith(batterymodel.Model(*req.Model)))
 		}
 		cabinets = cabQuery.AllX(s.ctx)
 	}
@@ -307,7 +310,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 		Lng:      &lng,
 		Lat:      &lat,
 		Distance: &distance,
-	}, nil)
+	}, nil, false)
 	bmap := make(map[uint64]*model.BranchDistanceListRes)
 	for _, temp := range temps {
 		bmap[temp.ID] = &model.BranchDistanceListRes{
@@ -398,7 +401,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 	//     if req.Business == business.TypeUnsubscribe && sub.Status != model.SubscribeStatusUsing {}
 	// }
 
-	temps, stores, cabinets := s.ListByDistance(req, sub)
+	temps, stores, cabinets := s.ListByDistance(req, sub, v2)
 
 	items = make([]*model.BranchWithDistanceRes, 0)
 	// 三种设备类别
@@ -454,7 +457,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 
 	// 电柜
 	// 同步电柜信息
-	// NewCabinet().SyncCabinets(cabinets)
+	NewCabinet().SyncCabinets(cabinets)
 	for _, c := range cabinets {
 		// 预约检查 = 非预约筛选 或 电柜可满足预约并且如果订阅非空则电柜电池型号满足订阅型号
 		// resvcheck := req.Business == "" || (c.ReserveAble(business.Type(req.Business), rm[c.ID]) && (sub == nil || NewCabinet().ModelInclude(c, sub.Model)))
