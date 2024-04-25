@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -363,29 +364,11 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 		}
 	}
 
-	// 积分抵扣
 	var points int64
-	if req.Point && price > 0.01 {
-		pointServ := service.NewPoint()
-		realPoints := pointServ.Real(r)
-		if realPoints > 0 {
-			cents := int64(price / model.PointRatio)
-			if realPoints < cents {
-				// 若积分小于所需积分, 则全部扣除
-				points = realPoints
-			} else {
-				// 若剩余积分大于所需金额, 则扣除剩余金额积分数量
-				points = cents
-			}
-			price = tools.NewDecimal().Sub(price, float64(points)*model.PointRatio)
-			_, err = pointServ.PreConsume(r, points)
-			if err != nil {
-				return nil, err
-			}
-		}
-		if price <= 0 {
-			price = 0.01
-		}
+	// 积分抵扣
+	price, points, err = s.DeductPoints(r, req.Point, req.PointNum, price)
+	if err != nil {
+		return nil, err
 	}
 
 	if price < 0 {
@@ -716,4 +699,55 @@ func (s *orderBiz) OrderPaid(trade *model.PaymentSubscribe) {
 			_ = service.NewSubscribe().UpdateStatus(sub, false)
 		}()
 	}
+}
+
+// DeductPoints 积分抵扣
+func (s *orderBiz) DeductPoints(r *ent.Rider, point bool, pointNum *int64, price float64) (float64, int64, error) {
+
+	if !point || price <= 0.01 {
+		// 不使用积分或订单金额太低不支持积分抵扣
+		return price, 0, nil
+	}
+
+	pointServ := service.NewPoint()
+	realPoints := pointServ.Real(r)
+	if realPoints <= 0 {
+		// 没有可用积分
+		return price, 0, nil
+	}
+
+	var points int64
+	if pointNum != nil && *pointNum > 0 {
+		// 指定了积分抵扣数量
+		if *pointNum > realPoints {
+			return 0, 0, errors.New("积分不足")
+		}
+		if *pointNum > int64(price/model.PointRatio) {
+			return 0, 0, fmt.Errorf("积分抵扣金额超过订单金额，最多抵扣 %d 积分", int64(price/model.PointRatio))
+		}
+		points = *pointNum
+	} else {
+		// 自动计算积分抵扣数量
+		cents := int64(price / model.PointRatio)
+		if realPoints < cents {
+			// 若积分小于所需积分, 则全部扣除
+			points = realPoints
+		} else {
+			// 若剩余积分大于所需金额, 则扣除剩余金额积分数量
+			points = cents
+		}
+	}
+
+	price = tools.NewDecimal().Sub(price, float64(points)*model.PointRatio)
+	_, err := pointServ.PreConsume(r, points)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	// 确保价格不小于最低金额
+	if price <= 0 {
+		price = 0.01
+	}
+
+	return price, points, nil
 }

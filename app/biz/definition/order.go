@@ -31,6 +31,7 @@ type OrderCreateReq struct {
 	StoreID                 *uint64            `json:"storeId"`                 // 门店ID
 	AgreementHash           *string            `json:"agreementHash"`           // 协议hash
 	DepositType             *model.DepositType `json:"depositType"`             // 押金类型 1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金
+	PointNum                *int64             `json:"pointNum"`                // 积分数量
 }
 
 // OrderCreateRes 订单创建响应
