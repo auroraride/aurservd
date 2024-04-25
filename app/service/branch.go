@@ -454,7 +454,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 
 	// 电柜
 	// 同步电柜信息
-	// NewCabinet().SyncCabinets(cabinets)
+	NewCabinet().SyncCabinets(cabinets)
 	for _, c := range cabinets {
 		// 预约检查 = 非预约筛选 或 电柜可满足预约并且如果订阅非空则电柜电池型号满足订阅型号
 		// resvcheck := req.Business == "" || (c.ReserveAble(business.Type(req.Business), rm[c.ID]) && (sub == nil || NewCabinet().ModelInclude(c, sub.Model)))
