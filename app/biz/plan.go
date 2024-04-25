@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/golang-module/carbon/v2"
@@ -135,6 +137,8 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 
 		*m.Children = append(*m.Children, planDaysPriceOption)
 
+		SortIDOptions(*m.Children)
+
 		if item.BrandID != nil {
 			var b *model.PlanEbikeBrandOption
 			bid := *item.BrandID
@@ -195,7 +199,49 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 
 	for _, b := range bmap {
 		res.Brands = append(res.Brands, b)
+		SortPlanEbikeModelByName(*b.Children)
 	}
 
+	SortPlanEbikeBrandByName(res.Brands)
+	SortPlanModelByName(res.Models)
+
 	return res
+}
+
+type ByBrandName []*model.PlanEbikeBrandOption
+
+func (a ByBrandName) Len() int           { return len(a) }
+func (a ByBrandName) Less(i, j int) bool { return a[i].Name < a[j].Name }
+func (a ByBrandName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+func SortPlanEbikeBrandByName(options []*model.PlanEbikeBrandOption) {
+	sort.Sort(ByBrandName(options))
+}
+
+type ByModelName []*model.PlanModelOption
+
+func (a ByModelName) Len() int           { return len(a) }
+func (a ByModelName) Less(i, j int) bool { return a[i].Model < a[j].Model }
+func (a ByModelName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+func SortPlanModelByName(options []*model.PlanModelOption) {
+	sort.Sort(ByModelName(options))
+}
+
+type PlanModelName model.PlanModelOptions
+
+func (a PlanModelName) Len() int           { return len(a) }
+func (a PlanModelName) Less(i, j int) bool { return a[i].Model < a[j].Model }
+func (a PlanModelName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+func SortPlanEbikeModelByName(options model.PlanModelOptions) {
+	sort.Sort(PlanModelName(options))
+}
+
+func SortIDOptions(options model.PlanDaysPriceOptions) {
+	sort.Slice(options, func(i, j int) bool {
+		numI, _ := strconv.Atoi(strconv.FormatUint(options[i].ID, 10))
+		numJ, _ := strconv.Atoi(strconv.FormatUint(options[j].ID, 10))
+		return numI < numJ
+	})
 }
