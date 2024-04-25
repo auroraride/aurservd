@@ -310,7 +310,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 		Lng:      &lng,
 		Lat:      &lat,
 		Distance: &distance,
-	}, nil, true)
+	}, nil, false)
 	bmap := make(map[uint64]*model.BranchDistanceListRes)
 	for _, temp := range temps {
 		bmap[temp.ID] = &model.BranchDistanceListRes{
