@@ -8,6 +8,7 @@ type StoreListReq struct {
 	Distance *float64 `json:"distance" query:"distance" `          // 距离
 	CityID   *uint64  `json:"cityId" query:"cityId"`               // 城市ID
 	PlanID   *uint64  `json:"planId" query:"planId"`               // 套餐ID
+	Status   *uint8   `json:"status" query:"status"`               // 门店状态 0维护 1营业 2休息 3隐藏
 }
 
 // StoreDetail 门店信息
@@ -25,6 +26,7 @@ type StoreDetail struct {
 	Lat           float64         `json:"lat"`                // 纬度
 	Distance      float64         `json:"distance"`           // 距离(米)
 	Address       string          `json:"address"`            // 地址
+	EbikeStage    bool            `json:"ebikeStage"`         // 是否拥有驿站
 }
 
 // StoreDetailReq 门店详情请求

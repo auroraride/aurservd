@@ -22,6 +22,7 @@ type StoreCreateReq struct {
 	EbikeRepair   bool                 `json:"ebikeRepair"`                                // 是否可以维修车辆
 	EbikeSale     bool                 `json:"ebikeSale"`                                  // 是否可以买车
 	BusinessHours string               `json:"businessHours"`                              // 营业时间
+	EbikeStage    bool                 `json:"ebikeStage"`                                 // 是否拥有驿站
 }
 
 // StoreModifyReq 门店修改请求
@@ -34,6 +35,7 @@ type StoreModifyReq struct {
 	EbikeRepair   *bool   `json:"ebikeRepair"`            // 是否可以维修车辆
 	EbikeSale     *bool   `json:"ebikeSale"`              // 是否可以买车
 	BusinessHours *string `json:"businessHours"`          // 营业时间
+	EbikeStage    *bool   `json:"ebikeStage"`             // 是否拥有驿站
 }
 
 type StoreItem struct {
@@ -49,6 +51,7 @@ type StoreItem struct {
 	EbikeRepair   bool   `json:"ebikeRepair"`   // 是否可以维修车辆
 	EbikeSale     bool   `json:"ebikeSale"`     // 是否可以买车
 	BusinessHours string `json:"businessHours"` // 营业时间
+	EbikeStage    bool   `json:"ebikeStage"`    // 是否有驿站
 }
 
 type Store struct {

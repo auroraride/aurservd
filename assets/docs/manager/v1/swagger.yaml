@@ -5973,6 +5973,9 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
+      ebikeStage:
+        description: 是否拥有驿站
+        type: boolean
       materials:
         description: 门店物资
         items:
@@ -6017,6 +6020,9 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
+      ebikeStage:
+        description: 是否有驿站
+        type: boolean
       employee:
         allOf:
         - $ref: '#/definitions/model.Employee'
@@ -6049,6 +6055,9 @@ definitions:
         type: boolean
       ebikeSale:
         description: 是否可以买车
+        type: boolean
+      ebikeStage:
+        description: 是否拥有驿站
         type: boolean
       name:
         description: 门店名称

@@ -757,6 +757,9 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
+      ebikeStage:
+        description: 是否拥有驿站
+        type: boolean
       employee:
         allOf:
         - $ref: '#/definitions/model.Employee'
@@ -4723,6 +4726,10 @@ paths:
       - description: 套餐ID
         in: query
         name: planId
+        type: integer
+      - description: 门店状态 0维护 1营业 2休息 3隐藏
+        in: query
+        name: status
         type: integer
       produces:
       - application/json

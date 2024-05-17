@@ -54,6 +54,10 @@ func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 		q.Where(store.CityID(*req.CityID))
 	}
 
+	if req.Status != nil {
+		q.Where(store.Status(*req.Status))
+	}
+
 	list, _ := q.All(s.ctx)
 	if len(list) == 0 {
 		return res, nil
@@ -114,6 +118,7 @@ func (s *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 		EbikeObtain:   item.EbikeObtain,
 		EbikeSale:     item.EbikeSale,
 		BusinessHours: item.BusinessHours,
+		EbikeStage:    item.EbikeStage,
 	}
 	if item.Edges.Employee != nil {
 		res.Employee = &model.Employee{

@@ -92,6 +92,7 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
 		SetEbikeObtain(req.EbikeObtain).
 		SetEbikeSale(req.EbikeSale).
 		SetBusinessHours(req.BusinessHours).
+		SetEbikeStage(req.EbikeStage).
 		SaveX(s.ctx)
 
 	if len(req.Materials) > 0 {
@@ -119,7 +120,8 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
 	q := s.orm.UpdateOne(item).
 		SetNillableEbikeObtain(req.EbikeObtain).
 		SetNillableEbikeRepair(req.EbikeRepair).
-		SetNillableEbikeSale(req.EbikeSale)
+		SetNillableEbikeSale(req.EbikeSale).
+		SetNillableEbikeStage(req.EbikeStage)
 	if req.Status != nil {
 		q.SetStatus(*req.Status)
 	}
