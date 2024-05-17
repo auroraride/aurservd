@@ -135,6 +135,11 @@ func EbikeSale(v bool) predicate.Store {
 	return predicate.Store(sql.FieldEQ(FieldEbikeSale, v))
 }
 
+// EbikeStage applies equality check predicate on the "ebike_stage" field. It's identical to EbikeStageEQ.
+func EbikeStage(v bool) predicate.Store {
+	return predicate.Store(sql.FieldEQ(FieldEbikeStage, v))
+}
+
 // BusinessHours applies equality check predicate on the "business_hours" field. It's identical to BusinessHoursEQ.
 func BusinessHours(v string) predicate.Store {
 	return predicate.Store(sql.FieldEQ(FieldBusinessHours, v))
@@ -778,6 +783,16 @@ func EbikeSaleEQ(v bool) predicate.Store {
 // EbikeSaleNEQ applies the NEQ predicate on the "ebike_sale" field.
 func EbikeSaleNEQ(v bool) predicate.Store {
 	return predicate.Store(sql.FieldNEQ(FieldEbikeSale, v))
+}
+
+// EbikeStageEQ applies the EQ predicate on the "ebike_stage" field.
+func EbikeStageEQ(v bool) predicate.Store {
+	return predicate.Store(sql.FieldEQ(FieldEbikeStage, v))
+}
+
+// EbikeStageNEQ applies the NEQ predicate on the "ebike_stage" field.
+func EbikeStageNEQ(v bool) predicate.Store {
+	return predicate.Store(sql.FieldNEQ(FieldEbikeStage, v))
 }
 
 // BusinessHoursEQ applies the EQ predicate on the "business_hours" field.

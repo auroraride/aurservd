@@ -104505,6 +104505,7 @@ type StoreMutation struct {
 	ebike_obtain       *bool
 	ebike_repair       *bool
 	ebike_sale         *bool
+	ebike_stage        *bool
 	business_hours     *string
 	clearedFields      map[string]struct{}
 	city               *uint64
@@ -105398,6 +105399,42 @@ func (m *StoreMutation) ResetEbikeSale() {
 	m.ebike_sale = nil
 }
 
+// SetEbikeStage sets the "ebike_stage" field.
+func (m *StoreMutation) SetEbikeStage(b bool) {
+	m.ebike_stage = &b
+}
+
+// EbikeStage returns the value of the "ebike_stage" field in the mutation.
+func (m *StoreMutation) EbikeStage() (r bool, exists bool) {
+	v := m.ebike_stage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEbikeStage returns the old "ebike_stage" field's value of the Store entity.
+// If the Store object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StoreMutation) OldEbikeStage(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEbikeStage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEbikeStage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEbikeStage: %w", err)
+	}
+	return oldValue.EbikeStage, nil
+}
+
+// ResetEbikeStage resets all changes to the "ebike_stage" field.
+func (m *StoreMutation) ResetEbikeStage() {
+	m.ebike_stage = nil
+}
+
 // SetBusinessHours sets the "business_hours" field.
 func (m *StoreMutation) SetBusinessHours(s string) {
 	m.business_hours = &s
@@ -105724,7 +105761,7 @@ func (m *StoreMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StoreMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, store.FieldCreatedAt)
 	}
@@ -105779,6 +105816,9 @@ func (m *StoreMutation) Fields() []string {
 	if m.ebike_sale != nil {
 		fields = append(fields, store.FieldEbikeSale)
 	}
+	if m.ebike_stage != nil {
+		fields = append(fields, store.FieldEbikeStage)
+	}
 	if m.business_hours != nil {
 		fields = append(fields, store.FieldBusinessHours)
 	}
@@ -105826,6 +105866,8 @@ func (m *StoreMutation) Field(name string) (ent.Value, bool) {
 		return m.EbikeRepair()
 	case store.FieldEbikeSale:
 		return m.EbikeSale()
+	case store.FieldEbikeStage:
+		return m.EbikeStage()
 	case store.FieldBusinessHours:
 		return m.BusinessHours()
 	}
@@ -105873,6 +105915,8 @@ func (m *StoreMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldEbikeRepair(ctx)
 	case store.FieldEbikeSale:
 		return m.OldEbikeSale(ctx)
+	case store.FieldEbikeStage:
+		return m.OldEbikeStage(ctx)
 	case store.FieldBusinessHours:
 		return m.OldBusinessHours(ctx)
 	}
@@ -106009,6 +106053,13 @@ func (m *StoreMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEbikeSale(v)
+		return nil
+	case store.FieldEbikeStage:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEbikeStage(v)
 		return nil
 	case store.FieldBusinessHours:
 		v, ok := value.(string)
@@ -106197,6 +106248,9 @@ func (m *StoreMutation) ResetField(name string) error {
 		return nil
 	case store.FieldEbikeSale:
 		m.ResetEbikeSale()
+		return nil
+	case store.FieldEbikeStage:
+		m.ResetEbikeStage()
 		return nil
 	case store.FieldBusinessHours:
 		m.ResetBusinessHours()

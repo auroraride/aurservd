@@ -2058,6 +2058,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldEbikeObtain:   {Type: field.TypeBool, Column: store.FieldEbikeObtain},
 			store.FieldEbikeRepair:   {Type: field.TypeBool, Column: store.FieldEbikeRepair},
 			store.FieldEbikeSale:     {Type: field.TypeBool, Column: store.FieldEbikeSale},
+			store.FieldEbikeStage:    {Type: field.TypeBool, Column: store.FieldEbikeStage},
 			store.FieldBusinessHours: {Type: field.TypeString, Column: store.FieldBusinessHours},
 		},
 	}
@@ -17660,6 +17661,11 @@ func (f *StoreFilter) WhereEbikeRepair(p entql.BoolP) {
 // WhereEbikeSale applies the entql bool predicate on the ebike_sale field.
 func (f *StoreFilter) WhereEbikeSale(p entql.BoolP) {
 	f.Where(p.Field(store.FieldEbikeSale))
+}
+
+// WhereEbikeStage applies the entql bool predicate on the ebike_stage field.
+func (f *StoreFilter) WhereEbikeStage(p entql.BoolP) {
+	f.Where(p.Field(store.FieldEbikeStage))
 }
 
 // WhereBusinessHours applies the entql string predicate on the business_hours field.

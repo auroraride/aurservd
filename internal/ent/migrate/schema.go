@@ -5167,6 +5167,7 @@ var (
 		{Name: "ebike_obtain", Type: field.TypeBool, Comment: "是否可以领取车辆(租车)", Default: false},
 		{Name: "ebike_repair", Type: field.TypeBool, Comment: "是否可以维修车辆", Default: false},
 		{Name: "ebike_sale", Type: field.TypeBool, Comment: "是否可以购买车辆", Default: false},
+		{Name: "ebike_stage", Type: field.TypeBool, Comment: "是否拥有驿站", Default: false},
 		{Name: "business_hours", Type: field.TypeString, Nullable: true, Comment: "营业时间"},
 		{Name: "branch_id", Type: field.TypeUint64, Comment: "网点ID"},
 		{Name: "employee_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "上班员工ID"},
@@ -5180,19 +5181,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "store_branch_stores",
-				Columns:    []*schema.Column{StoreColumns[17]},
+				Columns:    []*schema.Column{StoreColumns[18]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "store_employee_store",
-				Columns:    []*schema.Column{StoreColumns[18]},
+				Columns:    []*schema.Column{StoreColumns[19]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "store_city_city",
-				Columns:    []*schema.Column{StoreColumns[19]},
+				Columns:    []*schema.Column{StoreColumns[20]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -5211,17 +5212,17 @@ var (
 			{
 				Name:    "store_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{StoreColumns[19]},
+				Columns: []*schema.Column{StoreColumns[20]},
 			},
 			{
 				Name:    "store_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{StoreColumns[17]},
+				Columns: []*schema.Column{StoreColumns[18]},
 			},
 			{
 				Name:    "store_employee_id",
 				Unique:  false,
-				Columns: []*schema.Column{StoreColumns[18]},
+				Columns: []*schema.Column{StoreColumns[19]},
 			},
 			{
 				Name:    "store_status",

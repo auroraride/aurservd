@@ -22072,6 +22072,10 @@ const docTemplate = `{
                     "description": "是否可以买车",
                     "type": "boolean"
                 },
+                "ebikeStage": {
+                    "description": "是否拥有驿站",
+                    "type": "boolean"
+                },
                 "materials": {
                     "description": "门店物资",
                     "type": "array",
@@ -22129,6 +22133,10 @@ const docTemplate = `{
                     "description": "是否可以买车",
                     "type": "boolean"
                 },
+                "ebikeStage": {
+                    "description": "是否有驿站",
+                    "type": "boolean"
+                },
                 "employee": {
                     "description": "店员, 有可能不存在",
                     "allOf": [
@@ -22175,6 +22183,10 @@ const docTemplate = `{
                 },
                 "ebikeSale": {
                     "description": "是否可以买车",
+                    "type": "boolean"
+                },
+                "ebikeStage": {
+                    "description": "是否拥有驿站",
                     "type": "boolean"
                 },
                 "name": {

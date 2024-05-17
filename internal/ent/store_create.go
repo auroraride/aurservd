@@ -209,6 +209,20 @@ func (sc *StoreCreate) SetNillableEbikeSale(b *bool) *StoreCreate {
 	return sc
 }
 
+// SetEbikeStage sets the "ebike_stage" field.
+func (sc *StoreCreate) SetEbikeStage(b bool) *StoreCreate {
+	sc.mutation.SetEbikeStage(b)
+	return sc
+}
+
+// SetNillableEbikeStage sets the "ebike_stage" field if the given value is not nil.
+func (sc *StoreCreate) SetNillableEbikeStage(b *bool) *StoreCreate {
+	if b != nil {
+		sc.SetEbikeStage(*b)
+	}
+	return sc
+}
+
 // SetBusinessHours sets the "business_hours" field.
 func (sc *StoreCreate) SetBusinessHours(s string) *StoreCreate {
 	sc.mutation.SetBusinessHours(s)
@@ -350,6 +364,10 @@ func (sc *StoreCreate) defaults() error {
 		v := store.DefaultEbikeSale
 		sc.mutation.SetEbikeSale(v)
 	}
+	if _, ok := sc.mutation.EbikeStage(); !ok {
+		v := store.DefaultEbikeStage
+		sc.mutation.SetEbikeStage(v)
+	}
 	return nil
 }
 
@@ -393,6 +411,9 @@ func (sc *StoreCreate) check() error {
 	}
 	if _, ok := sc.mutation.EbikeSale(); !ok {
 		return &ValidationError{Name: "ebike_sale", err: errors.New(`ent: missing required field "Store.ebike_sale"`)}
+	}
+	if _, ok := sc.mutation.EbikeStage(); !ok {
+		return &ValidationError{Name: "ebike_stage", err: errors.New(`ent: missing required field "Store.ebike_stage"`)}
 	}
 	if _, ok := sc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Store.city"`)}
@@ -486,6 +507,10 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.EbikeSale(); ok {
 		_spec.SetField(store.FieldEbikeSale, field.TypeBool, value)
 		_node.EbikeSale = value
+	}
+	if value, ok := sc.mutation.EbikeStage(); ok {
+		_spec.SetField(store.FieldEbikeStage, field.TypeBool, value)
+		_node.EbikeStage = value
 	}
 	if value, ok := sc.mutation.BusinessHours(); ok {
 		_spec.SetField(store.FieldBusinessHours, field.TypeString, value)
@@ -864,6 +889,18 @@ func (u *StoreUpsert) UpdateEbikeSale() *StoreUpsert {
 	return u
 }
 
+// SetEbikeStage sets the "ebike_stage" field.
+func (u *StoreUpsert) SetEbikeStage(v bool) *StoreUpsert {
+	u.Set(store.FieldEbikeStage, v)
+	return u
+}
+
+// UpdateEbikeStage sets the "ebike_stage" field to the value that was provided on create.
+func (u *StoreUpsert) UpdateEbikeStage() *StoreUpsert {
+	u.SetExcluded(store.FieldEbikeStage)
+	return u
+}
+
 // SetBusinessHours sets the "business_hours" field.
 func (u *StoreUpsert) SetBusinessHours(v string) *StoreUpsert {
 	u.Set(store.FieldBusinessHours, v)
@@ -1189,6 +1226,20 @@ func (u *StoreUpsertOne) SetEbikeSale(v bool) *StoreUpsertOne {
 func (u *StoreUpsertOne) UpdateEbikeSale() *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdateEbikeSale()
+	})
+}
+
+// SetEbikeStage sets the "ebike_stage" field.
+func (u *StoreUpsertOne) SetEbikeStage(v bool) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetEbikeStage(v)
+	})
+}
+
+// UpdateEbikeStage sets the "ebike_stage" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdateEbikeStage() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateEbikeStage()
 	})
 }
 
@@ -1686,6 +1737,20 @@ func (u *StoreUpsertBulk) SetEbikeSale(v bool) *StoreUpsertBulk {
 func (u *StoreUpsertBulk) UpdateEbikeSale() *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdateEbikeSale()
+	})
+}
+
+// SetEbikeStage sets the "ebike_stage" field.
+func (u *StoreUpsertBulk) SetEbikeStage(v bool) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetEbikeStage(v)
+	})
+}
+
+// UpdateEbikeStage sets the "ebike_stage" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdateEbikeStage() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateEbikeStage()
 	})
 }
 

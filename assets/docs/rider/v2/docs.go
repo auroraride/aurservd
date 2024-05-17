@@ -3040,6 +3040,12 @@ const docTemplate = `{
                         "description": "套餐ID",
                         "name": "planId",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店状态 0维护 1营业 2休息 3隐藏",
+                        "name": "status",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -4458,6 +4464,10 @@ const docTemplate = `{
                 },
                 "ebikeSale": {
                     "description": "是否可以买车",
+                    "type": "boolean"
+                },
+                "ebikeStage": {
+                    "description": "是否拥有驿站",
                     "type": "boolean"
                 },
                 "employee": {
