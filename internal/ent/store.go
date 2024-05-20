@@ -58,6 +58,8 @@ type Store struct {
 	EbikeRepair bool `json:"ebike_repair,omitempty"`
 	// 是否可以购买车辆
 	EbikeSale bool `json:"ebike_sale,omitempty"`
+	// 是否拥有驿站
+	EbikeStage bool `json:"ebike_stage,omitempty"`
 	// 营业时间
 	BusinessHours string `json:"business_hours,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -152,7 +154,7 @@ func (*Store) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case store.FieldCreator, store.FieldLastModifier:
 			values[i] = new([]byte)
-		case store.FieldEbikeObtain, store.FieldEbikeRepair, store.FieldEbikeSale:
+		case store.FieldEbikeObtain, store.FieldEbikeRepair, store.FieldEbikeSale, store.FieldEbikeStage:
 			values[i] = new(sql.NullBool)
 		case store.FieldLng, store.FieldLat:
 			values[i] = new(sql.NullFloat64)
@@ -297,6 +299,12 @@ func (s *Store) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.EbikeSale = value.Bool
 			}
+		case store.FieldEbikeStage:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field ebike_stage", values[i])
+			} else if value.Valid {
+				s.EbikeStage = value.Bool
+			}
 		case store.FieldBusinessHours:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field business_hours", values[i])
@@ -426,6 +434,9 @@ func (s *Store) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("ebike_sale=")
 	builder.WriteString(fmt.Sprintf("%v", s.EbikeSale))
+	builder.WriteString(", ")
+	builder.WriteString("ebike_stage=")
+	builder.WriteString(fmt.Sprintf("%v", s.EbikeStage))
 	builder.WriteString(", ")
 	builder.WriteString("business_hours=")
 	builder.WriteString(s.BusinessHours)

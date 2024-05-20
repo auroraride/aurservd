@@ -2725,14 +2725,14 @@
         "model.BranchFacility": {
             "type": "object",
             "properties": {
-              "batteryNum": {
-                "description": "电池数量",
-                "type": "integer"
-              },
-              "cabinetNum": {
-                "description": "电柜数量",
-                "type": "integer"
-              },
+                "batteryNum": {
+                    "description": "电池数量",
+                    "type": "integer"
+                },
+                "cabinetNum": {
+                    "description": "电柜数量",
+                    "type": "integer"
+                },
                 "fid": {
                     "description": "设施标识",
                     "type": "string"
@@ -2757,7 +2757,7 @@
                     "type": "integer"
                 },
                 "total": {
-                  "description": "仓位数量",
+                    "description": "仓位数量",
                     "type": "integer"
                 },
                 "type": {
@@ -2895,13 +2895,13 @@
                     "description": "网点名称",
                     "type": "string"
                 },
-              "photos": {
-                "description": "网点图片(V2)",
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
+                "photos": {
+                    "description": "网点图片(V2)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "store": {
                     "description": "门店, 当type=store时存在",
                     "allOf": [
@@ -2990,12 +2990,12 @@
                     "description": "网点名称",
                     "type": "string"
                 },
-              "photos": {
-                "description": "网点图片(V2)",
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+                "photos": {
+                    "description": "网点图片(V2)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -3257,27 +3257,27 @@
                 }
             }
         },
-      "model.DepositType": {
-        "type": "integer",
-        "enum": [
-          1,
-          2,
-          3,
-          4
-        ],
-        "x-enum-comments": {
-          "DepositTypeAlipayAuthFreeze": "芝麻免押",
-          "DepositTypeContract": "合同押金",
-          "DepositTypePay": "支付押金",
-          "DepositTypeWechatDeposit": "微信支付分免押"
+        "model.DepositType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "x-enum-comments": {
+                "DepositTypeAlipayAuthFreeze": "芝麻免押",
+                "DepositTypeContract": "合同押金",
+                "DepositTypePay": "支付押金",
+                "DepositTypeWechatDeposit": "微信支付分免押"
+            },
+            "x-enum-varnames": [
+                "DepositTypeAlipayAuthFreeze",
+                "DepositTypeWechatDeposit",
+                "DepositTypeContract",
+                "DepositTypePay"
+            ]
         },
-        "x-enum-varnames": [
-          "DepositTypeAlipayAuthFreeze",
-          "DepositTypeWechatDeposit",
-          "DepositTypeContract",
-          "DepositTypePay"
-        ]
-      },
         "model.Ebike": {
             "type": "object",
             "properties": {
@@ -3676,10 +3676,10 @@
                         "$ref": "#/definitions/model.CouponRider"
                     }
                 },
-              "createdAt": {
-                "description": "创建时间",
-                "type": "string"
-              },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
                 "discountNewly": {
                     "description": "新签优惠",
                     "type": "number"
@@ -3963,13 +3963,13 @@
                     "description": "售价",
                     "type": "number"
                 },
-              "type": {
-                "description": "类别",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/model.PlanType"
-                  }
-                ]
+                "type": {
+                    "description": "类别",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PlanType"
+                        }
+                    ]
                 }
             }
         },
@@ -4131,21 +4131,21 @@
                 }
             }
         },
-      "model.PlanType": {
-        "type": "integer",
-        "enum": [
-          1,
-          2
-        ],
-        "x-enum-comments": {
-          "PlanTypeBattery": "单电",
-          "PlanTypeEbikeWithBattery": "车加电"
+        "model.PlanType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "PlanTypeBattery": "单电",
+                "PlanTypeEbikeWithBattery": "车加电"
+            },
+            "x-enum-varnames": [
+                "PlanTypeBattery",
+                "PlanTypeEbikeWithBattery"
+            ]
         },
-        "x-enum-varnames": [
-          "PlanTypeBattery",
-          "PlanTypeEbikeWithBattery"
-        ]
-      },
         "model.PointLogListRes": {
             "type": "object",
             "properties": {
@@ -4226,10 +4226,10 @@
                     "description": "退款成功时间",
                     "type": "string"
                 },
-              "remainAmount": {
-                "description": "剩余金额",
-                "type": "number"
-              },
+                "remainAmount": {
+                    "description": "剩余金额",
+                    "type": "number"
+                },
                 "remark": {
                     "description": "备注",
                     "type": "string"
@@ -4328,10 +4328,10 @@
                     "description": "电柜ID",
                     "type": "integer"
                 },
-              "endTime": {
-                "description": "结束时间",
-                "type": "string"
-              },
+                "endTime": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
                 "fid": {
                     "description": "设施ID",
                     "type": "string"
@@ -5059,14 +5059,14 @@
                     "description": "已缴纳押金",
                     "type": "number"
                 },
-              "depositType": {
-                "description": "押金类型  1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/model.DepositType"
-                  }
-                ]
-              },
+                "depositType": {
+                    "description": "押金类型  1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.DepositType"
+                        }
+                    ]
+                },
                 "points": {
                     "description": "积分数量",
                     "type": "integer"

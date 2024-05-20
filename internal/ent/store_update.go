@@ -275,6 +275,20 @@ func (su *StoreUpdate) SetNillableEbikeSale(b *bool) *StoreUpdate {
 	return su
 }
 
+// SetEbikeStage sets the "ebike_stage" field.
+func (su *StoreUpdate) SetEbikeStage(b bool) *StoreUpdate {
+	su.mutation.SetEbikeStage(b)
+	return su
+}
+
+// SetNillableEbikeStage sets the "ebike_stage" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableEbikeStage(b *bool) *StoreUpdate {
+	if b != nil {
+		su.SetEbikeStage(*b)
+	}
+	return su
+}
+
 // SetBusinessHours sets the "business_hours" field.
 func (su *StoreUpdate) SetBusinessHours(s string) *StoreUpdate {
 	su.mutation.SetBusinessHours(s)
@@ -568,6 +582,9 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.EbikeSale(); ok {
 		_spec.SetField(store.FieldEbikeSale, field.TypeBool, value)
+	}
+	if value, ok := su.mutation.EbikeStage(); ok {
+		_spec.SetField(store.FieldEbikeStage, field.TypeBool, value)
 	}
 	if value, ok := su.mutation.BusinessHours(); ok {
 		_spec.SetField(store.FieldBusinessHours, field.TypeString, value)
@@ -1058,6 +1075,20 @@ func (suo *StoreUpdateOne) SetNillableEbikeSale(b *bool) *StoreUpdateOne {
 	return suo
 }
 
+// SetEbikeStage sets the "ebike_stage" field.
+func (suo *StoreUpdateOne) SetEbikeStage(b bool) *StoreUpdateOne {
+	suo.mutation.SetEbikeStage(b)
+	return suo
+}
+
+// SetNillableEbikeStage sets the "ebike_stage" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableEbikeStage(b *bool) *StoreUpdateOne {
+	if b != nil {
+		suo.SetEbikeStage(*b)
+	}
+	return suo
+}
+
 // SetBusinessHours sets the "business_hours" field.
 func (suo *StoreUpdateOne) SetBusinessHours(s string) *StoreUpdateOne {
 	suo.mutation.SetBusinessHours(s)
@@ -1381,6 +1412,9 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 	}
 	if value, ok := suo.mutation.EbikeSale(); ok {
 		_spec.SetField(store.FieldEbikeSale, field.TypeBool, value)
+	}
+	if value, ok := suo.mutation.EbikeStage(); ok {
+		_spec.SetField(store.FieldEbikeStage, field.TypeBool, value)
 	}
 	if value, ok := suo.mutation.BusinessHours(); ok {
 		_spec.SetField(store.FieldBusinessHours, field.TypeString, value)

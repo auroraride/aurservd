@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"sort"
 
 	"entgo.io/ent/dialect/sql"
 
@@ -175,6 +176,11 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 			res = append(res, cdr)
 		}
 	}
+	// 排序 当有预约数据排在最前面
+	sort.Slice(res, func(i, j int) bool {
+		return res[i].Reserve != nil && res[j].Reserve == nil
+	})
+
 	return
 }
 

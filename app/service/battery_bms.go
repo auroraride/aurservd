@@ -251,7 +251,12 @@ func (s *batteryBmsService) Position(req *model.BatteryPositionReq) (res *model.
 	}
 	var start, end *timestamppb.Timestamp
 	if req.Start != "" {
-		start = timestamppb.New(carbon.ParseByLayout(req.Start, carbon.DateTimeLayout).ToStdTime())
+		reqStart := carbon.ParseByLayout(req.Start, carbon.DateTimeLayout).StdTime()
+		start = timestamppb.New(reqStart)
+	}
+	if req.End != "" {
+		reqEnd := carbon.ParseByLayout(req.End, carbon.DateTimeLayout).StdTime()
+		end = timestamppb.New(reqEnd)
 	}
 	r := rpc.BmsPosition(ab.Brand, &pb.BatteryPositionRequest{
 		Sn:    req.SN,
