@@ -34,9 +34,9 @@ func (*instructions) Modify(c echo.Context) (err error) {
 // @Tags	说明
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string								true	"管理员校验token"
-// @Param	key				path		definition.InstructionsDetailReq	true	"说明key"
-// @Success	200				{object}	definition.InstructionsRes			"请求成功"
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	key				path		string						true	"说明key"
+// @Success	200				{object}	definition.InstructionsRes	"请求成功"
 func (*instructions) Detail(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.InstructionsDetailReq](c)
 	return ctx.SendResponse(biz.NewInstructions().Detail(req.Key))

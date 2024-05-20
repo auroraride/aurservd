@@ -11848,6 +11848,11 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 说明key
+        in: path
+        name: key
+        required: true
+        type: string
       produces:
       - application/json
       responses:
