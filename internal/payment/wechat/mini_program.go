@@ -20,7 +20,7 @@ type miniProgramClient struct {
 }
 
 func NewMiniProgram() *miniProgramClient {
-	client := NewWechatClientWithConfig(ar.Config.Payment.Wechatpay)
+	client := NewWechatClientWithConfig(ar.Config.Payment.Wechat)
 	return &miniProgramClient{
 		Client:       client,
 		commonClient: newCommonClient(client),
@@ -29,7 +29,7 @@ func NewMiniProgram() *miniProgramClient {
 
 func (c *miniProgramClient) Miniprogram(appID, openID string, pc *model.PaymentCache) (*jsapi.PrepayWithRequestPaymentResponse, error) {
 	amount, subject, no, _ := pc.GetPaymentArgs()
-	cfg := ar.Config.Payment.Wechatpay
+	cfg := ar.Config.Payment.Wechat
 
 	svc := jsapi.JsapiApiService{Client: c.Client}
 	resp, _, err := svc.PrepayWithRequestPayment(context.Background(), jsapi.PrepayRequest{

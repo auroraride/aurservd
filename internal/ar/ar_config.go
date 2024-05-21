@@ -248,7 +248,7 @@ type config struct {
 	Trans map[string]string
 
 	Payment struct {
-		Wechatpay        WechatpayConfig
+		Wechat           WechatpayConfig
 		Alipay           AlipayConfig
 		AlipayAuthFreeze struct {
 			// 冻结回调通知

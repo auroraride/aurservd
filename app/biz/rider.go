@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/payment/alipay"
 	"github.com/auroraride/aurservd/pkg/cache"
+	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/utils"
 )
 
@@ -62,7 +63,11 @@ func (b *riderBiz) ChangePhone(r *ent.Rider, req *definition.RiderChangePhoneReq
 
 // Signin 登录
 func (b *riderBiz) Signin(device *model.Device, req *definition.RiderSignupReq) (res *model.RiderSigninRes, err error) {
-	switch req.SigninType {
+	// 兼容老版本
+	if req.SigninType == nil {
+		req.SigninType = silk.UInt64(model.SigninTypeSms)
+	}
+	switch *req.SigninType {
 	case model.SigninTypeSms:
 		service.NewSms().VerifyCodeX(req.Phone, req.SmsId, req.SmsCode)
 	case model.SigninTypeAuth:
