@@ -24,7 +24,7 @@ type appClient struct {
 }
 
 func NewApp() *appClient {
-	client := NewWechatClientWithConfig(ar.Config.Payment.Wechatpay)
+	client := NewWechatClientWithConfig(ar.Config.Payment.Wechat)
 	return &appClient{
 		Client:       client,
 		commonClient: newCommonClient(client),
@@ -34,7 +34,7 @@ func NewApp() *appClient {
 // AppPay APP支付
 func (c *appClient) AppPay(pc *model.PaymentCache) (string, error) {
 	amount, subject, no, _ := pc.GetPaymentArgs()
-	cfg := ar.Config.Payment.Wechatpay
+	cfg := ar.Config.Payment.Wechat
 
 	svc := app.AppApiService{
 		Client: c.Client,
@@ -79,7 +79,7 @@ func (c *appClient) AppPay(pc *model.PaymentCache) (string, error) {
 
 func (c *appClient) Native(pc *model.PaymentCache) (string, error) {
 	amount, subject, no, attach := pc.GetPaymentArgs()
-	cfg := ar.Config.Payment.Wechatpay
+	cfg := ar.Config.Payment.Wechat
 
 	svc := native.NativeApiService{Client: c.Client}
 	resp, _, err := svc.Prepay(context.Background(), native.PrepayRequest{

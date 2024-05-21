@@ -15,11 +15,11 @@ type RiderAllocatedReq struct {
 
 // RiderSignupReq 骑手登录V2
 type RiderSignupReq struct {
-	Phone         string `json:"phone,omitempty" validate:"required_if=SigninType 1" trans:"电话"`    // 电话
-	SmsId         string `json:"smsId,omitempty" validate:"required_if=SigninType 1" trans:"短信ID"`  // 短信ID
-	SmsCode       string `json:"smsCode,omitempty" validate:"required_if=SigninType 1" trans:"验证码"` // 验证码
-	SigninType    uint64 `json:"signinType" validate:"required,oneof=1 2" enums:"1,2"`              // 登录类型 1:短信登录 2:授权登录
-	AuthType      uint8  `json:"authType" validate:"required_if=SigninType 2" enums:"1,2"`          // 授权类型 1:微信 2:支付宝
-	EncryptedData string `json:"encryptedData" validate:"required_if=AuthType 2 SigninType 2"`      // 支付宝获取手机加密数据
-	AuthCode      string `json:"authCode" validate:"required_if=AuthType 1 SigninType 2"`           // 授权码
+	Phone         string  `json:"phone,omitempty" validate:"required_if=SigninType 1" trans:"电话"`    // 电话
+	SmsId         string  `json:"smsId,omitempty" validate:"required_if=SigninType 1" trans:"短信ID"`  // 短信ID
+	SmsCode       string  `json:"smsCode,omitempty" validate:"required_if=SigninType 1" trans:"验证码"` // 验证码
+	SigninType    *uint64 `json:"signinType"`                                                        // 登录类型 1:短信登录 2:授权登录
+	AuthType      uint8   `json:"authType" validate:"required_if=SigninType 2"`                      // 授权类型 1:微信 2:支付宝
+	EncryptedData string  `json:"encryptedData" validate:"required_if=AuthType 2 SigninType 2"`      // 支付宝获取手机加密数据
+	AuthCode      string  `json:"authCode" validate:"required_if=AuthType 1 SigninType 2"`           // 授权码
 }

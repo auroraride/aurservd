@@ -31,8 +31,8 @@ type commonClient struct {
 }
 
 func newCommonClient(client *core.Client) *commonClient {
-	certVisitor := downloader.MgrInstance().GetCertificateVisitor(ar.Config.Payment.Wechatpay.MchID)
-	notifyClient, err := notify.NewRSANotifyHandler(ar.Config.Payment.Wechatpay.MchAPIv3Key, verifiers.NewSHA256WithRSAVerifier(certVisitor))
+	certVisitor := downloader.MgrInstance().GetCertificateVisitor(ar.Config.Payment.Wechat.MchID)
+	notifyClient, err := notify.NewRSANotifyHandler(ar.Config.Payment.Wechat.MchAPIv3Key, verifiers.NewSHA256WithRSAVerifier(certVisitor))
 	if err != nil {
 		zap.L().Fatal(err.Error())
 	}
@@ -62,7 +62,7 @@ func NewWechatClientWithConfig(cfg ar.WechatpayConfig) *core.Client {
 // Refund 退款
 func (c *commonClient) Refund(req *model.PaymentRefund) {
 	svc := refunddomestic.RefundsApiService{Client: c.Client}
-	cfg := ar.Config.Payment.Wechatpay
+	cfg := ar.Config.Payment.Wechat
 	resp, result, err := svc.Create(context.Background(),
 		refunddomestic.CreateRequest{
 			TransactionId: core.String(req.TradeNo),
