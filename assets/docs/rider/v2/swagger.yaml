@@ -210,31 +210,6 @@ definitions:
         description: 合同链接
         type: string
     type: object
-  definition.Destination:
-    properties:
-      area_id:
-        description: 终点区域ID
-        type: integer
-      cname:
-        description: 终点城市名称
-        type: string
-      destinationPt:
-        description: 终点坐标
-        properties:
-          lat:
-            description: 终点纬度
-            type: number
-          lng:
-            description: 终点经度
-            type: number
-        type: object
-      uid:
-        description: 终点UID
-        type: string
-      wd:
-        description: 终点名称
-        type: string
-    type: object
   definition.FaultCauseRes:
     properties:
       key:
@@ -313,6 +288,9 @@ definitions:
       agreementHash:
         description: 协议hash
         type: string
+      buyerOpenId:
+        description: 买家支付宝用户ID
+        type: string
       cityId:
         description: 城市ID, 新签必填
         type: integer
@@ -343,11 +321,12 @@ definitions:
         - 7
         type: integer
       payway:
-        description: 支付方式, 1支付宝 2微信 3支付宝预授权(仅限V2使用)
+        description: 支付方式, 1支付宝 2微信 3支付宝预授权(仅限V2使用) 5 支付宝小程序
         enum:
         - 1
         - 2
         - 3
+        - 5
         type: integer
       planId:
         description: 套餐ID
@@ -368,7 +347,7 @@ definitions:
   definition.OrderDepositCreditReq:
     properties:
       payway:
-        description: 支付方式, 1支付宝 2微信 3支付宝信用免押 4 微信支付分
+        description: 支付方式, 1支付宝 2微信 3支付宝信用免押 4微信支付分
         enum:
         - 1
         - 2
@@ -392,31 +371,6 @@ definitions:
         type: string
       prepay:
         description: 支付信息
-        type: string
-    type: object
-  definition.Origin:
-    properties:
-      area_id:
-        description: 起点区域ID
-        type: integer
-      cname:
-        description: 起点城市名称
-        type: string
-      originPt:
-        description: 起点坐标
-        properties:
-          lat:
-            description: 起点纬度
-            type: number
-          lng:
-            description: 起点经度
-            type: number
-        type: object
-      uid:
-        description: 起点UID
-        type: string
-      wd:
-        description: 起点名称
         type: string
     type: object
   definition.PersonCertificationFaceReq:
@@ -600,138 +554,37 @@ definitions:
     - smsCode
     - smsId
     type: object
-  definition.RiderDirectionRes:
+  definition.RiderSignupReq:
     properties:
-      destination:
-        allOf:
-        - $ref: '#/definitions/definition.Destination'
-        description: 终点信息
-      origin:
-        allOf:
-        - $ref: '#/definitions/definition.Origin'
-        description: 起点信息
-      routes:
-        description: 方案列表
-        items:
-          $ref: '#/definitions/definition.Routes'
-        type: array
-    type: object
-  definition.Routes:
-    properties:
-      destinationLocation:
-        description: 路线终点坐标
-        properties:
-          lat:
-            description: 路线终点纬度
-            type: number
-          lng:
-            description: 路线终点经度
-            type: number
-        type: object
-      distance:
-        description: 方案距离 单位：米
-        type: integer
-      duration:
-        description: 单位：秒
-        type: integer
-      originLocation:
-        description: 路线起点坐标
-        properties:
-          lat:
-            description: 路线终点纬度
-            type: number
-          lng:
-            description: 路线终点经度
-            type: number
-        type: object
-      restrictions_info:
-        description: "限行信息\t如 \"包含禁行路段|包含逆行路段\""
+      authCode:
+        description: 授权码
         type: string
-      restrictions_status:
-        description: "限行类型\t0x01表示禁行；0x02表示逆行"
+      authType:
+        description: 授权类型 1:微信 2:支付宝
+        enum:
+          - 1
+          - 2
         type: integer
-      steps:
-        items:
-          properties:
-            area:
-              description: 文档未标注
-              type: integer
-            direction:
-              description: 当前道路方向角
-              type: integer
-            distance:
-              description: "路段距离\t单位：米"
-              type: integer
-            duration:
-              description: "路段耗时\t单位：秒"
-              type: integer
-            instructions:
-              description: "路段描述\t如“骑行50米“"
-              type: string
-            leg_index:
-              type: integer
-            links:
-              description: link信息
-              items:
-                properties:
-                  attr:
-                    description: "link属性\t0x01表示禁行；0x02表示逆行"
-                    type: integer
-                  length:
-                    description: "link长度\t单位：米"
-                    type: integer
-                type: object
-              type: array
-            name:
-              description: "该路段道路名称\t如“信息路“ 若道路未命名或百度地图未采集到该道路名称，则返回\"无名路\""
-              type: string
-            path:
-              description: 路段位置坐标描述
-              type: string
-            pois:
-              description: 文档未标注  该路段途径的POI列表？
-              items: {}
-              type: array
-            restrictions_info:
-              description: "限行信息\t如 \"包含禁行路段|包含逆行路段\""
-              type: string
-            restrictions_status:
-              description: "限行类型\t0x01表示禁行；0x02表示逆行"
-              type: integer
-            stepDestinationInstruction:
-              description: 路段终点描述？
-              type: string
-            stepDestinationLocation:
-              description: 路段终点坐标
-              properties:
-                lat:
-                  description: 路段终点经度
-                  type: number
-                lng:
-                  description: 路段终点经度
-                  type: number
-              type: object
-            stepOriginInstruction:
-              description: 路段起点描述？
-              type: string
-            stepOriginLocation:
-              description: 路段起点坐标
-              properties:
-                lat:
-                  description: 路段起点纬度
-                  type: number
-                lng:
-                  description: 路段起点经度
-                  type: number
-              type: object
-            turn_type:
-              description: "行驶转向方向\t如“直行”、“左前方转弯”"
-              type: string
-            type:
-              description: 文档未标注
-              type: integer
-          type: object
-        type: array
+      encryptedData:
+        description: 支付宝获取手机加密数据
+        type: string
+      phone:
+        description: 电话, 电话
+        type: string
+      signinType:
+        description: 登录类型 1:短信登录 2:授权登录
+        enum:
+          - 1
+          - 2
+        type: integer
+      smsCode:
+        description: 验证码, 验证码
+        type: string
+      smsId:
+        description: 短信ID, 短信ID
+        type: string
+    required:
+      - signinType
     type: object
   definition.StoreDetail:
     properties:
@@ -1818,6 +1671,11 @@ definitions:
       phone:
         type: string
     type: object
+  model.OpenidRes:
+    properties:
+      openid:
+        type: string
+    type: object
   model.Order:
     properties:
       agent:
@@ -2465,24 +2323,6 @@ definitions:
       useStore:
         description: 是否可使用门店办理业务
         type: boolean
-    type: object
-  model.RiderSignupReq:
-    properties:
-      cityId:
-        type: integer
-      phone:
-        description: 电话
-        type: string
-      smsCode:
-        description: 短信验证码
-        type: string
-      smsId:
-        description: 短信ID
-        type: string
-    required:
-    - phone
-    - smsCode
-    - smsId
     type: object
   model.SettingPlanDescription:
     properties:
@@ -3619,37 +3459,6 @@ paths:
       summary: 注销账户
       tags:
       - Rider - 骑手
-  /rider/v2/direction:
-    get:
-      consumes:
-      - application/json
-      operationId: RiderDirection
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: 终点
-        in: query
-        name: destination
-        required: true
-        type: string
-      - description: 起点
-        in: query
-        name: origin
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/definition.RiderDirectionRes'
-      summary: 路径规划
-      tags:
-      - Rider - 骑手
   /rider/v2/enterprise/battery:
     get:
       consumes:
@@ -4234,6 +4043,32 @@ paths:
       summary: 买前必读 积分 优惠券使用说明
       tags:
       - Instructions - 说明
+  /rider/v2/mini/openid:
+    get:
+      consumes:
+        - application/json
+      operationId: GetOpenid
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: 微信code
+          in: query
+          name: code
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.OpenidRes'
+      summary: 获取支付宝小程序openid
+      tags:
+        - Rider - 骑手
   /rider/v2/order:
     get:
       consumes:
@@ -4688,7 +4523,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.RiderSignupReq'
+          $ref: '#/definitions/definition.RiderSignupReq'
       produces:
       - application/json
       responses:

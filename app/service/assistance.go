@@ -29,7 +29,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
-	"github.com/auroraride/aurservd/internal/payment"
+	"github.com/auroraride/aurservd/internal/payment/alipay"
+	"github.com/auroraride/aurservd/internal/payment/wechat"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -740,9 +741,11 @@ func (s *assistanceService) Pay(req *model.AssistancePayReq) model.AssistancePay
 	// 生成预支付订单
 	switch req.Payway {
 	case model.OrderPaywayAlipay:
-		qr, err = payment.NewAlipay().Native(pc)
+		qr, err = alipay.NewApp().Native(pc)
 	case model.OrderPaywayWechat:
-		qr, err = payment.NewWechat().Native(pc)
+		qr, err = wechat.NewApp().Native(pc)
+	default:
+		snag.Panic("unhandled default case")
 	}
 
 	if err != nil {

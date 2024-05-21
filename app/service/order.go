@@ -14,7 +14,7 @@ import (
 
 	"github.com/auroraride/adapter/log"
 	"github.com/golang-module/carbon/v2"
-	"github.com/smartwalle/alipay/v3"
+	ali "github.com/smartwalle/alipay/v3"
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
@@ -32,7 +32,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	"github.com/auroraride/aurservd/internal/payment"
+	"github.com/auroraride/aurservd/internal/payment/alipay"
+	"github.com/auroraride/aurservd/internal/payment/wechat"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -383,7 +384,7 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
 	switch payway {
 	case model.OrderPaywayAlipay:
 		// 使用支付宝支付
-		str, err = payment.NewAlipay().AppPay(prepay)
+		str, err = alipay.NewApp().AppPay(prepay)
 		if err != nil {
 			snag.Panic("支付宝支付请求失败")
 		}
@@ -391,7 +392,7 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
 		result.OutTradeNo = no
 	case model.OrderPaywayWechat:
 		// 使用微信支付
-		str, err = payment.NewWechat().AppPay(prepay)
+		str, err = wechat.NewApp().AppPay(prepay)
 		if err != nil {
 			snag.Panic("微信支付请求失败")
 		}
@@ -399,12 +400,20 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
 		result.OutTradeNo = no
 	case model.OrderPaywayAlipayAuthFreeze:
 		// 使用支付宝预授权支付
-		str, err = payment.NewAlipay().FandAuthFreeze(prepay)
+		str, err = alipay.NewApp().FandAuthFreeze(prepay)
 		if err != nil {
 			snag.Panic("支付宝预授权支付请求失败")
 		}
 		result.Prepay = str
 		result.OutOrderNo = no
+	case model.OrderPaywayAlipayMiniProgram:
+		// 使用支付宝小程序支付
+		str, err = alipay.NewMiniProgram().Trade(prepay)
+		if err != nil {
+			snag.Panic("支付宝小程序支付请求失败")
+		}
+		result.Prepay = ""
+		result.OutTradeNo = str
 	default:
 		snag.Panic("支付方式错误")
 	}
@@ -1084,7 +1093,7 @@ func (s *orderService) TradePay(o *ent.Order) error {
 	}
 
 	// 查询授权订单状态
-	fundAuthOperationDetailQueryRsp, err := payment.NewAlipay().AlipayFundAuthOperationDetailQuery(definition.FundAuthOperationDetailReq{
+	fundAuthOperationDetailQueryRsp, err := alipay.NewApp().AlipayFundAuthOperationDetailQuery(definition.FundAuthOperationDetailReq{
 		OutOrderNo:   o.OutOrderNo,
 		OutRequestNo: o.OutRequestNo,
 	})
@@ -1093,7 +1102,7 @@ func (s *orderService) TradePay(o *ent.Order) error {
 	}
 
 	// 授权订单状态 已授权状态：授权成功，可以进行转支付或解冻操作
-	if fundAuthOperationDetailQueryRsp.OrderStatus != alipay.OrderStatusAuthorized {
+	if fundAuthOperationDetailQueryRsp.OrderStatus != ali.OrderStatusAuthorized {
 		return errors.New("授权订单状态异常")
 	}
 
@@ -1115,7 +1124,7 @@ func (s *orderService) TradePay(o *ent.Order) error {
 	o.Update().SetOutTradeNo(no).SaveX(s.ctx)
 
 	// 调用资金冻结转支付
-	_, err = payment.NewAlipay().AlipayTradePay(&definition.TradePay{
+	_, err = alipay.NewApp().AlipayTradePay(&definition.TradePay{
 		AuthNo:          o.AuthNo,
 		OutTradeNo:      no,
 		TotalAmount:     o.Amount,
@@ -1191,7 +1200,7 @@ func (s *orderService) FandAuthUnfreeze(refund *model.PaymentRefund, o *ent.Orde
 	}
 
 	// 查询授权订单状态
-	fundAuthOperationDetailQueryRsp, err := payment.NewAlipay().AlipayFundAuthOperationDetailQuery(definition.FundAuthOperationDetailReq{
+	fundAuthOperationDetailQueryRsp, err := alipay.NewApp().AlipayFundAuthOperationDetailQuery(definition.FundAuthOperationDetailReq{
 		OutOrderNo:   o.OutOrderNo,
 		OutRequestNo: o.OutRequestNo,
 	})
@@ -1200,7 +1209,7 @@ func (s *orderService) FandAuthUnfreeze(refund *model.PaymentRefund, o *ent.Orde
 	}
 
 	// 授权订单状态 已授权状态：授权成功，可以进行转支付或解冻操作
-	if fundAuthOperationDetailQueryRsp.OrderStatus != alipay.OrderStatusAuthorized {
+	if fundAuthOperationDetailQueryRsp.OrderStatus != ali.OrderStatusAuthorized {
 		return errors.New("支付宝订单状态错误")
 	}
 
@@ -1210,5 +1219,5 @@ func (s *orderService) FandAuthUnfreeze(refund *model.PaymentRefund, o *ent.Orde
 		return errors.New("解冻金额大于剩余金额")
 	}
 
-	return payment.NewAlipay().FandAuthUnfreeze(refund, fandAuthUnfreezeReq)
+	return alipay.NewApp().FandAuthUnfreeze(refund, fandAuthUnfreezeReq)
 }

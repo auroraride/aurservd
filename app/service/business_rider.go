@@ -26,7 +26,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
-	"github.com/auroraride/aurservd/internal/payment"
+	"github.com/auroraride/aurservd/internal/payment/alipay"
+	"github.com/auroraride/aurservd/internal/payment/wechat"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -983,9 +984,9 @@ func (s *businessRiderService) ForceUnsubscribe(req *model.BusinessSubscribeReq,
 			if (depositOrder.Payway == model.OrderPaywayAlipay || depositOrder.Payway == model.OrderPaywayWechat) && *req.RefundDeposit {
 				switch depositOrder.Payway {
 				case model.OrderPaywayAlipay:
-					payment.NewAlipay().Refund(prepay.Refund)
+					alipay.NewApp().Refund(prepay.Refund)
 				case model.OrderPaywayWechat:
-					payment.NewWechat().Refund(prepay.Refund)
+					wechat.NewApp().Refund(prepay.Refund)
 				default:
 					return fmt.Errorf("不支持的支付方式")
 				}

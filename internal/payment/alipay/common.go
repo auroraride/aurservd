@@ -1,9 +1,4 @@
-// Copyright (C) liasica. 2022-present.
-//
-// Created at 2022-05-25
-// Based on aurservd by liasica, magicrolan@qq.com.
-
-package payment
+package alipay
 
 import (
 	"context"
@@ -27,15 +22,22 @@ import (
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
-var _alipay *alipayClient
-
-type alipayClient struct {
+type commonClient struct {
 	*alipay.Client
 }
 
-func newAlipayClient() *alipay.Client {
-	cfg := ar.Config.Payment.Alipay
+func newCommonClient(client *alipay.Client) *commonClient {
+	return &commonClient{
+		Client: client,
+	}
+}
+
+func newAlipayClientWithConfig(cfg ar.AlipayConfig) *alipay.Client {
 	client, err := alipay.New(cfg.Appid, cfg.PrivateKey, true)
+	if err != nil {
+		snag.Panic(err)
+	}
+
 	if err != nil {
 		snag.Panic(err)
 	}
@@ -51,91 +53,18 @@ func newAlipayClient() *alipay.Client {
 	if err != nil {
 		snag.Panic(err)
 	}
+	if cfg.EncryptKey != "" {
+		err = client.SetEncryptKey(cfg.EncryptKey)
+		if err != nil {
+			snag.Panic(err)
+		}
+	}
+
 	return client
 }
 
-func NewAlipay() *alipayClient {
-	return _alipay
-}
-
-func (c *alipayClient) loadCerts() {
-	cfg := ar.Config.Payment.Alipay
-
-	err := c.Client.LoadAppCertPublicKeyFromFile(cfg.AppPublicCert) // 加载应用公钥证书
-	if err != nil {
-		snag.Panic(err)
-	}
-	err = c.Client.LoadAliPayRootCertFromFile(cfg.RootCert) // 加载支付宝根证书
-	if err != nil {
-		snag.Panic(err)
-	}
-	err = c.Client.LoadAlipayCertPublicKeyFromFile(cfg.PublicCert) // 加载支付宝公钥证书
-	if err != nil {
-		snag.Panic(err)
-	}
-}
-
-// AppPay app支付
-func (c *alipayClient) AppPay(pc *model.PaymentCache) (string, error) {
-	cfg := ar.Config.Payment.Alipay
-	amount, subject, no, _ := pc.GetPaymentArgs()
-	trade := alipay.TradeAppPay{
-		Trade: alipay.Trade{
-			TotalAmount: fmt.Sprintf("%.2f", amount),
-			NotifyURL:   cfg.NotifyUrl,
-			Subject:     subject,
-			OutTradeNo:  no,
-			TimeExpire:  time.Now().Add(10 * time.Minute).Format(carbon.DateTimeLayout),
-		},
-	}
-	return c.TradeAppPay(trade)
-}
-
-func (c *alipayClient) AppPayDemo() (string, string, error) {
-	cfg := ar.Config.Payment.Alipay
-	no := tools.NewUnique().NewSN()
-	trade := alipay.TradeAppPay{
-		Trade: alipay.Trade{
-			TotalAmount: fmt.Sprintf("%.2f", 0.01),
-			NotifyURL:   cfg.NotifyUrl,
-			Subject:     "测试支付",
-			OutTradeNo:  no,
-			TimeExpire:  time.Now().Add(10 * time.Minute).Format(carbon.DateTimeLayout),
-		},
-	}
-
-	s, err := c.TradeAppPay(trade)
-	return s, no, err
-}
-
-func (c *alipayClient) Native(pc *model.PaymentCache) (string, error) {
-	cfg := ar.Config.Payment.Alipay
-
-	c.loadCerts()
-
-	amount, subject, no, _ := pc.GetPaymentArgs()
-	trade := alipay.TradePreCreate{
-		Trade: alipay.Trade{
-			TotalAmount: fmt.Sprintf("%.2f", amount),
-			NotifyURL:   cfg.NotifyUrl,
-			Subject:     subject,
-			OutTradeNo:  no,
-		},
-	}
-	res, err := c.TradePreCreate(trade)
-	if err != nil {
-		return "", err
-	}
-
-	if !res.IsSuccess() {
-		return "", errors.New("支付宝二维码生成失败")
-	}
-
-	return res.QRCode, nil
-}
-
 // Refund 退款
-func (c *alipayClient) Refund(req *model.PaymentRefund) {
+func (c *commonClient) Refund(req *model.PaymentRefund) {
 	result, err := c.Client.TradeRefund(alipay.TradeRefund{
 		TradeNo:      req.TradeNo,
 		OutRequestNo: req.OutRefundNo,
@@ -161,7 +90,7 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
 }
 
 // Notification 支付宝回调
-func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
+func (c *commonClient) Notification(req *http.Request) *model.PaymentCache {
 	err := req.ParseForm()
 	if err != nil {
 		zap.L().Error("支付宝回调失败", zap.Error(err))
@@ -212,7 +141,7 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
 	case model.PaymentCacheTypeRefund:
 		pc.Refund.Success = true
 		pc.Refund.Request = true
-		pc.Refund.Time = carbon.Parse(result.GmtRefund).ToStdTime()
+		pc.Refund.Time = carbon.Parse(result.GmtRefund).StdTime()
 		return pc
 	case model.PaymentCacheTypeDeposit:
 		if result.TradeStatus == alipay.TradeStatusSuccess {
@@ -221,13 +150,14 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
 			return nil
 		}
 		return pc
+	default:
+		snag.Panic("unhandled default case")
 	}
-
 	return nil
 }
 
 // FandAuthFreeze 线上资金授权冻结
-func (c *alipayClient) FandAuthFreeze(pc *model.PaymentCache) (string, error) {
+func (c *commonClient) FandAuthFreeze(pc *model.PaymentCache) (string, error) {
 	cfg := ar.Config.Payment.AlipayAuthFreeze
 	var no, subject, amount string
 
@@ -310,12 +240,12 @@ type FundAuthOrderAppFreeze struct {
 }
 
 // FundAuthOrderAppFreeze 这里复写alipay.FundAuthOrderAppFreeze方法是为了解决alipay.FundAuthOrderAppFreeze 扩展字段未更新问题
-func (c *alipayClient) FundAuthOrderAppFreeze(param FundAuthOrderAppFreeze) (result string, err error) {
+func (c *commonClient) FundAuthOrderAppFreeze(param FundAuthOrderAppFreeze) (result string, err error) {
 	return c.EncodeParam(param)
 }
 
 // NotificationFandAuthFreeze 资金授权冻结回调
-func (c *alipayClient) NotificationFandAuthFreeze(req *http.Request) *model.PaymentCache {
+func (c *commonClient) NotificationFandAuthFreeze(req *http.Request) *model.PaymentCache {
 	err := req.ParseForm()
 	if err != nil {
 		zap.L().Error("资金授权冻结回调失败", zap.Error(err))
@@ -361,7 +291,7 @@ func (c *alipayClient) NotificationFandAuthFreeze(req *http.Request) *model.Paym
 }
 
 // DecodeFandAuthFreezeNotification 解析线上资金授权冻结回调
-func (c *alipayClient) DecodeFandAuthFreezeNotification(values url.Values) (notification *definition.FandAuthFreezeNotification, err error) {
+func (c *commonClient) DecodeFandAuthFreezeNotification(values url.Values) (notification *definition.FandAuthFreezeNotification, err error) {
 
 	if err = c.VerifySign(values); err != nil {
 		return nil, err
@@ -404,7 +334,7 @@ func (c *alipayClient) DecodeFandAuthFreezeNotification(values url.Values) (noti
 }
 
 // FandAuthUnfreeze 资金授权解冻
-func (c *alipayClient) FandAuthUnfreeze(refund *model.PaymentRefund, req *definition.FandAuthUnfreezeReq) error {
+func (c *commonClient) FandAuthUnfreeze(refund *model.PaymentRefund, req *definition.FandAuthUnfreezeReq) error {
 	if req.Remark == "" {
 		req.Remark = "申请退款"
 	}
@@ -434,7 +364,7 @@ func (c *alipayClient) FandAuthUnfreeze(refund *model.PaymentRefund, req *defini
 }
 
 // NotificationFandAuthUnfreeze 解冻回调
-func (c *alipayClient) NotificationFandAuthUnfreeze(req *http.Request) (res *model.PaymentCache) {
+func (c *commonClient) NotificationFandAuthUnfreeze(req *http.Request) (res *model.PaymentCache) {
 	res = new(model.PaymentCache)
 	err := req.ParseForm()
 	if err != nil {
@@ -465,7 +395,7 @@ func (c *alipayClient) NotificationFandAuthUnfreeze(req *http.Request) (res *mod
 }
 
 // AlipayTradePay 资金冻结转支付
-func (c *alipayClient) AlipayTradePay(req *definition.TradePay) (res *alipay.TradePayRsp, err error) {
+func (c *commonClient) AlipayTradePay(req *definition.TradePay) (res *alipay.TradePayRsp, err error) {
 	cfg := ar.Config.Payment.AlipayAuthFreeze
 
 	// 如果下单时指定了免押受理台模式则必填
@@ -508,7 +438,7 @@ func (c *alipayClient) AlipayTradePay(req *definition.TradePay) (res *alipay.Tra
 }
 
 // NotificationTradePay 扣款完成回调通知
-func (c *alipayClient) NotificationTradePay(req *http.Request) (res *definition.OrderDepositFreezeToPayRes) {
+func (c *commonClient) NotificationTradePay(req *http.Request) (res *definition.OrderDepositFreezeToPayRes) {
 	res = new(definition.OrderDepositFreezeToPayRes)
 	err := req.ParseForm()
 	if err != nil {
@@ -529,7 +459,7 @@ func (c *alipayClient) NotificationTradePay(req *http.Request) (res *definition.
 }
 
 // AlipayFundAuthOperationDetailQuery 查询预授权订单
-func (c *alipayClient) AlipayFundAuthOperationDetailQuery(req definition.FundAuthOperationDetailReq) (result *alipay.FundAuthOperationDetailQueryRsp, err error) {
+func (c *commonClient) AlipayFundAuthOperationDetailQuery(req definition.FundAuthOperationDetailReq) (result *alipay.FundAuthOperationDetailQueryRsp, err error) {
 	trade := alipay.FundAuthOperationDetailQuery{
 		OutOrderNo:   req.OutOrderNo,
 		OutRequestNo: req.OutRequestNo,
@@ -553,7 +483,7 @@ func (c *alipayClient) AlipayFundAuthOperationDetailQuery(req definition.FundAut
 }
 
 // AlipayFundAuthOperationCancel 取消预授权订单 订单为以下状态时可以取消订单：INIT（初始化）、AUTHORIZED（已创建）（此时一般为用户取消服务时使用）。
-func (c *alipayClient) AlipayFundAuthOperationCancel(authNo, outRequestNo string) (result *alipay.FundAuthOperationCancelRsp, err error) {
+func (c *commonClient) AlipayFundAuthOperationCancel(authNo, outRequestNo string) (result *alipay.FundAuthOperationCancelRsp, err error) {
 	trade := alipay.FundAuthOperationCancel{
 		AuthNo:       authNo,
 		OutRequestNo: outRequestNo,

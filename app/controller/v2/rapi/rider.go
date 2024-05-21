@@ -6,26 +6,12 @@ import (
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/biz"
 	"github.com/auroraride/aurservd/app/biz/definition"
+	"github.com/auroraride/aurservd/app/model"
 )
 
 type rider struct{}
 
 var Rider = new(rider)
-
-// Direction
-// @ID		RiderDirection
-// @Router	/rider/v2/direction [GET]
-// @Summary	路径规划
-// @Tags	Rider - 骑手
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string							true	"骑手校验token"
-// @Param	query			query		definition.RiderDirectionReq	true	"请求参数"
-// @Success	200				{object}	definition.RiderDirectionRes	"请求成功"
-func (*rider) Direction(c echo.Context) (err error) {
-	ctx, req := app.RiderContextAndBinding[definition.RiderDirectionReq](c)
-	return ctx.SendResponse(biz.NewRiderBiz().Direction(req))
-}
 
 // ChangePhone 修改手机号
 // @ID		RiderChangePhone
@@ -40,4 +26,33 @@ func (*rider) Direction(c echo.Context) (err error) {
 func (*rider) ChangePhone(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.RiderChangePhoneReq](c)
 	return ctx.SendResponse(biz.NewRiderBiz().ChangePhone(ctx.Rider, req))
+}
+
+// Signin
+// @ID		Signin
+// @Router	/rider/v2/signin [POST]
+// @Summary	登录或注册
+// @Tags	Rider - 骑手
+// @Accept	json
+// @Produce	json
+// @Param	body	body		definition.RiderSignupReq	true	"desc"
+// @Success	200		{object}	model.RiderSigninRes		"请求成功"
+func (*rider) Signin(c echo.Context) (err error) {
+	ctx, req := app.ContextBinding[definition.RiderSignupReq](c)
+	return ctx.SendResponse(biz.NewRiderBiz().Signin(ctx.Device, req))
+}
+
+// GetOpenid
+// @ID		GetOpenid
+// @Router	/rider/v2/mini/openid [GET]
+// @Summary	获取支付宝小程序openid
+// @Tags	Rider - 骑手
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string			true	"骑手校验token"
+// @Param	code			query		string			true	"支付宝code"
+// @Success	200				{object}	model.OpenidRes	"请求成功"
+func (*rider) GetOpenid(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[model.OpenidReq](c)
+	return ctx.SendResponse(biz.NewRiderBiz().GetAlipayOpenid(req))
 }

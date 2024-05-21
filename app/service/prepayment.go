@@ -19,7 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
-	"github.com/auroraride/aurservd/internal/payment"
+	"github.com/auroraride/aurservd/internal/payment/wechat"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -140,7 +140,7 @@ func (s *prepaymentService) WechatMiniprogramPay(ag *ent.Agent, en *ent.Enterpri
 
 	// 生成预支付订单
 	var res *jsapi.PrepayWithRequestPaymentResponse
-	res, err = payment.NewWechat().Miniprogram(ar.Config.WechatMiniprogram.Agent.AppID, req.OpenID, pc)
+	res, err = wechat.NewMiniProgram().Miniprogram(ar.Config.WechatMiniprogram.Agent.AppID, req.OpenID, pc)
 	if err != nil {
 		snag.Panic(err)
 		zap.L().Error("代理商小程序支付订单生成失败", zap.Error(err))

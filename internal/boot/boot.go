@@ -18,7 +18,6 @@ import (
 	_ "github.com/auroraride/aurservd/app/permission"
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/ar"
-	"github.com/auroraride/aurservd/internal/payment"
 	"github.com/auroraride/aurservd/internal/tencent"
 )
 
@@ -66,7 +65,7 @@ func Bootstrap() {
 	logging.Boot()
 
 	// 初始化支付
-	payment.Boot()
+	// payment.Boot()
 
 	// 加载模板
 	assets.LoadTemplates()

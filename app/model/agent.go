@@ -5,11 +5,6 @@
 
 package model
 
-const (
-	AgentSigninTypeSms    uint64 = iota + 1 // 短信登录
-	AgentSigninTypeWechat                   // 微信授权登录
-)
-
 type AgentCreateReq struct {
 	Phone        string `json:"phone" validate:"required" trans:"电话"`
 	Name         string `json:"name" validate:"required" trans:"姓名"`
