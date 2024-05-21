@@ -166,10 +166,10 @@ func (s *agentService) signin(ag *ent.Agent) *model.AgentSigninRes {
 // Signin 登录
 func (s *agentService) Signin(req *model.AgentSigninReq) *model.AgentSigninRes {
 	switch req.SigninType {
-	case model.AgentSigninTypeSms:
+	case model.SigninTypeSms:
 		// 校验短信
 		NewSms().VerifyCodeX(req.Phone, req.SmsId, req.Code)
-	case model.AgentSigninTypeWechat:
+	case model.SigninTypeAuth:
 		// 获取手机号
 		req.Phone = NewminiProgram().GetPhoneNumber(req.Code)
 	}

@@ -73,6 +73,7 @@ func (ws *WechatService) GetMiniProgram(name string) *miniProgramService {
 	return ws.MiniPrograms[name]
 }
 
+// NewminiProgram 代理小程序
 func NewminiProgram(params ...any) *miniProgramService {
 	ws := NewWechatService()
 	ws.AddMiniProgram("agent", &MiniProgramConfig{
@@ -82,6 +83,7 @@ func NewminiProgram(params ...any) *miniProgramService {
 	return ws.GetMiniProgram("agent")
 }
 
+// NewPromotionMiniProgram 推广小程序
 func NewPromotionMiniProgram(params ...any) *miniProgramService {
 	ws := NewWechatService()
 	ws.AddMiniProgram("promotion", &MiniProgramConfig{
@@ -89,6 +91,16 @@ func NewPromotionMiniProgram(params ...any) *miniProgramService {
 		AppSecret: ar.Config.WechatMiniprogram.Promotion.AppSecret,
 	}, params...)
 	return ws.GetMiniProgram("promotion")
+}
+
+// NewRiderMiniProgram 骑手小程序
+func NewRiderMiniProgram(params ...any) *miniProgramService {
+	ws := NewWechatService()
+	ws.AddMiniProgram("promotion", &MiniProgramConfig{
+		AppID:     ar.Config.WechatMiniprogram.Rider.AppID,
+		AppSecret: ar.Config.WechatMiniprogram.Rider.AppSecret,
+	}, params...)
+	return ws.GetMiniProgram("rider")
 }
 
 // GetPhoneNumber 通过code换取手机号码

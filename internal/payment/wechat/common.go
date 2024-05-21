@@ -1,21 +1,11 @@
-// Copyright (C) liasica. 2022-present.
-//
-// Created at 2022-05-26
-// Based on aurservd by liasica, magicrolan@qq.com.
-
-package payment
+package wechat
 
 import (
 	"context"
-	"errors"
 	"io"
 	"math"
 	"net/http"
 	"time"
-
-	"github.com/wechatpay-apiv3/wechatpay-go/services/refunddomestic"
-
-	"github.com/auroraride/aurservd/pkg/snag"
 
 	"github.com/auroraride/adapter/log"
 	jsoniter "github.com/json-iterator/go"
@@ -25,36 +15,39 @@ import (
 	"github.com/wechatpay-apiv3/wechatpay-go/core/notify"
 	"github.com/wechatpay-apiv3/wechatpay-go/core/option"
 	"github.com/wechatpay-apiv3/wechatpay-go/services/payments"
-	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/app"
-	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/jsapi"
-	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/native"
+	"github.com/wechatpay-apiv3/wechatpay-go/services/refunddomestic"
 	"github.com/wechatpay-apiv3/wechatpay-go/utils"
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/cache"
+	"github.com/auroraride/aurservd/pkg/snag"
 )
 
-const (
-	WechatPayCodeSuccess = "SUCCESS"
-	WechatPayCodeFail    = "FAIL"
-)
-
-var _wechat *wechatClient
-
-type wechatClient struct {
+type commonClient struct {
 	*core.Client
 	notifyClient *notify.Handler
 }
 
-func newWechatClient() *wechatClient {
-	cfg := ar.Config.Payment.Wechat
+func newCommonClient(client *core.Client) *commonClient {
+	certVisitor := downloader.MgrInstance().GetCertificateVisitor(ar.Config.Payment.Wechatpay.MchID)
+	notifyClient, err := notify.NewRSANotifyHandler(ar.Config.Payment.Wechatpay.MchAPIv3Key, verifiers.NewSHA256WithRSAVerifier(certVisitor))
+	if err != nil {
+		zap.L().Fatal(err.Error())
+	}
+	return &commonClient{
+		Client:       client,
+		notifyClient: notifyClient,
+	}
+}
+
+// NewWechatClientWithConfig 初始化微信支付客户端
+func NewWechatClientWithConfig(cfg ar.WechatpayConfig) *core.Client {
 	mchPrivateKey, err := utils.LoadPrivateKeyWithPath(cfg.PrivateKeyPath)
 	if err != nil {
 		zap.L().Fatal(err.Error())
 	}
-
 	ctx := context.Background()
 	opts := []core.ClientOption{
 		option.WithWechatPayAutoAuthCipher(cfg.MchID, cfg.MchCertificateSerialNumber, mchPrivateKey, cfg.MchAPIv3Key),
@@ -63,132 +56,13 @@ func newWechatClient() *wechatClient {
 	if err != nil {
 		zap.L().Fatal(err.Error())
 	}
-
-	// 获取商户号对应的微信支付平台证书访问器
-	certVisitor := downloader.MgrInstance().GetCertificateVisitor(cfg.MchID)
-
-	return &wechatClient{
-		Client:       client,
-		notifyClient: notify.NewNotifyHandler(cfg.MchAPIv3Key, verifiers.NewSHA256WithRSAVerifier(certVisitor)),
-	}
-}
-
-func NewWechat() *wechatClient {
-	return _wechat
-}
-
-// AppPay APP支付
-func (c *wechatClient) AppPay(pc *model.PaymentCache) (string, error) {
-	amount, subject, no, _ := pc.GetPaymentArgs()
-	cfg := ar.Config.Payment.Wechat
-
-	svc := app.AppApiService{
-		Client: c.Client,
-	}
-
-	resp, result, err := svc.PrepayWithRequestPayment(context.Background(), app.PrepayRequest{
-		Appid:       core.String(cfg.AppID),
-		Mchid:       core.String(cfg.MchID),
-		Description: core.String(subject),
-		OutTradeNo:  core.String(no),
-		TimeExpire:  core.Time(time.Now().Add(10 * time.Minute)),
-		NotifyUrl:   core.String(cfg.NotifyUrl),
-		Amount: &app.Amount{
-			Currency: core.String("CNY"),
-			Total:    core.Int64(int64(math.Round(amount * 100))),
-		},
-	})
-
-	if err != nil {
-		b, _ := io.ReadAll(result.Response.Body)
-		zap.L().Error("微信App支付调用失败", log.ResponseBody(b), zap.Error(err))
-		return "", err
-	}
-
-	var out struct {
-		*app.PrepayWithRequestPaymentResponse
-		AppID string `json:"appId"`
-	}
-
-	out.PrepayWithRequestPaymentResponse = resp
-	out.AppID = cfg.AppID
-
-	b, _ := jsoniter.Marshal(out)
-
-	return string(b), nil
-}
-
-func (c *wechatClient) Native(pc *model.PaymentCache) (string, error) {
-	amount, subject, no, attach := pc.GetPaymentArgs()
-	cfg := ar.Config.Payment.Wechat
-
-	svc := native.NativeApiService{Client: c.Client}
-	resp, _, err := svc.Prepay(context.Background(), native.PrepayRequest{
-		Appid:       core.String(cfg.AppID),
-		Mchid:       core.String(cfg.MchID),
-		Description: core.String(subject),
-		OutTradeNo:  core.String(no),
-		TimeExpire:  core.Time(time.Now().Add(10 * time.Minute)),
-		NotifyUrl:   core.String(cfg.NotifyUrl),
-		Attach:      core.String(attach),
-		Amount: &native.Amount{
-			Currency: core.String("CNY"),
-			Total:    core.Int64(int64(math.Round(amount * 100))),
-		},
-	})
-
-	if err != nil {
-		zap.L().Error("微信Native支付调用失败", zap.Error(err))
-		return "", err
-	}
-
-	if resp.CodeUrl == nil {
-		return "", errors.New("支付二维码获取失败")
-	}
-
-	return *resp.CodeUrl, nil
-}
-
-func (c *wechatClient) Miniprogram(appID, openID string, pc *model.PaymentCache) (*jsapi.PrepayWithRequestPaymentResponse, error) {
-	amount, subject, no, _ := pc.GetPaymentArgs()
-	cfg := ar.Config.Payment.Wechat
-
-	svc := jsapi.JsapiApiService{Client: c.Client}
-	resp, _, err := svc.PrepayWithRequestPayment(context.Background(), jsapi.PrepayRequest{
-		Appid:       core.String(appID),
-		Mchid:       core.String(cfg.MchID),
-		Description: core.String(subject),
-		OutTradeNo:  core.String(no),
-		TimeExpire:  core.Time(time.Now().Add(10 * time.Minute)),
-		NotifyUrl:   core.String(cfg.NotifyUrl),
-		Payer:       &jsapi.Payer{Openid: core.String(openID)},
-		Amount: &jsapi.Amount{
-			Currency: core.String("CNY"),
-			Total:    core.Int64(int64(math.Round(amount * 100))),
-		},
-	})
-
-	if err != nil {
-		zap.L().Error("微信Miniprogram支付调用失败", zap.Error(err))
-		return nil, err
-	}
-
-	if resp.PrepayId == nil {
-		return nil, errors.New("支付二维码获取失败")
-	}
-
-	return resp, nil
-}
-
-type WechatPayResponse struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
+	return client
 }
 
 // Refund 退款
-func (c *wechatClient) Refund(req *model.PaymentRefund) {
+func (c *commonClient) Refund(req *model.PaymentRefund) {
 	svc := refunddomestic.RefundsApiService{Client: c.Client}
-	cfg := ar.Config.Payment.Wechat
+	cfg := ar.Config.Payment.Wechatpay
 	resp, result, err := svc.Create(context.Background(),
 		refunddomestic.CreateRequest{
 			TransactionId: core.String(req.TradeNo),
@@ -218,7 +92,7 @@ func (c *wechatClient) Refund(req *model.PaymentRefund) {
 }
 
 // Notification 微信支付回调
-func (c *wechatClient) Notification(req *http.Request) *model.PaymentCache {
+func (c *commonClient) Notification(req *http.Request) *model.PaymentCache {
 	transaction := new(payments.Transaction)
 	nq, err := c.notifyClient.ParseNotifyRequest(context.Background(), req, transaction)
 	if err != nil {
@@ -287,7 +161,7 @@ type WechatRefundTransaction struct {
 }
 
 // RefundNotification 微信退款回调
-func (c *wechatClient) RefundNotification(req *http.Request) *model.PaymentCache {
+func (c *commonClient) RefundNotification(req *http.Request) *model.PaymentCache {
 	transaction := new(WechatRefundTransaction)
 	nq, err := c.notifyClient.ParseNotifyRequest(context.Background(), req, transaction)
 	if err != nil {

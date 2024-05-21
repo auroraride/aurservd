@@ -208,34 +208,22 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 	return res
 }
 
-type ByBrandName []*model.PlanEbikeBrandOption
-
-func (a ByBrandName) Len() int           { return len(a) }
-func (a ByBrandName) Less(i, j int) bool { return a[i].Name < a[j].Name }
-func (a ByBrandName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-
 func SortPlanEbikeBrandByName(options []*model.PlanEbikeBrandOption) {
-	sort.Sort(ByBrandName(options))
+	sort.Slice(options, func(i, j int) bool {
+		return options[i].Name < options[j].Name
+	})
 }
-
-type ByModelName []*model.PlanModelOption
-
-func (a ByModelName) Len() int           { return len(a) }
-func (a ByModelName) Less(i, j int) bool { return a[i].Model < a[j].Model }
-func (a ByModelName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 func SortPlanModelByName(options []*model.PlanModelOption) {
-	sort.Sort(ByModelName(options))
+	sort.Slice(options, func(i, j int) bool {
+		return options[i].Model < options[j].Model
+	})
 }
 
-type PlanModelName model.PlanModelOptions
-
-func (a PlanModelName) Len() int           { return len(a) }
-func (a PlanModelName) Less(i, j int) bool { return a[i].Model < a[j].Model }
-func (a PlanModelName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-
 func SortPlanEbikeModelByName(options model.PlanModelOptions) {
-	sort.Sort(PlanModelName(options))
+	sort.Slice(options, func(i, j int) bool {
+		return options[i].Model < options[j].Model
+	})
 }
 
 func SortIDOptions(options model.PlanDaysPriceOptions) {

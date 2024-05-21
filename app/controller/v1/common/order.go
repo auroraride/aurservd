@@ -10,7 +10,7 @@ import (
 
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/payment"
+	"github.com/auroraride/aurservd/internal/payment/alipay"
 )
 
 type order struct{}
@@ -20,7 +20,7 @@ var Order = new(order)
 func (*order) Paytest(c echo.Context) (err error) {
 	ctx := app.Context(c)
 	result := new(model.OrderCreateRes)
-	prepay, no, _ := payment.NewAlipay().AppPayDemo()
+	prepay, no, _ := alipay.NewApp().AppPayDemo()
 	result.OutTradeNo = no
 	result.Prepay = prepay
 

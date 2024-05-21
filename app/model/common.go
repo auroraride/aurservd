@@ -122,3 +122,13 @@ type CascaderOption struct {
 type KeywordQueryReq struct {
 	Keyword *string `json:"keyword" validate:"required" query:"keyword" trans:"关键词"`
 }
+
+const (
+	SigninTypeSms  uint64 = iota + 1 // 短信登录
+	SigninTypeAuth                   // 授权登录
+)
+
+const (
+	AuthTypeWechat uint8 = iota + 1 // 微信
+	AuthTypeAlipay                  // 支付宝
+)

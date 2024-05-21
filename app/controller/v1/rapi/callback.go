@@ -15,7 +15,8 @@ import (
 
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
-	"github.com/auroraride/aurservd/internal/payment"
+	"github.com/auroraride/aurservd/internal/payment/alipay"
+	"github.com/auroraride/aurservd/internal/payment/wechat"
 )
 
 type callback struct{}
@@ -49,7 +50,7 @@ func (*callback) ESignCallback(c echo.Context) (err error) {
 
 // AlipayCallback 支付宝回调
 func (*callback) AlipayCallback(c echo.Context) (err error) {
-	res := payment.NewAlipay().Notification(c.Request())
+	res := alipay.NewApp().Notification(c.Request())
 
 	zap.L().Info("支付宝支付缓存更新", log.JsonData(res))
 
@@ -59,14 +60,14 @@ func (*callback) AlipayCallback(c echo.Context) (err error) {
 
 // WechatPayCallback 微信回调
 func (*callback) WechatPayCallback(c echo.Context) (err error) {
-	res := payment.NewWechat().Notification(c.Request())
+	res := wechat.NewApp().Notification(c.Request())
 	service.NewOrder().DoPayment(res)
 	return c.JSON(http.StatusOK, ar.Map{"code": "SUCCESS", "message": "成功"})
 }
 
 // WechatRefundCallback 微信退款回调
 func (*callback) WechatRefundCallback(c echo.Context) (err error) {
-	res := payment.NewWechat().RefundNotification(c.Request())
+	res := wechat.NewApp().RefundNotification(c.Request())
 	service.NewOrder().DoPayment(res)
 	return c.JSON(http.StatusOK, ar.Map{"code": "SUCCESS", "message": "成功"})
 }

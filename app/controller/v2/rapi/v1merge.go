@@ -443,17 +443,6 @@ func (*Reserve) Create() {}
 // @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*Reserve) Cancel() {}
 
-// Signin
-// @ID		Signin
-// @Router	/rider/v2/signin [POST]
-// @Summary	登录或注册
-// @Tags	Rider - 骑手
-// @Accept	json
-// @Produce	json
-// @Param	body	body		model.RiderSignupReq	true	"desc"
-// @Success	200		{object}	model.RiderSigninRes	"请求成功"
-func (*rider) Signin() {}
-
 // Contact
 // @ID		Contact
 // @Router	/rider/v2/contact [POST]
