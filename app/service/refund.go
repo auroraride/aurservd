@@ -236,6 +236,8 @@ func (s *refundService) DoRefund(o *ent.Order, or *ent.OrderRefund, status uint8
 			if err != nil {
 				snag.Panic("退款处理失败")
 			}
+		case model.OrderPaywayAlipayMiniProgram:
+			alipay.NewMiniProgram().Refund(prepay.Refund)
 		default:
 			snag.Panic("退款处理失败")
 		}
