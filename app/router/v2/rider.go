@@ -30,6 +30,8 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.Any("/callback/alipay/auth/unfreeze", rapi.Callback.AlipayFandAuthUnfreeze, rawDump) //  骑手支付宝资金授权解冻回调
 	g.Any("/callback/alipay/trade/pay", rapi.Callback.AlipayTradePay, rawDump)             // 冻结转支付回调
 
+	g.Any("/callback/alipay/mini/pay", rapi.Callback.AlipayMiniProgramPay, rawDump) // 支付宝小程序支付回调
+
 	// 记录请求日志
 	dumpSkipPaths := map[string]bool{}
 	dumpReqHeaders := map[string]struct{}{
@@ -77,8 +79,8 @@ func LoadRiderV2Routes(root *echo.Group) {
 	person := middleware.RiderCertificationMiddlewareV2 // 实人认证中间件，包含登录认证
 
 	// 不需要登录的接口
-	g.POST("/signin", v1.Rider.Signin) // 登录
-	g.GET("/city", v1.City.List)       // 已开通城市
+	g.POST("/signin", rapi.Rider.Signin) // 登录
+	g.GET("/city", v1.City.List)         // 已开通城市
 
 	g.GET("/branch", rapi.Branch.List)                 // 网点列表
 	g.GET("/branch/facility/:fid", v1.Branch.Facility) // 网点设施
@@ -93,6 +95,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	g.GET("/instructions/:key", rapi.Instructions.Detail) // 买前必读 积分 优惠券使用说明
 
+	g.GET("/mini/openid", rapi.Rider.GetOpenid) // 获取openid
 	// 电柜
 	cabinet := g.Group("/cabinet")
 	cabinet.GET("", rapi.Cabinet.List)           // 电柜列表
@@ -173,9 +176,6 @@ func LoadRiderV2Routes(root *echo.Group) {
 	feedback := g.Group("/feedback", logged())
 	feedback.POST("", rapi.Feedback.Create) // 创建反馈
 	feedback.GET("", rapi.Feedback.List)    // 反馈列表
-
-	// 地图
-	g.GET("/direction", rapi.Rider.Direction) // 获取地图路径规划
 
 	// 故障上报
 	fault := g.Group("/fault", logged())

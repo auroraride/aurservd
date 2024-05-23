@@ -3,39 +3,34 @@ package biz
 import (
 	"context"
 	"errors"
+	"fmt"
+
+	"github.com/rs/xid"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/auroraride/aurservd/internal/baidu"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/payment/alipay"
+	"github.com/auroraride/aurservd/pkg/cache"
+	"github.com/auroraride/aurservd/pkg/silk"
+	"github.com/auroraride/aurservd/pkg/utils"
 )
 
 type riderBiz struct {
-	orm *ent.RiderClient
-	ctx context.Context
+	orm            *ent.RiderClient
+	ctx            context.Context
+	cacheKeyPrefix string
 }
 
 func NewRiderBiz() *riderBiz {
 	return &riderBiz{
-		orm: ent.Database.Rider,
-		ctx: context.Background(),
+		orm:            ent.Database.Rider,
+		ctx:            context.Background(),
+		cacheKeyPrefix: "RIDER_",
 	}
-}
-
-// Direction 骑手路径规划
-func (b *riderBiz) Direction(req *definition.RiderDirectionReq) (*definition.RiderDirectionRes, error) {
-	direction, err := baidu.NewDirection().GetDirection(req.Origin, req.Destination)
-	if err != nil {
-		return nil, err
-	}
-	return &definition.RiderDirectionRes{
-		Routes:      direction.Result.Routes,
-		Origin:      direction.Result.Origin,
-		Destination: direction.Result.Destination,
-	}, nil
 }
 
 // ChangePhone 修改手机号
@@ -64,4 +59,83 @@ func (b *riderBiz) ChangePhone(r *ent.Rider, req *definition.RiderChangePhoneReq
 		SetDiff(r.Phone, req.Phone).
 		Send()
 	return
+}
+
+// Signin 登录
+func (b *riderBiz) Signin(device *model.Device, req *definition.RiderSignupReq) (res *model.RiderSigninRes, err error) {
+	// 兼容老版本
+	if req.SigninType == nil {
+		req.SigninType = silk.UInt64(model.SigninTypeSms)
+	}
+	switch *req.SigninType {
+	case model.SigninTypeSms:
+		service.NewSms().VerifyCodeX(req.Phone, req.SmsId, req.SmsCode)
+	case model.SigninTypeAuth:
+		// 微信授权登录
+		if req.AuthType == model.AuthTypeWechat {
+			req.Phone = service.NewRiderMiniProgram().GetPhoneNumber(req.AuthCode)
+		}
+
+		// 支付宝授权登录
+		if req.AuthType == model.AuthTypeAlipay {
+			var phone string
+			phone, err = alipay.NewMiniProgram().GetPhoneNumber(req.EncryptedData)
+			if err != nil {
+				return nil, err
+			}
+			req.Phone = phone
+		}
+	}
+
+	ctx := context.Background()
+	orm := ent.Database.Rider
+	var u *ent.Rider
+
+	u, err = orm.QueryNotDeleted().Where(rider.Phone(req.Phone)).WithPerson().WithEnterprise().WithStation().First(ctx)
+	if err != nil {
+		// 创建骑手
+		u, err = orm.Create().
+			SetPhone(req.Phone).
+			SetLastDevice(device.Serial).
+			SetDeviceType(device.Type.Value()).
+			Save(ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// 判定用户是否被封禁
+	if service.NewRider().IsBanned(u) {
+		return nil, errors.New("用户已被封禁")
+	}
+
+	token := xid.New().String() + utils.RandTokenString()
+	key := fmt.Sprintf("%s%d", b.cacheKeyPrefix, u.ID)
+
+	// 删除旧的token
+	if old := cache.Get(ctx, key).Val(); old != "" {
+		cache.Del(ctx, key)
+		cache.Del(ctx, old)
+	}
+
+	// 更新设备
+	if u.LastDevice != device.Serial {
+		service.NewRider().SetNewDevice(u, device)
+	}
+
+	res = service.NewRider().Profile(u, device, token)
+
+	// 设置登录token
+	service.NewRider().ExtendTokenTime(u.ID, token)
+
+	return res, nil
+}
+
+// GetAlipayOpenid 获取支付宝小程序openid
+func (b *riderBiz) GetAlipayOpenid(req *model.OpenidReq) (res *model.OpenidRes, err error) {
+	openId, err := alipay.NewMiniProgram().GetOpenid(req.Code)
+	if err != nil || openId == "" {
+		return nil, errors.New("获取openid失败")
+	}
+	return &model.OpenidRes{Openid: openId}, nil
 }

@@ -21,8 +21,9 @@ const (
 	OrderPaywayAlipay              // 支付宝支付
 	OrderPaywayWechat              // 微信支付
 
-	OrderPaywayAlipayAuthFreeze // 支付宝预授权信用分支付(仅限V2使用)
-	OrderPaywayWechatDeposit    // 微信支付分支付(仅限V2使用)
+	OrderPaywayAlipayAuthFreeze  // 支付宝预授权信用分支付(仅限V2使用)
+	OrderPaywayWechatDeposit     // 微信支付分支付(仅限V2使用)
+	OrderPaywayAlipayMiniProgram // 支付宝小程序支付(仅限V2使用)
 )
 
 const (

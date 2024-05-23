@@ -15,7 +15,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
-	"github.com/auroraride/aurservd/internal/payment"
+	"github.com/auroraride/aurservd/internal/payment/alipay"
+	"github.com/auroraride/aurservd/internal/payment/wechat"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -215,9 +216,9 @@ func (s *refundService) DoRefund(o *ent.Order, or *ent.OrderRefund, status uint8
 		// 处理退款
 		switch o.Payway {
 		case model.OrderPaywayAlipay:
-			payment.NewAlipay().Refund(prepay.Refund)
+			alipay.NewApp().Refund(prepay.Refund)
 		case model.OrderPaywayWechat:
-			payment.NewWechat().Refund(prepay.Refund)
+			wechat.NewApp().Refund(prepay.Refund)
 		case model.OrderPaywayAlipayAuthFreeze:
 			// 芝麻免押参数不一样
 			var isDeposit bool
@@ -225,7 +226,7 @@ func (s *refundService) DoRefund(o *ent.Order, or *ent.OrderRefund, status uint8
 				isDeposit = true
 			}
 			// 如果只是预支付直接解冻
-			err = payment.NewAlipay().FandAuthUnfreeze(prepay.Refund, &definition.FandAuthUnfreezeReq{
+			err = alipay.NewApp().FandAuthUnfreeze(prepay.Refund, &definition.FandAuthUnfreezeReq{
 				AuthNo:       o.AuthNo,
 				Amount:       or.Amount,
 				OutRequestNo: or.OutRefundNo,
@@ -235,6 +236,8 @@ func (s *refundService) DoRefund(o *ent.Order, or *ent.OrderRefund, status uint8
 			if err != nil {
 				snag.Panic("退款处理失败")
 			}
+		case model.OrderPaywayAlipayMiniProgram:
+			alipay.NewMiniProgram().Refund(prepay.Refund)
 		default:
 			snag.Panic("退款处理失败")
 		}

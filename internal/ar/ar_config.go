@@ -248,23 +248,8 @@ type config struct {
 	Trans map[string]string
 
 	Payment struct {
-		Wechat struct {
-			PrivateKeyPath             string
-			MchID                      string
-			AppID                      string
-			MchCertificateSerialNumber string
-			MchAPIv3Key                string
-			NotifyUrl                  string
-			RefundUrl                  string
-		}
-		Alipay struct {
-			Appid         string
-			PrivateKey    string
-			AppPublicCert string
-			RootCert      string
-			PublicCert    string
-			NotifyUrl     string
-		}
+		Wechat           WechatpayConfig
+		Alipay           AlipayConfig
 		AlipayAuthFreeze struct {
 			// 冻结回调通知
 			FreezeNotifyUrl string `koanf:"freezeNotifyUrl"`
@@ -277,6 +262,7 @@ type config struct {
 			Category  string // 芝麻免押的类目
 			ServiceId string // 芝麻免押的服务ID
 		}
+		AlipayMiniprogram AlipayConfig
 	}
 	RiderApp    AppVersion
 	EmployeeApp AppVersion
@@ -288,6 +274,7 @@ type config struct {
 	WechatMiniprogram struct {
 		Agent     Wechat
 		Promotion Wechat
+		Rider     Wechat
 	} `koanf:"wechatMiniprogram"`
 
 	Tencent struct {
@@ -310,6 +297,26 @@ type config struct {
 			Enterprise string
 		}
 	}
+}
+
+type AlipayConfig struct {
+	Appid         string
+	PrivateKey    string
+	AppPublicCert string
+	RootCert      string
+	PublicCert    string
+	NotifyUrl     string
+	EncryptKey    string
+}
+
+type WechatpayConfig struct {
+	PrivateKeyPath             string
+	MchID                      string
+	AppID                      string
+	MchCertificateSerialNumber string
+	MchAPIv3Key                string
+	NotifyUrl                  string
+	RefundUrl                  string
 }
 
 func LoadConfig() {

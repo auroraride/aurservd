@@ -54,6 +54,7 @@ type PaymentSubscribe struct {
 	StoreID        *uint64      `json:"storeId,omitempty"`        // 门店ID
 	AgreementHash  *string      `json:"agreementHash,omitempty"`  // 协议hash
 	DepositType    *DepositType `json:"depositType,omitempty"`    // 押金类型 1:芝麻免押 2:微信支付分免押 3:合同押金 4:支付押金
+	BuyerOpenId    *string      `json:"buyerOpenId,omitempty"`    // 买家支付宝用户ID
 }
 
 // PaymentRefund 退款详情

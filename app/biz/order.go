@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/auroraride/adapter/log"
-	"github.com/smartwalle/alipay/v3"
+	ali "github.com/smartwalle/alipay/v3"
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
@@ -22,7 +22,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/payment"
+	"github.com/auroraride/aurservd/internal/payment/alipay"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -111,7 +111,7 @@ func (s *orderBiz) DepositCredit(r *ent.Rider, req *definition.OrderDepositCredi
 	// }
 	case model.OrderPaywayAlipayAuthFreeze:
 		// 使用支付宝预授权支付
-		str, err = payment.NewAlipay().FandAuthFreeze(prepay)
+		str, err = alipay.NewApp().FandAuthFreeze(prepay)
 		if err != nil {
 			zap.L().Error("支付宝预授权支付请求失败", zap.Error(err))
 			return nil, err
@@ -136,6 +136,8 @@ func (s *orderBiz) DoPayment(pc *model.PaymentCache) {
 		s.OrderPaid(pc.Subscribe)
 	case model.PaymentCacheTypeDeposit:
 		service.NewOrder().DepositPay(pc.DepositCredit)
+	case model.PaymentCacheTypePlan:
+		service.NewOrder().OrderPaid(pc.Subscribe)
 	default:
 		return
 	}
@@ -149,8 +151,7 @@ func (s *orderBiz) CancelDeposit(req *definition.OrderDepositCancelReq) error {
 		return errors.New("订单不存在")
 	}
 	// 查询在支付宝的订单状态
-	var detailQuery *alipay.FundAuthOperationDetailQueryRsp
-	detailQuery, err := payment.NewAlipay().AlipayFundAuthOperationDetailQuery(
+	detailQuery, err := alipay.NewApp().AlipayFundAuthOperationDetailQuery(
 		definition.FundAuthOperationDetailReq{
 			OutOrderNo:   o.OutOrderNo,
 			OutRequestNo: o.OutRequestNo,
@@ -161,9 +162,9 @@ func (s *orderBiz) CancelDeposit(req *definition.OrderDepositCancelReq) error {
 		return err
 	}
 	// 订单状态为初始化或已创建时可以取消订单
-	if detailQuery.OrderStatus == alipay.OrderStatusInit || detailQuery.OrderStatus == alipay.OrderStatusAuthorized {
+	if detailQuery.OrderStatus == ali.OrderStatusInit || detailQuery.OrderStatus == ali.OrderStatusAuthorized {
 		// 取消订单
-		_, err = payment.NewAlipay().AlipayFundAuthOperationCancel(o.AuthNo, o.OutRequestNo)
+		_, err = alipay.NewApp().AlipayFundAuthOperationCancel(o.AuthNo, o.OutRequestNo)
 		if err != nil {
 			zap.L().Error("取消订单失败", zap.Error(err))
 			return err
@@ -411,6 +412,7 @@ func (s *orderBiz) Create(r *ent.Rider, req *definition.OrderCreateReq) (result 
 		DepositOrderNo: req.DepositOrderNo,
 		AgreementHash:  req.AgreementHash,
 		DepositType:    req.DepositType,
+		BuyerOpenId:    req.BuyerOpenId,
 	}
 
 	prepay := &model.PaymentCache{
