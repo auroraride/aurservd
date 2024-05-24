@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -27,6 +28,7 @@ type FeedbackQuery struct {
 	withEnterprise *EnterpriseQuery
 	withAgent      *AgentQuery
 	withRider      *RiderQuery
+	withCity       *CityQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -123,6 +125,28 @@ func (fq *FeedbackQuery) QueryRider() *RiderQuery {
 			sqlgraph.From(feedback.Table, feedback.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, feedback.RiderTable, feedback.RiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(fq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCity chains the current query on the "city" edge.
+func (fq *FeedbackQuery) QueryCity() *CityQuery {
+	query := (&CityClient{config: fq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := fq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := fq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(feedback.Table, feedback.FieldID, selector),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, feedback.CityTable, feedback.CityColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(fq.driver.Dialect(), step)
 		return fromU, nil
@@ -325,6 +349,7 @@ func (fq *FeedbackQuery) Clone() *FeedbackQuery {
 		withEnterprise: fq.withEnterprise.Clone(),
 		withAgent:      fq.withAgent.Clone(),
 		withRider:      fq.withRider.Clone(),
+		withCity:       fq.withCity.Clone(),
 		// clone intermediate query.
 		sql:  fq.sql.Clone(),
 		path: fq.path,
@@ -361,6 +386,17 @@ func (fq *FeedbackQuery) WithRider(opts ...func(*RiderQuery)) *FeedbackQuery {
 		opt(query)
 	}
 	fq.withRider = query
+	return fq
+}
+
+// WithCity tells the query-builder to eager-load the nodes that are connected to
+// the "city" edge. The optional arguments are used to configure the query builder of the edge.
+func (fq *FeedbackQuery) WithCity(opts ...func(*CityQuery)) *FeedbackQuery {
+	query := (&CityClient{config: fq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	fq.withCity = query
 	return fq
 }
 
@@ -442,10 +478,11 @@ func (fq *FeedbackQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Fee
 	var (
 		nodes       = []*Feedback{}
 		_spec       = fq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			fq.withEnterprise != nil,
 			fq.withAgent != nil,
 			fq.withRider != nil,
+			fq.withCity != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -484,6 +521,12 @@ func (fq *FeedbackQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Fee
 	if query := fq.withRider; query != nil {
 		if err := fq.loadRider(ctx, query, nodes, nil,
 			func(n *Feedback, e *Rider) { n.Edges.Rider = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := fq.withCity; query != nil {
+		if err := fq.loadCity(ctx, query, nodes, nil,
+			func(n *Feedback, e *City) { n.Edges.City = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -586,6 +629,38 @@ func (fq *FeedbackQuery) loadRider(ctx context.Context, query *RiderQuery, nodes
 	}
 	return nil
 }
+func (fq *FeedbackQuery) loadCity(ctx context.Context, query *CityQuery, nodes []*Feedback, init func(*Feedback), assign func(*Feedback, *City)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Feedback)
+	for i := range nodes {
+		if nodes[i].CityID == nil {
+			continue
+		}
+		fk := *nodes[i].CityID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(city.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (fq *FeedbackQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := fq.querySpec()
@@ -623,6 +698,9 @@ func (fq *FeedbackQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if fq.withRider != nil {
 			_spec.Node.AddColumnOnce(feedback.FieldRiderID)
+		}
+		if fq.withCity != nil {
+			_spec.Node.AddColumnOnce(feedback.FieldCityID)
 		}
 	}
 	if ps := fq.predicates; len(ps) > 0 {
@@ -695,6 +773,7 @@ var (
 	FeedbackQueryWithEnterprise FeedbackQueryWith = "Enterprise"
 	FeedbackQueryWithAgent      FeedbackQueryWith = "Agent"
 	FeedbackQueryWithRider      FeedbackQueryWith = "Rider"
+	FeedbackQueryWithCity       FeedbackQueryWith = "City"
 )
 
 func (fq *FeedbackQuery) With(withEdges ...FeedbackQueryWith) *FeedbackQuery {
@@ -706,6 +785,8 @@ func (fq *FeedbackQuery) With(withEdges ...FeedbackQueryWith) *FeedbackQuery {
 			fq.WithAgent()
 		case FeedbackQueryWithRider:
 			fq.WithRider()
+		case FeedbackQueryWithCity:
+			fq.WithCity()
 		}
 	}
 	return fq

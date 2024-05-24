@@ -32,6 +32,8 @@ func (s *feedbackBiz) RiderCreate(r *ent.Rider, req *model.FeedbackReq) error {
 		SetName(r.Name).
 		SetPhone(r.Phone).
 		SetRider(r).
+		SetCityID(req.CityID).
+		SetNillableVersionInfo(req.VersionInfo).
 		Save(s.ctx)
 	if err != nil {
 		return err
@@ -41,16 +43,20 @@ func (s *feedbackBiz) RiderCreate(r *ent.Rider, req *model.FeedbackReq) error {
 
 // List 反馈列表
 func (s *feedbackBiz) List(r *ent.Rider, req *model.FeedbackListReq) (res *model.PaginationRes) {
-	q := s.orm.Query().Where(feedback.RiderID(r.ID)).Order(ent.Desc(feedback.FieldID))
+	q := s.orm.Query().Where(feedback.RiderID(r.ID)).WithCity().Order(ent.Desc(feedback.FieldID))
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Feedback) (res *model.FeedbackDetail) {
 		res = &model.FeedbackDetail{
-			ID:        item.ID,
-			Content:   item.Content,
-			Url:       item.URL,
-			Type:      item.Type,
-			CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
-			Name:      item.Name,
-			Phone:     item.Phone,
+			ID:          item.ID,
+			Content:     item.Content,
+			Url:         item.URL,
+			Type:        item.Type,
+			CreatedAt:   item.CreatedAt.Format(carbon.DateTimeLayout),
+			Name:        item.Name,
+			Phone:       item.Phone,
+			VersionInfo: item.VersionInfo,
+		}
+		if item.Edges.City != nil {
+			res.CityName = item.Edges.City.Name
 		}
 		return
 	})

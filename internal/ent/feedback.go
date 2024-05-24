@@ -10,7 +10,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -31,6 +33,8 @@ type Feedback struct {
 	AgentID *uint64 `json:"agent_id,omitempty"`
 	// 骑手ID
 	RiderID *uint64 `json:"rider_id,omitempty"`
+	// 城市ID
+	CityID *uint64 `json:"city_id,omitempty"`
 	// 反馈内容
 	Content string `json:"content,omitempty"`
 	// 反馈类型
@@ -43,6 +47,8 @@ type Feedback struct {
 	Name string `json:"name,omitempty"`
 	// 电话
 	Phone string `json:"phone,omitempty"`
+	// 版本信息
+	VersionInfo model.VersionInfo `json:"version_info,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the FeedbackQuery when eager-loading is set.
 	Edges        FeedbackEdges `json:"edges"`
@@ -57,9 +63,11 @@ type FeedbackEdges struct {
 	Agent *Agent `json:"agent,omitempty"`
 	// 骑手
 	Rider *Rider `json:"rider,omitempty"`
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
@@ -95,14 +103,25 @@ func (e FeedbackEdges) RiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "rider"}
 }
 
+// CityOrErr returns the City value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e FeedbackEdges) CityOrErr() (*City, error) {
+	if e.City != nil {
+		return e.City, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: city.Label}
+	}
+	return nil, &NotLoadedError{edge: "city"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Feedback) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case feedback.FieldURL:
+		case feedback.FieldURL, feedback.FieldVersionInfo:
 			values[i] = new([]byte)
-		case feedback.FieldID, feedback.FieldEnterpriseID, feedback.FieldAgentID, feedback.FieldRiderID, feedback.FieldType, feedback.FieldSource:
+		case feedback.FieldID, feedback.FieldEnterpriseID, feedback.FieldAgentID, feedback.FieldRiderID, feedback.FieldCityID, feedback.FieldType, feedback.FieldSource:
 			values[i] = new(sql.NullInt64)
 		case feedback.FieldContent, feedback.FieldName, feedback.FieldPhone:
 			values[i] = new(sql.NullString)
@@ -162,6 +181,13 @@ func (f *Feedback) assignValues(columns []string, values []any) error {
 				f.RiderID = new(uint64)
 				*f.RiderID = uint64(value.Int64)
 			}
+		case feedback.FieldCityID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field city_id", values[i])
+			} else if value.Valid {
+				f.CityID = new(uint64)
+				*f.CityID = uint64(value.Int64)
+			}
 		case feedback.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field content", values[i])
@@ -200,6 +226,14 @@ func (f *Feedback) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				f.Phone = value.String
 			}
+		case feedback.FieldVersionInfo:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field version_info", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &f.VersionInfo); err != nil {
+					return fmt.Errorf("unmarshal field version_info: %w", err)
+				}
+			}
 		default:
 			f.selectValues.Set(columns[i], values[i])
 		}
@@ -226,6 +260,11 @@ func (f *Feedback) QueryAgent() *AgentQuery {
 // QueryRider queries the "rider" edge of the Feedback entity.
 func (f *Feedback) QueryRider() *RiderQuery {
 	return NewFeedbackClient(f.config).QueryRider(f)
+}
+
+// QueryCity queries the "city" edge of the Feedback entity.
+func (f *Feedback) QueryCity() *CityQuery {
+	return NewFeedbackClient(f.config).QueryCity(f)
 }
 
 // Update returns a builder for updating this Feedback.
@@ -272,6 +311,11 @@ func (f *Feedback) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
+	if v := f.CityID; v != nil {
+		builder.WriteString("city_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("content=")
 	builder.WriteString(f.Content)
 	builder.WriteString(", ")
@@ -289,6 +333,9 @@ func (f *Feedback) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("phone=")
 	builder.WriteString(f.Phone)
+	builder.WriteString(", ")
+	builder.WriteString("version_info=")
+	builder.WriteString(fmt.Sprintf("%v", f.VersionInfo))
 	builder.WriteByte(')')
 	return builder.String()
 }

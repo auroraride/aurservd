@@ -11,7 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -95,6 +97,20 @@ func (fc *FeedbackCreate) SetNillableRiderID(u *uint64) *FeedbackCreate {
 	return fc
 }
 
+// SetCityID sets the "city_id" field.
+func (fc *FeedbackCreate) SetCityID(u uint64) *FeedbackCreate {
+	fc.mutation.SetCityID(u)
+	return fc
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (fc *FeedbackCreate) SetNillableCityID(u *uint64) *FeedbackCreate {
+	if u != nil {
+		fc.SetCityID(*u)
+	}
+	return fc
+}
+
 // SetContent sets the "content" field.
 func (fc *FeedbackCreate) SetContent(s string) *FeedbackCreate {
 	fc.mutation.SetContent(s)
@@ -163,6 +179,20 @@ func (fc *FeedbackCreate) SetNillablePhone(s *string) *FeedbackCreate {
 	return fc
 }
 
+// SetVersionInfo sets the "version_info" field.
+func (fc *FeedbackCreate) SetVersionInfo(mi model.VersionInfo) *FeedbackCreate {
+	fc.mutation.SetVersionInfo(mi)
+	return fc
+}
+
+// SetNillableVersionInfo sets the "version_info" field if the given value is not nil.
+func (fc *FeedbackCreate) SetNillableVersionInfo(mi *model.VersionInfo) *FeedbackCreate {
+	if mi != nil {
+		fc.SetVersionInfo(*mi)
+	}
+	return fc
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (fc *FeedbackCreate) SetEnterprise(e *Enterprise) *FeedbackCreate {
 	return fc.SetEnterpriseID(e.ID)
@@ -176,6 +206,11 @@ func (fc *FeedbackCreate) SetAgent(a *Agent) *FeedbackCreate {
 // SetRider sets the "rider" edge to the Rider entity.
 func (fc *FeedbackCreate) SetRider(r *Rider) *FeedbackCreate {
 	return fc.SetRiderID(r.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (fc *FeedbackCreate) SetCity(c *City) *FeedbackCreate {
+	return fc.SetCityID(c.ID)
 }
 
 // Mutation returns the FeedbackMutation object of the builder.
@@ -307,6 +342,10 @@ func (fc *FeedbackCreate) createSpec() (*Feedback, *sqlgraph.CreateSpec) {
 		_spec.SetField(feedback.FieldPhone, field.TypeString, value)
 		_node.Phone = value
 	}
+	if value, ok := fc.mutation.VersionInfo(); ok {
+		_spec.SetField(feedback.FieldVersionInfo, field.TypeJSON, value)
+		_node.VersionInfo = value
+	}
 	if nodes := fc.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -356,6 +395,23 @@ func (fc *FeedbackCreate) createSpec() (*Feedback, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.RiderID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := fc.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.CityTable,
+			Columns: []string{feedback.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -476,6 +532,24 @@ func (u *FeedbackUpsert) ClearRiderID() *FeedbackUpsert {
 	return u
 }
 
+// SetCityID sets the "city_id" field.
+func (u *FeedbackUpsert) SetCityID(v uint64) *FeedbackUpsert {
+	u.Set(feedback.FieldCityID, v)
+	return u
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *FeedbackUpsert) UpdateCityID() *FeedbackUpsert {
+	u.SetExcluded(feedback.FieldCityID)
+	return u
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *FeedbackUpsert) ClearCityID() *FeedbackUpsert {
+	u.SetNull(feedback.FieldCityID)
+	return u
+}
+
 // SetContent sets the "content" field.
 func (u *FeedbackUpsert) SetContent(v string) *FeedbackUpsert {
 	u.Set(feedback.FieldContent, v)
@@ -575,6 +649,24 @@ func (u *FeedbackUpsert) UpdatePhone() *FeedbackUpsert {
 // ClearPhone clears the value of the "phone" field.
 func (u *FeedbackUpsert) ClearPhone() *FeedbackUpsert {
 	u.SetNull(feedback.FieldPhone)
+	return u
+}
+
+// SetVersionInfo sets the "version_info" field.
+func (u *FeedbackUpsert) SetVersionInfo(v model.VersionInfo) *FeedbackUpsert {
+	u.Set(feedback.FieldVersionInfo, v)
+	return u
+}
+
+// UpdateVersionInfo sets the "version_info" field to the value that was provided on create.
+func (u *FeedbackUpsert) UpdateVersionInfo() *FeedbackUpsert {
+	u.SetExcluded(feedback.FieldVersionInfo)
+	return u
+}
+
+// ClearVersionInfo clears the value of the "version_info" field.
+func (u *FeedbackUpsert) ClearVersionInfo() *FeedbackUpsert {
+	u.SetNull(feedback.FieldVersionInfo)
 	return u
 }
 
@@ -700,6 +792,27 @@ func (u *FeedbackUpsertOne) ClearRiderID() *FeedbackUpsertOne {
 	})
 }
 
+// SetCityID sets the "city_id" field.
+func (u *FeedbackUpsertOne) SetCityID(v uint64) *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *FeedbackUpsertOne) UpdateCityID() *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *FeedbackUpsertOne) ClearCityID() *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.ClearCityID()
+	})
+}
+
 // SetContent sets the "content" field.
 func (u *FeedbackUpsertOne) SetContent(v string) *FeedbackUpsertOne {
 	return u.Update(func(s *FeedbackUpsert) {
@@ -816,6 +929,27 @@ func (u *FeedbackUpsertOne) UpdatePhone() *FeedbackUpsertOne {
 func (u *FeedbackUpsertOne) ClearPhone() *FeedbackUpsertOne {
 	return u.Update(func(s *FeedbackUpsert) {
 		s.ClearPhone()
+	})
+}
+
+// SetVersionInfo sets the "version_info" field.
+func (u *FeedbackUpsertOne) SetVersionInfo(v model.VersionInfo) *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.SetVersionInfo(v)
+	})
+}
+
+// UpdateVersionInfo sets the "version_info" field to the value that was provided on create.
+func (u *FeedbackUpsertOne) UpdateVersionInfo() *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.UpdateVersionInfo()
+	})
+}
+
+// ClearVersionInfo clears the value of the "version_info" field.
+func (u *FeedbackUpsertOne) ClearVersionInfo() *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.ClearVersionInfo()
 	})
 }
 
@@ -1107,6 +1241,27 @@ func (u *FeedbackUpsertBulk) ClearRiderID() *FeedbackUpsertBulk {
 	})
 }
 
+// SetCityID sets the "city_id" field.
+func (u *FeedbackUpsertBulk) SetCityID(v uint64) *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *FeedbackUpsertBulk) UpdateCityID() *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *FeedbackUpsertBulk) ClearCityID() *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.ClearCityID()
+	})
+}
+
 // SetContent sets the "content" field.
 func (u *FeedbackUpsertBulk) SetContent(v string) *FeedbackUpsertBulk {
 	return u.Update(func(s *FeedbackUpsert) {
@@ -1223,6 +1378,27 @@ func (u *FeedbackUpsertBulk) UpdatePhone() *FeedbackUpsertBulk {
 func (u *FeedbackUpsertBulk) ClearPhone() *FeedbackUpsertBulk {
 	return u.Update(func(s *FeedbackUpsert) {
 		s.ClearPhone()
+	})
+}
+
+// SetVersionInfo sets the "version_info" field.
+func (u *FeedbackUpsertBulk) SetVersionInfo(v model.VersionInfo) *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.SetVersionInfo(v)
+	})
+}
+
+// UpdateVersionInfo sets the "version_info" field to the value that was provided on create.
+func (u *FeedbackUpsertBulk) UpdateVersionInfo() *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.UpdateVersionInfo()
+	})
+}
+
+// ClearVersionInfo clears the value of the "version_info" field.
+func (u *FeedbackUpsertBulk) ClearVersionInfo() *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.ClearVersionInfo()
 	})
 }
 
