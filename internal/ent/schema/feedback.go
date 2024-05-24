@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -23,6 +24,7 @@ func (Feedback) Fields() []ent.Field {
 		field.JSON("url", []string{}).Optional().Comment("反馈图片"),
 		field.String("name").Optional().Comment("姓名"),
 		field.String("phone").Optional().Comment("电话"),
+		field.JSON("version_info", model.VersionInfo{}).Optional().Comment("版本信息"),
 	}
 }
 
@@ -37,6 +39,7 @@ func (Feedback) Mixin() []ent.Mixin {
 		EnterpriseMixin{Optional: true},
 		AgentMixin{Optional: true},
 		RiderMixin{Optional: true},
+		CityMixin{Optional: true},
 	}
 }
 

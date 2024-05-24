@@ -57350,6 +57350,7 @@ type FeedbackMutation struct {
 	appendurl         []string
 	name              *string
 	phone             *string
+	version_info      *model.VersionInfo
 	clearedFields     map[string]struct{}
 	enterprise        *uint64
 	clearedenterprise bool
@@ -57357,6 +57358,8 @@ type FeedbackMutation struct {
 	clearedagent      bool
 	rider             *uint64
 	clearedrider      bool
+	city              *uint64
+	clearedcity       bool
 	done              bool
 	oldValue          func(context.Context) (*Feedback, error)
 	predicates        []predicate.Feedback
@@ -57679,6 +57682,55 @@ func (m *FeedbackMutation) ResetRiderID() {
 	delete(m.clearedFields, feedback.FieldRiderID)
 }
 
+// SetCityID sets the "city_id" field.
+func (m *FeedbackMutation) SetCityID(u uint64) {
+	m.city = &u
+}
+
+// CityID returns the value of the "city_id" field in the mutation.
+func (m *FeedbackMutation) CityID() (r uint64, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCityID returns the old "city_id" field's value of the Feedback entity.
+// If the Feedback object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FeedbackMutation) OldCityID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCityID: %w", err)
+	}
+	return oldValue.CityID, nil
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (m *FeedbackMutation) ClearCityID() {
+	m.city = nil
+	m.clearedFields[feedback.FieldCityID] = struct{}{}
+}
+
+// CityIDCleared returns if the "city_id" field was cleared in this mutation.
+func (m *FeedbackMutation) CityIDCleared() bool {
+	_, ok := m.clearedFields[feedback.FieldCityID]
+	return ok
+}
+
+// ResetCityID resets all changes to the "city_id" field.
+func (m *FeedbackMutation) ResetCityID() {
+	m.city = nil
+	delete(m.clearedFields, feedback.FieldCityID)
+}
+
 // SetContent sets the "content" field.
 func (m *FeedbackMutation) SetContent(s string) {
 	m.content = &s
@@ -57990,6 +58042,55 @@ func (m *FeedbackMutation) ResetPhone() {
 	delete(m.clearedFields, feedback.FieldPhone)
 }
 
+// SetVersionInfo sets the "version_info" field.
+func (m *FeedbackMutation) SetVersionInfo(mi model.VersionInfo) {
+	m.version_info = &mi
+}
+
+// VersionInfo returns the value of the "version_info" field in the mutation.
+func (m *FeedbackMutation) VersionInfo() (r model.VersionInfo, exists bool) {
+	v := m.version_info
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersionInfo returns the old "version_info" field's value of the Feedback entity.
+// If the Feedback object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FeedbackMutation) OldVersionInfo(ctx context.Context) (v model.VersionInfo, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersionInfo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersionInfo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersionInfo: %w", err)
+	}
+	return oldValue.VersionInfo, nil
+}
+
+// ClearVersionInfo clears the value of the "version_info" field.
+func (m *FeedbackMutation) ClearVersionInfo() {
+	m.version_info = nil
+	m.clearedFields[feedback.FieldVersionInfo] = struct{}{}
+}
+
+// VersionInfoCleared returns if the "version_info" field was cleared in this mutation.
+func (m *FeedbackMutation) VersionInfoCleared() bool {
+	_, ok := m.clearedFields[feedback.FieldVersionInfo]
+	return ok
+}
+
+// ResetVersionInfo resets all changes to the "version_info" field.
+func (m *FeedbackMutation) ResetVersionInfo() {
+	m.version_info = nil
+	delete(m.clearedFields, feedback.FieldVersionInfo)
+}
+
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *FeedbackMutation) ClearEnterprise() {
 	m.clearedenterprise = true
@@ -58071,6 +58172,33 @@ func (m *FeedbackMutation) ResetRider() {
 	m.clearedrider = false
 }
 
+// ClearCity clears the "city" edge to the City entity.
+func (m *FeedbackMutation) ClearCity() {
+	m.clearedcity = true
+	m.clearedFields[feedback.FieldCityID] = struct{}{}
+}
+
+// CityCleared reports if the "city" edge to the City entity was cleared.
+func (m *FeedbackMutation) CityCleared() bool {
+	return m.CityIDCleared() || m.clearedcity
+}
+
+// CityIDs returns the "city" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CityID instead. It exists only for internal usage by the builders.
+func (m *FeedbackMutation) CityIDs() (ids []uint64) {
+	if id := m.city; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCity resets all changes to the "city" edge.
+func (m *FeedbackMutation) ResetCity() {
+	m.city = nil
+	m.clearedcity = false
+}
+
 // Where appends a list predicates to the FeedbackMutation builder.
 func (m *FeedbackMutation) Where(ps ...predicate.Feedback) {
 	m.predicates = append(m.predicates, ps...)
@@ -58105,7 +58233,7 @@ func (m *FeedbackMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FeedbackMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, feedback.FieldCreatedAt)
 	}
@@ -58120,6 +58248,9 @@ func (m *FeedbackMutation) Fields() []string {
 	}
 	if m.rider != nil {
 		fields = append(fields, feedback.FieldRiderID)
+	}
+	if m.city != nil {
+		fields = append(fields, feedback.FieldCityID)
 	}
 	if m.content != nil {
 		fields = append(fields, feedback.FieldContent)
@@ -58139,6 +58270,9 @@ func (m *FeedbackMutation) Fields() []string {
 	if m.phone != nil {
 		fields = append(fields, feedback.FieldPhone)
 	}
+	if m.version_info != nil {
+		fields = append(fields, feedback.FieldVersionInfo)
+	}
 	return fields
 }
 
@@ -58157,6 +58291,8 @@ func (m *FeedbackMutation) Field(name string) (ent.Value, bool) {
 		return m.AgentID()
 	case feedback.FieldRiderID:
 		return m.RiderID()
+	case feedback.FieldCityID:
+		return m.CityID()
 	case feedback.FieldContent:
 		return m.Content()
 	case feedback.FieldType:
@@ -58169,6 +58305,8 @@ func (m *FeedbackMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case feedback.FieldPhone:
 		return m.Phone()
+	case feedback.FieldVersionInfo:
+		return m.VersionInfo()
 	}
 	return nil, false
 }
@@ -58188,6 +58326,8 @@ func (m *FeedbackMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldAgentID(ctx)
 	case feedback.FieldRiderID:
 		return m.OldRiderID(ctx)
+	case feedback.FieldCityID:
+		return m.OldCityID(ctx)
 	case feedback.FieldContent:
 		return m.OldContent(ctx)
 	case feedback.FieldType:
@@ -58200,6 +58340,8 @@ func (m *FeedbackMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldName(ctx)
 	case feedback.FieldPhone:
 		return m.OldPhone(ctx)
+	case feedback.FieldVersionInfo:
+		return m.OldVersionInfo(ctx)
 	}
 	return nil, fmt.Errorf("unknown Feedback field %s", name)
 }
@@ -58244,6 +58386,13 @@ func (m *FeedbackMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRiderID(v)
 		return nil
+	case feedback.FieldCityID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCityID(v)
+		return nil
 	case feedback.FieldContent:
 		v, ok := value.(string)
 		if !ok {
@@ -58285,6 +58434,13 @@ func (m *FeedbackMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPhone(v)
+		return nil
+	case feedback.FieldVersionInfo:
+		v, ok := value.(model.VersionInfo)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersionInfo(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Feedback field %s", name)
@@ -58352,6 +58508,9 @@ func (m *FeedbackMutation) ClearedFields() []string {
 	if m.FieldCleared(feedback.FieldRiderID) {
 		fields = append(fields, feedback.FieldRiderID)
 	}
+	if m.FieldCleared(feedback.FieldCityID) {
+		fields = append(fields, feedback.FieldCityID)
+	}
 	if m.FieldCleared(feedback.FieldURL) {
 		fields = append(fields, feedback.FieldURL)
 	}
@@ -58360,6 +58519,9 @@ func (m *FeedbackMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(feedback.FieldPhone) {
 		fields = append(fields, feedback.FieldPhone)
+	}
+	if m.FieldCleared(feedback.FieldVersionInfo) {
+		fields = append(fields, feedback.FieldVersionInfo)
 	}
 	return fields
 }
@@ -58384,6 +58546,9 @@ func (m *FeedbackMutation) ClearField(name string) error {
 	case feedback.FieldRiderID:
 		m.ClearRiderID()
 		return nil
+	case feedback.FieldCityID:
+		m.ClearCityID()
+		return nil
 	case feedback.FieldURL:
 		m.ClearURL()
 		return nil
@@ -58392,6 +58557,9 @@ func (m *FeedbackMutation) ClearField(name string) error {
 		return nil
 	case feedback.FieldPhone:
 		m.ClearPhone()
+		return nil
+	case feedback.FieldVersionInfo:
+		m.ClearVersionInfo()
 		return nil
 	}
 	return fmt.Errorf("unknown Feedback nullable field %s", name)
@@ -58416,6 +58584,9 @@ func (m *FeedbackMutation) ResetField(name string) error {
 	case feedback.FieldRiderID:
 		m.ResetRiderID()
 		return nil
+	case feedback.FieldCityID:
+		m.ResetCityID()
+		return nil
 	case feedback.FieldContent:
 		m.ResetContent()
 		return nil
@@ -58434,13 +58605,16 @@ func (m *FeedbackMutation) ResetField(name string) error {
 	case feedback.FieldPhone:
 		m.ResetPhone()
 		return nil
+	case feedback.FieldVersionInfo:
+		m.ResetVersionInfo()
+		return nil
 	}
 	return fmt.Errorf("unknown Feedback field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *FeedbackMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.enterprise != nil {
 		edges = append(edges, feedback.EdgeEnterprise)
 	}
@@ -58449,6 +58623,9 @@ func (m *FeedbackMutation) AddedEdges() []string {
 	}
 	if m.rider != nil {
 		edges = append(edges, feedback.EdgeRider)
+	}
+	if m.city != nil {
+		edges = append(edges, feedback.EdgeCity)
 	}
 	return edges
 }
@@ -58469,13 +58646,17 @@ func (m *FeedbackMutation) AddedIDs(name string) []ent.Value {
 		if id := m.rider; id != nil {
 			return []ent.Value{*id}
 		}
+	case feedback.EdgeCity:
+		if id := m.city; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *FeedbackMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -58487,7 +58668,7 @@ func (m *FeedbackMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *FeedbackMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedenterprise {
 		edges = append(edges, feedback.EdgeEnterprise)
 	}
@@ -58496,6 +58677,9 @@ func (m *FeedbackMutation) ClearedEdges() []string {
 	}
 	if m.clearedrider {
 		edges = append(edges, feedback.EdgeRider)
+	}
+	if m.clearedcity {
+		edges = append(edges, feedback.EdgeCity)
 	}
 	return edges
 }
@@ -58510,6 +58694,8 @@ func (m *FeedbackMutation) EdgeCleared(name string) bool {
 		return m.clearedagent
 	case feedback.EdgeRider:
 		return m.clearedrider
+	case feedback.EdgeCity:
+		return m.clearedcity
 	}
 	return false
 }
@@ -58527,6 +58713,9 @@ func (m *FeedbackMutation) ClearEdge(name string) error {
 	case feedback.EdgeRider:
 		m.ClearRider()
 		return nil
+	case feedback.EdgeCity:
+		m.ClearCity()
+		return nil
 	}
 	return fmt.Errorf("unknown Feedback unique edge %s", name)
 }
@@ -58543,6 +58732,9 @@ func (m *FeedbackMutation) ResetEdge(name string) error {
 		return nil
 	case feedback.EdgeRider:
 		m.ResetRider()
+		return nil
+	case feedback.EdgeCity:
+		m.ResetCity()
 		return nil
 	}
 	return fmt.Errorf("unknown Feedback edge %s", name)

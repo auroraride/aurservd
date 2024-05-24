@@ -8400,6 +8400,22 @@ func (c *FeedbackClient) QueryRider(f *Feedback) *RiderQuery {
 	return query
 }
 
+// QueryCity queries the city edge of a Feedback.
+func (c *FeedbackClient) QueryCity(f *Feedback) *CityQuery {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(feedback.Table, feedback.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, feedback.CityTable, feedback.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *FeedbackClient) Hooks() []Hook {
 	return c.hooks.Feedback

@@ -80,6 +80,11 @@ func RiderID(v uint64) predicate.Feedback {
 	return predicate.Feedback(sql.FieldEQ(FieldRiderID, v))
 }
 
+// CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
+func CityID(v uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldEQ(FieldCityID, v))
+}
+
 // Content applies equality check predicate on the "content" field. It's identical to ContentEQ.
 func Content(v string) predicate.Feedback {
 	return predicate.Feedback(sql.FieldEQ(FieldContent, v))
@@ -273,6 +278,36 @@ func RiderIDIsNil() predicate.Feedback {
 // RiderIDNotNil applies the NotNil predicate on the "rider_id" field.
 func RiderIDNotNil() predicate.Feedback {
 	return predicate.Feedback(sql.FieldNotNull(FieldRiderID))
+}
+
+// CityIDEQ applies the EQ predicate on the "city_id" field.
+func CityIDEQ(v uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldEQ(FieldCityID, v))
+}
+
+// CityIDNEQ applies the NEQ predicate on the "city_id" field.
+func CityIDNEQ(v uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldNEQ(FieldCityID, v))
+}
+
+// CityIDIn applies the In predicate on the "city_id" field.
+func CityIDIn(vs ...uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldIn(FieldCityID, vs...))
+}
+
+// CityIDNotIn applies the NotIn predicate on the "city_id" field.
+func CityIDNotIn(vs ...uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldNotIn(FieldCityID, vs...))
+}
+
+// CityIDIsNil applies the IsNil predicate on the "city_id" field.
+func CityIDIsNil() predicate.Feedback {
+	return predicate.Feedback(sql.FieldIsNull(FieldCityID))
+}
+
+// CityIDNotNil applies the NotNil predicate on the "city_id" field.
+func CityIDNotNil() predicate.Feedback {
+	return predicate.Feedback(sql.FieldNotNull(FieldCityID))
 }
 
 // ContentEQ applies the EQ predicate on the "content" field.
@@ -580,6 +615,16 @@ func PhoneContainsFold(v string) predicate.Feedback {
 	return predicate.Feedback(sql.FieldContainsFold(FieldPhone, v))
 }
 
+// VersionInfoIsNil applies the IsNil predicate on the "version_info" field.
+func VersionInfoIsNil() predicate.Feedback {
+	return predicate.Feedback(sql.FieldIsNull(FieldVersionInfo))
+}
+
+// VersionInfoNotNil applies the NotNil predicate on the "version_info" field.
+func VersionInfoNotNil() predicate.Feedback {
+	return predicate.Feedback(sql.FieldNotNull(FieldVersionInfo))
+}
+
 // HasEnterprise applies the HasEdge predicate on the "enterprise" edge.
 func HasEnterprise() predicate.Feedback {
 	return predicate.Feedback(func(s *sql.Selector) {
@@ -641,6 +686,29 @@ func HasRider() predicate.Feedback {
 func HasRiderWith(preds ...predicate.Rider) predicate.Feedback {
 	return predicate.Feedback(func(s *sql.Selector) {
 		step := newRiderStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCity applies the HasEdge predicate on the "city" edge.
+func HasCity() predicate.Feedback {
+	return predicate.Feedback(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCityWith applies the HasEdge predicate on the "city" edge with a given conditions (other predicates).
+func HasCityWith(preds ...predicate.City) predicate.Feedback {
+	return predicate.Feedback(func(s *sql.Selector) {
+		step := newCityStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

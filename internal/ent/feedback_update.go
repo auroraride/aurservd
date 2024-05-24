@@ -12,7 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -96,6 +98,26 @@ func (fu *FeedbackUpdate) SetNillableRiderID(u *uint64) *FeedbackUpdate {
 // ClearRiderID clears the value of the "rider_id" field.
 func (fu *FeedbackUpdate) ClearRiderID() *FeedbackUpdate {
 	fu.mutation.ClearRiderID()
+	return fu
+}
+
+// SetCityID sets the "city_id" field.
+func (fu *FeedbackUpdate) SetCityID(u uint64) *FeedbackUpdate {
+	fu.mutation.SetCityID(u)
+	return fu
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (fu *FeedbackUpdate) SetNillableCityID(u *uint64) *FeedbackUpdate {
+	if u != nil {
+		fu.SetCityID(*u)
+	}
+	return fu
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (fu *FeedbackUpdate) ClearCityID() *FeedbackUpdate {
+	fu.mutation.ClearCityID()
 	return fu
 }
 
@@ -213,6 +235,26 @@ func (fu *FeedbackUpdate) ClearPhone() *FeedbackUpdate {
 	return fu
 }
 
+// SetVersionInfo sets the "version_info" field.
+func (fu *FeedbackUpdate) SetVersionInfo(mi model.VersionInfo) *FeedbackUpdate {
+	fu.mutation.SetVersionInfo(mi)
+	return fu
+}
+
+// SetNillableVersionInfo sets the "version_info" field if the given value is not nil.
+func (fu *FeedbackUpdate) SetNillableVersionInfo(mi *model.VersionInfo) *FeedbackUpdate {
+	if mi != nil {
+		fu.SetVersionInfo(*mi)
+	}
+	return fu
+}
+
+// ClearVersionInfo clears the value of the "version_info" field.
+func (fu *FeedbackUpdate) ClearVersionInfo() *FeedbackUpdate {
+	fu.mutation.ClearVersionInfo()
+	return fu
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (fu *FeedbackUpdate) SetEnterprise(e *Enterprise) *FeedbackUpdate {
 	return fu.SetEnterpriseID(e.ID)
@@ -226,6 +268,11 @@ func (fu *FeedbackUpdate) SetAgent(a *Agent) *FeedbackUpdate {
 // SetRider sets the "rider" edge to the Rider entity.
 func (fu *FeedbackUpdate) SetRider(r *Rider) *FeedbackUpdate {
 	return fu.SetRiderID(r.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (fu *FeedbackUpdate) SetCity(c *City) *FeedbackUpdate {
+	return fu.SetCityID(c.ID)
 }
 
 // Mutation returns the FeedbackMutation object of the builder.
@@ -248,6 +295,12 @@ func (fu *FeedbackUpdate) ClearAgent() *FeedbackUpdate {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (fu *FeedbackUpdate) ClearRider() *FeedbackUpdate {
 	fu.mutation.ClearRider()
+	return fu
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (fu *FeedbackUpdate) ClearCity() *FeedbackUpdate {
+	fu.mutation.ClearCity()
 	return fu
 }
 
@@ -343,6 +396,12 @@ func (fu *FeedbackUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if fu.mutation.PhoneCleared() {
 		_spec.ClearField(feedback.FieldPhone, field.TypeString)
 	}
+	if value, ok := fu.mutation.VersionInfo(); ok {
+		_spec.SetField(feedback.FieldVersionInfo, field.TypeJSON, value)
+	}
+	if fu.mutation.VersionInfoCleared() {
+		_spec.ClearField(feedback.FieldVersionInfo, field.TypeJSON)
+	}
 	if fu.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -423,6 +482,35 @@ func (fu *FeedbackUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if fu.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.CityTable,
+			Columns: []string{feedback.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fu.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.CityTable,
+			Columns: []string{feedback.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -515,6 +603,26 @@ func (fuo *FeedbackUpdateOne) SetNillableRiderID(u *uint64) *FeedbackUpdateOne {
 // ClearRiderID clears the value of the "rider_id" field.
 func (fuo *FeedbackUpdateOne) ClearRiderID() *FeedbackUpdateOne {
 	fuo.mutation.ClearRiderID()
+	return fuo
+}
+
+// SetCityID sets the "city_id" field.
+func (fuo *FeedbackUpdateOne) SetCityID(u uint64) *FeedbackUpdateOne {
+	fuo.mutation.SetCityID(u)
+	return fuo
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (fuo *FeedbackUpdateOne) SetNillableCityID(u *uint64) *FeedbackUpdateOne {
+	if u != nil {
+		fuo.SetCityID(*u)
+	}
+	return fuo
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (fuo *FeedbackUpdateOne) ClearCityID() *FeedbackUpdateOne {
+	fuo.mutation.ClearCityID()
 	return fuo
 }
 
@@ -632,6 +740,26 @@ func (fuo *FeedbackUpdateOne) ClearPhone() *FeedbackUpdateOne {
 	return fuo
 }
 
+// SetVersionInfo sets the "version_info" field.
+func (fuo *FeedbackUpdateOne) SetVersionInfo(mi model.VersionInfo) *FeedbackUpdateOne {
+	fuo.mutation.SetVersionInfo(mi)
+	return fuo
+}
+
+// SetNillableVersionInfo sets the "version_info" field if the given value is not nil.
+func (fuo *FeedbackUpdateOne) SetNillableVersionInfo(mi *model.VersionInfo) *FeedbackUpdateOne {
+	if mi != nil {
+		fuo.SetVersionInfo(*mi)
+	}
+	return fuo
+}
+
+// ClearVersionInfo clears the value of the "version_info" field.
+func (fuo *FeedbackUpdateOne) ClearVersionInfo() *FeedbackUpdateOne {
+	fuo.mutation.ClearVersionInfo()
+	return fuo
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (fuo *FeedbackUpdateOne) SetEnterprise(e *Enterprise) *FeedbackUpdateOne {
 	return fuo.SetEnterpriseID(e.ID)
@@ -645,6 +773,11 @@ func (fuo *FeedbackUpdateOne) SetAgent(a *Agent) *FeedbackUpdateOne {
 // SetRider sets the "rider" edge to the Rider entity.
 func (fuo *FeedbackUpdateOne) SetRider(r *Rider) *FeedbackUpdateOne {
 	return fuo.SetRiderID(r.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (fuo *FeedbackUpdateOne) SetCity(c *City) *FeedbackUpdateOne {
+	return fuo.SetCityID(c.ID)
 }
 
 // Mutation returns the FeedbackMutation object of the builder.
@@ -667,6 +800,12 @@ func (fuo *FeedbackUpdateOne) ClearAgent() *FeedbackUpdateOne {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (fuo *FeedbackUpdateOne) ClearRider() *FeedbackUpdateOne {
 	fuo.mutation.ClearRider()
+	return fuo
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (fuo *FeedbackUpdateOne) ClearCity() *FeedbackUpdateOne {
+	fuo.mutation.ClearCity()
 	return fuo
 }
 
@@ -792,6 +931,12 @@ func (fuo *FeedbackUpdateOne) sqlSave(ctx context.Context) (_node *Feedback, err
 	if fuo.mutation.PhoneCleared() {
 		_spec.ClearField(feedback.FieldPhone, field.TypeString)
 	}
+	if value, ok := fuo.mutation.VersionInfo(); ok {
+		_spec.SetField(feedback.FieldVersionInfo, field.TypeJSON, value)
+	}
+	if fuo.mutation.VersionInfoCleared() {
+		_spec.ClearField(feedback.FieldVersionInfo, field.TypeJSON)
+	}
 	if fuo.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -872,6 +1017,35 @@ func (fuo *FeedbackUpdateOne) sqlSave(ctx context.Context) (_node *Feedback, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if fuo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.CityTable,
+			Columns: []string{feedback.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fuo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.CityTable,
+			Columns: []string{feedback.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

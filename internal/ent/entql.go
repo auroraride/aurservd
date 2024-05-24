@@ -1133,12 +1133,14 @@ var schemaGraph = func() *sqlgraph.Schema {
 			feedback.FieldEnterpriseID: {Type: field.TypeUint64, Column: feedback.FieldEnterpriseID},
 			feedback.FieldAgentID:      {Type: field.TypeUint64, Column: feedback.FieldAgentID},
 			feedback.FieldRiderID:      {Type: field.TypeUint64, Column: feedback.FieldRiderID},
+			feedback.FieldCityID:       {Type: field.TypeUint64, Column: feedback.FieldCityID},
 			feedback.FieldContent:      {Type: field.TypeString, Column: feedback.FieldContent},
 			feedback.FieldType:         {Type: field.TypeUint8, Column: feedback.FieldType},
 			feedback.FieldSource:       {Type: field.TypeUint8, Column: feedback.FieldSource},
 			feedback.FieldURL:          {Type: field.TypeJSON, Column: feedback.FieldURL},
 			feedback.FieldName:         {Type: field.TypeString, Column: feedback.FieldName},
 			feedback.FieldPhone:        {Type: field.TypeString, Column: feedback.FieldPhone},
+			feedback.FieldVersionInfo:  {Type: field.TypeJSON, Column: feedback.FieldVersionInfo},
 		},
 	}
 	graph.Nodes[37] = &sqlgraph.Node{
@@ -4209,6 +4211,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Feedback",
 		"Rider",
+	)
+	graph.MustAddE(
+		"city",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.CityTable,
+			Columns: []string{feedback.CityColumn},
+			Bidi:    false,
+		},
+		"Feedback",
+		"City",
 	)
 	graph.MustAddE(
 		"cities",
@@ -12496,6 +12510,11 @@ func (f *FeedbackFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(feedback.FieldRiderID))
 }
 
+// WhereCityID applies the entql uint64 predicate on the city_id field.
+func (f *FeedbackFilter) WhereCityID(p entql.Uint64P) {
+	f.Where(p.Field(feedback.FieldCityID))
+}
+
 // WhereContent applies the entql string predicate on the content field.
 func (f *FeedbackFilter) WhereContent(p entql.StringP) {
 	f.Where(p.Field(feedback.FieldContent))
@@ -12524,6 +12543,11 @@ func (f *FeedbackFilter) WhereName(p entql.StringP) {
 // WherePhone applies the entql string predicate on the phone field.
 func (f *FeedbackFilter) WherePhone(p entql.StringP) {
 	f.Where(p.Field(feedback.FieldPhone))
+}
+
+// WhereVersionInfo applies the entql json.RawMessage predicate on the version_info field.
+func (f *FeedbackFilter) WhereVersionInfo(p entql.BytesP) {
+	f.Where(p.Field(feedback.FieldVersionInfo))
 }
 
 // WhereHasEnterprise applies a predicate to check if query has an edge enterprise.
@@ -12562,6 +12586,20 @@ func (f *FeedbackFilter) WhereHasRider() {
 // WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
 func (f *FeedbackFilter) WhereHasRiderWith(preds ...predicate.Rider) {
 	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCity applies a predicate to check if query has an edge city.
+func (f *FeedbackFilter) WhereHasCity() {
+	f.Where(entql.HasEdge("city"))
+}
+
+// WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
+func (f *FeedbackFilter) WhereHasCityWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

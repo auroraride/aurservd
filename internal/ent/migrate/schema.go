@@ -2969,9 +2969,11 @@ var (
 		{Name: "url", Type: field.TypeJSON, Nullable: true},
 		{Name: "name", Type: field.TypeString, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Nullable: true},
+		{Name: "version_info", Type: field.TypeJSON, Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "agent_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// FeedbackTable holds the schema information for the "feedback" table.
 	FeedbackTable = &schema.Table{
@@ -2981,20 +2983,26 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "feedback_enterprise_enterprise",
-				Columns:    []*schema.Column{FeedbackColumns[9]},
+				Columns:    []*schema.Column{FeedbackColumns[10]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "feedback_agent_agent",
-				Columns:    []*schema.Column{FeedbackColumns[10]},
+				Columns:    []*schema.Column{FeedbackColumns[11]},
 				RefColumns: []*schema.Column{AgentColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "feedback_rider_rider",
-				Columns:    []*schema.Column{FeedbackColumns[11]},
+				Columns:    []*schema.Column{FeedbackColumns[12]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "feedback_city_city",
+				Columns:    []*schema.Column{FeedbackColumns[13]},
+				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -3007,17 +3015,22 @@ var (
 			{
 				Name:    "feedback_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{FeedbackColumns[9]},
+				Columns: []*schema.Column{FeedbackColumns[10]},
 			},
 			{
 				Name:    "feedback_agent_id",
 				Unique:  false,
-				Columns: []*schema.Column{FeedbackColumns[10]},
+				Columns: []*schema.Column{FeedbackColumns[11]},
 			},
 			{
 				Name:    "feedback_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{FeedbackColumns[11]},
+				Columns: []*schema.Column{FeedbackColumns[12]},
+			},
+			{
+				Name:    "feedback_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{FeedbackColumns[13]},
 			},
 		},
 	}
@@ -6309,6 +6322,7 @@ func init() {
 	FeedbackTable.ForeignKeys[0].RefTable = EnterpriseTable
 	FeedbackTable.ForeignKeys[1].RefTable = AgentTable
 	FeedbackTable.ForeignKeys[2].RefTable = RiderTable
+	FeedbackTable.ForeignKeys[3].RefTable = CityTable
 	FeedbackTable.Annotation = &entsql.Annotation{
 		Table: "feedback",
 	}
