@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -128,6 +129,11 @@ func BatteryID(v uint64) predicate.Business {
 // AgentID applies equality check predicate on the "agent_id" field. It's identical to AgentIDEQ.
 func AgentID(v uint64) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldAgentID, v))
+}
+
+// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
+func Type(v model.BusinessType) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldType, v))
 }
 
 // StockSn applies equality check predicate on the "stock_sn" field. It's identical to StockSnEQ.
@@ -661,23 +667,43 @@ func AgentIDNotNil() predicate.Business {
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v Type) predicate.Business {
+func TypeEQ(v model.BusinessType) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldType, v))
 }
 
 // TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v Type) predicate.Business {
+func TypeNEQ(v model.BusinessType) predicate.Business {
 	return predicate.Business(sql.FieldNEQ(FieldType, v))
 }
 
 // TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...Type) predicate.Business {
+func TypeIn(vs ...model.BusinessType) predicate.Business {
 	return predicate.Business(sql.FieldIn(FieldType, vs...))
 }
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...Type) predicate.Business {
+func TypeNotIn(vs ...model.BusinessType) predicate.Business {
 	return predicate.Business(sql.FieldNotIn(FieldType, vs...))
+}
+
+// TypeGT applies the GT predicate on the "type" field.
+func TypeGT(v model.BusinessType) predicate.Business {
+	return predicate.Business(sql.FieldGT(FieldType, v))
+}
+
+// TypeGTE applies the GTE predicate on the "type" field.
+func TypeGTE(v model.BusinessType) predicate.Business {
+	return predicate.Business(sql.FieldGTE(FieldType, v))
+}
+
+// TypeLT applies the LT predicate on the "type" field.
+func TypeLT(v model.BusinessType) predicate.Business {
+	return predicate.Business(sql.FieldLT(FieldType, v))
+}
+
+// TypeLTE applies the LTE predicate on the "type" field.
+func TypeLTE(v model.BusinessType) predicate.Business {
+	return predicate.Business(sql.FieldLTE(FieldType, v))
 }
 
 // BinInfoIsNil applies the IsNil predicate on the "bin_info" field.

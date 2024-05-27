@@ -435,7 +435,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			business.FieldCabinetID:    {Type: field.TypeUint64, Column: business.FieldCabinetID},
 			business.FieldBatteryID:    {Type: field.TypeUint64, Column: business.FieldBatteryID},
 			business.FieldAgentID:      {Type: field.TypeUint64, Column: business.FieldAgentID},
-			business.FieldType:         {Type: field.TypeEnum, Column: business.FieldType},
+			business.FieldType:         {Type: field.TypeOther, Column: business.FieldType},
 			business.FieldBinInfo:      {Type: field.TypeJSON, Column: business.FieldBinInfo},
 			business.FieldStockSn:      {Type: field.TypeString, Column: business.FieldStockSn},
 		},
@@ -7951,8 +7951,8 @@ func (f *BusinessFilter) WhereAgentID(p entql.Uint64P) {
 	f.Where(p.Field(business.FieldAgentID))
 }
 
-// WhereType applies the entql string predicate on the type field.
-func (f *BusinessFilter) WhereType(p entql.StringP) {
+// WhereType applies the entql other predicate on the type field.
+func (f *BusinessFilter) WhereType(p entql.OtherP) {
 	f.Where(p.Field(business.FieldType))
 }
 

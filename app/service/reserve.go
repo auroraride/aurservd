@@ -14,7 +14,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
@@ -151,14 +150,14 @@ func (s *reserveService) CabinetCounts(ids []uint64) (data map[model.ReserveBusi
 		Scan(s.ctx, &results)
 	data = make(map[model.ReserveBusinessKey]int)
 	for _, result := range results {
-		data[model.NewReserveBusinessKey(result.CabinetID, result.Type)] = result.Count
+		data[model.NewReserveBusinessKey(result.CabinetID, model.BusinessType(result.Type))] = result.Count
 	}
 	return
 }
 
 // Create 创建预约
 func (s *reserveService) Create(req *model.ReserveCreateReq) *model.ReserveUnfinishedRes {
-	typ := business.Type(req.Business)
+	typ := model.BusinessType(req.Business)
 
 	// 检查订阅状态
 	sub := NewSubscribeWithRider(s.rider).RecentX(s.rider.ID)

@@ -885,7 +885,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 
 			bizList, _ := ent.Database.Business.QueryNotDeleted().
 				WithEmployee().WithStore().WithAgent().
-				Where(business.RiderID(item.ID), business.TypeIn(business.TypeActive, business.TypeUnsubscribe)).
+				Where(business.RiderID(item.ID), business.TypeIn(model.BusinessTypeActive, model.BusinessTypeUnsubscribe)).
 				Order(ent.Desc(business.FieldCreatedAt)).
 				Limit(2).
 				All(s.ctx)
@@ -920,12 +920,12 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 				}
 
 				// 记录激活操作人
-				if biz.Type == business.TypeActive {
+				if biz.Type == model.BusinessTypeActive {
 					activeOperator = operator
 				}
 
 				// 最新记录为退租业务时记录退租操作人
-				if biz.Type == business.TypeUnsubscribe && i == 0 {
+				if biz.Type == model.BusinessTypeUnsubscribe && i == 0 {
 					unsubscribeOperator = operator
 				}
 			}

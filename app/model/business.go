@@ -5,11 +5,40 @@
 
 package model
 
+import "database/sql/driver"
+
 const (
 	BusinessAimedAll        uint8 = iota // 全部
 	BusinessAimedPersonal                // 个签
 	BusinessAimedEnterprise              // 团签
 )
+
+type BusinessType string
+
+const (
+	BusinessTypeActive      BusinessType = "active"      // 激活
+	BusinessTypePause       BusinessType = "pause"       // 寄存
+	BusinessTypeContinue    BusinessType = "continue"    // 结束寄存
+	BusinessTypeUnsubscribe BusinessType = "unsubscribe" // 退租
+)
+
+func (b BusinessType) String() string {
+	return string(b)
+}
+
+func (b BusinessType) Value() (driver.Value, error) {
+	return string(b), nil
+}
+
+func (b *BusinessType) Scan(src interface{}) error {
+	switch v := src.(type) {
+	case nil:
+		return nil
+	case string:
+		*b = BusinessType(v)
+	}
+	return nil
+}
 
 func BusinessTypeText(bt string) string {
 	return map[string]string{

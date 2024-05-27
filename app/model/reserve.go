@@ -45,8 +45,8 @@ func (rs ReserveStatus) String() string {
 type ReserveBusinessKey string
 
 // NewReserveBusinessKey 预约业务键
-func NewReserveBusinessKey(id uint64, typ string) ReserveBusinessKey {
-	return ReserveBusinessKey(strconv.FormatUint(id, 10) + "-" + typ)
+func NewReserveBusinessKey(id uint64, typ BusinessType) ReserveBusinessKey {
+	return ReserveBusinessKey(strconv.FormatUint(id, 10) + "-" + typ.String())
 }
 
 type ReserveCreateReq struct {

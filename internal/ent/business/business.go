@@ -3,7 +3,6 @@
 package business
 
 import (
-	"fmt"
 	"time"
 
 	"entgo.io/ent"
@@ -208,31 +207,6 @@ var (
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
 )
-
-// Type defines the type for the "type" enum field.
-type Type string
-
-// Type values.
-const (
-	TypeActive      Type = "active"
-	TypePause       Type = "pause"
-	TypeContinue    Type = "continue"
-	TypeUnsubscribe Type = "unsubscribe"
-)
-
-func (_type Type) String() string {
-	return string(_type)
-}
-
-// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
-func TypeValidator(_type Type) error {
-	switch _type {
-	case TypeActive, TypePause, TypeContinue, TypeUnsubscribe:
-		return nil
-	default:
-		return fmt.Errorf("business: invalid enum value for type field: %q", _type)
-	}
-}
 
 // OrderOption defines the ordering options for the Business queries.
 type OrderOption func(*sql.Selector)

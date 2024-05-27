@@ -20,7 +20,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
-	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -388,7 +387,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
 			SetNillableEnterpriseID(sub.EnterpriseID).
 			SetNillableStationID(sub.StationID).
 			SetNillablePlanID(sub.PlanID).
-			SetType(business.TypeActive).
+			SetType(model.BusinessTypeActive).
 			SetStockSn(stockParent.Sn).
 			Save(s.ctx)
 

@@ -18,7 +18,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
-	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -37,7 +36,7 @@ type riderBusinessService struct {
 	cabinet   *ent.Cabinet
 	subscribe *ent.Subscribe
 
-	bt business.Type
+	bt model.BusinessType
 
 	battery *ent.Battery
 
@@ -55,7 +54,7 @@ func NewRiderBusiness(rider *ent.Rider) *riderBusinessService {
 }
 
 // preprocess 预处理业务
-func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
+func (s *riderBusinessService) preprocess(serial string, bt model.BusinessType) {
 	NewSetting().SystemMaintainX()
 
 	cs := NewCabinet()
@@ -117,7 +116,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 // TODO 分配信息是否需要记录电池编号
 func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, version string) model.BusinessCabinetStatus {
 	// 预处理
-	s.preprocess(req.Serial, business.TypeActive)
+	s.preprocess(req.Serial, model.BusinessTypeActive)
 
 	// 检查骑士卡状态
 	if s.subscribe.Status != model.SubscribeStatusInactive {
@@ -210,7 +209,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, version str
 }
 
 func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
-	s.preprocess(req.Serial, business.TypeContinue)
+	s.preprocess(req.Serial, model.BusinessTypeContinue)
 	if s.subscribe.Status != model.SubscribeStatusPaused {
 		snag.Panic("骑士卡状态错误")
 	}
@@ -238,7 +237,7 @@ func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.Bus
 }
 
 func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
-	s.preprocess(req.Serial, business.TypeUnsubscribe)
+	s.preprocess(req.Serial, model.BusinessTypeUnsubscribe)
 
 	if s.subscribe.Status != model.SubscribeStatusUsing {
 		snag.Panic("骑士卡状态异常")
@@ -263,7 +262,7 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
 }
 
 func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
-	s.preprocess(req.Serial, business.TypePause)
+	s.preprocess(req.Serial, model.BusinessTypePause)
 	if s.subscribe.Status != model.SubscribeStatusUsing {
 		snag.Panic("骑士卡未在计费中")
 	}
@@ -318,16 +317,16 @@ func (s *riderBusinessService) Status(req *model.BusinessCabinetStatusReq) (res 
 }
 
 // Executable 业务是否可执行
-func (s *riderBusinessService) Executable(sub *ent.Subscribe, typ business.Type) bool {
+func (s *riderBusinessService) Executable(sub *ent.Subscribe, typ model.BusinessType) bool {
 	if sub == nil {
 		return false
 	}
 	switch typ {
-	case business.TypePause, business.TypeUnsubscribe:
+	case model.BusinessTypePause, model.BusinessTypeUnsubscribe:
 		return sub.Status == model.SubscribeStatusUsing
-	case business.TypeActive:
+	case model.BusinessTypeActive:
 		return sub.Status == model.SubscribeStatusInactive
-	case business.TypeContinue:
+	case model.BusinessTypeContinue:
 		return sub.Status == model.SubscribeStatusPaused
 	}
 	return false

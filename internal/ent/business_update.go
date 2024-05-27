@@ -302,15 +302,15 @@ func (bu *BusinessUpdate) ClearAgentID() *BusinessUpdate {
 }
 
 // SetType sets the "type" field.
-func (bu *BusinessUpdate) SetType(b business.Type) *BusinessUpdate {
-	bu.mutation.SetType(b)
+func (bu *BusinessUpdate) SetType(mt model.BusinessType) *BusinessUpdate {
+	bu.mutation.SetType(mt)
 	return bu
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (bu *BusinessUpdate) SetNillableType(b *business.Type) *BusinessUpdate {
-	if b != nil {
-		bu.SetType(*b)
+func (bu *BusinessUpdate) SetNillableType(mt *model.BusinessType) *BusinessUpdate {
+	if mt != nil {
+		bu.SetType(*mt)
 	}
 	return bu
 }
@@ -517,11 +517,6 @@ func (bu *BusinessUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (bu *BusinessUpdate) check() error {
-	if v, ok := bu.mutation.GetType(); ok {
-		if err := business.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Business.type": %w`, err)}
-		}
-	}
 	if _, ok := bu.mutation.RiderID(); bu.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Business.rider"`)
 	}
@@ -577,7 +572,7 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.ClearField(business.FieldRemark, field.TypeString)
 	}
 	if value, ok := bu.mutation.GetType(); ok {
-		_spec.SetField(business.FieldType, field.TypeEnum, value)
+		_spec.SetField(business.FieldType, field.TypeOther, value)
 	}
 	if value, ok := bu.mutation.BinInfo(); ok {
 		_spec.SetField(business.FieldBinInfo, field.TypeJSON, value)
@@ -1193,15 +1188,15 @@ func (buo *BusinessUpdateOne) ClearAgentID() *BusinessUpdateOne {
 }
 
 // SetType sets the "type" field.
-func (buo *BusinessUpdateOne) SetType(b business.Type) *BusinessUpdateOne {
-	buo.mutation.SetType(b)
+func (buo *BusinessUpdateOne) SetType(mt model.BusinessType) *BusinessUpdateOne {
+	buo.mutation.SetType(mt)
 	return buo
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (buo *BusinessUpdateOne) SetNillableType(b *business.Type) *BusinessUpdateOne {
-	if b != nil {
-		buo.SetType(*b)
+func (buo *BusinessUpdateOne) SetNillableType(mt *model.BusinessType) *BusinessUpdateOne {
+	if mt != nil {
+		buo.SetType(*mt)
 	}
 	return buo
 }
@@ -1421,11 +1416,6 @@ func (buo *BusinessUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (buo *BusinessUpdateOne) check() error {
-	if v, ok := buo.mutation.GetType(); ok {
-		if err := business.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Business.type": %w`, err)}
-		}
-	}
 	if _, ok := buo.mutation.RiderID(); buo.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Business.rider"`)
 	}
@@ -1498,7 +1488,7 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 		_spec.ClearField(business.FieldRemark, field.TypeString)
 	}
 	if value, ok := buo.mutation.GetType(); ok {
-		_spec.SetField(business.FieldType, field.TypeEnum, value)
+		_spec.SetField(business.FieldType, field.TypeOther, value)
 	}
 	if value, ok := buo.mutation.BinInfo(); ok {
 		_spec.SetField(business.FieldBinInfo, field.TypeJSON, value)

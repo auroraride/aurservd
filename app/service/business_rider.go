@@ -18,7 +18,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
-	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
@@ -326,7 +325,7 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
 }
 
 // Preprocess 预处理数据
-func (s *businessRiderService) Preprocess(bt business.Type, sub *ent.Subscribe) {
+func (s *businessRiderService) Preprocess(bt model.BusinessType, sub *ent.Subscribe) {
 	s.subscribe = sub
 
 	if sub.EnterpriseID != nil {
@@ -335,7 +334,7 @@ func (s *businessRiderService) Preprocess(bt business.Type, sub *ent.Subscribe) 
 			snag.Panic("未找到团签信息")
 		}
 		// 判定是否寄存或取消寄存业务
-		if bt == business.TypePause || bt == business.TypeContinue {
+		if bt == model.BusinessTypePause || bt == model.BusinessTypeContinue {
 			snag.Panic("团签用户无法办理")
 		}
 		// 判定代理是否可使用门店
@@ -398,7 +397,7 @@ func (s *businessRiderService) Preprocess(bt business.Type, sub *ent.Subscribe) 
 	if sub.BrandID != nil {
 		// 车电订阅无法办理寄存相关业务
 		// 车电订阅无法使用电柜
-		if (bt != business.TypeActive && bt != business.TypeUnsubscribe) || s.cabinetID != nil {
+		if (bt != model.BusinessTypeActive && bt != model.BusinessTypeUnsubscribe) || s.cabinetID != nil {
 			snag.Panic("车电订阅无法办理此业务")
 		}
 	}
@@ -433,34 +432,34 @@ func (s *businessRiderService) doTask() (bin *model.BinInfo, bat *model.Battery,
 }
 
 // do 处理业务
-func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
+func (s *businessRiderService) do(bt model.BusinessType, cb func(tx *ent.Tx)) {
 	async.WithTask(func() {
-		sts := map[business.Type]uint8{
-			business.TypeActive:      model.StockTypeRiderActive,
-			business.TypeUnsubscribe: model.StockTypeRiderUnSubscribe,
-			business.TypePause:       model.StockTypeRiderPause,
-			business.TypeContinue:    model.StockTypeRiderContinue,
+		sts := map[model.BusinessType]uint8{
+			model.BusinessTypeActive:      model.StockTypeRiderActive,
+			model.BusinessTypeUnsubscribe: model.StockTypeRiderUnSubscribe,
+			model.BusinessTypePause:       model.StockTypeRiderPause,
+			model.BusinessTypeContinue:    model.StockTypeRiderContinue,
 		}
 
-		ops := map[business.Type]model.Operate{
-			business.TypeActive:      model.OperateActive,
-			business.TypeUnsubscribe: model.OperateUnsubscribe,
-			business.TypePause:       model.OperateSubscribePause,
-			business.TypeContinue:    model.OperateSubscribeContinue,
+		ops := map[model.BusinessType]model.Operate{
+			model.BusinessTypeActive:      model.OperateActive,
+			model.BusinessTypeUnsubscribe: model.OperateUnsubscribe,
+			model.BusinessTypePause:       model.OperateSubscribePause,
+			model.BusinessTypeContinue:    model.OperateSubscribeContinue,
 		}
 
-		bfs := map[business.Type]string{
-			business.TypeActive:      "未激活",
-			business.TypeUnsubscribe: "生效中",
-			business.TypePause:       "计费中",
-			business.TypeContinue:    "寄存中",
+		bfs := map[model.BusinessType]string{
+			model.BusinessTypeActive:      "未激活",
+			model.BusinessTypeUnsubscribe: "生效中",
+			model.BusinessTypePause:       "计费中",
+			model.BusinessTypeContinue:    "寄存中",
 		}
 
-		afs := map[business.Type]string{
-			business.TypeActive:      "已激活",
-			business.TypeUnsubscribe: "已退租",
-			business.TypePause:       "已寄存",
-			business.TypeContinue:    "计费中",
+		afs := map[model.BusinessType]string{
+			model.BusinessTypeActive:      "已激活",
+			model.BusinessTypeUnsubscribe: "已退租",
+			model.BusinessTypePause:       "已寄存",
+			model.BusinessTypeContinue:    "计费中",
 		}
 
 		var bin *model.BinInfo
@@ -477,7 +476,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 		}
 
 		// 放入电池优先执行电柜任务
-		if s.cabTask != nil && (bt == business.TypePause || bt == business.TypeUnsubscribe) {
+		if s.cabTask != nil && (bt == model.BusinessTypePause || bt == model.BusinessTypeUnsubscribe) {
 			bin, bat, err = s.doTask()
 			if err != nil {
 				snag.Panic(err)
@@ -486,7 +485,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 
 		// 激活业务查找提成
 		var co *ent.Commission
-		if bt == business.TypeActive {
+		if bt == model.BusinessTypeActive {
 			co, _ = ent.Database.Commission.QueryNotDeleted().Where(commission.SubscribeID(s.subscribe.ID)).First(s.ctx)
 		}
 
@@ -529,7 +528,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 		})
 
 		// 取出电池滞后执行电柜任务
-		if s.cabTask != nil && (bt == business.TypeActive || bt == business.TypeContinue) {
+		if s.cabTask != nil && (bt == model.BusinessTypeActive || bt == model.BusinessTypeContinue) {
 			bin, bat, err = s.doTask()
 			if err != nil {
 				zap.L().Error("骑手业务取出电池后任务执行失败: "+bt.String(), zap.Error(err))
@@ -567,7 +566,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 		}
 
 		// 更新提成
-		if bt == business.TypeActive && co != nil && b != nil && s.employeeID != nil {
+		if bt == model.BusinessTypeActive && co != nil && b != nil && s.employeeID != nil {
 			_, _ = co.Update().SetBusiness(b).SetEmployeeID(*s.employeeID).Save(s.ctx)
 		}
 
@@ -592,13 +591,13 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 	// 设置代理id
 	s.agentID = allo.AgentID
 
-	s.Preprocess(business.TypeActive, sub)
+	s.Preprocess(model.BusinessTypeActive, sub)
 
 	if NewSubscribe().NeedContract(sub) {
 		snag.Panic("还未签约, 请签约")
 	}
 
-	s.do(business.TypeActive, func(tx *ent.Tx) {
+	s.do(model.BusinessTypeActive, func(tx *ent.Tx) {
 		var err error
 
 		// 更新分配
@@ -692,7 +691,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 // 会抹去欠费情况
 func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns ...func(sub *ent.Subscribe)) {
 	// 预处理业务信息
-	s.Preprocess(business.TypeUnsubscribe, s.QuerySubscribeWithRider(req.ID))
+	s.Preprocess(model.BusinessTypeUnsubscribe, s.QuerySubscribeWithRider(req.ID))
 
 	if len(fns) > 0 {
 		fns[0](s.subscribe)
@@ -727,7 +726,7 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 		snag.Panic("请到指定站点退租")
 	}
 
-	s.do(business.TypeUnsubscribe, func(tx *ent.Tx) {
+	s.do(model.BusinessTypeUnsubscribe, func(tx *ent.Tx) {
 		var reason string
 		if s.cabinet != nil {
 			reason = "用户电柜退租"
@@ -792,13 +791,13 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 
 // Pause 寄存
 func (s *businessRiderService) Pause(subscribeID uint64) {
-	s.Preprocess(business.TypePause, s.QuerySubscribeWithRider(subscribeID))
+	s.Preprocess(model.BusinessTypePause, s.QuerySubscribeWithRider(subscribeID))
 
 	if s.subscribe.Remaining < 1 {
 		snag.Panic("当前剩余时间不足, 无法寄存")
 	}
 
-	s.do(business.TypePause, func(tx *ent.Tx) {
+	s.do(model.BusinessTypePause, func(tx *ent.Tx) {
 		_, err := tx.SubscribePause.Create().
 			SetStartAt(time.Now()).
 			SetRiderID(s.subscribe.RiderID).
@@ -819,7 +818,7 @@ func (s *businessRiderService) Pause(subscribeID uint64) {
 
 // Continue 取消寄存
 func (s *businessRiderService) Continue(subscribeID uint64) {
-	s.Preprocess(business.TypeContinue, s.QuerySubscribeWithRider(subscribeID))
+	s.Preprocess(model.BusinessTypeContinue, s.QuerySubscribeWithRider(subscribeID))
 
 	// 更新订阅信息
 	err := NewSubscribe().UpdateStatus(s.subscribe, false)
@@ -842,7 +841,7 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
 	// 当前时间
 	now := time.Now()
 
-	s.do(business.TypeContinue, func(tx *ent.Tx) {
+	s.do(model.BusinessTypeContinue, func(tx *ent.Tx) {
 		_, err = tx.SubscribePause.
 			UpdateOne(sp).
 			SetDays(pr.CurrentDays).

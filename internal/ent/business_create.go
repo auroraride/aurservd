@@ -233,8 +233,8 @@ func (bc *BusinessCreate) SetNillableAgentID(u *uint64) *BusinessCreate {
 }
 
 // SetType sets the "type" field.
-func (bc *BusinessCreate) SetType(b business.Type) *BusinessCreate {
-	bc.mutation.SetType(b)
+func (bc *BusinessCreate) SetType(mt model.BusinessType) *BusinessCreate {
+	bc.mutation.SetType(mt)
 	return bc
 }
 
@@ -387,11 +387,6 @@ func (bc *BusinessCreate) check() error {
 	if _, ok := bc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Business.type"`)}
 	}
-	if v, ok := bc.mutation.GetType(); ok {
-		if err := business.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Business.type": %w`, err)}
-		}
-	}
 	if _, ok := bc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Business.rider"`)}
 	}
@@ -453,7 +448,7 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 		_node.Remark = value
 	}
 	if value, ok := bc.mutation.GetType(); ok {
-		_spec.SetField(business.FieldType, field.TypeEnum, value)
+		_spec.SetField(business.FieldType, field.TypeOther, value)
 		_node.Type = value
 	}
 	if value, ok := bc.mutation.BinInfo(); ok {
@@ -950,7 +945,7 @@ func (u *BusinessUpsert) ClearAgentID() *BusinessUpsert {
 }
 
 // SetType sets the "type" field.
-func (u *BusinessUpsert) SetType(v business.Type) *BusinessUpsert {
+func (u *BusinessUpsert) SetType(v model.BusinessType) *BusinessUpsert {
 	u.Set(business.FieldType, v)
 	return u
 }
@@ -1333,7 +1328,7 @@ func (u *BusinessUpsertOne) ClearAgentID() *BusinessUpsertOne {
 }
 
 // SetType sets the "type" field.
-func (u *BusinessUpsertOne) SetType(v business.Type) *BusinessUpsertOne {
+func (u *BusinessUpsertOne) SetType(v model.BusinessType) *BusinessUpsertOne {
 	return u.Update(func(s *BusinessUpsert) {
 		s.SetType(v)
 	})
@@ -1890,7 +1885,7 @@ func (u *BusinessUpsertBulk) ClearAgentID() *BusinessUpsertBulk {
 }
 
 // SetType sets the "type" field.
-func (u *BusinessUpsertBulk) SetType(v business.Type) *BusinessUpsertBulk {
+func (u *BusinessUpsertBulk) SetType(v model.BusinessType) *BusinessUpsertBulk {
 	return u.Update(func(s *BusinessUpsert) {
 		s.SetType(v)
 	})
