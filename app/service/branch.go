@@ -442,7 +442,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 	// 电柜id
 	var cabIDs []uint64
 	// 预约数量map
-	var rm map[uint64]int
+	var rm map[model.ReserveBusinessKey]int
 
 	// 每个网点可用业务
 	branchBusinessesMap := make(map[uint64]map[uint64][]string)
@@ -452,7 +452,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 			cabIDs = append(cabIDs, c.ID)
 		}
 
-		rm = NewReserve().CabinetCounts(cabIDs, business.Type(req.Business))
+		rm = NewReserve().CabinetCounts(cabIDs)
 	}
 
 	// 电柜
@@ -462,7 +462,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 		// 预约检查 = 非预约筛选 或 电柜可满足预约并且如果订阅非空则电柜电池型号满足订阅型号
 		// resvcheck := req.Business == "" || (c.ReserveAble(business.Type(req.Business), rm[c.ID]) && (sub == nil || NewCabinet().ModelInclude(c, sub.Model)))
 		resvcheck := req.Business == ""
-		if c.ReserveAble(business.Type(req.Business), rm[c.ID]) {
+		if c.ReserveAble(business.Type(req.Business), rm) {
 			resvcheck = sub == nil || NewCabinet().ModelInclude(c, sub.Model)
 		}
 
@@ -513,22 +513,18 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 			}
 
 			// active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
-			// 查询激活预约数
-			reserveActiveNum := NewReserve().CabinetCounts([]uint64{c.ID}, "active")
-			// 查询结束寄存
-			reserveContinueNum := NewReserve().CabinetCounts([]uint64{c.ID}, "continue")
-			// 查询寄存
-			reservePauseNum := NewReserve().CabinetCounts([]uint64{c.ID}, "pause")
-			// 查询退租
-			reserveUnsubscribeNum := NewReserve().CabinetCounts([]uint64{c.ID}, "unsubscribe")
-
+			reserveNum := NewReserve().CabinetCounts([]uint64{c.ID})
+			// 电柜可办理业务
 			var batteryFullNum, emptyBinNum int
+			reserveActiveNum := reserveNum[model.NewReserveBusinessKey(c.ID, business.TypeActive.String())]
+			reserveContinueNum := reserveNum[model.NewReserveBusinessKey(c.ID, business.TypeContinue.String())]
+			reservePauseNum := reserveNum[model.NewReserveBusinessKey(c.ID, business.TypePause.String())]
+			reserveUnsubscribeNum := reserveNum[model.NewReserveBusinessKey(c.ID, business.TypeUnsubscribe.String())]
 
 			// 可用电池数
-			batteryFullNum = c.BatteryFullNum - reserveActiveNum[c.ID] - reserveContinueNum[c.ID]
+			batteryFullNum = c.BatteryFullNum - reserveActiveNum - reserveContinueNum
 			// 可用空仓数
-			emptyBinNum = c.EmptyBinNum - reservePauseNum[c.ID] - reserveUnsubscribeNum[c.ID]
-
+			emptyBinNum = c.EmptyBinNum - reservePauseNum - reserveUnsubscribeNum
 			// 电柜可办业务展示规则：
 			//  1）激活：电柜可用电池数 ≥ 2
 			//  2）退租：电柜空仓数 ≥ 2
@@ -802,21 +798,17 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 			}
 
 			// 电柜可办理业务
-			reserveActiveNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "active")
-			// 查询结束寄存
-			reserveContinueNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "continue")
-			// 查询寄存
-			reservePauseNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "pause")
-			// 查询退租
-			reserveUnsubscribeNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "unsubscribe")
-
+			reserveNum := NewReserve().CabinetCounts([]uint64{cab.ID})
 			var batteryFullNum, emptyBinNum int
+			reserveActiveNum := reserveNum[model.NewReserveBusinessKey(c.ID, business.TypeActive.String())]
+			reserveContinueNum := reserveNum[model.NewReserveBusinessKey(c.ID, business.TypeContinue.String())]
+			reservePauseNum := reserveNum[model.NewReserveBusinessKey(c.ID, business.TypePause.String())]
+			reserveUnsubscribeNum := reserveNum[model.NewReserveBusinessKey(c.ID, business.TypeUnsubscribe.String())]
 
 			// 可用电池数
-			batteryFullNum = cab.BatteryFullNum - reserveActiveNum[c.ID] - reserveContinueNum[c.ID]
+			batteryFullNum = cab.BatteryFullNum - reserveActiveNum - reserveContinueNum
 			// 可用空仓数
-			emptyBinNum = cab.EmptyBinNum - reservePauseNum[c.ID] - reserveUnsubscribeNum[c.ID]
-
+			emptyBinNum = cab.EmptyBinNum - reservePauseNum - reserveUnsubscribeNum
 			if batteryFullNum >= 2 {
 				c.CabinetBusinesses = append(c.CabinetBusinesses, business.TypeActive.String(), business.TypeContinue.String())
 			}

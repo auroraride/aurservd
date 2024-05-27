@@ -23,17 +23,21 @@ func (c *Cabinet) GetTaskInfo() *ec.Cabinet {
 
 // ReserveAble 是否可预约
 // num 当前已有预约数量
-func (c *Cabinet) ReserveAble(typ business.Type, num int) bool {
+func (c *Cabinet) ReserveAble(typ business.Type, num map[model.ReserveBusinessKey]int) bool {
 	if c.Status != model.CabinetStatusNormal.Value() || c.Health != model.CabinetHealthStatusOnline {
 		return false
 	}
 	switch typ {
 	// 取电
 	case business.TypeActive, business.TypeContinue:
-		return c.BatteryNum-num >= 2
+		activeNum := num[model.NewReserveBusinessKey(c.ID, business.TypeActive.String())]
+		continueNum := num[model.NewReserveBusinessKey(c.ID, business.TypeContinue.String())]
+		return c.BatteryNum-(activeNum+continueNum) >= 2
 	// 放电
 	case business.TypePause, business.TypeUnsubscribe:
-		return c.EmptyBinNum-num >= 2
+		pauseNum := num[model.NewReserveBusinessKey(c.ID, business.TypePause.String())]
+		unsubscribeNum := num[model.NewReserveBusinessKey(c.ID, business.TypeUnsubscribe.String())]
+		return c.EmptyBinNum-(pauseNum+unsubscribeNum) >= 2
 	}
 	return false
 }
