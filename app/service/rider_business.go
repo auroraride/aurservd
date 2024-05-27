@@ -105,11 +105,11 @@ func (s *riderBusinessService) preprocess(serial string, bt model.BusinessType) 
 	s.battery = NewIntelligentCabinet(s.rider).BusinessCensorX(bus, sub, cab)
 
 	// 获取仓位信息
-	var err error
-	s.response.UUID, s.response.Index, err = NewIntelligentCabinet(s.rider).BusinessUsable(cab, bus, sub.Model)
-	if err != nil {
-		snag.Panic(err)
-	}
+	// var err error
+	// s.response.UUID, s.response.Index, err = NewIntelligentCabinet(s.rider).BusinessUsable(cab, bus, sub.Model)
+	// if err != nil {
+	// 	snag.Panic(err)
+	// }
 }
 
 // Active 骑手自主激活
@@ -197,6 +197,17 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, version str
 		snag.Panic("请先分配物资")
 	}
 
+	// 激活限制城市
+	if s.cabinet != nil && s.subscribe != nil {
+		citys, err := NewPlan().PlanCity(*s.subscribe.PlanID)
+		if err != nil {
+			snag.Panic("未找到套餐")
+		}
+		if !s.IsCabinetCityInCities(citys, *s.cabinet.CityID) {
+			snag.Panic("请在指定城市办理业务")
+		}
+	}
+
 	NewBusinessRider(s.rider).
 		SetCabinet(s.cabinet).
 		SetCabinetTask(func() (*model.BinInfo, *model.Battery, error) {
@@ -212,6 +223,17 @@ func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.Bus
 	s.preprocess(req.Serial, model.BusinessTypeContinue)
 	if s.subscribe.Status != model.SubscribeStatusPaused {
 		snag.Panic("骑士卡状态错误")
+	}
+
+	// 限制城市
+	if s.cabinet != nil && s.subscribe != nil {
+		citys, err := NewPlan().PlanCity(*s.subscribe.PlanID)
+		if err != nil {
+			snag.Panic("未找到套餐")
+		}
+		if !s.IsCabinetCityInCities(citys, *s.cabinet.CityID) {
+			snag.Panic("请在指定城市办理业务")
+		}
 	}
 
 	// ↓ 2023-01-02 添加了异步操作
@@ -243,6 +265,16 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
 		snag.Panic("骑士卡状态异常")
 	}
 
+	if s.cabinet != nil && s.subscribe != nil {
+		citys, err := NewPlan().PlanCity(*s.subscribe.PlanID)
+		if err != nil {
+			snag.Panic("未找到套餐")
+		}
+		if !s.IsCabinetCityInCities(citys, *s.cabinet.CityID) {
+			snag.Panic("请在指定城市办理业务")
+		}
+	}
+
 	go func() {
 		err := snag.WithPanic(func() {
 			NewBusinessRider(s.rider).
@@ -269,6 +301,16 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
 
 	if s.subscribe.Remaining < 1 {
 		snag.Panic("当前剩余时间不足, 无法寄存")
+	}
+
+	if s.cabinet != nil && s.subscribe != nil {
+		citys, err := NewPlan().PlanCity(*s.subscribe.PlanID)
+		if err != nil {
+			snag.Panic("未找到套餐")
+		}
+		if !s.IsCabinetCityInCities(citys, *s.cabinet.CityID) {
+			snag.Panic("请在指定城市办理业务")
+		}
 	}
 
 	go func() {
@@ -371,4 +413,14 @@ func (s *riderBusinessService) PauseInfo() (res model.BusinessPauseInfoRes) {
 	}
 
 	return
+}
+
+// IsCabinetCityInCities 电柜城市是否在购买套餐的城市列表中
+func (s *riderBusinessService) IsCabinetCityInCities(cities []uint64, cabinetCityID uint64) bool {
+	for _, city := range cities {
+		if city == cabinetCityID {
+			return true
+		}
+	}
+	return false
 }
