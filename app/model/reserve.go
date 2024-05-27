@@ -5,6 +5,8 @@
 
 package model
 
+import "strconv"
+
 type ReserveStatus uint8
 
 const (
@@ -38,6 +40,13 @@ func (rs ReserveStatus) String() string {
 	case ReserveStatusInvalid:
 		return "已失效"
 	}
+}
+
+type ReserveBusinessKey string
+
+// NewReserveBusinessKey 预约业务键
+func NewReserveBusinessKey(id uint64, typ BusinessType) ReserveBusinessKey {
+	return ReserveBusinessKey(strconv.FormatUint(id, 10) + "-" + typ.String())
 }
 
 type ReserveCreateReq struct {

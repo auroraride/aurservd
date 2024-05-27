@@ -824,7 +824,7 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
-		{Name: "type", Type: field.TypeEnum, Comment: "业务类型", Enums: []string{"active", "pause", "continue", "unsubscribe"}},
+		{Name: "type", Type: field.TypeOther, Comment: "业务类型", SchemaType: map[string]string{"postgres": "character varying"}},
 		{Name: "bin_info", Type: field.TypeJSON, Nullable: true, Comment: "仓位信息"},
 		{Name: "stock_sn", Type: field.TypeString, Nullable: true, Comment: "出入库编码"},
 		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},

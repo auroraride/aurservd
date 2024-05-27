@@ -17163,7 +17163,7 @@ type BusinessMutation struct {
 	creator           **model.Modifier
 	last_modifier     **model.Modifier
 	remark            *string
-	_type             *business.Type
+	_type             *model.BusinessType
 	bin_info          **model.BinInfo
 	stock_sn          *string
 	clearedFields     map[string]struct{}
@@ -18061,12 +18061,12 @@ func (m *BusinessMutation) ResetAgentID() {
 }
 
 // SetType sets the "type" field.
-func (m *BusinessMutation) SetType(b business.Type) {
-	m._type = &b
+func (m *BusinessMutation) SetType(mt model.BusinessType) {
+	m._type = &mt
 }
 
 // GetType returns the value of the "type" field in the mutation.
-func (m *BusinessMutation) GetType() (r business.Type, exists bool) {
+func (m *BusinessMutation) GetType() (r model.BusinessType, exists bool) {
 	v := m._type
 	if v == nil {
 		return
@@ -18077,7 +18077,7 @@ func (m *BusinessMutation) GetType() (r business.Type, exists bool) {
 // OldType returns the old "type" field's value of the Business entity.
 // If the Business object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BusinessMutation) OldType(ctx context.Context) (v business.Type, err error) {
+func (m *BusinessMutation) OldType(ctx context.Context) (v model.BusinessType, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldType is only allowed on UpdateOne operations")
 	}
@@ -18812,7 +18812,7 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 		m.SetAgentID(v)
 		return nil
 	case business.FieldType:
-		v, ok := value.(business.Type)
+		v, ok := value.(model.BusinessType)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

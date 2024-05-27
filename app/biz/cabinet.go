@@ -17,7 +17,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
-	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 )
 
@@ -72,20 +71,20 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 	var cabIDs []uint64
 
 	// 预约数量map
-	var rm map[uint64]int
+	var rm map[model.ReserveBusinessKey]int
 
 	if req.Business != nil {
 		for _, c := range cabinets {
 			cabIDs = append(cabIDs, c.ID)
 		}
-		rm = service.NewReserve().CabinetCounts(cabIDs, business.Type(*req.Business))
+		rm = service.NewReserve().CabinetCounts(cabIDs)
 	}
 
 	service.NewCabinet().SyncCabinets(cabinets)
 	res = make([]definition.CabinetByRiderRes, 0)
 	for _, c := range cabinets {
 		resvcheck := req.Business == nil
-		if req.Business != nil && c.ReserveAble(business.Type(*req.Business), rm[c.ID]) {
+		if req.Business != nil && c.ReserveAble(model.BusinessType(*req.Business), rm) {
 			resvcheck = sub == nil || service.NewCabinet().ModelInclude(c, sub.Model)
 		}
 
@@ -112,26 +111,23 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 			}
 
 			// 电柜可办理业务
-			reserveActiveNum := service.NewReserve().CabinetCounts([]uint64{c.ID}, "active")
-			// 查询结束寄存
-			reserveContinueNum := service.NewReserve().CabinetCounts([]uint64{c.ID}, "continue")
-			// 查询寄存
-			reservePauseNum := service.NewReserve().CabinetCounts([]uint64{c.ID}, "pause")
-			// 查询退租
-			reserveUnsubscribeNum := service.NewReserve().CabinetCounts([]uint64{c.ID}, "unsubscribe")
-
+			reserveNum := service.NewReserve().CabinetCounts([]uint64{c.ID})
 			var batteryFullNum, emptyBinNum int
+			reserveActiveNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeActive)]
+			reserveContinueNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeContinue)]
+			reservePauseNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypePause)]
+			reserveUnsubscribeNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeUnsubscribe)]
 
 			// 可用电池数
-			batteryFullNum = c.BatteryFullNum - reserveActiveNum[c.ID] - reserveContinueNum[c.ID]
+			batteryFullNum = c.BatteryFullNum - reserveActiveNum - reserveContinueNum
 			// 可用空仓数
-			emptyBinNum = c.EmptyBinNum - reservePauseNum[c.ID] - reserveUnsubscribeNum[c.ID]
+			emptyBinNum = c.EmptyBinNum - reservePauseNum - reserveUnsubscribeNum
 
 			if batteryFullNum >= 2 {
-				cdr.Businesses = append(cdr.Businesses, business.TypeActive.String(), business.TypeContinue.String())
+				cdr.Businesses = append(cdr.Businesses, model.BusinessTypeActive.String(), model.BusinessTypeContinue.String())
 			}
 			if emptyBinNum >= 2 {
-				cdr.Businesses = append(cdr.Businesses, business.TypePause.String(), business.TypeUnsubscribe.String())
+				cdr.Businesses = append(cdr.Businesses, model.BusinessTypePause.String(), model.BusinessTypeUnsubscribe.String())
 			}
 
 			if c.Edges.Branch != nil {

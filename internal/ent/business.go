@@ -65,7 +65,7 @@ type Business struct {
 	// AgentID holds the value of the "agent_id" field.
 	AgentID *uint64 `json:"agent_id,omitempty"`
 	// 业务类型
-	Type business.Type `json:"type,omitempty"`
+	Type model.BusinessType `json:"type,omitempty"`
 	// 仓位信息
 	BinInfo *model.BinInfo `json:"bin_info,omitempty"`
 	// 出入库编码
@@ -233,9 +233,11 @@ func (*Business) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case business.FieldCreator, business.FieldLastModifier, business.FieldBinInfo:
 			values[i] = new([]byte)
+		case business.FieldType:
+			values[i] = new(model.BusinessType)
 		case business.FieldID, business.FieldRiderID, business.FieldCityID, business.FieldSubscribeID, business.FieldEmployeeID, business.FieldStoreID, business.FieldPlanID, business.FieldEnterpriseID, business.FieldStationID, business.FieldCabinetID, business.FieldBatteryID, business.FieldAgentID:
 			values[i] = new(sql.NullInt64)
-		case business.FieldRemark, business.FieldType, business.FieldStockSn:
+		case business.FieldRemark, business.FieldStockSn:
 			values[i] = new(sql.NullString)
 		case business.FieldCreatedAt, business.FieldUpdatedAt, business.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -376,10 +378,10 @@ func (b *Business) assignValues(columns []string, values []any) error {
 				*b.AgentID = uint64(value.Int64)
 			}
 		case business.FieldType:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*model.BusinessType); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
-			} else if value.Valid {
-				b.Type = business.Type(value.String)
+			} else if value != nil {
+				b.Type = *value
 			}
 		case business.FieldBinInfo:
 			if value, ok := values[i].(*[]byte); !ok {

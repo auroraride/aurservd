@@ -14,7 +14,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
@@ -33,11 +32,11 @@ type reserveService struct {
 }
 
 func NewReserve() *reserveService {
-	max := time.Duration(cache.Int(model.SettingReserveDurationKey))
+	maxDuration := time.Duration(cache.Int(model.SettingReserveDurationKey))
 	return &reserveService{
 		ctx: context.Background(),
 		orm: ent.Database.Reserve,
-		max: max,
+		max: maxDuration,
 	}
 }
 
@@ -128,10 +127,12 @@ func (s *reserveService) Timeout() {
 
 // CabinetCounts 获取电柜当前预约数量
 // 条件: 执行中的预约或一个小时以内的未执行预约
-func (s *reserveService) CabinetCounts(ids []uint64, typ business.Type) (data map[uint64]int) {
+// data = map[电柜ID-业务类型]数量
+func (s *reserveService) CabinetCounts(ids []uint64) (data map[model.ReserveBusinessKey]int) {
 	var results []struct {
 		CabinetID uint64 `json:"cabinet_id"`
 		Count     int    `json:"count"`
+		Type      string `json:"type"`
 	}
 	_ = s.orm.QueryNotDeleted().
 		Where(
@@ -140,24 +141,23 @@ func (s *reserveService) CabinetCounts(ids []uint64, typ business.Type) (data ma
 				reserve.And(
 					reserve.Status(model.ReserveStatusPending.Value()),
 					reserve.CreatedAtGTE(time.Now().Add(-s.max*time.Minute)),
-					reserve.Type(typ.String()),
 				),
 				reserve.Status(model.ReserveStatusProcessing.Value()),
 			),
 		).
-		GroupBy(reserve.FieldCabinetID).
+		GroupBy(reserve.FieldCabinetID, reserve.FieldType).
 		Aggregate(ent.Count()).
 		Scan(s.ctx, &results)
-	data = make(map[uint64]int)
+	data = make(map[model.ReserveBusinessKey]int)
 	for _, result := range results {
-		data[result.CabinetID] = result.Count
+		data[model.NewReserveBusinessKey(result.CabinetID, model.BusinessType(result.Type))] = result.Count
 	}
 	return
 }
 
 // Create 创建预约
 func (s *reserveService) Create(req *model.ReserveCreateReq) *model.ReserveUnfinishedRes {
-	typ := business.Type(req.Business)
+	typ := model.BusinessType(req.Business)
 
 	// 检查订阅状态
 	sub := NewSubscribeWithRider(s.rider).RecentX(s.rider.ID)
@@ -174,8 +174,8 @@ func (s *reserveService) Create(req *model.ReserveCreateReq) *model.ReserveUnfin
 	cab := NewCabinet().QueryOne(req.CabinetID)
 	// 同步电柜并返回电柜详情
 	NewCabinet().Sync(cab)
-	m := s.CabinetCounts([]uint64{cab.ID}, typ)
-	if !cab.ReserveAble(typ, m[cab.ID]) {
+	m := s.CabinetCounts([]uint64{cab.ID})
+	if !cab.ReserveAble(typ, m) {
 		snag.Panic("电柜无法预约")
 	}
 
