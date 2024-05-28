@@ -477,6 +477,18 @@ const docTemplate = `{
                         "description": "电池型号",
                         "name": "model",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店业务 1-租车，2-修车，3-买车，4-驿站",
+                        "name": "storeBusiness",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店状态 1-营业 2-休息",
+                        "name": "storeStatus",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -485,7 +497,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.BranchWithDistanceRes"
+                                "$ref": "#/definitions/definition.BranchWithDistanceRes"
                             }
                         }
                     }
@@ -3004,6 +3016,12 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "门店业务 1租车 2修车 3买车 4驿站",
+                        "name": "businessType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "城市ID",
                         "name": "cityId",
                         "in": "query"
@@ -3012,6 +3030,12 @@ const docTemplate = `{
                         "type": "number",
                         "description": "距离",
                         "name": "distance",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
                         "in": "query"
                     },
                     {
@@ -3512,6 +3536,104 @@ const docTemplate = `{
                 "userType": {
                     "description": "用户类型 1:个签 2:团签",
                     "type": "integer"
+                }
+            }
+        },
+        "definition.BranchFacility": {
+            "type": "object",
+            "properties": {
+                "batteryNum": {
+                    "description": "电池数量",
+                    "type": "integer"
+                },
+                "cabinetNum": {
+                    "description": "电柜数量",
+                    "type": "integer"
+                },
+                "fid": {
+                    "description": "设施标识",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "num": {
+                    "description": "满电数量",
+                    "type": "integer"
+                },
+                "phone": {
+                    "description": "联系电话",
+                    "type": "string"
+                },
+                "state": {
+                    "description": "状态 0不可用 1可用",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "仓位数量",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "类别",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.BranchWithDistanceRes": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "网点地址",
+                    "type": "string"
+                },
+                "businesses": {
+                    "description": "可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "distance": {
+                    "description": "距离(前端处理: 超过1000米显示nKM)",
+                    "type": "number"
+                },
+                "facility": {
+                    "description": "网点设施",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.BranchFacility"
+                    }
+                },
+                "id": {
+                    "description": "网点ID",
+                    "type": "integer"
+                },
+                "image": {
+                    "description": "网点图片",
+                    "type": "string"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "网点名称",
+                    "type": "string"
+                },
+                "photos": {
+                    "description": "网点图片(V2)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -4237,10 +4359,6 @@ const docTemplate = `{
                     "description": "是否可以买车",
                     "type": "boolean"
                 },
-                "ebikeStage": {
-                    "description": "是否拥有驿站",
-                    "type": "boolean"
-                },
                 "employee": {
                     "description": "店员, 有可能不存在",
                     "allOf": [
@@ -4264,6 +4382,17 @@ const docTemplate = `{
                 "name": {
                     "description": "门店名称",
                     "type": "string"
+                },
+                "photos": {
+                    "description": "门店照片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "rest": {
+                    "description": "是否拥有驿站",
+                    "type": "boolean"
                 },
                 "status": {
                     "description": "状态",
@@ -4570,50 +4699,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.BranchFacility": {
-            "type": "object",
-            "properties": {
-                "batteryNum": {
-                    "description": "电池数量",
-                    "type": "integer"
-                },
-                "cabinetNum": {
-                    "description": "电柜数量",
-                    "type": "integer"
-                },
-                "fid": {
-                    "description": "设施标识",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "名称",
-                    "type": "string"
-                },
-                "num": {
-                    "description": "满电数量",
-                    "type": "integer"
-                },
-                "phone": {
-                    "description": "联系电话",
-                    "type": "string"
-                },
-                "state": {
-                    "description": "状态 0不可用 1可用",
-                    "type": "integer"
-                },
-                "total": {
-                    "description": "仓位数量",
-                    "type": "integer"
-                },
-                "type": {
-                    "description": "类别",
-                    "type": "string"
-                }
-            }
-        },
         "model.BranchFacilityCabinet": {
             "type": "object",
             "properties": {
@@ -4790,60 +4875,6 @@ const docTemplate = `{
                 "minutes": {
                     "description": "骑行规划时间(分钟)",
                     "type": "number"
-                }
-            }
-        },
-        "model.BranchWithDistanceRes": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "description": "网点地址",
-                    "type": "string"
-                },
-                "businesses": {
-                    "description": "可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "distance": {
-                    "description": "距离(前端处理: 超过1000米显示nKM)",
-                    "type": "number"
-                },
-                "facility": {
-                    "description": "网点设施",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.BranchFacility"
-                    }
-                },
-                "id": {
-                    "description": "网点ID",
-                    "type": "integer"
-                },
-                "image": {
-                    "description": "网点图片",
-                    "type": "string"
-                },
-                "lat": {
-                    "description": "纬度",
-                    "type": "number"
-                },
-                "lng": {
-                    "description": "经度",
-                    "type": "number"
-                },
-                "name": {
-                    "description": "网点名称",
-                    "type": "string"
-                },
-                "photos": {
-                    "description": "网点图片(V2)",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 }
             }
         },

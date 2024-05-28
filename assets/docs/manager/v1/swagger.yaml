@@ -3897,7 +3897,7 @@ definitions:
         type: array
       versionInfo:
         allOf:
-          - $ref: '#/definitions/model.VersionInfo'
+        - $ref: '#/definitions/model.VersionInfo'
         description: 版本信息
     type: object
   model.FeedbackListReq:
@@ -6012,9 +6012,6 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
-      ebikeStage:
-        description: 是否拥有驿站
-        type: boolean
       materials:
         description: 门店物资
         items:
@@ -6023,6 +6020,14 @@ definitions:
       name:
         description: 门店名称
         type: string
+      photos:
+        description: 门店照片, 门店照片
+        items:
+          type: string
+        type: array
+      rest:
+        description: 是否驿站
+        type: boolean
       status:
         description: 门店状态 0维护 1营业 2休息 3隐藏
         enum:
@@ -6034,6 +6039,7 @@ definitions:
     required:
     - branchId
     - name
+    - photos
     - status
     type: object
   model.StoreItem:
@@ -6059,9 +6065,6 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
-      ebikeStage:
-        description: 是否有驿站
-        type: boolean
       employee:
         allOf:
         - $ref: '#/definitions/model.Employee'
@@ -6071,9 +6074,17 @@ definitions:
       name:
         description: 门店名称
         type: string
+      photos:
+        description: 照片
+        items:
+          type: string
+        type: array
       qrcode:
         description: 门店二维码
         type: string
+      rest:
+        description: 是否驿站
+        type: boolean
       status:
         description: 状态
         type: integer
@@ -6095,12 +6106,17 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
-      ebikeStage:
-        description: 是否拥有驿站
-        type: boolean
       name:
         description: 门店名称
         type: string
+      photos:
+        description: 门店照片, 门店照片
+        items:
+          type: string
+        type: array
+      rest:
+        description: 是否驿站
+        type: boolean
       status:
         description: 门店状态 0维护 1营业 2休息 3隐藏
         enum:
@@ -15667,7 +15683,7 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 业务类型 1:领取车辆(租车) 2:维修车辆 3:买车
+      - description: 业务类型 1:领取车辆(租车) 2:维修车辆 3:买车 4:驿站
         in: query
         name: businessType
         type: integer

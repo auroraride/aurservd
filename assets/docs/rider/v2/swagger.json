@@ -469,6 +469,18 @@
                         "description": "电池型号",
                         "name": "model",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店业务 1-租车，2-修车，3-买车，4-驿站",
+                        "name": "storeBusiness",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店状态 1-营业 2-休息",
+                        "name": "storeStatus",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -477,7 +489,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.BranchWithDistanceRes"
+                                "$ref": "#/definitions/definition.BranchWithDistanceRes"
                             }
                         }
                     }
@@ -2233,45 +2245,45 @@
                 }
             }
         },
-      "/rider/v2/mini/openid": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "Rider - 骑手"
-          ],
-          "summary": "获取支付宝小程序openid",
-          "operationId": "GetOpenid",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "骑手校验token",
-              "name": "X-Rider-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "string",
-              "description": "支付宝code",
-              "name": "code",
-              "in": "query",
-              "required": true
+        "/rider/v2/mini/openid": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rider - 骑手"
+                ],
+                "summary": "获取支付宝小程序openid",
+                "operationId": "GetOpenid",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "支付宝code",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.OpenidRes"
+                        }
+                    }
+                }
             }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.OpenidRes"
-              }
-            }
-          }
-        }
-      },
+        },
         "/rider/v2/order": {
             "get": {
                 "consumes": [
@@ -2966,7 +2978,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                          "$ref": "#/definitions/definition.RiderSignupReq"
+                            "$ref": "#/definitions/definition.RiderSignupReq"
                         }
                     }
                 ],
@@ -2996,6 +3008,12 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "门店业务 1租车 2修车 3买车 4驿站",
+                        "name": "businessType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "城市ID",
                         "name": "cityId",
                         "in": "query"
@@ -3004,6 +3022,12 @@
                         "type": "number",
                         "description": "距离",
                         "name": "distance",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
                         "in": "query"
                     },
                     {
@@ -3507,6 +3531,104 @@
                 }
             }
         },
+        "definition.BranchFacility": {
+            "type": "object",
+            "properties": {
+                "batteryNum": {
+                    "description": "电池数量",
+                    "type": "integer"
+                },
+                "cabinetNum": {
+                    "description": "电柜数量",
+                    "type": "integer"
+                },
+                "fid": {
+                    "description": "设施标识",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "num": {
+                    "description": "满电数量",
+                    "type": "integer"
+                },
+                "phone": {
+                    "description": "联系电话",
+                    "type": "string"
+                },
+                "state": {
+                    "description": "状态 0不可用 1可用",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "仓位数量",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "类别",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.BranchWithDistanceRes": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "网点地址",
+                    "type": "string"
+                },
+                "businesses": {
+                    "description": "可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "distance": {
+                    "description": "距离(前端处理: 超过1000米显示nKM)",
+                    "type": "number"
+                },
+                "facility": {
+                    "description": "网点设施",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.BranchFacility"
+                    }
+                },
+                "id": {
+                    "description": "网点ID",
+                    "type": "integer"
+                },
+                "image": {
+                    "description": "网点图片",
+                    "type": "string"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "网点名称",
+                    "type": "string"
+                },
+                "photos": {
+                    "description": "网点图片(V2)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "definition.CabinetByRiderRes": {
             "type": "object",
             "properties": {
@@ -3784,9 +3906,9 @@
                     "description": "协议hash",
                     "type": "string"
                 },
-              "buyerOpenId": {
-                "description": "买家支付宝用户ID",
-                "type": "string"
+                "buyerOpenId": {
+                    "description": "买家支付宝用户ID",
+                    "type": "string"
                 },
                 "cityId": {
                     "description": "城市ID, 新签必填",
@@ -3800,7 +3922,7 @@
                     }
                 },
                 "depositAlipayAuthFreeze": {
-                  "description": "是否使用支付宝预授权信用分支付押金 \t// 以下字段仅限V2使用",
+                    "description": "是否使用支付宝预授权信用分支付押金 \t// 以下字段仅限V2使用",
                     "type": "boolean"
                 },
                 "depositOrderNo": {
@@ -3829,13 +3951,13 @@
                     ]
                 },
                 "payway": {
-                  "description": "支付方式, 1支付宝 2微信 3支付宝预授权(仅限V2使用) 5 支付宝小程序",
+                    "description": "支付方式, 1支付宝 2微信 3支付宝预授权(仅限V2使用) 5 支付宝小程序",
                     "type": "integer",
                     "enum": [
                         1,
                         2,
-                      3,
-                      5
+                        3,
+                        5
                     ]
                 },
                 "planId": {
@@ -3864,7 +3986,7 @@
             ],
             "properties": {
                 "payway": {
-                  "description": "支付方式, 1支付宝 2微信 3支付宝信用免押 4微信支付分",
+                    "description": "支付方式, 1支付宝 2微信 3支付宝信用免押 4微信支付分",
                     "type": "integer",
                     "enum": [
                         1,
@@ -4161,36 +4283,36 @@
                 }
             }
         },
-      "definition.RiderSignupReq": {
+        "definition.RiderSignupReq": {
             "type": "object",
             "properties": {
-              "authCode": {
-                "description": "授权码",
-                "type": "string"
-              },
-              "authType": {
-                "description": "授权类型 1:微信 2:支付宝",
-                "type": "integer"
-              },
-              "encryptedData": {
-                "description": "支付宝获取手机加密数据",
-                "type": "string"
-              },
-              "phone": {
-                "description": "电话, 电话",
-                "type": "string"
-              },
-              "signinType": {
-                "description": "登录类型 1:短信登录 2:授权登录",
-                "type": "integer"
-              },
-              "smsCode": {
-                "description": "验证码, 验证码",
-                "type": "string"
-              },
-              "smsId": {
-                "description": "短信ID, 短信ID",
-                "type": "string"
+                "authCode": {
+                    "description": "授权码",
+                    "type": "string"
+                },
+                "authType": {
+                    "description": "授权类型 1:微信 2:支付宝",
+                    "type": "integer"
+                },
+                "encryptedData": {
+                    "description": "支付宝获取手机加密数据",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话, 电话",
+                    "type": "string"
+                },
+                "signinType": {
+                    "description": "登录类型 1:短信登录 2:授权登录",
+                    "type": "integer"
+                },
+                "smsCode": {
+                    "description": "验证码, 验证码",
+                    "type": "string"
+                },
+                "smsId": {
+                    "description": "短信ID, 短信ID",
+                    "type": "string"
                 }
             }
         },
@@ -4229,10 +4351,6 @@
                     "description": "是否可以买车",
                     "type": "boolean"
                 },
-                "ebikeStage": {
-                    "description": "是否拥有驿站",
-                    "type": "boolean"
-                },
                 "employee": {
                     "description": "店员, 有可能不存在",
                     "allOf": [
@@ -4256,6 +4374,17 @@
                 "name": {
                     "description": "门店名称",
                     "type": "string"
+                },
+                "photos": {
+                    "description": "门店照片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "rest": {
+                    "description": "是否拥有驿站",
+                    "type": "boolean"
                 },
                 "status": {
                     "description": "状态",
@@ -4562,50 +4691,6 @@
                 }
             }
         },
-        "model.BranchFacility": {
-            "type": "object",
-            "properties": {
-                "batteryNum": {
-                    "description": "电池数量",
-                    "type": "integer"
-                },
-                "cabinetNum": {
-                    "description": "电柜数量",
-                    "type": "integer"
-                },
-                "fid": {
-                    "description": "设施标识",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "名称",
-                    "type": "string"
-                },
-                "num": {
-                    "description": "满电数量",
-                    "type": "integer"
-                },
-                "phone": {
-                    "description": "联系电话",
-                    "type": "string"
-                },
-                "state": {
-                    "description": "状态 0不可用 1可用",
-                    "type": "integer"
-                },
-                "total": {
-                    "description": "仓位数量",
-                    "type": "integer"
-                },
-                "type": {
-                    "description": "类别",
-                    "type": "string"
-                }
-            }
-        },
         "model.BranchFacilityCabinet": {
             "type": "object",
             "properties": {
@@ -4782,60 +4867,6 @@
                 "minutes": {
                     "description": "骑行规划时间(分钟)",
                     "type": "number"
-                }
-            }
-        },
-        "model.BranchWithDistanceRes": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "description": "网点地址",
-                    "type": "string"
-                },
-                "businesses": {
-                    "description": "可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "distance": {
-                    "description": "距离(前端处理: 超过1000米显示nKM)",
-                    "type": "number"
-                },
-                "facility": {
-                    "description": "网点设施",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.BranchFacility"
-                    }
-                },
-                "id": {
-                    "description": "网点ID",
-                    "type": "integer"
-                },
-                "image": {
-                    "description": "网点图片",
-                    "type": "string"
-                },
-                "lat": {
-                    "description": "纬度",
-                    "type": "number"
-                },
-                "lng": {
-                    "description": "经度",
-                    "type": "number"
-                },
-                "name": {
-                    "description": "网点名称",
-                    "type": "string"
-                },
-                "photos": {
-                    "description": "网点图片(V2)",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 }
             }
         },
@@ -5655,10 +5686,10 @@
         "model.FeedbackDetail": {
             "type": "object",
             "properties": {
-              "cityName": {
-                "description": "城市名称",
-                "type": "string"
-              },
+                "cityName": {
+                    "description": "城市名称",
+                    "type": "string"
+                },
                 "content": {
                     "description": "反馈内容",
                     "type": "string"
@@ -5702,28 +5733,28 @@
                         "type": "string"
                     }
                 },
-              "versionInfo": {
-                "description": "版本信息",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/model.VersionInfo"
-                  }
-                ]
+                "versionInfo": {
+                    "description": "版本信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.VersionInfo"
+                        }
+                    ]
                 }
             }
         },
         "model.FeedbackReq": {
             "type": "object",
             "required": [
-              "cityId",
+                "cityId",
                 "content",
                 "type"
             ],
             "properties": {
-              "cityId": {
-                "description": "城市ID",
-                "type": "integer"
-              },
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
                 "content": {
                     "description": "反馈内容",
                     "type": "string"
@@ -5739,13 +5770,13 @@
                         "type": "string"
                     }
                 },
-              "versionInfo": {
-                "description": "版本信息",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/model.VersionInfo"
-                  }
-                ]
+                "versionInfo": {
+                    "description": "版本信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.VersionInfo"
+                        }
+                    ]
                 }
             }
         },
@@ -5776,14 +5807,14 @@
                 }
             }
         },
-      "model.OpenidRes": {
-        "type": "object",
-        "properties": {
-          "openid": {
-            "type": "string"
-          }
-        }
-      },
+        "model.OpenidRes": {
+            "type": "object",
+            "properties": {
+                "openid": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Order": {
             "type": "object",
             "properties": {
@@ -7055,27 +7086,27 @@
                 "TaskStatusFail"
             ]
         },
-      "model.VersionInfo": {
-        "type": "object",
-        "properties": {
-          "buildTime": {
-            "description": "编译时间",
-            "type": "string"
-          },
-          "ciJobId": {
-            "description": "CI任务ID",
-            "type": "string"
-          },
-          "commitId": {
-            "description": "提交ID",
-            "type": "string"
-          },
-          "version": {
-            "description": "版本号",
-            "type": "string"
-          }
-        }
-      },
+        "model.VersionInfo": {
+            "type": "object",
+            "properties": {
+                "buildTime": {
+                    "description": "编译时间",
+                    "type": "string"
+                },
+                "ciJobId": {
+                    "description": "CI任务ID",
+                    "type": "string"
+                },
+                "commitId": {
+                    "description": "提交ID",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "string"
+                }
+            }
+        },
         "model.WalletOverview": {
             "type": "object",
             "properties": {

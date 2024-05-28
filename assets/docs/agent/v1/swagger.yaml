@@ -1121,10 +1121,10 @@ definitions:
         type: array
       versionInfo:
         allOf:
-          - $ref: '#/definitions/model.VersionInfo'
+        - $ref: '#/definitions/model.VersionInfo'
         description: 版本信息
     required:
-      - cityId
+    - cityId
     - content
     - type
     type: object

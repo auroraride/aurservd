@@ -94,6 +94,77 @@ definitions:
         description: 用户类型 1:个签 2:团签
         type: integer
     type: object
+  definition.BranchFacility:
+    properties:
+      batteryNum:
+        description: 电池数量
+        type: integer
+      cabinetNum:
+        description: 电柜数量
+        type: integer
+      fid:
+        description: 设施标识
+        type: string
+      id:
+        type: integer
+      name:
+        description: 名称
+        type: string
+      num:
+        description: 满电数量
+        type: integer
+      phone:
+        description: 联系电话
+        type: string
+      state:
+        description: 状态 0不可用 1可用
+        type: integer
+      total:
+        description: 仓位数量
+        type: integer
+      type:
+        description: 类别
+        type: string
+    type: object
+  definition.BranchWithDistanceRes:
+    properties:
+      address:
+        description: 网点地址
+        type: string
+      businesses:
+        description: 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        items:
+          type: string
+        type: array
+      distance:
+        description: '距离(前端处理: 超过1000米显示nKM)'
+        type: number
+      facility:
+        description: 网点设施
+        items:
+          $ref: '#/definitions/definition.BranchFacility'
+        type: array
+      id:
+        description: 网点ID
+        type: integer
+      image:
+        description: 网点图片
+        type: string
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      name:
+        description: 网点名称
+        type: string
+      photos:
+        description: 网点图片(V2)
+        items:
+          type: string
+        type: array
+    type: object
   definition.CabinetByRiderRes:
     properties:
       address:
@@ -602,9 +673,6 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
-      ebikeStage:
-        description: 是否拥有驿站
-        type: boolean
       employee:
         allOf:
         - $ref: '#/definitions/model.Employee'
@@ -621,6 +689,14 @@ definitions:
       name:
         description: 门店名称
         type: string
+      photos:
+        description: 门店照片
+        items:
+          type: string
+        type: array
+      rest:
+        description: 是否拥有驿站
+        type: boolean
       status:
         description: 状态
         type: integer
@@ -829,38 +905,6 @@ definitions:
         description: 电压(V)
         type: number
     type: object
-  model.BranchFacility:
-    properties:
-      batteryNum:
-        description: 电池数量
-        type: integer
-      cabinetNum:
-        description: 电柜数量
-        type: integer
-      fid:
-        description: 设施标识
-        type: string
-      id:
-        type: integer
-      name:
-        description: 名称
-        type: string
-      num:
-        description: 满电数量
-        type: integer
-      phone:
-        description: 联系电话
-        type: string
-      state:
-        description: 状态 0不可用 1可用
-        type: integer
-      total:
-        description: 仓位数量
-        type: integer
-      type:
-        description: 类别
-        type: string
-    type: object
   model.BranchFacilityCabinet:
     properties:
       batteries:
@@ -984,45 +1028,6 @@ definitions:
       minutes:
         description: 骑行规划时间(分钟)
         type: number
-    type: object
-  model.BranchWithDistanceRes:
-    properties:
-      address:
-        description: 网点地址
-        type: string
-      businesses:
-        description: 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
-        items:
-          type: string
-        type: array
-      distance:
-        description: '距离(前端处理: 超过1000米显示nKM)'
-        type: number
-      facility:
-        description: 网点设施
-        items:
-          $ref: '#/definitions/model.BranchFacility'
-        type: array
-      id:
-        description: 网点ID
-        type: integer
-      image:
-        description: 网点图片
-        type: string
-      lat:
-        description: 纬度
-        type: number
-      lng:
-        description: 经度
-        type: number
-      name:
-        description: 网点名称
-        type: string
-      photos:
-        description: 网点图片(V2)
-        items:
-          type: string
-        type: array
     type: object
   model.BusinessCabinetReq:
     properties:
@@ -1632,7 +1637,7 @@ definitions:
         type: array
       versionInfo:
         allOf:
-          - $ref: '#/definitions/model.VersionInfo'
+        - $ref: '#/definitions/model.VersionInfo'
         description: 版本信息
     type: object
   model.FeedbackReq:
@@ -1653,10 +1658,10 @@ definitions:
         type: array
       versionInfo:
         allOf:
-          - $ref: '#/definitions/model.VersionInfo'
+        - $ref: '#/definitions/model.VersionInfo'
         description: 版本信息
     required:
-      - cityId
+    - cityId
     - content
     - type
     type: object
@@ -2905,6 +2910,14 @@ paths:
         in: query
         name: model
         type: string
+      - description: 门店业务 1-租车，2-修车，3-买车，4-驿站
+        in: query
+        name: storeBusiness
+        type: integer
+      - description: 门店状态 1-营业 2-休息
+        in: query
+        name: storeStatus
+        type: integer
       produces:
       - application/json
       responses:
@@ -2912,7 +2925,7 @@ paths:
           description: 请求成功
           schema:
             items:
-              $ref: '#/definitions/model.BranchWithDistanceRes'
+              $ref: '#/definitions/definition.BranchWithDistanceRes'
             type: array
       summary: 列举网点
       tags:
@@ -4068,21 +4081,21 @@ paths:
   /rider/v2/mini/openid:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: GetOpenid
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 支付宝code
-          in: query
-          name: code
-          required: true
-          type: string
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 支付宝code
+        in: query
+        name: code
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4090,7 +4103,7 @@ paths:
             $ref: '#/definitions/model.OpenidRes'
       summary: 获取支付宝小程序openid
       tags:
-        - Rider - 骑手
+      - Rider - 骑手
   /rider/v2/order:
     get:
       consumes:
@@ -4562,6 +4575,10 @@ paths:
       - application/json
       operationId: StoreList
       parameters:
+      - description: 门店业务 1租车 2修车 3买车 4驿站
+        in: query
+        name: businessType
+        type: integer
       - description: 城市ID
         in: query
         name: cityId
@@ -4570,6 +4587,10 @@ paths:
         in: query
         name: distance
         type: number
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
       - description: 纬度
         in: query
         name: lat

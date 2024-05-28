@@ -57,6 +57,23 @@ func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 		q.Where(store.Status(*req.Status))
 	}
 
+	if req.BusinessType != nil {
+		switch *req.BusinessType {
+		case model.StoreBusinessTypeObtain:
+			q.Where(store.EbikeObtain(true))
+		case model.StoreBusinessTypeRepair:
+			q.Where(store.EbikeRepair(true))
+		case model.StoreBusinessTypeSale:
+			q.Where(store.EbikeSale(true))
+		case model.StoreBusinessTypeRest:
+			q.Where(store.Rest(true))
+		}
+	}
+
+	if req.Keyword != nil {
+		q.Where(store.NameContains(*req.Keyword))
+	}
+
 	list, _ := q.All(s.ctx)
 	if len(list) == 0 {
 		return res, nil

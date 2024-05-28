@@ -12667,7 +12667,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "业务类型 1:领取车辆(租车) 2:维修车辆 3:买车",
+                        "description": "业务类型 1:领取车辆(租车) 2:维修车辆 3:买车 4:驿站",
                         "name": "businessType",
                         "in": "query"
                     },
@@ -22155,6 +22155,7 @@ const docTemplate = `{
             "required": [
                 "branchId",
                 "name",
+                "photos",
                 "status"
             ],
             "properties": {
@@ -22178,10 +22179,6 @@ const docTemplate = `{
                     "description": "是否可以买车",
                     "type": "boolean"
                 },
-                "ebikeStage": {
-                    "description": "是否拥有驿站",
-                    "type": "boolean"
-                },
                 "materials": {
                     "description": "门店物资",
                     "type": "array",
@@ -22192,6 +22189,17 @@ const docTemplate = `{
                 "name": {
                     "description": "门店名称",
                     "type": "string"
+                },
+                "photos": {
+                    "description": "门店照片, 门店照片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "rest": {
+                    "description": "是否驿站",
+                    "type": "boolean"
                 },
                 "status": {
                     "description": "门店状态 0维护 1营业 2休息 3隐藏",
@@ -22239,10 +22247,6 @@ const docTemplate = `{
                     "description": "是否可以买车",
                     "type": "boolean"
                 },
-                "ebikeStage": {
-                    "description": "是否有驿站",
-                    "type": "boolean"
-                },
                 "employee": {
                     "description": "店员, 有可能不存在",
                     "allOf": [
@@ -22258,9 +22262,20 @@ const docTemplate = `{
                     "description": "门店名称",
                     "type": "string"
                 },
+                "photos": {
+                    "description": "照片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "qrcode": {
                     "description": "门店二维码",
                     "type": "string"
+                },
+                "rest": {
+                    "description": "是否驿站",
+                    "type": "boolean"
                 },
                 "status": {
                     "description": "状态",
@@ -22291,13 +22306,20 @@ const docTemplate = `{
                     "description": "是否可以买车",
                     "type": "boolean"
                 },
-                "ebikeStage": {
-                    "description": "是否拥有驿站",
-                    "type": "boolean"
-                },
                 "name": {
                     "description": "门店名称",
                     "type": "string"
+                },
+                "photos": {
+                    "description": "门店照片, 门店照片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "rest": {
+                    "description": "是否驿站",
+                    "type": "boolean"
                 },
                 "status": {
                     "description": "门店状态 0维护 1营业 2休息 3隐藏",
