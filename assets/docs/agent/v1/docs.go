@@ -3945,10 +3945,15 @@ const docTemplate = `{
         "model.FeedbackReq": {
             "type": "object",
             "required": [
+                "cityId",
                 "content",
                 "type"
             ],
             "properties": {
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
                 "content": {
                     "description": "反馈内容",
                     "type": "string"
@@ -3963,6 +3968,14 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "versionInfo": {
+                    "description": "版本信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.VersionInfo"
+                        }
+                    ]
                 }
             }
         },
@@ -4565,6 +4578,27 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                }
+            }
+        },
+        "model.VersionInfo": {
+            "type": "object",
+            "properties": {
+                "buildTime": {
+                    "description": "编译时间",
+                    "type": "string"
+                },
+                "ciJobId": {
+                    "description": "CI任务ID",
+                    "type": "string"
+                },
+                "commitId": {
+                    "description": "提交ID",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "string"
                 }
             }
         }

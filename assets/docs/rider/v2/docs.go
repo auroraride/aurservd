@@ -2264,7 +2264,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "微信code",
+                        "description": "支付宝code",
                         "name": "code",
                         "in": "query",
                         "required": true
@@ -3808,7 +3808,7 @@ const docTemplate = `{
                     }
                 },
                 "depositAlipayAuthFreeze": {
-                    "description": "以下字段仅限V2使用",
+                    "description": "是否使用支付宝预授权信用分支付押金 \t// 以下字段仅限V2使用",
                     "type": "boolean"
                 },
                 "depositOrderNo": {
@@ -4171,9 +4171,6 @@ const docTemplate = `{
         },
         "definition.RiderSignupReq": {
             "type": "object",
-            "required": [
-                "signinType"
-            ],
             "properties": {
                 "authCode": {
                     "description": "授权码",
@@ -4181,11 +4178,7 @@ const docTemplate = `{
                 },
                 "authType": {
                     "description": "授权类型 1:微信 2:支付宝",
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
+                    "type": "integer"
                 },
                 "encryptedData": {
                     "description": "支付宝获取手机加密数据",
@@ -4197,11 +4190,7 @@ const docTemplate = `{
                 },
                 "signinType": {
                     "description": "登录类型 1:短信登录 2:授权登录",
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
+                    "type": "integer"
                 },
                 "smsCode": {
                     "description": "验证码, 验证码",
@@ -5674,6 +5663,10 @@ const docTemplate = `{
         "model.FeedbackDetail": {
             "type": "object",
             "properties": {
+                "cityName": {
+                    "description": "城市名称",
+                    "type": "string"
+                },
                 "content": {
                     "description": "反馈内容",
                     "type": "string"
@@ -5716,16 +5709,29 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "versionInfo": {
+                    "description": "版本信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.VersionInfo"
+                        }
+                    ]
                 }
             }
         },
         "model.FeedbackReq": {
             "type": "object",
             "required": [
+                "cityId",
                 "content",
                 "type"
             ],
             "properties": {
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
                 "content": {
                     "description": "反馈内容",
                     "type": "string"
@@ -5740,6 +5746,14 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "versionInfo": {
+                    "description": "版本信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.VersionInfo"
+                        }
+                    ]
                 }
             }
         },
@@ -7048,6 +7062,27 @@ const docTemplate = `{
                 "TaskStatusSuccess",
                 "TaskStatusFail"
             ]
+        },
+        "model.VersionInfo": {
+            "type": "object",
+            "properties": {
+                "buildTime": {
+                    "description": "编译时间",
+                    "type": "string"
+                },
+                "ciJobId": {
+                    "description": "CI任务ID",
+                    "type": "string"
+                },
+                "commitId": {
+                    "description": "提交ID",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "string"
+                }
+            }
         },
         "model.WalletOverview": {
             "type": "object",

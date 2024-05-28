@@ -3828,6 +3828,9 @@ definitions:
     type: object
   model.FeedbackDetail:
     properties:
+      cityName:
+        description: 城市名称
+        type: string
       content:
         description: 反馈内容
         type: string
@@ -3860,6 +3863,10 @@ definitions:
         items:
           type: string
         type: array
+      versionInfo:
+        allOf:
+          - $ref: '#/definitions/model.VersionInfo'
+        description: 版本信息
     type: object
   model.FeedbackListReq:
     properties:
@@ -6195,6 +6202,21 @@ definitions:
     required:
     - id
     - remark
+    type: object
+  model.VersionInfo:
+    properties:
+      buildTime:
+        description: 编译时间
+        type: string
+      ciJobId:
+        description: CI任务ID
+        type: string
+      commitId:
+        description: 提交ID
+        type: string
+      version:
+        description: 版本号
+        type: string
     type: object
   pb.BatteryFaultOverview:
     properties:

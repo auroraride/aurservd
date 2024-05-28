@@ -1105,6 +1105,9 @@ definitions:
     type: object
   model.FeedbackReq:
     properties:
+      cityId:
+        description: 城市ID
+        type: integer
       content:
         description: 反馈内容
         type: string
@@ -1116,7 +1119,12 @@ definitions:
         items:
           type: string
         type: array
+      versionInfo:
+        allOf:
+          - $ref: '#/definitions/model.VersionInfo'
+        description: 版本信息
     required:
+      - cityId
     - content
     - type
     type: object
@@ -1535,6 +1543,21 @@ definitions:
         type: integer
     required:
     - status
+    type: object
+  model.VersionInfo:
+    properties:
+      buildTime:
+        description: 编译时间
+        type: string
+      ciJobId:
+        description: CI任务ID
+        type: string
+      commitId:
+        description: 提交ID
+        type: string
+      version:
+        description: 版本号
+        type: string
     type: object
 info:
   contact: {}

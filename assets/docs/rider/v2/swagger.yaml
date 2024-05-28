@@ -300,7 +300,7 @@ definitions:
           type: integer
         type: array
       depositAlipayAuthFreeze:
-        description: 以下字段仅限V2使用
+        description: "是否使用支付宝预授权信用分支付押金 \t// 以下字段仅限V2使用"
         type: boolean
       depositOrderNo:
         description: 押金订单编号 (如果分开支付的押金此参必填 例如 选择了信用免押,支付为支付宝,则此参数必填)
@@ -561,9 +561,6 @@ definitions:
         type: string
       authType:
         description: 授权类型 1:微信 2:支付宝
-        enum:
-          - 1
-          - 2
         type: integer
       encryptedData:
         description: 支付宝获取手机加密数据
@@ -573,9 +570,6 @@ definitions:
         type: string
       signinType:
         description: 登录类型 1:短信登录 2:授权登录
-        enum:
-          - 1
-          - 2
         type: integer
       smsCode:
         description: 验证码, 验证码
@@ -583,8 +577,6 @@ definitions:
       smsId:
         description: 短信ID, 短信ID
         type: string
-    required:
-      - signinType
     type: object
   definition.StoreDetail:
     properties:
@@ -1603,6 +1595,9 @@ definitions:
     type: object
   model.FeedbackDetail:
     properties:
+      cityName:
+        description: 城市名称
+        type: string
       content:
         description: 反馈内容
         type: string
@@ -1635,9 +1630,16 @@ definitions:
         items:
           type: string
         type: array
+      versionInfo:
+        allOf:
+          - $ref: '#/definitions/model.VersionInfo'
+        description: 版本信息
     type: object
   model.FeedbackReq:
     properties:
+      cityId:
+        description: 城市ID
+        type: integer
       content:
         description: 反馈内容
         type: string
@@ -1649,7 +1651,12 @@ definitions:
         items:
           type: string
         type: array
+      versionInfo:
+        allOf:
+          - $ref: '#/definitions/model.VersionInfo'
+        description: 版本信息
     required:
+      - cityId
     - content
     - type
     type: object
@@ -2544,6 +2551,21 @@ definitions:
     - TaskStatusProcessing
     - TaskStatusSuccess
     - TaskStatusFail
+  model.VersionInfo:
+    properties:
+      buildTime:
+        description: 编译时间
+        type: string
+      ciJobId:
+        description: CI任务ID
+        type: string
+      commitId:
+        description: 提交ID
+        type: string
+      version:
+        description: 版本号
+        type: string
+    type: object
   model.WalletOverview:
     properties:
       balance:
@@ -4054,7 +4076,7 @@ paths:
           name: X-Rider-Token
           required: true
           type: string
-        - description: 微信code
+        - description: 支付宝code
           in: query
           name: code
           required: true
