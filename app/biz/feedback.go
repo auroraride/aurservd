@@ -32,7 +32,7 @@ func (s *feedbackBiz) RiderCreate(r *ent.Rider, req *model.FeedbackReq) error {
 		SetName(r.Name).
 		SetPhone(r.Phone).
 		SetRider(r).
-		SetCityID(req.CityID).
+		SetNillableCityID(req.CityID).
 		SetNillableVersionInfo(req.VersionInfo).
 		Save(s.ctx)
 	if err != nil {
