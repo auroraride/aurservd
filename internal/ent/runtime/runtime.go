@@ -333,6 +333,10 @@ func init() {
 	business.DefaultUpdatedAt = businessDescUpdatedAt.Default.(func() time.Time)
 	// business.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	business.UpdateDefaultUpdatedAt = businessDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// businessDescIsRto is the schema descriptor for is_rto field.
+	businessDescIsRto := businessFields[3].Descriptor()
+	// business.DefaultIsRto holds the default value on creation for the is_rto field.
+	business.DefaultIsRto = businessDescIsRto.Default.(uint8)
 	cabinetMixin := schema.Cabinet{}.Mixin()
 	cabinetMixinHooks2 := cabinetMixin[2].Hooks()
 	cabinetHooks := schema.Cabinet{}.Hooks()
@@ -633,6 +637,10 @@ func init() {
 	ebikeDescColor := ebikeFields[6].Descriptor()
 	// ebike.DefaultColor holds the default value on creation for the color field.
 	ebike.DefaultColor = ebikeDescColor.Default.(string)
+	// ebikeDescIsRto is the schema descriptor for is_rto field.
+	ebikeDescIsRto := ebikeFields[8].Descriptor()
+	// ebike.DefaultIsRto holds the default value on creation for the is_rto field.
+	ebike.DefaultIsRto = ebikeDescIsRto.Default.(uint8)
 	ebikebrandMixin := schema.EbikeBrand{}.Mixin()
 	ebikebrandMixinHooks2 := ebikebrandMixin[2].Hooks()
 	ebikebrand.Hooks[0] = ebikebrandMixinHooks2[0]
@@ -1171,6 +1179,10 @@ func init() {
 	planDescDepositPay := planFields[20].Descriptor()
 	// plan.DefaultDepositPay holds the default value on creation for the deposit_pay field.
 	plan.DefaultDepositPay = planDescDepositPay.Default.(bool)
+	// planDescOverdueFee is the schema descriptor for overdue_fee field.
+	planDescOverdueFee := planFields[22].Descriptor()
+	// plan.DefaultOverdueFee holds the default value on creation for the overdue_fee field.
+	plan.DefaultOverdueFee = planDescOverdueFee.Default.(float64)
 	planintroduceMixin := schema.PlanIntroduce{}.Mixin()
 	planintroduceMixinFields0 := planintroduceMixin[0].Fields()
 	_ = planintroduceMixinFields0
@@ -1839,10 +1851,10 @@ func init() {
 	storeDescEbikeSale := storeFields[10].Descriptor()
 	// store.DefaultEbikeSale holds the default value on creation for the ebike_sale field.
 	store.DefaultEbikeSale = storeDescEbikeSale.Default.(bool)
-	// storeDescEbikeStage is the schema descriptor for ebike_stage field.
-	storeDescEbikeStage := storeFields[11].Descriptor()
-	// store.DefaultEbikeStage holds the default value on creation for the ebike_stage field.
-	store.DefaultEbikeStage = storeDescEbikeStage.Default.(bool)
+	// storeDescRest is the schema descriptor for rest field.
+	storeDescRest := storeFields[11].Descriptor()
+	// store.DefaultRest holds the default value on creation for the rest field.
+	store.DefaultRest = storeDescRest.Default.(bool)
 	subscribeMixin := schema.Subscribe{}.Mixin()
 	subscribeMixinHooks2 := subscribeMixin[2].Hooks()
 	subscribeHooks := schema.Subscribe{}.Hooks()

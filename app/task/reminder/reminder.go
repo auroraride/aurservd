@@ -156,6 +156,7 @@ func Subscribe(sub *ent.Subscribe, fee *float64, formula *string) {
 func (r *reminderTask) run() {
 	if !r.running {
 		zap.L().Info("催费任务未启动")
+		return
 	}
 	for {
 		<-r.ticker.C

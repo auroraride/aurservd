@@ -117,7 +117,8 @@ func (s *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 		EbikeObtain:   item.EbikeObtain,
 		EbikeSale:     item.EbikeSale,
 		BusinessHours: item.BusinessHours,
-		EbikeStage:    item.EbikeStage,
+		Rest:          item.Rest,
+		Photos:        item.Photos,
 	}
 	if item.Edges.Employee != nil {
 		res.Employee = &model.Employee{

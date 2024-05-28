@@ -17166,6 +17166,8 @@ type BusinessMutation struct {
 	_type             *model.BusinessType
 	bin_info          **model.BinInfo
 	stock_sn          *string
+	is_rto            *uint8
+	addis_rto         *int8
 	clearedFields     map[string]struct{}
 	rider             *uint64
 	clearedrider      bool
@@ -18194,6 +18196,62 @@ func (m *BusinessMutation) ResetStockSn() {
 	delete(m.clearedFields, business.FieldStockSn)
 }
 
+// SetIsRto sets the "is_rto" field.
+func (m *BusinessMutation) SetIsRto(u uint8) {
+	m.is_rto = &u
+	m.addis_rto = nil
+}
+
+// IsRto returns the value of the "is_rto" field in the mutation.
+func (m *BusinessMutation) IsRto() (r uint8, exists bool) {
+	v := m.is_rto
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsRto returns the old "is_rto" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldIsRto(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsRto is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsRto requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsRto: %w", err)
+	}
+	return oldValue.IsRto, nil
+}
+
+// AddIsRto adds u to the "is_rto" field.
+func (m *BusinessMutation) AddIsRto(u int8) {
+	if m.addis_rto != nil {
+		*m.addis_rto += u
+	} else {
+		m.addis_rto = &u
+	}
+}
+
+// AddedIsRto returns the value that was added to the "is_rto" field in this mutation.
+func (m *BusinessMutation) AddedIsRto() (r int8, exists bool) {
+	v := m.addis_rto
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetIsRto resets all changes to the "is_rto" field.
+func (m *BusinessMutation) ResetIsRto() {
+	m.is_rto = nil
+	m.addis_rto = nil
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *BusinessMutation) ClearRider() {
 	m.clearedrider = true
@@ -18525,7 +18583,7 @@ func (m *BusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 21)
 	if m.created_at != nil {
 		fields = append(fields, business.FieldCreatedAt)
 	}
@@ -18586,6 +18644,9 @@ func (m *BusinessMutation) Fields() []string {
 	if m.stock_sn != nil {
 		fields = append(fields, business.FieldStockSn)
 	}
+	if m.is_rto != nil {
+		fields = append(fields, business.FieldIsRto)
+	}
 	return fields
 }
 
@@ -18634,6 +18695,8 @@ func (m *BusinessMutation) Field(name string) (ent.Value, bool) {
 		return m.BinInfo()
 	case business.FieldStockSn:
 		return m.StockSn()
+	case business.FieldIsRto:
+		return m.IsRto()
 	}
 	return nil, false
 }
@@ -18683,6 +18746,8 @@ func (m *BusinessMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldBinInfo(ctx)
 	case business.FieldStockSn:
 		return m.OldStockSn(ctx)
+	case business.FieldIsRto:
+		return m.OldIsRto(ctx)
 	}
 	return nil, fmt.Errorf("unknown Business field %s", name)
 }
@@ -18832,6 +18897,13 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStockSn(v)
 		return nil
+	case business.FieldIsRto:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsRto(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Business field %s", name)
 }
@@ -18840,6 +18912,9 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *BusinessMutation) AddedFields() []string {
 	var fields []string
+	if m.addis_rto != nil {
+		fields = append(fields, business.FieldIsRto)
+	}
 	return fields
 }
 
@@ -18848,6 +18923,8 @@ func (m *BusinessMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *BusinessMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case business.FieldIsRto:
+		return m.AddedIsRto()
 	}
 	return nil, false
 }
@@ -18857,6 +18934,13 @@ func (m *BusinessMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *BusinessMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case business.FieldIsRto:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddIsRto(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Business numeric field %s", name)
 }
@@ -19030,6 +19114,9 @@ func (m *BusinessMutation) ResetField(name string) error {
 		return nil
 	case business.FieldStockSn:
 		m.ResetStockSn()
+		return nil
+	case business.FieldIsRto:
+		m.ResetIsRto()
 		return nil
 	}
 	return fmt.Errorf("unknown Business field %s", name)
@@ -33747,6 +33834,8 @@ type EbikeMutation struct {
 	sim               *string
 	color             *string
 	ex_factory        *string
+	is_rto            *uint8
+	addis_rto         *int8
 	clearedFields     map[string]struct{}
 	brand             *uint64
 	clearedbrand      bool
@@ -34642,6 +34731,62 @@ func (m *EbikeMutation) ResetExFactory() {
 	m.ex_factory = nil
 }
 
+// SetIsRto sets the "is_rto" field.
+func (m *EbikeMutation) SetIsRto(u uint8) {
+	m.is_rto = &u
+	m.addis_rto = nil
+}
+
+// IsRto returns the value of the "is_rto" field in the mutation.
+func (m *EbikeMutation) IsRto() (r uint8, exists bool) {
+	v := m.is_rto
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsRto returns the old "is_rto" field's value of the Ebike entity.
+// If the Ebike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EbikeMutation) OldIsRto(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsRto is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsRto requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsRto: %w", err)
+	}
+	return oldValue.IsRto, nil
+}
+
+// AddIsRto adds u to the "is_rto" field.
+func (m *EbikeMutation) AddIsRto(u int8) {
+	if m.addis_rto != nil {
+		*m.addis_rto += u
+	} else {
+		m.addis_rto = &u
+	}
+}
+
+// AddedIsRto returns the value that was added to the "is_rto" field in this mutation.
+func (m *EbikeMutation) AddedIsRto() (r int8, exists bool) {
+	v := m.addis_rto
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetIsRto resets all changes to the "is_rto" field.
+func (m *EbikeMutation) ResetIsRto() {
+	m.is_rto = nil
+	m.addis_rto = nil
+}
+
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (m *EbikeMutation) ClearBrand() {
 	m.clearedbrand = true
@@ -34865,7 +35010,7 @@ func (m *EbikeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EbikeMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, ebike.FieldCreatedAt)
 	}
@@ -34920,6 +35065,9 @@ func (m *EbikeMutation) Fields() []string {
 	if m.ex_factory != nil {
 		fields = append(fields, ebike.FieldExFactory)
 	}
+	if m.is_rto != nil {
+		fields = append(fields, ebike.FieldIsRto)
+	}
 	return fields
 }
 
@@ -34964,6 +35112,8 @@ func (m *EbikeMutation) Field(name string) (ent.Value, bool) {
 		return m.Color()
 	case ebike.FieldExFactory:
 		return m.ExFactory()
+	case ebike.FieldIsRto:
+		return m.IsRto()
 	}
 	return nil, false
 }
@@ -35009,6 +35159,8 @@ func (m *EbikeMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldColor(ctx)
 	case ebike.FieldExFactory:
 		return m.OldExFactory(ctx)
+	case ebike.FieldIsRto:
+		return m.OldIsRto(ctx)
 	}
 	return nil, fmt.Errorf("unknown Ebike field %s", name)
 }
@@ -35144,6 +35296,13 @@ func (m *EbikeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetExFactory(v)
 		return nil
+	case ebike.FieldIsRto:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsRto(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Ebike field %s", name)
 }
@@ -35152,6 +35311,9 @@ func (m *EbikeMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *EbikeMutation) AddedFields() []string {
 	var fields []string
+	if m.addis_rto != nil {
+		fields = append(fields, ebike.FieldIsRto)
+	}
 	return fields
 }
 
@@ -35160,6 +35322,8 @@ func (m *EbikeMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *EbikeMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case ebike.FieldIsRto:
+		return m.AddedIsRto()
 	}
 	return nil, false
 }
@@ -35169,6 +35333,13 @@ func (m *EbikeMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *EbikeMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case ebike.FieldIsRto:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddIsRto(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Ebike numeric field %s", name)
 }
@@ -35312,6 +35483,9 @@ func (m *EbikeMutation) ResetField(name string) error {
 		return nil
 	case ebike.FieldExFactory:
 		m.ResetExFactory()
+		return nil
+	case ebike.FieldIsRto:
+		m.ResetIsRto()
 		return nil
 	}
 	return fmt.Errorf("unknown Ebike field %s", name)
@@ -68724,6 +68898,10 @@ type PlanMutation struct {
 	deposit_alipay_auth_freeze *bool
 	deposit_contract           *bool
 	deposit_pay                *bool
+	rto_days                   *uint
+	addrto_days                *int
+	overdue_fee                *float64
+	addoverdue_fee             *float64
 	clearedFields              map[string]struct{}
 	brand                      *uint64
 	clearedbrand               bool
@@ -70253,6 +70431,132 @@ func (m *PlanMutation) ResetDepositPay() {
 	delete(m.clearedFields, plan.FieldDepositPay)
 }
 
+// SetRtoDays sets the "rto_days" field.
+func (m *PlanMutation) SetRtoDays(u uint) {
+	m.rto_days = &u
+	m.addrto_days = nil
+}
+
+// RtoDays returns the value of the "rto_days" field in the mutation.
+func (m *PlanMutation) RtoDays() (r uint, exists bool) {
+	v := m.rto_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRtoDays returns the old "rto_days" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldRtoDays(ctx context.Context) (v uint, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRtoDays is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRtoDays requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRtoDays: %w", err)
+	}
+	return oldValue.RtoDays, nil
+}
+
+// AddRtoDays adds u to the "rto_days" field.
+func (m *PlanMutation) AddRtoDays(u int) {
+	if m.addrto_days != nil {
+		*m.addrto_days += u
+	} else {
+		m.addrto_days = &u
+	}
+}
+
+// AddedRtoDays returns the value that was added to the "rto_days" field in this mutation.
+func (m *PlanMutation) AddedRtoDays() (r int, exists bool) {
+	v := m.addrto_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearRtoDays clears the value of the "rto_days" field.
+func (m *PlanMutation) ClearRtoDays() {
+	m.rto_days = nil
+	m.addrto_days = nil
+	m.clearedFields[plan.FieldRtoDays] = struct{}{}
+}
+
+// RtoDaysCleared returns if the "rto_days" field was cleared in this mutation.
+func (m *PlanMutation) RtoDaysCleared() bool {
+	_, ok := m.clearedFields[plan.FieldRtoDays]
+	return ok
+}
+
+// ResetRtoDays resets all changes to the "rto_days" field.
+func (m *PlanMutation) ResetRtoDays() {
+	m.rto_days = nil
+	m.addrto_days = nil
+	delete(m.clearedFields, plan.FieldRtoDays)
+}
+
+// SetOverdueFee sets the "overdue_fee" field.
+func (m *PlanMutation) SetOverdueFee(f float64) {
+	m.overdue_fee = &f
+	m.addoverdue_fee = nil
+}
+
+// OverdueFee returns the value of the "overdue_fee" field in the mutation.
+func (m *PlanMutation) OverdueFee() (r float64, exists bool) {
+	v := m.overdue_fee
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOverdueFee returns the old "overdue_fee" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldOverdueFee(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOverdueFee is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOverdueFee requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOverdueFee: %w", err)
+	}
+	return oldValue.OverdueFee, nil
+}
+
+// AddOverdueFee adds f to the "overdue_fee" field.
+func (m *PlanMutation) AddOverdueFee(f float64) {
+	if m.addoverdue_fee != nil {
+		*m.addoverdue_fee += f
+	} else {
+		m.addoverdue_fee = &f
+	}
+}
+
+// AddedOverdueFee returns the value that was added to the "overdue_fee" field in this mutation.
+func (m *PlanMutation) AddedOverdueFee() (r float64, exists bool) {
+	v := m.addoverdue_fee
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetOverdueFee resets all changes to the "overdue_fee" field.
+func (m *PlanMutation) ResetOverdueFee() {
+	m.overdue_fee = nil
+	m.addoverdue_fee = nil
+}
+
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (m *PlanMutation) ClearBrand() {
 	m.clearedbrand = true
@@ -70530,7 +70834,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 29)
+	fields := make([]string, 0, 31)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -70618,6 +70922,12 @@ func (m *PlanMutation) Fields() []string {
 	if m.deposit_pay != nil {
 		fields = append(fields, plan.FieldDepositPay)
 	}
+	if m.rto_days != nil {
+		fields = append(fields, plan.FieldRtoDays)
+	}
+	if m.overdue_fee != nil {
+		fields = append(fields, plan.FieldOverdueFee)
+	}
 	return fields
 }
 
@@ -70684,6 +70994,10 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.DepositContract()
 	case plan.FieldDepositPay:
 		return m.DepositPay()
+	case plan.FieldRtoDays:
+		return m.RtoDays()
+	case plan.FieldOverdueFee:
+		return m.OverdueFee()
 	}
 	return nil, false
 }
@@ -70751,6 +71065,10 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldDepositContract(ctx)
 	case plan.FieldDepositPay:
 		return m.OldDepositPay(ctx)
+	case plan.FieldRtoDays:
+		return m.OldRtoDays(ctx)
+	case plan.FieldOverdueFee:
+		return m.OldOverdueFee(ctx)
 	}
 	return nil, fmt.Errorf("unknown Plan field %s", name)
 }
@@ -70963,6 +71281,20 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDepositPay(v)
 		return nil
+	case plan.FieldRtoDays:
+		v, ok := value.(uint)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRtoDays(v)
+		return nil
+	case plan.FieldOverdueFee:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOverdueFee(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
 }
@@ -70992,6 +71324,12 @@ func (m *PlanMutation) AddedFields() []string {
 	if m.adddeposit_amount != nil {
 		fields = append(fields, plan.FieldDepositAmount)
 	}
+	if m.addrto_days != nil {
+		fields = append(fields, plan.FieldRtoDays)
+	}
+	if m.addoverdue_fee != nil {
+		fields = append(fields, plan.FieldOverdueFee)
+	}
 	return fields
 }
 
@@ -71014,6 +71352,10 @@ func (m *PlanMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedDiscountNewly()
 	case plan.FieldDepositAmount:
 		return m.AddedDepositAmount()
+	case plan.FieldRtoDays:
+		return m.AddedRtoDays()
+	case plan.FieldOverdueFee:
+		return m.AddedOverdueFee()
 	}
 	return nil, false
 }
@@ -71072,6 +71414,20 @@ func (m *PlanMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddDepositAmount(v)
 		return nil
+	case plan.FieldRtoDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRtoDays(v)
+		return nil
+	case plan.FieldOverdueFee:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOverdueFee(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Plan numeric field %s", name)
 }
@@ -71127,6 +71483,9 @@ func (m *PlanMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(plan.FieldDepositPay) {
 		fields = append(fields, plan.FieldDepositPay)
+	}
+	if m.FieldCleared(plan.FieldRtoDays) {
+		fields = append(fields, plan.FieldRtoDays)
 	}
 	return fields
 }
@@ -71189,6 +71548,9 @@ func (m *PlanMutation) ClearField(name string) error {
 		return nil
 	case plan.FieldDepositPay:
 		m.ClearDepositPay()
+		return nil
+	case plan.FieldRtoDays:
+		m.ClearRtoDays()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan nullable field %s", name)
@@ -71284,6 +71646,12 @@ func (m *PlanMutation) ResetField(name string) error {
 		return nil
 	case plan.FieldDepositPay:
 		m.ResetDepositPay()
+		return nil
+	case plan.FieldRtoDays:
+		m.ResetRtoDays()
+		return nil
+	case plan.FieldOverdueFee:
+		m.ResetOverdueFee()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
@@ -104697,8 +105065,10 @@ type StoreMutation struct {
 	ebike_obtain       *bool
 	ebike_repair       *bool
 	ebike_sale         *bool
-	ebike_stage        *bool
+	rest               *bool
 	business_hours     *string
+	photos             *[]string
+	appendphotos       []string
 	clearedFields      map[string]struct{}
 	city               *uint64
 	clearedcity        bool
@@ -105591,40 +105961,40 @@ func (m *StoreMutation) ResetEbikeSale() {
 	m.ebike_sale = nil
 }
 
-// SetEbikeStage sets the "ebike_stage" field.
-func (m *StoreMutation) SetEbikeStage(b bool) {
-	m.ebike_stage = &b
+// SetRest sets the "rest" field.
+func (m *StoreMutation) SetRest(b bool) {
+	m.rest = &b
 }
 
-// EbikeStage returns the value of the "ebike_stage" field in the mutation.
-func (m *StoreMutation) EbikeStage() (r bool, exists bool) {
-	v := m.ebike_stage
+// Rest returns the value of the "rest" field in the mutation.
+func (m *StoreMutation) Rest() (r bool, exists bool) {
+	v := m.rest
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldEbikeStage returns the old "ebike_stage" field's value of the Store entity.
+// OldRest returns the old "rest" field's value of the Store entity.
 // If the Store object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StoreMutation) OldEbikeStage(ctx context.Context) (v bool, err error) {
+func (m *StoreMutation) OldRest(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldEbikeStage is only allowed on UpdateOne operations")
+		return v, errors.New("OldRest is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldEbikeStage requires an ID field in the mutation")
+		return v, errors.New("OldRest requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldEbikeStage: %w", err)
+		return v, fmt.Errorf("querying old value for OldRest: %w", err)
 	}
-	return oldValue.EbikeStage, nil
+	return oldValue.Rest, nil
 }
 
-// ResetEbikeStage resets all changes to the "ebike_stage" field.
-func (m *StoreMutation) ResetEbikeStage() {
-	m.ebike_stage = nil
+// ResetRest resets all changes to the "rest" field.
+func (m *StoreMutation) ResetRest() {
+	m.rest = nil
 }
 
 // SetBusinessHours sets the "business_hours" field.
@@ -105674,6 +106044,71 @@ func (m *StoreMutation) BusinessHoursCleared() bool {
 func (m *StoreMutation) ResetBusinessHours() {
 	m.business_hours = nil
 	delete(m.clearedFields, store.FieldBusinessHours)
+}
+
+// SetPhotos sets the "photos" field.
+func (m *StoreMutation) SetPhotos(s []string) {
+	m.photos = &s
+	m.appendphotos = nil
+}
+
+// Photos returns the value of the "photos" field in the mutation.
+func (m *StoreMutation) Photos() (r []string, exists bool) {
+	v := m.photos
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPhotos returns the old "photos" field's value of the Store entity.
+// If the Store object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StoreMutation) OldPhotos(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPhotos is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPhotos requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPhotos: %w", err)
+	}
+	return oldValue.Photos, nil
+}
+
+// AppendPhotos adds s to the "photos" field.
+func (m *StoreMutation) AppendPhotos(s []string) {
+	m.appendphotos = append(m.appendphotos, s...)
+}
+
+// AppendedPhotos returns the list of values that were appended to the "photos" field in this mutation.
+func (m *StoreMutation) AppendedPhotos() ([]string, bool) {
+	if len(m.appendphotos) == 0 {
+		return nil, false
+	}
+	return m.appendphotos, true
+}
+
+// ClearPhotos clears the value of the "photos" field.
+func (m *StoreMutation) ClearPhotos() {
+	m.photos = nil
+	m.appendphotos = nil
+	m.clearedFields[store.FieldPhotos] = struct{}{}
+}
+
+// PhotosCleared returns if the "photos" field was cleared in this mutation.
+func (m *StoreMutation) PhotosCleared() bool {
+	_, ok := m.clearedFields[store.FieldPhotos]
+	return ok
+}
+
+// ResetPhotos resets all changes to the "photos" field.
+func (m *StoreMutation) ResetPhotos() {
+	m.photos = nil
+	m.appendphotos = nil
+	delete(m.clearedFields, store.FieldPhotos)
 }
 
 // ClearCity clears the "city" edge to the City entity.
@@ -105953,7 +106388,7 @@ func (m *StoreMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StoreMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 21)
 	if m.created_at != nil {
 		fields = append(fields, store.FieldCreatedAt)
 	}
@@ -106008,11 +106443,14 @@ func (m *StoreMutation) Fields() []string {
 	if m.ebike_sale != nil {
 		fields = append(fields, store.FieldEbikeSale)
 	}
-	if m.ebike_stage != nil {
-		fields = append(fields, store.FieldEbikeStage)
+	if m.rest != nil {
+		fields = append(fields, store.FieldRest)
 	}
 	if m.business_hours != nil {
 		fields = append(fields, store.FieldBusinessHours)
+	}
+	if m.photos != nil {
+		fields = append(fields, store.FieldPhotos)
 	}
 	return fields
 }
@@ -106058,10 +106496,12 @@ func (m *StoreMutation) Field(name string) (ent.Value, bool) {
 		return m.EbikeRepair()
 	case store.FieldEbikeSale:
 		return m.EbikeSale()
-	case store.FieldEbikeStage:
-		return m.EbikeStage()
+	case store.FieldRest:
+		return m.Rest()
 	case store.FieldBusinessHours:
 		return m.BusinessHours()
+	case store.FieldPhotos:
+		return m.Photos()
 	}
 	return nil, false
 }
@@ -106107,10 +106547,12 @@ func (m *StoreMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldEbikeRepair(ctx)
 	case store.FieldEbikeSale:
 		return m.OldEbikeSale(ctx)
-	case store.FieldEbikeStage:
-		return m.OldEbikeStage(ctx)
+	case store.FieldRest:
+		return m.OldRest(ctx)
 	case store.FieldBusinessHours:
 		return m.OldBusinessHours(ctx)
+	case store.FieldPhotos:
+		return m.OldPhotos(ctx)
 	}
 	return nil, fmt.Errorf("unknown Store field %s", name)
 }
@@ -106246,12 +106688,12 @@ func (m *StoreMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEbikeSale(v)
 		return nil
-	case store.FieldEbikeStage:
+	case store.FieldRest:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetEbikeStage(v)
+		m.SetRest(v)
 		return nil
 	case store.FieldBusinessHours:
 		v, ok := value.(string)
@@ -106259,6 +106701,13 @@ func (m *StoreMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBusinessHours(v)
+		return nil
+	case store.FieldPhotos:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPhotos(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Store field %s", name)
@@ -106347,6 +106796,9 @@ func (m *StoreMutation) ClearedFields() []string {
 	if m.FieldCleared(store.FieldBusinessHours) {
 		fields = append(fields, store.FieldBusinessHours)
 	}
+	if m.FieldCleared(store.FieldPhotos) {
+		fields = append(fields, store.FieldPhotos)
+	}
 	return fields
 }
 
@@ -106378,6 +106830,9 @@ func (m *StoreMutation) ClearField(name string) error {
 		return nil
 	case store.FieldBusinessHours:
 		m.ClearBusinessHours()
+		return nil
+	case store.FieldPhotos:
+		m.ClearPhotos()
 		return nil
 	}
 	return fmt.Errorf("unknown Store nullable field %s", name)
@@ -106441,11 +106896,14 @@ func (m *StoreMutation) ResetField(name string) error {
 	case store.FieldEbikeSale:
 		m.ResetEbikeSale()
 		return nil
-	case store.FieldEbikeStage:
-		m.ResetEbikeStage()
+	case store.FieldRest:
+		m.ResetRest()
 		return nil
 	case store.FieldBusinessHours:
 		m.ResetBusinessHours()
+		return nil
+	case store.FieldPhotos:
+		m.ResetPhotos()
 		return nil
 	}
 	return fmt.Errorf("unknown Store field %s", name)

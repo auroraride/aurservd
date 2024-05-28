@@ -141,6 +141,11 @@ func StockSn(v string) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldStockSn, v))
 }
 
+// IsRto applies equality check predicate on the "is_rto" field. It's identical to IsRtoEQ.
+func IsRto(v uint8) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldIsRto, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldCreatedAt, v))
@@ -789,6 +794,46 @@ func StockSnEqualFold(v string) predicate.Business {
 // StockSnContainsFold applies the ContainsFold predicate on the "stock_sn" field.
 func StockSnContainsFold(v string) predicate.Business {
 	return predicate.Business(sql.FieldContainsFold(FieldStockSn, v))
+}
+
+// IsRtoEQ applies the EQ predicate on the "is_rto" field.
+func IsRtoEQ(v uint8) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldIsRto, v))
+}
+
+// IsRtoNEQ applies the NEQ predicate on the "is_rto" field.
+func IsRtoNEQ(v uint8) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldIsRto, v))
+}
+
+// IsRtoIn applies the In predicate on the "is_rto" field.
+func IsRtoIn(vs ...uint8) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldIsRto, vs...))
+}
+
+// IsRtoNotIn applies the NotIn predicate on the "is_rto" field.
+func IsRtoNotIn(vs ...uint8) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldIsRto, vs...))
+}
+
+// IsRtoGT applies the GT predicate on the "is_rto" field.
+func IsRtoGT(v uint8) predicate.Business {
+	return predicate.Business(sql.FieldGT(FieldIsRto, v))
+}
+
+// IsRtoGTE applies the GTE predicate on the "is_rto" field.
+func IsRtoGTE(v uint8) predicate.Business {
+	return predicate.Business(sql.FieldGTE(FieldIsRto, v))
+}
+
+// IsRtoLT applies the LT predicate on the "is_rto" field.
+func IsRtoLT(v uint8) predicate.Business {
+	return predicate.Business(sql.FieldLT(FieldIsRto, v))
+}
+
+// IsRtoLTE applies the LTE predicate on the "is_rto" field.
+func IsRtoLTE(v uint8) predicate.Business {
+	return predicate.Business(sql.FieldLTE(FieldIsRto, v))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.

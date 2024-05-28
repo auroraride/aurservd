@@ -209,16 +209,16 @@ func (sc *StoreCreate) SetNillableEbikeSale(b *bool) *StoreCreate {
 	return sc
 }
 
-// SetEbikeStage sets the "ebike_stage" field.
-func (sc *StoreCreate) SetEbikeStage(b bool) *StoreCreate {
-	sc.mutation.SetEbikeStage(b)
+// SetRest sets the "rest" field.
+func (sc *StoreCreate) SetRest(b bool) *StoreCreate {
+	sc.mutation.SetRest(b)
 	return sc
 }
 
-// SetNillableEbikeStage sets the "ebike_stage" field if the given value is not nil.
-func (sc *StoreCreate) SetNillableEbikeStage(b *bool) *StoreCreate {
+// SetNillableRest sets the "rest" field if the given value is not nil.
+func (sc *StoreCreate) SetNillableRest(b *bool) *StoreCreate {
 	if b != nil {
-		sc.SetEbikeStage(*b)
+		sc.SetRest(*b)
 	}
 	return sc
 }
@@ -234,6 +234,12 @@ func (sc *StoreCreate) SetNillableBusinessHours(s *string) *StoreCreate {
 	if s != nil {
 		sc.SetBusinessHours(*s)
 	}
+	return sc
+}
+
+// SetPhotos sets the "photos" field.
+func (sc *StoreCreate) SetPhotos(s []string) *StoreCreate {
+	sc.mutation.SetPhotos(s)
 	return sc
 }
 
@@ -364,9 +370,9 @@ func (sc *StoreCreate) defaults() error {
 		v := store.DefaultEbikeSale
 		sc.mutation.SetEbikeSale(v)
 	}
-	if _, ok := sc.mutation.EbikeStage(); !ok {
-		v := store.DefaultEbikeStage
-		sc.mutation.SetEbikeStage(v)
+	if _, ok := sc.mutation.Rest(); !ok {
+		v := store.DefaultRest
+		sc.mutation.SetRest(v)
 	}
 	return nil
 }
@@ -412,8 +418,8 @@ func (sc *StoreCreate) check() error {
 	if _, ok := sc.mutation.EbikeSale(); !ok {
 		return &ValidationError{Name: "ebike_sale", err: errors.New(`ent: missing required field "Store.ebike_sale"`)}
 	}
-	if _, ok := sc.mutation.EbikeStage(); !ok {
-		return &ValidationError{Name: "ebike_stage", err: errors.New(`ent: missing required field "Store.ebike_stage"`)}
+	if _, ok := sc.mutation.Rest(); !ok {
+		return &ValidationError{Name: "rest", err: errors.New(`ent: missing required field "Store.rest"`)}
 	}
 	if _, ok := sc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Store.city"`)}
@@ -508,13 +514,17 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 		_spec.SetField(store.FieldEbikeSale, field.TypeBool, value)
 		_node.EbikeSale = value
 	}
-	if value, ok := sc.mutation.EbikeStage(); ok {
-		_spec.SetField(store.FieldEbikeStage, field.TypeBool, value)
-		_node.EbikeStage = value
+	if value, ok := sc.mutation.Rest(); ok {
+		_spec.SetField(store.FieldRest, field.TypeBool, value)
+		_node.Rest = value
 	}
 	if value, ok := sc.mutation.BusinessHours(); ok {
 		_spec.SetField(store.FieldBusinessHours, field.TypeString, value)
 		_node.BusinessHours = value
+	}
+	if value, ok := sc.mutation.Photos(); ok {
+		_spec.SetField(store.FieldPhotos, field.TypeJSON, value)
+		_node.Photos = value
 	}
 	if nodes := sc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -889,15 +899,15 @@ func (u *StoreUpsert) UpdateEbikeSale() *StoreUpsert {
 	return u
 }
 
-// SetEbikeStage sets the "ebike_stage" field.
-func (u *StoreUpsert) SetEbikeStage(v bool) *StoreUpsert {
-	u.Set(store.FieldEbikeStage, v)
+// SetRest sets the "rest" field.
+func (u *StoreUpsert) SetRest(v bool) *StoreUpsert {
+	u.Set(store.FieldRest, v)
 	return u
 }
 
-// UpdateEbikeStage sets the "ebike_stage" field to the value that was provided on create.
-func (u *StoreUpsert) UpdateEbikeStage() *StoreUpsert {
-	u.SetExcluded(store.FieldEbikeStage)
+// UpdateRest sets the "rest" field to the value that was provided on create.
+func (u *StoreUpsert) UpdateRest() *StoreUpsert {
+	u.SetExcluded(store.FieldRest)
 	return u
 }
 
@@ -916,6 +926,24 @@ func (u *StoreUpsert) UpdateBusinessHours() *StoreUpsert {
 // ClearBusinessHours clears the value of the "business_hours" field.
 func (u *StoreUpsert) ClearBusinessHours() *StoreUpsert {
 	u.SetNull(store.FieldBusinessHours)
+	return u
+}
+
+// SetPhotos sets the "photos" field.
+func (u *StoreUpsert) SetPhotos(v []string) *StoreUpsert {
+	u.Set(store.FieldPhotos, v)
+	return u
+}
+
+// UpdatePhotos sets the "photos" field to the value that was provided on create.
+func (u *StoreUpsert) UpdatePhotos() *StoreUpsert {
+	u.SetExcluded(store.FieldPhotos)
+	return u
+}
+
+// ClearPhotos clears the value of the "photos" field.
+func (u *StoreUpsert) ClearPhotos() *StoreUpsert {
+	u.SetNull(store.FieldPhotos)
 	return u
 }
 
@@ -1229,17 +1257,17 @@ func (u *StoreUpsertOne) UpdateEbikeSale() *StoreUpsertOne {
 	})
 }
 
-// SetEbikeStage sets the "ebike_stage" field.
-func (u *StoreUpsertOne) SetEbikeStage(v bool) *StoreUpsertOne {
+// SetRest sets the "rest" field.
+func (u *StoreUpsertOne) SetRest(v bool) *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
-		s.SetEbikeStage(v)
+		s.SetRest(v)
 	})
 }
 
-// UpdateEbikeStage sets the "ebike_stage" field to the value that was provided on create.
-func (u *StoreUpsertOne) UpdateEbikeStage() *StoreUpsertOne {
+// UpdateRest sets the "rest" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdateRest() *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
-		s.UpdateEbikeStage()
+		s.UpdateRest()
 	})
 }
 
@@ -1261,6 +1289,27 @@ func (u *StoreUpsertOne) UpdateBusinessHours() *StoreUpsertOne {
 func (u *StoreUpsertOne) ClearBusinessHours() *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
 		s.ClearBusinessHours()
+	})
+}
+
+// SetPhotos sets the "photos" field.
+func (u *StoreUpsertOne) SetPhotos(v []string) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetPhotos(v)
+	})
+}
+
+// UpdatePhotos sets the "photos" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdatePhotos() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdatePhotos()
+	})
+}
+
+// ClearPhotos clears the value of the "photos" field.
+func (u *StoreUpsertOne) ClearPhotos() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearPhotos()
 	})
 }
 
@@ -1740,17 +1789,17 @@ func (u *StoreUpsertBulk) UpdateEbikeSale() *StoreUpsertBulk {
 	})
 }
 
-// SetEbikeStage sets the "ebike_stage" field.
-func (u *StoreUpsertBulk) SetEbikeStage(v bool) *StoreUpsertBulk {
+// SetRest sets the "rest" field.
+func (u *StoreUpsertBulk) SetRest(v bool) *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
-		s.SetEbikeStage(v)
+		s.SetRest(v)
 	})
 }
 
-// UpdateEbikeStage sets the "ebike_stage" field to the value that was provided on create.
-func (u *StoreUpsertBulk) UpdateEbikeStage() *StoreUpsertBulk {
+// UpdateRest sets the "rest" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdateRest() *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
-		s.UpdateEbikeStage()
+		s.UpdateRest()
 	})
 }
 
@@ -1772,6 +1821,27 @@ func (u *StoreUpsertBulk) UpdateBusinessHours() *StoreUpsertBulk {
 func (u *StoreUpsertBulk) ClearBusinessHours() *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
 		s.ClearBusinessHours()
+	})
+}
+
+// SetPhotos sets the "photos" field.
+func (u *StoreUpsertBulk) SetPhotos(v []string) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetPhotos(v)
+	})
+}
+
+// UpdatePhotos sets the "photos" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdatePhotos() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdatePhotos()
+	})
+}
+
+// ClearPhotos clears the value of the "photos" field.
+func (u *StoreUpsertBulk) ClearPhotos() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearPhotos()
 	})
 }
 

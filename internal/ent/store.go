@@ -59,9 +59,11 @@ type Store struct {
 	// 是否可以购买车辆
 	EbikeSale bool `json:"ebike_sale,omitempty"`
 	// 是否拥有驿站
-	EbikeStage bool `json:"ebike_stage,omitempty"`
+	Rest bool `json:"rest,omitempty"`
 	// 营业时间
 	BusinessHours string `json:"business_hours,omitempty"`
+	// 门店照片
+	Photos []string `json:"photos,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StoreQuery when eager-loading is set.
 	Edges        StoreEdges `json:"edges"`
@@ -152,9 +154,9 @@ func (*Store) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case store.FieldCreator, store.FieldLastModifier:
+		case store.FieldCreator, store.FieldLastModifier, store.FieldPhotos:
 			values[i] = new([]byte)
-		case store.FieldEbikeObtain, store.FieldEbikeRepair, store.FieldEbikeSale, store.FieldEbikeStage:
+		case store.FieldEbikeObtain, store.FieldEbikeRepair, store.FieldEbikeSale, store.FieldRest:
 			values[i] = new(sql.NullBool)
 		case store.FieldLng, store.FieldLat:
 			values[i] = new(sql.NullFloat64)
@@ -299,17 +301,25 @@ func (s *Store) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.EbikeSale = value.Bool
 			}
-		case store.FieldEbikeStage:
+		case store.FieldRest:
 			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field ebike_stage", values[i])
+				return fmt.Errorf("unexpected type %T for field rest", values[i])
 			} else if value.Valid {
-				s.EbikeStage = value.Bool
+				s.Rest = value.Bool
 			}
 		case store.FieldBusinessHours:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field business_hours", values[i])
 			} else if value.Valid {
 				s.BusinessHours = value.String
+			}
+		case store.FieldPhotos:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field photos", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &s.Photos); err != nil {
+					return fmt.Errorf("unmarshal field photos: %w", err)
+				}
 			}
 		default:
 			s.selectValues.Set(columns[i], values[i])
@@ -435,11 +445,14 @@ func (s *Store) String() string {
 	builder.WriteString("ebike_sale=")
 	builder.WriteString(fmt.Sprintf("%v", s.EbikeSale))
 	builder.WriteString(", ")
-	builder.WriteString("ebike_stage=")
-	builder.WriteString(fmt.Sprintf("%v", s.EbikeStage))
+	builder.WriteString("rest=")
+	builder.WriteString(fmt.Sprintf("%v", s.Rest))
 	builder.WriteString(", ")
 	builder.WriteString("business_hours=")
 	builder.WriteString(s.BusinessHours)
+	builder.WriteString(", ")
+	builder.WriteString("photos=")
+	builder.WriteString(fmt.Sprintf("%v", s.Photos))
 	builder.WriteByte(')')
 	return builder.String()
 }

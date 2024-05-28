@@ -52,6 +52,8 @@ const (
 	FieldColor = "color"
 	// FieldExFactory holds the string denoting the ex_factory field in the database.
 	FieldExFactory = "ex_factory"
+	// FieldIsRto holds the string denoting the is_rto field in the database.
+	FieldIsRto = "is_rto"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
@@ -131,6 +133,7 @@ var Columns = []string{
 	FieldSim,
 	FieldColor,
 	FieldExFactory,
+	FieldIsRto,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -162,6 +165,8 @@ var (
 	DefaultEnable bool
 	// DefaultColor holds the default value on creation for the "color" field.
 	DefaultColor string
+	// DefaultIsRto holds the default value on creation for the "is_rto" field.
+	DefaultIsRto uint8
 )
 
 // OrderOption defines the ordering options for the Ebike queries.
@@ -250,6 +255,11 @@ func ByColor(opts ...sql.OrderTermOption) OrderOption {
 // ByExFactory orders the results by the ex_factory field.
 func ByExFactory(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldExFactory, opts...).ToFunc()
+}
+
+// ByIsRto orders the results by the is_rto field.
+func ByIsRto(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsRto, opts...).ToFunc()
 }
 
 // ByBrandField orders the results by brand field.

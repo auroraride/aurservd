@@ -26,7 +26,8 @@ type StoreDetail struct {
 	Lat           float64         `json:"lat"`                // 纬度
 	Distance      float64         `json:"distance"`           // 距离(米)
 	Address       string          `json:"address"`            // 地址
-	EbikeStage    bool            `json:"ebikeStage"`         // 是否拥有驿站
+	Rest          bool            `json:"rest"`               // 是否拥有驿站
+	Photos        []string        `json:"photos"`             // 门店照片
 }
 
 // StoreDetailReq 门店详情请求

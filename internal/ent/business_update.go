@@ -347,6 +347,27 @@ func (bu *BusinessUpdate) ClearStockSn() *BusinessUpdate {
 	return bu
 }
 
+// SetIsRto sets the "is_rto" field.
+func (bu *BusinessUpdate) SetIsRto(u uint8) *BusinessUpdate {
+	bu.mutation.ResetIsRto()
+	bu.mutation.SetIsRto(u)
+	return bu
+}
+
+// SetNillableIsRto sets the "is_rto" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableIsRto(u *uint8) *BusinessUpdate {
+	if u != nil {
+		bu.SetIsRto(*u)
+	}
+	return bu
+}
+
+// AddIsRto adds u to the "is_rto" field.
+func (bu *BusinessUpdate) AddIsRto(u int8) *BusinessUpdate {
+	bu.mutation.AddIsRto(u)
+	return bu
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (bu *BusinessUpdate) SetRider(r *Rider) *BusinessUpdate {
 	return bu.SetRiderID(r.ID)
@@ -585,6 +606,12 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if bu.mutation.StockSnCleared() {
 		_spec.ClearField(business.FieldStockSn, field.TypeString)
+	}
+	if value, ok := bu.mutation.IsRto(); ok {
+		_spec.SetField(business.FieldIsRto, field.TypeUint8, value)
+	}
+	if value, ok := bu.mutation.AddedIsRto(); ok {
+		_spec.AddField(business.FieldIsRto, field.TypeUint8, value)
 	}
 	if bu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1233,6 +1260,27 @@ func (buo *BusinessUpdateOne) ClearStockSn() *BusinessUpdateOne {
 	return buo
 }
 
+// SetIsRto sets the "is_rto" field.
+func (buo *BusinessUpdateOne) SetIsRto(u uint8) *BusinessUpdateOne {
+	buo.mutation.ResetIsRto()
+	buo.mutation.SetIsRto(u)
+	return buo
+}
+
+// SetNillableIsRto sets the "is_rto" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableIsRto(u *uint8) *BusinessUpdateOne {
+	if u != nil {
+		buo.SetIsRto(*u)
+	}
+	return buo
+}
+
+// AddIsRto adds u to the "is_rto" field.
+func (buo *BusinessUpdateOne) AddIsRto(u int8) *BusinessUpdateOne {
+	buo.mutation.AddIsRto(u)
+	return buo
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (buo *BusinessUpdateOne) SetRider(r *Rider) *BusinessUpdateOne {
 	return buo.SetRiderID(r.ID)
@@ -1501,6 +1549,12 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 	}
 	if buo.mutation.StockSnCleared() {
 		_spec.ClearField(business.FieldStockSn, field.TypeString)
+	}
+	if value, ok := buo.mutation.IsRto(); ok {
+		_spec.SetField(business.FieldIsRto, field.TypeUint8, value)
+	}
+	if value, ok := buo.mutation.AddedIsRto(); ok {
+		_spec.AddField(business.FieldIsRto, field.TypeUint8, value)
 	}
 	if buo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -438,6 +438,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			business.FieldType:         {Type: field.TypeOther, Column: business.FieldType},
 			business.FieldBinInfo:      {Type: field.TypeJSON, Column: business.FieldBinInfo},
 			business.FieldStockSn:      {Type: field.TypeString, Column: business.FieldStockSn},
+			business.FieldIsRto:        {Type: field.TypeUint8, Column: business.FieldIsRto},
 		},
 	}
 	graph.Nodes[12] = &sqlgraph.Node{
@@ -728,6 +729,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			ebike.FieldSim:          {Type: field.TypeString, Column: ebike.FieldSim},
 			ebike.FieldColor:        {Type: field.TypeString, Column: ebike.FieldColor},
 			ebike.FieldExFactory:    {Type: field.TypeString, Column: ebike.FieldExFactory},
+			ebike.FieldIsRto:        {Type: field.TypeUint8, Column: ebike.FieldIsRto},
 		},
 	}
 	graph.Nodes[22] = &sqlgraph.Node{
@@ -1374,6 +1376,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldDepositAlipayAuthFreeze: {Type: field.TypeBool, Column: plan.FieldDepositAlipayAuthFreeze},
 			plan.FieldDepositContract:         {Type: field.TypeBool, Column: plan.FieldDepositContract},
 			plan.FieldDepositPay:              {Type: field.TypeBool, Column: plan.FieldDepositPay},
+			plan.FieldRtoDays:                 {Type: field.TypeUint, Column: plan.FieldRtoDays},
+			plan.FieldOverdueFee:              {Type: field.TypeFloat64, Column: plan.FieldOverdueFee},
 		},
 	}
 	graph.Nodes[45] = &sqlgraph.Node{
@@ -2060,8 +2064,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldEbikeObtain:   {Type: field.TypeBool, Column: store.FieldEbikeObtain},
 			store.FieldEbikeRepair:   {Type: field.TypeBool, Column: store.FieldEbikeRepair},
 			store.FieldEbikeSale:     {Type: field.TypeBool, Column: store.FieldEbikeSale},
-			store.FieldEbikeStage:    {Type: field.TypeBool, Column: store.FieldEbikeStage},
+			store.FieldRest:          {Type: field.TypeBool, Column: store.FieldRest},
 			store.FieldBusinessHours: {Type: field.TypeString, Column: store.FieldBusinessHours},
+			store.FieldPhotos:        {Type: field.TypeJSON, Column: store.FieldPhotos},
 		},
 	}
 	graph.Nodes[73] = &sqlgraph.Node{
@@ -7966,6 +7971,11 @@ func (f *BusinessFilter) WhereStockSn(p entql.StringP) {
 	f.Where(p.Field(business.FieldStockSn))
 }
 
+// WhereIsRto applies the entql uint8 predicate on the is_rto field.
+func (f *BusinessFilter) WhereIsRto(p entql.Uint8P) {
+	f.Where(p.Field(business.FieldIsRto))
+}
+
 // WhereHasRider applies a predicate to check if query has an edge rider.
 func (f *BusinessFilter) WhereHasRider() {
 	f.Where(entql.HasEdge("rider"))
@@ -9808,6 +9818,11 @@ func (f *EbikeFilter) WhereColor(p entql.StringP) {
 // WhereExFactory applies the entql string predicate on the ex_factory field.
 func (f *EbikeFilter) WhereExFactory(p entql.StringP) {
 	f.Where(p.Field(ebike.FieldExFactory))
+}
+
+// WhereIsRto applies the entql uint8 predicate on the is_rto field.
+func (f *EbikeFilter) WhereIsRto(p entql.Uint8P) {
+	f.Where(p.Field(ebike.FieldIsRto))
 }
 
 // WhereHasBrand applies a predicate to check if query has an edge brand.
@@ -13809,6 +13824,16 @@ func (f *PlanFilter) WhereDepositPay(p entql.BoolP) {
 	f.Where(p.Field(plan.FieldDepositPay))
 }
 
+// WhereRtoDays applies the entql uint predicate on the rto_days field.
+func (f *PlanFilter) WhereRtoDays(p entql.UintP) {
+	f.Where(p.Field(plan.FieldRtoDays))
+}
+
+// WhereOverdueFee applies the entql float64 predicate on the overdue_fee field.
+func (f *PlanFilter) WhereOverdueFee(p entql.Float64P) {
+	f.Where(p.Field(plan.FieldOverdueFee))
+}
+
 // WhereHasBrand applies a predicate to check if query has an edge brand.
 func (f *PlanFilter) WhereHasBrand() {
 	f.Where(entql.HasEdge("brand"))
@@ -17701,14 +17726,19 @@ func (f *StoreFilter) WhereEbikeSale(p entql.BoolP) {
 	f.Where(p.Field(store.FieldEbikeSale))
 }
 
-// WhereEbikeStage applies the entql bool predicate on the ebike_stage field.
-func (f *StoreFilter) WhereEbikeStage(p entql.BoolP) {
-	f.Where(p.Field(store.FieldEbikeStage))
+// WhereRest applies the entql bool predicate on the rest field.
+func (f *StoreFilter) WhereRest(p entql.BoolP) {
+	f.Where(p.Field(store.FieldRest))
 }
 
 // WhereBusinessHours applies the entql string predicate on the business_hours field.
 func (f *StoreFilter) WhereBusinessHours(p entql.StringP) {
 	f.Where(p.Field(store.FieldBusinessHours))
+}
+
+// WherePhotos applies the entql json.RawMessage predicate on the photos field.
+func (f *StoreFilter) WherePhotos(p entql.BytesP) {
+	f.Where(p.Field(store.FieldPhotos))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.

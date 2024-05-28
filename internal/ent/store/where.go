@@ -135,9 +135,9 @@ func EbikeSale(v bool) predicate.Store {
 	return predicate.Store(sql.FieldEQ(FieldEbikeSale, v))
 }
 
-// EbikeStage applies equality check predicate on the "ebike_stage" field. It's identical to EbikeStageEQ.
-func EbikeStage(v bool) predicate.Store {
-	return predicate.Store(sql.FieldEQ(FieldEbikeStage, v))
+// Rest applies equality check predicate on the "rest" field. It's identical to RestEQ.
+func Rest(v bool) predicate.Store {
+	return predicate.Store(sql.FieldEQ(FieldRest, v))
 }
 
 // BusinessHours applies equality check predicate on the "business_hours" field. It's identical to BusinessHoursEQ.
@@ -785,14 +785,14 @@ func EbikeSaleNEQ(v bool) predicate.Store {
 	return predicate.Store(sql.FieldNEQ(FieldEbikeSale, v))
 }
 
-// EbikeStageEQ applies the EQ predicate on the "ebike_stage" field.
-func EbikeStageEQ(v bool) predicate.Store {
-	return predicate.Store(sql.FieldEQ(FieldEbikeStage, v))
+// RestEQ applies the EQ predicate on the "rest" field.
+func RestEQ(v bool) predicate.Store {
+	return predicate.Store(sql.FieldEQ(FieldRest, v))
 }
 
-// EbikeStageNEQ applies the NEQ predicate on the "ebike_stage" field.
-func EbikeStageNEQ(v bool) predicate.Store {
-	return predicate.Store(sql.FieldNEQ(FieldEbikeStage, v))
+// RestNEQ applies the NEQ predicate on the "rest" field.
+func RestNEQ(v bool) predicate.Store {
+	return predicate.Store(sql.FieldNEQ(FieldRest, v))
 }
 
 // BusinessHoursEQ applies the EQ predicate on the "business_hours" field.
@@ -868,6 +868,16 @@ func BusinessHoursEqualFold(v string) predicate.Store {
 // BusinessHoursContainsFold applies the ContainsFold predicate on the "business_hours" field.
 func BusinessHoursContainsFold(v string) predicate.Store {
 	return predicate.Store(sql.FieldContainsFold(FieldBusinessHours, v))
+}
+
+// PhotosIsNil applies the IsNil predicate on the "photos" field.
+func PhotosIsNil() predicate.Store {
+	return predicate.Store(sql.FieldIsNull(FieldPhotos))
+}
+
+// PhotosNotNil applies the NotNil predicate on the "photos" field.
+func PhotosNotNil() predicate.Store {
+	return predicate.Store(sql.FieldNotNull(FieldPhotos))
 }
 
 // HasCity applies the HasEdge predicate on the "city" edge.

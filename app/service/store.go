@@ -92,7 +92,8 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
 		SetEbikeObtain(req.EbikeObtain).
 		SetEbikeSale(req.EbikeSale).
 		SetBusinessHours(req.BusinessHours).
-		SetEbikeStage(req.EbikeStage).
+		SetRest(req.Rest).
+		SetPhotos(req.Photos).
 		SaveX(s.ctx)
 
 	if len(req.Materials) > 0 {
@@ -121,7 +122,7 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
 		SetNillableEbikeObtain(req.EbikeObtain).
 		SetNillableEbikeRepair(req.EbikeRepair).
 		SetNillableEbikeSale(req.EbikeSale).
-		SetNillableEbikeStage(req.EbikeStage)
+		SetNillableRest(req.Rest)
 	if req.Status != nil {
 		q.SetStatus(*req.Status)
 	}
@@ -138,6 +139,9 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
 	}
 	if req.BusinessHours != nil {
 		q.SetBusinessHours(*req.BusinessHours)
+	}
+	if req.Photos != nil {
+		q.SetPhotos(*req.Photos)
 	}
 	q.SaveX(s.ctx)
 	return s.Detail(item.ID)
@@ -200,14 +204,17 @@ func (s *storeService) List(req *model.StoreListReq) *model.PaginationRes {
 
 	if req.BusinessType != nil {
 		switch *req.BusinessType {
-		case 1: // 租车
+		case model.StoreBusinessTypeObtain: // 租车
 			q.Where(store.EbikeObtain(true))
-		case 2:
+		case model.StoreBusinessTypeRepair:
 			// 维修
 			q.Where(store.EbikeRepair(true))
-		case 3:
+		case model.StoreBusinessTypeSale:
 			// 买车
 			q.Where(store.EbikeSale(true))
+		case model.StoreBusinessTypeRest:
+			// 驿站
+			q.Where(store.Rest(true))
 		}
 	}
 

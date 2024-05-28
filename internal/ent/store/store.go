@@ -51,10 +51,12 @@ const (
 	FieldEbikeRepair = "ebike_repair"
 	// FieldEbikeSale holds the string denoting the ebike_sale field in the database.
 	FieldEbikeSale = "ebike_sale"
-	// FieldEbikeStage holds the string denoting the ebike_stage field in the database.
-	FieldEbikeStage = "ebike_stage"
+	// FieldRest holds the string denoting the rest field in the database.
+	FieldRest = "rest"
 	// FieldBusinessHours holds the string denoting the business_hours field in the database.
 	FieldBusinessHours = "business_hours"
+	// FieldPhotos holds the string denoting the photos field in the database.
+	FieldPhotos = "photos"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
@@ -134,8 +136,9 @@ var Columns = []string{
 	FieldEbikeObtain,
 	FieldEbikeRepair,
 	FieldEbikeSale,
-	FieldEbikeStage,
+	FieldRest,
 	FieldBusinessHours,
+	FieldPhotos,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -169,8 +172,8 @@ var (
 	DefaultEbikeRepair bool
 	// DefaultEbikeSale holds the default value on creation for the "ebike_sale" field.
 	DefaultEbikeSale bool
-	// DefaultEbikeStage holds the default value on creation for the "ebike_stage" field.
-	DefaultEbikeStage bool
+	// DefaultRest holds the default value on creation for the "rest" field.
+	DefaultRest bool
 )
 
 // OrderOption defines the ordering options for the Store queries.
@@ -261,9 +264,9 @@ func ByEbikeSale(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEbikeSale, opts...).ToFunc()
 }
 
-// ByEbikeStage orders the results by the ebike_stage field.
-func ByEbikeStage(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldEbikeStage, opts...).ToFunc()
+// ByRest orders the results by the rest field.
+func ByRest(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRest, opts...).ToFunc()
 }
 
 // ByBusinessHours orders the results by the business_hours field.

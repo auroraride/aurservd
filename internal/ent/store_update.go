@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
@@ -275,16 +276,16 @@ func (su *StoreUpdate) SetNillableEbikeSale(b *bool) *StoreUpdate {
 	return su
 }
 
-// SetEbikeStage sets the "ebike_stage" field.
-func (su *StoreUpdate) SetEbikeStage(b bool) *StoreUpdate {
-	su.mutation.SetEbikeStage(b)
+// SetRest sets the "rest" field.
+func (su *StoreUpdate) SetRest(b bool) *StoreUpdate {
+	su.mutation.SetRest(b)
 	return su
 }
 
-// SetNillableEbikeStage sets the "ebike_stage" field if the given value is not nil.
-func (su *StoreUpdate) SetNillableEbikeStage(b *bool) *StoreUpdate {
+// SetNillableRest sets the "rest" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableRest(b *bool) *StoreUpdate {
 	if b != nil {
-		su.SetEbikeStage(*b)
+		su.SetRest(*b)
 	}
 	return su
 }
@@ -306,6 +307,24 @@ func (su *StoreUpdate) SetNillableBusinessHours(s *string) *StoreUpdate {
 // ClearBusinessHours clears the value of the "business_hours" field.
 func (su *StoreUpdate) ClearBusinessHours() *StoreUpdate {
 	su.mutation.ClearBusinessHours()
+	return su
+}
+
+// SetPhotos sets the "photos" field.
+func (su *StoreUpdate) SetPhotos(s []string) *StoreUpdate {
+	su.mutation.SetPhotos(s)
+	return su
+}
+
+// AppendPhotos appends s to the "photos" field.
+func (su *StoreUpdate) AppendPhotos(s []string) *StoreUpdate {
+	su.mutation.AppendPhotos(s)
+	return su
+}
+
+// ClearPhotos clears the value of the "photos" field.
+func (su *StoreUpdate) ClearPhotos() *StoreUpdate {
+	su.mutation.ClearPhotos()
 	return su
 }
 
@@ -583,14 +602,25 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := su.mutation.EbikeSale(); ok {
 		_spec.SetField(store.FieldEbikeSale, field.TypeBool, value)
 	}
-	if value, ok := su.mutation.EbikeStage(); ok {
-		_spec.SetField(store.FieldEbikeStage, field.TypeBool, value)
+	if value, ok := su.mutation.Rest(); ok {
+		_spec.SetField(store.FieldRest, field.TypeBool, value)
 	}
 	if value, ok := su.mutation.BusinessHours(); ok {
 		_spec.SetField(store.FieldBusinessHours, field.TypeString, value)
 	}
 	if su.mutation.BusinessHoursCleared() {
 		_spec.ClearField(store.FieldBusinessHours, field.TypeString)
+	}
+	if value, ok := su.mutation.Photos(); ok {
+		_spec.SetField(store.FieldPhotos, field.TypeJSON, value)
+	}
+	if value, ok := su.mutation.AppendedPhotos(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, store.FieldPhotos, value)
+		})
+	}
+	if su.mutation.PhotosCleared() {
+		_spec.ClearField(store.FieldPhotos, field.TypeJSON)
 	}
 	if su.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1075,16 +1105,16 @@ func (suo *StoreUpdateOne) SetNillableEbikeSale(b *bool) *StoreUpdateOne {
 	return suo
 }
 
-// SetEbikeStage sets the "ebike_stage" field.
-func (suo *StoreUpdateOne) SetEbikeStage(b bool) *StoreUpdateOne {
-	suo.mutation.SetEbikeStage(b)
+// SetRest sets the "rest" field.
+func (suo *StoreUpdateOne) SetRest(b bool) *StoreUpdateOne {
+	suo.mutation.SetRest(b)
 	return suo
 }
 
-// SetNillableEbikeStage sets the "ebike_stage" field if the given value is not nil.
-func (suo *StoreUpdateOne) SetNillableEbikeStage(b *bool) *StoreUpdateOne {
+// SetNillableRest sets the "rest" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableRest(b *bool) *StoreUpdateOne {
 	if b != nil {
-		suo.SetEbikeStage(*b)
+		suo.SetRest(*b)
 	}
 	return suo
 }
@@ -1106,6 +1136,24 @@ func (suo *StoreUpdateOne) SetNillableBusinessHours(s *string) *StoreUpdateOne {
 // ClearBusinessHours clears the value of the "business_hours" field.
 func (suo *StoreUpdateOne) ClearBusinessHours() *StoreUpdateOne {
 	suo.mutation.ClearBusinessHours()
+	return suo
+}
+
+// SetPhotos sets the "photos" field.
+func (suo *StoreUpdateOne) SetPhotos(s []string) *StoreUpdateOne {
+	suo.mutation.SetPhotos(s)
+	return suo
+}
+
+// AppendPhotos appends s to the "photos" field.
+func (suo *StoreUpdateOne) AppendPhotos(s []string) *StoreUpdateOne {
+	suo.mutation.AppendPhotos(s)
+	return suo
+}
+
+// ClearPhotos clears the value of the "photos" field.
+func (suo *StoreUpdateOne) ClearPhotos() *StoreUpdateOne {
+	suo.mutation.ClearPhotos()
 	return suo
 }
 
@@ -1413,14 +1461,25 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 	if value, ok := suo.mutation.EbikeSale(); ok {
 		_spec.SetField(store.FieldEbikeSale, field.TypeBool, value)
 	}
-	if value, ok := suo.mutation.EbikeStage(); ok {
-		_spec.SetField(store.FieldEbikeStage, field.TypeBool, value)
+	if value, ok := suo.mutation.Rest(); ok {
+		_spec.SetField(store.FieldRest, field.TypeBool, value)
 	}
 	if value, ok := suo.mutation.BusinessHours(); ok {
 		_spec.SetField(store.FieldBusinessHours, field.TypeString, value)
 	}
 	if suo.mutation.BusinessHoursCleared() {
 		_spec.ClearField(store.FieldBusinessHours, field.TypeString)
+	}
+	if value, ok := suo.mutation.Photos(); ok {
+		_spec.SetField(store.FieldPhotos, field.TypeJSON, value)
+	}
+	if value, ok := suo.mutation.AppendedPhotos(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, store.FieldPhotos, value)
+		})
+	}
+	if suo.mutation.PhotosCleared() {
+		_spec.ClearField(store.FieldPhotos, field.TypeJSON)
 	}
 	if suo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
