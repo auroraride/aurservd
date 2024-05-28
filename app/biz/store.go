@@ -44,8 +44,7 @@ func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 					*req.Distance = 100000
 				}
 				sel.Where(sql.P(func(b *sql.Builder) {
-
-					b.WriteString(fmt.Sprintf(`ST_DWithin(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)')), %f)`, req.Lng, req.Lat, *req.Distance))
+					b.WriteString(fmt.Sprintf(`ST_DWithin(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'), %f)`, req.Lng, req.Lat, *req.Distance))
 				}))
 			}
 		})
