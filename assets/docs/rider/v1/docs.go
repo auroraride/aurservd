@@ -4041,6 +4041,10 @@ const docTemplate = `{
                 "price": {
                     "description": "价格, 应支付价格 = 价格 - 新签优惠",
                     "type": "number"
+                },
+                "rentToBuyDays": {
+                    "description": "以租代购赠车最小使用天数",
+                    "type": "integer"
                 }
             }
         },
@@ -4142,15 +4146,18 @@ const docTemplate = `{
             "type": "integer",
             "enum": [
                 1,
-                2
+                2,
+                3
             ],
             "x-enum-comments": {
                 "PlanTypeBattery": "单电",
+                "PlanTypeEbikeRto": "以租代购（赠）",
                 "PlanTypeEbikeWithBattery": "车加电"
             },
             "x-enum-varnames": [
                 "PlanTypeBattery",
-                "PlanTypeEbikeWithBattery"
+                "PlanTypeEbikeWithBattery",
+                "PlanTypeEbikeRto"
             ]
         },
         "model.PointLogListRes": {

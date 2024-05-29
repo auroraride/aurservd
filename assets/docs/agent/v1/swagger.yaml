@@ -656,6 +656,9 @@ definitions:
         description: 站点
       id:
         type: integer
+      isRto:
+        description: 是否已赠车
+        type: integer
       name:
         description: 骑手姓名
         type: string
@@ -669,6 +672,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Plan'
         description: 骑士卡, 团签无此字段
+      remark:
+        description: 备注
+        type: string
       store:
         allOf:
         - $ref: '#/definitions/model.Store'
@@ -693,6 +699,9 @@ definitions:
         type: number
       id:
         description: 订阅ID
+        type: integer
+      needRto:
+        description: 管理员强制退租-是否赠车：0-不赠车; 1-赠车;
         type: integer
       refundDeposit:
         description: 是否退押金, 是否退押金(后台使用)
@@ -824,6 +833,9 @@ definitions:
         type: string
       id:
         type: integer
+      isRto:
+        description: 是否已赠送
+        type: boolean
       machine:
         description: 终端编号
         type: string
@@ -1209,13 +1221,16 @@ definitions:
     enum:
     - 1
     - 2
+    - 3
     type: integer
     x-enum-comments:
       PlanTypeBattery: 单电
+      PlanTypeEbikeRto: 以租代购（赠）
       PlanTypeEbikeWithBattery: 车加电
     x-enum-varnames:
     - PlanTypeBattery
     - PlanTypeEbikeWithBattery
+    - PlanTypeEbikeRto
   model.PrepaymentListRes:
     properties:
       amount:
@@ -1308,6 +1323,9 @@ definitions:
       model:
         description: 骑士卡可用电池型号
         type: string
+      pastDay:
+        description: 骑手当前订阅已使用天数
+        type: integer
       remaining:
         description: 剩余天数
         type: integer

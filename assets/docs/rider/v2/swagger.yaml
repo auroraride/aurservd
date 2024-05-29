@@ -561,6 +561,11 @@ definitions:
         items:
           $ref: '#/definitions/model.PlanModelOption'
         type: array
+      rtoBrands:
+        description: 以租代购车电选项
+        items:
+          $ref: '#/definitions/model.PlanEbikeBrandOption'
+        type: array
     type: object
   definition.QuestionCategoryDetail:
     properties:
@@ -624,6 +629,14 @@ definitions:
     - phone
     - smsCode
     - smsId
+    type: object
+  definition.RiderSetMobPushReq:
+    properties:
+      pushId:
+        description: 骑手推送ID
+        type: string
+    required:
+    - pushId
     type: object
   definition.RiderSignupReq:
     properties:
@@ -698,9 +711,26 @@ definitions:
         description: 是否拥有驿站
         type: boolean
       status:
-        description: 状态
+        description: 门店状态 0维护 1营业 2休息 3隐藏
         type: integer
     type: object
+  definition.StoreStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-comments:
+      StoreStatusClose: 休息中
+      StoreStatusHidden: 隐藏
+      StoreStatusMaintain: 维护中
+      StoreStatusOpen: 营业中
+    x-enum-varnames:
+    - StoreStatusMaintain
+    - StoreStatusOpen
+    - StoreStatusClose
+    - StoreStatusHidden
   definition.SubscribeStoreModifyReq:
     properties:
       storeId:
@@ -1916,6 +1946,9 @@ definitions:
       price:
         description: 价格, 应支付价格 = 价格 - 新签优惠
         type: number
+      rentToBuyDays:
+        description: 以租代购赠车最小使用天数
+        type: integer
     type: object
   model.PlanEbikeBrandOption:
     properties:
@@ -1954,13 +1987,16 @@ definitions:
     enum:
     - 1
     - 2
+    - 3
     type: integer
     x-enum-comments:
       PlanTypeBattery: 单电
+      PlanTypeEbikeRto: 以租代购（赠）
       PlanTypeEbikeWithBattery: 车加电
     x-enum-varnames:
     - PlanTypeBattery
     - PlanTypeEbikeWithBattery
+    - PlanTypeEbikeRto
   model.PointLogListRes:
     properties:
       after:
@@ -2382,6 +2418,23 @@ definitions:
         description: 门店名称
         type: string
     type: object
+  model.StoreBusinessType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
+    x-enum-comments:
+      StoreBusinessTypeObtain: 领取车辆(租车)
+      StoreBusinessTypeRepair: 维修
+      StoreBusinessTypeRest: 驿站
+      StoreBusinessTypeSale: 购买
+    x-enum-varnames:
+    - StoreBusinessTypeObtain
+    - StoreBusinessTypeRepair
+    - StoreBusinessTypeSale
+    - StoreBusinessTypeRest
   model.StoreLngLat:
     properties:
       id:
@@ -4104,6 +4157,33 @@ paths:
       summary: 获取支付宝小程序openid
       tags:
       - Rider - 骑手
+  /rider/v2/mobpush:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderSetMobPush
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.RiderSetMobPushReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 设置推送ID
+      tags:
+      - Rider - 骑手
   /rider/v2/order:
     get:
       consumes:
@@ -4576,9 +4656,24 @@ paths:
       operationId: StoreList
       parameters:
       - description: 门店业务 1租车 2修车 3买车 4驿站
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
         in: query
         name: businessType
         type: integer
+        x-enum-comments:
+          StoreBusinessTypeObtain: 领取车辆(租车)
+          StoreBusinessTypeRepair: 维修
+          StoreBusinessTypeRest: 驿站
+          StoreBusinessTypeSale: 购买
+        x-enum-varnames:
+        - StoreBusinessTypeObtain
+        - StoreBusinessTypeRepair
+        - StoreBusinessTypeSale
+        - StoreBusinessTypeRest
       - description: 城市ID
         in: query
         name: cityId
@@ -4606,9 +4701,24 @@ paths:
         name: planId
         type: integer
       - description: 门店状态 0维护 1营业 2休息 3隐藏
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
         in: query
         name: status
         type: integer
+        x-enum-comments:
+          StoreStatusClose: 休息中
+          StoreStatusHidden: 隐藏
+          StoreStatusMaintain: 维护中
+          StoreStatusOpen: 营业中
+        x-enum-varnames:
+        - StoreStatusMaintain
+        - StoreStatusOpen
+        - StoreStatusClose
+        - StoreStatusHidden
       produces:
       - application/json
       responses:

@@ -53,14 +53,6 @@ func (s *branchBiz) ListByDistanceRider(req *definition.BranchWithDistanceReq) (
 		sub, _ = service.NewSubscribeWithRider(s.rider).QueryEffective(s.rider.ID)
 	}
 
-	// TODO 业务获取限制
-	// if sub != nil {
-	//     if req.Business == business.TypeActive && sub.Status != model.SubscribeStatusInactive {}
-	//     if req.Business == business.TypePause && sub.Status != model.SubscribeStatusUsing {}
-	//     if req.Business == business.TypeContinue && sub.Status != model.SubscribeStatusPaused {}
-	//     if req.Business == business.TypeUnsubscribe && sub.Status != model.SubscribeStatusUsing {}
-	// }
-
 	temps, stores, cabinets := s.ListByDistance(req)
 
 	items = make([]*definition.BranchWithDistanceRes, 0)
@@ -318,13 +310,13 @@ func (s *branchBiz) ListByDistance(req *definition.BranchWithDistanceReq) (temps
 
 		if req.StoreBusiness != nil {
 			switch *req.StoreBusiness {
-			case model.StoreBusinessTypeObtain:
+			case model.StoreBusinessTypeObtain.Value():
 				storeQuery.Where(store.EbikeObtain(true))
-			case model.StoreBusinessTypeRepair:
+			case model.StoreBusinessTypeRepair.Value():
 				storeQuery.Where(store.EbikeRepair(true))
-			case model.StoreBusinessTypeSale:
+			case model.StoreBusinessTypeSale.Value():
 				storeQuery.Where(store.EbikeSale(true))
-			case model.StoreBusinessTypeRest:
+			case model.StoreBusinessTypeRest.Value():
 				storeQuery.Where(store.Rest(true))
 			}
 		}

@@ -23,3 +23,8 @@ type RiderSignupReq struct {
 	EncryptedData string  `json:"encryptedData" validate:"required_if=AuthType 2 SigninType 2"`      // 支付宝获取手机加密数据
 	AuthCode      string  `json:"authCode" validate:"required_if=AuthType 1 SigninType 2"`           // 授权码
 }
+
+// RiderSetMobPushReq 骑手推送ID
+type RiderSetMobPushReq struct {
+	PushId string `json:"pushId" validate:"required" trans:"骑手推送ID"`
+}

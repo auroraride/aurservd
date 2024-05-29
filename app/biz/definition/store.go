@@ -2,22 +2,35 @@ package definition
 
 import "github.com/auroraride/aurservd/app/model"
 
+type StoreStatus uint8
+
+const (
+	StoreStatusMaintain StoreStatus = iota // 维护中
+	StoreStatusOpen                        // 营业中
+	StoreStatusClose                       // 休息中
+	StoreStatusHidden                      // 隐藏
+)
+
+func (t StoreStatus) Value() uint8 {
+	return uint8(t)
+}
+
 type StoreListReq struct {
-	Lng          float64  `json:"lng" query:"lng" validate:"required"` // 经度
-	Lat          float64  `json:"lat" query:"lat" validate:"required"` // 纬度
-	Distance     *float64 `json:"distance" query:"distance" `          // 距离
-	CityID       *uint64  `json:"cityId" query:"cityId"`               // 城市ID
-	PlanID       *uint64  `json:"planId" query:"planId"`               // 套餐ID
-	Status       *uint8   `json:"status" query:"status"`               // 门店状态 0维护 1营业 2休息 3隐藏
-	BusinessType *uint8   `json:"businessType" query:"businessType"`   // 门店业务 1租车 2修车 3买车 4驿站
-	Keyword      *string  `json:"keyword" query:"keyword"`             // 关键字
+	Lng          float64                  `json:"lng" query:"lng" validate:"required"` // 经度
+	Lat          float64                  `json:"lat" query:"lat" validate:"required"` // 纬度
+	Distance     *float64                 `json:"distance" query:"distance" `          // 距离
+	CityID       *uint64                  `json:"cityId" query:"cityId"`               // 城市ID
+	PlanID       *uint64                  `json:"planId" query:"planId"`               // 套餐ID
+	Status       *StoreStatus             `json:"status" query:"status"`               // 门店状态 0维护 1营业 2休息 3隐藏
+	BusinessType *model.StoreBusinessType `json:"businessType" query:"businessType"`   // 门店业务 1租车 2修车 3买车 4驿站
+	Keyword      *string                  `json:"keyword" query:"keyword"`             // 关键字
 }
 
 // StoreDetail 门店信息
 type StoreDetail struct {
 	ID            uint64          `json:"id"`                 // 门店ID
 	Name          string          `json:"name"`               // 门店名称
-	Status        uint8           `json:"status"`             // 状态
+	Status        uint8           `json:"status"`             // 门店状态 0维护 1营业 2休息 3隐藏
 	City          model.City      `json:"city"`               // 城市
 	Employee      *model.Employee `json:"employee,omitempty"` // 店员, 有可能不存在
 	EbikeObtain   bool            `json:"ebikeObtain"`        // 是否可以领取车辆

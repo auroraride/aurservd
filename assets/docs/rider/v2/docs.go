@@ -2292,6 +2292,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/mobpush": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rider - 骑手"
+                ],
+                "summary": "设置推送ID",
+                "operationId": "RiderSetMobPush",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.RiderSetMobPushReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/order": {
             "get": {
                 "consumes": [
@@ -3015,7 +3056,25 @@ const docTemplate = `{
                 "operationId": "StoreList",
                 "parameters": [
                     {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
                         "type": "integer",
+                        "x-enum-comments": {
+                            "StoreBusinessTypeObtain": "领取车辆(租车)",
+                            "StoreBusinessTypeRepair": "维修",
+                            "StoreBusinessTypeRest": "驿站",
+                            "StoreBusinessTypeSale": "购买"
+                        },
+                        "x-enum-varnames": [
+                            "StoreBusinessTypeObtain",
+                            "StoreBusinessTypeRepair",
+                            "StoreBusinessTypeSale",
+                            "StoreBusinessTypeRest"
+                        ],
                         "description": "门店业务 1租车 2修车 3买车 4驿站",
                         "name": "businessType",
                         "in": "query"
@@ -3059,7 +3118,25 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
                         "type": "integer",
+                        "x-enum-comments": {
+                            "StoreStatusClose": "休息中",
+                            "StoreStatusHidden": "隐藏",
+                            "StoreStatusMaintain": "维护中",
+                            "StoreStatusOpen": "营业中"
+                        },
+                        "x-enum-varnames": [
+                            "StoreStatusMaintain",
+                            "StoreStatusOpen",
+                            "StoreStatusClose",
+                            "StoreStatusHidden"
+                        ],
                         "description": "门店状态 0维护 1营业 2休息 3隐藏",
                         "name": "status",
                         "in": "query"
@@ -4200,6 +4277,13 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.PlanModelOption"
                     }
+                },
+                "rtoBrands": {
+                    "description": "以租代购车电选项",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanEbikeBrandOption"
+                    }
                 }
             }
         },
@@ -4287,6 +4371,18 @@ const docTemplate = `{
                 },
                 "smsId": {
                     "description": "短信ID, 短信ID",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.RiderSetMobPushReq": {
+            "type": "object",
+            "required": [
+                "pushId"
+            ],
+            "properties": {
+                "pushId": {
+                    "description": "骑手推送ID",
                     "type": "string"
                 }
             }
@@ -4395,10 +4491,31 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "status": {
-                    "description": "状态",
+                    "description": "门店状态 0维护 1营业 2休息 3隐藏",
                     "type": "integer"
                 }
             }
+        },
+        "definition.StoreStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "StoreStatusClose": "休息中",
+                "StoreStatusHidden": "隐藏",
+                "StoreStatusMaintain": "维护中",
+                "StoreStatusOpen": "营业中"
+            },
+            "x-enum-varnames": [
+                "StoreStatusMaintain",
+                "StoreStatusOpen",
+                "StoreStatusClose",
+                "StoreStatusHidden"
+            ]
         },
         "definition.SubscribeStoreModifyReq": {
             "type": "object",
@@ -6165,6 +6282,10 @@ const docTemplate = `{
                 "price": {
                     "description": "价格, 应支付价格 = 价格 - 新签优惠",
                     "type": "number"
+                },
+                "rentToBuyDays": {
+                    "description": "以租代购赠车最小使用天数",
+                    "type": "integer"
                 }
             }
         },
@@ -6219,15 +6340,18 @@ const docTemplate = `{
             "type": "integer",
             "enum": [
                 1,
-                2
+                2,
+                3
             ],
             "x-enum-comments": {
                 "PlanTypeBattery": "单电",
+                "PlanTypeEbikeRto": "以租代购（赠）",
                 "PlanTypeEbikeWithBattery": "车加电"
             },
             "x-enum-varnames": [
                 "PlanTypeBattery",
-                "PlanTypeEbikeWithBattery"
+                "PlanTypeEbikeWithBattery",
+                "PlanTypeEbikeRto"
             ]
         },
         "model.PointLogListRes": {
@@ -6841,6 +6965,27 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.StoreBusinessType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "x-enum-comments": {
+                "StoreBusinessTypeObtain": "领取车辆(租车)",
+                "StoreBusinessTypeRepair": "维修",
+                "StoreBusinessTypeRest": "驿站",
+                "StoreBusinessTypeSale": "购买"
+            },
+            "x-enum-varnames": [
+                "StoreBusinessTypeObtain",
+                "StoreBusinessTypeRepair",
+                "StoreBusinessTypeSale",
+                "StoreBusinessTypeRest"
+            ]
         },
         "model.StoreLngLat": {
             "type": "object",

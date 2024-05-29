@@ -54,7 +54,7 @@ func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 	}
 
 	if req.Status != nil {
-		q.Where(store.Status(*req.Status))
+		q.Where(store.Status(req.Status.Value()))
 	}
 
 	if req.BusinessType != nil {

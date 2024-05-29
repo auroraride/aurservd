@@ -7797,16 +7797,19 @@ const docTemplate = `{
                     {
                         "enum": [
                             1,
-                            2
+                            2,
+                            3
                         ],
                         "type": "integer",
                         "x-enum-comments": {
                             "PlanTypeBattery": "单电",
+                            "PlanTypeEbikeRto": "以租代购（赠）",
                             "PlanTypeEbikeWithBattery": "车加电"
                         },
                         "x-enum-varnames": [
                             "PlanTypeBattery",
-                            "PlanTypeEbikeWithBattery"
+                            "PlanTypeEbikeWithBattery",
+                            "PlanTypeEbikeRto"
                         ],
                         "description": "骑士卡类别, 不携带字段为全部, 1:单电 2:车加电",
                         "name": "type",
@@ -12666,7 +12669,25 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
                         "type": "integer",
+                        "x-enum-comments": {
+                            "StoreBusinessTypeObtain": "领取车辆(租车)",
+                            "StoreBusinessTypeRepair": "维修",
+                            "StoreBusinessTypeRest": "驿站",
+                            "StoreBusinessTypeSale": "购买"
+                        },
+                        "x-enum-varnames": [
+                            "StoreBusinessTypeObtain",
+                            "StoreBusinessTypeRepair",
+                            "StoreBusinessTypeSale",
+                            "StoreBusinessTypeRest"
+                        ],
                         "description": "业务类型 1:领取车辆(租车) 2:维修车辆 3:买车 4:驿站",
                         "name": "businessType",
                         "in": "query"
@@ -16022,6 +16043,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "isRto": {
+                    "description": "是否已赠车",
+                    "type": "integer"
+                },
                 "name": {
                     "description": "骑手姓名",
                     "type": "string"
@@ -16041,6 +16066,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Plan"
                         }
                     ]
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
                 },
                 "store": {
                     "description": "门店, 可能为空",
@@ -16153,6 +16182,10 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "订阅ID",
+                    "type": "integer"
+                },
+                "needRto": {
+                    "description": "管理员强制退租-是否赠车：0-不赠车; 1-赠车;",
                     "type": "integer"
                 },
                 "refundDeposit": {
@@ -17919,6 +17952,10 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "isRto": {
+                    "description": "是否已赠送",
+                    "type": "boolean"
                 },
                 "machine": {
                     "description": "终端编号",
@@ -19975,6 +20012,7 @@ const docTemplate = `{
             "required": [
                 "days",
                 "model",
+                "overdueFee",
                 "price"
             ],
             "properties": {
@@ -20015,9 +20053,17 @@ const docTemplate = `{
                     "description": "原价",
                     "type": "number"
                 },
+                "overdueFee": {
+                    "description": "滞纳金单价, 滞纳金单价",
+                    "type": "number"
+                },
                 "price": {
                     "description": "价格",
                     "type": "number"
+                },
+                "rtoDays": {
+                    "description": "赠车最小使用天数",
+                    "type": "integer"
                 }
             }
         },
@@ -20039,7 +20085,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brandId": {
-                    "description": "电车型号, 车加电必填",
+                    "description": "电车型号, 车加电，以租代购 必填",
                     "type": "integer"
                 },
                 "cities": {
@@ -20347,15 +20393,18 @@ const docTemplate = `{
             "type": "integer",
             "enum": [
                 1,
-                2
+                2,
+                3
             ],
             "x-enum-comments": {
                 "PlanTypeBattery": "单电",
+                "PlanTypeEbikeRto": "以租代购（赠）",
                 "PlanTypeEbikeWithBattery": "车加电"
             },
             "x-enum-varnames": [
                 "PlanTypeBattery",
-                "PlanTypeEbikeWithBattery"
+                "PlanTypeEbikeWithBattery",
+                "PlanTypeEbikeRto"
             ]
         },
         "model.PointBatchReq": {
@@ -20911,6 +20960,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "isRto": {
+                    "description": "骑手当前订阅是否可赠车",
+                    "type": "boolean"
+                },
                 "name": {
                     "description": "姓名",
                     "type": "string"
@@ -20991,6 +21044,10 @@ const docTemplate = `{
                 "model": {
                     "description": "骑士卡可用电池型号",
                     "type": "string"
+                },
+                "pastDay": {
+                    "description": "骑手当前订阅已使用天数",
+                    "type": "integer"
                 },
                 "remaining": {
                     "description": "剩余天数",
@@ -22134,6 +22191,27 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.StoreBusinessType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "x-enum-comments": {
+                "StoreBusinessTypeObtain": "领取车辆(租车)",
+                "StoreBusinessTypeRepair": "维修",
+                "StoreBusinessTypeRest": "驿站",
+                "StoreBusinessTypeSale": "购买"
+            },
+            "x-enum-varnames": [
+                "StoreBusinessTypeObtain",
+                "StoreBusinessTypeRepair",
+                "StoreBusinessTypeSale",
+                "StoreBusinessTypeRest"
+            ]
         },
         "model.StoreCabiletGoal": {
             "type": "integer",

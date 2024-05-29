@@ -73,12 +73,18 @@ type StoreWithStatus struct {
 	Status uint8 `json:"status"` // 门店状态
 }
 
+type StoreBusinessType uint8
+
 const (
-	StoreBusinessTypeObtain uint8 = iota + 1 // 领取车辆(租车)
-	StoreBusinessTypeRepair                  // 维修
-	StoreBusinessTypeSale                    // 购买
-	StoreBusinessTypeRest                    // 驿站
+	StoreBusinessTypeObtain StoreBusinessType = iota + 1 // 领取车辆(租车)
+	StoreBusinessTypeRepair                              // 维修
+	StoreBusinessTypeSale                                // 购买
+	StoreBusinessTypeRest                                // 驿站
 )
+
+func (t StoreBusinessType) Value() uint8 {
+	return uint8(t)
+}
 
 type StoreListReq struct {
 	PaginationReq
@@ -87,7 +93,7 @@ type StoreListReq struct {
 	Name   *string `json:"name" query:"name"`     // 门店名称
 	Status *uint8  `json:"status" query:"status"` // 门店状态
 
-	BusinessType *uint8 `json:"businessType" query:"businessType"` // 业务类型 1:领取车辆(租车) 2:维修车辆 3:买车 4:驿站
+	BusinessType *StoreBusinessType `json:"businessType" query:"businessType"` // 业务类型 1:领取车辆(租车) 2:维修车辆 3:买车 4:驿站
 }
 
 type StoreSwtichStatusReq struct {
