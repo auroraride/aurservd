@@ -10,7 +10,7 @@ type FeedbackReq struct {
 	Content     string       `json:"content" validate:"required"` // 反馈内容
 	Url         []string     `json:"url"`                         // 反馈图片
 	Type        uint8        `json:"type" validate:"required"`    // 反馈类型
-	CityID      uint64       `json:"cityId" validate:"required"`  // 城市ID
+	CityID      *uint64      `json:"cityId" `                     // 城市ID
 	VersionInfo *VersionInfo `json:"versionInfo"`                 // 版本信息
 }
 
