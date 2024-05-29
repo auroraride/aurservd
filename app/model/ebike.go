@@ -56,6 +56,27 @@ func (p EbikeStatus) String() string {
 	return " - "
 }
 
+type EbikeIsRto uint8
+
+const (
+	EbikeIsRtoUnSend EbikeIsRto = iota // 未赠送
+	EbikeIsRtoSend                     // 已赠送
+)
+
+func (s EbikeIsRto) Value() uint8 {
+	return uint8(s)
+}
+
+func (s EbikeIsRto) String() string {
+	switch s {
+	case EbikeIsRtoUnSend:
+		return "未赠送"
+	case EbikeIsRtoSend:
+		return "已赠送"
+	}
+	return " - "
+}
+
 type EbikeListFilter struct {
 	RiderID      uint64       `json:"riderId" query:"riderId"`                 // 骑手ID
 	StoreID      uint64       `json:"storeId" query:"storeId"`                 // 门店ID
@@ -99,6 +120,7 @@ type EbikeListRes struct {
 	EnterpriseName string  `json:"enterpriseName,omitempty"` // 团签名称
 	EnterpriseID   *uint64 `json:"enterpriseId,omitempty"`   // 团签ID
 
+	IsRto bool `json:"isRto"` // 是否已赠送
 }
 
 type EbikeCreateReq struct {

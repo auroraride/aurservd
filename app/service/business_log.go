@@ -122,3 +122,15 @@ func (s *businessLogService) SetAgentId(agentId *uint64) *businessLogService {
 	s.creator.SetNillableAgentID(agentId)
 	return s
 }
+
+// SetIsRto 设置是否赠送
+func (s *businessLogService) SetIsRto(isRto uint8) *businessLogService {
+	s.creator.SetIsRto(isRto)
+	return s
+}
+
+// SetRemark 设置备注
+func (s *businessLogService) SetRemark(remark string) *businessLogService {
+	s.creator.SetRemark(remark)
+	return s
+}

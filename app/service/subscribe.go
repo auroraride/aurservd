@@ -549,7 +549,8 @@ func (s *subscribeService) OverdueFee(sub *ent.Subscribe) (fee float64, formula 
 
 	remaining := -sub.Remaining
 
-	_, dr := NewSetting().DailyRent(nil, sub.CityID, sub.Model, sub.BrandID)
+	// _, dr := NewSetting().DailyRent(nil, sub.CityID, sub.Model, sub.BrandID)
+	dr := sub.Edges.Plan.OverdueFee
 	fee, _ = decimal.NewFromFloat(dr).Mul(decimal.NewFromInt(int64(remaining))).Float64()
 	// fee, _ = decimal.NewFromFloat(dr).Mul(decimal.NewFromInt(int64(remaining))).Mul(decimal.NewFromFloat(1.24)).Float64()
 	fee = math.Round(fee*100) / 100

@@ -65,7 +65,7 @@ func (Business) Fields() []ent.Field {
 		}).Comment("业务类型"),
 		field.JSON("bin_info", &model.BinInfo{}).Optional().Comment("仓位信息"),
 		field.String("stock_sn").Optional().Comment("出入库编码"),
-		field.Uint8("is_rto").Default(model.BusinessIsRtoUnSend.Value()).Comment("是否已赠送 0:未赠送 1:已赠送"),
+		field.Uint8("is_rto").Default(0).Comment("是否已赠送 0:未赠送 1:已赠送"),
 	}
 }
 

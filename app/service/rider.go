@@ -735,6 +735,7 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 			Type:        model.SubscribeTypeBattery,
 			Ebike:       NewEbike().Detail(sub.Edges.Ebike, sub.Edges.Brand),
 			Intelligent: sub.Intelligent,
+			PastDay:     tools.NewTime().UsedDaysToNow(*sub.StartAt),
 		}
 		if sub.BrandID != nil {
 			ri.Subscribe.Type = model.SubscribeTypeEbike
@@ -761,6 +762,19 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 		}
 
 		ri.PlanName = pn
+
+		// 骑手以租代购判断
+		if pl != nil {
+			if pl.Type == model.PlanTypeEbikeRto.Value() {
+				pastDays := tools.NewTime().UsedDaysToNow(*sub.StartAt)
+				if pastDays >= int(pl.RtoDays) {
+					ri.IsRto = true
+				}
+			}
+		}
+
+		// 订阅已使用天数
+
 	}
 	if item.DeletedAt != nil {
 		ri.DeletedAt = item.DeletedAt.Format(carbon.DateTimeLayout)

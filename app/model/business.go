@@ -49,6 +49,27 @@ func BusinessTypeText(bt string) string {
 	}[bt]
 }
 
+type BusinessIsRto uint8
+
+const (
+	BusinessIsRtoUnSend BusinessIsRto = iota // 未赠送
+	BusinessIsRtoSend                        // 已赠送
+)
+
+func (s BusinessIsRto) Value() uint8 {
+	return uint8(s)
+}
+
+func (s BusinessIsRto) String() string {
+	switch s {
+	case BusinessIsRtoUnSend:
+		return "未赠送"
+	case BusinessIsRtoSend:
+		return "已赠送"
+	}
+	return " - "
+}
+
 type BusinessSubscribeID struct {
 	SubscribeID uint64 `json:"subscribeId" validate:"required" trans:"订阅ID"`
 }
@@ -88,6 +109,8 @@ type BusinessEmployeeListRes struct {
 	Plan              *Plan              `json:"plan,omitempty"`              // 骑士卡, 团签无此字段
 	Enterprise        *Enterprise        `json:"enterprise,omitempty"`        // 团签企业, 个签无此字段
 	EnterpriseStation *EnterpriseStation `json:"enterpriseStation,omitempty"` // 站点
+	IsRto             uint8              `json:"isRto"`                       // 是否已赠车
+	Remark            string             `json:"remark"`                      // 备注
 }
 
 type BusinessListRes struct {

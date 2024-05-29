@@ -58,6 +58,8 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 
 	bmap := make(map[uint64]*model.PlanEbikeBrandOption)
 
+	rbmap := make(map[uint64]*model.PlanEbikeBrandOption)
+
 	serv := service.NewPlanIntroduce()
 	intro := serv.QueryMap()
 
@@ -116,6 +118,7 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 			DepositAlipayAuthFreeze: item.DepositAlipayAuthFreeze,
 			DepositContract:         item.DepositContract,
 			DepositPay:              item.DepositPay,
+			RentToBuyDays:           item.RtoDays,
 		}
 		if item.Edges.Agreement != nil {
 			planDaysPriceOption.Agreement = &model.Agreement{
@@ -140,28 +143,56 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 		SortIDOptions(*m.Children)
 
 		if item.BrandID != nil {
-			var b *model.PlanEbikeBrandOption
-			bid := *item.BrandID
-			b, ok = bmap[bid]
-			if !ok {
-				brand := item.Edges.Brand
-				b = &model.PlanEbikeBrandOption{
-					Children: new(model.PlanModelOptions),
-					Name:     brand.Name,
-					Cover:    brand.Cover,
+			switch item.Type {
+			case model.PlanTypeEbikeWithBattery.Value():
+				var b *model.PlanEbikeBrandOption
+				bid := *item.BrandID
+				b, ok = bmap[bid]
+				if !ok {
+					brand := item.Edges.Brand
+					b = &model.PlanEbikeBrandOption{
+						Children: new(model.PlanModelOptions),
+						Name:     brand.Name,
+						Cover:    brand.Cover,
+					}
+					bmap[bid] = b
 				}
-				bmap[bid] = b
+
+				var exists bool
+				for _, c := range *b.Children {
+					if c.Model == item.Model {
+						exists = true
+					}
+				}
+				if !exists {
+					*b.Children = append(*b.Children, m)
+				}
+			case model.PlanTypeEbikeRto.Value():
+				var b *model.PlanEbikeBrandOption
+				bid := *item.BrandID
+				b, ok = rbmap[bid]
+				if !ok {
+					brand := item.Edges.Brand
+					b = &model.PlanEbikeBrandOption{
+						Children: new(model.PlanModelOptions),
+						Name:     brand.Name,
+						Cover:    brand.Cover,
+					}
+					rbmap[bid] = b
+				}
+
+				var exists bool
+				for _, c := range *b.Children {
+					if c.Model == item.Model {
+						exists = true
+					}
+				}
+				if !exists {
+					*b.Children = append(*b.Children, m)
+				}
+			default:
 			}
 
-			var exists bool
-			for _, c := range *b.Children {
-				if c.Model == item.Model {
-					exists = true
-				}
-			}
-			if !exists {
-				*b.Children = append(*b.Children, m)
-			}
 		}
 	}
 
@@ -202,8 +233,14 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 		SortPlanEbikeModelByName(*b.Children)
 	}
 
+	for _, rb := range rbmap {
+		res.RtoBrands = append(res.RtoBrands, rb)
+		SortPlanEbikeModelByName(*rb.Children)
+	}
+
 	SortPlanEbikeBrandByName(res.Brands)
 	SortPlanModelByName(res.Models)
+	SortPlanEbikeBrandByName(res.RtoBrands)
 
 	return res
 }

@@ -220,6 +220,7 @@ func (s *ebikeService) List(req *model.EbikeListReq) *model.PaginationRes {
 				Sim:     item.Sim,
 				Color:   silk.Pointer(item.Color),
 			},
+			IsRto: item.IsRto == model.EbikeIsRtoSend.Value(),
 		}
 		if eb != nil {
 			res.Brand = eb.Name
