@@ -944,6 +944,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/battery/track/rectify": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "电池"
+                ],
+                "summary": "电池轨迹纠偏",
+                "operationId": "ManagerBatteryTrackRectify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "轨迹点",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryTrackReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryTrackRes"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/battery/unbind": {
             "post": {
                 "consumes": [
@@ -15302,6 +15343,28 @@ const docTemplate = `{
                 }
             }
         },
+        "model.BatteryPoint": {
+            "type": "object",
+            "required": [
+                "latitude",
+                "locTime",
+                "longitude"
+            ],
+            "properties": {
+                "latitude": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "locTime": {
+                    "description": "时间UNIX时间戳（秒级）",
+                    "type": "integer"
+                },
+                "longitude": {
+                    "description": "经度",
+                    "type": "number"
+                }
+            }
+        },
         "model.BatteryPosition": {
             "type": "object",
             "properties": {
@@ -15491,6 +15554,30 @@ const docTemplate = `{
                 "BatteryStatusDisCharging",
                 "BatteryStatusFault"
             ]
+        },
+        "model.BatteryTrackReq": {
+            "type": "object",
+            "properties": {
+                "points": {
+                    "description": "轨迹点",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryPoint"
+                    }
+                }
+            }
+        },
+        "model.BatteryTrackRes": {
+            "type": "object",
+            "properties": {
+                "track": {
+                    "description": "轨迹点",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryPoint"
+                    }
+                }
+            }
         },
         "model.BatteryUnbindRequest": {
             "type": "object",

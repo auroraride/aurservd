@@ -200,3 +200,19 @@ type BatteryFaultRes struct {
 	BeginAt string              `json:"begin_at,omitempty"`
 	EndAt   string              `json:"end_at,omitempty"`
 }
+
+// BatteryTrackReq 电池轨迹
+type BatteryTrackReq struct {
+	Points []BatteryPoint `json:"points"` // 轨迹点
+}
+
+// BatteryPoint 电池轨迹点
+type BatteryPoint struct {
+	Latitude  float64 `json:"latitude" validate:"required"`  // 纬度
+	Longitude float64 `json:"longitude" validate:"required"` // 经度
+	LocTime   int32   `json:"locTime" validate:"required"`   // 时间UNIX时间戳（秒级）
+}
+
+type BatteryTrackRes struct {
+	Points []BatteryPoint `json:"track"` // 轨迹点
+}
