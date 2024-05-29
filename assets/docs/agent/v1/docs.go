@@ -3961,7 +3961,6 @@ const docTemplate = `{
         "model.FeedbackReq": {
             "type": "object",
             "required": [
-                "cityId",
                 "content",
                 "type"
             ],

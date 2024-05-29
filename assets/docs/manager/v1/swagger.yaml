@@ -1226,9 +1226,9 @@ definitions:
         description: 经度
         type: number
     required:
-      - latitude
-      - locTime
-      - longitude
+    - latitude
+    - locTime
+    - longitude
     type: object
   model.BatteryPosition:
     properties:
@@ -8045,22 +8045,22 @@ paths:
   /manager/v1/battery/track/rectify:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerBatteryTrackRectify
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 轨迹点
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.BatteryTrackReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 轨迹点
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BatteryTrackReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -8068,7 +8068,7 @@ paths:
             $ref: '#/definitions/model.BatteryTrackRes'
       summary: 电池轨迹纠偏
       tags:
-        - 电池
+      - 电池
   /manager/v1/battery/unbind:
     post:
       consumes:

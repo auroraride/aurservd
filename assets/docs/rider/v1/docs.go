@@ -406,13 +406,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "门店业务 0-全部 1-租车，2-修车，3-买车，4-驿站",
+                        "description": "门店业务 0-全部 1-租车，2-修车，3-买车，4-驿站 （首页地图不要传入此值）",
                         "name": "storeBusiness",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "门店状态 0-全部 1-营业 2-休息",
+                        "description": "门店状态 0-全部 1-营业 2-休息 （首页地图不要传入此值）",
                         "name": "storeStatus",
                         "in": "query"
                     }

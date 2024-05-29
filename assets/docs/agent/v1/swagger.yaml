@@ -1136,7 +1136,6 @@ definitions:
         - $ref: '#/definitions/model.VersionInfo'
         description: 版本信息
     required:
-    - cityId
     - content
     - type
     type: object
