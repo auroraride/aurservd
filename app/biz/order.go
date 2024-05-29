@@ -25,7 +25,6 @@ import (
 	"github.com/auroraride/aurservd/internal/payment/alipay"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
-	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
@@ -119,7 +118,7 @@ func (s *orderBiz) DepositCredit(r *ent.Rider, req *definition.OrderDepositCredi
 	case model.OrderPaywayWechatDeposit:
 		// TODO
 	default:
-		snag.Panic("未知的支付请求")
+		return nil, errors.New("支付方式错误")
 	}
 	result.Prepay = str
 	return

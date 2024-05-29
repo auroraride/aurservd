@@ -1214,6 +1214,22 @@ definitions:
         description: 是否启用
         type: boolean
     type: object
+  model.BatteryPoint:
+    properties:
+      latitude:
+        description: 纬度
+        type: number
+      locTime:
+        description: 时间UNIX时间戳（秒级）
+        type: integer
+      longitude:
+        description: 经度
+        type: number
+    required:
+      - latitude
+      - locTime
+      - longitude
+    type: object
   model.BatteryPosition:
     properties:
       at:
@@ -1352,6 +1368,22 @@ definitions:
     - BatteryStatusCharging
     - BatteryStatusDisCharging
     - BatteryStatusFault
+  model.BatteryTrackReq:
+    properties:
+      points:
+        description: 轨迹点
+        items:
+          $ref: '#/definitions/model.BatteryPoint'
+        type: array
+    type: object
+  model.BatteryTrackRes:
+    properties:
+      track:
+        description: 轨迹点
+        items:
+          $ref: '#/definitions/model.BatteryPoint'
+        type: array
+    type: object
   model.BatteryUnbindRequest:
     properties:
       riderId:
@@ -7949,6 +7981,33 @@ paths:
       summary: 创建电池型号
       tags:
       - 电池
+  /manager/v1/battery/track/rectify:
+    post:
+      consumes:
+        - application/json
+      operationId: ManagerBatteryTrackRectify
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 轨迹点
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/model.BatteryTrackReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BatteryTrackRes'
+      summary: 电池轨迹纠偏
+      tags:
+        - 电池
   /manager/v1/battery/unbind:
     post:
       consumes:

@@ -22,6 +22,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/rpc"
 	"github.com/auroraride/aurservd/internal/ar"
+	"github.com/auroraride/aurservd/internal/baidu"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/pkg/silk"
@@ -357,4 +358,23 @@ func (s *batteryBmsService) FaultList(req *model.BatteryFaultReq) *model.Paginat
 		Pagination: page,
 		Items:      items,
 	}
+}
+
+// TrackRectify 轨迹纠偏
+func (s *batteryBmsService) TrackRectify(req *model.BatteryTrackReq) (res *model.BatteryTrackRes, err error) {
+	r := baidu.Track{}
+	for _, v := range req.Points {
+		r = append(r, baidu.Point{
+			LocTime:        v.LocTime,
+			Longitude:      v.Longitude,
+			Latitude:       v.Latitude,
+			CoordTypeInput: baidu.MapCoordType,
+		})
+	}
+
+	rectify, err := baidu.NewMap().TrackRectify(r)
+	if err != nil {
+		return nil, err
+	}
+	return rectify, nil
 }
