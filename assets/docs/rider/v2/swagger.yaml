@@ -94,77 +94,6 @@ definitions:
         description: 用户类型 1:个签 2:团签
         type: integer
     type: object
-  definition.BranchFacility:
-    properties:
-      batteryNum:
-        description: 电池数量
-        type: integer
-      cabinetNum:
-        description: 电柜数量
-        type: integer
-      fid:
-        description: 设施标识
-        type: string
-      id:
-        type: integer
-      name:
-        description: 名称
-        type: string
-      num:
-        description: 满电数量
-        type: integer
-      phone:
-        description: 联系电话
-        type: string
-      state:
-        description: 状态 0不可用 1可用
-        type: integer
-      total:
-        description: 仓位数量
-        type: integer
-      type:
-        description: 类别
-        type: string
-    type: object
-  definition.BranchWithDistanceRes:
-    properties:
-      address:
-        description: 网点地址
-        type: string
-      businesses:
-        description: 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
-        items:
-          type: string
-        type: array
-      distance:
-        description: '距离(前端处理: 超过1000米显示nKM)'
-        type: number
-      facility:
-        description: 网点设施
-        items:
-          $ref: '#/definitions/definition.BranchFacility'
-        type: array
-      id:
-        description: 网点ID
-        type: integer
-      image:
-        description: 网点图片
-        type: string
-      lat:
-        description: 纬度
-        type: number
-      lng:
-        description: 经度
-        type: number
-      name:
-        description: 网点名称
-        type: string
-      photos:
-        description: 网点图片(V2)
-        items:
-          type: string
-        type: array
-    type: object
   definition.CabinetByRiderRes:
     properties:
       address:
@@ -935,6 +864,38 @@ definitions:
         description: 电压(V)
         type: number
     type: object
+  model.BranchFacility:
+    properties:
+      batteryNum:
+        description: 电池数量
+        type: integer
+      cabinetNum:
+        description: 电柜数量
+        type: integer
+      fid:
+        description: 设施标识
+        type: string
+      id:
+        type: integer
+      name:
+        description: 名称
+        type: string
+      num:
+        description: 满电数量
+        type: integer
+      phone:
+        description: 联系电话
+        type: string
+      state:
+        description: 状态 0不可用 1可用
+        type: integer
+      total:
+        description: 仓位数量
+        type: integer
+      type:
+        description: 类别  store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
+        type: string
+    type: object
   model.BranchFacilityCabinet:
     properties:
       batteries:
@@ -1058,6 +1019,45 @@ definitions:
       minutes:
         description: 骑行规划时间(分钟)
         type: number
+    type: object
+  model.BranchWithDistanceRes:
+    properties:
+      address:
+        description: 网点地址
+        type: string
+      businesses:
+        description: 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        items:
+          type: string
+        type: array
+      distance:
+        description: '距离(前端处理: 超过1000米显示nKM)'
+        type: number
+      facility:
+        description: 网点设施
+        items:
+          $ref: '#/definitions/model.BranchFacility'
+        type: array
+      id:
+        description: 网点ID
+        type: integer
+      image:
+        description: 网点图片
+        type: string
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      name:
+        description: 网点名称
+        type: string
+      photos:
+        description: 网点图片(V2)
+        items:
+          type: string
+        type: array
     type: object
   model.BusinessCabinetReq:
     properties:
@@ -2963,11 +2963,11 @@ paths:
         in: query
         name: model
         type: string
-      - description: 门店业务 1-租车，2-修车，3-买车，4-驿站
+      - description: 门店业务 0-全部 1-租车，2-修车，3-买车，4-驿站
         in: query
         name: storeBusiness
         type: integer
-      - description: 门店状态 1-营业 2-休息
+      - description: 门店状态 0-全部 1-营业 2-休息
         in: query
         name: storeStatus
         type: integer
@@ -2978,7 +2978,7 @@ paths:
           description: 请求成功
           schema:
             items:
-              $ref: '#/definitions/definition.BranchWithDistanceRes'
+              $ref: '#/definitions/model.BranchWithDistanceRes'
             type: array
       summary: 列举网点
       tags:

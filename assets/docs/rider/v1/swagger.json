@@ -396,6 +396,18 @@
                         "description": "电池型号",
                         "name": "model",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店业务 0-全部 1-租车，2-修车，3-买车，4-驿站",
+                        "name": "storeBusiness",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店状态 0-全部 1-营业 2-休息",
+                        "name": "storeStatus",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2761,7 +2773,7 @@
                     "type": "integer"
                 },
                 "type": {
-                    "description": "类别",
+                    "description": "类别  store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店",
                     "type": "string"
                 }
             }

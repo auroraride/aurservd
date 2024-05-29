@@ -278,14 +278,52 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 			),
 		)
 	default:
-		cabQuery := ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithModels()
-		if sub != nil && !v2 {
-			cabQuery.Where(cabinet.Intelligent(sub.Intelligent), cabinet.HasModelsWith(batterymodel.Model(sub.Model)))
+		// 电柜查询
+		// 当没有传入门店相关参数时需查询电柜数据
+		if req.StoreStatus == nil && req.StoreBusiness == nil {
+			cabQuery := ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithModels()
+			if sub != nil && !v2 {
+				cabQuery.Where(cabinet.Intelligent(sub.Intelligent), cabinet.HasModelsWith(batterymodel.Model(sub.Model)))
+			}
+			if v2 && req.Model != nil {
+				cabQuery.Where(cabinet.HasModelsWith(batterymodel.Model(*req.Model)))
+			}
+			cabinets = cabQuery.AllX(s.ctx)
 		}
-		if v2 && req.Model != nil {
-			cabQuery.Where(cabinet.HasModelsWith(batterymodel.Model(*req.Model)))
+	}
+
+	// 门店查询
+	// 当没有传入电池型号、电柜业务、filter查询参数时，需查询驿站或者门店数据
+	if filter == "" && req.Model == nil && req.Business == "" {
+		switch {
+		case req.StoreStatus == nil && req.StoreBusiness == nil:
+			// 未传入门店筛选条件只查询驿站数据
+			storeQuery.Where(
+				store.StatusIn(model.StoreStatusOpen, model.StoreStatusClose),
+				// store.Rest(true), //若加入此条件、v1版本查询所有门店逻辑不符合
+			)
+		case req.StoreStatus != nil:
+			// 传入门店筛选条件-门店状态
+			switch *req.StoreStatus {
+			case model.StoreStatusOpen:
+				storeQuery.Where(store.Status(model.StoreStatusOpen))
+			case model.StoreStatusClose:
+				storeQuery.Where(store.Status(model.StoreStatusClose))
+			default:
+			}
+		case req.StoreBusiness != nil:
+			// 传入门店筛选条件-门店业务
+			switch *req.StoreBusiness {
+			case model.StoreBusinessTypeObtain.Value():
+				storeQuery.Where(store.EbikeObtain(true))
+			case model.StoreBusinessTypeRepair.Value():
+				storeQuery.Where(store.EbikeRepair(true))
+			case model.StoreBusinessTypeSale.Value():
+				storeQuery.Where(store.EbikeSale(true))
+			case model.StoreBusinessTypeRest.Value():
+				storeQuery.Where(store.Rest(true))
+			}
 		}
-		cabinets = cabQuery.AllX(s.ctx)
 	}
 	stores = storeQuery.AllX(s.ctx)
 	return
@@ -403,7 +441,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 	temps, stores, cabinets := s.ListByDistance(req, sub, v2)
 
 	items = make([]*model.BranchWithDistanceRes, 0)
-	// 三种设备类别
+	// 四种设备类别
 	itemsMap := make(map[uint64]*model.BranchWithDistanceRes, len(temps))
 	for _, temp := range temps {
 		itemsMap[temp.ID] = &model.BranchWithDistanceRes{
@@ -421,20 +459,32 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 		}
 	}
 
-	// 进行关联查询
-	// 门店
+	// 门店数据
 	if req.Business == "" {
 		for _, es := range stores {
-			if es.Status == model.StoreStatusOpen {
-				s.facility(itemsMap[es.BranchID].FacilityMap, model.BranchFacility{
-					ID:    es.ID,
-					Type:  model.BranchFacilityTypeStore,
-					Name:  es.Name,
-					State: model.BranchFacilityStateOnline,
-					Num:   0,
-					Fid:   s.EncodeFacility(es, nil),
-				})
+			var eState uint
+			switch es.Status {
+			case model.StoreStatusOpen:
+				eState = model.BranchFacilityStateOnline
+			case model.StoreStatusClose:
+				eState = model.BranchFacilityStateOffline
+			default:
+				continue
 			}
+
+			esType := model.BranchFacilityTypeStore
+			if es.Rest {
+				esType = model.BranchFacilityTypeRest
+			}
+
+			s.facility(itemsMap[es.BranchID].FacilityMap, model.BranchFacility{
+				ID:    es.ID,
+				Type:  esType,
+				Name:  es.Name,
+				State: eState,
+				Num:   0,
+				Fid:   s.EncodeFacility(es, nil),
+			})
 		}
 	}
 
@@ -564,6 +614,11 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 			}
 			m.Facility = append(m.Facility, fa)
 		}
+		// 排序设施 (v60,v72,store,rest)
+		sort.Slice(items, func(i, j int) bool {
+			return strings.Compare(m.Facility[i].Type, m.Facility[j].Type) > 0
+		})
+
 		if len(m.Facility) > 0 {
 			items = append(items, m)
 		}
