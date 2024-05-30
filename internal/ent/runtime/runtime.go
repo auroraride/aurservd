@@ -81,6 +81,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -997,7 +998,7 @@ func init() {
 	// goods.DefaultType holds the default value on creation for the type field.
 	goods.DefaultType = goodsDescType.Default.(uint8)
 	// goodsDescStatus is the schema descriptor for status field.
-	goodsDescStatus := goodsFields[10].Descriptor()
+	goodsDescStatus := goodsFields[9].Descriptor()
 	// goods.DefaultStatus holds the default value on creation for the status field.
 	goods.DefaultStatus = goodsDescStatus.Default.(uint8)
 	instructionsMixin := schema.Instructions{}.Mixin()
@@ -1881,6 +1882,21 @@ func init() {
 	storeDescRest := storeFields[11].Descriptor()
 	// store.DefaultRest holds the default value on creation for the rest field.
 	store.DefaultRest = storeDescRest.Default.(bool)
+	storegoodsMixin := schema.StoreGoods{}.Mixin()
+	storegoodsMixinFields0 := storegoodsMixin[0].Fields()
+	_ = storegoodsMixinFields0
+	storegoodsFields := schema.StoreGoods{}.Fields()
+	_ = storegoodsFields
+	// storegoodsDescCreatedAt is the schema descriptor for created_at field.
+	storegoodsDescCreatedAt := storegoodsMixinFields0[0].Descriptor()
+	// storegoods.DefaultCreatedAt holds the default value on creation for the created_at field.
+	storegoods.DefaultCreatedAt = storegoodsDescCreatedAt.Default.(func() time.Time)
+	// storegoodsDescUpdatedAt is the schema descriptor for updated_at field.
+	storegoodsDescUpdatedAt := storegoodsMixinFields0[1].Descriptor()
+	// storegoods.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	storegoods.DefaultUpdatedAt = storegoodsDescUpdatedAt.Default.(func() time.Time)
+	// storegoods.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	storegoods.UpdateDefaultUpdatedAt = storegoodsDescUpdatedAt.UpdateDefault.(func() time.Time)
 	subscribeMixin := schema.Subscribe{}.Mixin()
 	subscribeMixinHooks2 := subscribeMixin[2].Hooks()
 	subscribeHooks := schema.Subscribe{}.Hooks()

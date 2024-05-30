@@ -897,6 +897,18 @@ func (f StoreFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StoreMutation", m)
 }
 
+// The StoreGoodsFunc type is an adapter to allow the use of ordinary
+// function as StoreGoods mutator.
+type StoreGoodsFunc func(context.Context, *ent.StoreGoodsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f StoreGoodsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.StoreGoodsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StoreGoodsMutation", m)
+}
+
 // The SubscribeFunc type is an adapter to allow the use of ordinary
 // function as Subscribe mutator.
 type SubscribeFunc func(context.Context, *ent.SubscribeMutation) (ent.Value, error)

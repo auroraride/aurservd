@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -44,12 +45,19 @@ const (
 	FieldPhotos = "photos"
 	// FieldIntro holds the string denoting the intro field in the database.
 	FieldIntro = "intro"
-	// FieldStoreIds holds the string denoting the store_ids field in the database.
-	FieldStoreIds = "store_ids"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// EdgeStores holds the string denoting the stores edge name in mutations.
+	EdgeStores = "stores"
 	// Table holds the table name of the goods in the database.
 	Table = "goods"
+	// StoresTable is the table that holds the stores relation/edge.
+	StoresTable = "store_goods"
+	// StoresInverseTable is the table name for the StoreGoods entity.
+	// It exists in this package in order to avoid circular dependency with the "storegoods" package.
+	StoresInverseTable = "store_goods"
+	// StoresColumn is the table column denoting the stores relation/edge.
+	StoresColumn = "goods_id"
 )
 
 // Columns holds all SQL columns for goods fields.
@@ -70,7 +78,6 @@ var Columns = []string{
 	FieldHeadPic,
 	FieldPhotos,
 	FieldIntro,
-	FieldStoreIds,
 	FieldStatus,
 }
 
@@ -164,4 +171,25 @@ func ByHeadPic(opts ...sql.OrderTermOption) OrderOption {
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByStoresCount orders the results by stores count.
+func ByStoresCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newStoresStep(), opts...)
+	}
+}
+
+// ByStores orders the results by stores terms.
+func ByStores(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStoresStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newStoresStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StoresInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, StoresTable, StoresColumn),
+	)
 }

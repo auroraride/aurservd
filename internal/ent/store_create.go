@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 )
 
 // StoreCreate is the builder for creating a Store entity.
@@ -301,6 +302,21 @@ func (sc *StoreCreate) AddExceptions(e ...*Exception) *StoreCreate {
 		ids[i] = e[i].ID
 	}
 	return sc.AddExceptionIDs(ids...)
+}
+
+// AddGoodIDs adds the "goods" edge to the StoreGoods entity by IDs.
+func (sc *StoreCreate) AddGoodIDs(ids ...uint64) *StoreCreate {
+	sc.mutation.AddGoodIDs(ids...)
+	return sc
+}
+
+// AddGoods adds the "goods" edges to the StoreGoods entity.
+func (sc *StoreCreate) AddGoods(s ...*StoreGoods) *StoreCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return sc.AddGoodIDs(ids...)
 }
 
 // Mutation returns the StoreMutation object of the builder.
@@ -618,6 +634,22 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(exception.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.GoodsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.GoodsTable,
+			Columns: []string{store.GoodsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

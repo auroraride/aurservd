@@ -67,14 +67,15 @@ func (Goods) Fields() []ent.Field {
 		field.String("head_pic").Comment("列表头图"),
 		field.Strings("photos").Comment("商品图片"),
 		field.Strings("intro").Comment("商品介绍"),
-		field.JSON("store_ids", []uint64{}).Comment("上架门店"),
 		field.Uint8("status").Default(0).Comment("商品状态 0下架 1上架"),
 	}
 }
 
 // Edges of the Goods.
 func (Goods) Edges() []ent.Edge {
-	return []ent.Edge{}
+	return []ent.Edge{
+		edge.To("stores", StoreGoods.Type),
+	}
 }
 
 func (Goods) Mixin() []ent.Mixin {

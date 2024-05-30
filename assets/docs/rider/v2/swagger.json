@@ -3858,6 +3858,113 @@
                 "FaultTypeOther"
             ]
         },
+        "definition.GoodsDetail": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "headPic": {
+                    "description": "商品头图",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "intro": {
+                    "description": "商品介绍",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "lables": {
+                    "description": "商品标签",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "description": "商品名称",
+                    "type": "string"
+                },
+                "photos": {
+                    "description": "商品图片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "description": "商品价格",
+                    "type": "number"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "商品编号",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "商品状态 0-已下架 1-已上架",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.GoodsStatus"
+                        }
+                    ]
+                },
+                "stores": {
+                    "description": "配置店铺信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Store"
+                    }
+                },
+                "type": {
+                    "description": "商品类型 1-电车",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.GoodsType"
+                        }
+                    ]
+                },
+                "weight": {
+                    "description": "商品权重",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.GoodsStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1
+            ],
+            "x-enum-comments": {
+                "GoodsStatusOffline": "下架",
+                "GoodsStatusOnline": "上架"
+            },
+            "x-enum-varnames": [
+                "GoodsStatusOffline",
+                "GoodsStatusOnline"
+            ]
+        },
+        "definition.GoodsType": {
+            "type": "integer",
+            "enum": [
+                1
+            ],
+            "x-enum-comments": {
+                "GoodsTypeEbike": "电车"
+            },
+            "x-enum-varnames": [
+                "GoodsTypeEbike"
+            ]
+        },
         "definition.InstructionsRes": {
             "type": "object",
             "properties": {
@@ -4321,6 +4428,13 @@
                     "description": "地址",
                     "type": "string"
                 },
+                "brands": {
+                    "description": "租车车电选项",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanEbikeBrandOption"
+                    }
+                },
                 "businessHours": {
                     "description": "营业时间",
                     "type": "string"
@@ -4384,9 +4498,20 @@
                     "description": "是否拥有驿站",
                     "type": "boolean"
                 },
+                "saleGoods": {
+                    "description": "买车列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.GoodsDetail"
+                    }
+                },
                 "status": {
                     "description": "门店状态 0维护 1营业 2休息 3隐藏",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.StoreStatus"
+                        }
+                    ]
                 }
             }
         },

@@ -3054,7 +3054,6 @@ var (
 		{Name: "head_pic", Type: field.TypeString, Comment: "列表头图"},
 		{Name: "photos", Type: field.TypeJSON, Comment: "商品图片"},
 		{Name: "intro", Type: field.TypeJSON, Comment: "商品介绍"},
-		{Name: "store_ids", Type: field.TypeJSON, Comment: "上架门店"},
 		{Name: "status", Type: field.TypeUint8, Comment: "商品状态 0下架 1上架", Default: 0},
 	}
 	// GoodsTable holds the schema information for the "goods" table.
@@ -3098,7 +3097,7 @@ var (
 			{
 				Name:    "goods_status",
 				Unique:  false,
-				Columns: []*schema.Column{GoodsColumns[17]},
+				Columns: []*schema.Column{GoodsColumns[16]},
 			},
 		},
 	}
@@ -5326,6 +5325,47 @@ var (
 			},
 		},
 	}
+	// StoreGoodsColumns holds the columns for the "store_goods" table.
+	StoreGoodsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "goods_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
+	}
+	// StoreGoodsTable holds the schema information for the "store_goods" table.
+	StoreGoodsTable = &schema.Table{
+		Name:       "store_goods",
+		Columns:    StoreGoodsColumns,
+		PrimaryKey: []*schema.Column{StoreGoodsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "store_goods_goods_stores",
+				Columns:    []*schema.Column{StoreGoodsColumns[4]},
+				RefColumns: []*schema.Column{GoodsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "store_goods_store_goods",
+				Columns:    []*schema.Column{StoreGoodsColumns[5]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "storegoods_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{StoreGoodsColumns[1]},
+			},
+			{
+				Name:    "storegoods_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{StoreGoodsColumns[3]},
+			},
+		},
+	}
 	// SubscribeColumns holds the columns for the "subscribe" table.
 	SubscribeColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -6153,6 +6193,7 @@ var (
 		StockTable,
 		StockSummaryTable,
 		StoreTable,
+		StoreGoodsTable,
 		SubscribeTable,
 		SubscribeAlterTable,
 		SubscribePauseTable,
@@ -6582,6 +6623,11 @@ func init() {
 	StoreTable.ForeignKeys[2].RefTable = CityTable
 	StoreTable.Annotation = &entsql.Annotation{
 		Table: "store",
+	}
+	StoreGoodsTable.ForeignKeys[0].RefTable = GoodsTable
+	StoreGoodsTable.ForeignKeys[1].RefTable = StoreTable
+	StoreGoodsTable.Annotation = &entsql.Annotation{
+		Table: "store_goods",
 	}
 	SubscribeTable.ForeignKeys[0].RefTable = EnterpriseTable
 	SubscribeTable.ForeignKeys[1].RefTable = RiderTable

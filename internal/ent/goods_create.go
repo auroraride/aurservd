@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/goods"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 )
 
 // GoodsCreate is the builder for creating a Goods entity.
@@ -153,12 +154,6 @@ func (gc *GoodsCreate) SetIntro(s []string) *GoodsCreate {
 	return gc
 }
 
-// SetStoreIds sets the "store_ids" field.
-func (gc *GoodsCreate) SetStoreIds(u []uint64) *GoodsCreate {
-	gc.mutation.SetStoreIds(u)
-	return gc
-}
-
 // SetStatus sets the "status" field.
 func (gc *GoodsCreate) SetStatus(u uint8) *GoodsCreate {
 	gc.mutation.SetStatus(u)
@@ -171,6 +166,21 @@ func (gc *GoodsCreate) SetNillableStatus(u *uint8) *GoodsCreate {
 		gc.SetStatus(*u)
 	}
 	return gc
+}
+
+// AddStoreIDs adds the "stores" edge to the StoreGoods entity by IDs.
+func (gc *GoodsCreate) AddStoreIDs(ids ...uint64) *GoodsCreate {
+	gc.mutation.AddStoreIDs(ids...)
+	return gc
+}
+
+// AddStores adds the "stores" edges to the StoreGoods entity.
+func (gc *GoodsCreate) AddStores(s ...*StoreGoods) *GoodsCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return gc.AddStoreIDs(ids...)
 }
 
 // Mutation returns the GoodsMutation object of the builder.
@@ -267,9 +277,6 @@ func (gc *GoodsCreate) check() error {
 	if _, ok := gc.mutation.Intro(); !ok {
 		return &ValidationError{Name: "intro", err: errors.New(`ent: missing required field "Goods.intro"`)}
 	}
-	if _, ok := gc.mutation.StoreIds(); !ok {
-		return &ValidationError{Name: "store_ids", err: errors.New(`ent: missing required field "Goods.store_ids"`)}
-	}
 	if _, ok := gc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Goods.status"`)}
 	}
@@ -360,13 +367,25 @@ func (gc *GoodsCreate) createSpec() (*Goods, *sqlgraph.CreateSpec) {
 		_spec.SetField(goods.FieldIntro, field.TypeJSON, value)
 		_node.Intro = value
 	}
-	if value, ok := gc.mutation.StoreIds(); ok {
-		_spec.SetField(goods.FieldStoreIds, field.TypeJSON, value)
-		_node.StoreIds = value
-	}
 	if value, ok := gc.mutation.Status(); ok {
 		_spec.SetField(goods.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
+	}
+	if nodes := gc.mutation.StoresIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   goods.StoresTable,
+			Columns: []string{goods.StoresColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -615,18 +634,6 @@ func (u *GoodsUpsert) SetIntro(v []string) *GoodsUpsert {
 // UpdateIntro sets the "intro" field to the value that was provided on create.
 func (u *GoodsUpsert) UpdateIntro() *GoodsUpsert {
 	u.SetExcluded(goods.FieldIntro)
-	return u
-}
-
-// SetStoreIds sets the "store_ids" field.
-func (u *GoodsUpsert) SetStoreIds(v []uint64) *GoodsUpsert {
-	u.Set(goods.FieldStoreIds, v)
-	return u
-}
-
-// UpdateStoreIds sets the "store_ids" field to the value that was provided on create.
-func (u *GoodsUpsert) UpdateStoreIds() *GoodsUpsert {
-	u.SetExcluded(goods.FieldStoreIds)
 	return u
 }
 
@@ -924,20 +931,6 @@ func (u *GoodsUpsertOne) SetIntro(v []string) *GoodsUpsertOne {
 func (u *GoodsUpsertOne) UpdateIntro() *GoodsUpsertOne {
 	return u.Update(func(s *GoodsUpsert) {
 		s.UpdateIntro()
-	})
-}
-
-// SetStoreIds sets the "store_ids" field.
-func (u *GoodsUpsertOne) SetStoreIds(v []uint64) *GoodsUpsertOne {
-	return u.Update(func(s *GoodsUpsert) {
-		s.SetStoreIds(v)
-	})
-}
-
-// UpdateStoreIds sets the "store_ids" field to the value that was provided on create.
-func (u *GoodsUpsertOne) UpdateStoreIds() *GoodsUpsertOne {
-	return u.Update(func(s *GoodsUpsert) {
-		s.UpdateStoreIds()
 	})
 }
 
@@ -1404,20 +1397,6 @@ func (u *GoodsUpsertBulk) SetIntro(v []string) *GoodsUpsertBulk {
 func (u *GoodsUpsertBulk) UpdateIntro() *GoodsUpsertBulk {
 	return u.Update(func(s *GoodsUpsert) {
 		s.UpdateIntro()
-	})
-}
-
-// SetStoreIds sets the "store_ids" field.
-func (u *GoodsUpsertBulk) SetStoreIds(v []uint64) *GoodsUpsertBulk {
-	return u.Update(func(s *GoodsUpsert) {
-		s.SetStoreIds(v)
-	})
-}
-
-// UpdateStoreIds sets the "store_ids" field to the value that was provided on create.
-func (u *GoodsUpsertBulk) UpdateStoreIds() *GoodsUpsertBulk {
-	return u.Update(func(s *GoodsUpsert) {
-		s.UpdateStoreIds()
 	})
 }
 

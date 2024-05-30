@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 )
 
 // GoodsUpdate is the builder for updating Goods entities.
@@ -236,18 +237,6 @@ func (gu *GoodsUpdate) AppendIntro(s []string) *GoodsUpdate {
 	return gu
 }
 
-// SetStoreIds sets the "store_ids" field.
-func (gu *GoodsUpdate) SetStoreIds(u []uint64) *GoodsUpdate {
-	gu.mutation.SetStoreIds(u)
-	return gu
-}
-
-// AppendStoreIds appends u to the "store_ids" field.
-func (gu *GoodsUpdate) AppendStoreIds(u []uint64) *GoodsUpdate {
-	gu.mutation.AppendStoreIds(u)
-	return gu
-}
-
 // SetStatus sets the "status" field.
 func (gu *GoodsUpdate) SetStatus(u uint8) *GoodsUpdate {
 	gu.mutation.ResetStatus()
@@ -269,9 +258,45 @@ func (gu *GoodsUpdate) AddStatus(u int8) *GoodsUpdate {
 	return gu
 }
 
+// AddStoreIDs adds the "stores" edge to the StoreGoods entity by IDs.
+func (gu *GoodsUpdate) AddStoreIDs(ids ...uint64) *GoodsUpdate {
+	gu.mutation.AddStoreIDs(ids...)
+	return gu
+}
+
+// AddStores adds the "stores" edges to the StoreGoods entity.
+func (gu *GoodsUpdate) AddStores(s ...*StoreGoods) *GoodsUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return gu.AddStoreIDs(ids...)
+}
+
 // Mutation returns the GoodsMutation object of the builder.
 func (gu *GoodsUpdate) Mutation() *GoodsMutation {
 	return gu.mutation
+}
+
+// ClearStores clears all "stores" edges to the StoreGoods entity.
+func (gu *GoodsUpdate) ClearStores() *GoodsUpdate {
+	gu.mutation.ClearStores()
+	return gu
+}
+
+// RemoveStoreIDs removes the "stores" edge to StoreGoods entities by IDs.
+func (gu *GoodsUpdate) RemoveStoreIDs(ids ...uint64) *GoodsUpdate {
+	gu.mutation.RemoveStoreIDs(ids...)
+	return gu
+}
+
+// RemoveStores removes "stores" edges to StoreGoods entities.
+func (gu *GoodsUpdate) RemoveStores(s ...*StoreGoods) *GoodsUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return gu.RemoveStoreIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -409,19 +434,56 @@ func (gu *GoodsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			sqljson.Append(u, goods.FieldIntro, value)
 		})
 	}
-	if value, ok := gu.mutation.StoreIds(); ok {
-		_spec.SetField(goods.FieldStoreIds, field.TypeJSON, value)
-	}
-	if value, ok := gu.mutation.AppendedStoreIds(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, goods.FieldStoreIds, value)
-		})
-	}
 	if value, ok := gu.mutation.Status(); ok {
 		_spec.SetField(goods.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := gu.mutation.AddedStatus(); ok {
 		_spec.AddField(goods.FieldStatus, field.TypeUint8, value)
+	}
+	if gu.mutation.StoresCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   goods.StoresTable,
+			Columns: []string{goods.StoresColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := gu.mutation.RemovedStoresIDs(); len(nodes) > 0 && !gu.mutation.StoresCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   goods.StoresTable,
+			Columns: []string{goods.StoresColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := gu.mutation.StoresIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   goods.StoresTable,
+			Columns: []string{goods.StoresColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(gu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, gu.driver, _spec); err != nil {
@@ -650,18 +712,6 @@ func (guo *GoodsUpdateOne) AppendIntro(s []string) *GoodsUpdateOne {
 	return guo
 }
 
-// SetStoreIds sets the "store_ids" field.
-func (guo *GoodsUpdateOne) SetStoreIds(u []uint64) *GoodsUpdateOne {
-	guo.mutation.SetStoreIds(u)
-	return guo
-}
-
-// AppendStoreIds appends u to the "store_ids" field.
-func (guo *GoodsUpdateOne) AppendStoreIds(u []uint64) *GoodsUpdateOne {
-	guo.mutation.AppendStoreIds(u)
-	return guo
-}
-
 // SetStatus sets the "status" field.
 func (guo *GoodsUpdateOne) SetStatus(u uint8) *GoodsUpdateOne {
 	guo.mutation.ResetStatus()
@@ -683,9 +733,45 @@ func (guo *GoodsUpdateOne) AddStatus(u int8) *GoodsUpdateOne {
 	return guo
 }
 
+// AddStoreIDs adds the "stores" edge to the StoreGoods entity by IDs.
+func (guo *GoodsUpdateOne) AddStoreIDs(ids ...uint64) *GoodsUpdateOne {
+	guo.mutation.AddStoreIDs(ids...)
+	return guo
+}
+
+// AddStores adds the "stores" edges to the StoreGoods entity.
+func (guo *GoodsUpdateOne) AddStores(s ...*StoreGoods) *GoodsUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return guo.AddStoreIDs(ids...)
+}
+
 // Mutation returns the GoodsMutation object of the builder.
 func (guo *GoodsUpdateOne) Mutation() *GoodsMutation {
 	return guo.mutation
+}
+
+// ClearStores clears all "stores" edges to the StoreGoods entity.
+func (guo *GoodsUpdateOne) ClearStores() *GoodsUpdateOne {
+	guo.mutation.ClearStores()
+	return guo
+}
+
+// RemoveStoreIDs removes the "stores" edge to StoreGoods entities by IDs.
+func (guo *GoodsUpdateOne) RemoveStoreIDs(ids ...uint64) *GoodsUpdateOne {
+	guo.mutation.RemoveStoreIDs(ids...)
+	return guo
+}
+
+// RemoveStores removes "stores" edges to StoreGoods entities.
+func (guo *GoodsUpdateOne) RemoveStores(s ...*StoreGoods) *GoodsUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return guo.RemoveStoreIDs(ids...)
 }
 
 // Where appends a list predicates to the GoodsUpdate builder.
@@ -853,19 +939,56 @@ func (guo *GoodsUpdateOne) sqlSave(ctx context.Context) (_node *Goods, err error
 			sqljson.Append(u, goods.FieldIntro, value)
 		})
 	}
-	if value, ok := guo.mutation.StoreIds(); ok {
-		_spec.SetField(goods.FieldStoreIds, field.TypeJSON, value)
-	}
-	if value, ok := guo.mutation.AppendedStoreIds(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, goods.FieldStoreIds, value)
-		})
-	}
 	if value, ok := guo.mutation.Status(); ok {
 		_spec.SetField(goods.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := guo.mutation.AddedStatus(); ok {
 		_spec.AddField(goods.FieldStatus, field.TypeUint8, value)
+	}
+	if guo.mutation.StoresCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   goods.StoresTable,
+			Columns: []string{goods.StoresColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := guo.mutation.RemovedStoresIDs(); len(nodes) > 0 && !guo.mutation.StoresCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   goods.StoresTable,
+			Columns: []string{goods.StoresColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := guo.mutation.StoresIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   goods.StoresTable,
+			Columns: []string{goods.StoresColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(guo.modifiers...)
 	_node = &Goods{config: guo.config}

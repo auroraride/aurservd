@@ -270,3 +270,101 @@ func SortIDOptions(options model.PlanDaysPriceOptions) {
 		return numI < numJ
 	})
 }
+
+// EbikeList 撤店套餐列表
+func (s *planBiz) EbikeList(brandIds []uint64) *definition.PlanNewlyRes {
+
+	today := carbon.Now().StartOfDay().StdTime()
+
+	items := s.orm.QueryNotDeleted().
+		Where(
+			plan.Enable(true),
+			plan.StartLTE(today),
+			plan.EndGTE(today),
+			plan.BrandIDIn(brandIds...),
+		).
+		WithBrand().
+		WithCities().
+		WithAgreement().
+		Order(ent.Asc(plan.FieldDays)).
+		AllX(s.ctx)
+
+	bmap := make(map[uint64]*model.PlanEbikeBrandOption)
+
+	serv := service.NewPlanIntroduce()
+	intro := serv.QueryMap()
+
+	// // 查询个签默认协议
+	// var defaultAgreement *ent.Agreement
+	// defaultAgreement, _ = ent.Database.Agreement.QueryNotDeleted().
+	// 	Where(
+	// 		agreement.UserType(model.AgreementUserTypePersonal.Value()),
+	// 		agreement.IsDefault(true),
+	// 	).First(s.ctx)
+
+	for _, item := range items {
+		// 可用城市
+		var cs []string
+		for _, c := range item.Edges.Cities {
+			cs = append(cs, c.Name)
+		}
+		// 封装电池型号
+		m := &model.PlanModelOption{
+			Children: new(model.PlanDaysPriceOptions),
+			Model:    item.Model,
+			Intro:    intro[serv.Key(item.Model, item.BrandID)],
+			Notes:    append(item.Notes, fmt.Sprintf("仅限 %s 使用", strings.Join(cs, " / "))),
+		}
+		switch item.Type {
+		case model.PlanTypeEbikeWithBattery.Value():
+			var b *model.PlanEbikeBrandOption
+			bid := *item.BrandID
+			b, ok := bmap[bid]
+			if !ok {
+				brand := item.Edges.Brand
+				b = &model.PlanEbikeBrandOption{
+					Children: new(model.PlanModelOptions),
+					Name:     brand.Name,
+					Cover:    brand.Cover,
+				}
+				bmap[bid] = b
+			}
+
+			var exists bool
+			for _, c := range *b.Children {
+				if c.Model == item.Model {
+					exists = true
+				}
+			}
+			if !exists {
+				*b.Children = append(*b.Children, m)
+			}
+		default:
+		}
+	}
+
+	res := &definition.PlanNewlyRes{}
+
+	settings, _ := ent.Database.Setting.Query().Where(setting.KeyIn(model.SettingPlanBatteryDescriptionKey, model.SettingPlanEbikeDescriptionKey)).All(context.Background())
+	for _, sm := range settings {
+		var v model.SettingPlanDescription
+		err := jsoniter.Unmarshal([]byte(sm.Content), &v)
+		if err == nil {
+			switch sm.Key {
+			case model.SettingPlanBatteryDescriptionKey:
+				res.BatteryDescription = v
+			case model.SettingPlanEbikeDescriptionKey:
+				res.EbikeDescription = v
+			}
+		}
+	}
+
+	for _, b := range bmap {
+		res.Brands = append(res.Brands, b)
+		SortPlanEbikeModelByName(*b.Children)
+	}
+
+	SortPlanEbikeBrandByName(res.Brands)
+
+	return res
+}

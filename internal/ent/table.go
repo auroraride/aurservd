@@ -882,6 +882,16 @@ func (s *Store) GetName() string {
 	return s.Name
 }
 
+// GetTableName returns table name for StoreGoods.
+func (sg *StoreGoods) GetTableName() string {
+	return "store_goods"
+}
+
+// GetID returns id for StoreGoods.
+func (sg *StoreGoods) GetID() uint64 {
+	return sg.ID
+}
+
 // GetTableName returns table name for Subscribe.
 func (s *Subscribe) GetTableName() string {
 	return "subscribe"

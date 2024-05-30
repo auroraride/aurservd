@@ -69,6 +69,8 @@ const (
 	EdgeAttendances = "attendances"
 	// EdgeExceptions holds the string denoting the exceptions edge name in mutations.
 	EdgeExceptions = "exceptions"
+	// EdgeGoods holds the string denoting the goods edge name in mutations.
+	EdgeGoods = "goods"
 	// Table holds the table name of the store in the database.
 	Table = "store"
 	// CityTable is the table that holds the city relation/edge.
@@ -113,6 +115,13 @@ const (
 	ExceptionsInverseTable = "exception"
 	// ExceptionsColumn is the table column denoting the exceptions relation/edge.
 	ExceptionsColumn = "store_id"
+	// GoodsTable is the table that holds the goods relation/edge.
+	GoodsTable = "store_goods"
+	// GoodsInverseTable is the table name for the StoreGoods entity.
+	// It exists in this package in order to avoid circular dependency with the "storegoods" package.
+	GoodsInverseTable = "store_goods"
+	// GoodsColumn is the table column denoting the goods relation/edge.
+	GoodsColumn = "store_id"
 )
 
 // Columns holds all SQL columns for store fields.
@@ -336,6 +345,20 @@ func ByExceptions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newExceptionsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByGoodsCount orders the results by goods count.
+func ByGoodsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newGoodsStep(), opts...)
+	}
+}
+
+// ByGoods orders the results by goods terms.
+func ByGoods(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newGoodsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -376,5 +399,12 @@ func newExceptionsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ExceptionsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ExceptionsTable, ExceptionsColumn),
+	)
+}
+func newGoodsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(GoodsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, GoodsTable, GoodsColumn),
 	)
 }

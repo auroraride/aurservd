@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -12,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 )
 
 // GoodsQuery is the builder for querying Goods entities.
@@ -21,6 +23,7 @@ type GoodsQuery struct {
 	order      []goods.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Goods
+	withStores *StoreGoodsQuery
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -56,6 +59,28 @@ func (gq *GoodsQuery) Unique(unique bool) *GoodsQuery {
 func (gq *GoodsQuery) Order(o ...goods.OrderOption) *GoodsQuery {
 	gq.order = append(gq.order, o...)
 	return gq
+}
+
+// QueryStores chains the current query on the "stores" edge.
+func (gq *GoodsQuery) QueryStores() *StoreGoodsQuery {
+	query := (&StoreGoodsClient{config: gq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := gq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := gq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(goods.Table, goods.FieldID, selector),
+			sqlgraph.To(storegoods.Table, storegoods.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, goods.StoresTable, goods.StoresColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(gq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Goods entity from the query.
@@ -250,10 +275,22 @@ func (gq *GoodsQuery) Clone() *GoodsQuery {
 		order:      append([]goods.OrderOption{}, gq.order...),
 		inters:     append([]Interceptor{}, gq.inters...),
 		predicates: append([]predicate.Goods{}, gq.predicates...),
+		withStores: gq.withStores.Clone(),
 		// clone intermediate query.
 		sql:  gq.sql.Clone(),
 		path: gq.path,
 	}
+}
+
+// WithStores tells the query-builder to eager-load the nodes that are connected to
+// the "stores" edge. The optional arguments are used to configure the query builder of the edge.
+func (gq *GoodsQuery) WithStores(opts ...func(*StoreGoodsQuery)) *GoodsQuery {
+	query := (&StoreGoodsClient{config: gq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	gq.withStores = query
+	return gq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -332,8 +369,11 @@ func (gq *GoodsQuery) prepareQuery(ctx context.Context) error {
 
 func (gq *GoodsQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Goods, error) {
 	var (
-		nodes = []*Goods{}
-		_spec = gq.querySpec()
+		nodes       = []*Goods{}
+		_spec       = gq.querySpec()
+		loadedTypes = [1]bool{
+			gq.withStores != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Goods).scanValues(nil, columns)
@@ -341,6 +381,7 @@ func (gq *GoodsQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Goods,
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Goods{config: gq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(gq.modifiers) > 0 {
@@ -355,7 +396,45 @@ func (gq *GoodsQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Goods,
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := gq.withStores; query != nil {
+		if err := gq.loadStores(ctx, query, nodes,
+			func(n *Goods) { n.Edges.Stores = []*StoreGoods{} },
+			func(n *Goods, e *StoreGoods) { n.Edges.Stores = append(n.Edges.Stores, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (gq *GoodsQuery) loadStores(ctx context.Context, query *StoreGoodsQuery, nodes []*Goods, init func(*Goods), assign func(*Goods, *StoreGoods)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Goods)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(storegoods.FieldGoodsID)
+	}
+	query.Where(predicate.StoreGoods(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(goods.StoresColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.GoodsID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "goods_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (gq *GoodsQuery) sqlCount(ctx context.Context) (int, error) {
@@ -453,11 +532,15 @@ func (gq *GoodsQuery) Modify(modifiers ...func(s *sql.Selector)) *GoodsSelect {
 
 type GoodsQueryWith string
 
-var ()
+var (
+	GoodsQueryWithStores GoodsQueryWith = "Stores"
+)
 
 func (gq *GoodsQuery) With(withEdges ...GoodsQueryWith) *GoodsQuery {
 	for _, v := range withEdges {
 		switch v {
+		case GoodsQueryWithStores:
+			gq.WithStores()
 		}
 	}
 	return gq

@@ -89,6 +89,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -252,6 +253,8 @@ type Client struct {
 	StockSummary *StockSummaryClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
+	// StoreGoods is the client for interacting with the StoreGoods builders.
+	StoreGoods *StoreGoodsClient
 	// Subscribe is the client for interacting with the Subscribe builders.
 	Subscribe *SubscribeClient
 	// SubscribeAlter is the client for interacting with the SubscribeAlter builders.
@@ -349,6 +352,7 @@ func (c *Client) init() {
 	c.Stock = NewStockClient(c.config)
 	c.StockSummary = NewStockSummaryClient(c.config)
 	c.Store = NewStoreClient(c.config)
+	c.StoreGoods = NewStoreGoodsClient(c.config)
 	c.Subscribe = NewSubscribeClient(c.config)
 	c.SubscribeAlter = NewSubscribeAlterClient(c.config)
 	c.SubscribePause = NewSubscribePauseClient(c.config)
@@ -521,6 +525,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Stock:                      NewStockClient(cfg),
 		StockSummary:               NewStockSummaryClient(cfg),
 		Store:                      NewStoreClient(cfg),
+		StoreGoods:                 NewStoreGoodsClient(cfg),
 		Subscribe:                  NewSubscribeClient(cfg),
 		SubscribeAlter:             NewSubscribeAlterClient(cfg),
 		SubscribePause:             NewSubscribePauseClient(cfg),
@@ -620,6 +625,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Stock:                      NewStockClient(cfg),
 		StockSummary:               NewStockSummaryClient(cfg),
 		Store:                      NewStoreClient(cfg),
+		StoreGoods:                 NewStoreGoodsClient(cfg),
 		Subscribe:                  NewSubscribeClient(cfg),
 		SubscribeAlter:             NewSubscribeAlterClient(cfg),
 		SubscribePause:             NewSubscribePauseClient(cfg),
@@ -671,8 +677,8 @@ func (c *Client) Use(hooks ...Hook) {
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
 		c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
-		c.Subscribe, c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder,
-		c.SubscribeSuspend, c.Version,
+		c.StoreGoods, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
+		c.SubscribeReminder, c.SubscribeSuspend, c.Version,
 	} {
 		n.Use(hooks...)
 	}
@@ -698,8 +704,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
 		c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
-		c.Subscribe, c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder,
-		c.SubscribeSuspend, c.Version,
+		c.StoreGoods, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
+		c.SubscribeReminder, c.SubscribeSuspend, c.Version,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -856,6 +862,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.StockSummary.mutate(ctx, m)
 	case *StoreMutation:
 		return c.Store.mutate(ctx, m)
+	case *StoreGoodsMutation:
+		return c.StoreGoods.mutate(ctx, m)
 	case *SubscribeMutation:
 		return c.Subscribe.mutate(ctx, m)
 	case *SubscribeAlterMutation:
@@ -8557,6 +8565,22 @@ func (c *GoodsClient) GetX(ctx context.Context, id uint64) *Goods {
 	return obj
 }
 
+// QueryStores queries the stores edge of a Goods.
+func (c *GoodsClient) QueryStores(_go *Goods) *StoreGoodsQuery {
+	query := (&StoreGoodsClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _go.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(goods.Table, goods.FieldID, id),
+			sqlgraph.To(storegoods.Table, storegoods.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, goods.StoresTable, goods.StoresColumn),
+		)
+		fromV = sqlgraph.Neighbors(_go.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *GoodsClient) Hooks() []Hook {
 	hooks := c.hooks.Goods
@@ -15069,6 +15093,22 @@ func (c *StoreClient) QueryExceptions(s *Store) *ExceptionQuery {
 	return query
 }
 
+// QueryGoods queries the goods edge of a Store.
+func (c *StoreClient) QueryGoods(s *Store) *StoreGoodsQuery {
+	query := (&StoreGoodsClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, id),
+			sqlgraph.To(storegoods.Table, storegoods.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, store.GoodsTable, store.GoodsColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *StoreClient) Hooks() []Hook {
 	hooks := c.hooks.Store
@@ -15092,6 +15132,171 @@ func (c *StoreClient) mutate(ctx context.Context, m *StoreMutation) (Value, erro
 		return (&StoreDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Store mutation op: %q", m.Op())
+	}
+}
+
+// StoreGoodsClient is a client for the StoreGoods schema.
+type StoreGoodsClient struct {
+	config
+}
+
+// NewStoreGoodsClient returns a client for the StoreGoods from the given config.
+func NewStoreGoodsClient(c config) *StoreGoodsClient {
+	return &StoreGoodsClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `storegoods.Hooks(f(g(h())))`.
+func (c *StoreGoodsClient) Use(hooks ...Hook) {
+	c.hooks.StoreGoods = append(c.hooks.StoreGoods, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `storegoods.Intercept(f(g(h())))`.
+func (c *StoreGoodsClient) Intercept(interceptors ...Interceptor) {
+	c.inters.StoreGoods = append(c.inters.StoreGoods, interceptors...)
+}
+
+// Create returns a builder for creating a StoreGoods entity.
+func (c *StoreGoodsClient) Create() *StoreGoodsCreate {
+	mutation := newStoreGoodsMutation(c.config, OpCreate)
+	return &StoreGoodsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of StoreGoods entities.
+func (c *StoreGoodsClient) CreateBulk(builders ...*StoreGoodsCreate) *StoreGoodsCreateBulk {
+	return &StoreGoodsCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *StoreGoodsClient) MapCreateBulk(slice any, setFunc func(*StoreGoodsCreate, int)) *StoreGoodsCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &StoreGoodsCreateBulk{err: fmt.Errorf("calling to StoreGoodsClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*StoreGoodsCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &StoreGoodsCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for StoreGoods.
+func (c *StoreGoodsClient) Update() *StoreGoodsUpdate {
+	mutation := newStoreGoodsMutation(c.config, OpUpdate)
+	return &StoreGoodsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *StoreGoodsClient) UpdateOne(sg *StoreGoods) *StoreGoodsUpdateOne {
+	mutation := newStoreGoodsMutation(c.config, OpUpdateOne, withStoreGoods(sg))
+	return &StoreGoodsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *StoreGoodsClient) UpdateOneID(id uint64) *StoreGoodsUpdateOne {
+	mutation := newStoreGoodsMutation(c.config, OpUpdateOne, withStoreGoodsID(id))
+	return &StoreGoodsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for StoreGoods.
+func (c *StoreGoodsClient) Delete() *StoreGoodsDelete {
+	mutation := newStoreGoodsMutation(c.config, OpDelete)
+	return &StoreGoodsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *StoreGoodsClient) DeleteOne(sg *StoreGoods) *StoreGoodsDeleteOne {
+	return c.DeleteOneID(sg.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *StoreGoodsClient) DeleteOneID(id uint64) *StoreGoodsDeleteOne {
+	builder := c.Delete().Where(storegoods.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &StoreGoodsDeleteOne{builder}
+}
+
+// Query returns a query builder for StoreGoods.
+func (c *StoreGoodsClient) Query() *StoreGoodsQuery {
+	return &StoreGoodsQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeStoreGoods},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a StoreGoods entity by its id.
+func (c *StoreGoodsClient) Get(ctx context.Context, id uint64) (*StoreGoods, error) {
+	return c.Query().Where(storegoods.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *StoreGoodsClient) GetX(ctx context.Context, id uint64) *StoreGoods {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryGoods queries the goods edge of a StoreGoods.
+func (c *StoreGoodsClient) QueryGoods(sg *StoreGoods) *GoodsQuery {
+	query := (&GoodsClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := sg.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(storegoods.Table, storegoods.FieldID, id),
+			sqlgraph.To(goods.Table, goods.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, storegoods.GoodsTable, storegoods.GoodsColumn),
+		)
+		fromV = sqlgraph.Neighbors(sg.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a StoreGoods.
+func (c *StoreGoodsClient) QueryStore(sg *StoreGoods) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := sg.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(storegoods.Table, storegoods.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, storegoods.StoreTable, storegoods.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(sg.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *StoreGoodsClient) Hooks() []Hook {
+	return c.hooks.StoreGoods
+}
+
+// Interceptors returns the client interceptors.
+func (c *StoreGoodsClient) Interceptors() []Interceptor {
+	return c.inters.StoreGoods
+}
+
+func (c *StoreGoodsClient) mutate(ctx context.Context, m *StoreGoodsMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&StoreGoodsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&StoreGoodsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&StoreGoodsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&StoreGoodsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown StoreGoods mutation op: %q", m.Op())
 	}
 }
 
@@ -16555,7 +16760,7 @@ type (
 		PromotionPerson, PromotionPrivilege, PromotionReferrals,
 		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
 		QuestionCategory, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
-		StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
+		StockSummary, Store, StoreGoods, Subscribe, SubscribeAlter, SubscribePause,
 		SubscribeReminder, SubscribeSuspend, Version []ent.Hook
 	}
 	inters struct {
@@ -16573,7 +16778,7 @@ type (
 		PromotionPerson, PromotionPrivilege, PromotionReferrals,
 		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
 		QuestionCategory, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
-		StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
+		StockSummary, Store, StoreGoods, Subscribe, SubscribeAlter, SubscribePause,
 		SubscribeReminder, SubscribeSuspend, Version []ent.Interceptor
 	}
 )

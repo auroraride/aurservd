@@ -228,6 +228,9 @@ type StockSummary func(*sql.Selector)
 // Store is the predicate function for store builders.
 type Store func(*sql.Selector)
 
+// StoreGoods is the predicate function for storegoods builders.
+type StoreGoods func(*sql.Selector)
+
 // Subscribe is the predicate function for subscribe builders.
 type Subscribe func(*sql.Selector)
 

@@ -58,6 +58,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/version"
@@ -2136,6 +2137,46 @@ func (c *StoreClient) GetNotDeleted(ctx context.Context, id uint64) (*Store, err
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *StoreClient) GetNotDeletedX(ctx context.Context, id uint64) *Store {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for StoreGoods.
+func (c *StoreGoodsClient) SoftDelete() *StoreGoodsUpdate {
+	mutation := newStoreGoodsMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &StoreGoodsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *StoreGoodsClient) SoftDeleteOne(sg *StoreGoods) *StoreGoodsUpdateOne {
+	mutation := newStoreGoodsMutation(c.config, OpUpdateOne, withStoreGoods(sg))
+	mutation.SetDeletedAt(time.Now())
+	return &StoreGoodsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *StoreGoodsClient) SoftDeleteOneID(id uint64) *StoreGoodsUpdateOne {
+	mutation := newStoreGoodsMutation(c.config, OpUpdateOne, withStoreGoodsID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &StoreGoodsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for StoreGoods.
+func (c *StoreGoodsClient) QueryNotDeleted() *StoreGoodsQuery {
+	return c.Query().Where(storegoods.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a StoreGoods not deleted entity by its id.
+func (c *StoreGoodsClient) GetNotDeleted(ctx context.Context, id uint64) (*StoreGoods, error) {
+	return c.Query().Where(storegoods.ID(id), storegoods.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *StoreGoodsClient) GetNotDeletedX(ctx context.Context, id uint64) *StoreGoods {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

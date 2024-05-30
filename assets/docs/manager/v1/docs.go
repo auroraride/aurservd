@@ -14530,7 +14530,7 @@ const docTemplate = `{
                     "description": "创建时间",
                     "type": "string"
                 },
-                "head_pic": {
+                "headPic": {
                     "description": "商品头图",
                     "type": "string"
                 },
@@ -14581,13 +14581,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/definition.GoodsStatus"
                         }
                     ]
-                },
-                "storeIds": {
-                    "description": "商家店铺IDS",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
                 },
                 "stores": {
                     "description": "配置店铺信息",

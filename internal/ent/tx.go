@@ -162,6 +162,8 @@ type Tx struct {
 	StockSummary *StockSummaryClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
+	// StoreGoods is the client for interacting with the StoreGoods builders.
+	StoreGoods *StoreGoodsClient
 	// Subscribe is the client for interacting with the Subscribe builders.
 	Subscribe *SubscribeClient
 	// SubscribeAlter is the client for interacting with the SubscribeAlter builders.
@@ -379,6 +381,7 @@ func (tx *Tx) init() {
 	tx.Stock = NewStockClient(tx.config)
 	tx.StockSummary = NewStockSummaryClient(tx.config)
 	tx.Store = NewStoreClient(tx.config)
+	tx.StoreGoods = NewStoreGoodsClient(tx.config)
 	tx.Subscribe = NewSubscribeClient(tx.config)
 	tx.SubscribeAlter = NewSubscribeAlterClient(tx.config)
 	tx.SubscribePause = NewSubscribePauseClient(tx.config)

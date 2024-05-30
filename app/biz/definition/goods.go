@@ -5,8 +5,6 @@
 package definition
 
 import (
-	"time"
-
 	"github.com/auroraride/aurservd/app/model"
 )
 
@@ -49,12 +47,11 @@ type Goods struct {
 	Lables    []string      `json:"lables"`    // 商品标签
 	Price     float64       `json:"price"`     // 商品价格
 	Weight    int           `json:"weight"`    // 商品权重
-	HeadPic   string        `json:"head_pic"`  // 商品头图
+	HeadPic   string        `json:"headPic"`   // 商品头图
 	Photos    []string      `json:"photos"`    // 商品图片
 	Intro     []string      `json:"intro"`     // 商品介绍
-	StoreIds  []uint64      `json:"storeIds"`  // 商家店铺IDS
 	Stores    []model.Store `json:"stores"`    // 配置店铺信息
-	CreatedAt time.Time     `json:"createdAt"` // 创建时间
+	CreatedAt string        `json:"createdAt"` // 创建时间
 	Status    GoodsStatus   `json:"status"`    // 商品状态 0-已下架 1-已上架
 	Remark    string        `json:"remark"`    // 备注
 }

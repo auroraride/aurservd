@@ -8,11 +8,13 @@ import (
 	"context"
 	"errors"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/goods"
-	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
@@ -39,7 +41,12 @@ func NewGoodsWithModifierBiz(m *model.Modifier) *goodsBiz {
 }
 
 func (s *goodsBiz) List(req *definition.GoodsListReq) *model.PaginationRes {
-	query := s.orm.Query().Order(ent.Desc(goods.FieldWeight))
+	query := s.orm.QueryNotDeleted().Order(ent.Desc(goods.FieldWeight)).
+		WithStores(
+			func(q *ent.StoreGoodsQuery) {
+				q.Where(storegoods.DeletedAtIsNil()).WithStore()
+			},
+		)
 	if req.Keyword != nil {
 		query.Where(
 			goods.Or(
@@ -67,11 +74,10 @@ func (s *goodsBiz) List(req *definition.GoodsListReq) *model.PaginationRes {
 func toGoodsDetail(item *ent.Goods) *definition.GoodsDetail {
 	// 查询配置的门店信息
 	var stores []model.Store
-	sis, _ := ent.Database.Store.Query().Where(store.IDIn(item.StoreIds...)).All(context.Background())
-	for _, si := range sis {
+	for _, es := range item.Edges.Stores {
 		stores = append(stores, model.Store{
-			ID:   si.ID,
-			Name: si.Name,
+			ID:   es.Edges.Store.ID,
+			Name: es.Edges.Store.Name,
 		})
 	}
 	return &definition.GoodsDetail{
@@ -86,9 +92,8 @@ func toGoodsDetail(item *ent.Goods) *definition.GoodsDetail {
 			HeadPic:   item.HeadPic,
 			Photos:    item.Photos,
 			Intro:     item.Intro,
-			StoreIds:  item.StoreIds,
 			Stores:    stores,
-			CreatedAt: item.CreatedAt,
+			CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
 			Status:    definition.GoodsStatus(item.Status),
 			Remark:    item.Remark,
 		},
@@ -97,20 +102,30 @@ func toGoodsDetail(item *ent.Goods) *definition.GoodsDetail {
 
 func (s *goodsBiz) Create(req *definition.GoodsCreateReq) (err error) {
 	sn := tools.NewUnique().NewSN()
-	_, err = s.orm.Create().
+	var item *ent.Goods
+	item, err = s.orm.Create().
 		SetSn(sn).
 		SetName(req.Name).
 		SetType(definition.GoodsTypeEbike.Value()).
+		SetLables(req.Lables).
 		SetPrice(req.Price).
 		SetWeight(req.Weight).
 		SetHeadPic(req.HeadPic).
 		SetPhotos(req.Photos).
 		SetIntro(req.Intro).
-		SetStoreIds(req.StoreIds).
 		SetRemark(req.Remark).
 		SetStatus(definition.GoodsStatusOnline.Value()).
 		Save(s.ctx)
-	return
+	if err != nil {
+		return err
+	}
+
+	bulk := make([]*ent.StoreGoodsCreate, len(req.StoreIds))
+	for i, storeId := range req.StoreIds {
+		bulk[i] = ent.Database.StoreGoods.Create().SetGoodsID(item.ID).SetStoreID(storeId)
+	}
+
+	return ent.Database.StoreGoods.CreateBulk(bulk...).Exec(s.ctx)
 }
 
 func (s *goodsBiz) Delete(id uint64) (err error) {
@@ -139,13 +154,24 @@ func (s *goodsBiz) Modify(req *definition.GoodsModifyReq) (err error) {
 		SetHeadPic(req.HeadPic).
 		SetPhotos(req.Photos).
 		SetIntro(req.Intro).
-		SetStoreIds(req.StoreIds).
 		SetRemark(req.Remark).
 		SetStatus(definition.GoodsStatusOnline.Value()).
 		Save(s.ctx)
 	if err != nil {
 		return err
 	}
+
+	for _, storeId := range req.StoreIds {
+		_ = ent.Database.StoreGoods.Update().
+			Where(
+				storegoods.GoodsID(g.ID),
+				storegoods.StoreID(storeId),
+			).
+			SetGoodsID(g.ID).
+			SetStoreID(storeId).
+			Exec(s.ctx)
+	}
+
 	return
 }
 
@@ -172,6 +198,19 @@ func (s *goodsBiz) UpdateStatus(req *definition.GoodsUpdateStatusReq) (err error
 		Save(s.ctx)
 	if err != nil {
 		return err
+	}
+	return
+}
+
+func (s *goodsBiz) ListByStoreId(storeId uint64) (res []*definition.GoodsDetail) {
+	items, _ := s.orm.QueryNotDeleted().Order(ent.Desc(goods.FieldWeight)).
+		Where(
+			goods.Status(definition.GoodsStatusOnline.Value()),
+			goods.HasStoresWith(storegoods.StoreID(storeId), storegoods.DeletedAtIsNil()),
+		).All(s.ctx)
+
+	for _, item := range items {
+		res = append(res, toGoodsDetail(item))
 	}
 	return
 }

@@ -49,11 +49,30 @@ type Goods struct {
 	Photos []string `json:"photos,omitempty"`
 	// 商品介绍
 	Intro []string `json:"intro,omitempty"`
-	// 上架门店
-	StoreIds []uint64 `json:"store_ids,omitempty"`
 	// 商品状态 0下架 1上架
-	Status       uint8 `json:"status,omitempty"`
+	Status uint8 `json:"status,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the GoodsQuery when eager-loading is set.
+	Edges        GoodsEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// GoodsEdges holds the relations/edges for other nodes in the graph.
+type GoodsEdges struct {
+	// Stores holds the value of the stores edge.
+	Stores []*StoreGoods `json:"stores,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// StoresOrErr returns the Stores value or an error if the edge
+// was not loaded in eager-loading.
+func (e GoodsEdges) StoresOrErr() ([]*StoreGoods, error) {
+	if e.loadedTypes[0] {
+		return e.Stores, nil
+	}
+	return nil, &NotLoadedError{edge: "stores"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -61,7 +80,7 @@ func (*Goods) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case goods.FieldCreator, goods.FieldLastModifier, goods.FieldLables, goods.FieldPhotos, goods.FieldIntro, goods.FieldStoreIds:
+		case goods.FieldCreator, goods.FieldLastModifier, goods.FieldLables, goods.FieldPhotos, goods.FieldIntro:
 			values[i] = new([]byte)
 		case goods.FieldPrice:
 			values[i] = new(sql.NullFloat64)
@@ -193,14 +212,6 @@ func (_go *Goods) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field intro: %w", err)
 				}
 			}
-		case goods.FieldStoreIds:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field store_ids", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &_go.StoreIds); err != nil {
-					return fmt.Errorf("unmarshal field store_ids: %w", err)
-				}
-			}
 		case goods.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
@@ -218,6 +229,11 @@ func (_go *Goods) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (_go *Goods) Value(name string) (ent.Value, error) {
 	return _go.selectValues.Get(name)
+}
+
+// QueryStores queries the "stores" edge of the Goods entity.
+func (_go *Goods) QueryStores() *StoreGoodsQuery {
+	return NewGoodsClient(_go.config).QueryStores(_go)
 }
 
 // Update returns a builder for updating this Goods.
@@ -289,9 +305,6 @@ func (_go *Goods) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("intro=")
 	builder.WriteString(fmt.Sprintf("%v", _go.Intro))
-	builder.WriteString(", ")
-	builder.WriteString("store_ids=")
-	builder.WriteString(fmt.Sprintf("%v", _go.StoreIds))
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", _go.Status))

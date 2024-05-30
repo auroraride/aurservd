@@ -53,6 +53,9 @@ func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 		q.Where(store.CityID(*req.CityID))
 	}
 
+	// 门店只需要查询营业和休息中两种状态
+	q.Where(store.StatusIn(model.StoreStatusOpen, model.StoreStatusClose))
+
 	if req.Status != nil {
 		q.Where(store.Status(req.Status.Value()))
 	}
@@ -111,6 +114,7 @@ func (s *storeBiz) Detail(req *definition.StoreDetailReq) (res *definition.Store
 		Where(store.ID(req.ID)).
 		WithCity().
 		WithEmployee().
+		WithStocks().
 		Modify(func(sel *sql.Selector) {
 			sel.AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'))`, req.Lng, req.Lat)), "distance").
 				OrderBy(sql.Asc("distance"))
@@ -126,7 +130,7 @@ func (s *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 	res = &definition.StoreDetail{
 		ID:            item.ID,
 		Name:          item.Name,
-		Status:        item.Status,
+		Status:        definition.StoreStatus(item.Status),
 		Lng:           item.Lng,
 		Lat:           item.Lat,
 		Address:       item.Address,
@@ -158,6 +162,20 @@ func (s *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 			res.Distance = distanceFloat
 		}
 	}
+
+	if item.Edges.Stocks != nil {
+		var brandIds []uint64
+		for _, st := range item.Edges.Stocks {
+			brandIds = append(brandIds, *st.BrandID)
+		}
+		ebikeRes := NewPlanBiz().EbikeList(brandIds)
+		if ebikeRes != nil {
+			res.Brands = ebikeRes.Brands
+		}
+	}
+
+	// 查询门店商品
+	res.SaleGoods = NewGoods().ListByStoreId(item.ID)
 
 	return
 
@@ -210,7 +228,7 @@ func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreDetailReq
 		res = &definition.StoreDetail{
 			ID:            item.ID,
 			Name:          item.Name,
-			Status:        item.Status,
+			Status:        definition.StoreStatus(item.Status),
 			Lng:           item.Lng,
 			Lat:           item.Lat,
 			Address:       item.Address,
