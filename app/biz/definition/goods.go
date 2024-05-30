@@ -84,3 +84,9 @@ type GoodsModifyReq struct {
 	model.IDParamReq
 	GoodsCreateReq
 }
+
+// GoodsUpdateStatusReq 商品更新状态请求
+type GoodsUpdateStatusReq struct {
+	model.IDParamReq
+	Status GoodsStatus `json:"status"` // 商品状态 0下架 1上架
+}

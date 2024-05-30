@@ -156,3 +156,22 @@ func (s *goodsBiz) Detail(id uint64) (*definition.GoodsDetail, error) {
 	}
 	return toGoodsDetail(item), nil
 }
+
+func (s *goodsBiz) UpdateStatus(req *definition.GoodsUpdateStatusReq) (err error) {
+	g, _ := s.orm.QueryNotDeleted().Where(goods.ID(req.ID)).First(s.ctx)
+	if g == nil {
+		return errors.New("商品不存在")
+	}
+
+	if g.Status == req.Status.Value() {
+		return errors.New("商品状态已存在")
+	}
+
+	_, err = s.orm.UpdateOneID(req.ID).
+		SetStatus(req.Status.Value()).
+		Save(s.ctx)
+	if err != nil {
+		return err
+	}
+	return
+}

@@ -6988,6 +6988,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/goods/status/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品"
+                ],
+                "summary": "上下架商品",
+                "operationId": "GoodsUpdateStatus",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.GoodsUpdateStatusReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/goods/{id}": {
             "get": {
                 "consumes": [
@@ -14699,6 +14740,19 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "GoodsTypeEbike"
             ]
+        },
+        "definition.GoodsUpdateStatusReq": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "商品状态 0下架 1上架",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.GoodsStatus"
+                        }
+                    ]
+                }
+            }
         },
         "definition.InstructionsCreateReq": {
             "type": "object",

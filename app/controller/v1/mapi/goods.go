@@ -91,3 +91,18 @@ func (*goods) Modify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.GoodsModifyReq](c)
 	return ctx.SendResponse(biz.NewGoodsWithModifierBiz(ctx.Modifier).Modify(req))
 }
+
+// UpdateStatus
+// @ID		GoodsUpdateStatus
+// @Router	/manager/v1/goods/status/{id} [PUT]
+// @Summary	上下架商品
+// @Tags	商品
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string							true	"管理员校验token"
+// @Param	body			body		definition.GoodsUpdateStatusReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse			"请求成功"
+func (*goods) UpdateStatus(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[definition.GoodsUpdateStatusReq](c)
+	return ctx.SendResponse(biz.NewGoodsWithModifierBiz(ctx.Modifier).UpdateStatus(req))
+}
