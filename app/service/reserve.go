@@ -174,6 +174,16 @@ func (s *reserveService) Create(req *model.ReserveCreateReq) *model.ReserveUnfin
 	cab := NewCabinet().QueryOne(req.CabinetID)
 	// 同步电柜并返回电柜详情
 	NewCabinet().Sync(cab)
+	// 预约限制城市
+	if cab != nil && sub != nil {
+		citys, err := NewPlan().PlanCity(*sub.PlanID)
+		if err != nil {
+			snag.Panic("未找到套餐")
+		}
+		if !NewRiderBusiness(s.rider).IsCabinetCityInCities(citys, *cab.CityID) {
+			snag.Panic("请在指定城市办理业务")
+		}
+	}
 	m := s.CabinetCounts([]uint64{cab.ID})
 	if !cab.ReserveAble(typ, m) {
 		snag.Panic("电柜无法预约")

@@ -214,5 +214,5 @@ type BatteryPoint struct {
 }
 
 type BatteryTrackRes struct {
-	Points []BatteryPoint `json:"track"` // 轨迹点
+	Points []BatteryPoint `json:"points"` // 轨迹点
 }

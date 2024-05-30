@@ -26,17 +26,27 @@ func (c *Cabinet) ReserveAble(typ model.BusinessType, num map[model.ReserveBusin
 	if c.Status != model.CabinetStatusNormal.Value() || c.Health != model.CabinetHealthStatusOnline {
 		return false
 	}
+	// 可用电池数量,可用空仓数量 锁仓不算可用
+	var AvailableBatteryNum, AvailableEmptyBinNum int
+	for _, bin := range c.Bin {
+		if bin.Electricity.IsBatteryFull() && bin.DoorHealth {
+			AvailableBatteryNum += 1
+		}
+		if !bin.Battery && bin.DoorHealth {
+			AvailableEmptyBinNum += 1
+		}
+	}
 	switch typ {
 	// 取电
 	case model.BusinessTypeActive, model.BusinessTypeContinue:
 		activeNum := num[model.NewReserveBusinessKey(c.ID, model.BusinessTypeActive)]
 		continueNum := num[model.NewReserveBusinessKey(c.ID, model.BusinessTypeContinue)]
-		return c.BatteryNum-(activeNum+continueNum) >= 2
+		return AvailableBatteryNum-(activeNum+continueNum) >= 2
 	// 放电
 	case model.BusinessTypePause, model.BusinessTypeUnsubscribe:
 		pauseNum := num[model.NewReserveBusinessKey(c.ID, model.BusinessTypePause)]
 		unsubscribeNum := num[model.NewReserveBusinessKey(c.ID, model.BusinessTypeUnsubscribe)]
-		return c.EmptyBinNum-(pauseNum+unsubscribeNum) >= 2
+		return AvailableEmptyBinNum-(pauseNum+unsubscribeNum) >= 2
 	}
 	return false
 }
