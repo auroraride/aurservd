@@ -14582,6 +14582,13 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "storeIds": {
+                    "description": "门店Ids",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "stores": {
                     "description": "配置店铺信息",
                     "type": "array",

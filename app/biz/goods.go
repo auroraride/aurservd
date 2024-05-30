@@ -73,8 +73,10 @@ func (s *goodsBiz) List(req *definition.GoodsListReq) *model.PaginationRes {
 
 func toGoodsDetail(item *ent.Goods) *definition.GoodsDetail {
 	// 查询配置的门店信息
+	var storeIds []uint64
 	var stores []model.Store
 	for _, es := range item.Edges.Stores {
+		storeIds = append(storeIds, es.Edges.Store.ID)
 		stores = append(stores, model.Store{
 			ID:   es.Edges.Store.ID,
 			Name: es.Edges.Store.Name,
@@ -96,6 +98,7 @@ func toGoodsDetail(item *ent.Goods) *definition.GoodsDetail {
 			CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
 			Status:    definition.GoodsStatus(item.Status),
 			Remark:    item.Remark,
+			StoreIds:  storeIds,
 		},
 	}
 }
@@ -149,6 +152,7 @@ func (s *goodsBiz) Modify(req *definition.GoodsModifyReq) (err error) {
 	_, err = s.orm.UpdateOneID(req.ID).
 		SetName(req.Name).
 		SetType(definition.GoodsTypeEbike.Value()).
+		SetLables(req.Lables).
 		SetPrice(req.Price).
 		SetWeight(req.Weight).
 		SetHeadPic(req.HeadPic).
@@ -161,15 +165,11 @@ func (s *goodsBiz) Modify(req *definition.GoodsModifyReq) (err error) {
 		return err
 	}
 
+	// 直接先删除已配置的门店
+	_, _ = ent.Database.StoreGoods.Delete().Where(storegoods.GoodsID(g.ID)).Exec(s.ctx)
+
 	for _, storeId := range req.StoreIds {
-		_ = ent.Database.StoreGoods.Update().
-			Where(
-				storegoods.GoodsID(g.ID),
-				storegoods.StoreID(storeId),
-			).
-			SetGoodsID(g.ID).
-			SetStoreID(storeId).
-			Exec(s.ctx)
+		_, _ = ent.Database.StoreGoods.Create().SetGoodsID(g.ID).SetStoreID(storeId).Save(s.ctx)
 	}
 
 	return

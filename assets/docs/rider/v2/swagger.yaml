@@ -312,6 +312,11 @@ definitions:
         allOf:
         - $ref: '#/definitions/definition.GoodsStatus'
         description: 商品状态 0-已下架 1-已上架
+      storeIds:
+        description: 门店Ids
+        items:
+          type: integer
+        type: array
       stores:
         description: 配置店铺信息
         items:

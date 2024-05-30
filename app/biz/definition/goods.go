@@ -54,6 +54,7 @@ type Goods struct {
 	CreatedAt string        `json:"createdAt"` // 创建时间
 	Status    GoodsStatus   `json:"status"`    // 商品状态 0-已下架 1-已上架
 	Remark    string        `json:"remark"`    // 备注
+	StoreIds  []uint64      `json:"storeIds"`  // 门店Ids
 }
 
 // GoodsDetail 商品详情
