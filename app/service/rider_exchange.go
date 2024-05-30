@@ -70,12 +70,12 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 	}
 
 	// 限制换电城市
-	if s.cabinet != nil && s.subscribe != nil {
-		citys, err := NewPlan().PlanCity(*s.subscribe.PlanID)
+	if cab != nil {
+		citys, err := NewPlan().PlanCity(*sub.PlanID)
 		if err != nil {
 			snag.Panic("未找到套餐")
 		}
-		if !NewRiderBusiness(s.rider).IsCabinetCityInCities(citys, *s.cabinet.CityID) {
+		if !NewRiderBusiness(s.rider).IsCabinetCityInCities(citys, *cab.CityID) {
 			snag.Panic("请在指定城市办理业务")
 		}
 	}
