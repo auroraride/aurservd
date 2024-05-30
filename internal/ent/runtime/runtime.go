@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
@@ -394,6 +395,21 @@ func init() {
 	cabinetDescLockedBinNum := cabinetFields[23].Descriptor()
 	// cabinet.DefaultLockedBinNum holds the default value on creation for the locked_bin_num field.
 	cabinet.DefaultLockedBinNum = cabinetDescLockedBinNum.Default.(int)
+	cabinetecMixin := schema.CabinetEc{}.Mixin()
+	cabinetecMixinFields0 := cabinetecMixin[0].Fields()
+	_ = cabinetecMixinFields0
+	cabinetecFields := schema.CabinetEc{}.Fields()
+	_ = cabinetecFields
+	// cabinetecDescCreatedAt is the schema descriptor for created_at field.
+	cabinetecDescCreatedAt := cabinetecMixinFields0[0].Descriptor()
+	// cabinetec.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cabinetec.DefaultCreatedAt = cabinetecDescCreatedAt.Default.(func() time.Time)
+	// cabinetecDescUpdatedAt is the schema descriptor for updated_at field.
+	cabinetecDescUpdatedAt := cabinetecMixinFields0[1].Descriptor()
+	// cabinetec.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cabinetec.DefaultUpdatedAt = cabinetecDescUpdatedAt.Default.(func() time.Time)
+	// cabinetec.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cabinetec.UpdateDefaultUpdatedAt = cabinetecDescUpdatedAt.UpdateDefault.(func() time.Time)
 	cabinetfaultMixin := schema.CabinetFault{}.Mixin()
 	cabinetfaultMixinHooks2 := cabinetfaultMixin[2].Hooks()
 	cabinetfault.Hooks[0] = cabinetfaultMixinHooks2[0]

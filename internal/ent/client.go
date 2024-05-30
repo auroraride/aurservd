@@ -28,6 +28,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
@@ -131,6 +132,8 @@ type Client struct {
 	Business *BusinessClient
 	// Cabinet is the client for interacting with the Cabinet builders.
 	Cabinet *CabinetClient
+	// CabinetEc is the client for interacting with the CabinetEc builders.
+	CabinetEc *CabinetEcClient
 	// CabinetFault is the client for interacting with the CabinetFault builders.
 	CabinetFault *CabinetFaultClient
 	// City is the client for interacting with the City builders.
@@ -291,6 +294,7 @@ func (c *Client) init() {
 	c.BranchContract = NewBranchContractClient(c.config)
 	c.Business = NewBusinessClient(c.config)
 	c.Cabinet = NewCabinetClient(c.config)
+	c.CabinetEc = NewCabinetEcClient(c.config)
 	c.CabinetFault = NewCabinetFaultClient(c.config)
 	c.City = NewCityClient(c.config)
 	c.Commission = NewCommissionClient(c.config)
@@ -464,6 +468,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		BranchContract:             NewBranchContractClient(cfg),
 		Business:                   NewBusinessClient(cfg),
 		Cabinet:                    NewCabinetClient(cfg),
+		CabinetEc:                  NewCabinetEcClient(cfg),
 		CabinetFault:               NewCabinetFaultClient(cfg),
 		City:                       NewCityClient(cfg),
 		Commission:                 NewCommissionClient(cfg),
@@ -564,6 +569,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		BranchContract:             NewBranchContractClient(cfg),
 		Business:                   NewBusinessClient(cfg),
 		Cabinet:                    NewCabinetClient(cfg),
+		CabinetEc:                  NewCabinetEcClient(cfg),
 		CabinetFault:               NewCabinetFaultClient(cfg),
 		City:                       NewCityClient(cfg),
 		Commission:                 NewCommissionClient(cfg),
@@ -663,9 +669,9 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Assistance, c.Attendance,
 		c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract,
-		c.Business, c.Cabinet, c.CabinetFault, c.City, c.Commission, c.Contract,
-		c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate, c.Ebike,
-		c.EbikeBrand, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
+		c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City, c.Commission,
+		c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate,
+		c.Ebike, c.EbikeBrand, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
 		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
 		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
 		c.Exchange, c.Export, c.Fault, c.Feedback, c.Goods, c.Instructions,
@@ -690,9 +696,9 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Assistance, c.Attendance,
 		c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract,
-		c.Business, c.Cabinet, c.CabinetFault, c.City, c.Commission, c.Contract,
-		c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate, c.Ebike,
-		c.EbikeBrand, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
+		c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City, c.Commission,
+		c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate,
+		c.Ebike, c.EbikeBrand, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
 		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
 		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
 		c.Exchange, c.Export, c.Fault, c.Feedback, c.Goods, c.Instructions,
@@ -740,6 +746,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Business.mutate(ctx, m)
 	case *CabinetMutation:
 		return c.Cabinet.mutate(ctx, m)
+	case *CabinetEcMutation:
+		return c.CabinetEc.mutate(ctx, m)
 	case *CabinetFaultMutation:
 		return c.CabinetFault.mutate(ctx, m)
 	case *CityMutation:
@@ -3577,6 +3585,139 @@ func (c *CabinetClient) mutate(ctx context.Context, m *CabinetMutation) (Value, 
 		return (&CabinetDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Cabinet mutation op: %q", m.Op())
+	}
+}
+
+// CabinetEcClient is a client for the CabinetEc schema.
+type CabinetEcClient struct {
+	config
+}
+
+// NewCabinetEcClient returns a client for the CabinetEc from the given config.
+func NewCabinetEcClient(c config) *CabinetEcClient {
+	return &CabinetEcClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `cabinetec.Hooks(f(g(h())))`.
+func (c *CabinetEcClient) Use(hooks ...Hook) {
+	c.hooks.CabinetEc = append(c.hooks.CabinetEc, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `cabinetec.Intercept(f(g(h())))`.
+func (c *CabinetEcClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CabinetEc = append(c.inters.CabinetEc, interceptors...)
+}
+
+// Create returns a builder for creating a CabinetEc entity.
+func (c *CabinetEcClient) Create() *CabinetEcCreate {
+	mutation := newCabinetEcMutation(c.config, OpCreate)
+	return &CabinetEcCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CabinetEc entities.
+func (c *CabinetEcClient) CreateBulk(builders ...*CabinetEcCreate) *CabinetEcCreateBulk {
+	return &CabinetEcCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CabinetEcClient) MapCreateBulk(slice any, setFunc func(*CabinetEcCreate, int)) *CabinetEcCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CabinetEcCreateBulk{err: fmt.Errorf("calling to CabinetEcClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CabinetEcCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CabinetEcCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CabinetEc.
+func (c *CabinetEcClient) Update() *CabinetEcUpdate {
+	mutation := newCabinetEcMutation(c.config, OpUpdate)
+	return &CabinetEcUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CabinetEcClient) UpdateOne(ce *CabinetEc) *CabinetEcUpdateOne {
+	mutation := newCabinetEcMutation(c.config, OpUpdateOne, withCabinetEc(ce))
+	return &CabinetEcUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CabinetEcClient) UpdateOneID(id uint64) *CabinetEcUpdateOne {
+	mutation := newCabinetEcMutation(c.config, OpUpdateOne, withCabinetEcID(id))
+	return &CabinetEcUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CabinetEc.
+func (c *CabinetEcClient) Delete() *CabinetEcDelete {
+	mutation := newCabinetEcMutation(c.config, OpDelete)
+	return &CabinetEcDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CabinetEcClient) DeleteOne(ce *CabinetEc) *CabinetEcDeleteOne {
+	return c.DeleteOneID(ce.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CabinetEcClient) DeleteOneID(id uint64) *CabinetEcDeleteOne {
+	builder := c.Delete().Where(cabinetec.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CabinetEcDeleteOne{builder}
+}
+
+// Query returns a query builder for CabinetEc.
+func (c *CabinetEcClient) Query() *CabinetEcQuery {
+	return &CabinetEcQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCabinetEc},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CabinetEc entity by its id.
+func (c *CabinetEcClient) Get(ctx context.Context, id uint64) (*CabinetEc, error) {
+	return c.Query().Where(cabinetec.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CabinetEcClient) GetX(ctx context.Context, id uint64) *CabinetEc {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CabinetEcClient) Hooks() []Hook {
+	return c.hooks.CabinetEc
+}
+
+// Interceptors returns the client interceptors.
+func (c *CabinetEcClient) Interceptors() []Interceptor {
+	return c.inters.CabinetEc
+}
+
+func (c *CabinetEcClient) mutate(ctx context.Context, m *CabinetEcMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CabinetEcCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CabinetEcUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CabinetEcUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CabinetEcDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CabinetEc mutation op: %q", m.Op())
 	}
 }
 
@@ -16748,7 +16889,7 @@ type (
 	hooks struct {
 		Activity, Agent, Agreement, Allocate, Assistance, Attendance, Battery,
 		BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
-		CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
+		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
 		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee, Enterprise,
 		EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
 		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
@@ -16766,7 +16907,7 @@ type (
 	inters struct {
 		Activity, Agent, Agreement, Allocate, Assistance, Attendance, Battery,
 		BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
-		CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
+		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
 		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee, Enterprise,
 		EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
 		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,

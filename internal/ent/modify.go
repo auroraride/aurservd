@@ -142,6 +142,13 @@ func (c *CabinetClient) ModifyOne(old *Cabinet, data any) *CabinetUpdateOne {
 	return EntitySetAttributes[CabinetUpdateOne, Cabinet](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for CabinetEc.
+func (c *CabinetEcClient) ModifyOne(old *CabinetEc, data any) *CabinetEcUpdateOne {
+	mutation := newCabinetEcMutation(c.config, OpUpdateOne, withCabinetEc(old))
+	up := &CabinetEcUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[CabinetEcUpdateOne, CabinetEc](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for CabinetFault.
 func (c *CabinetFaultClient) ModifyOne(old *CabinetFault, data any) *CabinetFaultUpdateOne {
 	mutation := newCabinetFaultMutation(c.config, OpUpdateOne, withCabinetFault(old))

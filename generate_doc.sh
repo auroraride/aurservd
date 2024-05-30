@@ -16,6 +16,7 @@ APIS=(
   'controller/v1/aapi/aapi.go'
   'controller/v1/eapi/eapi.go'
   'controller/v1/mapi/mapi.go'
+  'controller/v2/mapi/mapi.go'
   'controller/v1/oapi/oapi.go'
   'controller/v1/papi/papi.go'
 )
@@ -27,6 +28,7 @@ OUTPUTS=(
   './assets/docs/agent/v1'
   './assets/docs/employee/v1'
   './assets/docs/manager/v1'
+  './assets/docs/manager/v2'
   './assets/docs/operator/v1'
   './assets/docs/promotion/v1'
 )

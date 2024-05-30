@@ -1138,6 +1138,36 @@ var (
 			},
 		},
 	}
+	// CabinetEcColumns holds the columns for the "cabinet_ec" table.
+	CabinetEcColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "serial", Type: field.TypeString, Comment: "电柜原始编号"},
+		{Name: "date", Type: field.TypeTime, Comment: "日期"},
+		{Name: "start", Type: field.TypeFloat64, Comment: "开始电量"},
+		{Name: "end", Type: field.TypeFloat64, Nullable: true, Comment: "结束电量"},
+		{Name: "total", Type: field.TypeFloat64, Comment: "耗电量"},
+	}
+	// CabinetEcTable holds the schema information for the "cabinet_ec" table.
+	CabinetEcTable = &schema.Table{
+		Name:       "cabinet_ec",
+		Columns:    CabinetEcColumns,
+		PrimaryKey: []*schema.Column{CabinetEcColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "cabinetec_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetEcColumns[1]},
+			},
+			{
+				Name:    "cabinetec_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetEcColumns[3]},
+			},
+		},
+	}
 	// CabinetFaultColumns holds the columns for the "cabinet_fault" table.
 	CabinetFaultColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -6132,6 +6162,7 @@ var (
 		BranchContractTable,
 		BusinessTable,
 		CabinetTable,
+		CabinetEcTable,
 		CabinetFaultTable,
 		CityTable,
 		CommissionTable,
@@ -6293,6 +6324,9 @@ func init() {
 	CabinetTable.ForeignKeys[3].RefTable = EnterpriseStationTable
 	CabinetTable.Annotation = &entsql.Annotation{
 		Table: "cabinet",
+	}
+	CabinetEcTable.Annotation = &entsql.Annotation{
+		Table: "cabinet_ec",
 	}
 	CabinetFaultTable.ForeignKeys[0].RefTable = BranchTable
 	CabinetFaultTable.ForeignKeys[1].RefTable = CabinetTable

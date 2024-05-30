@@ -152,6 +152,16 @@ func (c *Cabinet) GetName() string {
 	return c.Name
 }
 
+// GetTableName returns table name for CabinetEc.
+func (ce *CabinetEc) GetTableName() string {
+	return "cabinet_ec"
+}
+
+// GetID returns id for CabinetEc.
+func (ce *CabinetEc) GetID() uint64 {
+	return ce.ID
+}
+
 // GetTableName returns table name for CabinetFault.
 func (cf *CabinetFault) GetTableName() string {
 	return "cabinet_fault"

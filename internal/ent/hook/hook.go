@@ -165,6 +165,18 @@ func (f CabinetFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CabinetMutation", m)
 }
 
+// The CabinetEcFunc type is an adapter to allow the use of ordinary
+// function as CabinetEc mutator.
+type CabinetEcFunc func(context.Context, *ent.CabinetEcMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CabinetEcFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CabinetEcMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CabinetEcMutation", m)
+}
+
 // The CabinetFaultFunc type is an adapter to allow the use of ordinary
 // function as CabinetFault mutator.
 type CabinetFaultFunc func(context.Context, *ent.CabinetFaultMutation) (ent.Value, error)

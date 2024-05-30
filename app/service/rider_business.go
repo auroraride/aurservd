@@ -7,6 +7,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/auroraride/adapter"
@@ -89,6 +90,13 @@ func (s *riderBusinessService) preprocess(serial string, bt model.BusinessType) 
 
 	// 转换业务
 	bus, _ := NewBusiness().Convert(bt)
+
+	// 验证电柜是否可办理业务
+	NewCabinet().Sync(cab)
+	m := NewReserve().CabinetCounts([]uint64{cab.ID})
+	if !cab.ReserveAble(bt, m) {
+		snag.Panic(fmt.Sprintf("该电柜无法办理%s业务", model.BusinessTypeText(bt.String())))
+	}
 
 	// 查询电柜业务是否可被允许
 	// 代理商管理的电柜只允许非本代理商骑手进行换电业务

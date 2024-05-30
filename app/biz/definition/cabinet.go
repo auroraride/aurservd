@@ -51,3 +51,42 @@ type CabinetECData struct {
 	Value     float64   `json:"value"`
 	Timestamp time.Time `json:"@timestamp"`
 }
+
+// CabinetECMonthExportReq 电柜耗电量请求参数
+type CabinetECMonthExportReq struct {
+	Serial *string `json:"serial" query:"serial"` // 电柜编号
+	Date   *string `json:"date" query:"date"`     // 日期 yyyy-MM
+	Remark string  `json:"remark" query:"remark"` // 备注
+}
+
+// CabinetECMonthReq 电柜耗电列表
+type CabinetECMonthReq struct {
+	model.PaginationReq
+	Serial *string `json:"serial" query:"serial"` // 电柜编号
+	Date   *string `json:"date" query:"date"`     // 日期 yyyy-MM
+}
+
+// CabinetECRes 电柜耗电列表响应
+type CabinetECRes struct {
+	Serial  string  `json:"serial"`  // 电柜编号
+	StartAt string  `json:"startAt"` // 开始时间
+	EndAt   string  `json:"endAt"`   // 结束时间
+	StartEc float64 `json:"startEc"` // 开始电量
+	EndEc   float64 `json:"endEc"`   // 结束电量
+	Totoal  float64 `json:"total"`   // 总电量
+}
+
+// GroupCabinetECData 电柜能耗分组数据
+type GroupCabinetECData struct {
+	Max   *CabinetECData
+	Min   *CabinetECData
+	Total float64
+}
+
+// CabinetECReq 电柜耗电量明细
+type CabinetECReq struct {
+	model.PaginationReq
+	Serial *string `json:"serial" query:"serial"` // 电柜编号
+	Start  *string `json:"start" query:"start"`   // 开始时间
+	End    *string `json:"end" query:"end"`       // 结束时间
+}
