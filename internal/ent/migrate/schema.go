@@ -3036,6 +3036,72 @@ var (
 			},
 		},
 	}
+	// GoodsColumns holds the columns for the "goods" table.
+	GoodsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "sn", Type: field.TypeString, Comment: "商品编号"},
+		{Name: "name", Type: field.TypeString, Comment: "商品名称"},
+		{Name: "type", Type: field.TypeUint8, Comment: "商品类别 1:电车", Default: 1},
+		{Name: "lables", Type: field.TypeJSON, Nullable: true, Comment: "商品标签"},
+		{Name: "price", Type: field.TypeFloat64, Comment: "商品价格"},
+		{Name: "weight", Type: field.TypeInt, Comment: "商品权重"},
+		{Name: "head_pic", Type: field.TypeString, Comment: "列表头图"},
+		{Name: "photos", Type: field.TypeJSON, Comment: "商品图片"},
+		{Name: "intro", Type: field.TypeJSON, Comment: "商品介绍"},
+		{Name: "store_ids", Type: field.TypeJSON, Comment: "上架门店"},
+		{Name: "status", Type: field.TypeUint8, Comment: "商品状态 0下架 1上架", Default: 0},
+	}
+	// GoodsTable holds the schema information for the "goods" table.
+	GoodsTable = &schema.Table{
+		Name:       "goods",
+		Columns:    GoodsColumns,
+		PrimaryKey: []*schema.Column{GoodsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "goods_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{GoodsColumns[1]},
+			},
+			{
+				Name:    "goods_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{GoodsColumns[3]},
+			},
+			{
+				Name:    "goods_sn",
+				Unique:  false,
+				Columns: []*schema.Column{GoodsColumns[7]},
+				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+			{
+				Name:    "goods_name",
+				Unique:  false,
+				Columns: []*schema.Column{GoodsColumns[8]},
+				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+			{
+				Name:    "goods_status",
+				Unique:  false,
+				Columns: []*schema.Column{GoodsColumns[17]},
+			},
+		},
+	}
 	// InstructionsColumns holds the columns for the "instructions" table.
 	InstructionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -6050,6 +6116,7 @@ var (
 		ExportTable,
 		FaultTable,
 		FeedbackTable,
+		GoodsTable,
 		InstructionsTable,
 		InventoryTable,
 		MaintainerTable,
@@ -6330,6 +6397,9 @@ func init() {
 	FeedbackTable.ForeignKeys[3].RefTable = CityTable
 	FeedbackTable.Annotation = &entsql.Annotation{
 		Table: "feedback",
+	}
+	GoodsTable.Annotation = &entsql.Annotation{
+		Table: "goods",
 	}
 	InstructionsTable.Annotation = &entsql.Annotation{
 		Table: "instructions",

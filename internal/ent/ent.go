@@ -49,6 +49,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
+	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/instructions"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
@@ -188,6 +189,7 @@ func checkColumn(table, column string) error {
 			export.Table:                     export.ValidColumn,
 			fault.Table:                      fault.ValidColumn,
 			feedback.Table:                   feedback.ValidColumn,
+			goods.Table:                      goods.ValidColumn,
 			instructions.Table:               instructions.ValidColumn,
 			inventory.Table:                  inventory.ValidColumn,
 			maintainer.Table:                 maintainer.ValidColumn,

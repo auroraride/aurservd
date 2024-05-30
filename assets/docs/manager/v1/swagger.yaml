@@ -417,6 +417,208 @@ definitions:
     - FaultTypeBattery
     - FaultTypeEbike
     - FaultTypeOther
+  definition.GoodsCreateReq:
+    properties:
+      headPic:
+        description: 商品头图, 商品头图
+        type: string
+      intro:
+        description: 商品介绍, 商品介绍
+        items:
+          type: string
+        maxItems: 5
+        type: array
+      lables:
+        description: 商品标签
+        items:
+          type: string
+        type: array
+      name:
+        description: 商品名称, 商品名称
+        type: string
+      photos:
+        description: 商品图片, 商品图片
+        items:
+          type: string
+        maxItems: 5
+        type: array
+      price:
+        description: 商品价格, 商品价格
+        type: number
+      remark:
+        description: 备注
+        type: string
+      storeIds:
+        description: 门店IDS, 门店IDS
+        items:
+          type: integer
+        type: array
+      type:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsType'
+        description: 商品类别, 商品类别 1电车
+      weight:
+        description: 商品权重, 商品权重
+        type: integer
+    required:
+    - headPic
+    - name
+    - price
+    - storeIds
+    - type
+    - weight
+    type: object
+  definition.GoodsDetail:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      head_pic:
+        description: 商品头图
+        type: string
+      id:
+        type: integer
+      intro:
+        description: 商品介绍
+        items:
+          type: string
+        type: array
+      lables:
+        description: 商品标签
+        items:
+          type: string
+        type: array
+      name:
+        description: 商品名称
+        type: string
+      photos:
+        description: 商品图片
+        items:
+          type: string
+        type: array
+      price:
+        description: 商品价格
+        type: number
+      remark:
+        description: 备注
+        type: string
+      sn:
+        description: 商品编号
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsStatus'
+        description: 商品状态 0-已下架 1-已上架
+      storeIds:
+        description: 商家店铺IDS
+        items:
+          type: integer
+        type: array
+      stores:
+        description: 配置店铺信息
+        items:
+          $ref: '#/definitions/model.Store'
+        type: array
+      type:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsType'
+        description: 商品类型 1-电车
+      weight:
+        description: 商品权重
+        type: integer
+    type: object
+  definition.GoodsListReq:
+    properties:
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      end:
+        description: 结束时间
+        type: string
+      keyword:
+        description: 关键字
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      start:
+        description: 开始时间
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsStatus'
+        description: 是否启用
+    type: object
+  definition.GoodsModifyReq:
+    properties:
+      headPic:
+        description: 商品头图, 商品头图
+        type: string
+      intro:
+        description: 商品介绍, 商品介绍
+        items:
+          type: string
+        maxItems: 5
+        type: array
+      lables:
+        description: 商品标签
+        items:
+          type: string
+        type: array
+      name:
+        description: 商品名称, 商品名称
+        type: string
+      photos:
+        description: 商品图片, 商品图片
+        items:
+          type: string
+        maxItems: 5
+        type: array
+      price:
+        description: 商品价格, 商品价格
+        type: number
+      remark:
+        description: 备注
+        type: string
+      storeIds:
+        description: 门店IDS, 门店IDS
+        items:
+          type: integer
+        type: array
+      type:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsType'
+        description: 商品类别, 商品类别 1电车
+      weight:
+        description: 商品权重, 商品权重
+        type: integer
+    required:
+    - headPic
+    - name
+    - price
+    - storeIds
+    - type
+    - weight
+    type: object
+  definition.GoodsStatus:
+    enum:
+    - 0
+    - 1
+    type: integer
+    x-enum-comments:
+      GoodsStatusOffline: 下架
+      GoodsStatusOnline: 上架
+    x-enum-varnames:
+    - GoodsStatusOffline
+    - GoodsStatusOnline
+  definition.GoodsType:
+    enum:
+    - 1
+    type: integer
+    x-enum-comments:
+      GoodsTypeEbike: 电车
+    x-enum-varnames:
+    - GoodsTypeEbike
   definition.InstructionsCreateReq:
     properties:
       content:
@@ -11925,6 +12127,138 @@ paths:
       summary: 故障更改状态
       tags:
       - 故障上报
+  /manager/v1/goods:
+    get:
+      consumes:
+      - application/json
+      operationId: GoodsList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.GoodsListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.GoodsDetail'
+            type: array
+      summary: 商品列表
+      tags:
+      - 商品
+    post:
+      consumes:
+      - application/json
+      operationId: GoodsCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.GoodsCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建商品
+      tags:
+      - 商品
+  /manager/v1/goods/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: GoodsDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 商品ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 删除商品
+      tags:
+      - 商品
+    get:
+      consumes:
+      - application/json
+      operationId: GoodsDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 商品ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.GoodsDetail'
+      summary: 商品详情
+      tags:
+      - 商品
+    put:
+      consumes:
+      - application/json
+      operationId: GoodsModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.GoodsModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改商品
+      tags:
+      - 商品
   /manager/v1/import/rider:
     post:
       consumes:

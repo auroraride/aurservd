@@ -365,6 +365,14 @@ func loadManagerRoutes() {
 	agreement.DELETE("/:id", mapi.Agreement.Delete)       // 删除协议
 	agreement.GET("/selection", mapi.Agreement.Selection) // 协议选择
 
+	// 商品管理
+	goods := g.Group("/goods")
+	goods.GET("", mapi.Goods.List)          // 商品列表
+	goods.GET("/:id", mapi.Goods.Detail)    // 商品详情
+	goods.POST("", mapi.Goods.Create)       // 创建商品
+	goods.PUT("/:id", mapi.Goods.Modify)    // 编辑商品
+	goods.DELETE("/:id", mapi.Goods.Delete) // 删除商品
+
 	// 合同模版
 	contractTemplate := g.Group("/contract/template")
 	contractTemplate.GET("", mapi.ContractTemplate.List) // 列表

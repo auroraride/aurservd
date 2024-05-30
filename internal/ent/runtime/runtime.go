@@ -44,6 +44,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
+	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/instructions"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -974,6 +975,31 @@ func init() {
 	feedbackDescSource := feedbackFields[2].Descriptor()
 	// feedback.DefaultSource holds the default value on creation for the source field.
 	feedback.DefaultSource = feedbackDescSource.Default.(uint8)
+	goodsMixin := schema.Goods{}.Mixin()
+	goodsMixinHooks2 := goodsMixin[2].Hooks()
+	goods.Hooks[0] = goodsMixinHooks2[0]
+	goodsMixinFields0 := goodsMixin[0].Fields()
+	_ = goodsMixinFields0
+	goodsFields := schema.Goods{}.Fields()
+	_ = goodsFields
+	// goodsDescCreatedAt is the schema descriptor for created_at field.
+	goodsDescCreatedAt := goodsMixinFields0[0].Descriptor()
+	// goods.DefaultCreatedAt holds the default value on creation for the created_at field.
+	goods.DefaultCreatedAt = goodsDescCreatedAt.Default.(func() time.Time)
+	// goodsDescUpdatedAt is the schema descriptor for updated_at field.
+	goodsDescUpdatedAt := goodsMixinFields0[1].Descriptor()
+	// goods.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	goods.DefaultUpdatedAt = goodsDescUpdatedAt.Default.(func() time.Time)
+	// goods.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	goods.UpdateDefaultUpdatedAt = goodsDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// goodsDescType is the schema descriptor for type field.
+	goodsDescType := goodsFields[2].Descriptor()
+	// goods.DefaultType holds the default value on creation for the type field.
+	goods.DefaultType = goodsDescType.Default.(uint8)
+	// goodsDescStatus is the schema descriptor for status field.
+	goodsDescStatus := goodsFields[10].Descriptor()
+	// goods.DefaultStatus holds the default value on creation for the status field.
+	goods.DefaultStatus = goodsDescStatus.Default.(uint8)
 	instructionsMixin := schema.Instructions{}.Mixin()
 	instructionsMixinHooks2 := instructionsMixin[2].Hooks()
 	instructions.Hooks[0] = instructionsMixinHooks2[0]
