@@ -123,6 +123,7 @@ type RiderItemSubscribe struct {
 	Ebike       *Ebike  `json:"ebike,omitempty"`   // 电车信息
 	Intelligent bool    `json:"intelligent"`       // 是否智能电柜订阅
 	PastDay     int     `json:"pastDay"`           // 骑手当前订阅已使用天数
+	RtoDays     *int    `json:"rtoDays"`           // 骑手当前已租代购的最小赠车天数
 }
 
 // RiderItem 骑手信息

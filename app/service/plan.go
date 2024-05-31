@@ -408,6 +408,8 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 			m[child.Model] = r
 		}
 
+		rtoDays := child.RtoDays
+
 		pc := model.PlanComplex{
 			ID:            child.ID,
 			Price:         child.Price,
@@ -417,6 +419,7 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 			Commission:    child.Commission,
 			Model:         child.Model,
 			DiscountNewly: child.DiscountNewly,
+			RtoDays:       &rtoDays,
 		}
 
 		if len(child.Edges.Commissions) > 0 {

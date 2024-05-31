@@ -4277,6 +4277,10 @@ const docTemplate = `{
                     "description": "剩余天数",
                     "type": "integer"
                 },
+                "rtoDays": {
+                    "description": "骑手当前已租代购的最小赠车天数",
+                    "type": "integer"
+                },
                 "status": {
                     "description": "订阅状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态) 当 status = 1 且 remaining \u003c= 3 的时候是即将到期",
                     "type": "integer"
