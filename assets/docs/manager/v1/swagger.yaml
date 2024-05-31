@@ -417,6 +417,215 @@ definitions:
     - FaultTypeBattery
     - FaultTypeEbike
     - FaultTypeOther
+  definition.GoodsCreateReq:
+    properties:
+      headPic:
+        description: 商品头图, 商品头图
+        type: string
+      intro:
+        description: 商品介绍, 商品介绍
+        items:
+          type: string
+        maxItems: 5
+        type: array
+      lables:
+        description: 商品标签
+        items:
+          type: string
+        type: array
+      name:
+        description: 商品名称, 商品名称
+        type: string
+      photos:
+        description: 商品图片, 商品图片
+        items:
+          type: string
+        maxItems: 5
+        type: array
+      price:
+        description: 商品价格, 商品价格
+        type: number
+      remark:
+        description: 备注
+        type: string
+      storeIds:
+        description: 门店IDS, 门店IDS
+        items:
+          type: integer
+        type: array
+      type:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsType'
+        description: 商品类别, 商品类别 1电车
+      weight:
+        description: 商品权重, 商品权重
+        type: integer
+    required:
+    - headPic
+    - name
+    - price
+    - storeIds
+    - type
+    - weight
+    type: object
+  definition.GoodsDetail:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      headPic:
+        description: 商品头图
+        type: string
+      id:
+        type: integer
+      intro:
+        description: 商品介绍
+        items:
+          type: string
+        type: array
+      lables:
+        description: 商品标签
+        items:
+          type: string
+        type: array
+      name:
+        description: 商品名称
+        type: string
+      photos:
+        description: 商品图片
+        items:
+          type: string
+        type: array
+      price:
+        description: 商品价格
+        type: number
+      remark:
+        description: 备注
+        type: string
+      sn:
+        description: 商品编号
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsStatus'
+        description: 商品状态 0-已下架 1-已上架
+      storeIds:
+        description: 门店Ids
+        items:
+          type: integer
+        type: array
+      stores:
+        description: 配置店铺信息
+        items:
+          $ref: '#/definitions/model.Store'
+        type: array
+      type:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsType'
+        description: 商品类型 1-电车
+      weight:
+        description: 商品权重
+        type: integer
+    type: object
+  definition.GoodsListReq:
+    properties:
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      end:
+        description: 结束时间
+        type: string
+      keyword:
+        description: 关键字
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      start:
+        description: 开始时间
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsStatus'
+        description: 是否启用
+    type: object
+  definition.GoodsModifyReq:
+    properties:
+      headPic:
+        description: 商品头图, 商品头图
+        type: string
+      intro:
+        description: 商品介绍, 商品介绍
+        items:
+          type: string
+        maxItems: 5
+        type: array
+      lables:
+        description: 商品标签
+        items:
+          type: string
+        type: array
+      name:
+        description: 商品名称, 商品名称
+        type: string
+      photos:
+        description: 商品图片, 商品图片
+        items:
+          type: string
+        maxItems: 5
+        type: array
+      price:
+        description: 商品价格, 商品价格
+        type: number
+      remark:
+        description: 备注
+        type: string
+      storeIds:
+        description: 门店IDS, 门店IDS
+        items:
+          type: integer
+        type: array
+      type:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsType'
+        description: 商品类别, 商品类别 1电车
+      weight:
+        description: 商品权重, 商品权重
+        type: integer
+    required:
+    - headPic
+    - name
+    - price
+    - storeIds
+    - type
+    - weight
+    type: object
+  definition.GoodsStatus:
+    enum:
+    - 0
+    - 1
+    type: integer
+    x-enum-comments:
+      GoodsStatusOffline: 下架
+      GoodsStatusOnline: 上架
+    x-enum-varnames:
+    - GoodsStatusOffline
+    - GoodsStatusOnline
+  definition.GoodsType:
+    enum:
+    - 1
+    type: integer
+    x-enum-comments:
+      GoodsTypeEbike: 电车
+    x-enum-varnames:
+    - GoodsTypeEbike
+  definition.GoodsUpdateStatusReq:
+    properties:
+      status:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsStatus'
+        description: 商品状态 0下架 1上架
+    type: object
   definition.InstructionsCreateReq:
     properties:
       content:
@@ -1226,9 +1435,9 @@ definitions:
         description: 经度
         type: number
     required:
-      - latitude
-      - locTime
-      - longitude
+    - latitude
+    - locTime
+    - longitude
     type: object
   model.BatteryPosition:
     properties:
@@ -1378,7 +1587,7 @@ definitions:
     type: object
   model.BatteryTrackRes:
     properties:
-      track:
+      points:
         description: 轨迹点
         items:
           $ref: '#/definitions/model.BatteryPoint'
@@ -1693,6 +1902,9 @@ definitions:
         description: 站点
       id:
         type: integer
+      isRto:
+        description: 是否已赠车
+        type: integer
       name:
         description: 骑手姓名
         type: string
@@ -1706,6 +1918,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Plan'
         description: 骑士卡, 团签无此字段
+      remark:
+        description: 备注
+        type: string
       store:
         allOf:
         - $ref: '#/definitions/model.Store'
@@ -1784,6 +1999,9 @@ definitions:
         type: number
       id:
         description: 订阅ID
+        type: integer
+      needRto:
+        description: 管理员强制退租-是否赠车：0-不赠车; 1-赠车;
         type: integer
       refundDeposit:
         description: 是否退押金, 是否退押金(后台使用)
@@ -3027,6 +3245,9 @@ definitions:
         type: string
       id:
         type: integer
+      isRto:
+        description: 是否已赠送
+        type: boolean
       machine:
         description: 终端编号
         type: string
@@ -3897,7 +4118,7 @@ definitions:
         type: array
       versionInfo:
         allOf:
-          - $ref: '#/definitions/model.VersionInfo'
+        - $ref: '#/definitions/model.VersionInfo'
         description: 版本信息
     type: object
   model.FeedbackListReq:
@@ -4505,12 +4726,19 @@ definitions:
       original:
         description: 原价
         type: number
+      overdueFee:
+        description: 滞纳金单价, 滞纳金单价
+        type: number
       price:
         description: 价格
         type: number
+      rtoDays:
+        description: 赠车最小使用天数
+        type: integer
     required:
     - days
     - model
+    - overdueFee
     - price
     type: object
   model.PlanCreateReq:
@@ -4519,7 +4747,7 @@ definitions:
         description: 协议ID
         type: integer
       brandId:
-        description: 电车型号, 车加电必填
+        description: 电车型号, 车加电，以租代购 必填
         type: integer
       cities:
         description: 启用城市
@@ -4741,13 +4969,16 @@ definitions:
     enum:
     - 1
     - 2
+    - 3
     type: integer
     x-enum-comments:
       PlanTypeBattery: 单电
+      PlanTypeEbikeRto: 以租代购（赠）
       PlanTypeEbikeWithBattery: 车加电
     x-enum-varnames:
     - PlanTypeBattery
     - PlanTypeEbikeWithBattery
+    - PlanTypeEbikeRto
   model.PointBatchReq:
     properties:
       phones:
@@ -5130,6 +5361,9 @@ definitions:
         type: array
       id:
         type: integer
+      isRto:
+        description: 骑手当前订阅是否可赠车
+        type: boolean
       name:
         description: 姓名
         type: string
@@ -5182,6 +5416,9 @@ definitions:
       model:
         description: 骑士卡可用电池型号
         type: string
+      pastDay:
+        description: 骑手当前订阅已使用天数
+        type: integer
       remaining:
         description: 剩余天数
         type: integer
@@ -5983,6 +6220,23 @@ definitions:
         description: 门店名称
         type: string
     type: object
+  model.StoreBusinessType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
+    x-enum-comments:
+      StoreBusinessTypeObtain: 领取车辆(租车)
+      StoreBusinessTypeRepair: 维修
+      StoreBusinessTypeRest: 驿站
+      StoreBusinessTypeSale: 购买
+    x-enum-varnames:
+    - StoreBusinessTypeObtain
+    - StoreBusinessTypeRepair
+    - StoreBusinessTypeSale
+    - StoreBusinessTypeRest
   model.StoreCabiletGoal:
     enum:
     - 0
@@ -6012,9 +6266,6 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
-      ebikeStage:
-        description: 是否拥有驿站
-        type: boolean
       materials:
         description: 门店物资
         items:
@@ -6023,17 +6274,27 @@ definitions:
       name:
         description: 门店名称
         type: string
+      photos:
+        description: 门店照片, 门店照片
+        items:
+          type: string
+        type: array
+      rest:
+        description: 是否驿站
+        type: boolean
       status:
+        allOf:
+        - $ref: '#/definitions/model.StoreStatus'
         description: 门店状态 0维护 1营业 2休息 3隐藏
         enum:
         - 0
         - 1
         - 2
         - 3
-        type: integer
     required:
     - branchId
     - name
+    - photos
     - status
     type: object
   model.StoreItem:
@@ -6059,9 +6320,6 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
-      ebikeStage:
-        description: 是否有驿站
-        type: boolean
       employee:
         allOf:
         - $ref: '#/definitions/model.Employee'
@@ -6071,12 +6329,21 @@ definitions:
       name:
         description: 门店名称
         type: string
+      photos:
+        description: 照片
+        items:
+          type: string
+        type: array
       qrcode:
         description: 门店二维码
         type: string
+      rest:
+        description: 是否驿站
+        type: boolean
       status:
+        allOf:
+        - $ref: '#/definitions/model.StoreStatus'
         description: 状态
-        type: integer
     type: object
   model.StoreModifyReq:
     properties:
@@ -6095,21 +6362,44 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
-      ebikeStage:
-        description: 是否拥有驿站
-        type: boolean
       name:
         description: 门店名称
         type: string
+      photos:
+        description: 门店照片, 门店照片
+        items:
+          type: string
+        type: array
+      rest:
+        description: 是否驿站
+        type: boolean
       status:
+        allOf:
+        - $ref: '#/definitions/model.StoreStatus'
         description: 门店状态 0维护 1营业 2休息 3隐藏
         enum:
         - 0
         - 1
         - 2
         - 3
-        type: integer
     type: object
+  model.StoreStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-comments:
+      StoreStatusClose: 休息中
+      StoreStatusHidden: 隐藏
+      StoreStatusMaintain: 维护中
+      StoreStatusOpen: 营业中
+    x-enum-varnames:
+    - StoreStatusMaintain
+    - StoreStatusOpen
+    - StoreStatusClose
+    - StoreStatusHidden
   model.StoreWithStatus:
     properties:
       id:
@@ -6118,8 +6408,9 @@ definitions:
         description: 门店名称
         type: string
       status:
+        allOf:
+        - $ref: '#/definitions/model.StoreStatus'
         description: 门店状态
-        type: integer
     type: object
   model.SubscribeAlter:
     properties:
@@ -7984,22 +8275,22 @@ paths:
   /manager/v1/battery/track/rectify:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerBatteryTrackRectify
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 轨迹点
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.BatteryTrackReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 轨迹点
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BatteryTrackReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -8007,7 +8298,7 @@ paths:
             $ref: '#/definitions/model.BatteryTrackRes'
       summary: 电池轨迹纠偏
       tags:
-        - 电池
+      - 电池
   /manager/v1/battery/unbind:
     post:
       consumes:
@@ -11864,6 +12155,165 @@ paths:
       summary: 故障更改状态
       tags:
       - 故障上报
+  /manager/v1/goods:
+    get:
+      consumes:
+      - application/json
+      operationId: GoodsList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.GoodsListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.GoodsDetail'
+            type: array
+      summary: 商品列表
+      tags:
+      - 商品
+    post:
+      consumes:
+      - application/json
+      operationId: GoodsCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.GoodsCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建商品
+      tags:
+      - 商品
+  /manager/v1/goods/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: GoodsDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 商品ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 删除商品
+      tags:
+      - 商品
+    get:
+      consumes:
+      - application/json
+      operationId: GoodsDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 商品ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.GoodsDetail'
+      summary: 商品详情
+      tags:
+      - 商品
+    put:
+      consumes:
+      - application/json
+      operationId: GoodsModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.GoodsModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改商品
+      tags:
+      - 商品
+  /manager/v1/goods/status/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: GoodsUpdateStatus
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.GoodsUpdateStatusReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 上下架商品
+      tags:
+      - 商品
   /manager/v1/import/rider:
     post:
       consumes:
@@ -12451,15 +12901,18 @@ paths:
         enum:
         - 1
         - 2
+        - 3
         in: query
         name: type
         type: integer
         x-enum-comments:
           PlanTypeBattery: 单电
+          PlanTypeEbikeRto: 以租代购（赠）
           PlanTypeEbikeWithBattery: 车加电
         x-enum-varnames:
         - PlanTypeBattery
         - PlanTypeEbikeWithBattery
+        - PlanTypeEbikeRto
       produces:
       - application/json
       responses:
@@ -15667,10 +16120,25 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 业务类型 1:领取车辆(租车) 2:维修车辆 3:买车
+      - description: 业务类型 1:领取车辆(租车) 2:维修车辆 3:买车 4:驿站
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
         in: query
         name: businessType
         type: integer
+        x-enum-comments:
+          StoreBusinessTypeObtain: 领取车辆(租车)
+          StoreBusinessTypeRepair: 维修
+          StoreBusinessTypeRest: 驿站
+          StoreBusinessTypeSale: 购买
+        x-enum-varnames:
+        - StoreBusinessTypeObtain
+        - StoreBusinessTypeRepair
+        - StoreBusinessTypeSale
+        - StoreBusinessTypeRest
       - description: 城市
         in: query
         name: cityId
@@ -15688,9 +16156,24 @@ paths:
         name: pageSize
         type: integer
       - description: 门店状态
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
         in: query
         name: status
         type: integer
+        x-enum-comments:
+          StoreStatusClose: 休息中
+          StoreStatusHidden: 隐藏
+          StoreStatusMaintain: 维护中
+          StoreStatusOpen: 营业中
+        x-enum-varnames:
+        - StoreStatusMaintain
+        - StoreStatusOpen
+        - StoreStatusClose
+        - StoreStatusHidden
       produces:
       - application/json
       responses:

@@ -124,6 +124,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.DELETE("/deregister", v1.Rider.Deregister, logged())    // 注销账户
 	g.POST("/change/phone", rapi.Rider.ChangePhone, logged()) // 修改手机号
 	g.POST("/contact", v1.Rider.Contact, logged())            // 编辑紧急联系人
+	g.POST("/mobpush", rapi.Rider.SetMobPushId, logged())     // 绑定骑手推送ID
 
 	// 骑士卡
 	plan := g.Group("/plan")

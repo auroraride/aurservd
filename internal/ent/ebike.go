@@ -60,6 +60,8 @@ type Ebike struct {
 	Color string `json:"color,omitempty"`
 	// 生产批次(出厂日期)
 	ExFactory string `json:"ex_factory,omitempty"`
+	// 是否已赠送 0:未赠送 1:已赠送
+	IsRto uint8 `json:"is_rto,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EbikeQuery when eager-loading is set.
 	Edges        EbikeEdges `json:"edges"`
@@ -160,7 +162,7 @@ func (*Ebike) scanValues(columns []string) ([]any, error) {
 			values[i] = new(model.EbikeStatus)
 		case ebike.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case ebike.FieldID, ebike.FieldBrandID, ebike.FieldRiderID, ebike.FieldStoreID, ebike.FieldEnterpriseID, ebike.FieldStationID:
+		case ebike.FieldID, ebike.FieldBrandID, ebike.FieldRiderID, ebike.FieldStoreID, ebike.FieldEnterpriseID, ebike.FieldStationID, ebike.FieldIsRto:
 			values[i] = new(sql.NullInt64)
 		case ebike.FieldRemark, ebike.FieldSn, ebike.FieldPlate, ebike.FieldMachine, ebike.FieldSim, ebike.FieldColor, ebike.FieldExFactory:
 			values[i] = new(sql.NullString)
@@ -306,6 +308,12 @@ func (e *Ebike) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.ExFactory = value.String
 			}
+		case ebike.FieldIsRto:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field is_rto", values[i])
+			} else if value.Valid {
+				e.IsRto = uint8(value.Int64)
+			}
 		default:
 			e.selectValues.Set(columns[i], values[i])
 		}
@@ -439,6 +447,9 @@ func (e *Ebike) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("ex_factory=")
 	builder.WriteString(e.ExFactory)
+	builder.WriteString(", ")
+	builder.WriteString("is_rto=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsRto))
 	builder.WriteByte(')')
 	return builder.String()
 }

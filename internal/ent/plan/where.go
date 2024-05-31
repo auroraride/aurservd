@@ -185,6 +185,16 @@ func DepositPay(v bool) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldDepositPay, v))
 }
 
+// RtoDays applies equality check predicate on the "rto_days" field. It's identical to RtoDaysEQ.
+func RtoDays(v uint) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldRtoDays, v))
+}
+
+// OverdueFee applies equality check predicate on the "overdue_fee" field. It's identical to OverdueFeeEQ.
+func OverdueFee(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldOverdueFee, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldCreatedAt, v))
@@ -1213,6 +1223,96 @@ func DepositPayIsNil() predicate.Plan {
 // DepositPayNotNil applies the NotNil predicate on the "deposit_pay" field.
 func DepositPayNotNil() predicate.Plan {
 	return predicate.Plan(sql.FieldNotNull(FieldDepositPay))
+}
+
+// RtoDaysEQ applies the EQ predicate on the "rto_days" field.
+func RtoDaysEQ(v uint) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldRtoDays, v))
+}
+
+// RtoDaysNEQ applies the NEQ predicate on the "rto_days" field.
+func RtoDaysNEQ(v uint) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldRtoDays, v))
+}
+
+// RtoDaysIn applies the In predicate on the "rto_days" field.
+func RtoDaysIn(vs ...uint) predicate.Plan {
+	return predicate.Plan(sql.FieldIn(FieldRtoDays, vs...))
+}
+
+// RtoDaysNotIn applies the NotIn predicate on the "rto_days" field.
+func RtoDaysNotIn(vs ...uint) predicate.Plan {
+	return predicate.Plan(sql.FieldNotIn(FieldRtoDays, vs...))
+}
+
+// RtoDaysGT applies the GT predicate on the "rto_days" field.
+func RtoDaysGT(v uint) predicate.Plan {
+	return predicate.Plan(sql.FieldGT(FieldRtoDays, v))
+}
+
+// RtoDaysGTE applies the GTE predicate on the "rto_days" field.
+func RtoDaysGTE(v uint) predicate.Plan {
+	return predicate.Plan(sql.FieldGTE(FieldRtoDays, v))
+}
+
+// RtoDaysLT applies the LT predicate on the "rto_days" field.
+func RtoDaysLT(v uint) predicate.Plan {
+	return predicate.Plan(sql.FieldLT(FieldRtoDays, v))
+}
+
+// RtoDaysLTE applies the LTE predicate on the "rto_days" field.
+func RtoDaysLTE(v uint) predicate.Plan {
+	return predicate.Plan(sql.FieldLTE(FieldRtoDays, v))
+}
+
+// RtoDaysIsNil applies the IsNil predicate on the "rto_days" field.
+func RtoDaysIsNil() predicate.Plan {
+	return predicate.Plan(sql.FieldIsNull(FieldRtoDays))
+}
+
+// RtoDaysNotNil applies the NotNil predicate on the "rto_days" field.
+func RtoDaysNotNil() predicate.Plan {
+	return predicate.Plan(sql.FieldNotNull(FieldRtoDays))
+}
+
+// OverdueFeeEQ applies the EQ predicate on the "overdue_fee" field.
+func OverdueFeeEQ(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldOverdueFee, v))
+}
+
+// OverdueFeeNEQ applies the NEQ predicate on the "overdue_fee" field.
+func OverdueFeeNEQ(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldOverdueFee, v))
+}
+
+// OverdueFeeIn applies the In predicate on the "overdue_fee" field.
+func OverdueFeeIn(vs ...float64) predicate.Plan {
+	return predicate.Plan(sql.FieldIn(FieldOverdueFee, vs...))
+}
+
+// OverdueFeeNotIn applies the NotIn predicate on the "overdue_fee" field.
+func OverdueFeeNotIn(vs ...float64) predicate.Plan {
+	return predicate.Plan(sql.FieldNotIn(FieldOverdueFee, vs...))
+}
+
+// OverdueFeeGT applies the GT predicate on the "overdue_fee" field.
+func OverdueFeeGT(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldGT(FieldOverdueFee, v))
+}
+
+// OverdueFeeGTE applies the GTE predicate on the "overdue_fee" field.
+func OverdueFeeGTE(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldGTE(FieldOverdueFee, v))
+}
+
+// OverdueFeeLT applies the LT predicate on the "overdue_fee" field.
+func OverdueFeeLT(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldLT(FieldOverdueFee, v))
+}
+
+// OverdueFeeLTE applies the LTE predicate on the "overdue_fee" field.
+func OverdueFeeLTE(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldLTE(FieldOverdueFee, v))
 }
 
 // HasBrand applies the HasEdge predicate on the "brand" edge.

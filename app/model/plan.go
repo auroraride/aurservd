@@ -12,6 +12,7 @@ type PlanType uint8
 const (
 	PlanTypeBattery          PlanType = 1 + iota // 单电
 	PlanTypeEbikeWithBattery                     // 车加电
+	PlanTypeEbikeRto                             // 以租代购（赠）
 )
 
 func (t PlanType) Value() uint8 {
@@ -24,6 +25,8 @@ func (t PlanType) String() string {
 		return "单电"
 	case PlanTypeEbikeWithBattery:
 		return "车加电"
+	case PlanTypeEbikeRto:
+		return "以租代购"
 	}
 	return " - "
 }
@@ -33,7 +36,7 @@ func (t PlanType) IsValid() bool {
 }
 
 var (
-	PlanTypes = []PlanType{PlanTypeBattery, PlanTypeEbikeWithBattery}
+	PlanTypes = []PlanType{PlanTypeBattery, PlanTypeEbikeWithBattery, PlanTypeEbikeRto}
 )
 
 // Plan 骑士卡基础信息
@@ -63,6 +66,9 @@ type PlanComplex struct {
 	CommissionID   uint64 `json:"commissionId,omitempty"`   // 佣金方案ID
 
 	Model string `json:"model" validate:"required"` // 电池型号, 单电需要每一项都补充此字段
+
+	RtoDays    *uint   `json:"rtoDays"`                                      // 赠车最小使用天数
+	OverdueFee float64 `json:"overdueFee" validate:"required" trans:"滞纳金单价"` // 滞纳金单价
 }
 
 type PlanCreateReq struct {
@@ -73,7 +79,7 @@ type PlanCreateReq struct {
 	Cities    []uint64       `json:"cities" validate:"required,min=1" trans:"启用城市"`
 	Complexes []*PlanComplex `json:"complexes" validate:"required,min=1" trans:"骑士卡详细信息"`
 
-	BrandID uint64 `json:"brandId" validate:"required_if=Type 2" trans:"电车型号"` // 车加电必填
+	BrandID uint64 `json:"brandId" validate:"required_if=Type 2,required_if=Type 3" trans:"电车型号"` // 车加电，以租代购 必填
 
 	Enable bool     `json:"enable"` // 是否启用
 	Notes  []string `json:"notes"`  // 购买须知
@@ -149,6 +155,8 @@ type PlanListRiderReq struct {
 	Model        string  `json:"model" swaggerignore:"true"`        // 电池型号
 	EbikeBrandID *uint64 `json:"ebikeBrandId" swaggerignore:"true"` // 电车型号
 	Intelligent  bool    `json:"intelligent" swaggerignore:"true"`  // 是否智能
+
+	StoreId *uint64 `json:"storeId"` // 门店ID
 }
 
 // RiderPlanItem 骑士返回数据
@@ -210,6 +218,8 @@ type PlanDaysPriceOption struct {
 	DepositContract         bool       `json:"depositContract"`         // 是否支持合同免押金
 	DepositPay              bool       `json:"depositPay"`              // 是否支持支付押金
 	Agreement               *Agreement `json:"agreement,omitempty"`     // 协议
+
+	RentToBuyDays uint `json:"rentToBuyDays"` // 以租代购赠车最小使用天数
 }
 
 type PlanModelOptions []*PlanModelOption

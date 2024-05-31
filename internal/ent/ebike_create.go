@@ -241,6 +241,20 @@ func (ec *EbikeCreate) SetExFactory(s string) *EbikeCreate {
 	return ec
 }
 
+// SetIsRto sets the "is_rto" field.
+func (ec *EbikeCreate) SetIsRto(u uint8) *EbikeCreate {
+	ec.mutation.SetIsRto(u)
+	return ec
+}
+
+// SetNillableIsRto sets the "is_rto" field if the given value is not nil.
+func (ec *EbikeCreate) SetNillableIsRto(u *uint8) *EbikeCreate {
+	if u != nil {
+		ec.SetIsRto(*u)
+	}
+	return ec
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (ec *EbikeCreate) SetBrand(e *EbikeBrand) *EbikeCreate {
 	return ec.SetBrandID(e.ID)
@@ -344,6 +358,10 @@ func (ec *EbikeCreate) defaults() error {
 		v := ebike.DefaultColor
 		ec.mutation.SetColor(v)
 	}
+	if _, ok := ec.mutation.IsRto(); !ok {
+		v := ebike.DefaultIsRto
+		ec.mutation.SetIsRto(v)
+	}
 	return nil
 }
 
@@ -372,6 +390,9 @@ func (ec *EbikeCreate) check() error {
 	}
 	if _, ok := ec.mutation.ExFactory(); !ok {
 		return &ValidationError{Name: "ex_factory", err: errors.New(`ent: missing required field "Ebike.ex_factory"`)}
+	}
+	if _, ok := ec.mutation.IsRto(); !ok {
+		return &ValidationError{Name: "is_rto", err: errors.New(`ent: missing required field "Ebike.is_rto"`)}
 	}
 	if _, ok := ec.mutation.BrandID(); !ok {
 		return &ValidationError{Name: "brand", err: errors.New(`ent: missing required edge "Ebike.brand"`)}
@@ -454,6 +475,10 @@ func (ec *EbikeCreate) createSpec() (*Ebike, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.ExFactory(); ok {
 		_spec.SetField(ebike.FieldExFactory, field.TypeString, value)
 		_node.ExFactory = value
+	}
+	if value, ok := ec.mutation.IsRto(); ok {
+		_spec.SetField(ebike.FieldIsRto, field.TypeUint8, value)
+		_node.IsRto = value
 	}
 	if nodes := ec.mutation.BrandIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -854,6 +879,24 @@ func (u *EbikeUpsert) UpdateExFactory() *EbikeUpsert {
 	return u
 }
 
+// SetIsRto sets the "is_rto" field.
+func (u *EbikeUpsert) SetIsRto(v uint8) *EbikeUpsert {
+	u.Set(ebike.FieldIsRto, v)
+	return u
+}
+
+// UpdateIsRto sets the "is_rto" field to the value that was provided on create.
+func (u *EbikeUpsert) UpdateIsRto() *EbikeUpsert {
+	u.SetExcluded(ebike.FieldIsRto)
+	return u
+}
+
+// AddIsRto adds v to the "is_rto" field.
+func (u *EbikeUpsert) AddIsRto(v uint8) *EbikeUpsert {
+	u.Add(ebike.FieldIsRto, v)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1186,6 +1229,27 @@ func (u *EbikeUpsertOne) SetExFactory(v string) *EbikeUpsertOne {
 func (u *EbikeUpsertOne) UpdateExFactory() *EbikeUpsertOne {
 	return u.Update(func(s *EbikeUpsert) {
 		s.UpdateExFactory()
+	})
+}
+
+// SetIsRto sets the "is_rto" field.
+func (u *EbikeUpsertOne) SetIsRto(v uint8) *EbikeUpsertOne {
+	return u.Update(func(s *EbikeUpsert) {
+		s.SetIsRto(v)
+	})
+}
+
+// AddIsRto adds v to the "is_rto" field.
+func (u *EbikeUpsertOne) AddIsRto(v uint8) *EbikeUpsertOne {
+	return u.Update(func(s *EbikeUpsert) {
+		s.AddIsRto(v)
+	})
+}
+
+// UpdateIsRto sets the "is_rto" field to the value that was provided on create.
+func (u *EbikeUpsertOne) UpdateIsRto() *EbikeUpsertOne {
+	return u.Update(func(s *EbikeUpsert) {
+		s.UpdateIsRto()
 	})
 }
 
@@ -1687,6 +1751,27 @@ func (u *EbikeUpsertBulk) SetExFactory(v string) *EbikeUpsertBulk {
 func (u *EbikeUpsertBulk) UpdateExFactory() *EbikeUpsertBulk {
 	return u.Update(func(s *EbikeUpsert) {
 		s.UpdateExFactory()
+	})
+}
+
+// SetIsRto sets the "is_rto" field.
+func (u *EbikeUpsertBulk) SetIsRto(v uint8) *EbikeUpsertBulk {
+	return u.Update(func(s *EbikeUpsert) {
+		s.SetIsRto(v)
+	})
+}
+
+// AddIsRto adds v to the "is_rto" field.
+func (u *EbikeUpsertBulk) AddIsRto(v uint8) *EbikeUpsertBulk {
+	return u.Update(func(s *EbikeUpsert) {
+		s.AddIsRto(v)
+	})
+}
+
+// UpdateIsRto sets the "is_rto" field to the value that was provided on create.
+func (u *EbikeUpsertBulk) UpdateIsRto() *EbikeUpsertBulk {
+	return u.Update(func(s *EbikeUpsert) {
+		s.UpdateIsRto()
 	})
 }
 

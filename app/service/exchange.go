@@ -219,7 +219,7 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
 	qr := strings.ReplaceAll(req.Code, "STORE:", "")
 	item := NewStore().QuerySn(qr)
 	// 门店状态
-	if item.Status != model.StoreStatusOpen {
+	if item.Status != model.StoreStatusOpen.Value() {
 		snag.Panic("门店未营业")
 	}
 

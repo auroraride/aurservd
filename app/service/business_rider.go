@@ -23,6 +23,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/payment/alipay"
@@ -432,7 +433,7 @@ func (s *businessRiderService) doTask() (bin *model.BinInfo, bat *model.Battery,
 }
 
 // do 处理业务
-func (s *businessRiderService) do(bt model.BusinessType, cb func(tx *ent.Tx)) {
+func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt model.BusinessType, cb func(tx *ent.Tx)) {
 	async.WithTask(func() {
 		sts := map[model.BusinessType]uint8{
 			model.BusinessTypeActive:      model.StockTypeRiderActive,
@@ -492,6 +493,19 @@ func (s *businessRiderService) do(bt model.BusinessType, cb func(tx *ent.Tx)) {
 		// 库存管理
 		// TODO 智能电池
 		var sk *ent.Stock
+		var isRto uint8
+		var remark string
+		// 先判断退租时候的订阅是否符合赠车
+		if doReq.SubRto {
+			isRto = model.EbikeIsRtoSend.Value()
+			// 再次判断当前赠车是否为管理员强制退租
+			if doReq.NeedRto != nil {
+				switch *doReq.NeedRto {
+				case model.EbikeIsRtoUnSend.Value():
+					isRto = model.EbikeIsRtoUnSend.Value()
+				}
+			}
+		}
 		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 			cb(tx)
 
@@ -516,11 +530,31 @@ func (s *businessRiderService) do(bt model.BusinessType, cb func(tx *ent.Tx)) {
 
 						Ebike:   s.ebikeInfo,
 						Battery: bat,
+
+						IsRto: isRto,
 					},
 				)
 
 				if err != nil {
 					zap.L().Error("骑手业务出入库失败: "+bt.String(), zap.Error(err))
+				}
+			}
+
+			// 查询是否赠车
+			var rb *ent.Ebike
+			rb, err = tx.Ebike.Query().Where(ebike.ID(*s.subscribe.EbikeID)).First(s.ctx)
+			if err != nil {
+				zap.L().Error("查询是否赠车失败: ", zap.Error(err))
+			}
+			if rb != nil && doReq.SubRto {
+				isRto = model.EbikeIsRtoSend.Value()
+				remark = rb.Sn
+				// 判断是否管理员强制退租
+				if doReq.NeedRto != nil {
+					if *doReq.NeedRto == model.BusinessIsRtoUnSend.Value() {
+						isRto = model.EbikeIsRtoUnSend.Value()
+						remark = doReq.Remark
+					}
 				}
 			}
 
@@ -549,6 +583,8 @@ func (s *businessRiderService) do(bt model.BusinessType, cb func(tx *ent.Tx)) {
 			SetStock(sk).
 			SetBattery(bat).
 			SetAgentId(s.agentID).
+			SetIsRto(isRto).
+			SetRemark(remark).
 			Save(bt)
 		var bussinessID *uint64
 		revStatus := model.ReserveStatusFail
@@ -597,7 +633,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 		snag.Panic("还未签约, 请签约")
 	}
 
-	s.do(model.BusinessTypeActive, func(tx *ent.Tx) {
+	s.do(nil, model.BusinessTypeActive, func(tx *ent.Tx) {
 		var err error
 
 		// 更新分配
@@ -726,7 +762,25 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 		snag.Panic("请到指定站点退租")
 	}
 
-	s.do(model.BusinessTypeUnsubscribe, func(tx *ent.Tx) {
+	// 判定是否以租代购赠车
+	doReq := model.BusinessRiderServiceDoReq{
+		NeedRto: req.NeedRto,
+		Remark:  *req.Remark,
+	}
+
+	needRto := false
+	subPlan, _ := ent.Database.Plan.Query().Where(plan.ID(*sub.PlanID)).First(s.ctx)
+	if subPlan != nil {
+		if subPlan.Type == model.PlanTypeEbikeRto.Value() {
+			pastDays := tools.NewTime().UsedDaysToNow(*sub.StartAt)
+			if pastDays >= int(subPlan.RtoDays) {
+				needRto = true
+				doReq.SubRto = true
+			}
+		}
+	}
+
+	s.do(&doReq, model.BusinessTypeUnsubscribe, func(tx *ent.Tx) {
 		var reason string
 		if s.cabinet != nil {
 			reason = "用户电柜退租"
@@ -761,12 +815,21 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 
 		// 更新电车
 		if sub.EbikeID != nil {
-			// 删除电车所属
-			err = tx.Ebike.UpdateOneID(*sub.EbikeID).
-				ClearRiderID().
-				SetStatus(model.EbikeStatusInStock).
-				SetNillableStoreID(s.storeID).
-				Exec(s.ctx)
+			if needRto {
+				// 当前属于以租代购赠车，直接删除平台电车资产
+				err = tx.Ebike.UpdateOneID(*sub.EbikeID).
+					SetIsRto(model.EbikeIsRtoSend.Value()).
+					Exec(s.ctx)
+				snag.PanicIfError(err)
+			} else {
+				// 删除电车所属
+				err = tx.Ebike.UpdateOneID(*sub.EbikeID).
+					ClearRiderID().
+					SetStatus(model.EbikeStatusInStock).
+					SetNillableStoreID(s.storeID).
+					Exec(s.ctx)
+				snag.PanicIfError(err)
+			}
 		}
 
 		// 删除电池
@@ -797,7 +860,7 @@ func (s *businessRiderService) Pause(subscribeID uint64) {
 		snag.Panic("当前剩余时间不足, 无法寄存")
 	}
 
-	s.do(model.BusinessTypePause, func(tx *ent.Tx) {
+	s.do(nil, model.BusinessTypePause, func(tx *ent.Tx) {
 		_, err := tx.SubscribePause.Create().
 			SetStartAt(time.Now()).
 			SetRiderID(s.subscribe.RiderID).
@@ -841,7 +904,7 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
 	// 当前时间
 	now := time.Now()
 
-	s.do(model.BusinessTypeContinue, func(tx *ent.Tx) {
+	s.do(nil, model.BusinessTypeContinue, func(tx *ent.Tx) {
 		_, err = tx.SubscribePause.
 			UpdateOne(sp).
 			SetDays(pr.CurrentDays).

@@ -534,6 +534,54 @@ func (pu *PlanUpdate) ClearDepositPay() *PlanUpdate {
 	return pu
 }
 
+// SetRtoDays sets the "rto_days" field.
+func (pu *PlanUpdate) SetRtoDays(u uint) *PlanUpdate {
+	pu.mutation.ResetRtoDays()
+	pu.mutation.SetRtoDays(u)
+	return pu
+}
+
+// SetNillableRtoDays sets the "rto_days" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableRtoDays(u *uint) *PlanUpdate {
+	if u != nil {
+		pu.SetRtoDays(*u)
+	}
+	return pu
+}
+
+// AddRtoDays adds u to the "rto_days" field.
+func (pu *PlanUpdate) AddRtoDays(u int) *PlanUpdate {
+	pu.mutation.AddRtoDays(u)
+	return pu
+}
+
+// ClearRtoDays clears the value of the "rto_days" field.
+func (pu *PlanUpdate) ClearRtoDays() *PlanUpdate {
+	pu.mutation.ClearRtoDays()
+	return pu
+}
+
+// SetOverdueFee sets the "overdue_fee" field.
+func (pu *PlanUpdate) SetOverdueFee(f float64) *PlanUpdate {
+	pu.mutation.ResetOverdueFee()
+	pu.mutation.SetOverdueFee(f)
+	return pu
+}
+
+// SetNillableOverdueFee sets the "overdue_fee" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableOverdueFee(f *float64) *PlanUpdate {
+	if f != nil {
+		pu.SetOverdueFee(*f)
+	}
+	return pu
+}
+
+// AddOverdueFee adds f to the "overdue_fee" field.
+func (pu *PlanUpdate) AddOverdueFee(f float64) *PlanUpdate {
+	pu.mutation.AddOverdueFee(f)
+	return pu
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (pu *PlanUpdate) SetBrand(e *EbikeBrand) *PlanUpdate {
 	return pu.SetBrandID(e.ID)
@@ -873,6 +921,21 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if pu.mutation.DepositPayCleared() {
 		_spec.ClearField(plan.FieldDepositPay, field.TypeBool)
+	}
+	if value, ok := pu.mutation.RtoDays(); ok {
+		_spec.SetField(plan.FieldRtoDays, field.TypeUint, value)
+	}
+	if value, ok := pu.mutation.AddedRtoDays(); ok {
+		_spec.AddField(plan.FieldRtoDays, field.TypeUint, value)
+	}
+	if pu.mutation.RtoDaysCleared() {
+		_spec.ClearField(plan.FieldRtoDays, field.TypeUint)
+	}
+	if value, ok := pu.mutation.OverdueFee(); ok {
+		_spec.SetField(plan.FieldOverdueFee, field.TypeFloat64, value)
+	}
+	if value, ok := pu.mutation.AddedOverdueFee(); ok {
+		_spec.AddField(plan.FieldOverdueFee, field.TypeFloat64, value)
 	}
 	if pu.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1617,6 +1680,54 @@ func (puo *PlanUpdateOne) ClearDepositPay() *PlanUpdateOne {
 	return puo
 }
 
+// SetRtoDays sets the "rto_days" field.
+func (puo *PlanUpdateOne) SetRtoDays(u uint) *PlanUpdateOne {
+	puo.mutation.ResetRtoDays()
+	puo.mutation.SetRtoDays(u)
+	return puo
+}
+
+// SetNillableRtoDays sets the "rto_days" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableRtoDays(u *uint) *PlanUpdateOne {
+	if u != nil {
+		puo.SetRtoDays(*u)
+	}
+	return puo
+}
+
+// AddRtoDays adds u to the "rto_days" field.
+func (puo *PlanUpdateOne) AddRtoDays(u int) *PlanUpdateOne {
+	puo.mutation.AddRtoDays(u)
+	return puo
+}
+
+// ClearRtoDays clears the value of the "rto_days" field.
+func (puo *PlanUpdateOne) ClearRtoDays() *PlanUpdateOne {
+	puo.mutation.ClearRtoDays()
+	return puo
+}
+
+// SetOverdueFee sets the "overdue_fee" field.
+func (puo *PlanUpdateOne) SetOverdueFee(f float64) *PlanUpdateOne {
+	puo.mutation.ResetOverdueFee()
+	puo.mutation.SetOverdueFee(f)
+	return puo
+}
+
+// SetNillableOverdueFee sets the "overdue_fee" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableOverdueFee(f *float64) *PlanUpdateOne {
+	if f != nil {
+		puo.SetOverdueFee(*f)
+	}
+	return puo
+}
+
+// AddOverdueFee adds f to the "overdue_fee" field.
+func (puo *PlanUpdateOne) AddOverdueFee(f float64) *PlanUpdateOne {
+	puo.mutation.AddOverdueFee(f)
+	return puo
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (puo *PlanUpdateOne) SetBrand(e *EbikeBrand) *PlanUpdateOne {
 	return puo.SetBrandID(e.ID)
@@ -1986,6 +2097,21 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 	}
 	if puo.mutation.DepositPayCleared() {
 		_spec.ClearField(plan.FieldDepositPay, field.TypeBool)
+	}
+	if value, ok := puo.mutation.RtoDays(); ok {
+		_spec.SetField(plan.FieldRtoDays, field.TypeUint, value)
+	}
+	if value, ok := puo.mutation.AddedRtoDays(); ok {
+		_spec.AddField(plan.FieldRtoDays, field.TypeUint, value)
+	}
+	if puo.mutation.RtoDaysCleared() {
+		_spec.ClearField(plan.FieldRtoDays, field.TypeUint)
+	}
+	if value, ok := puo.mutation.OverdueFee(); ok {
+		_spec.SetField(plan.FieldOverdueFee, field.TypeFloat64, value)
+	}
+	if value, ok := puo.mutation.AddedOverdueFee(); ok {
+		_spec.AddField(plan.FieldOverdueFee, field.TypeFloat64, value)
 	}
 	if puo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{

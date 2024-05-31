@@ -329,7 +329,7 @@ func (s *assistanceService) Nearby(req *model.IDQueryReq) (items []model.Assista
 	}
 
 	err := ent.Database.Store.QueryNotDeleted().
-		Where(store.EmployeeIDNotNil(), store.Status(model.StoreStatusOpen)).
+		Where(store.EmployeeIDNotNil(), store.Status(model.StoreStatusOpen.Value())).
 		Modify(
 			func(sel *sql.Selector) {
 				sel.Select(sel.C(store.FieldID), sel.C(store.FieldLng), sel.C(store.FieldLat), sel.C(store.FieldName)).
@@ -404,7 +404,7 @@ func (s *assistanceService) Allocate(req *model.AssistanceAllocateReq) {
 		Where(
 			store.ID(req.StoreID),
 			store.EmployeeIDNotNil(),
-			store.Status(model.StoreStatusOpen),
+			store.Status(model.StoreStatusOpen.Value()),
 			store.HasEmployeeWith(
 				employee.Not(employee.HasAssistancesWith(
 					assistance.Status(model.AssistanceStatusAllocated),

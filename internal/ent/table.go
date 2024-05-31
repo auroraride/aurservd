@@ -436,6 +436,20 @@ func (f *Feedback) GetName() string {
 	return f.Name
 }
 
+// GetTableName returns table name for Goods.
+func (_go *Goods) GetTableName() string {
+	return "goods"
+}
+
+// GetID returns id for Goods.
+func (_go *Goods) GetID() uint64 {
+	return _go.ID
+}
+
+func (_go *Goods) GetName() string {
+	return _go.Name
+}
+
 // GetTableName returns table name for Instructions.
 func (i *Instructions) GetTableName() string {
 	return "instructions"
@@ -866,6 +880,16 @@ func (s *Store) GetID() uint64 {
 
 func (s *Store) GetName() string {
 	return s.Name
+}
+
+// GetTableName returns table name for StoreGoods.
+func (sg *StoreGoods) GetTableName() string {
+	return "store_goods"
+}
+
+// GetID returns id for StoreGoods.
+func (sg *StoreGoods) GetID() uint64 {
+	return sg.ID
 }
 
 // GetTableName returns table name for Subscribe.

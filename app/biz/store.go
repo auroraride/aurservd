@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 
 	"entgo.io/ent/dialect/sql"
 
@@ -53,8 +54,28 @@ func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 		q.Where(store.CityID(*req.CityID))
 	}
 
+	// 门店只需要查询营业和休息中两种状态
+	q.Where(store.StatusIn(model.StoreStatusOpen.Value(), model.StoreStatusClose.Value()))
+
 	if req.Status != nil {
-		q.Where(store.Status(*req.Status))
+		q.Where(store.Status(req.Status.Value()))
+	}
+
+	if req.BusinessType != nil {
+		switch *req.BusinessType {
+		case model.StoreBusinessTypeObtain:
+			q.Where(store.EbikeObtain(true))
+		case model.StoreBusinessTypeRepair:
+			q.Where(store.EbikeRepair(true))
+		case model.StoreBusinessTypeSale:
+			q.Where(store.EbikeSale(true))
+		case model.StoreBusinessTypeRest:
+			q.Where(store.Rest(true))
+		}
+	}
+
+	if req.Keyword != nil {
+		q.Where(store.NameContains(*req.Keyword))
 	}
 
 	list, _ := q.All(s.ctx)
@@ -94,6 +115,7 @@ func (s *storeBiz) Detail(req *definition.StoreDetailReq) (res *definition.Store
 		Where(store.ID(req.ID)).
 		WithCity().
 		WithEmployee().
+		WithStocks().
 		Modify(func(sel *sql.Selector) {
 			sel.AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'))`, req.Lng, req.Lat)), "distance").
 				OrderBy(sql.Asc("distance"))
@@ -102,14 +124,14 @@ func (s *storeBiz) Detail(req *definition.StoreDetailReq) (res *definition.Store
 	if q == nil {
 		return nil
 	}
-	return s.detail(q)
+	return s.detailForStock(q)
 }
 
 func (s *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 	res = &definition.StoreDetail{
 		ID:            item.ID,
 		Name:          item.Name,
-		Status:        item.Status,
+		Status:        model.StoreStatus(item.Status),
 		Lng:           item.Lng,
 		Lat:           item.Lat,
 		Address:       item.Address,
@@ -117,7 +139,8 @@ func (s *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 		EbikeObtain:   item.EbikeObtain,
 		EbikeSale:     item.EbikeSale,
 		BusinessHours: item.BusinessHours,
-		EbikeStage:    item.EbikeStage,
+		Rest:          item.Rest,
+		Photos:        item.Photos,
 	}
 	if item.Edges.Employee != nil {
 		res.Employee = &model.Employee{
@@ -140,7 +163,6 @@ func (s *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 			res.Distance = distanceFloat
 		}
 	}
-
 	return
 
 }
@@ -192,7 +214,7 @@ func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreDetailReq
 		res = &definition.StoreDetail{
 			ID:            item.ID,
 			Name:          item.Name,
-			Status:        item.Status,
+			Status:        model.StoreStatus(item.Status),
 			Lng:           item.Lng,
 			Lat:           item.Lat,
 			Address:       item.Address,
@@ -224,4 +246,87 @@ func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreDetailReq
 		}
 	}
 	return res, nil
+}
+
+// queryStocksByStore 查询门店电车是否有库存
+func (b *storeBiz) queryStocksByStore(item *ent.Store, brandIds []uint64) (eBrandIds []uint64) {
+	bikes := make(map[string]*model.StockMaterial)
+
+	brandIdMap := make(map[uint64]bool)
+	for _, brandId := range brandIds {
+		brandIdMap[brandId] = true
+	}
+
+	for _, st := range item.Edges.Stocks {
+		switch {
+		case st.BrandID != nil && brandIdMap[*st.BrandID]:
+			service.NewStock().Calculate(bikes, st)
+		}
+	}
+	for bId, bike := range bikes {
+		brandId, _ := strconv.Atoi(bId)
+		if bike.Surplus > 0 {
+			eBrandIds = append(eBrandIds, uint64(brandId))
+		}
+	}
+	return
+}
+
+// detailForStock 插叙门店详情及商品、电车套餐列表
+func (b *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail) {
+	res = &definition.StoreDetail{
+		ID:            item.ID,
+		Name:          item.Name,
+		Status:        model.StoreStatus(item.Status),
+		Lng:           item.Lng,
+		Lat:           item.Lat,
+		Address:       item.Address,
+		EbikeRepair:   item.EbikeRepair,
+		EbikeObtain:   item.EbikeObtain,
+		EbikeSale:     item.EbikeSale,
+		BusinessHours: item.BusinessHours,
+		Rest:          item.Rest,
+		Photos:        item.Photos,
+	}
+	if item.Edges.Employee != nil {
+		res.Employee = &model.Employee{
+			ID:    item.Edges.Employee.ID,
+			Name:  item.Edges.Employee.Name,
+			Phone: item.Edges.Employee.Phone,
+		}
+	}
+	if item.Edges.City != nil {
+		res.City = model.City{
+			ID:   item.Edges.City.ID,
+			Name: item.Edges.City.Name,
+		}
+	}
+
+	distance, err := item.Value("distance")
+	if distance != nil || err == nil {
+		distanceFloat, ok := distance.(float64)
+		if ok {
+			res.Distance = distanceFloat
+		}
+	}
+
+	if item.Edges.Stocks != nil {
+		var brandIds []uint64
+		for _, st := range item.Edges.Stocks {
+			brandIds = append(brandIds, *st.BrandID)
+		}
+
+		// 查询门店存在库存的电车数据
+		sBids := b.queryStocksByStore(item, brandIds)
+		ebikeRes := NewPlanBiz().EbikeList(sBids)
+		if ebikeRes.Brands != nil {
+			res.Brands = ebikeRes.Brands
+		}
+	}
+
+	// 查询门店商品
+	res.SaleGoods = NewGoods().ListByStoreId(item.ID)
+
+	return
+
 }

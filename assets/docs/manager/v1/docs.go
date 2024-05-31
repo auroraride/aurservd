@@ -6905,6 +6905,245 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/goods": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品"
+                ],
+                "summary": "商品列表",
+                "operationId": "GoodsList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.GoodsListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.GoodsDetail"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品"
+                ],
+                "summary": "创建商品",
+                "operationId": "GoodsCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.GoodsCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/goods/status/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品"
+                ],
+                "summary": "上下架商品",
+                "operationId": "GoodsUpdateStatus",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.GoodsUpdateStatusReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/goods/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品"
+                ],
+                "summary": "商品详情",
+                "operationId": "GoodsDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "商品ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.GoodsDetail"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品"
+                ],
+                "summary": "修改商品",
+                "operationId": "GoodsModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.GoodsModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商品"
+                ],
+                "summary": "删除商品",
+                "operationId": "GoodsDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "商品ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/import/rider": {
             "post": {
                 "consumes": [
@@ -7797,16 +8036,19 @@ const docTemplate = `{
                     {
                         "enum": [
                             1,
-                            2
+                            2,
+                            3
                         ],
                         "type": "integer",
                         "x-enum-comments": {
                             "PlanTypeBattery": "单电",
+                            "PlanTypeEbikeRto": "以租代购（赠）",
                             "PlanTypeEbikeWithBattery": "车加电"
                         },
                         "x-enum-varnames": [
                             "PlanTypeBattery",
-                            "PlanTypeEbikeWithBattery"
+                            "PlanTypeEbikeWithBattery",
+                            "PlanTypeEbikeRto"
                         ],
                         "description": "骑士卡类别, 不携带字段为全部, 1:单电 2:车加电",
                         "name": "type",
@@ -12666,8 +12908,26 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
                         "type": "integer",
-                        "description": "业务类型 1:领取车辆(租车) 2:维修车辆 3:买车",
+                        "x-enum-comments": {
+                            "StoreBusinessTypeObtain": "领取车辆(租车)",
+                            "StoreBusinessTypeRepair": "维修",
+                            "StoreBusinessTypeRest": "驿站",
+                            "StoreBusinessTypeSale": "购买"
+                        },
+                        "x-enum-varnames": [
+                            "StoreBusinessTypeObtain",
+                            "StoreBusinessTypeRepair",
+                            "StoreBusinessTypeSale",
+                            "StoreBusinessTypeRest"
+                        ],
+                        "description": "业务类型 1:领取车辆(租车) 2:维修车辆 3:买车 4:驿站",
                         "name": "businessType",
                         "in": "query"
                     },
@@ -12696,7 +12956,25 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
                         "type": "integer",
+                        "x-enum-comments": {
+                            "StoreStatusClose": "休息中",
+                            "StoreStatusHidden": "隐藏",
+                            "StoreStatusMaintain": "维护中",
+                            "StoreStatusOpen": "营业中"
+                        },
+                        "x-enum-varnames": [
+                            "StoreStatusMaintain",
+                            "StoreStatusOpen",
+                            "StoreStatusClose",
+                            "StoreStatusHidden"
+                        ],
                         "description": "门店状态",
                         "name": "status",
                         "in": "query"
@@ -14192,6 +14470,308 @@ const docTemplate = `{
                 "FaultTypeOther"
             ]
         },
+        "definition.GoodsCreateReq": {
+            "type": "object",
+            "required": [
+                "headPic",
+                "name",
+                "price",
+                "storeIds",
+                "type",
+                "weight"
+            ],
+            "properties": {
+                "headPic": {
+                    "description": "商品头图, 商品头图",
+                    "type": "string"
+                },
+                "intro": {
+                    "description": "商品介绍, 商品介绍",
+                    "type": "array",
+                    "maxItems": 5,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "lables": {
+                    "description": "商品标签",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "description": "商品名称, 商品名称",
+                    "type": "string"
+                },
+                "photos": {
+                    "description": "商品图片, 商品图片",
+                    "type": "array",
+                    "maxItems": 5,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "description": "商品价格, 商品价格",
+                    "type": "number"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "storeIds": {
+                    "description": "门店IDS, 门店IDS",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "type": {
+                    "description": "商品类别, 商品类别 1电车",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.GoodsType"
+                        }
+                    ]
+                },
+                "weight": {
+                    "description": "商品权重, 商品权重",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.GoodsDetail": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "headPic": {
+                    "description": "商品头图",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "intro": {
+                    "description": "商品介绍",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "lables": {
+                    "description": "商品标签",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "description": "商品名称",
+                    "type": "string"
+                },
+                "photos": {
+                    "description": "商品图片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "description": "商品价格",
+                    "type": "number"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "商品编号",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "商品状态 0-已下架 1-已上架",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.GoodsStatus"
+                        }
+                    ]
+                },
+                "storeIds": {
+                    "description": "门店Ids",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "stores": {
+                    "description": "配置店铺信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Store"
+                    }
+                },
+                "type": {
+                    "description": "商品类型 1-电车",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.GoodsType"
+                        }
+                    ]
+                },
+                "weight": {
+                    "description": "商品权重",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.GoodsListReq": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "keyword": {
+                    "description": "关键字",
+                    "type": "string"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                },
+                "start": {
+                    "description": "开始时间",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "是否启用",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.GoodsStatus"
+                        }
+                    ]
+                }
+            }
+        },
+        "definition.GoodsModifyReq": {
+            "type": "object",
+            "required": [
+                "headPic",
+                "name",
+                "price",
+                "storeIds",
+                "type",
+                "weight"
+            ],
+            "properties": {
+                "headPic": {
+                    "description": "商品头图, 商品头图",
+                    "type": "string"
+                },
+                "intro": {
+                    "description": "商品介绍, 商品介绍",
+                    "type": "array",
+                    "maxItems": 5,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "lables": {
+                    "description": "商品标签",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "description": "商品名称, 商品名称",
+                    "type": "string"
+                },
+                "photos": {
+                    "description": "商品图片, 商品图片",
+                    "type": "array",
+                    "maxItems": 5,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "description": "商品价格, 商品价格",
+                    "type": "number"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "storeIds": {
+                    "description": "门店IDS, 门店IDS",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "type": {
+                    "description": "商品类别, 商品类别 1电车",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.GoodsType"
+                        }
+                    ]
+                },
+                "weight": {
+                    "description": "商品权重, 商品权重",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.GoodsStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1
+            ],
+            "x-enum-comments": {
+                "GoodsStatusOffline": "下架",
+                "GoodsStatusOnline": "上架"
+            },
+            "x-enum-varnames": [
+                "GoodsStatusOffline",
+                "GoodsStatusOnline"
+            ]
+        },
+        "definition.GoodsType": {
+            "type": "integer",
+            "enum": [
+                1
+            ],
+            "x-enum-comments": {
+                "GoodsTypeEbike": "电车"
+            },
+            "x-enum-varnames": [
+                "GoodsTypeEbike"
+            ]
+        },
+        "definition.GoodsUpdateStatusReq": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "商品状态 0下架 1上架",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.GoodsStatus"
+                        }
+                    ]
+                }
+            }
+        },
         "definition.InstructionsCreateReq": {
             "type": "object",
             "required": [
@@ -15570,7 +16150,7 @@ const docTemplate = `{
         "model.BatteryTrackRes": {
             "type": "object",
             "properties": {
-                "track": {
+                "points": {
                     "description": "轨迹点",
                     "type": "array",
                     "items": {
@@ -16022,6 +16602,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "isRto": {
+                    "description": "是否已赠车",
+                    "type": "integer"
+                },
                 "name": {
                     "description": "骑手姓名",
                     "type": "string"
@@ -16041,6 +16625,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Plan"
                         }
                     ]
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
                 },
                 "store": {
                     "description": "门店, 可能为空",
@@ -16153,6 +16741,10 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "订阅ID",
+                    "type": "integer"
+                },
+                "needRto": {
+                    "description": "管理员强制退租-是否赠车：0-不赠车; 1-赠车;",
                     "type": "integer"
                 },
                 "refundDeposit": {
@@ -17919,6 +18511,10 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "isRto": {
+                    "description": "是否已赠送",
+                    "type": "boolean"
                 },
                 "machine": {
                     "description": "终端编号",
@@ -19975,6 +20571,7 @@ const docTemplate = `{
             "required": [
                 "days",
                 "model",
+                "overdueFee",
                 "price"
             ],
             "properties": {
@@ -20015,9 +20612,17 @@ const docTemplate = `{
                     "description": "原价",
                     "type": "number"
                 },
+                "overdueFee": {
+                    "description": "滞纳金单价, 滞纳金单价",
+                    "type": "number"
+                },
                 "price": {
                     "description": "价格",
                     "type": "number"
+                },
+                "rtoDays": {
+                    "description": "赠车最小使用天数",
+                    "type": "integer"
                 }
             }
         },
@@ -20039,7 +20644,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brandId": {
-                    "description": "电车型号, 车加电必填",
+                    "description": "电车型号, 车加电，以租代购 必填",
                     "type": "integer"
                 },
                 "cities": {
@@ -20347,15 +20952,18 @@ const docTemplate = `{
             "type": "integer",
             "enum": [
                 1,
-                2
+                2,
+                3
             ],
             "x-enum-comments": {
                 "PlanTypeBattery": "单电",
+                "PlanTypeEbikeRto": "以租代购（赠）",
                 "PlanTypeEbikeWithBattery": "车加电"
             },
             "x-enum-varnames": [
                 "PlanTypeBattery",
-                "PlanTypeEbikeWithBattery"
+                "PlanTypeEbikeWithBattery",
+                "PlanTypeEbikeRto"
             ]
         },
         "model.PointBatchReq": {
@@ -20911,6 +21519,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "isRto": {
+                    "description": "骑手当前订阅是否可赠车",
+                    "type": "boolean"
+                },
                 "name": {
                     "description": "姓名",
                     "type": "string"
@@ -20991,6 +21603,10 @@ const docTemplate = `{
                 "model": {
                     "description": "骑士卡可用电池型号",
                     "type": "string"
+                },
+                "pastDay": {
+                    "description": "骑手当前订阅已使用天数",
+                    "type": "integer"
                 },
                 "remaining": {
                     "description": "剩余天数",
@@ -22135,6 +22751,27 @@ const docTemplate = `{
                 }
             }
         },
+        "model.StoreBusinessType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "x-enum-comments": {
+                "StoreBusinessTypeObtain": "领取车辆(租车)",
+                "StoreBusinessTypeRepair": "维修",
+                "StoreBusinessTypeRest": "驿站",
+                "StoreBusinessTypeSale": "购买"
+            },
+            "x-enum-varnames": [
+                "StoreBusinessTypeObtain",
+                "StoreBusinessTypeRepair",
+                "StoreBusinessTypeSale",
+                "StoreBusinessTypeRest"
+            ]
+        },
         "model.StoreCabiletGoal": {
             "type": "integer",
             "enum": [
@@ -22155,6 +22792,7 @@ const docTemplate = `{
             "required": [
                 "branchId",
                 "name",
+                "photos",
                 "status"
             ],
             "properties": {
@@ -22178,10 +22816,6 @@ const docTemplate = `{
                     "description": "是否可以买车",
                     "type": "boolean"
                 },
-                "ebikeStage": {
-                    "description": "是否拥有驿站",
-                    "type": "boolean"
-                },
                 "materials": {
                     "description": "门店物资",
                     "type": "array",
@@ -22193,14 +22827,29 @@ const docTemplate = `{
                     "description": "门店名称",
                     "type": "string"
                 },
+                "photos": {
+                    "description": "门店照片, 门店照片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "rest": {
+                    "description": "是否驿站",
+                    "type": "boolean"
+                },
                 "status": {
                     "description": "门店状态 0维护 1营业 2休息 3隐藏",
-                    "type": "integer",
                     "enum": [
                         0,
                         1,
                         2,
                         3
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreStatus"
+                        }
                     ]
                 }
             }
@@ -22239,10 +22888,6 @@ const docTemplate = `{
                     "description": "是否可以买车",
                     "type": "boolean"
                 },
-                "ebikeStage": {
-                    "description": "是否有驿站",
-                    "type": "boolean"
-                },
                 "employee": {
                     "description": "店员, 有可能不存在",
                     "allOf": [
@@ -22258,13 +22903,28 @@ const docTemplate = `{
                     "description": "门店名称",
                     "type": "string"
                 },
+                "photos": {
+                    "description": "照片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "qrcode": {
                     "description": "门店二维码",
                     "type": "string"
                 },
+                "rest": {
+                    "description": "是否驿站",
+                    "type": "boolean"
+                },
                 "status": {
                     "description": "状态",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreStatus"
+                        }
+                    ]
                 }
             }
         },
@@ -22291,25 +22951,57 @@ const docTemplate = `{
                     "description": "是否可以买车",
                     "type": "boolean"
                 },
-                "ebikeStage": {
-                    "description": "是否拥有驿站",
-                    "type": "boolean"
-                },
                 "name": {
                     "description": "门店名称",
                     "type": "string"
                 },
+                "photos": {
+                    "description": "门店照片, 门店照片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "rest": {
+                    "description": "是否驿站",
+                    "type": "boolean"
+                },
                 "status": {
                     "description": "门店状态 0维护 1营业 2休息 3隐藏",
-                    "type": "integer",
                     "enum": [
                         0,
                         1,
                         2,
                         3
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreStatus"
+                        }
                     ]
                 }
             }
+        },
+        "model.StoreStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "StoreStatusClose": "休息中",
+                "StoreStatusHidden": "隐藏",
+                "StoreStatusMaintain": "维护中",
+                "StoreStatusOpen": "营业中"
+            },
+            "x-enum-varnames": [
+                "StoreStatusMaintain",
+                "StoreStatusOpen",
+                "StoreStatusClose",
+                "StoreStatusHidden"
+            ]
         },
         "model.StoreWithStatus": {
             "type": "object",
@@ -22323,7 +23015,11 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "门店状态",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreStatus"
+                        }
+                    ]
                 }
             }
         },

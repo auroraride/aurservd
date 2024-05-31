@@ -353,6 +353,34 @@ func (pc *PlanCreate) SetNillableDepositPay(b *bool) *PlanCreate {
 	return pc
 }
 
+// SetRtoDays sets the "rto_days" field.
+func (pc *PlanCreate) SetRtoDays(u uint) *PlanCreate {
+	pc.mutation.SetRtoDays(u)
+	return pc
+}
+
+// SetNillableRtoDays sets the "rto_days" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableRtoDays(u *uint) *PlanCreate {
+	if u != nil {
+		pc.SetRtoDays(*u)
+	}
+	return pc
+}
+
+// SetOverdueFee sets the "overdue_fee" field.
+func (pc *PlanCreate) SetOverdueFee(f float64) *PlanCreate {
+	pc.mutation.SetOverdueFee(f)
+	return pc
+}
+
+// SetNillableOverdueFee sets the "overdue_fee" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableOverdueFee(f *float64) *PlanCreate {
+	if f != nil {
+		pc.SetOverdueFee(*f)
+	}
+	return pc
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (pc *PlanCreate) SetBrand(e *EbikeBrand) *PlanCreate {
 	return pc.SetBrandID(e.ID)
@@ -496,6 +524,10 @@ func (pc *PlanCreate) defaults() error {
 		v := plan.DefaultDepositPay
 		pc.mutation.SetDepositPay(v)
 	}
+	if _, ok := pc.mutation.OverdueFee(); !ok {
+		v := plan.DefaultOverdueFee
+		pc.mutation.SetOverdueFee(v)
+	}
 	return nil
 }
 
@@ -539,6 +571,9 @@ func (pc *PlanCreate) check() error {
 	}
 	if _, ok := pc.mutation.Deposit(); !ok {
 		return &ValidationError{Name: "deposit", err: errors.New(`ent: missing required field "Plan.deposit"`)}
+	}
+	if _, ok := pc.mutation.OverdueFee(); !ok {
+		return &ValidationError{Name: "overdue_fee", err: errors.New(`ent: missing required field "Plan.overdue_fee"`)}
 	}
 	return nil
 }
@@ -670,6 +705,14 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.DepositPay(); ok {
 		_spec.SetField(plan.FieldDepositPay, field.TypeBool, value)
 		_node.DepositPay = value
+	}
+	if value, ok := pc.mutation.RtoDays(); ok {
+		_spec.SetField(plan.FieldRtoDays, field.TypeUint, value)
+		_node.RtoDays = value
+	}
+	if value, ok := pc.mutation.OverdueFee(); ok {
+		_spec.SetField(plan.FieldOverdueFee, field.TypeFloat64, value)
+		_node.OverdueFee = value
 	}
 	if nodes := pc.mutation.BrandIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1278,6 +1321,48 @@ func (u *PlanUpsert) ClearDepositPay() *PlanUpsert {
 	return u
 }
 
+// SetRtoDays sets the "rto_days" field.
+func (u *PlanUpsert) SetRtoDays(v uint) *PlanUpsert {
+	u.Set(plan.FieldRtoDays, v)
+	return u
+}
+
+// UpdateRtoDays sets the "rto_days" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateRtoDays() *PlanUpsert {
+	u.SetExcluded(plan.FieldRtoDays)
+	return u
+}
+
+// AddRtoDays adds v to the "rto_days" field.
+func (u *PlanUpsert) AddRtoDays(v uint) *PlanUpsert {
+	u.Add(plan.FieldRtoDays, v)
+	return u
+}
+
+// ClearRtoDays clears the value of the "rto_days" field.
+func (u *PlanUpsert) ClearRtoDays() *PlanUpsert {
+	u.SetNull(plan.FieldRtoDays)
+	return u
+}
+
+// SetOverdueFee sets the "overdue_fee" field.
+func (u *PlanUpsert) SetOverdueFee(v float64) *PlanUpsert {
+	u.Set(plan.FieldOverdueFee, v)
+	return u
+}
+
+// UpdateOverdueFee sets the "overdue_fee" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateOverdueFee() *PlanUpsert {
+	u.SetExcluded(plan.FieldOverdueFee)
+	return u
+}
+
+// AddOverdueFee adds v to the "overdue_fee" field.
+func (u *PlanUpsert) AddOverdueFee(v float64) *PlanUpsert {
+	u.Add(plan.FieldOverdueFee, v)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1855,6 +1940,55 @@ func (u *PlanUpsertOne) UpdateDepositPay() *PlanUpsertOne {
 func (u *PlanUpsertOne) ClearDepositPay() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearDepositPay()
+	})
+}
+
+// SetRtoDays sets the "rto_days" field.
+func (u *PlanUpsertOne) SetRtoDays(v uint) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetRtoDays(v)
+	})
+}
+
+// AddRtoDays adds v to the "rto_days" field.
+func (u *PlanUpsertOne) AddRtoDays(v uint) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.AddRtoDays(v)
+	})
+}
+
+// UpdateRtoDays sets the "rto_days" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateRtoDays() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateRtoDays()
+	})
+}
+
+// ClearRtoDays clears the value of the "rto_days" field.
+func (u *PlanUpsertOne) ClearRtoDays() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearRtoDays()
+	})
+}
+
+// SetOverdueFee sets the "overdue_fee" field.
+func (u *PlanUpsertOne) SetOverdueFee(v float64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetOverdueFee(v)
+	})
+}
+
+// AddOverdueFee adds v to the "overdue_fee" field.
+func (u *PlanUpsertOne) AddOverdueFee(v float64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.AddOverdueFee(v)
+	})
+}
+
+// UpdateOverdueFee sets the "overdue_fee" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateOverdueFee() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateOverdueFee()
 	})
 }
 
@@ -2601,6 +2735,55 @@ func (u *PlanUpsertBulk) UpdateDepositPay() *PlanUpsertBulk {
 func (u *PlanUpsertBulk) ClearDepositPay() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearDepositPay()
+	})
+}
+
+// SetRtoDays sets the "rto_days" field.
+func (u *PlanUpsertBulk) SetRtoDays(v uint) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetRtoDays(v)
+	})
+}
+
+// AddRtoDays adds v to the "rto_days" field.
+func (u *PlanUpsertBulk) AddRtoDays(v uint) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.AddRtoDays(v)
+	})
+}
+
+// UpdateRtoDays sets the "rto_days" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateRtoDays() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateRtoDays()
+	})
+}
+
+// ClearRtoDays clears the value of the "rto_days" field.
+func (u *PlanUpsertBulk) ClearRtoDays() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearRtoDays()
+	})
+}
+
+// SetOverdueFee sets the "overdue_fee" field.
+func (u *PlanUpsertBulk) SetOverdueFee(v float64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetOverdueFee(v)
+	})
+}
+
+// AddOverdueFee adds v to the "overdue_fee" field.
+func (u *PlanUpsertBulk) AddOverdueFee(v float64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.AddOverdueFee(v)
+	})
+}
+
+// UpdateOverdueFee sets the "overdue_fee" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateOverdueFee() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateOverdueFee()
 	})
 }
 

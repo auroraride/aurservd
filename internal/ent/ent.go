@@ -49,6 +49,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
+	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/instructions"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
@@ -85,6 +86,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -188,6 +190,7 @@ func checkColumn(table, column string) error {
 			export.Table:                     export.ValidColumn,
 			fault.Table:                      fault.ValidColumn,
 			feedback.Table:                   feedback.ValidColumn,
+			goods.Table:                      goods.ValidColumn,
 			instructions.Table:               instructions.ValidColumn,
 			inventory.Table:                  inventory.ValidColumn,
 			maintainer.Table:                 maintainer.ValidColumn,
@@ -224,6 +227,7 @@ func checkColumn(table, column string) error {
 			stock.Table:                      stock.ValidColumn,
 			stocksummary.Table:               stocksummary.ValidColumn,
 			store.Table:                      store.ValidColumn,
+			storegoods.Table:                 storegoods.ValidColumn,
 			subscribe.Table:                  subscribe.ValidColumn,
 			subscribealter.Table:             subscribealter.ValidColumn,
 			subscribepause.Table:             subscribepause.ValidColumn,

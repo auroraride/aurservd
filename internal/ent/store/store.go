@@ -51,10 +51,12 @@ const (
 	FieldEbikeRepair = "ebike_repair"
 	// FieldEbikeSale holds the string denoting the ebike_sale field in the database.
 	FieldEbikeSale = "ebike_sale"
-	// FieldEbikeStage holds the string denoting the ebike_stage field in the database.
-	FieldEbikeStage = "ebike_stage"
+	// FieldRest holds the string denoting the rest field in the database.
+	FieldRest = "rest"
 	// FieldBusinessHours holds the string denoting the business_hours field in the database.
 	FieldBusinessHours = "business_hours"
+	// FieldPhotos holds the string denoting the photos field in the database.
+	FieldPhotos = "photos"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
@@ -67,6 +69,8 @@ const (
 	EdgeAttendances = "attendances"
 	// EdgeExceptions holds the string denoting the exceptions edge name in mutations.
 	EdgeExceptions = "exceptions"
+	// EdgeGoods holds the string denoting the goods edge name in mutations.
+	EdgeGoods = "goods"
 	// Table holds the table name of the store in the database.
 	Table = "store"
 	// CityTable is the table that holds the city relation/edge.
@@ -111,6 +115,13 @@ const (
 	ExceptionsInverseTable = "exception"
 	// ExceptionsColumn is the table column denoting the exceptions relation/edge.
 	ExceptionsColumn = "store_id"
+	// GoodsTable is the table that holds the goods relation/edge.
+	GoodsTable = "store_goods"
+	// GoodsInverseTable is the table name for the StoreGoods entity.
+	// It exists in this package in order to avoid circular dependency with the "storegoods" package.
+	GoodsInverseTable = "store_goods"
+	// GoodsColumn is the table column denoting the goods relation/edge.
+	GoodsColumn = "store_id"
 )
 
 // Columns holds all SQL columns for store fields.
@@ -134,8 +145,9 @@ var Columns = []string{
 	FieldEbikeObtain,
 	FieldEbikeRepair,
 	FieldEbikeSale,
-	FieldEbikeStage,
+	FieldRest,
 	FieldBusinessHours,
+	FieldPhotos,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -169,8 +181,8 @@ var (
 	DefaultEbikeRepair bool
 	// DefaultEbikeSale holds the default value on creation for the "ebike_sale" field.
 	DefaultEbikeSale bool
-	// DefaultEbikeStage holds the default value on creation for the "ebike_stage" field.
-	DefaultEbikeStage bool
+	// DefaultRest holds the default value on creation for the "rest" field.
+	DefaultRest bool
 )
 
 // OrderOption defines the ordering options for the Store queries.
@@ -261,9 +273,9 @@ func ByEbikeSale(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEbikeSale, opts...).ToFunc()
 }
 
-// ByEbikeStage orders the results by the ebike_stage field.
-func ByEbikeStage(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldEbikeStage, opts...).ToFunc()
+// ByRest orders the results by the rest field.
+func ByRest(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRest, opts...).ToFunc()
 }
 
 // ByBusinessHours orders the results by the business_hours field.
@@ -333,6 +345,20 @@ func ByExceptions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newExceptionsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByGoodsCount orders the results by goods count.
+func ByGoodsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newGoodsStep(), opts...)
+	}
+}
+
+// ByGoods orders the results by goods terms.
+func ByGoods(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newGoodsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -373,5 +399,12 @@ func newExceptionsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ExceptionsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ExceptionsTable, ExceptionsColumn),
+	)
+}
+func newGoodsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(GoodsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, GoodsTable, GoodsColumn),
 	)
 }

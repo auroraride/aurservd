@@ -396,6 +396,18 @@
                         "description": "电池型号",
                         "name": "model",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店业务 0-全部 1-租车，2-修车，3-买车，4-驿站 （首页地图不要传入此值）",
+                        "name": "storeBusiness",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店状态 0-全部 1-营业 2-休息 （首页地图不要传入此值）",
+                        "name": "storeStatus",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2002,6 +2014,12 @@
                         "name": "cityId",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2761,7 +2779,7 @@
                     "type": "integer"
                 },
                 "type": {
-                    "description": "类别",
+                    "description": "类别  store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店",
                     "type": "string"
                 }
             }
@@ -4034,6 +4052,10 @@
                 "price": {
                     "description": "价格, 应支付价格 = 价格 - 新签优惠",
                     "type": "number"
+                },
+                "rentToBuyDays": {
+                    "description": "以租代购赠车最小使用天数",
+                    "type": "integer"
                 }
             }
         },
@@ -4135,15 +4157,18 @@
             "type": "integer",
             "enum": [
                 1,
-                2
+                2,
+                3
             ],
             "x-enum-comments": {
                 "PlanTypeBattery": "单电",
+                "PlanTypeEbikeRto": "以租代购（赠）",
                 "PlanTypeEbikeWithBattery": "车加电"
             },
             "x-enum-varnames": [
                 "PlanTypeBattery",
-                "PlanTypeEbikeWithBattery"
+                "PlanTypeEbikeWithBattery",
+                "PlanTypeEbikeRto"
             ]
         },
         "model.PointLogListRes": {

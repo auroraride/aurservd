@@ -271,6 +271,84 @@ definitions:
     - FaultTypeBattery
     - FaultTypeEbike
     - FaultTypeOther
+  definition.GoodsDetail:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      headPic:
+        description: 商品头图
+        type: string
+      id:
+        type: integer
+      intro:
+        description: 商品介绍
+        items:
+          type: string
+        type: array
+      lables:
+        description: 商品标签
+        items:
+          type: string
+        type: array
+      name:
+        description: 商品名称
+        type: string
+      photos:
+        description: 商品图片
+        items:
+          type: string
+        type: array
+      price:
+        description: 商品价格
+        type: number
+      remark:
+        description: 备注
+        type: string
+      sn:
+        description: 商品编号
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsStatus'
+        description: 商品状态 0-已下架 1-已上架
+      storeIds:
+        description: 门店Ids
+        items:
+          type: integer
+        type: array
+      stores:
+        description: 配置店铺信息
+        items:
+          $ref: '#/definitions/model.Store'
+        type: array
+      type:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsType'
+        description: 商品类型 1-电车
+      weight:
+        description: 商品权重
+        type: integer
+    type: object
+  definition.GoodsStatus:
+    enum:
+    - 0
+    - 1
+    type: integer
+    x-enum-comments:
+      GoodsStatusOffline: 下架
+      GoodsStatusOnline: 上架
+    x-enum-varnames:
+    - GoodsStatusOffline
+    - GoodsStatusOnline
+  definition.GoodsType:
+    enum:
+    - 1
+    type: integer
+    x-enum-comments:
+      GoodsTypeEbike: 电车
+    x-enum-varnames:
+    - GoodsTypeEbike
   definition.InstructionsRes:
     properties:
       content:
@@ -490,6 +568,11 @@ definitions:
         items:
           $ref: '#/definitions/model.PlanModelOption'
         type: array
+      rtoBrands:
+        description: 以租代购车电选项
+        items:
+          $ref: '#/definitions/model.PlanEbikeBrandOption'
+        type: array
     type: object
   definition.QuestionCategoryDetail:
     properties:
@@ -554,6 +637,14 @@ definitions:
     - smsCode
     - smsId
     type: object
+  definition.RiderSetMobPushReq:
+    properties:
+      pushId:
+        description: 骑手推送ID
+        type: string
+    required:
+    - pushId
+    type: object
   definition.RiderSignupReq:
     properties:
       authCode:
@@ -583,6 +674,11 @@ definitions:
       address:
         description: 地址
         type: string
+      brands:
+        description: 租车车电选项
+        items:
+          $ref: '#/definitions/model.PlanEbikeBrandOption'
+        type: array
       businessHours:
         description: 营业时间
         type: string
@@ -602,9 +698,6 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
-      ebikeStage:
-        description: 是否拥有驿站
-        type: boolean
       employee:
         allOf:
         - $ref: '#/definitions/model.Employee'
@@ -621,9 +714,23 @@ definitions:
       name:
         description: 门店名称
         type: string
+      photos:
+        description: 门店照片
+        items:
+          type: string
+        type: array
+      rest:
+        description: 是否拥有驿站
+        type: boolean
+      saleGoods:
+        description: 买车列表
+        items:
+          $ref: '#/definitions/definition.GoodsDetail'
+        type: array
       status:
-        description: 状态
-        type: integer
+        allOf:
+        - $ref: '#/definitions/model.StoreStatus'
+        description: 门店状态 0维护 1营业 2休息 3隐藏
     type: object
   definition.SubscribeStoreModifyReq:
     properties:
@@ -858,7 +965,7 @@ definitions:
         description: 仓位数量
         type: integer
       type:
-        description: 类别
+        description: 类别  store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
         type: string
     type: object
   model.BranchFacilityCabinet:
@@ -1632,7 +1739,7 @@ definitions:
         type: array
       versionInfo:
         allOf:
-          - $ref: '#/definitions/model.VersionInfo'
+        - $ref: '#/definitions/model.VersionInfo'
         description: 版本信息
     type: object
   model.FeedbackReq:
@@ -1653,10 +1760,9 @@ definitions:
         type: array
       versionInfo:
         allOf:
-          - $ref: '#/definitions/model.VersionInfo'
+        - $ref: '#/definitions/model.VersionInfo'
         description: 版本信息
     required:
-      - cityId
     - content
     - type
     type: object
@@ -1911,6 +2017,9 @@ definitions:
       price:
         description: 价格, 应支付价格 = 价格 - 新签优惠
         type: number
+      rentToBuyDays:
+        description: 以租代购赠车最小使用天数
+        type: integer
     type: object
   model.PlanEbikeBrandOption:
     properties:
@@ -1949,13 +2058,16 @@ definitions:
     enum:
     - 1
     - 2
+    - 3
     type: integer
     x-enum-comments:
       PlanTypeBattery: 单电
+      PlanTypeEbikeRto: 以租代购（赠）
       PlanTypeEbikeWithBattery: 车加电
     x-enum-varnames:
     - PlanTypeBattery
     - PlanTypeEbikeWithBattery
+    - PlanTypeEbikeRto
   model.PointLogListRes:
     properties:
       after:
@@ -2377,6 +2489,23 @@ definitions:
         description: 门店名称
         type: string
     type: object
+  model.StoreBusinessType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
+    x-enum-comments:
+      StoreBusinessTypeObtain: 领取车辆(租车)
+      StoreBusinessTypeRepair: 维修
+      StoreBusinessTypeRest: 驿站
+      StoreBusinessTypeSale: 购买
+    x-enum-varnames:
+    - StoreBusinessTypeObtain
+    - StoreBusinessTypeRepair
+    - StoreBusinessTypeSale
+    - StoreBusinessTypeRest
   model.StoreLngLat:
     properties:
       id:
@@ -2389,6 +2518,23 @@ definitions:
         description: 门店名称
         type: string
     type: object
+  model.StoreStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-comments:
+      StoreStatusClose: 休息中
+      StoreStatusHidden: 隐藏
+      StoreStatusMaintain: 维护中
+      StoreStatusOpen: 营业中
+    x-enum-varnames:
+    - StoreStatusMaintain
+    - StoreStatusOpen
+    - StoreStatusClose
+    - StoreStatusHidden
   model.Subscribe:
     properties:
       alterDays:
@@ -2905,6 +3051,14 @@ paths:
         in: query
         name: model
         type: string
+      - description: 门店业务 0-全部 1-租车，2-修车，3-买车，4-驿站 （首页地图不要传入此值）
+        in: query
+        name: storeBusiness
+        type: integer
+      - description: 门店状态 0-全部 1-营业 2-休息 （首页地图不要传入此值）
+        in: query
+        name: storeStatus
+        type: integer
       produces:
       - application/json
       responses:
@@ -4068,21 +4222,21 @@ paths:
   /rider/v2/mini/openid:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: GetOpenid
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 支付宝code
-          in: query
-          name: code
-          required: true
-          type: string
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 支付宝code
+        in: query
+        name: code
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4090,7 +4244,34 @@ paths:
             $ref: '#/definitions/model.OpenidRes'
       summary: 获取支付宝小程序openid
       tags:
-        - Rider - 骑手
+      - Rider - 骑手
+  /rider/v2/mobpush:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderSetMobPush
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.RiderSetMobPushReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 设置推送ID
+      tags:
+      - Rider - 骑手
   /rider/v2/order:
     get:
       consumes:
@@ -4274,6 +4455,10 @@ paths:
         in: query
         name: cityId
         required: true
+        type: integer
+      - description: 门店ID
+        in: query
+        name: storeId
         type: integer
       produces:
       - application/json
@@ -4562,6 +4747,25 @@ paths:
       - application/json
       operationId: StoreList
       parameters:
+      - description: 门店业务 1租车 2修车 3买车 4驿站
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        in: query
+        name: businessType
+        type: integer
+        x-enum-comments:
+          StoreBusinessTypeObtain: 领取车辆(租车)
+          StoreBusinessTypeRepair: 维修
+          StoreBusinessTypeRest: 驿站
+          StoreBusinessTypeSale: 购买
+        x-enum-varnames:
+        - StoreBusinessTypeObtain
+        - StoreBusinessTypeRepair
+        - StoreBusinessTypeSale
+        - StoreBusinessTypeRest
       - description: 城市ID
         in: query
         name: cityId
@@ -4570,6 +4774,10 @@ paths:
         in: query
         name: distance
         type: number
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
       - description: 纬度
         in: query
         name: lat
@@ -4585,9 +4793,24 @@ paths:
         name: planId
         type: integer
       - description: 门店状态 0维护 1营业 2休息 3隐藏
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
         in: query
         name: status
         type: integer
+        x-enum-comments:
+          StoreStatusClose: 休息中
+          StoreStatusHidden: 隐藏
+          StoreStatusMaintain: 维护中
+          StoreStatusOpen: 营业中
+        x-enum-varnames:
+        - StoreStatusMaintain
+        - StoreStatusOpen
+        - StoreStatusClose
+        - StoreStatusHidden
       produces:
       - application/json
       responses:

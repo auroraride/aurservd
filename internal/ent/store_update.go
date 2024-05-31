@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
@@ -20,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 )
 
 // StoreUpdate is the builder for updating Store entities.
@@ -275,16 +277,16 @@ func (su *StoreUpdate) SetNillableEbikeSale(b *bool) *StoreUpdate {
 	return su
 }
 
-// SetEbikeStage sets the "ebike_stage" field.
-func (su *StoreUpdate) SetEbikeStage(b bool) *StoreUpdate {
-	su.mutation.SetEbikeStage(b)
+// SetRest sets the "rest" field.
+func (su *StoreUpdate) SetRest(b bool) *StoreUpdate {
+	su.mutation.SetRest(b)
 	return su
 }
 
-// SetNillableEbikeStage sets the "ebike_stage" field if the given value is not nil.
-func (su *StoreUpdate) SetNillableEbikeStage(b *bool) *StoreUpdate {
+// SetNillableRest sets the "rest" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableRest(b *bool) *StoreUpdate {
 	if b != nil {
-		su.SetEbikeStage(*b)
+		su.SetRest(*b)
 	}
 	return su
 }
@@ -306,6 +308,24 @@ func (su *StoreUpdate) SetNillableBusinessHours(s *string) *StoreUpdate {
 // ClearBusinessHours clears the value of the "business_hours" field.
 func (su *StoreUpdate) ClearBusinessHours() *StoreUpdate {
 	su.mutation.ClearBusinessHours()
+	return su
+}
+
+// SetPhotos sets the "photos" field.
+func (su *StoreUpdate) SetPhotos(s []string) *StoreUpdate {
+	su.mutation.SetPhotos(s)
+	return su
+}
+
+// AppendPhotos appends s to the "photos" field.
+func (su *StoreUpdate) AppendPhotos(s []string) *StoreUpdate {
+	su.mutation.AppendPhotos(s)
+	return su
+}
+
+// ClearPhotos clears the value of the "photos" field.
+func (su *StoreUpdate) ClearPhotos() *StoreUpdate {
+	su.mutation.ClearPhotos()
 	return su
 }
 
@@ -367,6 +387,21 @@ func (su *StoreUpdate) AddExceptions(e ...*Exception) *StoreUpdate {
 		ids[i] = e[i].ID
 	}
 	return su.AddExceptionIDs(ids...)
+}
+
+// AddGoodIDs adds the "goods" edge to the StoreGoods entity by IDs.
+func (su *StoreUpdate) AddGoodIDs(ids ...uint64) *StoreUpdate {
+	su.mutation.AddGoodIDs(ids...)
+	return su
+}
+
+// AddGoods adds the "goods" edges to the StoreGoods entity.
+func (su *StoreUpdate) AddGoods(s ...*StoreGoods) *StoreUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return su.AddGoodIDs(ids...)
 }
 
 // Mutation returns the StoreMutation object of the builder.
@@ -453,6 +488,27 @@ func (su *StoreUpdate) RemoveExceptions(e ...*Exception) *StoreUpdate {
 		ids[i] = e[i].ID
 	}
 	return su.RemoveExceptionIDs(ids...)
+}
+
+// ClearGoods clears all "goods" edges to the StoreGoods entity.
+func (su *StoreUpdate) ClearGoods() *StoreUpdate {
+	su.mutation.ClearGoods()
+	return su
+}
+
+// RemoveGoodIDs removes the "goods" edge to StoreGoods entities by IDs.
+func (su *StoreUpdate) RemoveGoodIDs(ids ...uint64) *StoreUpdate {
+	su.mutation.RemoveGoodIDs(ids...)
+	return su
+}
+
+// RemoveGoods removes "goods" edges to StoreGoods entities.
+func (su *StoreUpdate) RemoveGoods(s ...*StoreGoods) *StoreUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return su.RemoveGoodIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -583,14 +639,25 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := su.mutation.EbikeSale(); ok {
 		_spec.SetField(store.FieldEbikeSale, field.TypeBool, value)
 	}
-	if value, ok := su.mutation.EbikeStage(); ok {
-		_spec.SetField(store.FieldEbikeStage, field.TypeBool, value)
+	if value, ok := su.mutation.Rest(); ok {
+		_spec.SetField(store.FieldRest, field.TypeBool, value)
 	}
 	if value, ok := su.mutation.BusinessHours(); ok {
 		_spec.SetField(store.FieldBusinessHours, field.TypeString, value)
 	}
 	if su.mutation.BusinessHoursCleared() {
 		_spec.ClearField(store.FieldBusinessHours, field.TypeString)
+	}
+	if value, ok := su.mutation.Photos(); ok {
+		_spec.SetField(store.FieldPhotos, field.TypeJSON, value)
+	}
+	if value, ok := su.mutation.AppendedPhotos(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, store.FieldPhotos, value)
+		})
+	}
+	if su.mutation.PhotosCleared() {
+		_spec.ClearField(store.FieldPhotos, field.TypeJSON)
 	}
 	if su.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -807,6 +874,51 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(exception.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.GoodsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.GoodsTable,
+			Columns: []string{store.GoodsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RemovedGoodsIDs(); len(nodes) > 0 && !su.mutation.GoodsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.GoodsTable,
+			Columns: []string{store.GoodsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.GoodsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.GoodsTable,
+			Columns: []string{store.GoodsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1075,16 +1187,16 @@ func (suo *StoreUpdateOne) SetNillableEbikeSale(b *bool) *StoreUpdateOne {
 	return suo
 }
 
-// SetEbikeStage sets the "ebike_stage" field.
-func (suo *StoreUpdateOne) SetEbikeStage(b bool) *StoreUpdateOne {
-	suo.mutation.SetEbikeStage(b)
+// SetRest sets the "rest" field.
+func (suo *StoreUpdateOne) SetRest(b bool) *StoreUpdateOne {
+	suo.mutation.SetRest(b)
 	return suo
 }
 
-// SetNillableEbikeStage sets the "ebike_stage" field if the given value is not nil.
-func (suo *StoreUpdateOne) SetNillableEbikeStage(b *bool) *StoreUpdateOne {
+// SetNillableRest sets the "rest" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableRest(b *bool) *StoreUpdateOne {
 	if b != nil {
-		suo.SetEbikeStage(*b)
+		suo.SetRest(*b)
 	}
 	return suo
 }
@@ -1106,6 +1218,24 @@ func (suo *StoreUpdateOne) SetNillableBusinessHours(s *string) *StoreUpdateOne {
 // ClearBusinessHours clears the value of the "business_hours" field.
 func (suo *StoreUpdateOne) ClearBusinessHours() *StoreUpdateOne {
 	suo.mutation.ClearBusinessHours()
+	return suo
+}
+
+// SetPhotos sets the "photos" field.
+func (suo *StoreUpdateOne) SetPhotos(s []string) *StoreUpdateOne {
+	suo.mutation.SetPhotos(s)
+	return suo
+}
+
+// AppendPhotos appends s to the "photos" field.
+func (suo *StoreUpdateOne) AppendPhotos(s []string) *StoreUpdateOne {
+	suo.mutation.AppendPhotos(s)
+	return suo
+}
+
+// ClearPhotos clears the value of the "photos" field.
+func (suo *StoreUpdateOne) ClearPhotos() *StoreUpdateOne {
+	suo.mutation.ClearPhotos()
 	return suo
 }
 
@@ -1167,6 +1297,21 @@ func (suo *StoreUpdateOne) AddExceptions(e ...*Exception) *StoreUpdateOne {
 		ids[i] = e[i].ID
 	}
 	return suo.AddExceptionIDs(ids...)
+}
+
+// AddGoodIDs adds the "goods" edge to the StoreGoods entity by IDs.
+func (suo *StoreUpdateOne) AddGoodIDs(ids ...uint64) *StoreUpdateOne {
+	suo.mutation.AddGoodIDs(ids...)
+	return suo
+}
+
+// AddGoods adds the "goods" edges to the StoreGoods entity.
+func (suo *StoreUpdateOne) AddGoods(s ...*StoreGoods) *StoreUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return suo.AddGoodIDs(ids...)
 }
 
 // Mutation returns the StoreMutation object of the builder.
@@ -1253,6 +1398,27 @@ func (suo *StoreUpdateOne) RemoveExceptions(e ...*Exception) *StoreUpdateOne {
 		ids[i] = e[i].ID
 	}
 	return suo.RemoveExceptionIDs(ids...)
+}
+
+// ClearGoods clears all "goods" edges to the StoreGoods entity.
+func (suo *StoreUpdateOne) ClearGoods() *StoreUpdateOne {
+	suo.mutation.ClearGoods()
+	return suo
+}
+
+// RemoveGoodIDs removes the "goods" edge to StoreGoods entities by IDs.
+func (suo *StoreUpdateOne) RemoveGoodIDs(ids ...uint64) *StoreUpdateOne {
+	suo.mutation.RemoveGoodIDs(ids...)
+	return suo
+}
+
+// RemoveGoods removes "goods" edges to StoreGoods entities.
+func (suo *StoreUpdateOne) RemoveGoods(s ...*StoreGoods) *StoreUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return suo.RemoveGoodIDs(ids...)
 }
 
 // Where appends a list predicates to the StoreUpdate builder.
@@ -1413,14 +1579,25 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 	if value, ok := suo.mutation.EbikeSale(); ok {
 		_spec.SetField(store.FieldEbikeSale, field.TypeBool, value)
 	}
-	if value, ok := suo.mutation.EbikeStage(); ok {
-		_spec.SetField(store.FieldEbikeStage, field.TypeBool, value)
+	if value, ok := suo.mutation.Rest(); ok {
+		_spec.SetField(store.FieldRest, field.TypeBool, value)
 	}
 	if value, ok := suo.mutation.BusinessHours(); ok {
 		_spec.SetField(store.FieldBusinessHours, field.TypeString, value)
 	}
 	if suo.mutation.BusinessHoursCleared() {
 		_spec.ClearField(store.FieldBusinessHours, field.TypeString)
+	}
+	if value, ok := suo.mutation.Photos(); ok {
+		_spec.SetField(store.FieldPhotos, field.TypeJSON, value)
+	}
+	if value, ok := suo.mutation.AppendedPhotos(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, store.FieldPhotos, value)
+		})
+	}
+	if suo.mutation.PhotosCleared() {
+		_spec.ClearField(store.FieldPhotos, field.TypeJSON)
 	}
 	if suo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1637,6 +1814,51 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(exception.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.GoodsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.GoodsTable,
+			Columns: []string{store.GoodsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RemovedGoodsIDs(); len(nodes) > 0 && !suo.mutation.GoodsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.GoodsTable,
+			Columns: []string{store.GoodsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.GoodsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.GoodsTable,
+			Columns: []string{store.GoodsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -311,6 +311,9 @@ definitions:
         description: 站点
       id:
         type: integer
+      isRto:
+        description: 是否已赠车
+        type: integer
       name:
         description: 骑手姓名
         type: string
@@ -321,6 +324,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Plan'
         description: 骑士卡, 团签无此字段
+      remark:
+        description: 备注
+        type: string
       time:
         description: 业务时间
         type: string
@@ -668,13 +674,16 @@ definitions:
     enum:
     - 1
     - 2
+    - 3
     type: integer
     x-enum-comments:
       PlanTypeBattery: 单电
+      PlanTypeEbikeRto: 以租代购（赠）
       PlanTypeEbikeWithBattery: 车加电
     x-enum-varnames:
     - PlanTypeBattery
     - PlanTypeEbikeWithBattery
+    - PlanTypeEbikeRto
   model.Rider:
     properties:
       id:
@@ -828,16 +837,34 @@ definitions:
         description: 门店名称
         type: string
     type: object
+  model.StoreStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-comments:
+      StoreStatusClose: 休息中
+      StoreStatusHidden: 隐藏
+      StoreStatusMaintain: 维护中
+      StoreStatusOpen: 营业中
+    x-enum-varnames:
+    - StoreStatusMaintain
+    - StoreStatusOpen
+    - StoreStatusClose
+    - StoreStatusHidden
   model.StoreSwtichStatusReq:
     properties:
       status:
+        allOf:
+        - $ref: '#/definitions/model.StoreStatus'
         description: 状态 1:营业中 2:休息中
         enum:
         - 1
         - 2
         maximum: 2
         minimum: 1
-        type: integer
     required:
     - status
     type: object
@@ -849,8 +876,9 @@ definitions:
         description: 门店名称
         type: string
       status:
+        allOf:
+        - $ref: '#/definitions/model.StoreStatus'
         description: 门店状态
-        type: integer
     type: object
   model.SubscribeActiveInfo:
     properties:

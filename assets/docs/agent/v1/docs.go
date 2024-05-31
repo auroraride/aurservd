@@ -3290,6 +3290,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "isRto": {
+                    "description": "是否已赠车",
+                    "type": "integer"
+                },
                 "name": {
                     "description": "骑手姓名",
                     "type": "string"
@@ -3309,6 +3313,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Plan"
                         }
                     ]
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
                 },
                 "store": {
                     "description": "门店, 可能为空",
@@ -3348,6 +3356,10 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "订阅ID",
+                    "type": "integer"
+                },
+                "needRto": {
+                    "description": "管理员强制退租-是否赠车：0-不赠车; 1-赠车;",
                     "type": "integer"
                 },
                 "refundDeposit": {
@@ -3532,6 +3544,10 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "isRto": {
+                    "description": "是否已赠送",
+                    "type": "boolean"
                 },
                 "machine": {
                     "description": "终端编号",
@@ -3945,7 +3961,6 @@ const docTemplate = `{
         "model.FeedbackReq": {
             "type": "object",
             "required": [
-                "cityId",
                 "content",
                 "type"
             ],
@@ -4098,15 +4113,18 @@ const docTemplate = `{
             "type": "integer",
             "enum": [
                 1,
-                2
+                2,
+                3
             ],
             "x-enum-comments": {
                 "PlanTypeBattery": "单电",
+                "PlanTypeEbikeRto": "以租代购（赠）",
                 "PlanTypeEbikeWithBattery": "车加电"
             },
             "x-enum-varnames": [
                 "PlanTypeBattery",
-                "PlanTypeEbikeWithBattery"
+                "PlanTypeEbikeWithBattery",
+                "PlanTypeEbikeRto"
             ]
         },
         "model.PrepaymentListRes": {
@@ -4240,6 +4258,10 @@ const docTemplate = `{
                 "model": {
                     "description": "骑士卡可用电池型号",
                     "type": "string"
+                },
+                "pastDay": {
+                    "description": "骑手当前订阅已使用天数",
+                    "type": "integer"
                 },
                 "remaining": {
                     "description": "剩余天数",

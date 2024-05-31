@@ -150,6 +150,9 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 	var bms []string
 	mms := make(map[string]bool)
 	for _, c := range req.Complexes {
+		if req.Type == model.PlanTypeEbikeRto && c.RtoDays == nil {
+			snag.Panic("赠车最小使用天数必填")
+		}
 		if c.Model == "" {
 			snag.Panic("电池型号必选")
 		}
@@ -209,7 +212,13 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 				SetCommission(cl.Commission).
 				SetDesc(cl.Desc).
 				SetDays(cl.Days).
-				SetDiscountNewly(cl.DiscountNewly)
+				SetDiscountNewly(cl.DiscountNewly).
+				SetOverdueFee(cl.OverdueFee)
+
+			if req.Type == model.PlanTypeEbikeRto && cl.RtoDays != nil {
+				c.SetRtoDays(*cl.RtoDays)
+			}
+
 			if i > 0 {
 				c.SetParent(parent)
 			}

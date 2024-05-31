@@ -41,7 +41,7 @@ type Plan struct {
 	Model string `json:"model,omitempty"`
 	// 是否启用
 	Enable bool `json:"enable,omitempty"`
-	// 骑士卡类别 1:单电 2:车加电
+	// 骑士卡类别 1:单电 2:车加电 3:以租代购（赠车）
 	Type uint8 `json:"type,omitempty"`
 	// 骑士卡名称
 	Name string `json:"name,omitempty"`
@@ -79,6 +79,10 @@ type Plan struct {
 	DepositContract bool `json:"deposit_contract,omitempty"`
 	// 支付押金
 	DepositPay bool `json:"deposit_pay,omitempty"`
+	// 以租代购赠车最小使用天数
+	RtoDays uint `json:"rto_days,omitempty"`
+	// 滞纳金单价
+	OverdueFee float64 `json:"overdue_fee,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlanQuery when eager-loading is set.
 	Edges        PlanEdges `json:"edges"`
@@ -173,9 +177,9 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case plan.FieldEnable, plan.FieldIntelligent, plan.FieldDeposit, plan.FieldDepositWechatPayscore, plan.FieldDepositAlipayAuthFreeze, plan.FieldDepositContract, plan.FieldDepositPay:
 			values[i] = new(sql.NullBool)
-		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal, plan.FieldDiscountNewly, plan.FieldDepositAmount:
+		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal, plan.FieldDiscountNewly, plan.FieldDepositAmount, plan.FieldOverdueFee:
 			values[i] = new(sql.NullFloat64)
-		case plan.FieldID, plan.FieldBrandID, plan.FieldAgreementID, plan.FieldType, plan.FieldDays, plan.FieldParentID:
+		case plan.FieldID, plan.FieldBrandID, plan.FieldAgreementID, plan.FieldType, plan.FieldDays, plan.FieldParentID, plan.FieldRtoDays:
 			values[i] = new(sql.NullInt64)
 		case plan.FieldRemark, plan.FieldModel, plan.FieldName, plan.FieldDesc:
 			values[i] = new(sql.NullString)
@@ -386,6 +390,18 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.DepositPay = value.Bool
 			}
+		case plan.FieldRtoDays:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field rto_days", values[i])
+			} else if value.Valid {
+				pl.RtoDays = uint(value.Int64)
+			}
+		case plan.FieldOverdueFee:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field overdue_fee", values[i])
+			} else if value.Valid {
+				pl.OverdueFee = value.Float64
+			}
 		default:
 			pl.selectValues.Set(columns[i], values[i])
 		}
@@ -546,6 +562,12 @@ func (pl *Plan) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("deposit_pay=")
 	builder.WriteString(fmt.Sprintf("%v", pl.DepositPay))
+	builder.WriteString(", ")
+	builder.WriteString("rto_days=")
+	builder.WriteString(fmt.Sprintf("%v", pl.RtoDays))
+	builder.WriteString(", ")
+	builder.WriteString("overdue_fee=")
+	builder.WriteString(fmt.Sprintf("%v", pl.OverdueFee))
 	builder.WriteByte(')')
 	return builder.String()
 }
