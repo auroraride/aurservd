@@ -305,24 +305,6 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "enum": [
-                            0,
-                            1
-                        ],
-                        "type": "integer",
-                        "x-enum-comments": {
-                            "EbikeIsRtoSend": "已赠送",
-                            "EbikeIsRtoUnSend": "未赠送"
-                        },
-                        "x-enum-varnames": [
-                            "EbikeIsRtoUnSend",
-                            "EbikeIsRtoSend"
-                        ],
-                        "description": "是否赠送",
-                        "name": "isRto",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
                         "description": "搜索关键词\u003c骑手:电话/姓名, 车辆:车架号/车牌号/终端编号/SIM卡号\u003e",
                         "name": "keyword",
@@ -348,6 +330,16 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "骑手ID",
                         "name": "riderId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1
+                        ],
+                        "type": "integer",
+                        "description": "是否赠送 0未赠送 1已赠送",
+                        "name": "rto",
                         "in": "query"
                     },
                     {
@@ -3527,21 +3519,6 @@ const docTemplate = `{
                 "EbikeAll",
                 "EbikeStation",
                 "EbikeRider"
-            ]
-        },
-        "model.EbikeIsRto": {
-            "type": "integer",
-            "enum": [
-                0,
-                1
-            ],
-            "x-enum-comments": {
-                "EbikeIsRtoSend": "已赠送",
-                "EbikeIsRtoUnSend": "未赠送"
-            },
-            "x-enum-varnames": [
-                "EbikeIsRtoUnSend",
-                "EbikeIsRtoSend"
             ]
         },
         "model.EbikeListRes": {
