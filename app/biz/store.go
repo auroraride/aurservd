@@ -313,7 +313,9 @@ func (b *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail)
 	if item.Edges.Stocks != nil {
 		var brandIds []uint64
 		for _, st := range item.Edges.Stocks {
-			brandIds = append(brandIds, *st.BrandID)
+			if st.BrandID != nil {
+				brandIds = append(brandIds, *st.BrandID)
+			}
 		}
 
 		// 查询门店存在库存的电车数据
