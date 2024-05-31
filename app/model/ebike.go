@@ -89,6 +89,7 @@ type EbikeListFilter struct {
 	EnterpriseID *uint64      `json:"enterpriseId" query:"enterpriseId"`       // 团签ID
 	StationID    *uint64      `json:"stationId" query:"stationId"`             // 站点ID
 	Goal         EbikeGoal    `json:"goal" query:"goal" enums:"0,1,2"`         // 查询目标, 0:不筛选 1:站点 2:骑手
+	IsRto        *EbikeIsRto  `json:"isRto" query:"isRto"`                     // 是否赠送
 }
 
 type EbikeAttributes struct {

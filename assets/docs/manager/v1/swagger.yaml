@@ -3220,6 +3220,17 @@ definitions:
     - EbikeAll
     - EbikeStation
     - EbikeRider
+  model.EbikeIsRto:
+    enum:
+    - 0
+    - 1
+    type: integer
+    x-enum-comments:
+      EbikeIsRtoSend: 已赠送
+      EbikeIsRtoUnSend: 未赠送
+    x-enum-varnames:
+    - EbikeIsRtoUnSend
+    - EbikeIsRtoSend
   model.EbikeListRes:
     properties:
       brand:
@@ -10151,6 +10162,19 @@ paths:
         - EbikeAll
         - EbikeStation
         - EbikeRider
+      - description: 是否赠送
+        enum:
+        - 0
+        - 1
+        in: query
+        name: isRto
+        type: integer
+        x-enum-comments:
+          EbikeIsRtoSend: 已赠送
+          EbikeIsRtoUnSend: 未赠送
+        x-enum-varnames:
+        - EbikeIsRtoUnSend
+        - EbikeIsRtoSend
       - description: 搜索关键词<骑手:电话/姓名, 车辆:车架号/车牌号/终端编号/SIM卡号>
         in: query
         name: keyword
