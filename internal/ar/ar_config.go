@@ -297,6 +297,12 @@ type config struct {
 			Enterprise string
 		}
 	}
+
+	Elastic struct {
+		Addresses     []string
+		ApiKey        string
+		EccDatastream string
+	}
 }
 
 type AlipayConfig struct {

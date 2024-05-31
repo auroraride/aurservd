@@ -8,16 +8,24 @@ import (
 	"fmt"
 	"regexp"
 	"sort"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/sortorder"
+	"github.com/golang-module/carbon/v2"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/es"
+	"github.com/auroraride/aurservd/pkg/silk"
 )
 
 type cabinetBiz struct {
@@ -33,8 +41,8 @@ func NewCabinet() *cabinetBiz {
 }
 
 // ListByRider  查询电柜
-func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderReq) (res []definition.CabinetByRiderRes, err error) {
-	q := s.orm.QueryNotDeleted().WithModels().WithEnterprise().WithBranch().
+func (b *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderReq) (res []definition.CabinetByRiderRes, err error) {
+	q := b.orm.QueryNotDeleted().WithModels().WithEnterprise().WithBranch().
 		Modify(func(sel *sql.Selector) {
 			sel.
 				AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(%s, ST_GeogFromText('POINT(%f %f)'))`, branch.FieldGeom, *req.Lng, *req.Lat)), "distance").
@@ -65,7 +73,7 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 		q.Where(cabinet.NameContains(*req.Keyword))
 	}
 
-	cabinets := q.AllX(s.ctx)
+	cabinets := q.AllX(b.ctx)
 
 	// 电柜id
 	var cabIDs []uint64
@@ -181,17 +189,70 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 }
 
 // DetailBySerial  通过serial获取电柜详情
-func (s *cabinetBiz) DetailBySerial(serial string) (res *model.CabinetDetailRes, err error) {
-	item, _ := s.orm.QueryNotDeleted().
+func (b *cabinetBiz) DetailBySerial(serial string) (res *model.CabinetDetailRes, err error) {
+	item, _ := b.orm.QueryNotDeleted().
 		Where(cabinet.Serial(serial)).
 		WithModels().
 		WithEnterprise().
 		WithStation().
-		First(s.ctx)
+		First(b.ctx)
 	if item == nil {
 		return nil, errors.New("电柜不存在")
 	}
 	// 同步电柜并返回电柜详情
 	service.NewCabinet().Sync(item)
 	return service.NewCabinet().Detail(item), nil
+}
+
+// ListECData 查询电柜电耗数据
+func (b *cabinetBiz) ListECData(options definition.CabinetECDataSearchOptions) (start, end time.Time, data []*definition.CabinetECData) {
+	cfg := ar.Config.Elastic
+	s, err := es.NewSearch[definition.CabinetECData](cfg.ApiKey, cfg.EccDatastream, cfg.Addresses)
+	data = make([]*definition.CabinetECData, 0)
+	if err == nil || s == nil {
+		return
+	}
+	query := &types.Query{
+		Match: map[string]types.MatchQuery{},
+	}
+	// 电柜编号
+	if options.Serial != nil {
+		query.Match[cabinet.FieldSerial] = types.MatchQuery{Query: *options.Serial}
+	}
+	// 若开始时间和结束时间都不为空，设置时间范围
+	if options.Start != nil && options.End != nil {
+		start = *options.Start
+		end = *options.End
+	}
+	// 若开始和结束时间均为空，设置默认时间为当日
+	if options.Start == nil && options.End == nil {
+		start = carbon.Now().StartOfDay().StdTime()
+		end = time.Now()
+	}
+	// 若开始时间为空，结束时间不为空，设置查询为结束时间当日
+	if options.Start == nil && options.End != nil {
+		start = carbon.CreateFromStdTime(*options.End).StartOfDay().StdTime()
+		end = *options.End
+	}
+	// 若开始时间不为空，结束时间为空，设置查询为开始时间当日
+	if options.Start != nil && options.End == nil {
+		start = *options.Start
+		end = carbon.CreateFromStdTime(*options.Start).EndOfDay().StdTime()
+	}
+	// 查询时间范围
+	query.Range = map[string]types.RangeQuery{
+		es.FieldECCTimestamp: types.DateRangeQuery{
+			Gte: silk.String(start.Format(time.RFC3339)),
+			Lt:  silk.String(end.Format(time.RFC3339)),
+		},
+	}
+	data = s.DoRequest(&search.Request{
+		Query: query,
+		Sort: []types.SortCombinations{
+			types.SortOptions{SortOptions: map[string]types.FieldSort{
+				es.FieldECCTimestamp: {Order: &sortorder.Asc},
+			}},
+		},
+	})
+	return
 }
