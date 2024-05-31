@@ -81,7 +81,7 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
 
 	item := s.orm.Create().
 		SetName(*req.Name).
-		SetStatus(req.Status).
+		SetStatus(req.Status.Value()).
 		SetBranch(b).
 		SetCityID(b.CityID).
 		SetSn(shortuuid.New()).
@@ -124,7 +124,7 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
 		SetNillableEbikeSale(req.EbikeSale).
 		SetNillableRest(req.Rest)
 	if req.Status != nil {
-		q.SetStatus(*req.Status)
+		q.SetStatus(req.Status.Value())
 	}
 	if req.Name != nil {
 		q.SetName(*req.Name)
@@ -161,7 +161,7 @@ func (s *storeService) Detail(id uint64) model.StoreItem {
 	res := model.StoreItem{
 		ID:            item.ID,
 		Name:          item.Name,
-		Status:        item.Status,
+		Status:        model.StoreStatus(item.Status),
 		QRCode:        fmt.Sprintf("STORE:%s", item.Sn),
 		EbikeRepair:   item.EbikeRepair,
 		EbikeObtain:   item.EbikeObtain,
@@ -199,7 +199,7 @@ func (s *storeService) List(req *model.StoreListReq) *model.PaginationRes {
 		q.Where(store.NameContainsFold(*req.Name))
 	}
 	if req.Status != nil {
-		q.Where(store.Status(*req.Status))
+		q.Where(store.Status(req.Status.Value()))
 	}
 
 	if req.BusinessType != nil {
@@ -240,7 +240,7 @@ func (s *storeService) SwitchStatus(req *model.StoreSwtichStatusReq) {
 	if req.Status != model.StoreStatusOpen && req.Status != model.StoreStatusClose {
 		snag.Panic("状态错误")
 	}
-	_, err := st.Update().SetStatus(req.Status).Save(s.ctx)
+	_, err := st.Update().SetStatus(req.Status.Value()).Save(s.ctx)
 	if err != nil {
 		snag.Panic(err)
 	}

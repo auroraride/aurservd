@@ -6283,13 +6283,14 @@ definitions:
         description: 是否驿站
         type: boolean
       status:
+        allOf:
+        - $ref: '#/definitions/model.StoreStatus'
         description: 门店状态 0维护 1营业 2休息 3隐藏
         enum:
         - 0
         - 1
         - 2
         - 3
-        type: integer
     required:
     - branchId
     - name
@@ -6340,8 +6341,9 @@ definitions:
         description: 是否驿站
         type: boolean
       status:
+        allOf:
+        - $ref: '#/definitions/model.StoreStatus'
         description: 状态
-        type: integer
     type: object
   model.StoreModifyReq:
     properties:
@@ -6372,14 +6374,32 @@ definitions:
         description: 是否驿站
         type: boolean
       status:
+        allOf:
+        - $ref: '#/definitions/model.StoreStatus'
         description: 门店状态 0维护 1营业 2休息 3隐藏
         enum:
         - 0
         - 1
         - 2
         - 3
-        type: integer
     type: object
+  model.StoreStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-comments:
+      StoreStatusClose: 休息中
+      StoreStatusHidden: 隐藏
+      StoreStatusMaintain: 维护中
+      StoreStatusOpen: 营业中
+    x-enum-varnames:
+    - StoreStatusMaintain
+    - StoreStatusOpen
+    - StoreStatusClose
+    - StoreStatusHidden
   model.StoreWithStatus:
     properties:
       id:
@@ -6388,8 +6408,9 @@ definitions:
         description: 门店名称
         type: string
       status:
+        allOf:
+        - $ref: '#/definitions/model.StoreStatus'
         description: 门店状态
-        type: integer
     type: object
   model.SubscribeAlter:
     properties:
@@ -16135,9 +16156,24 @@ paths:
         name: pageSize
         type: integer
       - description: 门店状态
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
         in: query
         name: status
         type: integer
+        x-enum-comments:
+          StoreStatusClose: 休息中
+          StoreStatusHidden: 隐藏
+          StoreStatusMaintain: 维护中
+          StoreStatusOpen: 营业中
+        x-enum-varnames:
+        - StoreStatusMaintain
+        - StoreStatusOpen
+        - StoreStatusClose
+        - StoreStatusHidden
       produces:
       - application/json
       responses:

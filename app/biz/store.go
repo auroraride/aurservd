@@ -55,7 +55,7 @@ func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 	}
 
 	// 门店只需要查询营业和休息中两种状态
-	q.Where(store.StatusIn(model.StoreStatusOpen, model.StoreStatusClose))
+	q.Where(store.StatusIn(model.StoreStatusOpen.Value(), model.StoreStatusClose.Value()))
 
 	if req.Status != nil {
 		q.Where(store.Status(req.Status.Value()))
@@ -131,7 +131,7 @@ func (s *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 	res = &definition.StoreDetail{
 		ID:            item.ID,
 		Name:          item.Name,
-		Status:        definition.StoreStatus(item.Status),
+		Status:        model.StoreStatus(item.Status),
 		Lng:           item.Lng,
 		Lat:           item.Lat,
 		Address:       item.Address,
@@ -214,7 +214,7 @@ func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreDetailReq
 		res = &definition.StoreDetail{
 			ID:            item.ID,
 			Name:          item.Name,
-			Status:        definition.StoreStatus(item.Status),
+			Status:        model.StoreStatus(item.Status),
 			Lng:           item.Lng,
 			Lat:           item.Lat,
 			Address:       item.Address,
@@ -277,7 +277,7 @@ func (b *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail)
 	res = &definition.StoreDetail{
 		ID:            item.ID,
 		Name:          item.Name,
-		Status:        definition.StoreStatus(item.Status),
+		Status:        model.StoreStatus(item.Status),
 		Lng:           item.Lng,
 		Lat:           item.Lat,
 		Address:       item.Address,

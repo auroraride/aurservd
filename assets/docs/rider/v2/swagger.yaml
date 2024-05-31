@@ -729,26 +729,9 @@ definitions:
         type: array
       status:
         allOf:
-        - $ref: '#/definitions/definition.StoreStatus'
+        - $ref: '#/definitions/model.StoreStatus'
         description: 门店状态 0维护 1营业 2休息 3隐藏
     type: object
-  definition.StoreStatus:
-    enum:
-    - 0
-    - 1
-    - 2
-    - 3
-    type: integer
-    x-enum-comments:
-      StoreStatusClose: 休息中
-      StoreStatusHidden: 隐藏
-      StoreStatusMaintain: 维护中
-      StoreStatusOpen: 营业中
-    x-enum-varnames:
-    - StoreStatusMaintain
-    - StoreStatusOpen
-    - StoreStatusClose
-    - StoreStatusHidden
   definition.SubscribeStoreModifyReq:
     properties:
       storeId:
@@ -2535,6 +2518,23 @@ definitions:
         description: 门店名称
         type: string
     type: object
+  model.StoreStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-comments:
+      StoreStatusClose: 休息中
+      StoreStatusHidden: 隐藏
+      StoreStatusMaintain: 维护中
+      StoreStatusOpen: 营业中
+    x-enum-varnames:
+    - StoreStatusMaintain
+    - StoreStatusOpen
+    - StoreStatusClose
+    - StoreStatusHidden
   model.Subscribe:
     properties:
       alterDays:

@@ -299,16 +299,16 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 		case req.StoreStatus == nil && req.StoreBusiness == nil:
 			// 未传入门店筛选条件只查询驿站数据
 			storeQuery.Where(
-				store.StatusIn(model.StoreStatusOpen, model.StoreStatusClose),
+				store.StatusIn(model.StoreStatusOpen.Value(), model.StoreStatusClose.Value()),
 				// store.Rest(true), //若加入此条件、v1版本查询所有门店逻辑不符合
 			)
 		case req.StoreStatus != nil:
 			// 传入门店筛选条件-门店状态
 			switch *req.StoreStatus {
-			case model.StoreStatusOpen:
-				storeQuery.Where(store.Status(model.StoreStatusOpen))
-			case model.StoreStatusClose:
-				storeQuery.Where(store.Status(model.StoreStatusClose))
+			case model.StoreStatusOpen.Value():
+				storeQuery.Where(store.Status(model.StoreStatusOpen.Value()))
+			case model.StoreStatusClose.Value():
+				storeQuery.Where(store.Status(model.StoreStatusClose.Value()))
 			default:
 			}
 		case req.StoreBusiness != nil:
@@ -369,7 +369,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 							ID:   st.ID,
 							Name: st.Name,
 						},
-						Status: st.Status,
+						Status: model.StoreStatus(st.Status),
 					})
 				}
 			}
@@ -464,9 +464,9 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 		for _, es := range stores {
 			var eState uint
 			switch es.Status {
-			case model.StoreStatusOpen:
+			case model.StoreStatusOpen.Value():
 				eState = model.BranchFacilityStateOnline
-			case model.StoreStatusClose:
+			case model.StoreStatusClose.Value():
 				eState = model.BranchFacilityStateOffline
 			default:
 				continue

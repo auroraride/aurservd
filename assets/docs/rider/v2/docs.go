@@ -4530,32 +4530,11 @@ const docTemplate = `{
                     "description": "门店状态 0维护 1营业 2休息 3隐藏",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.StoreStatus"
+                            "$ref": "#/definitions/model.StoreStatus"
                         }
                     ]
                 }
             }
-        },
-        "definition.StoreStatus": {
-            "type": "integer",
-            "enum": [
-                0,
-                1,
-                2,
-                3
-            ],
-            "x-enum-comments": {
-                "StoreStatusClose": "休息中",
-                "StoreStatusHidden": "隐藏",
-                "StoreStatusMaintain": "维护中",
-                "StoreStatusOpen": "营业中"
-            },
-            "x-enum-varnames": [
-                "StoreStatusMaintain",
-                "StoreStatusOpen",
-                "StoreStatusClose",
-                "StoreStatusHidden"
-            ]
         },
         "definition.SubscribeStoreModifyReq": {
             "type": "object",
@@ -7141,6 +7120,27 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.StoreStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "StoreStatusClose": "休息中",
+                "StoreStatusHidden": "隐藏",
+                "StoreStatusMaintain": "维护中",
+                "StoreStatusOpen": "营业中"
+            },
+            "x-enum-varnames": [
+                "StoreStatusMaintain",
+                "StoreStatusOpen",
+                "StoreStatusClose",
+                "StoreStatusHidden"
+            ]
         },
         "model.Subscribe": {
             "type": "object",

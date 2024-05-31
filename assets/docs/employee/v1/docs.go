@@ -2661,6 +2661,27 @@ const docTemplate = `{
                 }
             }
         },
+        "model.StoreStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "StoreStatusClose": "休息中",
+                "StoreStatusHidden": "隐藏",
+                "StoreStatusMaintain": "维护中",
+                "StoreStatusOpen": "营业中"
+            },
+            "x-enum-varnames": [
+                "StoreStatusMaintain",
+                "StoreStatusOpen",
+                "StoreStatusClose",
+                "StoreStatusHidden"
+            ]
+        },
         "model.StoreSwtichStatusReq": {
             "type": "object",
             "required": [
@@ -2669,12 +2690,16 @@ const docTemplate = `{
             "properties": {
                 "status": {
                     "description": "状态 1:营业中 2:休息中",
-                    "type": "integer",
                     "maximum": 2,
                     "minimum": 1,
                     "enum": [
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreStatus"
+                        }
                     ]
                 }
             }
@@ -2691,7 +2716,11 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "门店状态",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreStatus"
+                        }
+                    ]
                 }
             }
         },

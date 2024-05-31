@@ -12956,7 +12956,25 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
                         "type": "integer",
+                        "x-enum-comments": {
+                            "StoreStatusClose": "休息中",
+                            "StoreStatusHidden": "隐藏",
+                            "StoreStatusMaintain": "维护中",
+                            "StoreStatusOpen": "营业中"
+                        },
+                        "x-enum-varnames": [
+                            "StoreStatusMaintain",
+                            "StoreStatusOpen",
+                            "StoreStatusClose",
+                            "StoreStatusHidden"
+                        ],
                         "description": "门店状态",
                         "name": "status",
                         "in": "query"
@@ -22822,12 +22840,16 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "门店状态 0维护 1营业 2休息 3隐藏",
-                    "type": "integer",
                     "enum": [
                         0,
                         1,
                         2,
                         3
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreStatus"
+                        }
                     ]
                 }
             }
@@ -22898,7 +22920,11 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "状态",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreStatus"
+                        }
+                    ]
                 }
             }
         },
@@ -22942,15 +22968,40 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "门店状态 0维护 1营业 2休息 3隐藏",
-                    "type": "integer",
                     "enum": [
                         0,
                         1,
                         2,
                         3
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreStatus"
+                        }
                     ]
                 }
             }
+        },
+        "model.StoreStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "StoreStatusClose": "休息中",
+                "StoreStatusHidden": "隐藏",
+                "StoreStatusMaintain": "维护中",
+                "StoreStatusOpen": "营业中"
+            },
+            "x-enum-varnames": [
+                "StoreStatusMaintain",
+                "StoreStatusOpen",
+                "StoreStatusClose",
+                "StoreStatusHidden"
+            ]
         },
         "model.StoreWithStatus": {
             "type": "object",
@@ -22964,7 +23015,11 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "门店状态",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreStatus"
+                        }
+                    ]
                 }
             }
         },
