@@ -1587,7 +1587,7 @@ definitions:
     type: object
   model.BatteryTrackRes:
     properties:
-      track:
+      points:
         description: 轨迹点
         items:
           $ref: '#/definitions/model.BatteryPoint'

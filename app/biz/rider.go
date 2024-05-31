@@ -140,8 +140,8 @@ func (b *riderBiz) GetAlipayOpenid(req *model.OpenidReq) (res *model.OpenidRes, 
 	return &model.OpenidRes{Openid: openId}, nil
 }
 
-// SetMobPush 设置骑手推送ID
-func (s *riderBiz) SetMobPush(u *ent.Rider, req *definition.RiderSetMobPushReq) (err error) {
+// SetMobPushId 设置骑手推送ID
+func (b *riderBiz) SetMobPushId(u *ent.Rider, req *definition.RiderSetMobPushReq) (err error) {
 	if u.PushID == req.PushId {
 		return
 	}

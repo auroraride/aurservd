@@ -248,8 +248,8 @@ func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreDetailReq
 	return res, nil
 }
 
-// 查询门店电车是否有库存
-func (s *storeBiz) queryStocksByStore(item *ent.Store, brandIds []uint64) (eBrandIds []uint64) {
+// queryStocksByStore 查询门店电车是否有库存
+func (b *storeBiz) queryStocksByStore(item *ent.Store, brandIds []uint64) (eBrandIds []uint64) {
 	bikes := make(map[string]*model.StockMaterial)
 
 	brandIdMap := make(map[uint64]bool)
@@ -272,7 +272,8 @@ func (s *storeBiz) queryStocksByStore(item *ent.Store, brandIds []uint64) (eBran
 	return
 }
 
-func (s *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail) {
+// detailForStock 插叙门店详情及商品、电车套餐列表
+func (b *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail) {
 	res = &definition.StoreDetail{
 		ID:            item.ID,
 		Name:          item.Name,
@@ -316,7 +317,7 @@ func (s *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail)
 		}
 
 		// 查询门店存在库存的电车数据
-		sBids := s.queryStocksByStore(item, brandIds)
+		sBids := b.queryStocksByStore(item, brandIds)
 		ebikeRes := NewPlanBiz().EbikeList(sBids)
 		if ebikeRes.Brands != nil {
 			res.Brands = ebikeRes.Brands

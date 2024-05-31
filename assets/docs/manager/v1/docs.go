@@ -16132,7 +16132,7 @@ const docTemplate = `{
         "model.BatteryTrackRes": {
             "type": "object",
             "properties": {
-                "track": {
+                "points": {
                     "description": "轨迹点",
                     "type": "array",
                     "items": {
