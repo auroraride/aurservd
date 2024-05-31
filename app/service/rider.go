@@ -742,6 +742,11 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 			Intelligent: sub.Intelligent,
 			PastDay:     pastDay,
 		}
+
+		if sub.Edges.Plan != nil {
+			ri.Subscribe.RtoDays = silk.Int(int(sub.Edges.Plan.RtoDays))
+		}
+
 		if sub.BrandID != nil {
 			ri.Subscribe.Type = model.SubscribeTypeEbike
 		}
