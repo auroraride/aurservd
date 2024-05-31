@@ -2618,6 +2618,12 @@ const docTemplate = `{
                         "name": "cityId",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeId",
+                        "in": "query"
                     }
                 ],
                 "responses": {

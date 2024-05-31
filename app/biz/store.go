@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 
 	"entgo.io/ent/dialect/sql"
 
@@ -123,7 +124,7 @@ func (s *storeBiz) Detail(req *definition.StoreDetailReq) (res *definition.Store
 	if q == nil {
 		return nil
 	}
-	return s.detail(q)
+	return s.detailForStock(q)
 }
 
 func (s *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
@@ -162,21 +163,6 @@ func (s *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 			res.Distance = distanceFloat
 		}
 	}
-
-	if item.Edges.Stocks != nil {
-		var brandIds []uint64
-		for _, st := range item.Edges.Stocks {
-			brandIds = append(brandIds, *st.BrandID)
-		}
-		ebikeRes := NewPlanBiz().EbikeList(brandIds)
-		if ebikeRes != nil {
-			res.Brands = ebikeRes.Brands
-		}
-	}
-
-	// 查询门店商品
-	res.SaleGoods = NewGoods().ListByStoreId(item.ID)
-
 	return
 
 }
@@ -260,4 +246,86 @@ func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreDetailReq
 		}
 	}
 	return res, nil
+}
+
+// 查询门店电车是否有库存
+func (s *storeBiz) queryStocksByStore(item *ent.Store, brandIds []uint64) (eBrandIds []uint64) {
+	bikes := make(map[string]*model.StockMaterial)
+
+	brandIdMap := make(map[uint64]bool)
+	for _, brandId := range brandIds {
+		brandIdMap[brandId] = true
+	}
+
+	for _, st := range item.Edges.Stocks {
+		switch {
+		case st.BrandID != nil && brandIdMap[*st.BrandID]:
+			service.NewStock().Calculate(bikes, st)
+		}
+	}
+	for bId, bike := range bikes {
+		brandId, _ := strconv.Atoi(bId)
+		if bike.Surplus > 0 {
+			eBrandIds = append(eBrandIds, uint64(brandId))
+		}
+	}
+	return
+}
+
+func (s *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail) {
+	res = &definition.StoreDetail{
+		ID:            item.ID,
+		Name:          item.Name,
+		Status:        definition.StoreStatus(item.Status),
+		Lng:           item.Lng,
+		Lat:           item.Lat,
+		Address:       item.Address,
+		EbikeRepair:   item.EbikeRepair,
+		EbikeObtain:   item.EbikeObtain,
+		EbikeSale:     item.EbikeSale,
+		BusinessHours: item.BusinessHours,
+		Rest:          item.Rest,
+		Photos:        item.Photos,
+	}
+	if item.Edges.Employee != nil {
+		res.Employee = &model.Employee{
+			ID:    item.Edges.Employee.ID,
+			Name:  item.Edges.Employee.Name,
+			Phone: item.Edges.Employee.Phone,
+		}
+	}
+	if item.Edges.City != nil {
+		res.City = model.City{
+			ID:   item.Edges.City.ID,
+			Name: item.Edges.City.Name,
+		}
+	}
+
+	distance, err := item.Value("distance")
+	if distance != nil || err == nil {
+		distanceFloat, ok := distance.(float64)
+		if ok {
+			res.Distance = distanceFloat
+		}
+	}
+
+	if item.Edges.Stocks != nil {
+		var brandIds []uint64
+		for _, st := range item.Edges.Stocks {
+			brandIds = append(brandIds, *st.BrandID)
+		}
+
+		// 查询门店存在库存的电车数据
+		sBids := s.queryStocksByStore(item, brandIds)
+		ebikeRes := NewPlanBiz().EbikeList(sBids)
+		if ebikeRes.Brands != nil {
+			res.Brands = ebikeRes.Brands
+		}
+	}
+
+	// 查询门店商品
+	res.SaleGoods = NewGoods().ListByStoreId(item.ID)
+
+	return
+
 }

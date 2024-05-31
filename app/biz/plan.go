@@ -17,8 +17,10 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/setting"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 type planBiz struct {
@@ -39,7 +41,7 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 
 	today := carbon.Now().StartOfDay().StdTime()
 
-	items := s.orm.QueryNotDeleted().
+	q := s.orm.QueryNotDeleted().
 		Where(
 			plan.Enable(true),
 			plan.StartLTE(today),
@@ -51,9 +53,28 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 		WithBrand().
 		WithCities().
 		WithAgreement().
-		Order(ent.Asc(plan.FieldDays)).
-		AllX(s.ctx)
+		Order(ent.Asc(plan.FieldDays))
 
+	if req.StoreId != nil {
+		// 查询门店库存电车所属brandId
+		var brandIds []uint64
+		storeItem, _ := ent.Database.Store.QueryNotDeleted().
+			WithStocks().
+			Where(store.ID(*req.StoreId)).
+			First(s.ctx)
+		if storeItem.Edges.Stocks != nil {
+			for _, st := range storeItem.Edges.Stocks {
+				brandIds = append(brandIds, *st.BrandID)
+			}
+		}
+		if len(brandIds) > 0 {
+			q.Where(
+				plan.HasBrandWith(ebikebrand.IDIn(brandIds...)),
+			)
+		}
+	}
+
+	items := q.AllX(s.ctx)
 	mmap := make(map[string]*model.PlanModelOption)
 
 	bmap := make(map[uint64]*model.PlanEbikeBrandOption)
@@ -271,8 +292,8 @@ func SortIDOptions(options model.PlanDaysPriceOptions) {
 	})
 }
 
-// EbikeList 撤店套餐列表
-func (s *planBiz) EbikeList(brandIds []uint64) *definition.PlanNewlyRes {
+// EbikeList 车电套餐列表
+func (s *planBiz) EbikeList(brandIds []uint64) (res definition.PlanNewlyRes) {
 
 	today := carbon.Now().StartOfDay().StdTime()
 
@@ -293,14 +314,6 @@ func (s *planBiz) EbikeList(brandIds []uint64) *definition.PlanNewlyRes {
 
 	serv := service.NewPlanIntroduce()
 	intro := serv.QueryMap()
-
-	// // 查询个签默认协议
-	// var defaultAgreement *ent.Agreement
-	// defaultAgreement, _ = ent.Database.Agreement.QueryNotDeleted().
-	// 	Where(
-	// 		agreement.UserType(model.AgreementUserTypePersonal.Value()),
-	// 		agreement.IsDefault(true),
-	// 	).First(s.ctx)
 
 	for _, item := range items {
 		// 可用城市
@@ -343,16 +356,12 @@ func (s *planBiz) EbikeList(brandIds []uint64) *definition.PlanNewlyRes {
 		}
 	}
 
-	res := &definition.PlanNewlyRes{}
-
-	settings, _ := ent.Database.Setting.Query().Where(setting.KeyIn(model.SettingPlanBatteryDescriptionKey, model.SettingPlanEbikeDescriptionKey)).All(context.Background())
+	settings, _ := ent.Database.Setting.Query().Where(setting.KeyIn(model.SettingPlanEbikeDescriptionKey)).All(context.Background())
 	for _, sm := range settings {
 		var v model.SettingPlanDescription
 		err := jsoniter.Unmarshal([]byte(sm.Content), &v)
 		if err == nil {
 			switch sm.Key {
-			case model.SettingPlanBatteryDescriptionKey:
-				res.BatteryDescription = v
 			case model.SettingPlanEbikeDescriptionKey:
 				res.EbikeDescription = v
 			}
@@ -366,5 +375,5 @@ func (s *planBiz) EbikeList(brandIds []uint64) *definition.PlanNewlyRes {
 
 	SortPlanEbikeBrandByName(res.Brands)
 
-	return res
+	return
 }

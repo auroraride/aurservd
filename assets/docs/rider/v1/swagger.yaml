@@ -3208,6 +3208,10 @@ paths:
         name: cityId
         required: true
         type: integer
+      - description: 门店ID
+        in: query
+        name: storeId
+        type: integer
       produces:
       - application/json
       responses:
