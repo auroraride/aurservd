@@ -333,6 +333,16 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            0,
+                            1
+                        ],
+                        "type": "integer",
+                        "description": "是否赠送 0未赠送 1已赠送",
+                        "name": "rto",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "站点ID",
                         "name": "stationId",

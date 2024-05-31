@@ -725,6 +725,11 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 			remaining = tools.NewTime().LastDaysToNow(*sub.AgentEndAt)
 		}
 
+		var pastDay int
+		if sub.StartAt != nil {
+			pastDay = tools.NewTime().UsedDaysToNow(*sub.StartAt)
+		}
+
 		ri.Subscribe = &model.RiderItemSubscribe{
 			ID:          sub.ID,
 			Status:      sub.Status,
@@ -735,7 +740,7 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 			Type:        model.SubscribeTypeBattery,
 			Ebike:       NewEbike().Detail(sub.Edges.Ebike, sub.Edges.Brand),
 			Intelligent: sub.Intelligent,
-			PastDay:     tools.NewTime().UsedDaysToNow(*sub.StartAt),
+			PastDay:     pastDay,
 		}
 		if sub.BrandID != nil {
 			ri.Subscribe.Type = model.SubscribeTypeEbike

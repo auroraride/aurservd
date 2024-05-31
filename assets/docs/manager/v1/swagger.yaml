@@ -10170,6 +10170,13 @@ paths:
         in: query
         name: riderId
         type: integer
+      - description: 是否赠送 0未赠送 1已赠送
+        enum:
+        - 0
+        - 1
+        in: query
+        name: rto
+        type: integer
       - description: 站点ID
         in: query
         name: stationId

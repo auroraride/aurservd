@@ -198,6 +198,16 @@ func (s *ebikeService) listFilter(req model.EbikeListFilter) (q *ent.EbikeQuery,
 		)
 	}
 
+	if req.Rto != nil {
+		switch *req.Rto {
+		case model.EbikeIsRtoUnSend.Value():
+			info["是否已赠送"] = model.EbikeIsRtoUnSend.String()
+		case model.EbikeIsRtoSend.Value():
+			info["是否已赠送"] = model.EbikeIsRtoSend.String()
+		}
+		q.Where(ebike.IsRto(*req.Rto))
+	}
+
 	return
 }
 
