@@ -1,6 +1,10 @@
 package definition
 
-import "github.com/auroraride/aurservd/app/model"
+import (
+	"time"
+
+	"github.com/auroraride/aurservd/app/model"
+)
 
 // CabinetByRiderReq 根据获取电柜请求参数
 type CabinetByRiderReq struct {
@@ -29,4 +33,21 @@ type CabinetByRiderRes struct {
 // CabinetDetailReq 电柜详情请求参数
 type CabinetDetailReq struct {
 	Serial string `json:"serial" param:"serial" validate:"required"` // 电柜编号
+}
+
+// CabinetECDataSearchOptions 电柜能耗查询选项
+// 若开始和结束时间均为空，查询当日数据
+// 若开始时间为空，结束时间不为空，查询结束时间当日
+// 若开始时间不为空，结束时间为空，查询为开始时间当日
+type CabinetECDataSearchOptions struct {
+	Serial *string    // 电柜编号
+	Start  *time.Time // 开始时间，包含
+	End    *time.Time // 结束时间，包含
+}
+
+// CabinetECData 电柜能耗查询结果
+type CabinetECData struct {
+	Serial    string    `json:"serial"`
+	Value     float64   `json:"value"`
+	Timestamp time.Time `json:"@timestamp"`
 }
