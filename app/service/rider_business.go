@@ -311,6 +311,12 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
 		if !s.IsCabinetCityInCities(citys, *s.cabinet.CityID) {
 			snag.Panic("请在指定城市办理业务")
 		}
+
+		NewCabinet().Sync(s.cabinet)
+		m := NewReserve().CabinetCounts([]uint64{s.cabinet.ID})
+		if !s.cabinet.ReserveAble(model.BusinessTypePause, m) {
+			snag.Panic("电柜无法寄存")
+		}
 	}
 
 	go func() {
