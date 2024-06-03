@@ -57,7 +57,7 @@ type BusinessPauseInfoRes struct {
 }
 
 type BusinessRiderServiceDoReq struct {
-	NeedRto *uint8 `json:"needRto"` // 管理员强制退租-是否赠车：0-不赠车; 1-赠车;
-	Remark  string `json:"remark"`  // 备注
-	SubRto  bool   `json:"subRto"`  // 订阅退租符合赠车
+	NeedRto *uint8  `json:"needRto"` // 管理员强制退租-是否赠车：0-不赠车; 1-赠车;
+	Remark  *string `json:"remark"`  // 备注
+	SubRto  bool    `json:"subRto"`  // 订阅退租符合赠车
 }

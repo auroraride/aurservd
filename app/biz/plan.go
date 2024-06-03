@@ -64,7 +64,11 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 			First(s.ctx)
 		if storeItem.Edges.Stocks != nil {
 			for _, st := range storeItem.Edges.Stocks {
-				brandIds = append(brandIds, *st.BrandID)
+				if st != nil {
+					if st.BrandID != nil {
+						brandIds = append(brandIds, *st.BrandID)
+					}
+				}
 			}
 		}
 		if len(brandIds) > 0 {
