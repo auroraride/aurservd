@@ -496,7 +496,7 @@ func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt mod
 		var isRto uint8
 		var remark string
 		// 先判断退租时候的订阅是否符合赠车
-		if doReq.SubRto {
+		if doReq != nil && doReq.SubRto {
 			isRto = model.EbikeIsRtoSend.Value()
 			// 再次判断当前赠车是否为管理员强制退租
 			if doReq.NeedRto != nil {
@@ -542,18 +542,20 @@ func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt mod
 
 			// 查询是否赠车
 			var rb *ent.Ebike
-			rb, err = tx.Ebike.Query().Where(ebike.ID(*s.subscribe.EbikeID)).First(s.ctx)
-			if err != nil {
-				zap.L().Error("查询是否赠车失败: ", zap.Error(err))
-			}
-			if rb != nil && doReq.SubRto {
-				isRto = model.EbikeIsRtoSend.Value()
-				remark = rb.Sn
-				// 判断是否管理员强制退租
-				if doReq.NeedRto != nil {
-					if *doReq.NeedRto == model.BusinessIsRtoUnSend.Value() {
-						isRto = model.EbikeIsRtoUnSend.Value()
-						remark = doReq.Remark
+			if s.subscribe.EbikeID != nil {
+				rb, err = tx.Ebike.Query().Where(ebike.ID(*s.subscribe.EbikeID)).First(s.ctx)
+				if err != nil {
+					zap.L().Error("查询是否赠车失败: ", zap.Error(err))
+				}
+				if rb != nil && doReq.SubRto {
+					isRto = model.EbikeIsRtoSend.Value()
+					remark = rb.Sn
+					// 判断是否管理员强制退租
+					if doReq.NeedRto != nil {
+						if *doReq.NeedRto == model.BusinessIsRtoUnSend.Value() {
+							isRto = model.EbikeIsRtoUnSend.Value()
+							remark = doReq.Remark
+						}
 					}
 				}
 			}
