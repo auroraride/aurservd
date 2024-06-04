@@ -708,7 +708,7 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := pc.mutation.RtoDays(); ok {
 		_spec.SetField(plan.FieldRtoDays, field.TypeUint, value)
-		_node.RtoDays = value
+		_node.RtoDays = &value
 	}
 	if value, ok := pc.mutation.OverdueFee(); ok {
 		_spec.SetField(plan.FieldOverdueFee, field.TypeFloat64, value)

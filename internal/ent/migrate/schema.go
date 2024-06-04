@@ -827,7 +827,6 @@ var (
 		{Name: "type", Type: field.TypeOther, Comment: "业务类型", SchemaType: map[string]string{"postgres": "character varying"}},
 		{Name: "bin_info", Type: field.TypeJSON, Nullable: true, Comment: "仓位信息"},
 		{Name: "stock_sn", Type: field.TypeString, Nullable: true, Comment: "出入库编码"},
-		{Name: "is_rto", Type: field.TypeUint8, Comment: "是否已赠送 0:未赠送 1:已赠送", Default: 0},
 		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64},
@@ -839,6 +838,7 @@ var (
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
 		{Name: "battery_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "agent_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "rto_ebike_id", Type: field.TypeUint64, Nullable: true, Comment: "以租代购车辆ID，生成后禁止修改"},
 	}
 	// BusinessTable holds the schema information for the "business" table.
 	BusinessTable = &schema.Table{
@@ -848,68 +848,74 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "business_rider_rider",
-				Columns:    []*schema.Column{BusinessColumns[11]},
+				Columns:    []*schema.Column{BusinessColumns[10]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "business_city_city",
-				Columns:    []*schema.Column{BusinessColumns[12]},
+				Columns:    []*schema.Column{BusinessColumns[11]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "business_subscribe_subscribe",
-				Columns:    []*schema.Column{BusinessColumns[13]},
+				Columns:    []*schema.Column{BusinessColumns[12]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "business_employee_employee",
-				Columns:    []*schema.Column{BusinessColumns[14]},
+				Columns:    []*schema.Column{BusinessColumns[13]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "business_store_store",
-				Columns:    []*schema.Column{BusinessColumns[15]},
+				Columns:    []*schema.Column{BusinessColumns[14]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "business_plan_plan",
-				Columns:    []*schema.Column{BusinessColumns[16]},
+				Columns:    []*schema.Column{BusinessColumns[15]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "business_enterprise_enterprise",
-				Columns:    []*schema.Column{BusinessColumns[17]},
+				Columns:    []*schema.Column{BusinessColumns[16]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "business_enterprise_station_station",
-				Columns:    []*schema.Column{BusinessColumns[18]},
+				Columns:    []*schema.Column{BusinessColumns[17]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "business_cabinet_cabinet",
-				Columns:    []*schema.Column{BusinessColumns[19]},
+				Columns:    []*schema.Column{BusinessColumns[18]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "business_battery_battery",
-				Columns:    []*schema.Column{BusinessColumns[20]},
+				Columns:    []*schema.Column{BusinessColumns[19]},
 				RefColumns: []*schema.Column{BatteryColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "business_agent_agent",
-				Columns:    []*schema.Column{BusinessColumns[21]},
+				Columns:    []*schema.Column{BusinessColumns[20]},
 				RefColumns: []*schema.Column{AgentColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "business_ebike_rto_ebike",
+				Columns:    []*schema.Column{BusinessColumns[21]},
+				RefColumns: []*schema.Column{EbikeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -927,57 +933,57 @@ var (
 			{
 				Name:    "business_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{BusinessColumns[11]},
+				Columns: []*schema.Column{BusinessColumns[10]},
 			},
 			{
 				Name:    "business_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{BusinessColumns[12]},
+				Columns: []*schema.Column{BusinessColumns[11]},
 			},
 			{
 				Name:    "business_subscribe_id",
 				Unique:  false,
-				Columns: []*schema.Column{BusinessColumns[13]},
+				Columns: []*schema.Column{BusinessColumns[12]},
 			},
 			{
 				Name:    "business_employee_id",
 				Unique:  false,
-				Columns: []*schema.Column{BusinessColumns[14]},
+				Columns: []*schema.Column{BusinessColumns[13]},
 			},
 			{
 				Name:    "business_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{BusinessColumns[15]},
+				Columns: []*schema.Column{BusinessColumns[14]},
 			},
 			{
 				Name:    "business_plan_id",
 				Unique:  false,
-				Columns: []*schema.Column{BusinessColumns[16]},
+				Columns: []*schema.Column{BusinessColumns[15]},
 			},
 			{
 				Name:    "business_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{BusinessColumns[17]},
+				Columns: []*schema.Column{BusinessColumns[16]},
 			},
 			{
 				Name:    "business_station_id",
 				Unique:  false,
-				Columns: []*schema.Column{BusinessColumns[18]},
+				Columns: []*schema.Column{BusinessColumns[17]},
 			},
 			{
 				Name:    "business_cabinet_id",
 				Unique:  false,
-				Columns: []*schema.Column{BusinessColumns[19]},
+				Columns: []*schema.Column{BusinessColumns[18]},
 			},
 			{
 				Name:    "business_battery_id",
 				Unique:  false,
-				Columns: []*schema.Column{BusinessColumns[20]},
+				Columns: []*schema.Column{BusinessColumns[19]},
 			},
 			{
 				Name:    "business_agent_id",
 				Unique:  false,
-				Columns: []*schema.Column{BusinessColumns[21]},
+				Columns: []*schema.Column{BusinessColumns[20]},
 			},
 			{
 				Name:    "business_type",
@@ -988,6 +994,11 @@ var (
 				Name:    "business_stock_sn",
 				Unique:  false,
 				Columns: []*schema.Column{BusinessColumns[9]},
+			},
+			{
+				Name:    "business_rto_ebike_id",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[21]},
 			},
 		},
 	}
@@ -1730,12 +1741,12 @@ var (
 		{Name: "sim", Type: field.TypeString, Unique: true, Nullable: true, Comment: "SIM卡号"},
 		{Name: "color", Type: field.TypeString, Comment: "颜色", Default: "橘黄"},
 		{Name: "ex_factory", Type: field.TypeString, Comment: "生产批次(出厂日期)"},
-		{Name: "is_rto", Type: field.TypeUint8, Comment: "是否已赠送 0:未赠送 1:已赠送", Default: 0},
 		{Name: "brand_id", Type: field.TypeUint64},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "企业ID"},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
+		{Name: "rto_rider_id", Type: field.TypeUint64, Nullable: true, Comment: "以租代购骑手ID，生成后禁止修改"},
 	}
 	// EbikeTable holds the schema information for the "ebike" table.
 	EbikeTable = &schema.Table{
@@ -1745,32 +1756,38 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "ebike_ebike_brand_brand",
-				Columns:    []*schema.Column{EbikeColumns[15]},
+				Columns:    []*schema.Column{EbikeColumns[14]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "ebike_rider_rider",
-				Columns:    []*schema.Column{EbikeColumns[16]},
+				Columns:    []*schema.Column{EbikeColumns[15]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "ebike_store_store",
-				Columns:    []*schema.Column{EbikeColumns[17]},
+				Columns:    []*schema.Column{EbikeColumns[16]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "ebike_enterprise_enterprise",
-				Columns:    []*schema.Column{EbikeColumns[18]},
+				Columns:    []*schema.Column{EbikeColumns[17]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "ebike_enterprise_station_station",
-				Columns:    []*schema.Column{EbikeColumns[19]},
+				Columns:    []*schema.Column{EbikeColumns[18]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "ebike_rider_rto_rider",
+				Columns:    []*schema.Column{EbikeColumns[19]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -1783,27 +1800,27 @@ var (
 			{
 				Name:    "ebike_brand_id",
 				Unique:  false,
-				Columns: []*schema.Column{EbikeColumns[15]},
+				Columns: []*schema.Column{EbikeColumns[14]},
 			},
 			{
 				Name:    "ebike_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{EbikeColumns[16]},
+				Columns: []*schema.Column{EbikeColumns[15]},
 			},
 			{
 				Name:    "ebike_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{EbikeColumns[17]},
+				Columns: []*schema.Column{EbikeColumns[16]},
 			},
 			{
 				Name:    "ebike_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{EbikeColumns[18]},
+				Columns: []*schema.Column{EbikeColumns[17]},
 			},
 			{
 				Name:    "ebike_station_id",
 				Unique:  false,
-				Columns: []*schema.Column{EbikeColumns[19]},
+				Columns: []*schema.Column{EbikeColumns[18]},
 			},
 			{
 				Name:    "ebike_status",
@@ -1814,6 +1831,11 @@ var (
 				Name:    "ebike_ex_factory",
 				Unique:  false,
 				Columns: []*schema.Column{EbikeColumns[13]},
+			},
+			{
+				Name:    "ebike_rto_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeColumns[19]},
 			},
 		},
 	}
@@ -3602,7 +3624,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "model", Type: field.TypeString, Nullable: true, Comment: "电池型号"},
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用"},
-		{Name: "type", Type: field.TypeUint8, Comment: "骑士卡类别 1:单电 2:车加电 3:以租代购（赠车）", Default: 1},
+		{Name: "type", Type: field.TypeUint8, Comment: "骑士卡类别 1:单电 2:车加电 3:以租代购", Default: 1},
 		{Name: "name", Type: field.TypeString, Comment: "骑士卡名称"},
 		{Name: "start", Type: field.TypeTime, Comment: "有效期开始日期"},
 		{Name: "end", Type: field.TypeTime, Comment: "有效期结束日期"},
@@ -3620,7 +3642,7 @@ var (
 		{Name: "deposit_alipay_auth_freeze", Type: field.TypeBool, Nullable: true, Comment: "预授权信用免押金", Default: false},
 		{Name: "deposit_contract", Type: field.TypeBool, Nullable: true, Comment: "合同免押金", Default: false},
 		{Name: "deposit_pay", Type: field.TypeBool, Nullable: true, Comment: "支付押金", Default: false},
-		{Name: "rto_days", Type: field.TypeUint, Nullable: true, Comment: "以租代购赠车最小使用天数"},
+		{Name: "rto_days", Type: field.TypeUint, Nullable: true, Comment: "以租代购天数条件"},
 		{Name: "overdue_fee", Type: field.TypeFloat64, Comment: "滞纳金单价", Default: 999},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "agreement_id", Type: field.TypeUint64, Nullable: true},
@@ -6315,6 +6337,7 @@ func init() {
 	BusinessTable.ForeignKeys[8].RefTable = CabinetTable
 	BusinessTable.ForeignKeys[9].RefTable = BatteryTable
 	BusinessTable.ForeignKeys[10].RefTable = AgentTable
+	BusinessTable.ForeignKeys[11].RefTable = EbikeTable
 	BusinessTable.Annotation = &entsql.Annotation{
 		Table: "business",
 	}
@@ -6378,6 +6401,7 @@ func init() {
 	EbikeTable.ForeignKeys[2].RefTable = StoreTable
 	EbikeTable.ForeignKeys[3].RefTable = EnterpriseTable
 	EbikeTable.ForeignKeys[4].RefTable = EnterpriseStationTable
+	EbikeTable.ForeignKeys[5].RefTable = RiderTable
 	EbikeTable.Annotation = &entsql.Annotation{
 		Table: "ebike",
 	}

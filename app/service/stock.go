@@ -464,17 +464,15 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 
 	time.Sleep(10 * time.Millisecond)
 
-	if req.Ebike != nil {
-		// 当不赠送车辆时候需要进行出入库处理
-		if req.IsRto == model.EbikeIsRtoUnSend.Value() {
-			err = son.SetParent(sk).
-				SetEbikeID(req.Ebike.ID).
-				SetName(req.Ebike.BrandName).
-				SetBrandID(req.Ebike.BrandID).
-				SetMaterial(stock.MaterialEbike).
-				SetSn(tools.NewUnique().NewSN()).
-				Exec(s.ctx)
-		}
+	// 当电车需要参与出入库时
+	if req.Ebike != nil && !req.Rto {
+		err = son.SetParent(sk).
+			SetEbikeID(req.Ebike.ID).
+			SetName(req.Ebike.BrandName).
+			SetBrandID(req.Ebike.BrandID).
+			SetMaterial(stock.MaterialEbike).
+			SetSn(tools.NewUnique().NewSN()).
+			Exec(s.ctx)
 	}
 
 	return

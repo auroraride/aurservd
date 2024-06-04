@@ -41,7 +41,7 @@ type Plan struct {
 	Model string `json:"model,omitempty"`
 	// 是否启用
 	Enable bool `json:"enable,omitempty"`
-	// 骑士卡类别 1:单电 2:车加电 3:以租代购（赠车）
+	// 骑士卡类别 1:单电 2:车加电 3:以租代购
 	Type uint8 `json:"type,omitempty"`
 	// 骑士卡名称
 	Name string `json:"name,omitempty"`
@@ -79,8 +79,8 @@ type Plan struct {
 	DepositContract bool `json:"deposit_contract,omitempty"`
 	// 支付押金
 	DepositPay bool `json:"deposit_pay,omitempty"`
-	// 以租代购赠车最小使用天数
-	RtoDays uint `json:"rto_days,omitempty"`
+	// 以租代购天数条件
+	RtoDays *uint `json:"rto_days,omitempty"`
 	// 滞纳金单价
 	OverdueFee float64 `json:"overdue_fee,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -394,7 +394,8 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field rto_days", values[i])
 			} else if value.Valid {
-				pl.RtoDays = uint(value.Int64)
+				pl.RtoDays = new(uint)
+				*pl.RtoDays = uint(value.Int64)
 			}
 		case plan.FieldOverdueFee:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -563,8 +564,10 @@ func (pl *Plan) String() string {
 	builder.WriteString("deposit_pay=")
 	builder.WriteString(fmt.Sprintf("%v", pl.DepositPay))
 	builder.WriteString(", ")
-	builder.WriteString("rto_days=")
-	builder.WriteString(fmt.Sprintf("%v", pl.RtoDays))
+	if v := pl.RtoDays; v != nil {
+		builder.WriteString("rto_days=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("overdue_fee=")
 	builder.WriteString(fmt.Sprintf("%v", pl.OverdueFee))

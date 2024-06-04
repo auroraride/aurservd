@@ -17172,8 +17172,6 @@ type BusinessMutation struct {
 	_type             *model.BusinessType
 	bin_info          **model.BinInfo
 	stock_sn          *string
-	is_rto            *uint8
-	addis_rto         *int8
 	clearedFields     map[string]struct{}
 	rider             *uint64
 	clearedrider      bool
@@ -17197,6 +17195,8 @@ type BusinessMutation struct {
 	clearedbattery    bool
 	agent             *uint64
 	clearedagent      bool
+	rto_ebike         *uint64
+	clearedrto_ebike  bool
 	done              bool
 	oldValue          func(context.Context) (*Business, error)
 	predicates        []predicate.Business
@@ -18202,60 +18202,53 @@ func (m *BusinessMutation) ResetStockSn() {
 	delete(m.clearedFields, business.FieldStockSn)
 }
 
-// SetIsRto sets the "is_rto" field.
-func (m *BusinessMutation) SetIsRto(u uint8) {
-	m.is_rto = &u
-	m.addis_rto = nil
+// SetRtoEbikeID sets the "rto_ebike_id" field.
+func (m *BusinessMutation) SetRtoEbikeID(u uint64) {
+	m.rto_ebike = &u
 }
 
-// IsRto returns the value of the "is_rto" field in the mutation.
-func (m *BusinessMutation) IsRto() (r uint8, exists bool) {
-	v := m.is_rto
+// RtoEbikeID returns the value of the "rto_ebike_id" field in the mutation.
+func (m *BusinessMutation) RtoEbikeID() (r uint64, exists bool) {
+	v := m.rto_ebike
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIsRto returns the old "is_rto" field's value of the Business entity.
+// OldRtoEbikeID returns the old "rto_ebike_id" field's value of the Business entity.
 // If the Business object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BusinessMutation) OldIsRto(ctx context.Context) (v uint8, err error) {
+func (m *BusinessMutation) OldRtoEbikeID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIsRto is only allowed on UpdateOne operations")
+		return v, errors.New("OldRtoEbikeID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIsRto requires an ID field in the mutation")
+		return v, errors.New("OldRtoEbikeID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIsRto: %w", err)
+		return v, fmt.Errorf("querying old value for OldRtoEbikeID: %w", err)
 	}
-	return oldValue.IsRto, nil
+	return oldValue.RtoEbikeID, nil
 }
 
-// AddIsRto adds u to the "is_rto" field.
-func (m *BusinessMutation) AddIsRto(u int8) {
-	if m.addis_rto != nil {
-		*m.addis_rto += u
-	} else {
-		m.addis_rto = &u
-	}
+// ClearRtoEbikeID clears the value of the "rto_ebike_id" field.
+func (m *BusinessMutation) ClearRtoEbikeID() {
+	m.rto_ebike = nil
+	m.clearedFields[business.FieldRtoEbikeID] = struct{}{}
 }
 
-// AddedIsRto returns the value that was added to the "is_rto" field in this mutation.
-func (m *BusinessMutation) AddedIsRto() (r int8, exists bool) {
-	v := m.addis_rto
-	if v == nil {
-		return
-	}
-	return *v, true
+// RtoEbikeIDCleared returns if the "rto_ebike_id" field was cleared in this mutation.
+func (m *BusinessMutation) RtoEbikeIDCleared() bool {
+	_, ok := m.clearedFields[business.FieldRtoEbikeID]
+	return ok
 }
 
-// ResetIsRto resets all changes to the "is_rto" field.
-func (m *BusinessMutation) ResetIsRto() {
-	m.is_rto = nil
-	m.addis_rto = nil
+// ResetRtoEbikeID resets all changes to the "rto_ebike_id" field.
+func (m *BusinessMutation) ResetRtoEbikeID() {
+	m.rto_ebike = nil
+	delete(m.clearedFields, business.FieldRtoEbikeID)
 }
 
 // ClearRider clears the "rider" edge to the Rider entity.
@@ -18555,6 +18548,33 @@ func (m *BusinessMutation) ResetAgent() {
 	m.clearedagent = false
 }
 
+// ClearRtoEbike clears the "rto_ebike" edge to the Ebike entity.
+func (m *BusinessMutation) ClearRtoEbike() {
+	m.clearedrto_ebike = true
+	m.clearedFields[business.FieldRtoEbikeID] = struct{}{}
+}
+
+// RtoEbikeCleared reports if the "rto_ebike" edge to the Ebike entity was cleared.
+func (m *BusinessMutation) RtoEbikeCleared() bool {
+	return m.RtoEbikeIDCleared() || m.clearedrto_ebike
+}
+
+// RtoEbikeIDs returns the "rto_ebike" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RtoEbikeID instead. It exists only for internal usage by the builders.
+func (m *BusinessMutation) RtoEbikeIDs() (ids []uint64) {
+	if id := m.rto_ebike; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRtoEbike resets all changes to the "rto_ebike" edge.
+func (m *BusinessMutation) ResetRtoEbike() {
+	m.rto_ebike = nil
+	m.clearedrto_ebike = false
+}
+
 // Where appends a list predicates to the BusinessMutation builder.
 func (m *BusinessMutation) Where(ps ...predicate.Business) {
 	m.predicates = append(m.predicates, ps...)
@@ -18650,8 +18670,8 @@ func (m *BusinessMutation) Fields() []string {
 	if m.stock_sn != nil {
 		fields = append(fields, business.FieldStockSn)
 	}
-	if m.is_rto != nil {
-		fields = append(fields, business.FieldIsRto)
+	if m.rto_ebike != nil {
+		fields = append(fields, business.FieldRtoEbikeID)
 	}
 	return fields
 }
@@ -18701,8 +18721,8 @@ func (m *BusinessMutation) Field(name string) (ent.Value, bool) {
 		return m.BinInfo()
 	case business.FieldStockSn:
 		return m.StockSn()
-	case business.FieldIsRto:
-		return m.IsRto()
+	case business.FieldRtoEbikeID:
+		return m.RtoEbikeID()
 	}
 	return nil, false
 }
@@ -18752,8 +18772,8 @@ func (m *BusinessMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldBinInfo(ctx)
 	case business.FieldStockSn:
 		return m.OldStockSn(ctx)
-	case business.FieldIsRto:
-		return m.OldIsRto(ctx)
+	case business.FieldRtoEbikeID:
+		return m.OldRtoEbikeID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Business field %s", name)
 }
@@ -18903,12 +18923,12 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStockSn(v)
 		return nil
-	case business.FieldIsRto:
-		v, ok := value.(uint8)
+	case business.FieldRtoEbikeID:
+		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetIsRto(v)
+		m.SetRtoEbikeID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Business field %s", name)
@@ -18918,9 +18938,6 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *BusinessMutation) AddedFields() []string {
 	var fields []string
-	if m.addis_rto != nil {
-		fields = append(fields, business.FieldIsRto)
-	}
 	return fields
 }
 
@@ -18929,8 +18946,6 @@ func (m *BusinessMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *BusinessMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case business.FieldIsRto:
-		return m.AddedIsRto()
 	}
 	return nil, false
 }
@@ -18940,13 +18955,6 @@ func (m *BusinessMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *BusinessMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case business.FieldIsRto:
-		v, ok := value.(int8)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddIsRto(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Business numeric field %s", name)
 }
@@ -18996,6 +19004,9 @@ func (m *BusinessMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(business.FieldStockSn) {
 		fields = append(fields, business.FieldStockSn)
+	}
+	if m.FieldCleared(business.FieldRtoEbikeID) {
+		fields = append(fields, business.FieldRtoEbikeID)
 	}
 	return fields
 }
@@ -19052,6 +19063,9 @@ func (m *BusinessMutation) ClearField(name string) error {
 		return nil
 	case business.FieldStockSn:
 		m.ClearStockSn()
+		return nil
+	case business.FieldRtoEbikeID:
+		m.ClearRtoEbikeID()
 		return nil
 	}
 	return fmt.Errorf("unknown Business nullable field %s", name)
@@ -19121,8 +19135,8 @@ func (m *BusinessMutation) ResetField(name string) error {
 	case business.FieldStockSn:
 		m.ResetStockSn()
 		return nil
-	case business.FieldIsRto:
-		m.ResetIsRto()
+	case business.FieldRtoEbikeID:
+		m.ResetRtoEbikeID()
 		return nil
 	}
 	return fmt.Errorf("unknown Business field %s", name)
@@ -19130,7 +19144,7 @@ func (m *BusinessMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BusinessMutation) AddedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.rider != nil {
 		edges = append(edges, business.EdgeRider)
 	}
@@ -19163,6 +19177,9 @@ func (m *BusinessMutation) AddedEdges() []string {
 	}
 	if m.agent != nil {
 		edges = append(edges, business.EdgeAgent)
+	}
+	if m.rto_ebike != nil {
+		edges = append(edges, business.EdgeRtoEbike)
 	}
 	return edges
 }
@@ -19215,13 +19232,17 @@ func (m *BusinessMutation) AddedIDs(name string) []ent.Value {
 		if id := m.agent; id != nil {
 			return []ent.Value{*id}
 		}
+	case business.EdgeRtoEbike:
+		if id := m.rto_ebike; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BusinessMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	return edges
 }
 
@@ -19233,7 +19254,7 @@ func (m *BusinessMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BusinessMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.clearedrider {
 		edges = append(edges, business.EdgeRider)
 	}
@@ -19267,6 +19288,9 @@ func (m *BusinessMutation) ClearedEdges() []string {
 	if m.clearedagent {
 		edges = append(edges, business.EdgeAgent)
 	}
+	if m.clearedrto_ebike {
+		edges = append(edges, business.EdgeRtoEbike)
+	}
 	return edges
 }
 
@@ -19296,6 +19320,8 @@ func (m *BusinessMutation) EdgeCleared(name string) bool {
 		return m.clearedbattery
 	case business.EdgeAgent:
 		return m.clearedagent
+	case business.EdgeRtoEbike:
+		return m.clearedrto_ebike
 	}
 	return false
 }
@@ -19337,6 +19363,9 @@ func (m *BusinessMutation) ClearEdge(name string) error {
 	case business.EdgeAgent:
 		m.ClearAgent()
 		return nil
+	case business.EdgeRtoEbike:
+		m.ClearRtoEbike()
+		return nil
 	}
 	return fmt.Errorf("unknown Business unique edge %s", name)
 }
@@ -19377,6 +19406,9 @@ func (m *BusinessMutation) ResetEdge(name string) error {
 		return nil
 	case business.EdgeAgent:
 		m.ResetAgent()
+		return nil
+	case business.EdgeRtoEbike:
+		m.ResetRtoEbike()
 		return nil
 	}
 	return fmt.Errorf("unknown Business edge %s", name)
@@ -34688,8 +34720,6 @@ type EbikeMutation struct {
 	sim               *string
 	color             *string
 	ex_factory        *string
-	is_rto            *uint8
-	addis_rto         *int8
 	clearedFields     map[string]struct{}
 	brand             *uint64
 	clearedbrand      bool
@@ -34704,6 +34734,8 @@ type EbikeMutation struct {
 	allocates         map[uint64]struct{}
 	removedallocates  map[uint64]struct{}
 	clearedallocates  bool
+	rto_rider         *uint64
+	clearedrto_rider  bool
 	done              bool
 	oldValue          func(context.Context) (*Ebike, error)
 	predicates        []predicate.Ebike
@@ -35585,60 +35617,53 @@ func (m *EbikeMutation) ResetExFactory() {
 	m.ex_factory = nil
 }
 
-// SetIsRto sets the "is_rto" field.
-func (m *EbikeMutation) SetIsRto(u uint8) {
-	m.is_rto = &u
-	m.addis_rto = nil
+// SetRtoRiderID sets the "rto_rider_id" field.
+func (m *EbikeMutation) SetRtoRiderID(u uint64) {
+	m.rto_rider = &u
 }
 
-// IsRto returns the value of the "is_rto" field in the mutation.
-func (m *EbikeMutation) IsRto() (r uint8, exists bool) {
-	v := m.is_rto
+// RtoRiderID returns the value of the "rto_rider_id" field in the mutation.
+func (m *EbikeMutation) RtoRiderID() (r uint64, exists bool) {
+	v := m.rto_rider
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIsRto returns the old "is_rto" field's value of the Ebike entity.
+// OldRtoRiderID returns the old "rto_rider_id" field's value of the Ebike entity.
 // If the Ebike object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EbikeMutation) OldIsRto(ctx context.Context) (v uint8, err error) {
+func (m *EbikeMutation) OldRtoRiderID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIsRto is only allowed on UpdateOne operations")
+		return v, errors.New("OldRtoRiderID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIsRto requires an ID field in the mutation")
+		return v, errors.New("OldRtoRiderID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIsRto: %w", err)
+		return v, fmt.Errorf("querying old value for OldRtoRiderID: %w", err)
 	}
-	return oldValue.IsRto, nil
+	return oldValue.RtoRiderID, nil
 }
 
-// AddIsRto adds u to the "is_rto" field.
-func (m *EbikeMutation) AddIsRto(u int8) {
-	if m.addis_rto != nil {
-		*m.addis_rto += u
-	} else {
-		m.addis_rto = &u
-	}
+// ClearRtoRiderID clears the value of the "rto_rider_id" field.
+func (m *EbikeMutation) ClearRtoRiderID() {
+	m.rto_rider = nil
+	m.clearedFields[ebike.FieldRtoRiderID] = struct{}{}
 }
 
-// AddedIsRto returns the value that was added to the "is_rto" field in this mutation.
-func (m *EbikeMutation) AddedIsRto() (r int8, exists bool) {
-	v := m.addis_rto
-	if v == nil {
-		return
-	}
-	return *v, true
+// RtoRiderIDCleared returns if the "rto_rider_id" field was cleared in this mutation.
+func (m *EbikeMutation) RtoRiderIDCleared() bool {
+	_, ok := m.clearedFields[ebike.FieldRtoRiderID]
+	return ok
 }
 
-// ResetIsRto resets all changes to the "is_rto" field.
-func (m *EbikeMutation) ResetIsRto() {
-	m.is_rto = nil
-	m.addis_rto = nil
+// ResetRtoRiderID resets all changes to the "rto_rider_id" field.
+func (m *EbikeMutation) ResetRtoRiderID() {
+	m.rto_rider = nil
+	delete(m.clearedFields, ebike.FieldRtoRiderID)
 }
 
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
@@ -35830,6 +35855,33 @@ func (m *EbikeMutation) ResetAllocates() {
 	m.removedallocates = nil
 }
 
+// ClearRtoRider clears the "rto_rider" edge to the Rider entity.
+func (m *EbikeMutation) ClearRtoRider() {
+	m.clearedrto_rider = true
+	m.clearedFields[ebike.FieldRtoRiderID] = struct{}{}
+}
+
+// RtoRiderCleared reports if the "rto_rider" edge to the Rider entity was cleared.
+func (m *EbikeMutation) RtoRiderCleared() bool {
+	return m.RtoRiderIDCleared() || m.clearedrto_rider
+}
+
+// RtoRiderIDs returns the "rto_rider" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RtoRiderID instead. It exists only for internal usage by the builders.
+func (m *EbikeMutation) RtoRiderIDs() (ids []uint64) {
+	if id := m.rto_rider; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRtoRider resets all changes to the "rto_rider" edge.
+func (m *EbikeMutation) ResetRtoRider() {
+	m.rto_rider = nil
+	m.clearedrto_rider = false
+}
+
 // Where appends a list predicates to the EbikeMutation builder.
 func (m *EbikeMutation) Where(ps ...predicate.Ebike) {
 	m.predicates = append(m.predicates, ps...)
@@ -35919,8 +35971,8 @@ func (m *EbikeMutation) Fields() []string {
 	if m.ex_factory != nil {
 		fields = append(fields, ebike.FieldExFactory)
 	}
-	if m.is_rto != nil {
-		fields = append(fields, ebike.FieldIsRto)
+	if m.rto_rider != nil {
+		fields = append(fields, ebike.FieldRtoRiderID)
 	}
 	return fields
 }
@@ -35966,8 +36018,8 @@ func (m *EbikeMutation) Field(name string) (ent.Value, bool) {
 		return m.Color()
 	case ebike.FieldExFactory:
 		return m.ExFactory()
-	case ebike.FieldIsRto:
-		return m.IsRto()
+	case ebike.FieldRtoRiderID:
+		return m.RtoRiderID()
 	}
 	return nil, false
 }
@@ -36013,8 +36065,8 @@ func (m *EbikeMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldColor(ctx)
 	case ebike.FieldExFactory:
 		return m.OldExFactory(ctx)
-	case ebike.FieldIsRto:
-		return m.OldIsRto(ctx)
+	case ebike.FieldRtoRiderID:
+		return m.OldRtoRiderID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Ebike field %s", name)
 }
@@ -36150,12 +36202,12 @@ func (m *EbikeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetExFactory(v)
 		return nil
-	case ebike.FieldIsRto:
-		v, ok := value.(uint8)
+	case ebike.FieldRtoRiderID:
+		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetIsRto(v)
+		m.SetRtoRiderID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Ebike field %s", name)
@@ -36165,9 +36217,6 @@ func (m *EbikeMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *EbikeMutation) AddedFields() []string {
 	var fields []string
-	if m.addis_rto != nil {
-		fields = append(fields, ebike.FieldIsRto)
-	}
 	return fields
 }
 
@@ -36176,8 +36225,6 @@ func (m *EbikeMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *EbikeMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case ebike.FieldIsRto:
-		return m.AddedIsRto()
 	}
 	return nil, false
 }
@@ -36187,13 +36234,6 @@ func (m *EbikeMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *EbikeMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case ebike.FieldIsRto:
-		v, ok := value.(int8)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddIsRto(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Ebike numeric field %s", name)
 }
@@ -36231,6 +36271,9 @@ func (m *EbikeMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(ebike.FieldSim) {
 		fields = append(fields, ebike.FieldSim)
+	}
+	if m.FieldCleared(ebike.FieldRtoRiderID) {
+		fields = append(fields, ebike.FieldRtoRiderID)
 	}
 	return fields
 }
@@ -36275,6 +36318,9 @@ func (m *EbikeMutation) ClearField(name string) error {
 		return nil
 	case ebike.FieldSim:
 		m.ClearSim()
+		return nil
+	case ebike.FieldRtoRiderID:
+		m.ClearRtoRiderID()
 		return nil
 	}
 	return fmt.Errorf("unknown Ebike nullable field %s", name)
@@ -36338,8 +36384,8 @@ func (m *EbikeMutation) ResetField(name string) error {
 	case ebike.FieldExFactory:
 		m.ResetExFactory()
 		return nil
-	case ebike.FieldIsRto:
-		m.ResetIsRto()
+	case ebike.FieldRtoRiderID:
+		m.ResetRtoRiderID()
 		return nil
 	}
 	return fmt.Errorf("unknown Ebike field %s", name)
@@ -36347,7 +36393,7 @@ func (m *EbikeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EbikeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.brand != nil {
 		edges = append(edges, ebike.EdgeBrand)
 	}
@@ -36365,6 +36411,9 @@ func (m *EbikeMutation) AddedEdges() []string {
 	}
 	if m.allocates != nil {
 		edges = append(edges, ebike.EdgeAllocates)
+	}
+	if m.rto_rider != nil {
+		edges = append(edges, ebike.EdgeRtoRider)
 	}
 	return edges
 }
@@ -36399,13 +36448,17 @@ func (m *EbikeMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case ebike.EdgeRtoRider:
+		if id := m.rto_rider; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EbikeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.removedallocates != nil {
 		edges = append(edges, ebike.EdgeAllocates)
 	}
@@ -36428,7 +36481,7 @@ func (m *EbikeMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EbikeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.clearedbrand {
 		edges = append(edges, ebike.EdgeBrand)
 	}
@@ -36446,6 +36499,9 @@ func (m *EbikeMutation) ClearedEdges() []string {
 	}
 	if m.clearedallocates {
 		edges = append(edges, ebike.EdgeAllocates)
+	}
+	if m.clearedrto_rider {
+		edges = append(edges, ebike.EdgeRtoRider)
 	}
 	return edges
 }
@@ -36466,6 +36522,8 @@ func (m *EbikeMutation) EdgeCleared(name string) bool {
 		return m.clearedstation
 	case ebike.EdgeAllocates:
 		return m.clearedallocates
+	case ebike.EdgeRtoRider:
+		return m.clearedrto_rider
 	}
 	return false
 }
@@ -36488,6 +36546,9 @@ func (m *EbikeMutation) ClearEdge(name string) error {
 		return nil
 	case ebike.EdgeStation:
 		m.ClearStation()
+		return nil
+	case ebike.EdgeRtoRider:
+		m.ClearRtoRider()
 		return nil
 	}
 	return fmt.Errorf("unknown Ebike unique edge %s", name)
@@ -36514,6 +36575,9 @@ func (m *EbikeMutation) ResetEdge(name string) error {
 		return nil
 	case ebike.EdgeAllocates:
 		m.ResetAllocates()
+		return nil
+	case ebike.EdgeRtoRider:
+		m.ResetRtoRider()
 		return nil
 	}
 	return fmt.Errorf("unknown Ebike edge %s", name)
@@ -72814,7 +72878,7 @@ func (m *PlanMutation) RtoDays() (r uint, exists bool) {
 // OldRtoDays returns the old "rto_days" field's value of the Plan entity.
 // If the Plan object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PlanMutation) OldRtoDays(ctx context.Context) (v uint, err error) {
+func (m *PlanMutation) OldRtoDays(ctx context.Context) (v *uint, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRtoDays is only allowed on UpdateOne operations")
 	}

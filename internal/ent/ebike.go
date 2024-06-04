@@ -60,8 +60,8 @@ type Ebike struct {
 	Color string `json:"color,omitempty"`
 	// 生产批次(出厂日期)
 	ExFactory string `json:"ex_factory,omitempty"`
-	// 是否已赠送 0:未赠送 1:已赠送
-	IsRto uint8 `json:"is_rto,omitempty"`
+	// 以租代购骑手ID，生成后禁止修改
+	RtoRiderID *uint64 `json:"rto_rider_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EbikeQuery when eager-loading is set.
 	Edges        EbikeEdges `json:"edges"`
@@ -82,9 +82,11 @@ type EbikeEdges struct {
 	Station *EnterpriseStation `json:"station,omitempty"`
 	// Allocates holds the value of the allocates edge.
 	Allocates []*Allocate `json:"allocates,omitempty"`
+	// RtoRider holds the value of the rto_rider edge.
+	RtoRider *Rider `json:"rto_rider,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [7]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
@@ -151,6 +153,17 @@ func (e EbikeEdges) AllocatesOrErr() ([]*Allocate, error) {
 	return nil, &NotLoadedError{edge: "allocates"}
 }
 
+// RtoRiderOrErr returns the RtoRider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EbikeEdges) RtoRiderOrErr() (*Rider, error) {
+	if e.RtoRider != nil {
+		return e.RtoRider, nil
+	} else if e.loadedTypes[6] {
+		return nil, &NotFoundError{label: rider.Label}
+	}
+	return nil, &NotLoadedError{edge: "rto_rider"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Ebike) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -162,7 +175,7 @@ func (*Ebike) scanValues(columns []string) ([]any, error) {
 			values[i] = new(model.EbikeStatus)
 		case ebike.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case ebike.FieldID, ebike.FieldBrandID, ebike.FieldRiderID, ebike.FieldStoreID, ebike.FieldEnterpriseID, ebike.FieldStationID, ebike.FieldIsRto:
+		case ebike.FieldID, ebike.FieldBrandID, ebike.FieldRiderID, ebike.FieldStoreID, ebike.FieldEnterpriseID, ebike.FieldStationID, ebike.FieldRtoRiderID:
 			values[i] = new(sql.NullInt64)
 		case ebike.FieldRemark, ebike.FieldSn, ebike.FieldPlate, ebike.FieldMachine, ebike.FieldSim, ebike.FieldColor, ebike.FieldExFactory:
 			values[i] = new(sql.NullString)
@@ -308,11 +321,12 @@ func (e *Ebike) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.ExFactory = value.String
 			}
-		case ebike.FieldIsRto:
+		case ebike.FieldRtoRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field is_rto", values[i])
+				return fmt.Errorf("unexpected type %T for field rto_rider_id", values[i])
 			} else if value.Valid {
-				e.IsRto = uint8(value.Int64)
+				e.RtoRiderID = new(uint64)
+				*e.RtoRiderID = uint64(value.Int64)
 			}
 		default:
 			e.selectValues.Set(columns[i], values[i])
@@ -355,6 +369,11 @@ func (e *Ebike) QueryStation() *EnterpriseStationQuery {
 // QueryAllocates queries the "allocates" edge of the Ebike entity.
 func (e *Ebike) QueryAllocates() *AllocateQuery {
 	return NewEbikeClient(e.config).QueryAllocates(e)
+}
+
+// QueryRtoRider queries the "rto_rider" edge of the Ebike entity.
+func (e *Ebike) QueryRtoRider() *RiderQuery {
+	return NewEbikeClient(e.config).QueryRtoRider(e)
 }
 
 // Update returns a builder for updating this Ebike.
@@ -448,8 +467,10 @@ func (e *Ebike) String() string {
 	builder.WriteString("ex_factory=")
 	builder.WriteString(e.ExFactory)
 	builder.WriteString(", ")
-	builder.WriteString("is_rto=")
-	builder.WriteString(fmt.Sprintf("%v", e.IsRto))
+	if v := e.RtoRiderID; v != nil {
+		builder.WriteString("rto_rider_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

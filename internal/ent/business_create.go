@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -258,16 +259,16 @@ func (bc *BusinessCreate) SetNillableStockSn(s *string) *BusinessCreate {
 	return bc
 }
 
-// SetIsRto sets the "is_rto" field.
-func (bc *BusinessCreate) SetIsRto(u uint8) *BusinessCreate {
-	bc.mutation.SetIsRto(u)
+// SetRtoEbikeID sets the "rto_ebike_id" field.
+func (bc *BusinessCreate) SetRtoEbikeID(u uint64) *BusinessCreate {
+	bc.mutation.SetRtoEbikeID(u)
 	return bc
 }
 
-// SetNillableIsRto sets the "is_rto" field if the given value is not nil.
-func (bc *BusinessCreate) SetNillableIsRto(u *uint8) *BusinessCreate {
+// SetNillableRtoEbikeID sets the "rto_ebike_id" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableRtoEbikeID(u *uint64) *BusinessCreate {
 	if u != nil {
-		bc.SetIsRto(*u)
+		bc.SetRtoEbikeID(*u)
 	}
 	return bc
 }
@@ -327,6 +328,11 @@ func (bc *BusinessCreate) SetAgent(a *Agent) *BusinessCreate {
 	return bc.SetAgentID(a.ID)
 }
 
+// SetRtoEbike sets the "rto_ebike" edge to the Ebike entity.
+func (bc *BusinessCreate) SetRtoEbike(e *Ebike) *BusinessCreate {
+	return bc.SetRtoEbikeID(e.ID)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bc *BusinessCreate) Mutation() *BusinessMutation {
 	return bc.mutation
@@ -378,10 +384,6 @@ func (bc *BusinessCreate) defaults() error {
 		v := business.DefaultUpdatedAt()
 		bc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := bc.mutation.IsRto(); !ok {
-		v := business.DefaultIsRto
-		bc.mutation.SetIsRto(v)
-	}
 	return nil
 }
 
@@ -404,9 +406,6 @@ func (bc *BusinessCreate) check() error {
 	}
 	if _, ok := bc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Business.type"`)}
-	}
-	if _, ok := bc.mutation.IsRto(); !ok {
-		return &ValidationError{Name: "is_rto", err: errors.New(`ent: missing required field "Business.is_rto"`)}
 	}
 	if _, ok := bc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Business.rider"`)}
@@ -479,10 +478,6 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 	if value, ok := bc.mutation.StockSn(); ok {
 		_spec.SetField(business.FieldStockSn, field.TypeString, value)
 		_node.StockSn = value
-	}
-	if value, ok := bc.mutation.IsRto(); ok {
-		_spec.SetField(business.FieldIsRto, field.TypeUint8, value)
-		_node.IsRto = value
 	}
 	if nodes := bc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -669,6 +664,23 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.AgentID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.RtoEbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.RtoEbikeTable,
+			Columns: []string{business.RtoEbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RtoEbikeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -1017,21 +1029,21 @@ func (u *BusinessUpsert) ClearStockSn() *BusinessUpsert {
 	return u
 }
 
-// SetIsRto sets the "is_rto" field.
-func (u *BusinessUpsert) SetIsRto(v uint8) *BusinessUpsert {
-	u.Set(business.FieldIsRto, v)
+// SetRtoEbikeID sets the "rto_ebike_id" field.
+func (u *BusinessUpsert) SetRtoEbikeID(v uint64) *BusinessUpsert {
+	u.Set(business.FieldRtoEbikeID, v)
 	return u
 }
 
-// UpdateIsRto sets the "is_rto" field to the value that was provided on create.
-func (u *BusinessUpsert) UpdateIsRto() *BusinessUpsert {
-	u.SetExcluded(business.FieldIsRto)
+// UpdateRtoEbikeID sets the "rto_ebike_id" field to the value that was provided on create.
+func (u *BusinessUpsert) UpdateRtoEbikeID() *BusinessUpsert {
+	u.SetExcluded(business.FieldRtoEbikeID)
 	return u
 }
 
-// AddIsRto adds v to the "is_rto" field.
-func (u *BusinessUpsert) AddIsRto(v uint8) *BusinessUpsert {
-	u.Add(business.FieldIsRto, v)
+// ClearRtoEbikeID clears the value of the "rto_ebike_id" field.
+func (u *BusinessUpsert) ClearRtoEbikeID() *BusinessUpsert {
+	u.SetNull(business.FieldRtoEbikeID)
 	return u
 }
 
@@ -1426,24 +1438,24 @@ func (u *BusinessUpsertOne) ClearStockSn() *BusinessUpsertOne {
 	})
 }
 
-// SetIsRto sets the "is_rto" field.
-func (u *BusinessUpsertOne) SetIsRto(v uint8) *BusinessUpsertOne {
+// SetRtoEbikeID sets the "rto_ebike_id" field.
+func (u *BusinessUpsertOne) SetRtoEbikeID(v uint64) *BusinessUpsertOne {
 	return u.Update(func(s *BusinessUpsert) {
-		s.SetIsRto(v)
+		s.SetRtoEbikeID(v)
 	})
 }
 
-// AddIsRto adds v to the "is_rto" field.
-func (u *BusinessUpsertOne) AddIsRto(v uint8) *BusinessUpsertOne {
+// UpdateRtoEbikeID sets the "rto_ebike_id" field to the value that was provided on create.
+func (u *BusinessUpsertOne) UpdateRtoEbikeID() *BusinessUpsertOne {
 	return u.Update(func(s *BusinessUpsert) {
-		s.AddIsRto(v)
+		s.UpdateRtoEbikeID()
 	})
 }
 
-// UpdateIsRto sets the "is_rto" field to the value that was provided on create.
-func (u *BusinessUpsertOne) UpdateIsRto() *BusinessUpsertOne {
+// ClearRtoEbikeID clears the value of the "rto_ebike_id" field.
+func (u *BusinessUpsertOne) ClearRtoEbikeID() *BusinessUpsertOne {
 	return u.Update(func(s *BusinessUpsert) {
-		s.UpdateIsRto()
+		s.ClearRtoEbikeID()
 	})
 }
 
@@ -2004,24 +2016,24 @@ func (u *BusinessUpsertBulk) ClearStockSn() *BusinessUpsertBulk {
 	})
 }
 
-// SetIsRto sets the "is_rto" field.
-func (u *BusinessUpsertBulk) SetIsRto(v uint8) *BusinessUpsertBulk {
+// SetRtoEbikeID sets the "rto_ebike_id" field.
+func (u *BusinessUpsertBulk) SetRtoEbikeID(v uint64) *BusinessUpsertBulk {
 	return u.Update(func(s *BusinessUpsert) {
-		s.SetIsRto(v)
+		s.SetRtoEbikeID(v)
 	})
 }
 
-// AddIsRto adds v to the "is_rto" field.
-func (u *BusinessUpsertBulk) AddIsRto(v uint8) *BusinessUpsertBulk {
+// UpdateRtoEbikeID sets the "rto_ebike_id" field to the value that was provided on create.
+func (u *BusinessUpsertBulk) UpdateRtoEbikeID() *BusinessUpsertBulk {
 	return u.Update(func(s *BusinessUpsert) {
-		s.AddIsRto(v)
+		s.UpdateRtoEbikeID()
 	})
 }
 
-// UpdateIsRto sets the "is_rto" field to the value that was provided on create.
-func (u *BusinessUpsertBulk) UpdateIsRto() *BusinessUpsertBulk {
+// ClearRtoEbikeID clears the value of the "rto_ebike_id" field.
+func (u *BusinessUpsertBulk) ClearRtoEbikeID() *BusinessUpsertBulk {
 	return u.Update(func(s *BusinessUpsert) {
-		s.UpdateIsRto()
+		s.ClearRtoEbikeID()
 	})
 }
 

@@ -441,7 +441,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			business.FieldType:         {Type: field.TypeOther, Column: business.FieldType},
 			business.FieldBinInfo:      {Type: field.TypeJSON, Column: business.FieldBinInfo},
 			business.FieldStockSn:      {Type: field.TypeString, Column: business.FieldStockSn},
-			business.FieldIsRto:        {Type: field.TypeUint8, Column: business.FieldIsRto},
+			business.FieldRtoEbikeID:   {Type: field.TypeUint64, Column: business.FieldRtoEbikeID},
 		},
 	}
 	graph.Nodes[12] = &sqlgraph.Node{
@@ -753,7 +753,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			ebike.FieldSim:          {Type: field.TypeString, Column: ebike.FieldSim},
 			ebike.FieldColor:        {Type: field.TypeString, Column: ebike.FieldColor},
 			ebike.FieldExFactory:    {Type: field.TypeString, Column: ebike.FieldExFactory},
-			ebike.FieldIsRto:        {Type: field.TypeUint8, Column: ebike.FieldIsRto},
+			ebike.FieldRtoRiderID:   {Type: field.TypeUint64, Column: ebike.FieldRtoRiderID},
 		},
 	}
 	graph.Nodes[23] = &sqlgraph.Node{
@@ -2933,6 +2933,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Agent",
 	)
 	graph.MustAddE(
+		"rto_ebike",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.RtoEbikeTable,
+			Columns: []string{business.RtoEbikeColumn},
+			Bidi:    false,
+		},
+		"Business",
+		"Ebike",
+	)
+	graph.MustAddE(
 		"city",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -3423,6 +3435,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Ebike",
 		"Allocate",
+	)
+	graph.MustAddE(
+		"rto_rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.RtoRiderTable,
+			Columns: []string{ebike.RtoRiderColumn},
+			Bidi:    false,
+		},
+		"Ebike",
+		"Rider",
 	)
 	graph.MustAddE(
 		"city",
@@ -8090,9 +8114,9 @@ func (f *BusinessFilter) WhereStockSn(p entql.StringP) {
 	f.Where(p.Field(business.FieldStockSn))
 }
 
-// WhereIsRto applies the entql uint8 predicate on the is_rto field.
-func (f *BusinessFilter) WhereIsRto(p entql.Uint8P) {
-	f.Where(p.Field(business.FieldIsRto))
+// WhereRtoEbikeID applies the entql uint64 predicate on the rto_ebike_id field.
+func (f *BusinessFilter) WhereRtoEbikeID(p entql.Uint64P) {
+	f.Where(p.Field(business.FieldRtoEbikeID))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.
@@ -8243,6 +8267,20 @@ func (f *BusinessFilter) WhereHasAgent() {
 // WhereHasAgentWith applies a predicate to check if query has an edge agent with a given conditions (other predicates).
 func (f *BusinessFilter) WhereHasAgentWith(preds ...predicate.Agent) {
 	f.Where(entql.HasEdgeWith("agent", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRtoEbike applies a predicate to check if query has an edge rto_ebike.
+func (f *BusinessFilter) WhereHasRtoEbike() {
+	f.Where(entql.HasEdge("rto_ebike"))
+}
+
+// WhereHasRtoEbikeWith applies a predicate to check if query has an edge rto_ebike with a given conditions (other predicates).
+func (f *BusinessFilter) WhereHasRtoEbikeWith(preds ...predicate.Ebike) {
+	f.Where(entql.HasEdgeWith("rto_ebike", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -10019,9 +10057,9 @@ func (f *EbikeFilter) WhereExFactory(p entql.StringP) {
 	f.Where(p.Field(ebike.FieldExFactory))
 }
 
-// WhereIsRto applies the entql uint8 predicate on the is_rto field.
-func (f *EbikeFilter) WhereIsRto(p entql.Uint8P) {
-	f.Where(p.Field(ebike.FieldIsRto))
+// WhereRtoRiderID applies the entql uint64 predicate on the rto_rider_id field.
+func (f *EbikeFilter) WhereRtoRiderID(p entql.Uint64P) {
+	f.Where(p.Field(ebike.FieldRtoRiderID))
 }
 
 // WhereHasBrand applies a predicate to check if query has an edge brand.
@@ -10102,6 +10140,20 @@ func (f *EbikeFilter) WhereHasAllocates() {
 // WhereHasAllocatesWith applies a predicate to check if query has an edge allocates with a given conditions (other predicates).
 func (f *EbikeFilter) WhereHasAllocatesWith(preds ...predicate.Allocate) {
 	f.Where(entql.HasEdgeWith("allocates", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRtoRider applies a predicate to check if query has an edge rto_rider.
+func (f *EbikeFilter) WhereHasRtoRider() {
+	f.Where(entql.HasEdge("rto_rider"))
+}
+
+// WhereHasRtoRiderWith applies a predicate to check if query has an edge rto_rider with a given conditions (other predicates).
+func (f *EbikeFilter) WhereHasRtoRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rto_rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

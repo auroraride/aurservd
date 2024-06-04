@@ -52,8 +52,8 @@ const (
 	FieldColor = "color"
 	// FieldExFactory holds the string denoting the ex_factory field in the database.
 	FieldExFactory = "ex_factory"
-	// FieldIsRto holds the string denoting the is_rto field in the database.
-	FieldIsRto = "is_rto"
+	// FieldRtoRiderID holds the string denoting the rto_rider_id field in the database.
+	FieldRtoRiderID = "rto_rider_id"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
@@ -66,6 +66,8 @@ const (
 	EdgeStation = "station"
 	// EdgeAllocates holds the string denoting the allocates edge name in mutations.
 	EdgeAllocates = "allocates"
+	// EdgeRtoRider holds the string denoting the rto_rider edge name in mutations.
+	EdgeRtoRider = "rto_rider"
 	// Table holds the table name of the ebike in the database.
 	Table = "ebike"
 	// BrandTable is the table that holds the brand relation/edge.
@@ -110,6 +112,13 @@ const (
 	AllocatesInverseTable = "allocate"
 	// AllocatesColumn is the table column denoting the allocates relation/edge.
 	AllocatesColumn = "ebike_id"
+	// RtoRiderTable is the table that holds the rto_rider relation/edge.
+	RtoRiderTable = "ebike"
+	// RtoRiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	RtoRiderInverseTable = "rider"
+	// RtoRiderColumn is the table column denoting the rto_rider relation/edge.
+	RtoRiderColumn = "rto_rider_id"
 )
 
 // Columns holds all SQL columns for ebike fields.
@@ -133,7 +142,7 @@ var Columns = []string{
 	FieldSim,
 	FieldColor,
 	FieldExFactory,
-	FieldIsRto,
+	FieldRtoRiderID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -165,8 +174,6 @@ var (
 	DefaultEnable bool
 	// DefaultColor holds the default value on creation for the "color" field.
 	DefaultColor string
-	// DefaultIsRto holds the default value on creation for the "is_rto" field.
-	DefaultIsRto uint8
 )
 
 // OrderOption defines the ordering options for the Ebike queries.
@@ -257,9 +264,9 @@ func ByExFactory(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldExFactory, opts...).ToFunc()
 }
 
-// ByIsRto orders the results by the is_rto field.
-func ByIsRto(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldIsRto, opts...).ToFunc()
+// ByRtoRiderID orders the results by the rto_rider_id field.
+func ByRtoRiderID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRtoRiderID, opts...).ToFunc()
 }
 
 // ByBrandField orders the results by brand field.
@@ -310,6 +317,13 @@ func ByAllocates(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newAllocatesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByRtoRiderField orders the results by rto_rider field.
+func ByRtoRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRtoRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newBrandStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -350,5 +364,12 @@ func newAllocatesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AllocatesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, AllocatesTable, AllocatesColumn),
+	)
+}
+func newRtoRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RtoRiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RtoRiderTable, RtoRiderColumn),
 	)
 }

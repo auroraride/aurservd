@@ -141,9 +141,9 @@ func StockSn(v string) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldStockSn, v))
 }
 
-// IsRto applies equality check predicate on the "is_rto" field. It's identical to IsRtoEQ.
-func IsRto(v uint8) predicate.Business {
-	return predicate.Business(sql.FieldEQ(FieldIsRto, v))
+// RtoEbikeID applies equality check predicate on the "rto_ebike_id" field. It's identical to RtoEbikeIDEQ.
+func RtoEbikeID(v uint64) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldRtoEbikeID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -796,44 +796,34 @@ func StockSnContainsFold(v string) predicate.Business {
 	return predicate.Business(sql.FieldContainsFold(FieldStockSn, v))
 }
 
-// IsRtoEQ applies the EQ predicate on the "is_rto" field.
-func IsRtoEQ(v uint8) predicate.Business {
-	return predicate.Business(sql.FieldEQ(FieldIsRto, v))
+// RtoEbikeIDEQ applies the EQ predicate on the "rto_ebike_id" field.
+func RtoEbikeIDEQ(v uint64) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldRtoEbikeID, v))
 }
 
-// IsRtoNEQ applies the NEQ predicate on the "is_rto" field.
-func IsRtoNEQ(v uint8) predicate.Business {
-	return predicate.Business(sql.FieldNEQ(FieldIsRto, v))
+// RtoEbikeIDNEQ applies the NEQ predicate on the "rto_ebike_id" field.
+func RtoEbikeIDNEQ(v uint64) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldRtoEbikeID, v))
 }
 
-// IsRtoIn applies the In predicate on the "is_rto" field.
-func IsRtoIn(vs ...uint8) predicate.Business {
-	return predicate.Business(sql.FieldIn(FieldIsRto, vs...))
+// RtoEbikeIDIn applies the In predicate on the "rto_ebike_id" field.
+func RtoEbikeIDIn(vs ...uint64) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldRtoEbikeID, vs...))
 }
 
-// IsRtoNotIn applies the NotIn predicate on the "is_rto" field.
-func IsRtoNotIn(vs ...uint8) predicate.Business {
-	return predicate.Business(sql.FieldNotIn(FieldIsRto, vs...))
+// RtoEbikeIDNotIn applies the NotIn predicate on the "rto_ebike_id" field.
+func RtoEbikeIDNotIn(vs ...uint64) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldRtoEbikeID, vs...))
 }
 
-// IsRtoGT applies the GT predicate on the "is_rto" field.
-func IsRtoGT(v uint8) predicate.Business {
-	return predicate.Business(sql.FieldGT(FieldIsRto, v))
+// RtoEbikeIDIsNil applies the IsNil predicate on the "rto_ebike_id" field.
+func RtoEbikeIDIsNil() predicate.Business {
+	return predicate.Business(sql.FieldIsNull(FieldRtoEbikeID))
 }
 
-// IsRtoGTE applies the GTE predicate on the "is_rto" field.
-func IsRtoGTE(v uint8) predicate.Business {
-	return predicate.Business(sql.FieldGTE(FieldIsRto, v))
-}
-
-// IsRtoLT applies the LT predicate on the "is_rto" field.
-func IsRtoLT(v uint8) predicate.Business {
-	return predicate.Business(sql.FieldLT(FieldIsRto, v))
-}
-
-// IsRtoLTE applies the LTE predicate on the "is_rto" field.
-func IsRtoLTE(v uint8) predicate.Business {
-	return predicate.Business(sql.FieldLTE(FieldIsRto, v))
+// RtoEbikeIDNotNil applies the NotNil predicate on the "rto_ebike_id" field.
+func RtoEbikeIDNotNil() predicate.Business {
+	return predicate.Business(sql.FieldNotNull(FieldRtoEbikeID))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.
@@ -1081,6 +1071,29 @@ func HasAgent() predicate.Business {
 func HasAgentWith(preds ...predicate.Agent) predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
 		step := newAgentStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRtoEbike applies the HasEdge predicate on the "rto_ebike" edge.
+func HasRtoEbike() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RtoEbikeTable, RtoEbikeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRtoEbikeWith applies the HasEdge predicate on the "rto_ebike" edge with a given conditions (other predicates).
+func HasRtoEbikeWith(preds ...predicate.Ebike) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := newRtoEbikeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -262,6 +262,7 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 			ID:        bike.ID,
 			BrandID:   bike.Brand.ID,
 			BrandName: bike.Brand.Name,
+			Sn:        bike.SN,
 		}
 	}
 

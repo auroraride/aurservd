@@ -64,7 +64,9 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 			First(s.ctx)
 		if storeItem.Edges.Stocks != nil {
 			for _, st := range storeItem.Edges.Stocks {
-				brandIds = append(brandIds, *st.BrandID)
+				if st.BrandID != nil {
+					brandIds = append(brandIds, *st.BrandID)
+				}
 			}
 		}
 		if len(brandIds) > 0 {
@@ -139,7 +141,7 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 			DepositAlipayAuthFreeze: item.DepositAlipayAuthFreeze,
 			DepositContract:         item.DepositContract,
 			DepositPay:              item.DepositPay,
-			RentToBuyDays:           item.RtoDays,
+			RtoDays:                 item.RtoDays,
 		}
 		if item.Edges.Agreement != nil {
 			planDaysPriceOption.Agreement = &model.Agreement{

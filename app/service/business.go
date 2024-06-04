@@ -277,8 +277,11 @@ func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmp
 		}
 	}
 
-	res.IsRto = item.IsRto
-	res.Remark = item.Remark
+	rtoBike := item.Edges.RtoEbike
+	if rtoBike != nil {
+		res.RtoEbikeSn = &rtoBike.Sn
+	}
+
 	return
 }
 
@@ -368,7 +371,7 @@ func (s *businessService) detailInfo(item *ent.Business) model.BusinessListRes {
 // ListManager 业务列表 - 后台
 func (s *businessService) ListManager(req *model.BusinessListReq) *model.PaginationRes {
 	q, _ := s.listFilter(req.BusinessFilter)
-	q.WithEmployee().WithCabinet().WithStore().WithAgent().WithPlan()
+	q.WithEmployee().WithCabinet().WithStore().WithAgent().WithPlan().WithRtoEbike()
 
 	return model.ParsePaginationResponse(
 		q,

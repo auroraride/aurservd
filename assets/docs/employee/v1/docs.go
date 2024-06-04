@@ -1887,10 +1887,6 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "isRto": {
-                    "description": "是否已赠车",
-                    "type": "integer"
-                },
                 "name": {
                     "description": "骑手姓名",
                     "type": "string"
@@ -1910,6 +1906,10 @@ const docTemplate = `{
                 "remark": {
                     "description": "备注",
                     "type": "string"
+                },
+                "rto": {
+                    "description": "是否以租代购",
+                    "type": "boolean"
                 },
                 "time": {
                     "description": "业务时间",
@@ -2422,7 +2422,7 @@ const docTemplate = `{
             ],
             "x-enum-comments": {
                 "PlanTypeBattery": "单电",
-                "PlanTypeEbikeRto": "以租代购（赠）",
+                "PlanTypeEbikeRto": "以租代购",
                 "PlanTypeEbikeWithBattery": "车加电"
             },
             "x-enum-varnames": [

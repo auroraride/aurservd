@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -347,24 +348,23 @@ func (bu *BusinessUpdate) ClearStockSn() *BusinessUpdate {
 	return bu
 }
 
-// SetIsRto sets the "is_rto" field.
-func (bu *BusinessUpdate) SetIsRto(u uint8) *BusinessUpdate {
-	bu.mutation.ResetIsRto()
-	bu.mutation.SetIsRto(u)
+// SetRtoEbikeID sets the "rto_ebike_id" field.
+func (bu *BusinessUpdate) SetRtoEbikeID(u uint64) *BusinessUpdate {
+	bu.mutation.SetRtoEbikeID(u)
 	return bu
 }
 
-// SetNillableIsRto sets the "is_rto" field if the given value is not nil.
-func (bu *BusinessUpdate) SetNillableIsRto(u *uint8) *BusinessUpdate {
+// SetNillableRtoEbikeID sets the "rto_ebike_id" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableRtoEbikeID(u *uint64) *BusinessUpdate {
 	if u != nil {
-		bu.SetIsRto(*u)
+		bu.SetRtoEbikeID(*u)
 	}
 	return bu
 }
 
-// AddIsRto adds u to the "is_rto" field.
-func (bu *BusinessUpdate) AddIsRto(u int8) *BusinessUpdate {
-	bu.mutation.AddIsRto(u)
+// ClearRtoEbikeID clears the value of the "rto_ebike_id" field.
+func (bu *BusinessUpdate) ClearRtoEbikeID() *BusinessUpdate {
+	bu.mutation.ClearRtoEbikeID()
 	return bu
 }
 
@@ -421,6 +421,11 @@ func (bu *BusinessUpdate) SetBattery(b *Battery) *BusinessUpdate {
 // SetAgent sets the "agent" edge to the Agent entity.
 func (bu *BusinessUpdate) SetAgent(a *Agent) *BusinessUpdate {
 	return bu.SetAgentID(a.ID)
+}
+
+// SetRtoEbike sets the "rto_ebike" edge to the Ebike entity.
+func (bu *BusinessUpdate) SetRtoEbike(e *Ebike) *BusinessUpdate {
+	return bu.SetRtoEbikeID(e.ID)
 }
 
 // Mutation returns the BusinessMutation object of the builder.
@@ -491,6 +496,12 @@ func (bu *BusinessUpdate) ClearBattery() *BusinessUpdate {
 // ClearAgent clears the "agent" edge to the Agent entity.
 func (bu *BusinessUpdate) ClearAgent() *BusinessUpdate {
 	bu.mutation.ClearAgent()
+	return bu
+}
+
+// ClearRtoEbike clears the "rto_ebike" edge to the Ebike entity.
+func (bu *BusinessUpdate) ClearRtoEbike() *BusinessUpdate {
+	bu.mutation.ClearRtoEbike()
 	return bu
 }
 
@@ -606,12 +617,6 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if bu.mutation.StockSnCleared() {
 		_spec.ClearField(business.FieldStockSn, field.TypeString)
-	}
-	if value, ok := bu.mutation.IsRto(); ok {
-		_spec.SetField(business.FieldIsRto, field.TypeUint8, value)
-	}
-	if value, ok := bu.mutation.AddedIsRto(); ok {
-		_spec.AddField(business.FieldIsRto, field.TypeUint8, value)
 	}
 	if bu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -925,6 +930,35 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bu.mutation.RtoEbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.RtoEbikeTable,
+			Columns: []string{business.RtoEbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RtoEbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.RtoEbikeTable,
+			Columns: []string{business.RtoEbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1260,24 +1294,23 @@ func (buo *BusinessUpdateOne) ClearStockSn() *BusinessUpdateOne {
 	return buo
 }
 
-// SetIsRto sets the "is_rto" field.
-func (buo *BusinessUpdateOne) SetIsRto(u uint8) *BusinessUpdateOne {
-	buo.mutation.ResetIsRto()
-	buo.mutation.SetIsRto(u)
+// SetRtoEbikeID sets the "rto_ebike_id" field.
+func (buo *BusinessUpdateOne) SetRtoEbikeID(u uint64) *BusinessUpdateOne {
+	buo.mutation.SetRtoEbikeID(u)
 	return buo
 }
 
-// SetNillableIsRto sets the "is_rto" field if the given value is not nil.
-func (buo *BusinessUpdateOne) SetNillableIsRto(u *uint8) *BusinessUpdateOne {
+// SetNillableRtoEbikeID sets the "rto_ebike_id" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableRtoEbikeID(u *uint64) *BusinessUpdateOne {
 	if u != nil {
-		buo.SetIsRto(*u)
+		buo.SetRtoEbikeID(*u)
 	}
 	return buo
 }
 
-// AddIsRto adds u to the "is_rto" field.
-func (buo *BusinessUpdateOne) AddIsRto(u int8) *BusinessUpdateOne {
-	buo.mutation.AddIsRto(u)
+// ClearRtoEbikeID clears the value of the "rto_ebike_id" field.
+func (buo *BusinessUpdateOne) ClearRtoEbikeID() *BusinessUpdateOne {
+	buo.mutation.ClearRtoEbikeID()
 	return buo
 }
 
@@ -1334,6 +1367,11 @@ func (buo *BusinessUpdateOne) SetBattery(b *Battery) *BusinessUpdateOne {
 // SetAgent sets the "agent" edge to the Agent entity.
 func (buo *BusinessUpdateOne) SetAgent(a *Agent) *BusinessUpdateOne {
 	return buo.SetAgentID(a.ID)
+}
+
+// SetRtoEbike sets the "rto_ebike" edge to the Ebike entity.
+func (buo *BusinessUpdateOne) SetRtoEbike(e *Ebike) *BusinessUpdateOne {
+	return buo.SetRtoEbikeID(e.ID)
 }
 
 // Mutation returns the BusinessMutation object of the builder.
@@ -1404,6 +1442,12 @@ func (buo *BusinessUpdateOne) ClearBattery() *BusinessUpdateOne {
 // ClearAgent clears the "agent" edge to the Agent entity.
 func (buo *BusinessUpdateOne) ClearAgent() *BusinessUpdateOne {
 	buo.mutation.ClearAgent()
+	return buo
+}
+
+// ClearRtoEbike clears the "rto_ebike" edge to the Ebike entity.
+func (buo *BusinessUpdateOne) ClearRtoEbike() *BusinessUpdateOne {
+	buo.mutation.ClearRtoEbike()
 	return buo
 }
 
@@ -1549,12 +1593,6 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 	}
 	if buo.mutation.StockSnCleared() {
 		_spec.ClearField(business.FieldStockSn, field.TypeString)
-	}
-	if value, ok := buo.mutation.IsRto(); ok {
-		_spec.SetField(business.FieldIsRto, field.TypeUint8, value)
-	}
-	if value, ok := buo.mutation.AddedIsRto(); ok {
-		_spec.AddField(business.FieldIsRto, field.TypeUint8, value)
 	}
 	if buo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1868,6 +1906,35 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.RtoEbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.RtoEbikeTable,
+			Columns: []string{business.RtoEbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RtoEbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.RtoEbikeTable,
+			Columns: []string{business.RtoEbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
