@@ -32,6 +32,7 @@ func loadDocRoutes() {
 		"/agent/v1":     "代理接口 v1.0",
 		"/employee/v1":  "店员接口 v1.0",
 		"/manager/v1":   "管理接口 v1.0",
+		"/manager/v2":   "管理接口 v2.0",
 		"/operator/v1":  "运维接口 v1.0",
 		"/promotion/v1": "推广接口 v1.0",
 		"/rider/v1":     "骑手接口 v1.0",

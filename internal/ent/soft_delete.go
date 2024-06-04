@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
@@ -457,6 +458,46 @@ func (c *CabinetClient) GetNotDeleted(ctx context.Context, id uint64) (*Cabinet,
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *CabinetClient) GetNotDeletedX(ctx context.Context, id uint64) *Cabinet {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for CabinetEc.
+func (c *CabinetEcClient) SoftDelete() *CabinetEcUpdate {
+	mutation := newCabinetEcMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &CabinetEcUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *CabinetEcClient) SoftDeleteOne(ce *CabinetEc) *CabinetEcUpdateOne {
+	mutation := newCabinetEcMutation(c.config, OpUpdateOne, withCabinetEc(ce))
+	mutation.SetDeletedAt(time.Now())
+	return &CabinetEcUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *CabinetEcClient) SoftDeleteOneID(id uint64) *CabinetEcUpdateOne {
+	mutation := newCabinetEcMutation(c.config, OpUpdateOne, withCabinetEcID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &CabinetEcUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for CabinetEc.
+func (c *CabinetEcClient) QueryNotDeleted() *CabinetEcQuery {
+	return c.Query().Where(cabinetec.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a CabinetEc not deleted entity by its id.
+func (c *CabinetEcClient) GetNotDeleted(ctx context.Context, id uint64) (*CabinetEc, error) {
+	return c.Query().Where(cabinetec.ID(id), cabinetec.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *CabinetEcClient) GetNotDeletedX(ctx context.Context, id uint64) *CabinetEc {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

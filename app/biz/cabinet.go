@@ -24,8 +24,10 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/es"
 	"github.com/auroraride/aurservd/pkg/silk"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type cabinetBiz struct {
@@ -209,15 +211,8 @@ func (b *cabinetBiz) ListECData(options definition.CabinetECDataSearchOptions) (
 	cfg := ar.Config.Elastic
 	s, err := es.NewSearch[definition.CabinetECData](cfg.ApiKey, cfg.EccDatastream, cfg.Addresses)
 	data = make([]*definition.CabinetECData, 0)
-	if err == nil || s == nil {
+	if err != nil || s == nil {
 		return
-	}
-	query := &types.Query{
-		Match: map[string]types.MatchQuery{},
-	}
-	// 电柜编号
-	if options.Serial != nil {
-		query.Match[cabinet.FieldSerial] = types.MatchQuery{Query: *options.Serial}
 	}
 	// 若开始时间和结束时间都不为空，设置时间范围
 	if options.Start != nil && options.End != nil {
@@ -240,11 +235,27 @@ func (b *cabinetBiz) ListECData(options definition.CabinetECDataSearchOptions) (
 		end = carbon.CreateFromStdTime(*options.Start).EndOfDay().StdTime()
 	}
 	// 查询时间范围
-	query.Range = map[string]types.RangeQuery{
-		es.FieldECCTimestamp: types.DateRangeQuery{
-			Gte: silk.String(start.Format(time.RFC3339)),
-			Lt:  silk.String(end.Format(time.RFC3339)),
+	query := &types.Query{
+		Bool: &types.BoolQuery{
+			Must: []types.Query{
+				{
+					Range: map[string]types.RangeQuery{
+						es.FieldECCTimestamp: types.DateRangeQuery{
+							Gte: silk.String(start.Format(time.RFC3339)),
+							Lt:  silk.String(end.Format(time.RFC3339)),
+						},
+					},
+				},
+			},
 		},
+	}
+	// 电柜编号
+	if options.Serial != nil {
+		query.Bool.Must = append(query.Bool.Must, types.Query{
+			Match: map[string]types.MatchQuery{
+				cabinet.FieldSerial: {Query: *options.Serial},
+			},
+		})
 	}
 	data = s.DoRequest(&search.Request{
 		Query: query,
@@ -255,4 +266,211 @@ func (b *cabinetBiz) ListECData(options definition.CabinetECDataSearchOptions) (
 		},
 	})
 	return
+}
+
+// ECMonthExport 电柜耗电量导出
+func (b *cabinetBiz) ECMonthExport(modifier *model.Modifier, req *definition.CabinetECMonthExportReq) model.ExportRes {
+	q := ent.Database.CabinetEc.Query()
+	info := make(map[string]interface{})
+	now := carbon.Now()
+	var date time.Time
+	if req.Date == nil {
+		// 默认导出当月数据
+		date = now.StartOfMonth().StdTime()
+		info["date"] = req.Date
+	} else {
+		date, _ = time.Parse("2006-01", *req.Date)
+		info["date"] = date.Format("2006-01")
+	}
+	q.Where(cabinetec.Date(date))
+
+	if req.Serial != nil {
+		info["serial"] = *req.Serial
+		q.Where(cabinetec.Serial(*req.Serial))
+	}
+	items, _ := q.All(b.ctx)
+	return service.NewExportWithModifier(modifier).Start("电柜电耗月度统计表_"+*req.Date, req, info, "", func(path string) {
+		var rows tools.ExcelItems
+		title := []any{"电柜编号", "开始电量", "结束电量", "用电量", "开始时间", "结束时间"}
+		rows = append(rows, title)
+		for _, item := range items {
+			row := make([]any, len(title))
+			row[0] = item.Serial
+			row[1] = item.Start
+			row[2] = item.End
+			row[3] = item.Total
+			row[4] = item.Date.Format(time.DateOnly)
+			row[5] = now.StdTime().Format(time.DateOnly)
+			rows = append(rows, row)
+		}
+		tools.NewExcel(path).AddValues(rows).Done()
+	})
+}
+
+// ListECMonth 电柜耗电量列表
+func (b *cabinetBiz) ListECMonth(req *definition.CabinetECMonthReq) *model.PaginationRes {
+	q := ent.Database.CabinetEc.Query()
+	now := carbon.Now()
+	var date time.Time
+	if req.Date == nil {
+		date = now.StartOfMonth().StdTime()
+	} else {
+		date, _ = time.Parse("2006-01", *req.Date)
+	}
+	q.Where(cabinetec.Date(date))
+	if req.Serial != nil {
+		q.Where(cabinetec.Serial(*req.Serial))
+	}
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.CabinetEc) *definition.CabinetECRes {
+		return &definition.CabinetECRes{
+			Serial:  item.Serial,
+			StartAt: item.Date.Format(time.DateOnly),
+			EndAt:   now.StdTime().Format(time.DateOnly),
+			StartEc: item.Start,
+			EndEc:   item.End,
+			Totoal:  item.Total,
+		}
+	})
+}
+
+// ListECInfo 电柜耗电量明细
+func (b *cabinetBiz) ListECInfo(req definition.CabinetECReq) (res *model.PaginationRes) {
+	var start *time.Time
+	var end *time.Time
+	if req.Start != nil && req.End != nil {
+		s, _ := tools.NewTime().ParseDateString(*req.Start)
+		if req.Start == req.End {
+			e, _ := tools.NewTime().ParseNextDateString(*req.End)
+			end = silk.Time(e)
+		} else {
+			e, _ := tools.NewTime().ParseDateString(*req.End)
+			end = silk.Time(e)
+		}
+		start = silk.Time(s)
+	}
+
+	_, _, data := b.ListECData(definition.CabinetECDataSearchOptions{
+		Start:  start,
+		End:    end,
+		Serial: req.Serial,
+	})
+
+	// 分组
+	groups := make(map[string]*definition.GroupCabinetECData)
+	for _, item := range data {
+		group, exists := groups[item.Serial]
+		if !exists {
+			group = &definition.GroupCabinetECData{
+				Max:   item,
+				Min:   item,
+				Total: 0,
+			}
+			groups[item.Serial] = group
+		}
+		if item.Value > group.Max.Value {
+			group.Max = item
+		}
+		if item.Value < group.Min.Value {
+			group.Min = item
+		}
+	}
+
+	for _, group := range groups {
+		group.Total = group.Max.Value - group.Min.Value
+	}
+
+	resData := make([]definition.CabinetECRes, 0)
+	for _, item := range groups {
+		resData = append(resData, definition.CabinetECRes{
+			Serial:  item.Max.Serial,
+			StartAt: item.Min.Timestamp.Format(time.DateOnly),
+			EndAt:   item.Max.Timestamp.Format(time.DateOnly),
+			StartEc: item.Min.Value,
+			EndEc:   item.Max.Value,
+			Totoal:  item.Total,
+		})
+	}
+
+	// 切片分页
+	startIndex := (req.GetCurrent() - 1) * req.GetLimit()
+	endIndex := req.GetCurrent() * req.GetLimit()
+
+	// 防止索引越界
+	if startIndex > len(resData) {
+		startIndex = len(resData)
+	}
+
+	// 切片分页
+	var items []definition.CabinetECRes
+	if endIndex > len(resData) {
+		items = resData[startIndex:]
+	} else {
+		items = resData[startIndex:endIndex]
+	}
+
+	return &model.PaginationRes{
+		Pagination: model.Pagination{
+			Total:   len(resData),
+			Pages:   req.GetPages(len(resData)),
+			Current: req.GetCurrent(),
+		},
+		Items: items,
+	}
+}
+
+// ECExport 明细导出
+func (b *cabinetBiz) ECExport(modifier *model.Modifier, req *definition.CabinetECReq) model.ExportRes {
+	var start *time.Time
+	var end *time.Time
+	if req.Start != nil && req.End != nil {
+		s, _ := tools.NewTime().ParseDateString(*req.Start)
+		e, _ := tools.NewTime().ParseDateString(*req.End)
+		start = silk.Time(s)
+		end = silk.Time(e)
+
+	}
+	_, _, data := b.ListECData(definition.CabinetECDataSearchOptions{
+		Start: start,
+		End:   end,
+	})
+
+	groups := make(map[string]*definition.GroupCabinetECData)
+	for _, item := range data {
+		group, exists := groups[item.Serial]
+		if !exists {
+			group = &definition.GroupCabinetECData{
+				Max:   item,
+				Min:   item,
+				Total: 0,
+			}
+			groups[item.Serial] = group
+		}
+		if item.Value > group.Max.Value {
+			group.Max = item
+		}
+		if item.Value < group.Min.Value {
+			group.Min = item
+		}
+	}
+
+	for _, group := range groups {
+		group.Total = tools.NewDecimal().Sub(group.Max.Value, group.Min.Value)
+	}
+
+	return service.NewExportWithModifier(modifier).Start("电柜电耗查询表", req, nil, "", func(path string) {
+		var rows tools.ExcelItems
+		title := []any{"电柜编号", "开始电量", "结束电量", "用电量", "开始时间", "结束时间"}
+		rows = append(rows, title)
+		for _, item := range groups {
+			row := make([]any, len(title))
+			row[0] = item.Max.Serial
+			row[1] = item.Min.Value
+			row[2] = item.Max.Value
+			row[3] = item.Total
+			row[4] = item.Min.Timestamp.Format(time.DateOnly)
+			row[5] = item.Max.Timestamp.Format(time.DateOnly)
+			rows = append(rows, row)
+		}
+		tools.NewExcel(path).AddValues(rows).Done()
+	})
 }

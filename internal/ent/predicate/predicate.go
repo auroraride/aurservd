@@ -45,6 +45,9 @@ type Business func(*sql.Selector)
 // Cabinet is the predicate function for cabinet builders.
 type Cabinet func(*sql.Selector)
 
+// CabinetEc is the predicate function for cabinetec builders.
+type CabinetEc func(*sql.Selector)
+
 // CabinetFault is the predicate function for cabinetfault builders.
 type CabinetFault func(*sql.Selector)
 
