@@ -1,6 +1,7 @@
 package alipay
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -39,7 +40,7 @@ func (c *miniProgramClient) Trade(pc *model.PaymentCache) (string, error) {
 		OpAppId:     cfg.Appid,
 		BuyerOpenId: *pc.Subscribe.BuyerOpenId,
 	}
-	res, err := c.TradeCreate(trade)
+	res, err := c.TradeCreate(context.Background(), trade)
 	if err != nil {
 		return "", err
 	}
@@ -51,7 +52,7 @@ func (c *miniProgramClient) Trade(pc *model.PaymentCache) (string, error) {
 
 // GetPhoneNumber 获取手机号
 func (c *miniProgramClient) GetPhoneNumber(code string) (string, error) {
-	phoneNumber, err := c.DecodePhoneNumber(code)
+	phoneNumber, err := c.DecodePhoneNumber(context.Background(), code)
 	if err != nil {
 		return "", err
 	}
@@ -63,7 +64,7 @@ func (c *miniProgramClient) GetPhoneNumber(code string) (string, error) {
 
 // GetOpenid 获取openid
 func (c *miniProgramClient) GetOpenid(code string) (string, error) {
-	auth, err := c.SystemOauthToken(alipay.SystemOauthToken{
+	auth, err := c.SystemOauthToken(context.Background(), alipay.SystemOauthToken{
 		GrantType: "authorization_code",
 		Code:      code,
 	})

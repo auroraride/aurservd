@@ -65,7 +65,7 @@ func newAlipayClientWithConfig(cfg ar.AlipayConfig) *alipay.Client {
 
 // Refund 退款
 func (c *commonClient) Refund(req *model.PaymentRefund) {
-	result, err := c.Client.TradeRefund(alipay.TradeRefund{
+	result, err := c.Client.TradeRefund(context.Background(), alipay.TradeRefund{
 		TradeNo:      req.TradeNo,
 		OutRequestNo: req.OutRefundNo,
 		RefundAmount: fmt.Sprintf("%.2f", req.RefundAmount),
@@ -350,7 +350,7 @@ func (c *commonClient) FandAuthUnfreeze(refund *model.PaymentRefund, req *defini
 		trade.ExtraParam = `{"unfreezeBizInfo":{"bizComplete":true}}`
 	}
 
-	res, err := c.FundAuthOrderUnfreeze(trade)
+	res, err := c.FundAuthOrderUnfreeze(context.Background(), trade)
 	if err != nil || !res.IsSuccess() {
 		zap.L().Error("资金授权解冻失败", zap.Error(err), zap.Error(res.Error), log.JsonData(trade))
 		return err
@@ -424,7 +424,7 @@ func (c *commonClient) AlipayTradePay(req *definition.TradePay) (res *alipay.Tra
 		AuthConfirmMode: req.AuthConfirmMode,
 	}
 
-	res, err = c.TradePay(trade)
+	res, err = c.TradePay(context.Background(), trade)
 	if err != nil {
 		return nil, err
 	}
@@ -464,7 +464,7 @@ func (c *commonClient) AlipayFundAuthOperationDetailQuery(req definition.FundAut
 		OutOrderNo:   req.OutOrderNo,
 		OutRequestNo: req.OutRequestNo,
 	}
-	result, err = c.FundAuthOperationDetailQuery(trade)
+	result, err = c.FundAuthOperationDetailQuery(context.Background(), trade)
 	if err != nil {
 		zap.L().Error("查询预授权订单失败", zap.Error(err), log.Payload(req))
 		return nil, err
@@ -489,7 +489,7 @@ func (c *commonClient) AlipayFundAuthOperationCancel(authNo, outRequestNo string
 		OutRequestNo: outRequestNo,
 		Remark:       "用户取消",
 	}
-	result, err = c.FundAuthOperationCancel(trade)
+	result, err = c.FundAuthOperationCancel(context.Background(), trade)
 	if !result.Error.IsSuccess() {
 		zap.L().Error("取消预授权免押订单失败", zap.Error(result.Error))
 		return nil, result.Error

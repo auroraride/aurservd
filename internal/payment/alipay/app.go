@@ -1,6 +1,7 @@
 package alipay
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -71,7 +72,7 @@ func (c *appClient) Native(pc *model.PaymentCache) (string, error) {
 			OutTradeNo:  no,
 		},
 	}
-	res, err := c.TradePreCreate(trade)
+	res, err := c.TradePreCreate(context.Background(), trade)
 	if err != nil {
 		return "", err
 	}
