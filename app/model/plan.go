@@ -12,7 +12,7 @@ type PlanType uint8
 const (
 	PlanTypeBattery          PlanType = 1 + iota // 单电
 	PlanTypeEbikeWithBattery                     // 车加电
-	PlanTypeEbikeRto                             // 以租代购（赠）
+	PlanTypeEbikeRto                             // 以租代购
 )
 
 func (t PlanType) Value() uint8 {

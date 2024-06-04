@@ -57,7 +57,6 @@ type BusinessPauseInfoRes struct {
 }
 
 type BusinessRiderServiceDoReq struct {
-	Rto    *bool   `json:"rto"`    // 管理员强制退租-是否赠车
-	Remark *string `json:"remark"` // 备注
-	SubRto bool    `json:"subRto"` // 订阅退租符合赠车
+	Rto     *bool `json:"rto"`     // 管理员强制退租 - 是否以租代购成立
+	Rtoable bool  `json:"rtoable"` // 退租时是否满足以租代购条件
 }

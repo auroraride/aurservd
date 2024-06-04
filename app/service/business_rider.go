@@ -752,19 +752,16 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 
 	// 判定是否以租代购赠车
 	doReq := model.BusinessRiderServiceDoReq{
-		Rto:    req.Rto,
-		Remark: req.Remark,
+		Rto: req.Rto,
 	}
 
 	subRto := false
 	subPlan, _ := ent.Database.Plan.Query().Where(plan.ID(*sub.PlanID)).First(s.ctx)
-	if subPlan != nil {
-		if subPlan.Type == model.PlanTypeEbikeRto.Value() {
-			pastDays := tools.NewTime().UsedDaysToNow(*sub.StartAt)
-			if pastDays >= int(subPlan.RtoDays) {
-				subRto = true
-				doReq.SubRto = true
-			}
+	if subPlan != nil && subPlan.Type == model.PlanTypeEbikeRto.Value() {
+		pastDays := tools.NewTime().UsedDaysToNow(*sub.StartAt)
+		if pastDays >= int(subPlan.RtoDays) {
+			subRto = true
+			doReq.SubRto = true
 		}
 	}
 
