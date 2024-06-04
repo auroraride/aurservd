@@ -60,6 +60,8 @@ type Ebike struct {
 	Color string `json:"color,omitempty"`
 	// 生产批次(出厂日期)
 	ExFactory string `json:"ex_factory,omitempty"`
+	// 是否已被以租代购
+	Rto bool `json:"rto,omitempty"`
 	// 以租代购骑手ID，生成后禁止修改
 	RtoRiderID uint64 `json:"rto_rider_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -173,7 +175,7 @@ func (*Ebike) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case ebike.FieldStatus:
 			values[i] = new(model.EbikeStatus)
-		case ebike.FieldEnable:
+		case ebike.FieldEnable, ebike.FieldRto:
 			values[i] = new(sql.NullBool)
 		case ebike.FieldID, ebike.FieldBrandID, ebike.FieldRiderID, ebike.FieldStoreID, ebike.FieldEnterpriseID, ebike.FieldStationID, ebike.FieldRtoRiderID:
 			values[i] = new(sql.NullInt64)
@@ -321,6 +323,12 @@ func (e *Ebike) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.ExFactory = value.String
 			}
+		case ebike.FieldRto:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field rto", values[i])
+			} else if value.Valid {
+				e.Rto = value.Bool
+			}
 		case ebike.FieldRtoRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field rto_rider_id", values[i])
@@ -465,6 +473,9 @@ func (e *Ebike) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("ex_factory=")
 	builder.WriteString(e.ExFactory)
+	builder.WriteString(", ")
+	builder.WriteString("rto=")
+	builder.WriteString(fmt.Sprintf("%v", e.Rto))
 	builder.WriteString(", ")
 	builder.WriteString("rto_rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.RtoRiderID))

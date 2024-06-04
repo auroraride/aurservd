@@ -123,9 +123,9 @@ func (s *businessLogService) SetAgentId(agentId *uint64) *businessLogService {
 	return s
 }
 
-// SetRto 设置是否赠送
-func (s *businessLogService) SetRto(rto bool) *businessLogService {
-	s.creator.SetRtoEbikeID(rto)
+// SetRtoEbikeID 设置以租代购电车ID
+func (s *businessLogService) SetRtoEbikeID(id uint64) *businessLogService {
+	s.creator.SetRtoEbikeID(id)
 	return s
 }
 

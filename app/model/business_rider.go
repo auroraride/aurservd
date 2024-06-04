@@ -17,7 +17,7 @@ type BusinessSubscribeReq struct {
 	DepositAmount *float64 `json:"depositAmount"`               // 退押金金额(后台使用)
 	Remark        *string  `json:"remark"`                      // 备注
 
-	Rto *bool `json:"rto"` // 管理员强制退租-是否赠车
+	Rto *bool `json:"rto"` // 管理员强制退租 - 是否参与以租代购
 }
 
 type BusinessCabinetReq struct {
@@ -57,6 +57,6 @@ type BusinessPauseInfoRes struct {
 }
 
 type BusinessRiderServiceDoReq struct {
-	Rto     *bool `json:"rto"`     // 管理员强制退租 - 是否以租代购成立
-	Rtoable bool  `json:"rtoable"` // 退租时是否满足以租代购条件
+	Rto  bool         `json:"rto"` // 是否满足并参与以租代购
+	Type BusinessType `json:"bt"`  // 业务类型
 }

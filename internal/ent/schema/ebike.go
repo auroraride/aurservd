@@ -72,6 +72,7 @@ func (Ebike) Fields() []ent.Field {
 		field.String("sim").Unique().Optional().Nillable().Comment("SIM卡号"),
 		field.String("color").Default(model.EbikeColorDefault).Comment("颜色"),
 		field.String("ex_factory").Comment("生产批次(出厂日期)"),
+		field.Bool("rto").Default(false).Comment("是否已被以租代购"),
 		field.Uint64("rto_rider_id").Optional().Comment("以租代购骑手ID，生成后禁止修改"),
 	}
 }

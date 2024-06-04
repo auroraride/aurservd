@@ -3880,7 +3880,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "boolean",
-                        "description": "是否赠送",
+                        "description": "是否以租代购",
                         "name": "rto",
                         "in": "query"
                     },
@@ -8048,7 +8048,7 @@ const docTemplate = `{
                         "type": "integer",
                         "x-enum-comments": {
                             "PlanTypeBattery": "单电",
-                            "PlanTypeEbikeRto": "以租代购（赠）",
+                            "PlanTypeEbikeRto": "以租代购",
                             "PlanTypeEbikeWithBattery": "车加电"
                         },
                         "x-enum-varnames": [
@@ -16633,7 +16633,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rto": {
-                    "description": "是否已赠车",
+                    "description": "是否以租代购",
                     "type": "boolean"
                 },
                 "store": {
@@ -16758,7 +16758,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rto": {
-                    "description": "管理员强制退租-是否赠车",
+                    "description": "管理员强制退租 - 是否参与以租代购",
                     "type": "boolean"
                 },
                 "storeId": {
@@ -18531,7 +18531,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rto": {
-                    "description": "是否已赠送",
+                    "description": "是否以租代购",
                     "type": "boolean"
                 },
                 "sim": {
@@ -20627,7 +20627,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "rtoDays": {
-                    "description": "赠车最小使用天数",
+                    "description": "以租代购最小使用天数",
                     "type": "integer"
                 }
             }
@@ -20963,7 +20963,7 @@ const docTemplate = `{
             ],
             "x-enum-comments": {
                 "PlanTypeBattery": "单电",
-                "PlanTypeEbikeRto": "以租代购（赠）",
+                "PlanTypeEbikeRto": "以租代购",
                 "PlanTypeEbikeWithBattery": "车加电"
             },
             "x-enum-varnames": [
@@ -21553,10 +21553,6 @@ const docTemplate = `{
                     "description": "账户备注",
                     "type": "string"
                 },
-                "rto": {
-                    "description": "骑手当前订阅是否可赠车",
-                    "type": "boolean"
-                },
                 "station": {
                     "description": "团签代理信息",
                     "allOf": [
@@ -21619,7 +21615,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "rtoDays": {
-                    "description": "骑手当前已租代购的最小赠车天数",
+                    "description": "已租代购天数条件",
                     "type": "integer"
                 },
                 "status": {

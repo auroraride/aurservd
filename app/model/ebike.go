@@ -68,7 +68,7 @@ type EbikeListFilter struct {
 	EnterpriseID *uint64      `json:"enterpriseId" query:"enterpriseId"`       // 团签ID
 	StationID    *uint64      `json:"stationId" query:"stationId"`             // 站点ID
 	Goal         EbikeGoal    `json:"goal" query:"goal" enums:"0,1,2"`         // 查询目标, 0:不筛选 1:站点 2:骑手
-	Rto          *bool        `json:"rto" query:"rto"`                         // 是否赠送
+	Rto          *bool        `json:"rto" query:"rto"`                         // 是否以租代购
 }
 
 type EbikeAttributes struct {
@@ -100,7 +100,7 @@ type EbikeListRes struct {
 	EnterpriseName string  `json:"enterpriseName,omitempty"` // 团签名称
 	EnterpriseID   *uint64 `json:"enterpriseId,omitempty"`   // 团签ID
 
-	Rto bool `json:"rto"` // 是否已赠送
+	Rto bool `json:"rto"` // 是否以租代购
 }
 
 type EbikeCreateReq struct {

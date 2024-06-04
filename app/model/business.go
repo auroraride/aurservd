@@ -88,7 +88,7 @@ type BusinessEmployeeListRes struct {
 	Plan              *Plan              `json:"plan,omitempty"`              // 骑士卡, 团签无此字段
 	Enterprise        *Enterprise        `json:"enterprise,omitempty"`        // 团签企业, 个签无此字段
 	EnterpriseStation *EnterpriseStation `json:"enterpriseStation,omitempty"` // 站点
-	Rto               bool               `json:"rto"`                         // 是否已赠车
+	Rto               bool               `json:"rto"`                         // 是否以租代购
 	Remark            string             `json:"remark"`                      // 备注
 }
 

@@ -286,7 +286,7 @@ type StockBusinessReq struct {
 	Ebike   *EbikeBusinessInfo `json:"ebike"`   // 电车信息
 	Battery *Battery           `json:"battery"` // 电池信息
 
-	Rto bool `json:"rto"` // 是否赠送车辆(以租代购)
+	Rto bool `json:"rto"` // 是否参与以租代购
 }
 
 type StockEmployeeOverviewBattery struct {

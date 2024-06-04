@@ -123,7 +123,7 @@ type RiderItemSubscribe struct {
 	Ebike       *Ebike  `json:"ebike,omitempty"`   // 电车信息
 	Intelligent bool    `json:"intelligent"`       // 是否智能电柜订阅
 	PastDay     int     `json:"pastDay"`           // 骑手当前订阅已使用天数
-	RtoDays     *int    `json:"rtoDays"`           // 骑手当前已租代购的最小赠车天数
+	RtoDays     *uint   `json:"rtoDays,omitempty"` // 已租代购天数条件
 }
 
 // RiderItem 骑手信息
@@ -141,7 +141,6 @@ type RiderItem struct {
 	Points     int64            `json:"points"`             // 积分
 	Balance    float64          `json:"balance"`            // 余额
 	PlanName   string           `json:"planName,omitempty"` // 骑士卡名称
-	Rto        bool             `json:"rto"`                // 骑手当前订阅是否可赠车
 	// 团签企业信息, 若无此字段则为个签用户
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// 团签代理信息

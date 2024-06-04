@@ -67,7 +67,7 @@ type PlanComplex struct {
 
 	Model string `json:"model" validate:"required"` // 电池型号, 单电需要每一项都补充此字段
 
-	RtoDays    *uint   `json:"rtoDays"`                                      // 赠车最小使用天数
+	RtoDays    *uint   `json:"rtoDays"`                                      // 以租代购最小使用天数
 	OverdueFee float64 `json:"overdueFee" validate:"required" trans:"滞纳金单价"` // 滞纳金单价
 }
 
@@ -219,7 +219,7 @@ type PlanDaysPriceOption struct {
 	DepositPay              bool       `json:"depositPay"`              // 是否支持支付押金
 	Agreement               *Agreement `json:"agreement,omitempty"`     // 协议
 
-	RentToBuyDays uint `json:"rentToBuyDays"` // 以租代购赠车最小使用天数
+	RtoDays *uint `json:"rtoDays,omitempty"` // 以租代购最小使用天数
 }
 
 type PlanModelOptions []*PlanModelOption

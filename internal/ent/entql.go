@@ -731,6 +731,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			ebike.FieldSim:          {Type: field.TypeString, Column: ebike.FieldSim},
 			ebike.FieldColor:        {Type: field.TypeString, Column: ebike.FieldColor},
 			ebike.FieldExFactory:    {Type: field.TypeString, Column: ebike.FieldExFactory},
+			ebike.FieldRto:          {Type: field.TypeBool, Column: ebike.FieldRto},
 			ebike.FieldRtoRiderID:   {Type: field.TypeUint64, Column: ebike.FieldRtoRiderID},
 		},
 	}
@@ -9953,6 +9954,11 @@ func (f *EbikeFilter) WhereColor(p entql.StringP) {
 // WhereExFactory applies the entql string predicate on the ex_factory field.
 func (f *EbikeFilter) WhereExFactory(p entql.StringP) {
 	f.Where(p.Field(ebike.FieldExFactory))
+}
+
+// WhereRto applies the entql bool predicate on the rto field.
+func (f *EbikeFilter) WhereRto(p entql.BoolP) {
+	f.Where(p.Field(ebike.FieldRto))
 }
 
 // WhereRtoRiderID applies the entql uint64 predicate on the rto_rider_id field.

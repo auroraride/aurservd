@@ -635,6 +635,10 @@ func init() {
 	ebikeDescColor := ebikeFields[6].Descriptor()
 	// ebike.DefaultColor holds the default value on creation for the color field.
 	ebike.DefaultColor = ebikeDescColor.Default.(string)
+	// ebikeDescRto is the schema descriptor for rto field.
+	ebikeDescRto := ebikeFields[8].Descriptor()
+	// ebike.DefaultRto holds the default value on creation for the rto field.
+	ebike.DefaultRto = ebikeDescRto.Default.(bool)
 	ebikebrandMixin := schema.EbikeBrand{}.Mixin()
 	ebikebrandMixinHooks2 := ebikebrandMixin[2].Hooks()
 	ebikebrand.Hooks[0] = ebikebrandMixinHooks2[0]

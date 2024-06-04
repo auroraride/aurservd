@@ -23,7 +23,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
-	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/payment/alipay"
@@ -433,7 +432,7 @@ func (s *businessRiderService) doTask() (bin *model.BinInfo, bat *model.Battery,
 }
 
 // do 处理业务
-func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt model.BusinessType, cb func(tx *ent.Tx)) {
+func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func(tx *ent.Tx)) {
 	async.WithTask(func() {
 		sts := map[model.BusinessType]uint8{
 			model.BusinessTypeActive:      model.StockTypeRiderActive,
@@ -477,7 +476,7 @@ func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt mod
 		}
 
 		// 放入电池优先执行电柜任务
-		if s.cabTask != nil && (bt == model.BusinessTypePause || bt == model.BusinessTypeUnsubscribe) {
+		if s.cabTask != nil && (doReq.Type == model.BusinessTypePause || doReq.Type == model.BusinessTypeUnsubscribe) {
 			bin, bat, err = s.doTask()
 			if err != nil {
 				snag.Panic(err)
@@ -486,23 +485,13 @@ func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt mod
 
 		// 激活业务查找提成
 		var co *ent.Commission
-		if bt == model.BusinessTypeActive {
+		if doReq.Type == model.BusinessTypeActive {
 			co, _ = ent.Database.Commission.QueryNotDeleted().Where(commission.SubscribeID(s.subscribe.ID)).First(s.ctx)
 		}
 
 		// 库存管理
 		// TODO 智能电池
 		var sk *ent.Stock
-		var rto bool
-		var remark string
-		// 先判断退租时候的订阅是否符合赠车
-		if doReq != nil && doReq.SubRto {
-			rto = true
-			// 再次判断当前赠车是否为管理员强制退租
-			if doReq.Rto != nil && !*doReq.Rto {
-				rto = false
-			}
-		}
 		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 			cb(tx)
 
@@ -514,7 +503,7 @@ func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt mod
 						RiderID:   s.subscribe.RiderID,
 						Model:     s.subscribe.Model,
 						CityID:    s.subscribe.CityID,
-						StockType: sts[bt],
+						StockType: sts[doReq.Type],
 
 						StoreID:     s.storeID,
 						EmployeeID:  s.employeeID,
@@ -528,21 +517,12 @@ func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt mod
 						Ebike:   s.ebikeInfo,
 						Battery: bat,
 
-						Rto: rto,
+						Rto: doReq.Rto,
 					},
 				)
 
 				if err != nil {
-					zap.L().Error("骑手业务出入库失败: "+bt.String(), zap.Error(err))
-				}
-			}
-
-			// 查询车辆信息(取车架号信息)
-			if s.subscribe.Edges.Ebike != nil && doReq != nil && doReq.SubRto {
-				remark = fmt.Sprintf("赠送车架号：%s", s.subscribe.Edges.Ebike.Sn)
-				// 判断是否管理员强制退租
-				if doReq.Rto != nil && !*doReq.Rto && doReq.Remark != nil {
-					remark = *doReq.Remark
+					zap.L().Error("骑手业务出入库失败: "+doReq.Type.String(), zap.Error(err))
 				}
 			}
 
@@ -550,10 +530,10 @@ func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt mod
 		})
 
 		// 取出电池滞后执行电柜任务
-		if s.cabTask != nil && (bt == model.BusinessTypeActive || bt == model.BusinessTypeContinue) {
+		if s.cabTask != nil && (doReq.Type == model.BusinessTypeActive || doReq.Type == model.BusinessTypeContinue) {
 			bin, bat, err = s.doTask()
 			if err != nil {
-				zap.L().Error("骑手业务取出电池后任务执行失败: "+bt.String(), zap.Error(err))
+				zap.L().Error("骑手业务取出电池后任务执行失败: "+doReq.Type.String(), zap.Error(err))
 			}
 			if bat != nil && s.cabinet.Intelligent {
 				_ = sk.Update().SetBatteryID(bat.ID).Exec(s.ctx)
@@ -562,7 +542,7 @@ func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt mod
 
 		// 保存业务日志
 		var b *ent.Business
-		b, err = NewBusinessLog(s.subscribe).
+		bq := NewBusinessLog(s.subscribe).
 			SetModifier(s.modifier).
 			SetEmployee(s.employee).
 			SetCabinet(s.cabinet).
@@ -570,10 +550,12 @@ func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt mod
 			SetBinInfo(bin).
 			SetStock(sk).
 			SetBattery(bat).
-			SetAgentId(s.agentID).
-			SetRto(rto).
-			SetRemark(remark).
-			Save(bt)
+			SetAgentId(s.agentID)
+		if doReq.Rto && s.ebikeInfo != nil {
+			bq.SetRtoEbikeID(s.ebikeInfo.ID)
+		}
+
+		b, _ = bq.Save(doReq.Type)
 		var bussinessID *uint64
 		revStatus := model.ReserveStatusFail
 		if b != nil {
@@ -590,18 +572,18 @@ func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt mod
 		}
 
 		// 更新提成
-		if bt == model.BusinessTypeActive && co != nil && b != nil && s.employeeID != nil {
+		if doReq.Type == model.BusinessTypeActive && co != nil && b != nil && s.employeeID != nil {
 			_, _ = co.Update().SetBusiness(b).SetEmployeeID(*s.employeeID).Save(s.ctx)
 		}
 
 		// 记录日志
 		go logging.NewOperateLog().
 			SetRef(s.rider).
-			SetOperate(ops[bt]).
+			SetOperate(ops[doReq.Type]).
 			SetEmployee(s.employeeInfo).
 			SetModifier(s.modifier).
 			SetCabinet(s.cabinetInfo).
-			SetDiff(bfs[bt], afs[bt]).
+			SetDiff(bfs[doReq.Type], afs[doReq.Type]).
 			Send()
 
 		if err != nil {
@@ -621,7 +603,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 		snag.Panic("还未签约, 请签约")
 	}
 
-	s.do(nil, model.BusinessTypeActive, func(tx *ent.Tx) {
+	s.do(model.BusinessRiderServiceDoReq{Type: model.BusinessTypeActive}, func(tx *ent.Tx) {
 		var err error
 
 		// 更新分配
@@ -750,22 +732,21 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 		snag.Panic("请到指定站点退租")
 	}
 
-	// 判定是否以租代购赠车
-	doReq := model.BusinessRiderServiceDoReq{
-		Rto: req.Rto,
-	}
-
-	subRto := false
-	subPlan, _ := ent.Database.Plan.Query().Where(plan.ID(*sub.PlanID)).First(s.ctx)
-	if subPlan != nil && subPlan.Type == model.PlanTypeEbikeRto.Value() {
-		pastDays := tools.NewTime().UsedDaysToNow(*sub.StartAt)
-		if pastDays >= int(subPlan.RtoDays) {
-			subRto = true
-			doReq.SubRto = true
+	// 判定是否以租代购
+	var rto bool
+	var ebikeRemark string
+	if req.Rto != nil {
+		rto = *req.Rto
+		if !rto && req.Remark != nil {
+			ebikeRemark = *req.Remark
 		}
 	}
+	doReq := model.BusinessRiderServiceDoReq{
+		Rto:  rto,
+		Type: model.BusinessTypeUnsubscribe,
+	}
 
-	s.do(&doReq, model.BusinessTypeUnsubscribe, func(tx *ent.Tx) {
+	s.do(doReq, func(tx *ent.Tx) {
 		var reason string
 		if s.cabinet != nil {
 			reason = "用户电柜退租"
@@ -800,10 +781,14 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 
 		// 更新电车
 		if sub.EbikeID != nil {
-			if subRto {
-				// 当前属于以租代购赠车，直接删除平台电车资产
+			if rto {
+				// 当前属于以租代购
 				err = tx.Ebike.UpdateOneID(*sub.EbikeID).
+					ClearRiderID().
+					SetNillableStoreID(s.storeID).
 					SetRto(true).
+					SetRtoRiderID(sub.RiderID).
+					SetRemark(ebikeRemark).
 					Exec(s.ctx)
 				snag.PanicIfError(err)
 			} else {
@@ -845,7 +830,7 @@ func (s *businessRiderService) Pause(subscribeID uint64) {
 		snag.Panic("当前剩余时间不足, 无法寄存")
 	}
 
-	s.do(nil, model.BusinessTypePause, func(tx *ent.Tx) {
+	s.do(model.BusinessRiderServiceDoReq{Type: model.BusinessTypePause}, func(tx *ent.Tx) {
 		_, err := tx.SubscribePause.Create().
 			SetStartAt(time.Now()).
 			SetRiderID(s.subscribe.RiderID).
@@ -889,7 +874,7 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
 	// 当前时间
 	now := time.Now()
 
-	s.do(nil, model.BusinessTypeContinue, func(tx *ent.Tx) {
+	s.do(model.BusinessRiderServiceDoReq{Type: model.BusinessTypeContinue}, func(tx *ent.Tx) {
 		_, err = tx.SubscribePause.
 			UpdateOne(sp).
 			SetDays(pr.CurrentDays).

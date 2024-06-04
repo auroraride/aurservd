@@ -6489,7 +6489,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "rentToBuyDays": {
-                    "description": "以租代购赠车最小使用天数",
+                    "description": "以租代购最小使用天数",
                     "type": "integer"
                 }
             }
@@ -6550,7 +6550,7 @@ const docTemplate = `{
             ],
             "x-enum-comments": {
                 "PlanTypeBattery": "单电",
-                "PlanTypeEbikeRto": "以租代购（赠）",
+                "PlanTypeEbikeRto": "以租代购",
                 "PlanTypeEbikeWithBattery": "车加电"
             },
             "x-enum-varnames": [

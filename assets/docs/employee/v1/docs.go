@@ -1908,7 +1908,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rto": {
-                    "description": "是否已赠车",
+                    "description": "是否以租代购",
                     "type": "boolean"
                 },
                 "time": {
@@ -2422,7 +2422,7 @@ const docTemplate = `{
             ],
             "x-enum-comments": {
                 "PlanTypeBattery": "单电",
-                "PlanTypeEbikeRto": "以租代购（赠）",
+                "PlanTypeEbikeRto": "以租代购",
                 "PlanTypeEbikeWithBattery": "车加电"
             },
             "x-enum-varnames": [
