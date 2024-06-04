@@ -52,8 +52,6 @@ const (
 	FieldColor = "color"
 	// FieldExFactory holds the string denoting the ex_factory field in the database.
 	FieldExFactory = "ex_factory"
-	// FieldRto holds the string denoting the rto field in the database.
-	FieldRto = "rto"
 	// FieldRtoRiderID holds the string denoting the rto_rider_id field in the database.
 	FieldRtoRiderID = "rto_rider_id"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
@@ -144,7 +142,6 @@ var Columns = []string{
 	FieldSim,
 	FieldColor,
 	FieldExFactory,
-	FieldRto,
 	FieldRtoRiderID,
 }
 
@@ -177,8 +174,6 @@ var (
 	DefaultEnable bool
 	// DefaultColor holds the default value on creation for the "color" field.
 	DefaultColor string
-	// DefaultRto holds the default value on creation for the "rto" field.
-	DefaultRto bool
 )
 
 // OrderOption defines the ordering options for the Ebike queries.
@@ -267,11 +262,6 @@ func ByColor(opts ...sql.OrderTermOption) OrderOption {
 // ByExFactory orders the results by the ex_factory field.
 func ByExFactory(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldExFactory, opts...).ToFunc()
-}
-
-// ByRto orders the results by the rto field.
-func ByRto(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRto, opts...).ToFunc()
 }
 
 // ByRtoRiderID orders the results by the rto_rider_id field.

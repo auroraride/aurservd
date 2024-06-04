@@ -60,10 +60,8 @@ type Ebike struct {
 	Color string `json:"color,omitempty"`
 	// 生产批次(出厂日期)
 	ExFactory string `json:"ex_factory,omitempty"`
-	// 是否已被以租代购
-	Rto bool `json:"rto,omitempty"`
 	// 以租代购骑手ID，生成后禁止修改
-	RtoRiderID uint64 `json:"rto_rider_id,omitempty"`
+	RtoRiderID *uint64 `json:"rto_rider_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EbikeQuery when eager-loading is set.
 	Edges        EbikeEdges `json:"edges"`
@@ -175,7 +173,7 @@ func (*Ebike) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case ebike.FieldStatus:
 			values[i] = new(model.EbikeStatus)
-		case ebike.FieldEnable, ebike.FieldRto:
+		case ebike.FieldEnable:
 			values[i] = new(sql.NullBool)
 		case ebike.FieldID, ebike.FieldBrandID, ebike.FieldRiderID, ebike.FieldStoreID, ebike.FieldEnterpriseID, ebike.FieldStationID, ebike.FieldRtoRiderID:
 			values[i] = new(sql.NullInt64)
@@ -323,17 +321,12 @@ func (e *Ebike) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.ExFactory = value.String
 			}
-		case ebike.FieldRto:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field rto", values[i])
-			} else if value.Valid {
-				e.Rto = value.Bool
-			}
 		case ebike.FieldRtoRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field rto_rider_id", values[i])
 			} else if value.Valid {
-				e.RtoRiderID = uint64(value.Int64)
+				e.RtoRiderID = new(uint64)
+				*e.RtoRiderID = uint64(value.Int64)
 			}
 		default:
 			e.selectValues.Set(columns[i], values[i])
@@ -474,11 +467,10 @@ func (e *Ebike) String() string {
 	builder.WriteString("ex_factory=")
 	builder.WriteString(e.ExFactory)
 	builder.WriteString(", ")
-	builder.WriteString("rto=")
-	builder.WriteString(fmt.Sprintf("%v", e.Rto))
-	builder.WriteString(", ")
-	builder.WriteString("rto_rider_id=")
-	builder.WriteString(fmt.Sprintf("%v", e.RtoRiderID))
+	if v := e.RtoRiderID; v != nil {
+		builder.WriteString("rto_rider_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

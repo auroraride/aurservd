@@ -279,8 +279,7 @@ func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmp
 
 	rtoBike := item.Edges.RtoEbike
 	if rtoBike != nil {
-		res.Rto = rtoBike.Rto
-		res.Remark = rtoBike.Remark
+		res.RtoEbikeSn = &rtoBike.Sn
 	}
 
 	return

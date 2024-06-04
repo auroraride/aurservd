@@ -995,6 +995,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{BusinessColumns[9]},
 			},
+			{
+				Name:    "business_rto_ebike_id",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[21]},
+			},
 		},
 	}
 	// CabinetColumns holds the columns for the "cabinet" table.
@@ -1706,7 +1711,6 @@ var (
 		{Name: "sim", Type: field.TypeString, Unique: true, Nullable: true, Comment: "SIM卡号"},
 		{Name: "color", Type: field.TypeString, Comment: "颜色", Default: "橘黄"},
 		{Name: "ex_factory", Type: field.TypeString, Comment: "生产批次(出厂日期)"},
-		{Name: "rto", Type: field.TypeBool, Comment: "是否已被以租代购", Default: false},
 		{Name: "brand_id", Type: field.TypeUint64},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
@@ -1722,37 +1726,37 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "ebike_ebike_brand_brand",
-				Columns:    []*schema.Column{EbikeColumns[15]},
+				Columns:    []*schema.Column{EbikeColumns[14]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "ebike_rider_rider",
-				Columns:    []*schema.Column{EbikeColumns[16]},
+				Columns:    []*schema.Column{EbikeColumns[15]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "ebike_store_store",
-				Columns:    []*schema.Column{EbikeColumns[17]},
+				Columns:    []*schema.Column{EbikeColumns[16]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "ebike_enterprise_enterprise",
-				Columns:    []*schema.Column{EbikeColumns[18]},
+				Columns:    []*schema.Column{EbikeColumns[17]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "ebike_enterprise_station_station",
-				Columns:    []*schema.Column{EbikeColumns[19]},
+				Columns:    []*schema.Column{EbikeColumns[18]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "ebike_rider_rto_rider",
-				Columns:    []*schema.Column{EbikeColumns[20]},
+				Columns:    []*schema.Column{EbikeColumns[19]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1766,27 +1770,27 @@ var (
 			{
 				Name:    "ebike_brand_id",
 				Unique:  false,
-				Columns: []*schema.Column{EbikeColumns[15]},
+				Columns: []*schema.Column{EbikeColumns[14]},
 			},
 			{
 				Name:    "ebike_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{EbikeColumns[16]},
+				Columns: []*schema.Column{EbikeColumns[15]},
 			},
 			{
 				Name:    "ebike_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{EbikeColumns[17]},
+				Columns: []*schema.Column{EbikeColumns[16]},
 			},
 			{
 				Name:    "ebike_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{EbikeColumns[18]},
+				Columns: []*schema.Column{EbikeColumns[17]},
 			},
 			{
 				Name:    "ebike_station_id",
 				Unique:  false,
-				Columns: []*schema.Column{EbikeColumns[19]},
+				Columns: []*schema.Column{EbikeColumns[18]},
 			},
 			{
 				Name:    "ebike_status",
@@ -1797,6 +1801,11 @@ var (
 				Name:    "ebike_ex_factory",
 				Unique:  false,
 				Columns: []*schema.Column{EbikeColumns[13]},
+			},
+			{
+				Name:    "ebike_rto_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeColumns[19]},
 			},
 		},
 	}

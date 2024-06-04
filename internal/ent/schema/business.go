@@ -65,7 +65,7 @@ func (Business) Fields() []ent.Field {
 		}).Comment("业务类型"),
 		field.JSON("bin_info", &model.BinInfo{}).Optional().Comment("仓位信息"),
 		field.String("stock_sn").Optional().Comment("出入库编码"),
-		field.Uint64("rto_ebike_id").Optional().Comment("以租代购车辆ID，生成后禁止修改"),
+		field.Uint64("rto_ebike_id").Optional().Nillable().Comment("以租代购车辆ID，生成后禁止修改"),
 	}
 }
 
@@ -101,5 +101,6 @@ func (Business) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("type"),
 		index.Fields("stock_sn"),
+		index.Fields("rto_ebike_id"),
 	}
 }

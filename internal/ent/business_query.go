@@ -1224,7 +1224,10 @@ func (bq *BusinessQuery) loadRtoEbike(ctx context.Context, query *EbikeQuery, no
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Business)
 	for i := range nodes {
-		fk := nodes[i].RtoEbikeID
+		if nodes[i].RtoEbikeID == nil {
+			continue
+		}
+		fk := *nodes[i].RtoEbikeID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}

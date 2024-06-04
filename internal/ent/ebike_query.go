@@ -857,7 +857,10 @@ func (eq *EbikeQuery) loadRtoRider(ctx context.Context, query *RiderQuery, nodes
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Ebike)
 	for i := range nodes {
-		fk := nodes[i].RtoRiderID
+		if nodes[i].RtoRiderID == nil {
+			continue
+		}
+		fk := *nodes[i].RtoRiderID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}

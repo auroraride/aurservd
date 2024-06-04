@@ -148,6 +148,7 @@ func (s *businessRiderService) SetEbikeID(id *uint64) *businessRiderService {
 		ID:        bike.ID,
 		BrandID:   brand.ID,
 		BrandName: brand.Name,
+		Sn:        bike.Sn,
 	}
 
 	return s
@@ -577,14 +578,17 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 		}
 
 		// 记录日志
-		go logging.NewOperateLog().
+		olog := logging.NewOperateLog().
 			SetRef(s.rider).
 			SetOperate(ops[doReq.Type]).
 			SetEmployee(s.employeeInfo).
 			SetModifier(s.modifier).
 			SetCabinet(s.cabinetInfo).
-			SetDiff(bfs[doReq.Type], afs[doReq.Type]).
-			Send()
+			SetDiff(bfs[doReq.Type], afs[doReq.Type])
+		if doReq.Rto && s.ebikeInfo != nil {
+			olog.SetRemark("满足以租代购条件, 电车归属骑手 (" + s.ebikeInfo.Sn + ")")
+		}
+		go olog.Send()
 
 		if err != nil {
 			snag.Panic(err)
@@ -733,16 +737,8 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 	}
 
 	// 判定是否以租代购
-	var rto bool
-	var ebikeRemark string
-	if req.Rto != nil {
-		rto = *req.Rto
-		if !rto && req.Remark != nil {
-			ebikeRemark = *req.Remark
-		}
-	}
 	doReq := model.BusinessRiderServiceDoReq{
-		Rto:  rto,
+		Rto:  req.Rto != nil && *req.Rto,
 		Type: model.BusinessTypeUnsubscribe,
 	}
 
@@ -781,14 +777,13 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 
 		// 更新电车
 		if sub.EbikeID != nil {
-			if rto {
+			if doReq.Rto {
 				// 当前属于以租代购
 				err = tx.Ebike.UpdateOneID(*sub.EbikeID).
 					ClearRiderID().
 					SetNillableStoreID(s.storeID).
-					SetRto(true).
 					SetRtoRiderID(sub.RiderID).
-					SetRemark(ebikeRemark).
+					SetNillableRemark(req.Remark).
 					Exec(s.ctx)
 				snag.PanicIfError(err)
 			} else {

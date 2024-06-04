@@ -136,11 +136,6 @@ func ExFactory(v string) predicate.Ebike {
 	return predicate.Ebike(sql.FieldEQ(FieldExFactory, v))
 }
 
-// Rto applies equality check predicate on the "rto" field. It's identical to RtoEQ.
-func Rto(v bool) predicate.Ebike {
-	return predicate.Ebike(sql.FieldEQ(FieldRto, v))
-}
-
 // RtoRiderID applies equality check predicate on the "rto_rider_id" field. It's identical to RtoRiderIDEQ.
 func RtoRiderID(v uint64) predicate.Ebike {
 	return predicate.Ebike(sql.FieldEQ(FieldRtoRiderID, v))
@@ -929,16 +924,6 @@ func ExFactoryEqualFold(v string) predicate.Ebike {
 // ExFactoryContainsFold applies the ContainsFold predicate on the "ex_factory" field.
 func ExFactoryContainsFold(v string) predicate.Ebike {
 	return predicate.Ebike(sql.FieldContainsFold(FieldExFactory, v))
-}
-
-// RtoEQ applies the EQ predicate on the "rto" field.
-func RtoEQ(v bool) predicate.Ebike {
-	return predicate.Ebike(sql.FieldEQ(FieldRto, v))
-}
-
-// RtoNEQ applies the NEQ predicate on the "rto" field.
-func RtoNEQ(v bool) predicate.Ebike {
-	return predicate.Ebike(sql.FieldNEQ(FieldRto, v))
 }
 
 // RtoRiderIDEQ applies the EQ predicate on the "rto_rider_id" field.

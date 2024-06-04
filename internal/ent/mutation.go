@@ -18217,7 +18217,7 @@ func (m *BusinessMutation) RtoEbikeID() (r uint64, exists bool) {
 // OldRtoEbikeID returns the old "rto_ebike_id" field's value of the Business entity.
 // If the Business object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BusinessMutation) OldRtoEbikeID(ctx context.Context) (v uint64, err error) {
+func (m *BusinessMutation) OldRtoEbikeID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRtoEbikeID is only allowed on UpdateOne operations")
 	}
@@ -33870,7 +33870,6 @@ type EbikeMutation struct {
 	sim               *string
 	color             *string
 	ex_factory        *string
-	rto               *bool
 	clearedFields     map[string]struct{}
 	brand             *uint64
 	clearedbrand      bool
@@ -34768,42 +34767,6 @@ func (m *EbikeMutation) ResetExFactory() {
 	m.ex_factory = nil
 }
 
-// SetRto sets the "rto" field.
-func (m *EbikeMutation) SetRto(b bool) {
-	m.rto = &b
-}
-
-// Rto returns the value of the "rto" field in the mutation.
-func (m *EbikeMutation) Rto() (r bool, exists bool) {
-	v := m.rto
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRto returns the old "rto" field's value of the Ebike entity.
-// If the Ebike object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EbikeMutation) OldRto(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRto is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRto requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRto: %w", err)
-	}
-	return oldValue.Rto, nil
-}
-
-// ResetRto resets all changes to the "rto" field.
-func (m *EbikeMutation) ResetRto() {
-	m.rto = nil
-}
-
 // SetRtoRiderID sets the "rto_rider_id" field.
 func (m *EbikeMutation) SetRtoRiderID(u uint64) {
 	m.rto_rider = &u
@@ -34821,7 +34784,7 @@ func (m *EbikeMutation) RtoRiderID() (r uint64, exists bool) {
 // OldRtoRiderID returns the old "rto_rider_id" field's value of the Ebike entity.
 // If the Ebike object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EbikeMutation) OldRtoRiderID(ctx context.Context) (v uint64, err error) {
+func (m *EbikeMutation) OldRtoRiderID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRtoRiderID is only allowed on UpdateOne operations")
 	}
@@ -35103,7 +35066,7 @@ func (m *EbikeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EbikeMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, ebike.FieldCreatedAt)
 	}
@@ -35158,9 +35121,6 @@ func (m *EbikeMutation) Fields() []string {
 	if m.ex_factory != nil {
 		fields = append(fields, ebike.FieldExFactory)
 	}
-	if m.rto != nil {
-		fields = append(fields, ebike.FieldRto)
-	}
 	if m.rto_rider != nil {
 		fields = append(fields, ebike.FieldRtoRiderID)
 	}
@@ -35208,8 +35168,6 @@ func (m *EbikeMutation) Field(name string) (ent.Value, bool) {
 		return m.Color()
 	case ebike.FieldExFactory:
 		return m.ExFactory()
-	case ebike.FieldRto:
-		return m.Rto()
 	case ebike.FieldRtoRiderID:
 		return m.RtoRiderID()
 	}
@@ -35257,8 +35215,6 @@ func (m *EbikeMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldColor(ctx)
 	case ebike.FieldExFactory:
 		return m.OldExFactory(ctx)
-	case ebike.FieldRto:
-		return m.OldRto(ctx)
 	case ebike.FieldRtoRiderID:
 		return m.OldRtoRiderID(ctx)
 	}
@@ -35395,13 +35351,6 @@ func (m *EbikeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetExFactory(v)
-		return nil
-	case ebike.FieldRto:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRto(v)
 		return nil
 	case ebike.FieldRtoRiderID:
 		v, ok := value.(uint64)
@@ -35584,9 +35533,6 @@ func (m *EbikeMutation) ResetField(name string) error {
 		return nil
 	case ebike.FieldExFactory:
 		m.ResetExFactory()
-		return nil
-	case ebike.FieldRto:
-		m.ResetRto()
 		return nil
 	case ebike.FieldRtoRiderID:
 		m.ResetRtoRiderID()

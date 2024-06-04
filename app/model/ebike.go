@@ -135,6 +135,7 @@ type EbikeBusinessInfo struct {
 	ID        uint64 `json:"id"`
 	BrandID   uint64 `json:"brandId"`
 	BrandName string `json:"brandName"`
+	Sn        string `json:"sn"`
 }
 
 type EbikeUnallocatedParams struct {

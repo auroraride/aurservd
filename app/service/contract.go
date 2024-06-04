@@ -576,6 +576,7 @@ func (s *contractService) Update(c *ent.Contract) (err error) {
 			ID:        bike.ID,
 			BrandID:   brand.ID,
 			BrandName: brand.Name,
+			Sn:        bike.Sn,
 		})
 	}
 

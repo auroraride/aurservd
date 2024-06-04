@@ -72,7 +72,7 @@ type Business struct {
 	// 出入库编码
 	StockSn string `json:"stock_sn,omitempty"`
 	// 以租代购车辆ID，生成后禁止修改
-	RtoEbikeID uint64 `json:"rto_ebike_id,omitempty"`
+	RtoEbikeID *uint64 `json:"rto_ebike_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BusinessQuery when eager-loading is set.
 	Edges        BusinessEdges `json:"edges"`
@@ -417,7 +417,8 @@ func (b *Business) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field rto_ebike_id", values[i])
 			} else if value.Valid {
-				b.RtoEbikeID = uint64(value.Int64)
+				b.RtoEbikeID = new(uint64)
+				*b.RtoEbikeID = uint64(value.Int64)
 			}
 		default:
 			b.selectValues.Set(columns[i], values[i])
@@ -593,8 +594,10 @@ func (b *Business) String() string {
 	builder.WriteString("stock_sn=")
 	builder.WriteString(b.StockSn)
 	builder.WriteString(", ")
-	builder.WriteString("rto_ebike_id=")
-	builder.WriteString(fmt.Sprintf("%v", b.RtoEbikeID))
+	if v := b.RtoEbikeID; v != nil {
+		builder.WriteString("rto_ebike_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }
