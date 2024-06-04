@@ -335,10 +335,6 @@ func init() {
 	business.DefaultUpdatedAt = businessDescUpdatedAt.Default.(func() time.Time)
 	// business.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	business.UpdateDefaultUpdatedAt = businessDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// businessDescRto is the schema descriptor for rto field.
-	businessDescRto := businessFields[3].Descriptor()
-	// business.DefaultRto holds the default value on creation for the rto field.
-	business.DefaultRto = businessDescRto.Default.(bool)
 	cabinetMixin := schema.Cabinet{}.Mixin()
 	cabinetMixinHooks2 := cabinetMixin[2].Hooks()
 	cabinetHooks := schema.Cabinet{}.Hooks()
@@ -639,10 +635,6 @@ func init() {
 	ebikeDescColor := ebikeFields[6].Descriptor()
 	// ebike.DefaultColor holds the default value on creation for the color field.
 	ebike.DefaultColor = ebikeDescColor.Default.(string)
-	// ebikeDescRto is the schema descriptor for rto field.
-	ebikeDescRto := ebikeFields[8].Descriptor()
-	// ebike.DefaultRto holds the default value on creation for the rto field.
-	ebike.DefaultRto = ebikeDescRto.Default.(bool)
 	ebikebrandMixin := schema.EbikeBrand{}.Mixin()
 	ebikebrandMixinHooks2 := ebikebrandMixin[2].Hooks()
 	ebikebrand.Hooks[0] = ebikebrandMixinHooks2[0]

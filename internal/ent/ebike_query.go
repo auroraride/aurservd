@@ -34,6 +34,7 @@ type EbikeQuery struct {
 	withEnterprise *EnterpriseQuery
 	withStation    *EnterpriseStationQuery
 	withAllocates  *AllocateQuery
+	withRtoRider   *RiderQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -196,6 +197,28 @@ func (eq *EbikeQuery) QueryAllocates() *AllocateQuery {
 			sqlgraph.From(ebike.Table, ebike.FieldID, selector),
 			sqlgraph.To(allocate.Table, allocate.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ebike.AllocatesTable, ebike.AllocatesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRtoRider chains the current query on the "rto_rider" edge.
+func (eq *EbikeQuery) QueryRtoRider() *RiderQuery {
+	query := (&RiderClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, selector),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebike.RtoRiderTable, ebike.RtoRiderColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -401,6 +424,7 @@ func (eq *EbikeQuery) Clone() *EbikeQuery {
 		withEnterprise: eq.withEnterprise.Clone(),
 		withStation:    eq.withStation.Clone(),
 		withAllocates:  eq.withAllocates.Clone(),
+		withRtoRider:   eq.withRtoRider.Clone(),
 		// clone intermediate query.
 		sql:  eq.sql.Clone(),
 		path: eq.path,
@@ -470,6 +494,17 @@ func (eq *EbikeQuery) WithAllocates(opts ...func(*AllocateQuery)) *EbikeQuery {
 		opt(query)
 	}
 	eq.withAllocates = query
+	return eq
+}
+
+// WithRtoRider tells the query-builder to eager-load the nodes that are connected to
+// the "rto_rider" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EbikeQuery) WithRtoRider(opts ...func(*RiderQuery)) *EbikeQuery {
+	query := (&RiderClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withRtoRider = query
 	return eq
 }
 
@@ -551,13 +586,14 @@ func (eq *EbikeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ebike,
 	var (
 		nodes       = []*Ebike{}
 		_spec       = eq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [7]bool{
 			eq.withBrand != nil,
 			eq.withRider != nil,
 			eq.withStore != nil,
 			eq.withEnterprise != nil,
 			eq.withStation != nil,
 			eq.withAllocates != nil,
+			eq.withRtoRider != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -615,6 +651,12 @@ func (eq *EbikeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ebike,
 		if err := eq.loadAllocates(ctx, query, nodes,
 			func(n *Ebike) { n.Edges.Allocates = []*Allocate{} },
 			func(n *Ebike, e *Allocate) { n.Edges.Allocates = append(n.Edges.Allocates, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withRtoRider; query != nil {
+		if err := eq.loadRtoRider(ctx, query, nodes, nil,
+			func(n *Ebike, e *Rider) { n.Edges.RtoRider = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -811,6 +853,35 @@ func (eq *EbikeQuery) loadAllocates(ctx context.Context, query *AllocateQuery, n
 	}
 	return nil
 }
+func (eq *EbikeQuery) loadRtoRider(ctx context.Context, query *RiderQuery, nodes []*Ebike, init func(*Ebike), assign func(*Ebike, *Rider)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Ebike)
+	for i := range nodes {
+		fk := nodes[i].RtoRiderID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(rider.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "rto_rider_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (eq *EbikeQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := eq.querySpec()
@@ -854,6 +925,9 @@ func (eq *EbikeQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if eq.withStation != nil {
 			_spec.Node.AddColumnOnce(ebike.FieldStationID)
+		}
+		if eq.withRtoRider != nil {
+			_spec.Node.AddColumnOnce(ebike.FieldRtoRiderID)
 		}
 	}
 	if ps := eq.predicates; len(ps) > 0 {
@@ -929,6 +1003,7 @@ var (
 	EbikeQueryWithEnterprise EbikeQueryWith = "Enterprise"
 	EbikeQueryWithStation    EbikeQueryWith = "Station"
 	EbikeQueryWithAllocates  EbikeQueryWith = "Allocates"
+	EbikeQueryWithRtoRider   EbikeQueryWith = "RtoRider"
 )
 
 func (eq *EbikeQuery) With(withEdges ...EbikeQueryWith) *EbikeQuery {
@@ -946,6 +1021,8 @@ func (eq *EbikeQuery) With(withEdges ...EbikeQueryWith) *EbikeQuery {
 			eq.WithStation()
 		case EbikeQueryWithAllocates:
 			eq.WithAllocates()
+		case EbikeQueryWithRtoRider:
+			eq.WithRtoRider()
 		}
 	}
 	return eq

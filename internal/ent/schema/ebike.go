@@ -72,7 +72,7 @@ func (Ebike) Fields() []ent.Field {
 		field.String("sim").Unique().Optional().Nillable().Comment("SIM卡号"),
 		field.String("color").Default(model.EbikeColorDefault).Comment("颜色"),
 		field.String("ex_factory").Comment("生产批次(出厂日期)"),
-		field.Bool("rto").Default(false).Comment("是否赠送"),
+		field.Uint64("rto_rider_id").Optional().Comment("以租代购骑手ID，生成后禁止修改"),
 	}
 }
 
@@ -80,6 +80,7 @@ func (Ebike) Fields() []ent.Field {
 func (Ebike) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("allocates", Allocate.Type),
+		edge.To("rto_rider", Rider.Type).Unique().Field("rto_rider_id"),
 	}
 }
 

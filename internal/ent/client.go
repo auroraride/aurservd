@@ -3260,6 +3260,22 @@ func (c *BusinessClient) QueryAgent(b *Business) *AgentQuery {
 	return query
 }
 
+// QueryRtoEbike queries the rto_ebike edge of a Business.
+func (c *BusinessClient) QueryRtoEbike(b *Business) *EbikeQuery {
+	query := (&EbikeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(ebike.Table, ebike.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, business.RtoEbikeTable, business.RtoEbikeColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *BusinessClient) Hooks() []Hook {
 	hooks := c.hooks.Business
@@ -5249,6 +5265,22 @@ func (c *EbikeClient) QueryAllocates(e *Ebike) *AllocateQuery {
 			sqlgraph.From(ebike.Table, ebike.FieldID, id),
 			sqlgraph.To(allocate.Table, allocate.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ebike.AllocatesTable, ebike.AllocatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRtoRider queries the rto_rider edge of a Ebike.
+func (c *EbikeClient) QueryRtoRider(e *Ebike) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebike.RtoRiderTable, ebike.RtoRiderColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil

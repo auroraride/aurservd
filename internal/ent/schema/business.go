@@ -65,13 +65,15 @@ func (Business) Fields() []ent.Field {
 		}).Comment("业务类型"),
 		field.JSON("bin_info", &model.BinInfo{}).Optional().Comment("仓位信息"),
 		field.String("stock_sn").Optional().Comment("出入库编码"),
-		field.Bool("rto").Default(false).Comment("是否赠送"),
+		field.Uint64("rto_ebike_id").Optional().Comment("以租代购车辆ID，生成后禁止修改"),
 	}
 }
 
 // Edges of the Business.
 func (Business) Edges() []ent.Edge {
-	return []ent.Edge{}
+	return []ent.Edge{
+		edge.To("rto_ebike", Ebike.Type).Unique().Field("rto_ebike_id"),
+	}
 }
 
 func (Business) Mixin() []ent.Mixin {

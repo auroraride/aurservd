@@ -241,16 +241,16 @@ func (ec *EbikeCreate) SetExFactory(s string) *EbikeCreate {
 	return ec
 }
 
-// SetRto sets the "rto" field.
-func (ec *EbikeCreate) SetRto(b bool) *EbikeCreate {
-	ec.mutation.SetRto(b)
+// SetRtoRiderID sets the "rto_rider_id" field.
+func (ec *EbikeCreate) SetRtoRiderID(u uint64) *EbikeCreate {
+	ec.mutation.SetRtoRiderID(u)
 	return ec
 }
 
-// SetNillableRto sets the "rto" field if the given value is not nil.
-func (ec *EbikeCreate) SetNillableRto(b *bool) *EbikeCreate {
-	if b != nil {
-		ec.SetRto(*b)
+// SetNillableRtoRiderID sets the "rto_rider_id" field if the given value is not nil.
+func (ec *EbikeCreate) SetNillableRtoRiderID(u *uint64) *EbikeCreate {
+	if u != nil {
+		ec.SetRtoRiderID(*u)
 	}
 	return ec
 }
@@ -293,6 +293,11 @@ func (ec *EbikeCreate) AddAllocates(a ...*Allocate) *EbikeCreate {
 		ids[i] = a[i].ID
 	}
 	return ec.AddAllocateIDs(ids...)
+}
+
+// SetRtoRider sets the "rto_rider" edge to the Rider entity.
+func (ec *EbikeCreate) SetRtoRider(r *Rider) *EbikeCreate {
+	return ec.SetRtoRiderID(r.ID)
 }
 
 // Mutation returns the EbikeMutation object of the builder.
@@ -358,10 +363,6 @@ func (ec *EbikeCreate) defaults() error {
 		v := ebike.DefaultColor
 		ec.mutation.SetColor(v)
 	}
-	if _, ok := ec.mutation.Rto(); !ok {
-		v := ebike.DefaultRto
-		ec.mutation.SetRto(v)
-	}
 	return nil
 }
 
@@ -390,9 +391,6 @@ func (ec *EbikeCreate) check() error {
 	}
 	if _, ok := ec.mutation.ExFactory(); !ok {
 		return &ValidationError{Name: "ex_factory", err: errors.New(`ent: missing required field "Ebike.ex_factory"`)}
-	}
-	if _, ok := ec.mutation.Rto(); !ok {
-		return &ValidationError{Name: "rto", err: errors.New(`ent: missing required field "Ebike.rto"`)}
 	}
 	if _, ok := ec.mutation.BrandID(); !ok {
 		return &ValidationError{Name: "brand", err: errors.New(`ent: missing required edge "Ebike.brand"`)}
@@ -475,10 +473,6 @@ func (ec *EbikeCreate) createSpec() (*Ebike, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.ExFactory(); ok {
 		_spec.SetField(ebike.FieldExFactory, field.TypeString, value)
 		_node.ExFactory = value
-	}
-	if value, ok := ec.mutation.Rto(); ok {
-		_spec.SetField(ebike.FieldRto, field.TypeBool, value)
-		_node.Rto = value
 	}
 	if nodes := ec.mutation.BrandIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -579,6 +573,23 @@ func (ec *EbikeCreate) createSpec() (*Ebike, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.RtoRiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.RtoRiderTable,
+			Columns: []string{ebike.RtoRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RtoRiderID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -879,15 +890,21 @@ func (u *EbikeUpsert) UpdateExFactory() *EbikeUpsert {
 	return u
 }
 
-// SetRto sets the "rto" field.
-func (u *EbikeUpsert) SetRto(v bool) *EbikeUpsert {
-	u.Set(ebike.FieldRto, v)
+// SetRtoRiderID sets the "rto_rider_id" field.
+func (u *EbikeUpsert) SetRtoRiderID(v uint64) *EbikeUpsert {
+	u.Set(ebike.FieldRtoRiderID, v)
 	return u
 }
 
-// UpdateRto sets the "rto" field to the value that was provided on create.
-func (u *EbikeUpsert) UpdateRto() *EbikeUpsert {
-	u.SetExcluded(ebike.FieldRto)
+// UpdateRtoRiderID sets the "rto_rider_id" field to the value that was provided on create.
+func (u *EbikeUpsert) UpdateRtoRiderID() *EbikeUpsert {
+	u.SetExcluded(ebike.FieldRtoRiderID)
+	return u
+}
+
+// ClearRtoRiderID clears the value of the "rto_rider_id" field.
+func (u *EbikeUpsert) ClearRtoRiderID() *EbikeUpsert {
+	u.SetNull(ebike.FieldRtoRiderID)
 	return u
 }
 
@@ -1226,17 +1243,24 @@ func (u *EbikeUpsertOne) UpdateExFactory() *EbikeUpsertOne {
 	})
 }
 
-// SetRto sets the "rto" field.
-func (u *EbikeUpsertOne) SetRto(v bool) *EbikeUpsertOne {
+// SetRtoRiderID sets the "rto_rider_id" field.
+func (u *EbikeUpsertOne) SetRtoRiderID(v uint64) *EbikeUpsertOne {
 	return u.Update(func(s *EbikeUpsert) {
-		s.SetRto(v)
+		s.SetRtoRiderID(v)
 	})
 }
 
-// UpdateRto sets the "rto" field to the value that was provided on create.
-func (u *EbikeUpsertOne) UpdateRto() *EbikeUpsertOne {
+// UpdateRtoRiderID sets the "rto_rider_id" field to the value that was provided on create.
+func (u *EbikeUpsertOne) UpdateRtoRiderID() *EbikeUpsertOne {
 	return u.Update(func(s *EbikeUpsert) {
-		s.UpdateRto()
+		s.UpdateRtoRiderID()
+	})
+}
+
+// ClearRtoRiderID clears the value of the "rto_rider_id" field.
+func (u *EbikeUpsertOne) ClearRtoRiderID() *EbikeUpsertOne {
+	return u.Update(func(s *EbikeUpsert) {
+		s.ClearRtoRiderID()
 	})
 }
 
@@ -1741,17 +1765,24 @@ func (u *EbikeUpsertBulk) UpdateExFactory() *EbikeUpsertBulk {
 	})
 }
 
-// SetRto sets the "rto" field.
-func (u *EbikeUpsertBulk) SetRto(v bool) *EbikeUpsertBulk {
+// SetRtoRiderID sets the "rto_rider_id" field.
+func (u *EbikeUpsertBulk) SetRtoRiderID(v uint64) *EbikeUpsertBulk {
 	return u.Update(func(s *EbikeUpsert) {
-		s.SetRto(v)
+		s.SetRtoRiderID(v)
 	})
 }
 
-// UpdateRto sets the "rto" field to the value that was provided on create.
-func (u *EbikeUpsertBulk) UpdateRto() *EbikeUpsertBulk {
+// UpdateRtoRiderID sets the "rto_rider_id" field to the value that was provided on create.
+func (u *EbikeUpsertBulk) UpdateRtoRiderID() *EbikeUpsertBulk {
 	return u.Update(func(s *EbikeUpsert) {
-		s.UpdateRto()
+		s.UpdateRtoRiderID()
+	})
+}
+
+// ClearRtoRiderID clears the value of the "rto_rider_id" field.
+func (u *EbikeUpsertBulk) ClearRtoRiderID() *EbikeUpsertBulk {
+	return u.Update(func(s *EbikeUpsert) {
+		s.ClearRtoRiderID()
 	})
 }
 

@@ -298,17 +298,23 @@ func (eu *EbikeUpdate) SetNillableExFactory(s *string) *EbikeUpdate {
 	return eu
 }
 
-// SetRto sets the "rto" field.
-func (eu *EbikeUpdate) SetRto(b bool) *EbikeUpdate {
-	eu.mutation.SetRto(b)
+// SetRtoRiderID sets the "rto_rider_id" field.
+func (eu *EbikeUpdate) SetRtoRiderID(u uint64) *EbikeUpdate {
+	eu.mutation.SetRtoRiderID(u)
 	return eu
 }
 
-// SetNillableRto sets the "rto" field if the given value is not nil.
-func (eu *EbikeUpdate) SetNillableRto(b *bool) *EbikeUpdate {
-	if b != nil {
-		eu.SetRto(*b)
+// SetNillableRtoRiderID sets the "rto_rider_id" field if the given value is not nil.
+func (eu *EbikeUpdate) SetNillableRtoRiderID(u *uint64) *EbikeUpdate {
+	if u != nil {
+		eu.SetRtoRiderID(*u)
 	}
+	return eu
+}
+
+// ClearRtoRiderID clears the value of the "rto_rider_id" field.
+func (eu *EbikeUpdate) ClearRtoRiderID() *EbikeUpdate {
+	eu.mutation.ClearRtoRiderID()
 	return eu
 }
 
@@ -350,6 +356,11 @@ func (eu *EbikeUpdate) AddAllocates(a ...*Allocate) *EbikeUpdate {
 		ids[i] = a[i].ID
 	}
 	return eu.AddAllocateIDs(ids...)
+}
+
+// SetRtoRider sets the "rto_rider" edge to the Rider entity.
+func (eu *EbikeUpdate) SetRtoRider(r *Rider) *EbikeUpdate {
+	return eu.SetRtoRiderID(r.ID)
 }
 
 // Mutation returns the EbikeMutation object of the builder.
@@ -406,6 +417,12 @@ func (eu *EbikeUpdate) RemoveAllocates(a ...*Allocate) *EbikeUpdate {
 		ids[i] = a[i].ID
 	}
 	return eu.RemoveAllocateIDs(ids...)
+}
+
+// ClearRtoRider clears the "rto_rider" edge to the Rider entity.
+func (eu *EbikeUpdate) ClearRtoRider() *EbikeUpdate {
+	eu.mutation.ClearRtoRider()
+	return eu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -526,9 +543,6 @@ func (eu *EbikeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := eu.mutation.ExFactory(); ok {
 		_spec.SetField(ebike.FieldExFactory, field.TypeString, value)
-	}
-	if value, ok := eu.mutation.Rto(); ok {
-		_spec.SetField(ebike.FieldRto, field.TypeBool, value)
 	}
 	if eu.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -713,6 +727,35 @@ func (eu *EbikeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.RtoRiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.RtoRiderTable,
+			Columns: []string{ebike.RtoRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RtoRiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.RtoRiderTable,
+			Columns: []string{ebike.RtoRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1004,17 +1047,23 @@ func (euo *EbikeUpdateOne) SetNillableExFactory(s *string) *EbikeUpdateOne {
 	return euo
 }
 
-// SetRto sets the "rto" field.
-func (euo *EbikeUpdateOne) SetRto(b bool) *EbikeUpdateOne {
-	euo.mutation.SetRto(b)
+// SetRtoRiderID sets the "rto_rider_id" field.
+func (euo *EbikeUpdateOne) SetRtoRiderID(u uint64) *EbikeUpdateOne {
+	euo.mutation.SetRtoRiderID(u)
 	return euo
 }
 
-// SetNillableRto sets the "rto" field if the given value is not nil.
-func (euo *EbikeUpdateOne) SetNillableRto(b *bool) *EbikeUpdateOne {
-	if b != nil {
-		euo.SetRto(*b)
+// SetNillableRtoRiderID sets the "rto_rider_id" field if the given value is not nil.
+func (euo *EbikeUpdateOne) SetNillableRtoRiderID(u *uint64) *EbikeUpdateOne {
+	if u != nil {
+		euo.SetRtoRiderID(*u)
 	}
+	return euo
+}
+
+// ClearRtoRiderID clears the value of the "rto_rider_id" field.
+func (euo *EbikeUpdateOne) ClearRtoRiderID() *EbikeUpdateOne {
+	euo.mutation.ClearRtoRiderID()
 	return euo
 }
 
@@ -1056,6 +1105,11 @@ func (euo *EbikeUpdateOne) AddAllocates(a ...*Allocate) *EbikeUpdateOne {
 		ids[i] = a[i].ID
 	}
 	return euo.AddAllocateIDs(ids...)
+}
+
+// SetRtoRider sets the "rto_rider" edge to the Rider entity.
+func (euo *EbikeUpdateOne) SetRtoRider(r *Rider) *EbikeUpdateOne {
+	return euo.SetRtoRiderID(r.ID)
 }
 
 // Mutation returns the EbikeMutation object of the builder.
@@ -1112,6 +1166,12 @@ func (euo *EbikeUpdateOne) RemoveAllocates(a ...*Allocate) *EbikeUpdateOne {
 		ids[i] = a[i].ID
 	}
 	return euo.RemoveAllocateIDs(ids...)
+}
+
+// ClearRtoRider clears the "rto_rider" edge to the Rider entity.
+func (euo *EbikeUpdateOne) ClearRtoRider() *EbikeUpdateOne {
+	euo.mutation.ClearRtoRider()
+	return euo
 }
 
 // Where appends a list predicates to the EbikeUpdate builder.
@@ -1262,9 +1322,6 @@ func (euo *EbikeUpdateOne) sqlSave(ctx context.Context) (_node *Ebike, err error
 	}
 	if value, ok := euo.mutation.ExFactory(); ok {
 		_spec.SetField(ebike.FieldExFactory, field.TypeString, value)
-	}
-	if value, ok := euo.mutation.Rto(); ok {
-		_spec.SetField(ebike.FieldRto, field.TypeBool, value)
 	}
 	if euo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1449,6 +1506,35 @@ func (euo *EbikeUpdateOne) sqlSave(ctx context.Context) (_node *Ebike, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.RtoRiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.RtoRiderTable,
+			Columns: []string{ebike.RtoRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RtoRiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.RtoRiderTable,
+			Columns: []string{ebike.RtoRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -1,33 +1,31 @@
 module github.com/auroraride/aurservd
 
-go 1.22
-
-toolchain go1.22.0
+go 1.22.3
 
 require (
-	ariga.io/atlas v0.21.1
+	ariga.io/atlas v0.23.0
 	entgo.io/ent v0.13.1
 	github.com/LucaTheHacker/go-haversine v0.0.0-20220213075817-0d811fb84a1a
-	github.com/PuerkitoBio/goquery v1.9.1
-	github.com/alibabacloud-go/cloudauth-20190307/v3 v3.5.0
+	github.com/PuerkitoBio/goquery v1.9.2
+	github.com/alibabacloud-go/cloudauth-20190307/v3 v3.6.1
 	github.com/alibabacloud-go/darabonba-openapi v0.2.1
-	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.6
+	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.7
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
 	github.com/alibabacloud-go/openapi-util v0.1.0
 	github.com/alibabacloud-go/tea v1.2.2
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.719
-	github.com/aliyun/aliyun-log-go-sdk v0.1.72
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.753
+	github.com/aliyun/aliyun-log-go-sdk v0.1.75
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
-	github.com/aliyun/credentials-go v1.3.2
+	github.com/aliyun/credentials-go v1.3.4
 	github.com/auroraride/adapter v0.0.0-20240329063809-04d8343bf421
 	github.com/elastic/go-elasticsearch/v8 v8.13.1
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/getkin/kin-openapi v0.124.0
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
-	github.com/go-playground/validator/v10 v10.19.0
-	github.com/go-resty/resty/v2 v2.12.0
+	github.com/go-playground/validator/v10 v10.20.0
+	github.com/go-resty/resty/v2 v2.13.1
 	github.com/golang-module/carbon/v2 v2.3.12
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.1
@@ -38,7 +36,7 @@ require (
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/labstack/gommon v0.4.2
-	github.com/liasica/edocseal v0.0.0-20240421025742-95c18b2a38cc
+	github.com/liasica/edocseal v0.0.0-20240422090806-c17b3b193bc5
 	github.com/liasica/swag v1.16.3-0.20240305092534-ea9d354b2ef6
 	github.com/lithammer/shortuuid/v4 v4.0.0
 	github.com/modern-go/reflect2 v1.0.2
@@ -51,25 +49,25 @@ require (
 	github.com/shopspring/decimal v1.4.0
 	github.com/shurcooL/github_flavored_markdown v0.0.0-20210228213109-c3a9aa474629
 	github.com/silenceper/wechat/v2 v2.1.6
-	github.com/smartwalle/alipay/v3 v3.2.20
+	github.com/smartwalle/alipay/v3 v3.2.21
 	github.com/sony/sonyflake v1.2.0
 	github.com/speps/go-hashids/v2 v2.0.1
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/echo-swagger v1.4.1
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.904
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/faceid v1.0.904
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.933
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/faceid v1.0.933
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.18
 	github.com/xuri/excelize/v2 v2.8.1
 	go.uber.org/atomic v1.11.0
 	go.uber.org/zap v1.27.0
-	golang.org/x/crypto v0.22.0
-	golang.org/x/exp v0.0.0-20240416160154-fe59bbe5cc7f
+	golang.org/x/crypto v0.23.0
+	golang.org/x/exp v0.0.0-20240530194437-404ba88c7ed0
 	golang.org/x/time v0.5.0
-	golang.org/x/tools v0.20.0
-	google.golang.org/grpc v1.63.2
-	google.golang.org/protobuf v1.33.0
+	golang.org/x/tools v0.21.0
+	google.golang.org/grpc v1.64.0
+	google.golang.org/protobuf v1.34.1
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -98,12 +96,12 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/elastic/elastic-transport-go/v8 v8.5.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.4 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-kit/kit v0.13.0 // indirect
 	github.com/go-kit/log v0.2.1 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
-	github.com/go-logr/logr v1.3.0 // indirect
+	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/inflect v0.21.0 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
@@ -148,7 +146,7 @@ require (
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/onsi/gomega v1.24.1 // indirect
 	github.com/opentracing/opentracing-go v1.2.1-0.20220228012449-10b1cf09e00b // indirect
-	github.com/pelletier/go-toml/v2 v2.2.1 // indirect
+	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -185,24 +183,24 @@ require (
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.52.0 // indirect
+	github.com/valyala/fasthttp v1.54.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xuri/efp v0.0.0-20240408161823-9ad904a10d6d // indirect
 	github.com/xuri/nfp v0.0.0-20240318013403-ab9948c2c4a7 // indirect
 	github.com/zclconf/go-cty v1.14.4 // indirect
-	go.opentelemetry.io/otel v1.21.0 // indirect
-	go.opentelemetry.io/otel/metric v1.21.0 // indirect
-	go.opentelemetry.io/otel/trace v1.21.0 // indirect
+	go.opentelemetry.io/otel v1.27.0 // indirect
+	go.opentelemetry.io/otel/metric v1.27.0 // indirect
+	go.opentelemetry.io/otel/trace v1.27.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/image v0.15.0 // indirect
+	golang.org/x/image v0.16.0 // indirect
 	golang.org/x/mod v0.17.0 // indirect
-	golang.org/x/net v0.24.0 // indirect
+	golang.org/x/net v0.25.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.19.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240415180920-8c6c420018be // indirect
+	golang.org/x/sys v0.20.0 // indirect
+	golang.org/x/text v0.15.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
