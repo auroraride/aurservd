@@ -323,6 +323,7 @@ func (b *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail)
 		ebikeRes := NewPlanBiz().EbikeList(sBids)
 		if ebikeRes.Brands != nil {
 			res.Brands = ebikeRes.Brands
+			res.RtoBrands = ebikeRes.RtoBrands
 		}
 	}
 

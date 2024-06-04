@@ -722,6 +722,11 @@ definitions:
       rest:
         description: 是否拥有驿站
         type: boolean
+      rtoBrands:
+        description: 以租代购车电选项
+        items:
+          $ref: '#/definitions/model.PlanEbikeBrandOption'
+        type: array
       saleGoods:
         description: 买车列表
         items:
@@ -4193,6 +4198,60 @@ paths:
       summary: 意见反馈
       tags:
       - Feedback - 反馈
+  /rider/v2/goods:
+    get:
+      consumes:
+      - application/json
+      operationId: GoodsList
+      parameters:
+      - description: 城市ID, 城市ID
+        in: query
+        name: cityId
+        required: true
+        type: integer
+      - description: 商品类型, 商品类型 1-电车
+        enum:
+        - 1
+        in: query
+        name: type
+        type: integer
+        x-enum-comments:
+          GoodsTypeEbike: 电车
+        x-enum-varnames:
+        - GoodsTypeEbike
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.GoodsDetail'
+            type: array
+      summary: 商品列表
+      tags:
+      - Goods - 商品
+  /rider/v2/goods/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: GoodsDetail
+      parameters:
+      - description: 商品ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.GoodsDetail'
+      summary: 商品详情
+      tags:
+      - Goods - 商品
   /rider/v2/instructions/{key}:
     get:
       consumes:

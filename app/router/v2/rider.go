@@ -217,6 +217,11 @@ func LoadRiderV2Routes(root *echo.Group) {
 	subscribe.PUT("/store", rapi.Subscribe.StoreModify)      // 车电套餐修改激活门店
 	subscribe.GET("/status", rapi.Subscribe.SubscribeStatus) // 查询订阅是否激活
 
+	// 商品
+	goods := g.Group("/goods")
+	goods.GET("", rapi.Goods.List)       // 商品列表
+	goods.GET("/:id", rapi.Goods.Detail) // 商品详情
+
 	// 协议
 	agreement := g.Group("/agreement")
 	agreement.GET("/enterprise/price/:id", rapi.Agreement.QueryAgreementByEnterprisePriceID) // 根据企业价格ID查询协议

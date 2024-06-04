@@ -312,6 +312,8 @@ func (s *planBiz) EbikeList(brandIds []uint64) (res definition.PlanNewlyRes) {
 
 	bmap := make(map[uint64]*model.PlanEbikeBrandOption)
 
+	rbmap := make(map[uint64]*model.PlanEbikeBrandOption)
+
 	serv := service.NewPlanIntroduce()
 	intro := serv.QueryMap()
 
@@ -352,6 +354,29 @@ func (s *planBiz) EbikeList(brandIds []uint64) (res definition.PlanNewlyRes) {
 			if !exists {
 				*b.Children = append(*b.Children, m)
 			}
+		case model.PlanTypeEbikeRto.Value():
+			var b *model.PlanEbikeBrandOption
+			bid := *item.BrandID
+			b, ok := rbmap[bid]
+			if !ok {
+				brand := item.Edges.Brand
+				b = &model.PlanEbikeBrandOption{
+					Children: new(model.PlanModelOptions),
+					Name:     brand.Name,
+					Cover:    brand.Cover,
+				}
+				rbmap[bid] = b
+			}
+
+			var exists bool
+			for _, c := range *b.Children {
+				if c.Model == item.Model {
+					exists = true
+				}
+			}
+			if !exists {
+				*b.Children = append(*b.Children, m)
+			}
 		default:
 		}
 	}
@@ -373,7 +398,13 @@ func (s *planBiz) EbikeList(brandIds []uint64) (res definition.PlanNewlyRes) {
 		SortPlanEbikeModelByName(*b.Children)
 	}
 
+	for _, rb := range rbmap {
+		res.RtoBrands = append(res.RtoBrands, rb)
+		SortPlanEbikeModelByName(*rb.Children)
+	}
+
 	SortPlanEbikeBrandByName(res.Brands)
+	SortPlanEbikeBrandByName(res.RtoBrands)
 
 	return
 }
