@@ -466,7 +466,7 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 
 	if req.Ebike != nil {
 		// 当不赠送车辆时候需要进行出入库处理
-		if req.IsRto == model.EbikeIsRtoUnSend.Value() {
+		if !req.Rto {
 			err = son.SetParent(sk).
 				SetEbikeID(req.Ebike.ID).
 				SetName(req.Ebike.BrandName).

@@ -55,8 +55,8 @@ const (
 	FieldBinInfo = "bin_info"
 	// FieldStockSn holds the string denoting the stock_sn field in the database.
 	FieldStockSn = "stock_sn"
-	// FieldIsRto holds the string denoting the is_rto field in the database.
-	FieldIsRto = "is_rto"
+	// FieldRto holds the string denoting the rto field in the database.
+	FieldRto = "rto"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -183,7 +183,7 @@ var Columns = []string{
 	FieldType,
 	FieldBinInfo,
 	FieldStockSn,
-	FieldIsRto,
+	FieldRto,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -209,8 +209,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultIsRto holds the default value on creation for the "is_rto" field.
-	DefaultIsRto uint8
+	// DefaultRto holds the default value on creation for the "rto" field.
+	DefaultRto bool
 )
 
 // OrderOption defines the ordering options for the Business queries.
@@ -306,9 +306,9 @@ func ByStockSn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStockSn, opts...).ToFunc()
 }
 
-// ByIsRto orders the results by the is_rto field.
-func ByIsRto(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldIsRto, opts...).ToFunc()
+// ByRto orders the results by the rto field.
+func ByRto(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRto, opts...).ToFunc()
 }
 
 // ByRiderField orders the results by rider field.

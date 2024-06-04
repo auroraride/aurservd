@@ -1887,10 +1887,6 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "isRto": {
-                    "description": "是否已赠车",
-                    "type": "integer"
-                },
                 "name": {
                     "description": "骑手姓名",
                     "type": "string"
@@ -1910,6 +1906,10 @@ const docTemplate = `{
                 "remark": {
                     "description": "备注",
                     "type": "string"
+                },
+                "rto": {
+                    "description": "是否已赠车",
+                    "type": "boolean"
                 },
                 "time": {
                     "description": "业务时间",

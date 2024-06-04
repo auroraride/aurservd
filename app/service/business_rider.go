@@ -493,19 +493,14 @@ func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt mod
 		// 库存管理
 		// TODO 智能电池
 		var sk *ent.Stock
-		var isRto uint8
+		var rto bool
 		var remark string
 		// 先判断退租时候的订阅是否符合赠车
-		if doReq != nil {
-			if doReq.SubRto {
-				isRto = model.EbikeIsRtoSend.Value()
-				// 再次判断当前赠车是否为管理员强制退租
-				if doReq.NeedRto != nil {
-					switch *doReq.NeedRto {
-					case model.EbikeIsRtoUnSend.Value():
-						isRto = model.EbikeIsRtoUnSend.Value()
-					}
-				}
+		if doReq != nil && doReq.SubRto {
+			rto = true
+			// 再次判断当前赠车是否为管理员强制退租
+			if doReq.Rto != nil && !*doReq.Rto {
+				rto = false
 			}
 		}
 		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
@@ -533,7 +528,7 @@ func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt mod
 						Ebike:   s.ebikeInfo,
 						Battery: bat,
 
-						IsRto: isRto,
+						Rto: rto,
 					},
 				)
 
@@ -542,29 +537,12 @@ func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt mod
 				}
 			}
 
-			// 查询是否赠车
-			var rb *ent.Ebike
-			if s.subscribe.EbikeID != nil {
-				rb, err = tx.Ebike.Query().Where(ebike.ID(*s.subscribe.EbikeID)).First(s.ctx)
-				if err != nil {
-					zap.L().Error("查询是否赠车失败: ", zap.Error(err))
-				}
-				if doReq != nil {
-					if rb != nil && doReq.SubRto {
-						isRto = model.EbikeIsRtoSend.Value()
-						remark = rb.Sn
-						// 判断是否管理员强制退租
-						if doReq.NeedRto != nil {
-							switch *doReq.NeedRto {
-							case model.BusinessIsRtoUnSend.Value():
-								isRto = model.EbikeIsRtoUnSend.Value()
-								if doReq.Remark != nil {
-									remark = *doReq.Remark
-								}
-
-							}
-						}
-					}
+			// 查询车辆信息(取车架号信息)
+			if s.subscribe.Edges.Ebike != nil && doReq != nil && doReq.SubRto {
+				remark = fmt.Sprintf("赠送车架号：%s", s.subscribe.Edges.Ebike.Sn)
+				// 判断是否管理员强制退租
+				if doReq.Rto != nil && !*doReq.Rto && doReq.Remark != nil {
+					remark = *doReq.Remark
 				}
 			}
 
@@ -593,7 +571,7 @@ func (s *businessRiderService) do(doReq *model.BusinessRiderServiceDoReq, bt mod
 			SetStock(sk).
 			SetBattery(bat).
 			SetAgentId(s.agentID).
-			SetIsRto(isRto).
+			SetRto(rto).
 			SetRemark(remark).
 			Save(bt)
 		var bussinessID *uint64
@@ -774,17 +752,17 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 
 	// 判定是否以租代购赠车
 	doReq := model.BusinessRiderServiceDoReq{
-		NeedRto: req.NeedRto,
-		Remark:  req.Remark,
+		Rto:    req.Rto,
+		Remark: req.Remark,
 	}
 
-	needRto := false
+	subRto := false
 	subPlan, _ := ent.Database.Plan.Query().Where(plan.ID(*sub.PlanID)).First(s.ctx)
 	if subPlan != nil {
 		if subPlan.Type == model.PlanTypeEbikeRto.Value() {
 			pastDays := tools.NewTime().UsedDaysToNow(*sub.StartAt)
 			if pastDays >= int(subPlan.RtoDays) {
-				needRto = true
+				subRto = true
 				doReq.SubRto = true
 			}
 		}
@@ -825,10 +803,10 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 
 		// 更新电车
 		if sub.EbikeID != nil {
-			if needRto {
+			if subRto {
 				// 当前属于以租代购赠车，直接删除平台电车资产
 				err = tx.Ebike.UpdateOneID(*sub.EbikeID).
-					SetIsRto(model.EbikeIsRtoSend.Value()).
+					SetRto(true).
 					Exec(s.ctx)
 				snag.PanicIfError(err)
 			} else {

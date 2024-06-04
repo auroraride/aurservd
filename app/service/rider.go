@@ -778,7 +778,7 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 			if pl.Type == model.PlanTypeEbikeRto.Value() {
 				pastDays := tools.NewTime().UsedDaysToNow(*sub.StartAt)
 				if pastDays >= int(pl.RtoDays) {
-					ri.IsRto = true
+					ri.Rto = true
 				}
 			}
 		}

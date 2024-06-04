@@ -440,7 +440,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			business.FieldType:         {Type: field.TypeOther, Column: business.FieldType},
 			business.FieldBinInfo:      {Type: field.TypeJSON, Column: business.FieldBinInfo},
 			business.FieldStockSn:      {Type: field.TypeString, Column: business.FieldStockSn},
-			business.FieldIsRto:        {Type: field.TypeUint8, Column: business.FieldIsRto},
+			business.FieldRto:          {Type: field.TypeBool, Column: business.FieldRto},
 		},
 	}
 	graph.Nodes[12] = &sqlgraph.Node{
@@ -731,7 +731,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			ebike.FieldSim:          {Type: field.TypeString, Column: ebike.FieldSim},
 			ebike.FieldColor:        {Type: field.TypeString, Column: ebike.FieldColor},
 			ebike.FieldExFactory:    {Type: field.TypeString, Column: ebike.FieldExFactory},
-			ebike.FieldIsRto:        {Type: field.TypeUint8, Column: ebike.FieldIsRto},
+			ebike.FieldRto:          {Type: field.TypeBool, Column: ebike.FieldRto},
 		},
 	}
 	graph.Nodes[22] = &sqlgraph.Node{
@@ -8068,9 +8068,9 @@ func (f *BusinessFilter) WhereStockSn(p entql.StringP) {
 	f.Where(p.Field(business.FieldStockSn))
 }
 
-// WhereIsRto applies the entql uint8 predicate on the is_rto field.
-func (f *BusinessFilter) WhereIsRto(p entql.Uint8P) {
-	f.Where(p.Field(business.FieldIsRto))
+// WhereRto applies the entql bool predicate on the rto field.
+func (f *BusinessFilter) WhereRto(p entql.BoolP) {
+	f.Where(p.Field(business.FieldRto))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.
@@ -9917,9 +9917,9 @@ func (f *EbikeFilter) WhereExFactory(p entql.StringP) {
 	f.Where(p.Field(ebike.FieldExFactory))
 }
 
-// WhereIsRto applies the entql uint8 predicate on the is_rto field.
-func (f *EbikeFilter) WhereIsRto(p entql.Uint8P) {
-	f.Where(p.Field(ebike.FieldIsRto))
+// WhereRto applies the entql bool predicate on the rto field.
+func (f *EbikeFilter) WhereRto(p entql.BoolP) {
+	f.Where(p.Field(ebike.FieldRto))
 }
 
 // WhereHasBrand applies a predicate to check if query has an edge brand.

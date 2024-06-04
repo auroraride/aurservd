@@ -277,7 +277,7 @@ func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmp
 		}
 	}
 
-	res.IsRto = item.IsRto
+	res.Rto = item.Rto
 	res.Remark = item.Remark
 	return
 }

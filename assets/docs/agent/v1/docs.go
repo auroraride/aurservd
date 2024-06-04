@@ -333,12 +333,8 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "enum": [
-                            0,
-                            1
-                        ],
-                        "type": "integer",
-                        "description": "是否赠送 0未赠送 1已赠送",
+                        "type": "boolean",
+                        "description": "是否赠送",
                         "name": "rto",
                         "in": "query"
                     },
@@ -3300,10 +3296,6 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "isRto": {
-                    "description": "是否已赠车",
-                    "type": "integer"
-                },
                 "name": {
                     "description": "骑手姓名",
                     "type": "string"
@@ -3327,6 +3319,10 @@ const docTemplate = `{
                 "remark": {
                     "description": "备注",
                     "type": "string"
+                },
+                "rto": {
+                    "description": "是否已赠车",
+                    "type": "boolean"
                 },
                 "store": {
                     "description": "门店, 可能为空",
@@ -3368,10 +3364,6 @@ const docTemplate = `{
                     "description": "订阅ID",
                     "type": "integer"
                 },
-                "needRto": {
-                    "description": "管理员强制退租-是否赠车：0-不赠车; 1-赠车;",
-                    "type": "integer"
-                },
                 "refundDeposit": {
                     "description": "是否退押金, 是否退押金(后台使用)",
                     "type": "boolean"
@@ -3379,6 +3371,10 @@ const docTemplate = `{
                 "remark": {
                     "description": "备注",
                     "type": "string"
+                },
+                "rto": {
+                    "description": "管理员强制退租-是否赠车",
+                    "type": "boolean"
                 },
                 "storeId": {
                     "description": "门店ID",
@@ -3555,10 +3551,6 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "isRto": {
-                    "description": "是否已赠送",
-                    "type": "boolean"
-                },
                 "machine": {
                     "description": "终端编号",
                     "type": "string"
@@ -3570,6 +3562,10 @@ const docTemplate = `{
                 "rider": {
                     "description": "骑手",
                     "type": "string"
+                },
+                "rto": {
+                    "description": "是否已赠送",
+                    "type": "boolean"
                 },
                 "sim": {
                     "description": "SIM卡号",

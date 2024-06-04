@@ -141,7 +141,7 @@ type RiderItem struct {
 	Points     int64            `json:"points"`             // 积分
 	Balance    float64          `json:"balance"`            // 余额
 	PlanName   string           `json:"planName,omitempty"` // 骑士卡名称
-	IsRto      bool             `json:"isRto"`              // 骑手当前订阅是否可赠车
+	Rto        bool             `json:"rto"`                // 骑手当前订阅是否可赠车
 	// 团签企业信息, 若无此字段则为个签用户
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// 团签代理信息

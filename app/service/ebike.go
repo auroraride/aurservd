@@ -200,12 +200,12 @@ func (s *ebikeService) listFilter(req model.EbikeListFilter) (q *ent.EbikeQuery,
 
 	if req.Rto != nil {
 		switch *req.Rto {
-		case model.EbikeIsRtoUnSend.Value():
-			info["是否已赠送"] = model.EbikeIsRtoUnSend.String()
-		case model.EbikeIsRtoSend.Value():
-			info["是否已赠送"] = model.EbikeIsRtoSend.String()
+		case true:
+			info["是否已赠送"] = true
+		default:
+			info["是否已赠送"] = false
 		}
-		q.Where(ebike.IsRto(*req.Rto))
+		q.Where(ebike.Rto(*req.Rto))
 	}
 
 	return
@@ -230,7 +230,7 @@ func (s *ebikeService) List(req *model.EbikeListReq) *model.PaginationRes {
 				Sim:     item.Sim,
 				Color:   silk.Pointer(item.Color),
 			},
-			IsRto: item.IsRto == model.EbikeIsRtoSend.Value(),
+			Rto: item.Rto,
 		}
 		if eb != nil {
 			res.Brand = eb.Name

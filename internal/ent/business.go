@@ -70,8 +70,8 @@ type Business struct {
 	BinInfo *model.BinInfo `json:"bin_info,omitempty"`
 	// 出入库编码
 	StockSn string `json:"stock_sn,omitempty"`
-	// 是否已赠送 0:未赠送 1:已赠送
-	IsRto uint8 `json:"is_rto,omitempty"`
+	// 是否赠送
+	Rto bool `json:"rto,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BusinessQuery when eager-loading is set.
 	Edges        BusinessEdges `json:"edges"`
@@ -237,7 +237,9 @@ func (*Business) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case business.FieldType:
 			values[i] = new(model.BusinessType)
-		case business.FieldID, business.FieldRiderID, business.FieldCityID, business.FieldSubscribeID, business.FieldEmployeeID, business.FieldStoreID, business.FieldPlanID, business.FieldEnterpriseID, business.FieldStationID, business.FieldCabinetID, business.FieldBatteryID, business.FieldAgentID, business.FieldIsRto:
+		case business.FieldRto:
+			values[i] = new(sql.NullBool)
+		case business.FieldID, business.FieldRiderID, business.FieldCityID, business.FieldSubscribeID, business.FieldEmployeeID, business.FieldStoreID, business.FieldPlanID, business.FieldEnterpriseID, business.FieldStationID, business.FieldCabinetID, business.FieldBatteryID, business.FieldAgentID:
 			values[i] = new(sql.NullInt64)
 		case business.FieldRemark, business.FieldStockSn:
 			values[i] = new(sql.NullString)
@@ -399,11 +401,11 @@ func (b *Business) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				b.StockSn = value.String
 			}
-		case business.FieldIsRto:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field is_rto", values[i])
+		case business.FieldRto:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field rto", values[i])
 			} else if value.Valid {
-				b.IsRto = uint8(value.Int64)
+				b.Rto = value.Bool
 			}
 		default:
 			b.selectValues.Set(columns[i], values[i])
@@ -574,8 +576,8 @@ func (b *Business) String() string {
 	builder.WriteString("stock_sn=")
 	builder.WriteString(b.StockSn)
 	builder.WriteString(", ")
-	builder.WriteString("is_rto=")
-	builder.WriteString(fmt.Sprintf("%v", b.IsRto))
+	builder.WriteString("rto=")
+	builder.WriteString(fmt.Sprintf("%v", b.Rto))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -656,9 +656,6 @@ definitions:
         description: 站点
       id:
         type: integer
-      isRto:
-        description: 是否已赠车
-        type: integer
       name:
         description: 骑手姓名
         type: string
@@ -675,6 +672,9 @@ definitions:
       remark:
         description: 备注
         type: string
+      rto:
+        description: 是否已赠车
+        type: boolean
       store:
         allOf:
         - $ref: '#/definitions/model.Store'
@@ -700,15 +700,15 @@ definitions:
       id:
         description: 订阅ID
         type: integer
-      needRto:
-        description: 管理员强制退租-是否赠车：0-不赠车; 1-赠车;
-        type: integer
       refundDeposit:
         description: 是否退押金, 是否退押金(后台使用)
         type: boolean
       remark:
         description: 备注
         type: string
+      rto:
+        description: 管理员强制退租-是否赠车
+        type: boolean
       storeId:
         description: 门店ID
         type: integer
@@ -833,9 +833,6 @@ definitions:
         type: string
       id:
         type: integer
-      isRto:
-        description: 是否已赠送
-        type: boolean
       machine:
         description: 终端编号
         type: string
@@ -845,6 +842,9 @@ definitions:
       rider:
         description: 骑手
         type: string
+      rto:
+        description: 是否已赠送
+        type: boolean
       sim:
         description: SIM卡号
         type: string
@@ -1877,13 +1877,10 @@ paths:
         in: query
         name: riderId
         type: integer
-      - description: 是否赠送 0未赠送 1已赠送
-        enum:
-        - 0
-        - 1
+      - description: 是否赠送
         in: query
         name: rto
-        type: integer
+        type: boolean
       - description: 站点ID
         in: query
         name: stationId

@@ -258,16 +258,16 @@ func (bc *BusinessCreate) SetNillableStockSn(s *string) *BusinessCreate {
 	return bc
 }
 
-// SetIsRto sets the "is_rto" field.
-func (bc *BusinessCreate) SetIsRto(u uint8) *BusinessCreate {
-	bc.mutation.SetIsRto(u)
+// SetRto sets the "rto" field.
+func (bc *BusinessCreate) SetRto(b bool) *BusinessCreate {
+	bc.mutation.SetRto(b)
 	return bc
 }
 
-// SetNillableIsRto sets the "is_rto" field if the given value is not nil.
-func (bc *BusinessCreate) SetNillableIsRto(u *uint8) *BusinessCreate {
-	if u != nil {
-		bc.SetIsRto(*u)
+// SetNillableRto sets the "rto" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableRto(b *bool) *BusinessCreate {
+	if b != nil {
+		bc.SetRto(*b)
 	}
 	return bc
 }
@@ -378,9 +378,9 @@ func (bc *BusinessCreate) defaults() error {
 		v := business.DefaultUpdatedAt()
 		bc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := bc.mutation.IsRto(); !ok {
-		v := business.DefaultIsRto
-		bc.mutation.SetIsRto(v)
+	if _, ok := bc.mutation.Rto(); !ok {
+		v := business.DefaultRto
+		bc.mutation.SetRto(v)
 	}
 	return nil
 }
@@ -405,8 +405,8 @@ func (bc *BusinessCreate) check() error {
 	if _, ok := bc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Business.type"`)}
 	}
-	if _, ok := bc.mutation.IsRto(); !ok {
-		return &ValidationError{Name: "is_rto", err: errors.New(`ent: missing required field "Business.is_rto"`)}
+	if _, ok := bc.mutation.Rto(); !ok {
+		return &ValidationError{Name: "rto", err: errors.New(`ent: missing required field "Business.rto"`)}
 	}
 	if _, ok := bc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Business.rider"`)}
@@ -480,9 +480,9 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 		_spec.SetField(business.FieldStockSn, field.TypeString, value)
 		_node.StockSn = value
 	}
-	if value, ok := bc.mutation.IsRto(); ok {
-		_spec.SetField(business.FieldIsRto, field.TypeUint8, value)
-		_node.IsRto = value
+	if value, ok := bc.mutation.Rto(); ok {
+		_spec.SetField(business.FieldRto, field.TypeBool, value)
+		_node.Rto = value
 	}
 	if nodes := bc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1017,21 +1017,15 @@ func (u *BusinessUpsert) ClearStockSn() *BusinessUpsert {
 	return u
 }
 
-// SetIsRto sets the "is_rto" field.
-func (u *BusinessUpsert) SetIsRto(v uint8) *BusinessUpsert {
-	u.Set(business.FieldIsRto, v)
+// SetRto sets the "rto" field.
+func (u *BusinessUpsert) SetRto(v bool) *BusinessUpsert {
+	u.Set(business.FieldRto, v)
 	return u
 }
 
-// UpdateIsRto sets the "is_rto" field to the value that was provided on create.
-func (u *BusinessUpsert) UpdateIsRto() *BusinessUpsert {
-	u.SetExcluded(business.FieldIsRto)
-	return u
-}
-
-// AddIsRto adds v to the "is_rto" field.
-func (u *BusinessUpsert) AddIsRto(v uint8) *BusinessUpsert {
-	u.Add(business.FieldIsRto, v)
+// UpdateRto sets the "rto" field to the value that was provided on create.
+func (u *BusinessUpsert) UpdateRto() *BusinessUpsert {
+	u.SetExcluded(business.FieldRto)
 	return u
 }
 
@@ -1426,24 +1420,17 @@ func (u *BusinessUpsertOne) ClearStockSn() *BusinessUpsertOne {
 	})
 }
 
-// SetIsRto sets the "is_rto" field.
-func (u *BusinessUpsertOne) SetIsRto(v uint8) *BusinessUpsertOne {
+// SetRto sets the "rto" field.
+func (u *BusinessUpsertOne) SetRto(v bool) *BusinessUpsertOne {
 	return u.Update(func(s *BusinessUpsert) {
-		s.SetIsRto(v)
+		s.SetRto(v)
 	})
 }
 
-// AddIsRto adds v to the "is_rto" field.
-func (u *BusinessUpsertOne) AddIsRto(v uint8) *BusinessUpsertOne {
+// UpdateRto sets the "rto" field to the value that was provided on create.
+func (u *BusinessUpsertOne) UpdateRto() *BusinessUpsertOne {
 	return u.Update(func(s *BusinessUpsert) {
-		s.AddIsRto(v)
-	})
-}
-
-// UpdateIsRto sets the "is_rto" field to the value that was provided on create.
-func (u *BusinessUpsertOne) UpdateIsRto() *BusinessUpsertOne {
-	return u.Update(func(s *BusinessUpsert) {
-		s.UpdateIsRto()
+		s.UpdateRto()
 	})
 }
 
@@ -2004,24 +1991,17 @@ func (u *BusinessUpsertBulk) ClearStockSn() *BusinessUpsertBulk {
 	})
 }
 
-// SetIsRto sets the "is_rto" field.
-func (u *BusinessUpsertBulk) SetIsRto(v uint8) *BusinessUpsertBulk {
+// SetRto sets the "rto" field.
+func (u *BusinessUpsertBulk) SetRto(v bool) *BusinessUpsertBulk {
 	return u.Update(func(s *BusinessUpsert) {
-		s.SetIsRto(v)
+		s.SetRto(v)
 	})
 }
 
-// AddIsRto adds v to the "is_rto" field.
-func (u *BusinessUpsertBulk) AddIsRto(v uint8) *BusinessUpsertBulk {
+// UpdateRto sets the "rto" field to the value that was provided on create.
+func (u *BusinessUpsertBulk) UpdateRto() *BusinessUpsertBulk {
 	return u.Update(func(s *BusinessUpsert) {
-		s.AddIsRto(v)
-	})
-}
-
-// UpdateIsRto sets the "is_rto" field to the value that was provided on create.
-func (u *BusinessUpsertBulk) UpdateIsRto() *BusinessUpsertBulk {
-	return u.Update(func(s *BusinessUpsert) {
-		s.UpdateIsRto()
+		s.UpdateRto()
 	})
 }
 

@@ -136,9 +136,9 @@ func ExFactory(v string) predicate.Ebike {
 	return predicate.Ebike(sql.FieldEQ(FieldExFactory, v))
 }
 
-// IsRto applies equality check predicate on the "is_rto" field. It's identical to IsRtoEQ.
-func IsRto(v uint8) predicate.Ebike {
-	return predicate.Ebike(sql.FieldEQ(FieldIsRto, v))
+// Rto applies equality check predicate on the "rto" field. It's identical to RtoEQ.
+func Rto(v bool) predicate.Ebike {
+	return predicate.Ebike(sql.FieldEQ(FieldRto, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -926,44 +926,14 @@ func ExFactoryContainsFold(v string) predicate.Ebike {
 	return predicate.Ebike(sql.FieldContainsFold(FieldExFactory, v))
 }
 
-// IsRtoEQ applies the EQ predicate on the "is_rto" field.
-func IsRtoEQ(v uint8) predicate.Ebike {
-	return predicate.Ebike(sql.FieldEQ(FieldIsRto, v))
+// RtoEQ applies the EQ predicate on the "rto" field.
+func RtoEQ(v bool) predicate.Ebike {
+	return predicate.Ebike(sql.FieldEQ(FieldRto, v))
 }
 
-// IsRtoNEQ applies the NEQ predicate on the "is_rto" field.
-func IsRtoNEQ(v uint8) predicate.Ebike {
-	return predicate.Ebike(sql.FieldNEQ(FieldIsRto, v))
-}
-
-// IsRtoIn applies the In predicate on the "is_rto" field.
-func IsRtoIn(vs ...uint8) predicate.Ebike {
-	return predicate.Ebike(sql.FieldIn(FieldIsRto, vs...))
-}
-
-// IsRtoNotIn applies the NotIn predicate on the "is_rto" field.
-func IsRtoNotIn(vs ...uint8) predicate.Ebike {
-	return predicate.Ebike(sql.FieldNotIn(FieldIsRto, vs...))
-}
-
-// IsRtoGT applies the GT predicate on the "is_rto" field.
-func IsRtoGT(v uint8) predicate.Ebike {
-	return predicate.Ebike(sql.FieldGT(FieldIsRto, v))
-}
-
-// IsRtoGTE applies the GTE predicate on the "is_rto" field.
-func IsRtoGTE(v uint8) predicate.Ebike {
-	return predicate.Ebike(sql.FieldGTE(FieldIsRto, v))
-}
-
-// IsRtoLT applies the LT predicate on the "is_rto" field.
-func IsRtoLT(v uint8) predicate.Ebike {
-	return predicate.Ebike(sql.FieldLT(FieldIsRto, v))
-}
-
-// IsRtoLTE applies the LTE predicate on the "is_rto" field.
-func IsRtoLTE(v uint8) predicate.Ebike {
-	return predicate.Ebike(sql.FieldLTE(FieldIsRto, v))
+// RtoNEQ applies the NEQ predicate on the "rto" field.
+func RtoNEQ(v bool) predicate.Ebike {
+	return predicate.Ebike(sql.FieldNEQ(FieldRto, v))
 }
 
 // HasBrand applies the HasEdge predicate on the "brand" edge.

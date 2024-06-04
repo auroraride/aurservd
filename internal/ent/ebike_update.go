@@ -298,24 +298,17 @@ func (eu *EbikeUpdate) SetNillableExFactory(s *string) *EbikeUpdate {
 	return eu
 }
 
-// SetIsRto sets the "is_rto" field.
-func (eu *EbikeUpdate) SetIsRto(u uint8) *EbikeUpdate {
-	eu.mutation.ResetIsRto()
-	eu.mutation.SetIsRto(u)
+// SetRto sets the "rto" field.
+func (eu *EbikeUpdate) SetRto(b bool) *EbikeUpdate {
+	eu.mutation.SetRto(b)
 	return eu
 }
 
-// SetNillableIsRto sets the "is_rto" field if the given value is not nil.
-func (eu *EbikeUpdate) SetNillableIsRto(u *uint8) *EbikeUpdate {
-	if u != nil {
-		eu.SetIsRto(*u)
+// SetNillableRto sets the "rto" field if the given value is not nil.
+func (eu *EbikeUpdate) SetNillableRto(b *bool) *EbikeUpdate {
+	if b != nil {
+		eu.SetRto(*b)
 	}
-	return eu
-}
-
-// AddIsRto adds u to the "is_rto" field.
-func (eu *EbikeUpdate) AddIsRto(u int8) *EbikeUpdate {
-	eu.mutation.AddIsRto(u)
 	return eu
 }
 
@@ -534,11 +527,8 @@ func (eu *EbikeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := eu.mutation.ExFactory(); ok {
 		_spec.SetField(ebike.FieldExFactory, field.TypeString, value)
 	}
-	if value, ok := eu.mutation.IsRto(); ok {
-		_spec.SetField(ebike.FieldIsRto, field.TypeUint8, value)
-	}
-	if value, ok := eu.mutation.AddedIsRto(); ok {
-		_spec.AddField(ebike.FieldIsRto, field.TypeUint8, value)
+	if value, ok := eu.mutation.Rto(); ok {
+		_spec.SetField(ebike.FieldRto, field.TypeBool, value)
 	}
 	if eu.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1014,24 +1004,17 @@ func (euo *EbikeUpdateOne) SetNillableExFactory(s *string) *EbikeUpdateOne {
 	return euo
 }
 
-// SetIsRto sets the "is_rto" field.
-func (euo *EbikeUpdateOne) SetIsRto(u uint8) *EbikeUpdateOne {
-	euo.mutation.ResetIsRto()
-	euo.mutation.SetIsRto(u)
+// SetRto sets the "rto" field.
+func (euo *EbikeUpdateOne) SetRto(b bool) *EbikeUpdateOne {
+	euo.mutation.SetRto(b)
 	return euo
 }
 
-// SetNillableIsRto sets the "is_rto" field if the given value is not nil.
-func (euo *EbikeUpdateOne) SetNillableIsRto(u *uint8) *EbikeUpdateOne {
-	if u != nil {
-		euo.SetIsRto(*u)
+// SetNillableRto sets the "rto" field if the given value is not nil.
+func (euo *EbikeUpdateOne) SetNillableRto(b *bool) *EbikeUpdateOne {
+	if b != nil {
+		euo.SetRto(*b)
 	}
-	return euo
-}
-
-// AddIsRto adds u to the "is_rto" field.
-func (euo *EbikeUpdateOne) AddIsRto(u int8) *EbikeUpdateOne {
-	euo.mutation.AddIsRto(u)
 	return euo
 }
 
@@ -1280,11 +1263,8 @@ func (euo *EbikeUpdateOne) sqlSave(ctx context.Context) (_node *Ebike, err error
 	if value, ok := euo.mutation.ExFactory(); ok {
 		_spec.SetField(ebike.FieldExFactory, field.TypeString, value)
 	}
-	if value, ok := euo.mutation.IsRto(); ok {
-		_spec.SetField(ebike.FieldIsRto, field.TypeUint8, value)
-	}
-	if value, ok := euo.mutation.AddedIsRto(); ok {
-		_spec.AddField(ebike.FieldIsRto, field.TypeUint8, value)
+	if value, ok := euo.mutation.Rto(); ok {
+		_spec.SetField(ebike.FieldRto, field.TypeBool, value)
 	}
 	if euo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{

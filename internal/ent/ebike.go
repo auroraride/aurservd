@@ -60,8 +60,8 @@ type Ebike struct {
 	Color string `json:"color,omitempty"`
 	// 生产批次(出厂日期)
 	ExFactory string `json:"ex_factory,omitempty"`
-	// 是否已赠送 0:未赠送 1:已赠送
-	IsRto uint8 `json:"is_rto,omitempty"`
+	// 是否赠送
+	Rto bool `json:"rto,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EbikeQuery when eager-loading is set.
 	Edges        EbikeEdges `json:"edges"`
@@ -160,9 +160,9 @@ func (*Ebike) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case ebike.FieldStatus:
 			values[i] = new(model.EbikeStatus)
-		case ebike.FieldEnable:
+		case ebike.FieldEnable, ebike.FieldRto:
 			values[i] = new(sql.NullBool)
-		case ebike.FieldID, ebike.FieldBrandID, ebike.FieldRiderID, ebike.FieldStoreID, ebike.FieldEnterpriseID, ebike.FieldStationID, ebike.FieldIsRto:
+		case ebike.FieldID, ebike.FieldBrandID, ebike.FieldRiderID, ebike.FieldStoreID, ebike.FieldEnterpriseID, ebike.FieldStationID:
 			values[i] = new(sql.NullInt64)
 		case ebike.FieldRemark, ebike.FieldSn, ebike.FieldPlate, ebike.FieldMachine, ebike.FieldSim, ebike.FieldColor, ebike.FieldExFactory:
 			values[i] = new(sql.NullString)
@@ -308,11 +308,11 @@ func (e *Ebike) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.ExFactory = value.String
 			}
-		case ebike.FieldIsRto:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field is_rto", values[i])
+		case ebike.FieldRto:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field rto", values[i])
 			} else if value.Valid {
-				e.IsRto = uint8(value.Int64)
+				e.Rto = value.Bool
 			}
 		default:
 			e.selectValues.Set(columns[i], values[i])
@@ -448,8 +448,8 @@ func (e *Ebike) String() string {
 	builder.WriteString("ex_factory=")
 	builder.WriteString(e.ExFactory)
 	builder.WriteString(", ")
-	builder.WriteString("is_rto=")
-	builder.WriteString(fmt.Sprintf("%v", e.IsRto))
+	builder.WriteString("rto=")
+	builder.WriteString(fmt.Sprintf("%v", e.Rto))
 	builder.WriteByte(')')
 	return builder.String()
 }
