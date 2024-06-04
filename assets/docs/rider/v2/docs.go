@@ -2214,6 +2214,88 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/goods": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Goods - 商品"
+                ],
+                "summary": "商品列表",
+                "operationId": "GoodsList",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "城市ID, 城市ID",
+                        "name": "cityId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            1
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "GoodsTypeEbike": "电车"
+                        },
+                        "x-enum-varnames": [
+                            "GoodsTypeEbike"
+                        ],
+                        "description": "商品类型, 商品类型 1-电车",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.GoodsDetail"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/goods/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Goods - 商品"
+                ],
+                "summary": "商品详情",
+                "operationId": "GoodsDetail",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "商品ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.GoodsDetail"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/instructions/{key}": {
             "get": {
                 "consumes": [
@@ -4518,6 +4600,13 @@ const docTemplate = `{
                 "rest": {
                     "description": "是否拥有驿站",
                     "type": "boolean"
+                },
+                "rtoBrands": {
+                    "description": "以租代购车电选项",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanEbikeBrandOption"
+                    }
                 },
                 "saleGoods": {
                     "description": "买车列表",

@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/goods"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -78,11 +79,14 @@ func toGoodsDetail(item *ent.Goods) *definition.GoodsDetail {
 	var storeIds []uint64
 	var stores []model.Store
 	for _, es := range item.Edges.Stores {
-		storeIds = append(storeIds, es.Edges.Store.ID)
-		stores = append(stores, model.Store{
-			ID:   es.Edges.Store.ID,
-			Name: es.Edges.Store.Name,
-		})
+		if es.Edges.Store != nil {
+			storeIds = append(storeIds, es.Edges.Store.ID)
+			stores = append(stores, model.Store{
+				ID:   es.Edges.Store.ID,
+				Name: es.Edges.Store.Name,
+			})
+		}
+
 	}
 	return &definition.GoodsDetail{
 		ID: item.ID,
@@ -226,4 +230,25 @@ func (b *goodsBiz) ListByStoreId(storeId uint64) (res []*definition.GoodsDetail)
 		res = append(res, toGoodsDetail(item))
 	}
 	return
+}
+
+// ListForRider App获取商品列表
+func (b *goodsBiz) ListForRider(req *definition.GoodsListForRiderReq) []*definition.GoodsDetail {
+	items, _ := b.orm.QueryNotDeleted().Order(ent.Desc(goods.FieldWeight)).
+		Where(
+			goods.HasStoresWith(
+				storegoods.DeletedAtIsNil(),
+				storegoods.HasStoreWith(store.CityID(req.CityID)),
+			),
+		).
+		WithStores(
+			func(q *ent.StoreGoodsQuery) {
+				q.Where(storegoods.DeletedAtIsNil())
+			},
+		).All(b.ctx)
+	res := make([]*definition.GoodsDetail, 0, len(items))
+	for _, v := range items {
+		res = append(res, toGoodsDetail(v))
+	}
+	return res
 }
