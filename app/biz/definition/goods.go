@@ -88,3 +88,9 @@ type GoodsUpdateStatusReq struct {
 	model.IDParamReq
 	Status GoodsStatus `json:"status"` // 商品状态 0下架 1上架
 }
+
+// GoodsListForRiderReq App商品列表请求
+type GoodsListForRiderReq struct {
+	CityID uint64     `json:"cityId" query:"cityId" validate:"required" trans:"城市ID"` // 城市ID
+	Type   *GoodsType `json:"type" query:"type" trans:"商品类型"`                         // 商品类型 1-电车
+}
