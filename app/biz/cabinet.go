@@ -234,6 +234,11 @@ func (b *cabinetBiz) ListECData(options definition.CabinetECDataSearchOptions) (
 		start = *options.Start
 		end = carbon.CreateFromStdTime(*options.Start).EndOfDay().StdTime()
 	}
+	// 时间相等设置结束时间为当日结束
+	if start == end {
+		end = carbon.CreateFromStdTime(end).EndOfDay().StdTime()
+	}
+
 	// 查询时间范围
 	query := &types.Query{
 		Bool: &types.BoolQuery{
