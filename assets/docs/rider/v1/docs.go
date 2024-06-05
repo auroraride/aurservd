@@ -2787,7 +2787,11 @@ const docTemplate = `{
                 },
                 "type": {
                     "description": "类别  store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.BranchFacilityType"
+                        }
+                    ]
                 }
             }
         },
@@ -2960,6 +2964,21 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.BranchFacilityType": {
+            "type": "string",
+            "enum": [
+                "store",
+                "v72",
+                "v60",
+                "rest"
+            ],
+            "x-enum-varnames": [
+                "BranchFacilityTypeStore",
+                "BranchFacilityTypeV72",
+                "BranchFacilityTypeV60",
+                "BranchFacilityTypeRest"
+            ]
         },
         "model.BranchRidingRes": {
             "type": "object",
@@ -4060,7 +4079,7 @@ const docTemplate = `{
                     "description": "价格, 应支付价格 = 价格 - 新签优惠",
                     "type": "number"
                 },
-                "rentToBuyDays": {
+                "rtoDays": {
                     "description": "以租代购最小使用天数",
                     "type": "integer"
                 }

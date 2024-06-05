@@ -3316,13 +3316,9 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "remark": {
-                    "description": "备注",
+                "rtoEbikeSn": {
+                    "description": "以租代购成功车架号",
                     "type": "string"
-                },
-                "rto": {
-                    "description": "是否以租代购",
-                    "type": "boolean"
                 },
                 "store": {
                     "description": "门店, 可能为空",

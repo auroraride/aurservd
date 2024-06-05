@@ -58,7 +58,7 @@ definitions:
         type: string
     type: object
 info:
-  contact: { }
+  contact: {}
   description: |
     ### 说明
     接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。
@@ -146,36 +146,36 @@ paths:
   /manager/v2/cabinet/ec:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: CabinetListEC
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 结束时间
-          in: query
-          name: end
-          type: string
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
-        - description: 电柜编号
-          in: query
-          name: serial
-          type: string
-        - description: 开始时间
-          in: query
-          name: start
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 电柜编号
+        in: query
+        name: serial
+        type: string
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 成功
@@ -185,36 +185,36 @@ paths:
             type: array
       summary: 查询电柜能耗
       tags:
-        - 电柜
+      - 电柜
   /manager/v2/cabinet/ec/month:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: CabinetListECMonth
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 日期 yyyy-MM
-          in: query
-          name: date
-          type: string
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
-        - description: 电柜编号
-          in: query
-          name: serial
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 日期 yyyy-MM
+        in: query
+        name: date
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 电柜编号
+        in: query
+        name: serial
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 成功
@@ -224,26 +224,26 @@ paths:
             type: array
       summary: 查询电柜月能耗
       tags:
-        - 电柜
+      - 电柜
   /manager/v2/export/cabinet/ec:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: ExportCabinetEc
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 查询参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.CabinetECReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.CabinetECReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 成功
@@ -251,26 +251,26 @@ paths:
             $ref: '#/definitions/model.ExportRes'
       summary: 导出电柜能耗详情
       tags:
-        - 导出
+      - 导出
   /manager/v2/export/cabinet/ec/month:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: ExportCabinetECMonth
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 查询参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.CabinetECMonthExportReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.CabinetECMonthExportReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 成功
@@ -278,5 +278,5 @@ paths:
             $ref: '#/definitions/model.ExportRes'
       summary: 导出电柜能耗
       tags:
-        - 导出
+      - 导出
 swagger: "2.0"

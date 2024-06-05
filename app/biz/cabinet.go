@@ -50,8 +50,8 @@ func (b *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 				AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(%s, ST_GeogFromText('POINT(%f %f)'))`, branch.FieldGeom, *req.Lng, *req.Lat)), "distance").
 				OrderBy(sql.Asc("distance"))
 			if req.Distance != nil {
-				if *req.Distance > 100000 {
-					*req.Distance = 100000
+				if *req.Distance > 500000 {
+					*req.Distance = 500000
 				}
 				sel.Where(sql.P(func(b *sql.Builder) {
 					b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, cabinet.FieldGeom, *req.Lng, *req.Lat, *req.Distance))

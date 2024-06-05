@@ -239,8 +239,8 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 				GroupBy(bt.C(branch.FieldID)).
 				OrderBy(sql.Asc("distance"))
 			if req.Distance != nil {
-				if *req.Distance > 100000 {
-					*req.Distance = 100000
+				if *req.Distance > 500000 {
+					*req.Distance = 500000
 				}
 				sel.Where(sql.P(func(b *sql.Builder) {
 					b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, branch.FieldGeom, *req.Lng, *req.Lat, *req.Distance))
@@ -264,7 +264,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 	storeQuery := ent.Database.Store.QueryNotDeleted().Where(store.BranchIDIn(ids...))
 	filter := req.Filter
 	switch filter {
-	case model.BranchFacilityTypeStore:
+	case model.BranchFacilityTypeStore.String():
 		break
 	case model.BranchFacilityFilterEbikeObtain:
 		storeQuery.Where(store.EbikeObtain(true))
@@ -300,7 +300,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 			// 未传入门店筛选条件只查询驿站数据
 			storeQuery.Where(
 				store.StatusIn(model.StoreStatusOpen.Value(), model.StoreStatusClose.Value()),
-				// store.Rest(true), //若加入此条件、v1版本查询所有门店逻辑不符合
+				store.Rest(true),
 			)
 		case req.StoreStatus != nil:
 			// 传入门店筛选条件-门店状态
@@ -341,7 +341,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 	}
 	distance := req.Distance
 	if distance == 0 {
-		distance = 100000
+		distance = 500000
 	}
 	temps, stores, cabinets := s.ListByDistance(&model.BranchWithDistanceReq{
 		Lng:      &lng,
@@ -360,7 +360,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 			Stores:   make([]model.StoreWithStatus, 0),
 		}
 	}
-	if req.Type == 0 || req.Type == 1 {
+	if req.Type == "" || req.Type == model.BranchFacilityTypeStore || req.Type == model.BranchFacilityTypeRest {
 		for _, st := range stores {
 			if strings.Contains(st.Name, req.Name) {
 				if b, ok := bmap[st.BranchID]; ok {
@@ -375,15 +375,13 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 			}
 		}
 	}
-	if req.Type == 0 || req.Type > 1 {
+	if req.Type == "" || req.Type == model.BranchFacilityTypeV72 || req.Type == model.BranchFacilityTypeV60 {
 		var mt string
-		if req.Type > 1 {
-			switch req.Type {
-			case 60:
-				mt = "V60"
-			case 72:
-				mt = "V72"
-			}
+		switch req.Type {
+		case model.BranchFacilityTypeV72:
+			mt = "72V"
+		case model.BranchFacilityTypeV60:
+			mt = "60V"
 		}
 		for _, cab := range cabinets {
 			if strings.Contains(cab.Name, req.Name) {
@@ -616,7 +614,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 		}
 		// 排序设施 (v60,v72,store,rest)
 		sort.Slice(items, func(i, j int) bool {
-			return strings.Compare(m.Facility[i].Type, m.Facility[j].Type) > 0
+			return strings.Compare(m.Facility[i].Type.String(), m.Facility[j].Type.String()) > 0
 		})
 
 		if len(m.Facility) > 0 {
@@ -631,7 +629,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 }
 
 func (s *branchService) facility(mp map[string]*model.BranchFacility, info model.BranchFacility) {
-	fa, ok := mp[info.Type]
+	fa, ok := mp[info.Type.String()]
 	if ok {
 		// 合并电柜满电数量
 		if info.Type != model.BranchFacilityTypeStore {
@@ -641,7 +639,7 @@ func (s *branchService) facility(mp map[string]*model.BranchFacility, info model
 		}
 	} else {
 		fa = &info
-		mp[info.Type] = fa
+		mp[info.Type.String()] = fa
 	}
 }
 
