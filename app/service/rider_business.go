@@ -94,6 +94,12 @@ func (s *riderBusinessService) preprocess(serial string, bt model.BusinessType) 
 	// 验证电柜是否可办理业务
 	NewCabinet().Sync(cab)
 	m := NewReserve().CabinetCounts([]uint64{cab.ID})
+	// 查询自己预约数据
+	reserve := NewReserve().RiderUnfinished(s.rider.ID)
+	// 排除自己预约的电柜
+	if m[model.NewReserveBusinessKey(cab.ID, bt)] > 0 && reserve != nil && reserve.Status == model.ReserveStatusPending.Value() {
+		m[model.NewReserveBusinessKey(cab.ID, bt)] = m[model.NewReserveBusinessKey(cab.ID, bt)] - 1
+	}
 	if !cab.ReserveAble(bt, m) {
 		snag.Panic(fmt.Sprintf("该电柜无法办理%s业务", model.BusinessTypeText(bt.String())))
 	}
