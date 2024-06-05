@@ -458,7 +458,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 	}
 
 	// 门店数据
-	if req.Business == "" {
+	if req.Business == "" && req.Model == nil {
 		for _, es := range stores {
 			var eState uint
 			switch es.Status {

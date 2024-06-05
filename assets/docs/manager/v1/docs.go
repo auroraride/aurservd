@@ -1529,6 +1529,7 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
+                            "all",
                             "store",
                             "v72",
                             "v60",
@@ -1536,12 +1537,13 @@ const docTemplate = `{
                         ],
                         "type": "string",
                         "x-enum-varnames": [
+                            "BranchFacilityTypeAll",
                             "BranchFacilityTypeStore",
                             "BranchFacilityTypeV72",
                             "BranchFacilityTypeV60",
                             "BranchFacilityTypeRest"
                         ],
-                        "description": "筛选类别 空值:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店",
+                        "description": "筛选类别 all:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店",
                         "name": "type",
                         "in": "query"
                     }
@@ -16397,12 +16399,14 @@ const docTemplate = `{
         "model.BranchFacilityType": {
             "type": "string",
             "enum": [
+                "all",
                 "store",
                 "v72",
                 "v60",
                 "rest"
             ],
             "x-enum-varnames": [
+                "BranchFacilityTypeAll",
                 "BranchFacilityTypeStore",
                 "BranchFacilityTypeV72",
                 "BranchFacilityTypeV60",

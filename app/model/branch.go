@@ -8,6 +8,7 @@ package model
 type BranchFacilityType string
 
 const (
+	BranchFacilityTypeAll   BranchFacilityType = "all"
 	BranchFacilityTypeStore BranchFacilityType = "store"
 	BranchFacilityTypeV72   BranchFacilityType = "v72"
 	BranchFacilityTypeV60   BranchFacilityType = "v60"
@@ -129,7 +130,7 @@ type BranchDistanceListReq struct {
 	Lng      float64            `json:"lng" query:"lng"`           // 经度, 默认 `108.947713`
 	Lat      float64            `json:"lat" query:"lat"`           // 纬度, 默认 `34.231657`
 	Distance float64            `json:"distance" query:"distance"` // 请求距离(米), 默认 `500000`
-	Type     BranchFacilityType `json:"type" query:"type"`         // 筛选类别 空值:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
+	Type     BranchFacilityType `json:"type" query:"type"`         // 筛选类别 all:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
 	Name     string             `json:"name" query:"name"`         // 门店或电柜名称
 }
 
@@ -147,7 +148,7 @@ type BranchDistanceListRes struct {
 type BranchFacility struct {
 	ID         uint64             `json:"id"`
 	Fid        string             `json:"fid"`             // 设施标识
-	Type       BranchFacilityType `json:"type"`            // 类别  store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
+	Type       BranchFacilityType `json:"type"`            // 类别  all:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
 	Name       string             `json:"name"`            // 名称
 	State      uint               `json:"state"`           // 状态 0不可用 1可用
 	Num        int                `json:"num"`             // 满电数量

@@ -215,7 +215,7 @@ definitions:
       type:
         allOf:
         - $ref: '#/definitions/model.BranchFacilityType'
-        description: 类别  store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
+        description: 类别  all:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
     type: object
   model.BranchFacilityCabinet:
     properties:
@@ -337,12 +337,14 @@ definitions:
     type: object
   model.BranchFacilityType:
     enum:
+    - all
     - store
     - v72
     - v60
     - rest
     type: string
     x-enum-varnames:
+    - BranchFacilityTypeAll
     - BranchFacilityTypeStore
     - BranchFacilityTypeV72
     - BranchFacilityTypeV60
