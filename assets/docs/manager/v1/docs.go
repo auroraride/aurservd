@@ -1529,14 +1529,19 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
-                            0,
-                            1,
-                            2,
-                            3,
-                            4
+                            "store",
+                            "v72",
+                            "v60",
+                            "rest"
                         ],
-                        "type": "integer",
-                        "description": "筛选类别 0:全部 1:门店 2:72电柜 3:60电柜 4.驿站",
+                        "type": "string",
+                        "x-enum-varnames": [
+                            "BranchFacilityTypeStore",
+                            "BranchFacilityTypeV72",
+                            "BranchFacilityTypeV60",
+                            "BranchFacilityTypeRest"
+                        ],
+                        "description": "筛选类别 空值:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店",
                         "name": "type",
                         "in": "query"
                     }
@@ -16388,6 +16393,21 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "model.BranchFacilityType": {
+            "type": "string",
+            "enum": [
+                "store",
+                "v72",
+                "v60",
+                "rest"
+            ],
+            "x-enum-varnames": [
+                "BranchFacilityTypeStore",
+                "BranchFacilityTypeV72",
+                "BranchFacilityTypeV60",
+                "BranchFacilityTypeRest"
+            ]
         },
         "model.BranchItem": {
             "type": "object",

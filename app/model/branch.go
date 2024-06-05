@@ -5,12 +5,18 @@
 
 package model
 
+type BranchFacilityType string
+
 const (
-	BranchFacilityTypeStore = "store"
-	BranchFacilityTypeV72   = "v72"
-	BranchFacilityTypeV60   = "v60"
-	BranchFacilityTypeRest  = "rest"
+	BranchFacilityTypeStore BranchFacilityType = "store"
+	BranchFacilityTypeV72   BranchFacilityType = "v72"
+	BranchFacilityTypeV60   BranchFacilityType = "v60"
+	BranchFacilityTypeRest  BranchFacilityType = "rest"
 )
+
+func (b BranchFacilityType) String() string {
+	return string(b)
+}
 
 const (
 	BranchFacilityStateOffline uint = iota // 不在线
@@ -120,11 +126,11 @@ type BranchWithDistanceReq struct {
 }
 
 type BranchDistanceListReq struct {
-	Lng      float64 `json:"lng" query:"lng"`                     // 经度, 默认 `108.947713`
-	Lat      float64 `json:"lat" query:"lat"`                     // 纬度, 默认 `34.231657`
-	Distance float64 `json:"distance" query:"distance"`           // 请求距离(米), 默认 `500000`
-	Type     uint8   `json:"type" query:"type" enums:"0,1,2,3,4"` // 筛选类别 0:全部 1:门店 2:72电柜 3:60电柜 4.驿站
-	Name     string  `json:"name" query:"name"`                   // 门店或电柜名称
+	Lng      float64            `json:"lng" query:"lng"`           // 经度, 默认 `108.947713`
+	Lat      float64            `json:"lat" query:"lat"`           // 纬度, 默认 `34.231657`
+	Distance float64            `json:"distance" query:"distance"` // 请求距离(米), 默认 `500000`
+	Type     BranchFacilityType `json:"type" query:"type"`         // 筛选类别 空值:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
+	Name     string             `json:"name" query:"name"`         // 门店或电柜名称
 }
 
 type BranchDistanceListRes struct {
@@ -139,16 +145,16 @@ type BranchDistanceListRes struct {
 
 // BranchFacility 网点设施
 type BranchFacility struct {
-	ID         uint64 `json:"id"`
-	Fid        string `json:"fid"`             // 设施标识
-	Type       string `json:"type"`            // 类别  store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
-	Name       string `json:"name"`            // 名称
-	State      uint   `json:"state"`           // 状态 0不可用 1可用
-	Num        int    `json:"num"`             // 满电数量
-	Phone      string `json:"phone,omitempty"` // 联系电话
-	Total      int    `json:"total"`           // 仓位数量
-	CabinetNum int    `json:"cabinetNum"`      // 电柜数量
-	BatteryNum int    `json:"batteryNum"`      // 电池数量
+	ID         uint64             `json:"id"`
+	Fid        string             `json:"fid"`             // 设施标识
+	Type       BranchFacilityType `json:"type"`            // 类别  store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
+	Name       string             `json:"name"`            // 名称
+	State      uint               `json:"state"`           // 状态 0不可用 1可用
+	Num        int                `json:"num"`             // 满电数量
+	Phone      string             `json:"phone,omitempty"` // 联系电话
+	Total      int                `json:"total"`           // 仓位数量
+	CabinetNum int                `json:"cabinetNum"`      // 电柜数量
+	BatteryNum int                `json:"batteryNum"`      // 电池数量
 }
 
 // BranchWithDistanceRes 根据距离获取网点结果

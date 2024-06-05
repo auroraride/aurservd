@@ -970,8 +970,9 @@ definitions:
         description: 仓位数量
         type: integer
       type:
+        allOf:
+        - $ref: '#/definitions/model.BranchFacilityType'
         description: 类别  store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
-        type: string
     type: object
   model.BranchFacilityCabinet:
     properties:
@@ -1091,6 +1092,18 @@ definitions:
         description: 门店名称
         type: string
     type: object
+  model.BranchFacilityType:
+    enum:
+    - store
+    - v72
+    - v60
+    - rest
+    type: string
+    x-enum-varnames:
+    - BranchFacilityTypeStore
+    - BranchFacilityTypeV72
+    - BranchFacilityTypeV60
+    - BranchFacilityTypeRest
   model.BranchRidingRes:
     properties:
       minutes:
