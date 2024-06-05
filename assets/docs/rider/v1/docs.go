@@ -2786,7 +2786,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "type": {
-                    "description": "类别  store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店",
+                    "description": "类别  all:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.BranchFacilityType"
@@ -2968,12 +2968,14 @@ const docTemplate = `{
         "model.BranchFacilityType": {
             "type": "string",
             "enum": [
+                "all",
                 "store",
                 "v72",
                 "v60",
                 "rest"
             ],
             "x-enum-varnames": [
+                "BranchFacilityTypeAll",
                 "BranchFacilityTypeStore",
                 "BranchFacilityTypeV72",
                 "BranchFacilityTypeV60",

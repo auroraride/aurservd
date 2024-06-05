@@ -1756,12 +1756,14 @@ definitions:
     type: object
   model.BranchFacilityType:
     enum:
+    - all
     - store
     - v72
     - v60
     - rest
     type: string
     x-enum-varnames:
+    - BranchFacilityTypeAll
     - BranchFacilityTypeStore
     - BranchFacilityTypeV72
     - BranchFacilityTypeV60
@@ -8672,8 +8674,9 @@ paths:
         in: query
         name: name
         type: string
-      - description: 筛选类别 空值:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
+      - description: 筛选类别 all:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
         enum:
+        - all
         - store
         - v72
         - v60
@@ -8682,6 +8685,7 @@ paths:
         name: type
         type: string
         x-enum-varnames:
+        - BranchFacilityTypeAll
         - BranchFacilityTypeStore
         - BranchFacilityTypeV72
         - BranchFacilityTypeV60
