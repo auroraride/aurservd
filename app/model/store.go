@@ -22,7 +22,7 @@ func (t StoreStatus) Value() uint8 {
 type StoreCreateReq struct {
 	BranchID      *uint64              `json:"branchId" validate:"required" trans:"网点"`
 	Name          *string              `json:"name" validate:"required" trans:"门店名称"`
-	Status        StoreStatus          `json:"status" validate:"required" enums:"0,1,2,3"` // 门店状态 0维护 1营业 2休息 3隐藏
+	Status        *StoreStatus         `json:"status" validate:"required" enums:"0,1,2,3"` // 门店状态 0维护 1营业 2休息 3隐藏
 	Materials     []StockStoreMaterial `json:"materials"`                                  // 门店物资
 	EbikeObtain   bool                 `json:"ebikeObtain"`                                // 是否可以领取车辆
 	EbikeRepair   bool                 `json:"ebikeRepair"`                                // 是否可以维修车辆

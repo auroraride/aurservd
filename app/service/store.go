@@ -99,9 +99,10 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
 	if len(req.Materials) > 0 {
 		for _, m := range req.Materials {
 			tf := &model.StockTransferReq{
-				OutboundID: 0,
-				InboundID:  item.ID,
-				Num:        m.Num,
+				OutboundID:    0,
+				InboundID:     item.ID,
+				Num:           m.Num,
+				InboundTarget: model.StockTargetStore,
 			}
 			if m.Model != "" {
 				tf.Model = m.Model
