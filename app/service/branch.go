@@ -300,7 +300,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 			// 未传入门店筛选条件只查询驿站数据
 			storeQuery.Where(
 				store.StatusIn(model.StoreStatusOpen.Value(), model.StoreStatusClose.Value()),
-				// store.Rest(true), //若加入此条件、v1版本查询所有门店逻辑不符合
+				store.Rest(true),
 			)
 		case req.StoreStatus != nil:
 			// 传入门店筛选条件-门店状态
@@ -375,15 +375,13 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 			}
 		}
 	}
-	if req.Type == 0 || req.Type > 1 {
+	if req.Type == 0 || req.Type == 2 || req.Type == 3 {
 		var mt string
-		if req.Type > 1 {
-			switch req.Type {
-			case 60:
-				mt = "V60"
-			case 72:
-				mt = "V72"
-			}
+		switch req.Type {
+		case 2:
+			mt = "72V"
+		case 3:
+			mt = "60V"
 		}
 		for _, cab := range cabinets {
 			if strings.Contains(cab.Name, req.Name) {

@@ -1532,10 +1532,11 @@ const docTemplate = `{
                             0,
                             1,
                             2,
-                            3
+                            3,
+                            4
                         ],
                         "type": "integer",
-                        "description": "筛选类别 0:全部 1:门店 2:72电柜 3:60电柜",
+                        "description": "筛选类别 0:全部 1:门店 2:72电柜 3:60电柜 4.驿站",
                         "name": "type",
                         "in": "query"
                     }
@@ -16628,13 +16629,9 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "remark": {
-                    "description": "备注",
+                "rtoEbikeSn": {
+                    "description": "以租代购成功车架号",
                     "type": "string"
-                },
-                "rto": {
-                    "description": "是否以租代购",
-                    "type": "boolean"
                 },
                 "store": {
                     "description": "门店, 可能为空",

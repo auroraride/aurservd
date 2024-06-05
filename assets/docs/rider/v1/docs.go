@@ -4060,7 +4060,7 @@ const docTemplate = `{
                     "description": "价格, 应支付价格 = 价格 - 新签优惠",
                     "type": "number"
                 },
-                "rentToBuyDays": {
+                "rtoDays": {
                     "description": "以租代购最小使用天数",
                     "type": "integer"
                 }

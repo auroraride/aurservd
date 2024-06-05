@@ -120,11 +120,11 @@ type BranchWithDistanceReq struct {
 }
 
 type BranchDistanceListReq struct {
-	Lng      float64 `json:"lng" query:"lng"`                   // 经度, 默认 `108.947713`
-	Lat      float64 `json:"lat" query:"lat"`                   // 纬度, 默认 `34.231657`
-	Distance float64 `json:"distance" query:"distance"`         // 请求距离(米), 默认 `500000`
-	Type     uint8   `json:"type" query:"type" enums:"0,1,2,3"` // 筛选类别 0:全部 1:门店 2:72电柜 3:60电柜
-	Name     string  `json:"name" query:"name"`                 // 门店或电柜名称
+	Lng      float64 `json:"lng" query:"lng"`                     // 经度, 默认 `108.947713`
+	Lat      float64 `json:"lat" query:"lat"`                     // 纬度, 默认 `34.231657`
+	Distance float64 `json:"distance" query:"distance"`           // 请求距离(米), 默认 `500000`
+	Type     uint8   `json:"type" query:"type" enums:"0,1,2,3,4"` // 筛选类别 0:全部 1:门店 2:72电柜 3:60电柜 4.驿站
+	Name     string  `json:"name" query:"name"`                   // 门店或电柜名称
 }
 
 type BranchDistanceListRes struct {
