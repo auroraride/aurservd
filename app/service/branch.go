@@ -652,16 +652,15 @@ func (s *branchService) facility(mp map[string]*model.BranchFacility, info model
 	fa, ok := mp[info.Type.String()]
 	if ok {
 		switch info.Type {
-		case model.BranchFacilityTypeStore:
-			// 合并电柜满电数量
-			fa.Num += info.Num
-			fa.Total += info.Total
-			fa.CabinetNum += info.CabinetNum
 		case model.BranchFacilityTypeV72, model.BranchFacilityTypeV60:
 			// 电柜状态 只要有一个在线就是在线
 			if info.State == model.BranchFacilityStateOnline {
 				fa.State = model.BranchFacilityStateOnline
 			}
+			// 合并电柜满电数量
+			fa.Num += info.Num
+			fa.Total += info.Total
+			fa.CabinetNum += info.CabinetNum
 		}
 	} else {
 		fa = &info
