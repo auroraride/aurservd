@@ -45,19 +45,18 @@ func NewCabinet() *cabinetBiz {
 
 // ListByRider  查询电柜
 func (b *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderReq) (res []definition.CabinetByRiderRes, err error) {
+	maxDistance := 50000.0
+	if req.Distance != nil && *req.Distance < maxDistance {
+		maxDistance = *req.Distance
+	}
 	q := b.orm.QueryNotDeleted().WithModels().WithEnterprise().WithBranch().
 		Modify(func(sel *sql.Selector) {
 			sel.
 				AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(%s, ST_GeogFromText('POINT(%f %f)'))`, branch.FieldGeom, *req.Lng, *req.Lat)), "distance").
-				OrderBy(sql.Asc("distance"))
-			if req.Distance != nil {
-				if *req.Distance > 500000 {
-					*req.Distance = 500000
-				}
-				sel.Where(sql.P(func(b *sql.Builder) {
-					b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, cabinet.FieldGeom, *req.Lng, *req.Lat, *req.Distance))
+				OrderBy(sql.Asc("distance")).
+				Where(sql.P(func(b *sql.Builder) {
+					b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, cabinet.FieldGeom, *req.Lng, *req.Lat, maxDistance))
 				}))
-			}
 		})
 	// 默认查询骑手订阅型号的电柜
 	var sub *ent.Subscribe

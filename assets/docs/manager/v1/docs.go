@@ -1505,7 +1505,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "number",
-                        "description": "请求距离(米), 默认 ` + "`" + `500000` + "`" + `",
+                        "description": "请求距离(米), 默认 ` + "`" + `50000` + "`" + `",
                         "name": "distance",
                         "in": "query"
                     },
