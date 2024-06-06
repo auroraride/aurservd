@@ -61,7 +61,7 @@ func (s *feedbackService) Create(req *model.FeedbackReq, ag *ent.Agent) bool {
 
 // FeedbackList List 反馈列表
 func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.PaginationRes {
-	q := s.orm.Query().WithEnterprise().WithRider().Order(ent.Desc(feedback.FieldCreatedAt))
+	q := s.orm.Query().WithEnterprise().WithRider().WithCity().Order(ent.Desc(feedback.FieldCreatedAt))
 	// 筛选条件
 	if req.Keyword != "" {
 		q.Where(
@@ -105,16 +105,20 @@ func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.Pagina
 
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Feedback) model.FeedbackDetail {
 		res := model.FeedbackDetail{
-			ID:        item.ID,
-			Content:   item.Content,
-			Url:       item.URL,
-			Type:      item.Type,
-			Source:    item.Source,
-			CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
+			ID:          item.ID,
+			Content:     item.Content,
+			Url:         item.URL,
+			Type:        item.Type,
+			Source:      item.Source,
+			CreatedAt:   item.CreatedAt.Format(carbon.DateTimeLayout),
+			VersionInfo: item.VersionInfo,
 		}
 		if item.Edges.Enterprise != nil {
 			res.EnterpriseID = item.Edges.Enterprise.ID
 			res.EnterpriseName = item.Edges.Enterprise.Name
+		}
+		if item.Edges.City != nil {
+			res.CityName = item.Edges.City.Name
 		}
 		res.Name = item.Name
 		res.Phone = item.Phone
