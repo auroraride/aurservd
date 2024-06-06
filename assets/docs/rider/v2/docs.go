@@ -1312,6 +1312,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/contract/{docId}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Contract - 合同"
+                ],
+                "summary": "查看合同",
+                "operationId": "ContractDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "合同ID",
+                        "name": "docId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.ContractDetailRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/deposit": {
             "get": {
                 "consumes": [
@@ -3862,6 +3901,15 @@ const docTemplate = `{
                 "needRealName": {
                     "description": "是否需要实名认证   true:需要  false:不需要",
                     "type": "boolean"
+                }
+            }
+        },
+        "definition.ContractDetailRes": {
+            "type": "object",
+            "properties": {
+                "link": {
+                    "description": "合同链接",
+                    "type": "string"
                 }
             }
         },
@@ -7085,6 +7133,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.RiderContact"
                         }
                     ]
+                },
+                "contractDocId": {
+                    "description": "签署合同编号",
+                    "type": "string"
                 },
                 "deposit": {
                     "description": "需缴押金",

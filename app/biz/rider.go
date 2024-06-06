@@ -6,11 +6,13 @@ import (
 	"fmt"
 
 	"github.com/rs/xid"
+	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/payment/alipay"
@@ -125,6 +127,16 @@ func (b *riderBiz) Signin(device *model.Device, req *definition.RiderSignupReq) 
 
 	res = service.NewRider().Profile(u, device, token)
 
+	effectiveContract := service.NewContract().QueryEffectiveContract(u)
+	if effectiveContract != nil {
+		encryptDocID, err := utils.EncryptAES([]byte(ar.Config.Contract.EncryptKey), effectiveContract.DocID)
+		if err != nil || encryptDocID == "" {
+			zap.L().Error("加密合同编号失败", zap.Error(err))
+			return nil, err
+		}
+		res.ContractDocID = encryptDocID
+	}
+
 	// 设置登录token
 	service.NewRider().ExtendTokenTime(u.ID, token)
 
@@ -149,4 +161,9 @@ func (b *riderBiz) SetMobPushId(u *ent.Rider, req *definition.RiderSetMobPushReq
 		return err
 	}
 	return
+}
+
+// EncryptContractDocId 加密合同编号 合同有用户敏感信息
+func (b *riderBiz) EncryptContractDocId(contractNo string) string {
+	return utils.Md5Base64String(contractNo)
 }

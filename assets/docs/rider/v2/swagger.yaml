@@ -194,6 +194,12 @@ definitions:
         description: 是否需要实名认证   true:需要  false:不需要
         type: boolean
     type: object
+  definition.ContractDetailRes:
+    properties:
+      link:
+        description: 合同链接
+        type: string
+    type: object
   definition.ContractSignNewReq:
     properties:
       docId:
@@ -2429,6 +2435,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.RiderContact'
         description: 联系人
+      contractDocId:
+        description: 签署合同编号
+        type: string
       deposit:
         description: 需缴押金
         type: number
@@ -3592,6 +3601,32 @@ paths:
       summary: 添加紧急联系人
       tags:
       - Rider - 骑手
+  /rider/v2/contract/{docId}:
+    get:
+      consumes:
+        - application/json
+      operationId: ContractDetail
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: 合同ID
+          in: path
+          name: docId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.ContractDetailRes'
+      summary: 查看合同
+      tags:
+        - Contract - 合同
   /rider/v2/contract/create:
     post:
       consumes:

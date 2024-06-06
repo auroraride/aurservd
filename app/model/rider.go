@@ -59,6 +59,7 @@ type RiderSigninRes struct {
 	EnterpriseContact *EnterpriseContact `json:"enterpriseContact,omitempty"` // 团签联系方式
 	ExitEnterprise    bool               `json:"exitEnterprise"`              // 判断能否退出团签
 	Station           *EnterpriseStation `json:"station,omitempty"`           // 站点
+	ContractDocID     string             `json:"contractDocId,omitempty"`     // 签署合同编号
 }
 
 // RiderContact 紧急联系人
