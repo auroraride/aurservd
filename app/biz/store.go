@@ -32,6 +32,10 @@ func NewStore() *storeBiz {
 // List 门店列表
 func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDetail, err error) {
 	res = make([]*definition.StoreDetail, 0)
+	maxDistance := 50000.0
+	if req.Distance != nil && *req.Distance < maxDistance {
+		maxDistance = *req.Distance
+	}
 	q := s.orm.QueryNotDeleted().
 		WithCity().
 		WithEmployee().
@@ -39,19 +43,10 @@ func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 		Modify(func(sel *sql.Selector) {
 			sel.
 				AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'))`, req.Lng, req.Lat)), "distance").
-				OrderBy(sql.Asc("distance"))
-			if req.Distance != nil {
-				if *req.Distance > 50000 {
-					*req.Distance = 50000
-				}
-				sel.Where(sql.P(func(b *sql.Builder) {
-					b.WriteString(fmt.Sprintf(`ST_DWithin(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'), %f)`, req.Lng, req.Lat, *req.Distance))
+				OrderBy(sql.Asc("distance")).
+				Where(sql.P(func(b *sql.Builder) {
+					b.WriteString(fmt.Sprintf(`ST_DWithin(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'), %f)`, req.Lng, req.Lat, maxDistance))
 				}))
-			} else {
-				sel.Where(sql.P(func(b *sql.Builder) {
-					b.WriteString(fmt.Sprintf(`ST_DWithin(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'), %f)`, req.Lng, req.Lat, 50000.0))
-				}))
-			}
 		})
 
 	if req.CityID != nil {
