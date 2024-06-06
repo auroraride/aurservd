@@ -296,6 +296,7 @@ type config struct {
 			Personal   string
 			Enterprise string
 		}
+		EncryptKey string // 合同加密key
 	}
 
 	Elastic struct {

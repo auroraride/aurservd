@@ -665,3 +665,13 @@ func (s *contractService) List(req *model.ContractListReq) *model.PaginationRes 
 		return
 	})
 }
+
+// QueryEffectiveContract 查询骑手最新生效中的合同
+func (s *contractService) QueryEffectiveContract(r *ent.Rider) (c *ent.Contract) {
+	c, _ = s.orm.QueryNotDeleted().Where(
+		contract.RiderID(r.ID),
+		contract.Status(model.ContractStatusSuccess.Value()),
+		contract.Effective(true),
+	).Order(ent.Desc(contract.FieldCreatedAt)).First(s.ctx)
+	return
+}

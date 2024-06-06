@@ -32,3 +32,13 @@ type ContractCreateRPCReq struct {
 	ExpiresAt  int64  // 过期时间
 	Idcard     string // 身份证
 }
+
+// ContractDetailReq 查看合同请求
+type ContractDetailReq struct {
+	DocId string `json:"docId" param:"docId" validate:"required"` // 合同ID
+}
+
+// ContractDetailRes 查看合同响应
+type ContractDetailRes struct {
+	Link string `json:"link"` // 合同链接
+}
