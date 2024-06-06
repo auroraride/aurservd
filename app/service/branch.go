@@ -240,8 +240,8 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 				GroupBy(bt.C(branch.FieldID)).
 				OrderBy(sql.Asc("distance"))
 			if req.Distance != nil {
-				if *req.Distance > 500000 {
-					*req.Distance = 500000
+				if *req.Distance > 50000 {
+					*req.Distance = 50000
 				}
 				sel.Where(sql.P(func(b *sql.Builder) {
 					b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, branch.FieldGeom, *req.Lng, *req.Lat, *req.Distance))
@@ -362,7 +362,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 	}
 	distance := req.Distance
 	if distance == 0 {
-		distance = 500000
+		distance = 50000
 	}
 	temps, stores, cabinets := s.ListByDistance(&model.BranchWithDistanceReq{
 		Lng:      &lng,
@@ -646,8 +646,8 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 			m.Facility = append(m.Facility, fa)
 		}
 		// 排序设施 (v60,v72,store,rest)
-		sort.Slice(items, func(i, j int) bool {
-			return strings.Compare(m.Facility[i].Type.String(), m.Facility[j].Type.String()) > 0
+		sort.Slice(m.Facility, func(i, j int) bool {
+			return strings.Compare(m.Facility[i].Type.String()[2:3], m.Facility[j].Type.String()[2:3]) < 0
 		})
 
 		if len(m.Facility) > 0 {
