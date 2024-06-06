@@ -294,7 +294,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 
 	// 门店查询
 	// 当没有传入电池型号、电柜业务、filter查询参数时，需查询驿站或者门店数据 （骑手订阅后首页地图查询需要展示驿站门店数据）
-	if filter == "" && req.Model == nil && req.Business == "" || sub != nil {
+	if (filter == "" && req.Model == nil && req.Business == "") || sub != nil {
 		switch {
 		case req.StoreStatus == nil && req.StoreBusiness == nil:
 			// 未传入门店筛选条件只查询驿站数据
@@ -478,7 +478,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 	}
 
 	// 门店数据（骑手订阅后首页地图查询需要展示驿站门店数据）
-	if req.Business == "" && req.Model == nil || sub != nil {
+	if (req.Business == "" && req.Model == nil) || sub != nil {
 		for _, es := range stores {
 			var eState uint
 			switch es.Status {
