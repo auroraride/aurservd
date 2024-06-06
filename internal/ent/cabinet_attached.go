@@ -8,6 +8,7 @@ package ent
 import (
 	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/pkg/cache"
 )
 
 func (c *Cabinet) GetTaskInfo() *ec.Cabinet {
@@ -27,13 +28,13 @@ func (c *Cabinet) ReserveAble(typ model.BusinessType, num map[model.ReserveBusin
 		return false
 	}
 	// 可用电池数量,可用空仓数量 锁仓不算可用
-	var AvailableBatteryNum, AvailableEmptyBinNum int
+	var availableBatteryNum, availableEmptyBinNum int
 	for _, bin := range c.Bin {
-		if bin.Electricity.IsBatteryFull() && bin.DoorHealth {
-			AvailableBatteryNum += 1
+		if bin.DoorHealth && bin.Electricity.Value() >= cache.Float64(model.SettingExchangeMinBatteryKey) {
+			availableBatteryNum += 1
 		}
 		if !bin.Battery && bin.DoorHealth {
-			AvailableEmptyBinNum += 1
+			availableEmptyBinNum += 1
 		}
 	}
 	switch typ {
@@ -41,12 +42,12 @@ func (c *Cabinet) ReserveAble(typ model.BusinessType, num map[model.ReserveBusin
 	case model.BusinessTypeActive, model.BusinessTypeContinue:
 		activeNum := num[model.NewReserveBusinessKey(c.ID, model.BusinessTypeActive)]
 		continueNum := num[model.NewReserveBusinessKey(c.ID, model.BusinessTypeContinue)]
-		return AvailableBatteryNum-(activeNum+continueNum) >= 2
+		return availableBatteryNum-(activeNum+continueNum) >= 2
 	// 放电
 	case model.BusinessTypePause, model.BusinessTypeUnsubscribe:
 		pauseNum := num[model.NewReserveBusinessKey(c.ID, model.BusinessTypePause)]
 		unsubscribeNum := num[model.NewReserveBusinessKey(c.ID, model.BusinessTypeUnsubscribe)]
-		return AvailableEmptyBinNum-(pauseNum+unsubscribeNum) >= 2
+		return availableEmptyBinNum-(pauseNum+unsubscribeNum) >= 2
 	}
 	return false
 }
