@@ -4692,6 +4692,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "contractDocId": {
+                    "description": "签署合同编号",
+                    "type": "string"
+                },
                 "deposit": {
                     "description": "需缴押金",
                     "type": "number"
