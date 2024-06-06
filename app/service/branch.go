@@ -314,28 +314,28 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 		case req.StoreBusiness != nil:
 			// 传入门店筛选条件-门店业务
 			switch *req.StoreBusiness {
-			case model.StoreBusinessTypeObtain.Value():
+			case model.StoreBusinessTypeObtain:
 				storeQuery.Where(
 					store.EbikeObtain(true),
 					store.EbikeRepair(false),
 					store.EbikeSale(false),
 					store.Rest(false),
 				)
-			case model.StoreBusinessTypeRepair.Value():
+			case model.StoreBusinessTypeRepair:
 				storeQuery.Where(
 					store.EbikeObtain(false),
 					store.EbikeRepair(true),
 					store.EbikeSale(false),
 					store.Rest(false),
 				)
-			case model.StoreBusinessTypeSale.Value():
+			case model.StoreBusinessTypeSale:
 				storeQuery.Where(
 					store.EbikeObtain(false),
 					store.EbikeRepair(false),
 					store.EbikeSale(true),
 					store.Rest(false),
 				)
-			case model.StoreBusinessTypeRest.Value():
+			case model.StoreBusinessTypeRest:
 				storeQuery.Where(
 					store.EbikeObtain(false),
 					store.EbikeRepair(false),
