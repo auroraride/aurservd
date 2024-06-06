@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -69,13 +70,18 @@ func DeletedAt(v time.Time) predicate.CabinetEc {
 	return predicate.CabinetEc(sql.FieldEQ(FieldDeletedAt, v))
 }
 
+// CabinetID applies equality check predicate on the "cabinet_id" field. It's identical to CabinetIDEQ.
+func CabinetID(v uint64) predicate.CabinetEc {
+	return predicate.CabinetEc(sql.FieldEQ(FieldCabinetID, v))
+}
+
 // Serial applies equality check predicate on the "serial" field. It's identical to SerialEQ.
 func Serial(v string) predicate.CabinetEc {
 	return predicate.CabinetEc(sql.FieldEQ(FieldSerial, v))
 }
 
 // Date applies equality check predicate on the "date" field. It's identical to DateEQ.
-func Date(v time.Time) predicate.CabinetEc {
+func Date(v string) predicate.CabinetEc {
 	return predicate.CabinetEc(sql.FieldEQ(FieldDate, v))
 }
 
@@ -224,6 +230,36 @@ func DeletedAtNotNil() predicate.CabinetEc {
 	return predicate.CabinetEc(sql.FieldNotNull(FieldDeletedAt))
 }
 
+// CabinetIDEQ applies the EQ predicate on the "cabinet_id" field.
+func CabinetIDEQ(v uint64) predicate.CabinetEc {
+	return predicate.CabinetEc(sql.FieldEQ(FieldCabinetID, v))
+}
+
+// CabinetIDNEQ applies the NEQ predicate on the "cabinet_id" field.
+func CabinetIDNEQ(v uint64) predicate.CabinetEc {
+	return predicate.CabinetEc(sql.FieldNEQ(FieldCabinetID, v))
+}
+
+// CabinetIDIn applies the In predicate on the "cabinet_id" field.
+func CabinetIDIn(vs ...uint64) predicate.CabinetEc {
+	return predicate.CabinetEc(sql.FieldIn(FieldCabinetID, vs...))
+}
+
+// CabinetIDNotIn applies the NotIn predicate on the "cabinet_id" field.
+func CabinetIDNotIn(vs ...uint64) predicate.CabinetEc {
+	return predicate.CabinetEc(sql.FieldNotIn(FieldCabinetID, vs...))
+}
+
+// CabinetIDIsNil applies the IsNil predicate on the "cabinet_id" field.
+func CabinetIDIsNil() predicate.CabinetEc {
+	return predicate.CabinetEc(sql.FieldIsNull(FieldCabinetID))
+}
+
+// CabinetIDNotNil applies the NotNil predicate on the "cabinet_id" field.
+func CabinetIDNotNil() predicate.CabinetEc {
+	return predicate.CabinetEc(sql.FieldNotNull(FieldCabinetID))
+}
+
 // SerialEQ applies the EQ predicate on the "serial" field.
 func SerialEQ(v string) predicate.CabinetEc {
 	return predicate.CabinetEc(sql.FieldEQ(FieldSerial, v))
@@ -290,43 +326,68 @@ func SerialContainsFold(v string) predicate.CabinetEc {
 }
 
 // DateEQ applies the EQ predicate on the "date" field.
-func DateEQ(v time.Time) predicate.CabinetEc {
+func DateEQ(v string) predicate.CabinetEc {
 	return predicate.CabinetEc(sql.FieldEQ(FieldDate, v))
 }
 
 // DateNEQ applies the NEQ predicate on the "date" field.
-func DateNEQ(v time.Time) predicate.CabinetEc {
+func DateNEQ(v string) predicate.CabinetEc {
 	return predicate.CabinetEc(sql.FieldNEQ(FieldDate, v))
 }
 
 // DateIn applies the In predicate on the "date" field.
-func DateIn(vs ...time.Time) predicate.CabinetEc {
+func DateIn(vs ...string) predicate.CabinetEc {
 	return predicate.CabinetEc(sql.FieldIn(FieldDate, vs...))
 }
 
 // DateNotIn applies the NotIn predicate on the "date" field.
-func DateNotIn(vs ...time.Time) predicate.CabinetEc {
+func DateNotIn(vs ...string) predicate.CabinetEc {
 	return predicate.CabinetEc(sql.FieldNotIn(FieldDate, vs...))
 }
 
 // DateGT applies the GT predicate on the "date" field.
-func DateGT(v time.Time) predicate.CabinetEc {
+func DateGT(v string) predicate.CabinetEc {
 	return predicate.CabinetEc(sql.FieldGT(FieldDate, v))
 }
 
 // DateGTE applies the GTE predicate on the "date" field.
-func DateGTE(v time.Time) predicate.CabinetEc {
+func DateGTE(v string) predicate.CabinetEc {
 	return predicate.CabinetEc(sql.FieldGTE(FieldDate, v))
 }
 
 // DateLT applies the LT predicate on the "date" field.
-func DateLT(v time.Time) predicate.CabinetEc {
+func DateLT(v string) predicate.CabinetEc {
 	return predicate.CabinetEc(sql.FieldLT(FieldDate, v))
 }
 
 // DateLTE applies the LTE predicate on the "date" field.
-func DateLTE(v time.Time) predicate.CabinetEc {
+func DateLTE(v string) predicate.CabinetEc {
 	return predicate.CabinetEc(sql.FieldLTE(FieldDate, v))
+}
+
+// DateContains applies the Contains predicate on the "date" field.
+func DateContains(v string) predicate.CabinetEc {
+	return predicate.CabinetEc(sql.FieldContains(FieldDate, v))
+}
+
+// DateHasPrefix applies the HasPrefix predicate on the "date" field.
+func DateHasPrefix(v string) predicate.CabinetEc {
+	return predicate.CabinetEc(sql.FieldHasPrefix(FieldDate, v))
+}
+
+// DateHasSuffix applies the HasSuffix predicate on the "date" field.
+func DateHasSuffix(v string) predicate.CabinetEc {
+	return predicate.CabinetEc(sql.FieldHasSuffix(FieldDate, v))
+}
+
+// DateEqualFold applies the EqualFold predicate on the "date" field.
+func DateEqualFold(v string) predicate.CabinetEc {
+	return predicate.CabinetEc(sql.FieldEqualFold(FieldDate, v))
+}
+
+// DateContainsFold applies the ContainsFold predicate on the "date" field.
+func DateContainsFold(v string) predicate.CabinetEc {
+	return predicate.CabinetEc(sql.FieldContainsFold(FieldDate, v))
 }
 
 // StartEQ applies the EQ predicate on the "start" field.
@@ -457,6 +518,29 @@ func TotalLT(v float64) predicate.CabinetEc {
 // TotalLTE applies the LTE predicate on the "total" field.
 func TotalLTE(v float64) predicate.CabinetEc {
 	return predicate.CabinetEc(sql.FieldLTE(FieldTotal, v))
+}
+
+// HasCabinet applies the HasEdge predicate on the "cabinet" edge.
+func HasCabinet() predicate.CabinetEc {
+	return predicate.CabinetEc(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCabinetWith applies the HasEdge predicate on the "cabinet" edge with a given conditions (other predicates).
+func HasCabinetWith(preds ...predicate.Cabinet) predicate.CabinetEc {
+	return predicate.CabinetEc(func(s *sql.Selector) {
+		step := newCabinetStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

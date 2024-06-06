@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 )
 
@@ -64,6 +65,20 @@ func (cec *CabinetEcCreate) SetNillableDeletedAt(t *time.Time) *CabinetEcCreate 
 	return cec
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (cec *CabinetEcCreate) SetCabinetID(u uint64) *CabinetEcCreate {
+	cec.mutation.SetCabinetID(u)
+	return cec
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (cec *CabinetEcCreate) SetNillableCabinetID(u *uint64) *CabinetEcCreate {
+	if u != nil {
+		cec.SetCabinetID(*u)
+	}
+	return cec
+}
+
 // SetSerial sets the "serial" field.
 func (cec *CabinetEcCreate) SetSerial(s string) *CabinetEcCreate {
 	cec.mutation.SetSerial(s)
@@ -71,8 +86,8 @@ func (cec *CabinetEcCreate) SetSerial(s string) *CabinetEcCreate {
 }
 
 // SetDate sets the "date" field.
-func (cec *CabinetEcCreate) SetDate(t time.Time) *CabinetEcCreate {
-	cec.mutation.SetDate(t)
+func (cec *CabinetEcCreate) SetDate(s string) *CabinetEcCreate {
+	cec.mutation.SetDate(s)
 	return cec
 }
 
@@ -100,6 +115,11 @@ func (cec *CabinetEcCreate) SetNillableEnd(f *float64) *CabinetEcCreate {
 func (cec *CabinetEcCreate) SetTotal(f float64) *CabinetEcCreate {
 	cec.mutation.SetTotal(f)
 	return cec
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (cec *CabinetEcCreate) SetCabinet(c *Cabinet) *CabinetEcCreate {
+	return cec.SetCabinetID(c.ID)
 }
 
 // Mutation returns the CabinetEcMutation object of the builder.
@@ -211,7 +231,7 @@ func (cec *CabinetEcCreate) createSpec() (*CabinetEc, *sqlgraph.CreateSpec) {
 		_node.Serial = value
 	}
 	if value, ok := cec.mutation.Date(); ok {
-		_spec.SetField(cabinetec.FieldDate, field.TypeTime, value)
+		_spec.SetField(cabinetec.FieldDate, field.TypeString, value)
 		_node.Date = value
 	}
 	if value, ok := cec.mutation.Start(); ok {
@@ -225,6 +245,23 @@ func (cec *CabinetEcCreate) createSpec() (*CabinetEc, *sqlgraph.CreateSpec) {
 	if value, ok := cec.mutation.Total(); ok {
 		_spec.SetField(cabinetec.FieldTotal, field.TypeFloat64, value)
 		_node.Total = value
+	}
+	if nodes := cec.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinetec.CabinetTable,
+			Columns: []string{cabinetec.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CabinetID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -308,6 +345,24 @@ func (u *CabinetEcUpsert) ClearDeletedAt() *CabinetEcUpsert {
 	return u
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (u *CabinetEcUpsert) SetCabinetID(v uint64) *CabinetEcUpsert {
+	u.Set(cabinetec.FieldCabinetID, v)
+	return u
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *CabinetEcUpsert) UpdateCabinetID() *CabinetEcUpsert {
+	u.SetExcluded(cabinetec.FieldCabinetID)
+	return u
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *CabinetEcUpsert) ClearCabinetID() *CabinetEcUpsert {
+	u.SetNull(cabinetec.FieldCabinetID)
+	return u
+}
+
 // SetSerial sets the "serial" field.
 func (u *CabinetEcUpsert) SetSerial(v string) *CabinetEcUpsert {
 	u.Set(cabinetec.FieldSerial, v)
@@ -321,7 +376,7 @@ func (u *CabinetEcUpsert) UpdateSerial() *CabinetEcUpsert {
 }
 
 // SetDate sets the "date" field.
-func (u *CabinetEcUpsert) SetDate(v time.Time) *CabinetEcUpsert {
+func (u *CabinetEcUpsert) SetDate(v string) *CabinetEcUpsert {
 	u.Set(cabinetec.FieldDate, v)
 	return u
 }
@@ -472,6 +527,27 @@ func (u *CabinetEcUpsertOne) ClearDeletedAt() *CabinetEcUpsertOne {
 	})
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (u *CabinetEcUpsertOne) SetCabinetID(v uint64) *CabinetEcUpsertOne {
+	return u.Update(func(s *CabinetEcUpsert) {
+		s.SetCabinetID(v)
+	})
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *CabinetEcUpsertOne) UpdateCabinetID() *CabinetEcUpsertOne {
+	return u.Update(func(s *CabinetEcUpsert) {
+		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *CabinetEcUpsertOne) ClearCabinetID() *CabinetEcUpsertOne {
+	return u.Update(func(s *CabinetEcUpsert) {
+		s.ClearCabinetID()
+	})
+}
+
 // SetSerial sets the "serial" field.
 func (u *CabinetEcUpsertOne) SetSerial(v string) *CabinetEcUpsertOne {
 	return u.Update(func(s *CabinetEcUpsert) {
@@ -487,7 +563,7 @@ func (u *CabinetEcUpsertOne) UpdateSerial() *CabinetEcUpsertOne {
 }
 
 // SetDate sets the "date" field.
-func (u *CabinetEcUpsertOne) SetDate(v time.Time) *CabinetEcUpsertOne {
+func (u *CabinetEcUpsertOne) SetDate(v string) *CabinetEcUpsertOne {
 	return u.Update(func(s *CabinetEcUpsert) {
 		s.SetDate(v)
 	})
@@ -816,6 +892,27 @@ func (u *CabinetEcUpsertBulk) ClearDeletedAt() *CabinetEcUpsertBulk {
 	})
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (u *CabinetEcUpsertBulk) SetCabinetID(v uint64) *CabinetEcUpsertBulk {
+	return u.Update(func(s *CabinetEcUpsert) {
+		s.SetCabinetID(v)
+	})
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *CabinetEcUpsertBulk) UpdateCabinetID() *CabinetEcUpsertBulk {
+	return u.Update(func(s *CabinetEcUpsert) {
+		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *CabinetEcUpsertBulk) ClearCabinetID() *CabinetEcUpsertBulk {
+	return u.Update(func(s *CabinetEcUpsert) {
+		s.ClearCabinetID()
+	})
+}
+
 // SetSerial sets the "serial" field.
 func (u *CabinetEcUpsertBulk) SetSerial(v string) *CabinetEcUpsertBulk {
 	return u.Update(func(s *CabinetEcUpsert) {
@@ -831,7 +928,7 @@ func (u *CabinetEcUpsertBulk) UpdateSerial() *CabinetEcUpsertBulk {
 }
 
 // SetDate sets the "date" field.
-func (u *CabinetEcUpsertBulk) SetDate(v time.Time) *CabinetEcUpsertBulk {
+func (u *CabinetEcUpsertBulk) SetDate(v string) *CabinetEcUpsertBulk {
 	return u.Update(func(s *CabinetEcUpsert) {
 		s.SetDate(v)
 	})

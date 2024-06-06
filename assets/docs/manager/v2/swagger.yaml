@@ -2,6 +2,15 @@ basePath: /
 definitions:
   definition.CabinetECMonthExportReq:
     properties:
+      branchName:
+        description: 网点名称
+        type: string
+      cabinetName:
+        description: 电柜名称
+        type: string
+      cityID:
+        description: 城市ID
+        type: integer
       date:
         description: 日期 yyyy-MM
         type: string
@@ -32,6 +41,15 @@ definitions:
     type: object
   definition.CabinetECRes:
     properties:
+      branchName:
+        description: 网点名称
+        type: string
+      cabinetName:
+        description: 电柜名称
+        type: string
+      cityName:
+        description: 城市名称
+        type: string
       endAt:
         description: 结束时间
         type: string
@@ -197,6 +215,18 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 网点名称
+        in: query
+        name: branchName
+        type: string
+      - description: 电柜名称
+        in: query
+        name: cabinetName
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityID
+        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current

@@ -443,7 +443,11 @@ func (s *Contract) Detail(r *ent.Rider, req *definition.ContractDetailReq) (*def
 	if co == nil {
 		return nil, errors.New("未找到合同信息")
 	}
-	return &definition.ContractDetailRes{
-		Link: *co.Link,
-	}, nil
+
+	if len(co.Files) > 0 {
+		return &definition.ContractDetailRes{
+			Link: co.Files[0],
+		}, nil
+	}
+	return nil, errors.New("未找到合同文件")
 }

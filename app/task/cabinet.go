@@ -6,11 +6,13 @@ import (
 
 	"github.com/golang-module/carbon/v2"
 	"github.com/robfig/cron/v3"
+	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/biz"
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -75,11 +77,17 @@ func (t *cabinetTask) Do() {
 	}
 	bulkCreate := make([]*ent.CabinetEcCreate, 0)
 	for k, v := range groups {
+		// 查询电柜id
+		cab, _ := ent.Database.Cabinet.Query().Where(cabinet.Serial(k)).First(ctx)
+		if cab == nil {
+			zap.L().Error("电柜不存在", zap.String("serial", k))
+			continue
+		}
 		// 查询当月数据 如果没有则创建 当月总数等于上个月endec - 本月startec
-		ec, _ := ent.Database.CabinetEc.Query().Where(cabinetec.Date(month), cabinetec.Serial(k)).First(ctx)
+		ec, _ := ent.Database.CabinetEc.Query().Where(cabinetec.Date(month.Format("2006-01")), cabinetec.Serial(k)).First(ctx)
 		if ec == nil {
 			// 查询上个月的数据
-			lastec, _ := ent.Database.CabinetEc.Query().Where(cabinetec.Date(lastMonth), cabinetec.Serial(k)).First(ctx)
+			lastec, _ := ent.Database.CabinetEc.Query().Where(cabinetec.Date(lastMonth.Format("2006-01")), cabinetec.Serial(k)).First(ctx)
 			var total float64
 			startEC := v.Min.Value
 			total = v.Total
@@ -89,9 +97,10 @@ func (t *cabinetTask) Do() {
 			}
 			bulkCreate = append(bulkCreate, ent.Database.CabinetEc.Create().
 				SetSerial(k).
-				SetStart(startEC).
-				SetEnd(v.Max.Value).
-				SetDate(month).
+				SetStart(decimal.NewFromFloat(startEC).Round(2).InexactFloat64()).
+				SetEnd(decimal.NewFromFloat(v.Max.Value).Round(2).InexactFloat64()).
+				SetDate(month.Format("2006-01")).
+				SetCabinet(cab).
 				SetTotal(total))
 			continue
 		}
@@ -101,7 +110,7 @@ func (t *cabinetTask) Do() {
 			continue
 		}
 		// 更新当月数据
-		err := ec.Update().SetEnd(v.Max.Value).SetTotal(tools.NewDecimal().Sum(ec.Total, v.Total)).Exec(ctx)
+		err := ec.Update().SetEnd(decimal.NewFromFloat(v.Max.Value).Round(2).InexactFloat64()).SetTotal(tools.NewDecimal().Sum(ec.Total, v.Total)).Exec(ctx)
 		if err != nil {
 			zap.L().Error("更新电柜耗电量失败", zap.Error(err))
 			return

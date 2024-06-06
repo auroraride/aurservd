@@ -3712,6 +3712,22 @@ func (c *CabinetEcClient) GetX(ctx context.Context, id uint64) *CabinetEc {
 	return obj
 }
 
+// QueryCabinet queries the cabinet edge of a CabinetEc.
+func (c *CabinetEcClient) QueryCabinet(ce *CabinetEc) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ce.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinetec.Table, cabinetec.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, cabinetec.CabinetTable, cabinetec.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(ce.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CabinetEcClient) Hooks() []Hook {
 	return c.hooks.CabinetEc

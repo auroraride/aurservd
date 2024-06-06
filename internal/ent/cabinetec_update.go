@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -55,6 +56,26 @@ func (ceu *CabinetEcUpdate) ClearDeletedAt() *CabinetEcUpdate {
 	return ceu
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (ceu *CabinetEcUpdate) SetCabinetID(u uint64) *CabinetEcUpdate {
+	ceu.mutation.SetCabinetID(u)
+	return ceu
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (ceu *CabinetEcUpdate) SetNillableCabinetID(u *uint64) *CabinetEcUpdate {
+	if u != nil {
+		ceu.SetCabinetID(*u)
+	}
+	return ceu
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (ceu *CabinetEcUpdate) ClearCabinetID() *CabinetEcUpdate {
+	ceu.mutation.ClearCabinetID()
+	return ceu
+}
+
 // SetSerial sets the "serial" field.
 func (ceu *CabinetEcUpdate) SetSerial(s string) *CabinetEcUpdate {
 	ceu.mutation.SetSerial(s)
@@ -70,15 +91,15 @@ func (ceu *CabinetEcUpdate) SetNillableSerial(s *string) *CabinetEcUpdate {
 }
 
 // SetDate sets the "date" field.
-func (ceu *CabinetEcUpdate) SetDate(t time.Time) *CabinetEcUpdate {
-	ceu.mutation.SetDate(t)
+func (ceu *CabinetEcUpdate) SetDate(s string) *CabinetEcUpdate {
+	ceu.mutation.SetDate(s)
 	return ceu
 }
 
 // SetNillableDate sets the "date" field if the given value is not nil.
-func (ceu *CabinetEcUpdate) SetNillableDate(t *time.Time) *CabinetEcUpdate {
-	if t != nil {
-		ceu.SetDate(*t)
+func (ceu *CabinetEcUpdate) SetNillableDate(s *string) *CabinetEcUpdate {
+	if s != nil {
+		ceu.SetDate(*s)
 	}
 	return ceu
 }
@@ -152,9 +173,20 @@ func (ceu *CabinetEcUpdate) AddTotal(f float64) *CabinetEcUpdate {
 	return ceu
 }
 
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (ceu *CabinetEcUpdate) SetCabinet(c *Cabinet) *CabinetEcUpdate {
+	return ceu.SetCabinetID(c.ID)
+}
+
 // Mutation returns the CabinetEcMutation object of the builder.
 func (ceu *CabinetEcUpdate) Mutation() *CabinetEcMutation {
 	return ceu.mutation
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (ceu *CabinetEcUpdate) ClearCabinet() *CabinetEcUpdate {
+	ceu.mutation.ClearCabinet()
+	return ceu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -221,7 +253,7 @@ func (ceu *CabinetEcUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.SetField(cabinetec.FieldSerial, field.TypeString, value)
 	}
 	if value, ok := ceu.mutation.Date(); ok {
-		_spec.SetField(cabinetec.FieldDate, field.TypeTime, value)
+		_spec.SetField(cabinetec.FieldDate, field.TypeString, value)
 	}
 	if value, ok := ceu.mutation.Start(); ok {
 		_spec.SetField(cabinetec.FieldStart, field.TypeFloat64, value)
@@ -243,6 +275,35 @@ func (ceu *CabinetEcUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ceu.mutation.AddedTotal(); ok {
 		_spec.AddField(cabinetec.FieldTotal, field.TypeFloat64, value)
+	}
+	if ceu.mutation.CabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinetec.CabinetTable,
+			Columns: []string{cabinetec.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ceu.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinetec.CabinetTable,
+			Columns: []string{cabinetec.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(ceu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ceu.driver, _spec); err != nil {
@@ -292,6 +353,26 @@ func (ceuo *CabinetEcUpdateOne) ClearDeletedAt() *CabinetEcUpdateOne {
 	return ceuo
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (ceuo *CabinetEcUpdateOne) SetCabinetID(u uint64) *CabinetEcUpdateOne {
+	ceuo.mutation.SetCabinetID(u)
+	return ceuo
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (ceuo *CabinetEcUpdateOne) SetNillableCabinetID(u *uint64) *CabinetEcUpdateOne {
+	if u != nil {
+		ceuo.SetCabinetID(*u)
+	}
+	return ceuo
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (ceuo *CabinetEcUpdateOne) ClearCabinetID() *CabinetEcUpdateOne {
+	ceuo.mutation.ClearCabinetID()
+	return ceuo
+}
+
 // SetSerial sets the "serial" field.
 func (ceuo *CabinetEcUpdateOne) SetSerial(s string) *CabinetEcUpdateOne {
 	ceuo.mutation.SetSerial(s)
@@ -307,15 +388,15 @@ func (ceuo *CabinetEcUpdateOne) SetNillableSerial(s *string) *CabinetEcUpdateOne
 }
 
 // SetDate sets the "date" field.
-func (ceuo *CabinetEcUpdateOne) SetDate(t time.Time) *CabinetEcUpdateOne {
-	ceuo.mutation.SetDate(t)
+func (ceuo *CabinetEcUpdateOne) SetDate(s string) *CabinetEcUpdateOne {
+	ceuo.mutation.SetDate(s)
 	return ceuo
 }
 
 // SetNillableDate sets the "date" field if the given value is not nil.
-func (ceuo *CabinetEcUpdateOne) SetNillableDate(t *time.Time) *CabinetEcUpdateOne {
-	if t != nil {
-		ceuo.SetDate(*t)
+func (ceuo *CabinetEcUpdateOne) SetNillableDate(s *string) *CabinetEcUpdateOne {
+	if s != nil {
+		ceuo.SetDate(*s)
 	}
 	return ceuo
 }
@@ -389,9 +470,20 @@ func (ceuo *CabinetEcUpdateOne) AddTotal(f float64) *CabinetEcUpdateOne {
 	return ceuo
 }
 
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (ceuo *CabinetEcUpdateOne) SetCabinet(c *Cabinet) *CabinetEcUpdateOne {
+	return ceuo.SetCabinetID(c.ID)
+}
+
 // Mutation returns the CabinetEcMutation object of the builder.
 func (ceuo *CabinetEcUpdateOne) Mutation() *CabinetEcMutation {
 	return ceuo.mutation
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (ceuo *CabinetEcUpdateOne) ClearCabinet() *CabinetEcUpdateOne {
+	ceuo.mutation.ClearCabinet()
+	return ceuo
 }
 
 // Where appends a list predicates to the CabinetEcUpdate builder.
@@ -488,7 +580,7 @@ func (ceuo *CabinetEcUpdateOne) sqlSave(ctx context.Context) (_node *CabinetEc, 
 		_spec.SetField(cabinetec.FieldSerial, field.TypeString, value)
 	}
 	if value, ok := ceuo.mutation.Date(); ok {
-		_spec.SetField(cabinetec.FieldDate, field.TypeTime, value)
+		_spec.SetField(cabinetec.FieldDate, field.TypeString, value)
 	}
 	if value, ok := ceuo.mutation.Start(); ok {
 		_spec.SetField(cabinetec.FieldStart, field.TypeFloat64, value)
@@ -510,6 +602,35 @@ func (ceuo *CabinetEcUpdateOne) sqlSave(ctx context.Context) (_node *CabinetEc, 
 	}
 	if value, ok := ceuo.mutation.AddedTotal(); ok {
 		_spec.AddField(cabinetec.FieldTotal, field.TypeFloat64, value)
+	}
+	if ceuo.mutation.CabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinetec.CabinetTable,
+			Columns: []string{cabinetec.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ceuo.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinetec.CabinetTable,
+			Columns: []string{cabinetec.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(ceuo.modifiers...)
 	_node = &CabinetEc{config: ceuo.config}

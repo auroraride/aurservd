@@ -1156,16 +1156,25 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "serial", Type: field.TypeString, Comment: "电柜原始编号"},
-		{Name: "date", Type: field.TypeTime, Comment: "日期"},
+		{Name: "date", Type: field.TypeString, Comment: "日期 YYYY-MM"},
 		{Name: "start", Type: field.TypeFloat64, Comment: "开始电量"},
 		{Name: "end", Type: field.TypeFloat64, Nullable: true, Comment: "结束电量"},
 		{Name: "total", Type: field.TypeFloat64, Comment: "耗电量"},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
 	}
 	// CabinetEcTable holds the schema information for the "cabinet_ec" table.
 	CabinetEcTable = &schema.Table{
 		Name:       "cabinet_ec",
 		Columns:    CabinetEcColumns,
 		PrimaryKey: []*schema.Column{CabinetEcColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "cabinet_ec_cabinet_cabinet",
+				Columns:    []*schema.Column{CabinetEcColumns[9]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "cabinetec_created_at",
@@ -1176,6 +1185,11 @@ var (
 				Name:    "cabinetec_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{CabinetEcColumns[3]},
+			},
+			{
+				Name:    "cabinetec_cabinet_id",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetEcColumns[9]},
 			},
 		},
 	}
@@ -6348,6 +6362,7 @@ func init() {
 	CabinetTable.Annotation = &entsql.Annotation{
 		Table: "cabinet",
 	}
+	CabinetEcTable.ForeignKeys[0].RefTable = CabinetTable
 	CabinetEcTable.Annotation = &entsql.Annotation{
 		Table: "cabinet_ec",
 	}

@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -17,11 +18,12 @@ import (
 // CabinetEcQuery is the builder for querying CabinetEc entities.
 type CabinetEcQuery struct {
 	config
-	ctx        *QueryContext
-	order      []cabinetec.OrderOption
-	inters     []Interceptor
-	predicates []predicate.CabinetEc
-	modifiers  []func(*sql.Selector)
+	ctx         *QueryContext
+	order       []cabinetec.OrderOption
+	inters      []Interceptor
+	predicates  []predicate.CabinetEc
+	withCabinet *CabinetQuery
+	modifiers   []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -56,6 +58,28 @@ func (ceq *CabinetEcQuery) Unique(unique bool) *CabinetEcQuery {
 func (ceq *CabinetEcQuery) Order(o ...cabinetec.OrderOption) *CabinetEcQuery {
 	ceq.order = append(ceq.order, o...)
 	return ceq
+}
+
+// QueryCabinet chains the current query on the "cabinet" edge.
+func (ceq *CabinetEcQuery) QueryCabinet() *CabinetQuery {
+	query := (&CabinetClient{config: ceq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ceq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ceq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinetec.Table, cabinetec.FieldID, selector),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, cabinetec.CabinetTable, cabinetec.CabinetColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ceq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first CabinetEc entity from the query.
@@ -245,15 +269,27 @@ func (ceq *CabinetEcQuery) Clone() *CabinetEcQuery {
 		return nil
 	}
 	return &CabinetEcQuery{
-		config:     ceq.config,
-		ctx:        ceq.ctx.Clone(),
-		order:      append([]cabinetec.OrderOption{}, ceq.order...),
-		inters:     append([]Interceptor{}, ceq.inters...),
-		predicates: append([]predicate.CabinetEc{}, ceq.predicates...),
+		config:      ceq.config,
+		ctx:         ceq.ctx.Clone(),
+		order:       append([]cabinetec.OrderOption{}, ceq.order...),
+		inters:      append([]Interceptor{}, ceq.inters...),
+		predicates:  append([]predicate.CabinetEc{}, ceq.predicates...),
+		withCabinet: ceq.withCabinet.Clone(),
 		// clone intermediate query.
 		sql:  ceq.sql.Clone(),
 		path: ceq.path,
 	}
+}
+
+// WithCabinet tells the query-builder to eager-load the nodes that are connected to
+// the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
+func (ceq *CabinetEcQuery) WithCabinet(opts ...func(*CabinetQuery)) *CabinetEcQuery {
+	query := (&CabinetClient{config: ceq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	ceq.withCabinet = query
+	return ceq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -332,8 +368,11 @@ func (ceq *CabinetEcQuery) prepareQuery(ctx context.Context) error {
 
 func (ceq *CabinetEcQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*CabinetEc, error) {
 	var (
-		nodes = []*CabinetEc{}
-		_spec = ceq.querySpec()
+		nodes       = []*CabinetEc{}
+		_spec       = ceq.querySpec()
+		loadedTypes = [1]bool{
+			ceq.withCabinet != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*CabinetEc).scanValues(nil, columns)
@@ -341,6 +380,7 @@ func (ceq *CabinetEcQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*C
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &CabinetEc{config: ceq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(ceq.modifiers) > 0 {
@@ -355,7 +395,46 @@ func (ceq *CabinetEcQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*C
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := ceq.withCabinet; query != nil {
+		if err := ceq.loadCabinet(ctx, query, nodes, nil,
+			func(n *CabinetEc, e *Cabinet) { n.Edges.Cabinet = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (ceq *CabinetEcQuery) loadCabinet(ctx context.Context, query *CabinetQuery, nodes []*CabinetEc, init func(*CabinetEc), assign func(*CabinetEc, *Cabinet)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*CabinetEc)
+	for i := range nodes {
+		if nodes[i].CabinetID == nil {
+			continue
+		}
+		fk := *nodes[i].CabinetID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(cabinet.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (ceq *CabinetEcQuery) sqlCount(ctx context.Context) (int, error) {
@@ -385,6 +464,9 @@ func (ceq *CabinetEcQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != cabinetec.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if ceq.withCabinet != nil {
+			_spec.Node.AddColumnOnce(cabinetec.FieldCabinetID)
 		}
 	}
 	if ps := ceq.predicates; len(ps) > 0 {
@@ -453,11 +535,15 @@ func (ceq *CabinetEcQuery) Modify(modifiers ...func(s *sql.Selector)) *CabinetEc
 
 type CabinetEcQueryWith string
 
-var ()
+var (
+	CabinetEcQueryWithCabinet CabinetEcQueryWith = "Cabinet"
+)
 
 func (ceq *CabinetEcQuery) With(withEdges ...CabinetEcQueryWith) *CabinetEcQuery {
 	for _, v := range withEdges {
 		switch v {
+		case CabinetEcQueryWithCabinet:
+			ceq.WithCabinet()
 		}
 	}
 	return ceq

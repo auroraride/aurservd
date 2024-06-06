@@ -15,6 +15,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/sortorder"
 	"github.com/golang-module/carbon/v2"
+	"github.com/shopspring/decimal"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
@@ -25,6 +26,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetec"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/es"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
@@ -288,37 +290,66 @@ func (b *cabinetBiz) ListECData(options definition.CabinetECDataSearchOptions) (
 
 // ECMonthExport 电柜耗电量导出
 func (b *cabinetBiz) ECMonthExport(modifier *model.Modifier, req *definition.CabinetECMonthExportReq) model.ExportRes {
-	q := ent.Database.CabinetEc.Query()
+	q := ent.Database.CabinetEc.Query().WithCabinet(func(query *ent.CabinetQuery) {
+		query.WithCity().WithBranch()
+	})
 	info := make(map[string]interface{})
 	now := carbon.Now()
-	var date time.Time
-	if req.Date == nil {
-		// 默认导出当月数据
-		date = now.StartOfMonth().StdTime()
-		info["date"] = req.Date
-	} else {
-		date, _ = time.Parse("2006-01", *req.Date)
-		info["date"] = date.Format("2006-01")
+
+	date := now.StartOfMonth()
+	if req.Date != nil {
+		date = carbon.Parse(*req.Date)
+		if date.Error != nil {
+			date = now.StartOfMonth()
+		}
 	}
-	q.Where(cabinetec.Date(date))
+	info["date"] = date.StdTime().Format("2006-01")
+	q.Where(cabinetec.Date(date.StdTime().Format("2006-01")))
+
+	if req.CityID != nil {
+		q.Where(cabinetec.HasCabinetWith(cabinet.HasCityWith(city.ID(*req.CityID))))
+	}
+
+	if req.CabinetName != nil {
+		q.Where(cabinetec.HasCabinetWith(cabinet.Name(*req.CabinetName)))
+	}
+
+	if req.BranchName != nil {
+		q.Where(cabinetec.HasCabinetWith(cabinet.HasBranchWith(branch.Name(*req.BranchName))))
+	}
 
 	if req.Serial != nil {
 		info["serial"] = *req.Serial
 		q.Where(cabinetec.Serial(*req.Serial))
+		q.Where(cabinetec.Serial(*req.Serial))
 	}
 	items, _ := q.All(b.ctx)
-	return service.NewExportWithModifier(modifier).Start("电柜电耗月度统计表_"+*req.Date, req, info, "", func(path string) {
+	return service.NewExportWithModifier(modifier).Start("电柜电耗月度统计表_"+date.StdTime().Format("2006-01"), req, info, "", func(path string) {
 		var rows tools.ExcelItems
-		title := []any{"电柜编号", "开始电量", "结束电量", "用电量", "开始时间", "结束时间"}
+		title := []any{"电柜编号", "电柜名称", "城市", "所属网点", "开始电量", "结束电量", "用电量", "开始时间", "结束时间"}
 		rows = append(rows, title)
 		for _, item := range items {
 			row := make([]any, len(title))
 			row[0] = item.Serial
-			row[1] = item.Start
-			row[2] = item.End
-			row[3] = item.Total
-			row[4] = item.Date.Format(time.DateOnly)
-			row[5] = now.StdTime().Format(time.DateOnly)
+			row[1] = ""
+			row[2] = ""
+			row[3] = ""
+			row[4] = item.Start
+			row[5] = item.End
+			row[6] = item.Total
+			row[7] = date.StdTime().Format(time.DateOnly)
+			row[8] = now.StdTime().Format(time.DateOnly)
+
+			if item.Edges.Cabinet != nil {
+				row[1] = item.Edges.Cabinet.Name
+				if item.Edges.Cabinet.Edges.City != nil {
+					row[2] = item.Edges.Cabinet.Edges.City.Name
+				}
+				if item.Edges.Cabinet.Edges.Branch != nil {
+					row[3] = item.Edges.Cabinet.Edges.Branch.Name
+				}
+			}
+
 			rows = append(rows, row)
 		}
 		tools.NewExcel(path).AddValues(rows).Done()
@@ -327,27 +358,50 @@ func (b *cabinetBiz) ECMonthExport(modifier *model.Modifier, req *definition.Cab
 
 // ListECMonth 电柜耗电量列表
 func (b *cabinetBiz) ListECMonth(req *definition.CabinetECMonthReq) *model.PaginationRes {
-	q := ent.Database.CabinetEc.Query()
+	q := ent.Database.CabinetEc.Query().WithCabinet(func(query *ent.CabinetQuery) {
+		query.WithCity().WithBranch()
+	})
 	now := carbon.Now()
-	var date time.Time
-	if req.Date == nil {
-		date = now.StartOfMonth().StdTime()
-	} else {
+	date := now.StartOfMonth().StdTime()
+	if req.Date != nil {
 		date, _ = time.Parse("2006-01", *req.Date)
 	}
-	q.Where(cabinetec.Date(date))
+	q.Where(cabinetec.Date(date.Format("2006-01")))
+
+	if req.CityID != nil {
+		q.Where(cabinetec.HasCabinetWith(cabinet.HasCityWith(city.ID(*req.CityID))))
+	}
+
+	if req.CabinetName != nil {
+		q.Where(cabinetec.HasCabinetWith(cabinet.Name(*req.CabinetName)))
+	}
+
+	if req.BranchName != nil {
+		q.Where(cabinetec.HasCabinetWith(cabinet.HasBranchWith(branch.Name(*req.BranchName))))
+	}
+
 	if req.Serial != nil {
 		q.Where(cabinetec.Serial(*req.Serial))
 	}
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.CabinetEc) *definition.CabinetECRes {
-		return &definition.CabinetECRes{
+		res := &definition.CabinetECRes{
 			Serial:  item.Serial,
-			StartAt: item.Date.Format(time.DateOnly),
+			StartAt: date.Format(time.DateOnly),
 			EndAt:   now.StdTime().Format(time.DateOnly),
 			StartEc: item.Start,
 			EndEc:   item.End,
 			Totoal:  item.Total,
 		}
+		if item.Edges.Cabinet != nil {
+			res.CabinetName = item.Edges.Cabinet.Name
+			if item.Edges.Cabinet.Edges.City != nil {
+				res.CityName = item.Edges.Cabinet.Edges.City.Name
+			}
+			if item.Edges.Cabinet.Edges.Branch != nil {
+				res.BranchName = item.Edges.Cabinet.Edges.Branch.Name
+			}
+		}
+		return res
 	})
 }
 
@@ -356,15 +410,15 @@ func (b *cabinetBiz) ListECInfo(req definition.CabinetECReq) (res *model.Paginat
 	var start *time.Time
 	var end *time.Time
 	if req.Start != nil && req.End != nil {
-		s, _ := tools.NewTime().ParseDateString(*req.Start)
-		if req.Start == req.End {
-			e, _ := tools.NewTime().ParseNextDateString(*req.End)
-			end = silk.Time(e)
-		} else {
-			e, _ := tools.NewTime().ParseDateString(*req.End)
-			end = silk.Time(e)
+		startParsed, _ := tools.NewTime().ParseDateString(*req.Start)
+		endParsed, _ := tools.NewTime().ParseNextDateString(*req.End)
+
+		if *req.Start == *req.End {
+			endParsed, _ = tools.NewTime().ParseNextDateString(*req.End)
 		}
-		start = silk.Time(s)
+		start = silk.Time(startParsed)
+		end = silk.Time(endParsed)
+
 	}
 
 	_, _, data := b.ListECData(definition.CabinetECDataSearchOptions{
@@ -394,7 +448,7 @@ func (b *cabinetBiz) ListECInfo(req definition.CabinetECReq) (res *model.Paginat
 	}
 
 	for _, group := range groups {
-		group.Total = group.Max.Value - group.Min.Value
+		group.Total = tools.NewDecimal().Sub(group.Max.Value, group.Min.Value)
 	}
 
 	resData := make([]definition.CabinetECRes, 0)
@@ -403,11 +457,16 @@ func (b *cabinetBiz) ListECInfo(req definition.CabinetECReq) (res *model.Paginat
 			Serial:  item.Max.Serial,
 			StartAt: item.Min.Timestamp.Format(time.DateOnly),
 			EndAt:   item.Max.Timestamp.Format(time.DateOnly),
-			StartEc: item.Min.Value,
-			EndEc:   item.Max.Value,
+			StartEc: decimal.NewFromFloat(item.Min.Value).Round(2).InexactFloat64(),
+			EndEc:   decimal.NewFromFloat(item.Max.Value).Round(2).InexactFloat64(),
 			Totoal:  item.Total,
 		})
 	}
+
+	// 对 resData 进行排序
+	sort.Slice(resData, func(i, j int) bool {
+		return resData[i].Totoal > resData[j].Totoal
+	})
 
 	// 切片分页
 	startIndex := (req.GetCurrent() - 1) * req.GetLimit()
@@ -426,6 +485,20 @@ func (b *cabinetBiz) ListECInfo(req definition.CabinetECReq) (res *model.Paginat
 		items = resData[startIndex:endIndex]
 	}
 
+	for k, v := range items {
+		// 查询电柜信息
+		cab, _ := ent.Database.Cabinet.Query().WithCity().WithBranch().Where(cabinet.Serial(v.Serial)).First(b.ctx)
+		if cab != nil {
+			items[k].CabinetName = cab.Name
+			if cab.Edges.City != nil {
+				items[k].CityName = cab.Edges.City.Name
+			}
+			if cab.Edges.Branch != nil {
+				items[k].BranchName = cab.Edges.Branch.Name
+			}
+		}
+	}
+
 	return &model.PaginationRes{
 		Pagination: model.Pagination{
 			Total:   len(resData),
@@ -442,14 +515,15 @@ func (b *cabinetBiz) ECExport(modifier *model.Modifier, req *definition.CabinetE
 	var end *time.Time
 	if req.Start != nil && req.End != nil {
 		s, _ := tools.NewTime().ParseDateString(*req.Start)
-		e, _ := tools.NewTime().ParseDateString(*req.End)
+		e, _ := tools.NewTime().ParseNextDateString(*req.End)
 		start = silk.Time(s)
 		end = silk.Time(e)
 
 	}
 	_, _, data := b.ListECData(definition.CabinetECDataSearchOptions{
-		Start: start,
-		End:   end,
+		Start:  start,
+		End:    end,
+		Serial: req.Serial,
 	})
 
 	groups := make(map[string]*definition.GroupCabinetECData)
@@ -475,18 +549,33 @@ func (b *cabinetBiz) ECExport(modifier *model.Modifier, req *definition.CabinetE
 		group.Total = tools.NewDecimal().Sub(group.Max.Value, group.Min.Value)
 	}
 
-	return service.NewExportWithModifier(modifier).Start("电柜电耗查询表", req, nil, "", func(path string) {
+	return service.NewExportWithModifier(modifier).Start("电柜电耗查询", req, nil, "", func(path string) {
 		var rows tools.ExcelItems
-		title := []any{"电柜编号", "开始电量", "结束电量", "用电量", "开始时间", "结束时间"}
+		title := []any{"电柜编号", "电柜名称", "城市", "所属网点", "开始电量", "结束电量", "用电量", "开始时间", "结束时间"}
 		rows = append(rows, title)
-		for _, item := range groups {
+		for k, item := range groups {
 			row := make([]any, len(title))
 			row[0] = item.Max.Serial
-			row[1] = item.Min.Value
-			row[2] = item.Max.Value
-			row[3] = item.Total
-			row[4] = item.Min.Timestamp.Format(time.DateOnly)
-			row[5] = item.Max.Timestamp.Format(time.DateOnly)
+			row[1] = ""
+			row[2] = ""
+			row[3] = ""
+			row[4] = item.Min.Value
+			row[5] = item.Max.Value
+			row[6] = item.Total
+			row[7] = carbon.Now().StartOfDay().StdTime().Format(time.DateTime)
+			row[8] = item.Max.Timestamp.Format(time.DateTime)
+
+			cab, _ := ent.Database.Cabinet.Query().WithCity().WithBranch().Where(cabinet.Serial(k)).First(b.ctx)
+			if cab != nil {
+				row[1] = cab.Name
+				if cab.Edges.City != nil {
+					row[2] = cab.Edges.City.Name
+				}
+				if cab.Edges.Branch != nil {
+					row[3] = cab.Edges.Branch.Name
+				}
+			}
+
 			rows = append(rows, row)
 		}
 		tools.NewExcel(path).AddValues(rows).Done()
