@@ -106,8 +106,8 @@ func (b *riderBiz) Signin(device *model.Device, req *definition.RiderSignupReq) 
 		}
 	}
 
-	// 判定用户是否被封禁
-	if service.NewRider().IsBanned(u) {
+	// 判定用户是否被封禁 或者被拉黑
+	if service.NewRider().IsBanned(u) || service.NewRider().IsBlocked(u) {
 		return nil, errors.New("用户已被封禁")
 	}
 
@@ -161,9 +161,4 @@ func (b *riderBiz) SetMobPushId(u *ent.Rider, req *definition.RiderSetMobPushReq
 		return err
 	}
 	return
-}
-
-// EncryptContractDocId 加密合同编号 合同有用户敏感信息
-func (b *riderBiz) EncryptContractDocId(contractNo string) string {
-	return utils.Md5Base64String(contractNo)
 }

@@ -58,7 +58,7 @@ func (s *paymentService) Configure() *model.PaymentConfigure {
 			Useable:   c.ExpiresAt.After(now),
 			Amount:    amount,
 			Name:      c.Name,
-			ExpiredAt: c.ExpiresAt.Format("2006.1.2"),
+			ExpiredAt: c.ExpiresAt.Format(time.DateTime),
 			Code:      c.Code,
 			Exclusive: isExclusive,
 			Plans:     c.Plans,
