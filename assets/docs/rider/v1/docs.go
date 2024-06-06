@@ -2776,6 +2776,14 @@ const docTemplate = `{
                     "description": "电柜数量",
                     "type": "integer"
                 },
+                "emptyBinNum": {
+                    "description": "可用空仓数量",
+                    "type": "integer"
+                },
+                "exchangNum": {
+                    "description": "可换电池数量",
+                    "type": "integer"
+                },
                 "fid": {
                     "description": "设施标识",
                     "type": "string"
@@ -2881,8 +2889,16 @@ const docTemplate = `{
                     "description": "充电数量",
                     "type": "integer"
                 },
+                "emptyBinNum": {
+                    "description": "可用空仓数量",
+                    "type": "integer"
+                },
+                "exchangNum": {
+                    "description": "可换电池数量",
+                    "type": "integer"
+                },
                 "fully": {
-                    "description": "可换数量",
+                    "description": "满电数量",
                     "type": "integer"
                 },
                 "voltage": {

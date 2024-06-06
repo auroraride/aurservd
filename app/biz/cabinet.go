@@ -26,6 +26,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/es"
+	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -120,26 +121,6 @@ func (b *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 				cdr.Reserve = rev
 			}
 
-			// 电柜可办理业务
-			reserveNum := service.NewReserve().CabinetCounts([]uint64{c.ID})
-			var batteryFullNum, emptyBinNum int
-			reserveActiveNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeActive)]
-			reserveContinueNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeContinue)]
-			reservePauseNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypePause)]
-			reserveUnsubscribeNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeUnsubscribe)]
-
-			// 可用电池数
-			batteryFullNum = c.BatteryFullNum - reserveActiveNum - reserveContinueNum
-			// 可用空仓数
-			emptyBinNum = c.EmptyBinNum - reservePauseNum - reserveUnsubscribeNum
-
-			if batteryFullNum >= 2 {
-				cdr.Businesses = append(cdr.Businesses, model.BusinessTypeActive.String(), model.BusinessTypeContinue.String())
-			}
-			if emptyBinNum >= 2 {
-				cdr.Businesses = append(cdr.Businesses, model.BusinessTypePause.String(), model.BusinessTypeUnsubscribe.String())
-			}
-
 			if c.Edges.Branch != nil {
 				cdr.BranchID = c.Edges.Branch.ID
 				cdr.Fid = service.NewBranch().EncodeFacility(nil, c)
@@ -160,6 +141,8 @@ func (b *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 			}
 
 			cdr.Bins = make([]model.CabinetDataBin, len(c.Bin))
+			// 计算可用电池数量
+			var availableBatteryNum, availableEmptyBinNum int
 			for i, bin := range c.Bin {
 				if bin.Battery {
 					if bin.Full {
@@ -178,7 +161,38 @@ func (b *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 					cdr.Bins[i].Remark = bin.Remark
 					cdr.LockNum += 1
 				}
+
+				if bin.DoorHealth && bin.Electricity.Value() >= cache.Float64(model.SettingExchangeMinBatteryKey) {
+					availableBatteryNum += 1
+				}
+				if !bin.Battery && bin.DoorHealth {
+					availableEmptyBinNum += 1
+				}
 			}
+
+			// 电柜可办理业务
+			reserveNum := service.NewReserve().CabinetCounts([]uint64{c.ID})
+			var batteryNum, emptyBinNum int
+			reserveActiveNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeActive)]
+			reserveContinueNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeContinue)]
+			reservePauseNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypePause)]
+			reserveUnsubscribeNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeUnsubscribe)]
+
+			// 可用电池数 = 满足可换电电池数 - 预约数
+			batteryNum = availableBatteryNum - reserveActiveNum - reserveContinueNum
+			// 可用空仓数
+			emptyBinNum = availableEmptyBinNum - reservePauseNum - reserveUnsubscribeNum
+
+			cdr.EmptyBinNum = batteryNum
+			cdr.ExchangNum = emptyBinNum
+
+			if batteryNum >= 2 {
+				cdr.Businesses = append(cdr.Businesses, model.BusinessTypeActive.String(), model.BusinessTypeContinue.String())
+			}
+			if emptyBinNum >= 2 {
+				cdr.Businesses = append(cdr.Businesses, model.BusinessTypePause.String(), model.BusinessTypeUnsubscribe.String())
+			}
+
 			res = append(res, cdr)
 		}
 	}

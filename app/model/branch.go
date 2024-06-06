@@ -146,16 +146,18 @@ type BranchDistanceListRes struct {
 
 // BranchFacility 网点设施
 type BranchFacility struct {
-	ID         uint64             `json:"id"`
-	Fid        string             `json:"fid"`             // 设施标识
-	Type       BranchFacilityType `json:"type"`            // 类别  all:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
-	Name       string             `json:"name"`            // 名称
-	State      uint               `json:"state"`           // 状态 0不可用 1可用
-	Num        int                `json:"num"`             // 满电数量
-	Phone      string             `json:"phone,omitempty"` // 联系电话
-	Total      int                `json:"total"`           // 仓位数量
-	CabinetNum int                `json:"cabinetNum"`      // 电柜数量
-	BatteryNum int                `json:"batteryNum"`      // 电池数量
+	ID          uint64             `json:"id"`
+	Fid         string             `json:"fid"`             // 设施标识
+	Type        BranchFacilityType `json:"type"`            // 类别  all:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店
+	Name        string             `json:"name"`            // 名称
+	State       uint               `json:"state"`           // 状态 0不可用 1可用
+	Num         int                `json:"num"`             // 满电数量
+	Phone       string             `json:"phone,omitempty"` // 联系电话
+	Total       int                `json:"total"`           // 仓位数量
+	CabinetNum  int                `json:"cabinetNum"`      // 电柜数量
+	BatteryNum  int                `json:"batteryNum"`      // 电池数量
+	ExchangNum  int                `json:"exchangNum"`      // 可换电池数量
+	EmptyBinNum int                `json:"emptyBinNum"`     // 可用空仓数量
 }
 
 // BranchWithDistanceRes 根据距离获取网点结果
@@ -227,10 +229,12 @@ type BranchFacilityCabinet struct {
 }
 
 type BranchFacilityCabinetBattery struct {
-	Voltage  string `json:"voltage"`  // 电压, 单位V
-	Capacity string `json:"capacity"` // 容量, 单位AH
-	Charging int    `json:"charging"` // 充电数量
-	Fully    int    `json:"fully"`    // 可换数量
+	Voltage     string `json:"voltage"`     // 电压, 单位V
+	Capacity    string `json:"capacity"`    // 容量, 单位AH
+	Charging    int    `json:"charging"`    // 充电数量
+	Fully       int    `json:"fully"`       // 满电数量
+	ExchangNum  int    `json:"exchangNum"`  // 可换电池数量
+	EmptyBinNum int    `json:"emptyBinNum"` // 可用空仓数量
 }
 
 type BranchFacilityCabinetBin struct {

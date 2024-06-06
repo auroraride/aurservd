@@ -25,6 +25,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -548,6 +549,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 				fa.State = model.BranchFacilityStateOnline
 			}
 			// 计算可用电池数量
+			var availableBatteryNum, availableEmptyBinNum int
 			for _, bin := range c.Bin {
 				fa.Total += 1
 				// TODO 替换
@@ -556,6 +558,14 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 				}
 				if bin.Battery {
 					fa.BatteryNum += 1
+				}
+				// 可用电池数量,可用空仓数量 锁仓不算可用
+				if bin.DoorHealth && bin.Electricity.Value() >= cache.Float64(model.SettingExchangeMinBatteryKey) {
+					availableBatteryNum += 1
+				}
+				// 可用空仓数量 锁仓不算可用
+				if !bin.Battery && bin.DoorHealth {
+					availableEmptyBinNum += 1
 				}
 			}
 
@@ -572,8 +582,6 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 				fa.Type = model.BranchFacilityTypeV60
 			}
 
-			s.facility(itemsMap[*c.BranchID].FacilityMap, fa)
-
 			// 电柜可办理业务
 			if branchBusinessesMap[*c.BranchID] == nil {
 				branchBusinessesMap[*c.BranchID] = make(map[uint64][]string)
@@ -582,22 +590,27 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 			// active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
 			reserveNum := NewReserve().CabinetCounts([]uint64{c.ID})
 			// 电柜可办理业务
-			var batteryFullNum, emptyBinNum int
+			var batteryNum, emptyBinNum int
 			reserveActiveNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeActive)]
 			reserveContinueNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeContinue)]
 			reservePauseNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypePause)]
 			reserveUnsubscribeNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeUnsubscribe)]
 
-			// 可用电池数
-			batteryFullNum = c.BatteryFullNum - reserveActiveNum - reserveContinueNum
-			// 可用空仓数
-			emptyBinNum = c.EmptyBinNum - reservePauseNum - reserveUnsubscribeNum
-			// 电柜可办业务展示规则：
+			// 业务可用
+			batteryNum = availableBatteryNum - reserveActiveNum - reserveContinueNum
+			// 业务可用空仓数
+			emptyBinNum = availableBatteryNum - reservePauseNum - reserveUnsubscribeNum
+
+			fa.EmptyBinNum = emptyBinNum
+			fa.ExchangNum = batteryNum
+
+			s.facility(itemsMap[*c.BranchID].FacilityMap, fa)
+			// 电柜可办业务展示规则： 电池可用数据定义 (未锁仓的仓位且电量大于等于最低换电量) 空仓数据定义 (未锁仓且无电池)
 			//  1）激活：电柜可用电池数 ≥ 2
 			//  2）退租：电柜空仓数 ≥ 2
 			//  3）寄存：电柜空仓数 ≥ 2
 			//  4）结束寄存：电柜可用电池数 ≥ 2
-			if batteryFullNum >= 2 {
+			if batteryNum >= 2 {
 				branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], model.BusinessTypeActive.String(), model.BusinessTypeContinue.String())
 			}
 			if emptyBinNum >= 2 {
@@ -661,6 +674,8 @@ func (s *branchService) facility(mp map[string]*model.BranchFacility, info model
 			fa.Num += info.Num
 			fa.Total += info.Total
 			fa.CabinetNum += info.CabinetNum
+			fa.EmptyBinNum += info.EmptyBinNum
+			fa.ExchangNum += info.ExchangNum
 		}
 	} else {
 		fa = &info
@@ -825,6 +840,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 			}
 
 			// 获取仓位详情
+			var availableBatteryNum, availableEmptyBinNum int
 			for bi, bin := range cab.Bin {
 				// 锁仓
 				if !bin.DoorHealth {
@@ -849,6 +865,12 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 					}
 				}
 				c.Bins[bi].BatterySN = bin.BatterySN
+				if bin.DoorHealth && bin.Electricity.Value() >= cache.Float64(model.SettingExchangeMinBatteryKey) {
+					availableBatteryNum += 1
+				}
+				if !bin.Battery && bin.DoorHealth {
+					availableEmptyBinNum += 1
+				}
 			}
 
 			c.Batteries = []model.BranchFacilityCabinetBattery{batInfo}
@@ -876,17 +898,21 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 
 			// 电柜可办理业务
 			reserveNum := NewReserve().CabinetCounts([]uint64{cab.ID})
-			var batteryFullNum, emptyBinNum int
+			var batteryNum, emptyBinNum int
 			reserveActiveNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeActive)]
 			reserveContinueNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeContinue)]
 			reservePauseNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypePause)]
 			reserveUnsubscribeNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeUnsubscribe)]
 
 			// 可用电池数
-			batteryFullNum = cab.BatteryFullNum - reserveActiveNum - reserveContinueNum
+			batteryNum = availableBatteryNum - reserveActiveNum - reserveContinueNum
 			// 可用空仓数
-			emptyBinNum = cab.EmptyBinNum - reservePauseNum - reserveUnsubscribeNum
-			if batteryFullNum >= 2 {
+			emptyBinNum = availableEmptyBinNum - reservePauseNum - reserveUnsubscribeNum
+
+			batInfo.ExchangNum = batteryNum
+			batInfo.EmptyBinNum = emptyBinNum
+
+			if batteryNum >= 2 {
 				c.CabinetBusinesses = append(c.CabinetBusinesses, model.BusinessTypeActive.String(), model.BusinessTypeContinue.String())
 			}
 			if emptyBinNum >= 2 {
