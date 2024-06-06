@@ -115,15 +115,15 @@ type BranchContractSheetReq struct {
 
 // BranchWithDistanceReq 根据距离获取网点请求
 type BranchWithDistanceReq struct {
-	Lng           *float64 `json:"lng" query:"lng" validate:"required" trans:"经度"`
-	Lat           *float64 `json:"lat" query:"lat" validate:"required" trans:"纬度"`
-	Distance      *float64 `json:"distance" query:"distance" trans:"距离"`
-	CityID        *uint64  `json:"cityId" query:"cityId" trans:"城市ID"`
-	Business      string   `json:"business" query:"business" enums:"active,pause,continue,unsubscribe"` // 业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
-	Filter        string   `json:"filter" query:"filter"`                                               // 额外筛选参数
-	Model         *string  `json:"model" query:"model"`                                                 // 电池型号
-	StoreStatus   *uint8   `json:"storeStatus" query:"storeStatus"`                                     // 门店状态 0-全部 1-营业 2-休息 （首页地图不要传入此值）
-	StoreBusiness *uint8   `json:"storeBusiness" query:"storeBusiness"`                                 // 门店业务 0-全部 1-租车，2-修车，3-买车，4-驿站 （首页地图不要传入此值）
+	Lng           *float64           `json:"lng" query:"lng" validate:"required" trans:"经度"`
+	Lat           *float64           `json:"lat" query:"lat" validate:"required" trans:"纬度"`
+	Distance      *float64           `json:"distance" query:"distance" trans:"距离"`
+	CityID        *uint64            `json:"cityId" query:"cityId" trans:"城市ID"`
+	Business      string             `json:"business" query:"business" enums:"active,pause,continue,unsubscribe"` // 业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+	Filter        string             `json:"filter" query:"filter"`                                               // 额外筛选参数
+	Model         *string            `json:"model" query:"model"`                                                 // 电池型号
+	StoreStatus   *uint8             `json:"storeStatus" query:"storeStatus"`                                     // 门店状态 0-全部 1-营业 2-休息 （首页地图不要传入此值）
+	StoreBusiness *StoreBusinessType `json:"storeBusiness" query:"storeBusiness"`                                 // 门店业务 0-全部 1-租车，2-修车，3-买车，4-驿站 （首页地图不要传入此值）
 }
 
 type BranchDistanceListReq struct {
