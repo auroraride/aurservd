@@ -3604,21 +3604,21 @@ paths:
   /rider/v2/contract/{docId}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: ContractDetail
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 合同ID
-          in: path
-          name: docId
-          required: true
-          type: string
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 合同ID
+        in: path
+        name: docId
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -3626,7 +3626,7 @@ paths:
             $ref: '#/definitions/definition.ContractDetailRes'
       summary: 查看合同
       tags:
-        - Contract - 合同
+      - Contract - 合同
   /rider/v2/contract/create:
     post:
       consumes:

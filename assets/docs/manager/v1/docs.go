@@ -16758,6 +16758,10 @@ const docTemplate = `{
                     "description": "代理商ID",
                     "type": "integer"
                 },
+                "batStoreID": {
+                    "description": "电池退租门店ID, 强制退租电池选择门店ID",
+                    "type": "integer"
+                },
                 "cabinetId": {
                     "description": "电柜ID",
                     "type": "integer"
@@ -16765,6 +16769,10 @@ const docTemplate = `{
                 "depositAmount": {
                     "description": "退押金金额(后台使用)",
                     "type": "number"
+                },
+                "ebikeStoreID": {
+                    "description": "电车退租门店ID, 强制退租电车选择门店ID",
+                    "type": "integer"
                 },
                 "id": {
                     "description": "订阅ID",
@@ -16781,6 +16789,10 @@ const docTemplate = `{
                 "rto": {
                     "description": "管理员强制退租 - 是否参与以租代购",
                     "type": "boolean"
+                },
+                "rtoRemark": {
+                    "description": "以租代购备注",
+                    "type": "string"
                 },
                 "storeId": {
                     "description": "门店ID",

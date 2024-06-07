@@ -395,12 +395,7 @@ func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []mod
 func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (sk *ent.Stock, err error) {
 	num := model.StockNumberOfRiderBusiness(req.StockType)
 
-	if req.Ebike != nil && req.CabinetID != nil {
-		err = errors.New("车电业务无法使用电柜")
-		return
-	}
-
-	if req.StoreID == nil && req.CabinetID == nil && req.EnterpriseID == nil && req.StationID == nil {
+	if req.EbikeStoreID == nil && req.BatStoreID == nil && req.CabinetID == nil && req.EnterpriseID == nil && req.StationID == nil {
 		err = errors.New("参数校验错误")
 		return
 	}
@@ -408,13 +403,17 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 	creator := tx.Stock.Create()
 
 	// TODO 平台管理员可操作性时处理出入库逻辑
-	if req.StoreID != nil {
+	switch {
+	case req.StoreID != nil:
 		creator.SetStoreID(*req.StoreID)
 		// 判定非智能电池库存
 		if req.Battery == nil && num < 0 && !s.CheckStore(*req.StoreID, req.Model, int(math.Round(math.Abs(float64(num))))) {
 			err = errors.New("电池库存不足")
 			return
 		}
+	case req.BatStoreID != nil:
+		// 退租电池返回门店（退租时电池是查询出来的一定不会为空，所以此处无需上面的判定非智能电池库存）
+		creator.SetStoreID(*req.BatStoreID)
 	}
 
 	// 判定电柜库存
