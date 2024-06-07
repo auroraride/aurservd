@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -19,6 +20,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
+	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
+	FieldCabinetID = "cabinet_id"
 	// FieldSerial holds the string denoting the serial field in the database.
 	FieldSerial = "serial"
 	// FieldDate holds the string denoting the date field in the database.
@@ -29,8 +32,17 @@ const (
 	FieldEnd = "end"
 	// FieldTotal holds the string denoting the total field in the database.
 	FieldTotal = "total"
+	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
+	EdgeCabinet = "cabinet"
 	// Table holds the table name of the cabinetec in the database.
 	Table = "cabinet_ec"
+	// CabinetTable is the table that holds the cabinet relation/edge.
+	CabinetTable = "cabinet_ec"
+	// CabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	CabinetInverseTable = "cabinet"
+	// CabinetColumn is the table column denoting the cabinet relation/edge.
+	CabinetColumn = "cabinet_id"
 )
 
 // Columns holds all SQL columns for cabinetec fields.
@@ -39,6 +51,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
+	FieldCabinetID,
 	FieldSerial,
 	FieldDate,
 	FieldStart,
@@ -88,6 +101,11 @@ func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
 }
 
+// ByCabinetID orders the results by the cabinet_id field.
+func ByCabinetID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCabinetID, opts...).ToFunc()
+}
+
 // BySerial orders the results by the serial field.
 func BySerial(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSerial, opts...).ToFunc()
@@ -111,4 +129,18 @@ func ByEnd(opts ...sql.OrderTermOption) OrderOption {
 // ByTotal orders the results by the total field.
 func ByTotal(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTotal, opts...).ToFunc()
+}
+
+// ByCabinetField orders the results by cabinet field.
+func ByCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCabinetStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newCabinetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CabinetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
+	)
 }

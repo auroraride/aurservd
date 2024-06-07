@@ -56,33 +56,42 @@ type CabinetECData struct {
 
 // CabinetECMonthExportReq 电柜耗电量请求参数
 type CabinetECMonthExportReq struct {
-	Serial *string `json:"serial" query:"serial"` // 电柜编号
-	Date   *string `json:"date" query:"date"`     // 日期 yyyy-MM
-	Remark string  `json:"remark" query:"remark"` // 备注
+	Serial      *string `json:"serial" query:"serial"`           // 电柜编号
+	Date        *string `json:"date" query:"date"`               // 日期 yyyy-MM
+	CityID      *uint64 `json:"cityID" query:"cityID"`           // 城市ID
+	CabinetName *string `json:"cabinetName" query:"cabinetName"` // 电柜名称
+	BranchName  *string `json:"branchName" query:"branchName"`   // 网点名称
+	Remark      string  `json:"remark" query:"remark"`           // 备注
 }
 
 // CabinetECMonthReq 电柜耗电列表
 type CabinetECMonthReq struct {
 	model.PaginationReq
-	Serial *string `json:"serial" query:"serial"` // 电柜编号
-	Date   *string `json:"date" query:"date"`     // 日期 yyyy-MM
+	Serial      *string `json:"serial" query:"serial"`           // 电柜编号
+	Date        *string `json:"date" query:"date"`               // 日期 yyyy-MM
+	CityID      *uint64 `json:"cityID" query:"cityID"`           // 城市ID
+	CabinetName *string `json:"cabinetName" query:"cabinetName"` // 电柜名称
+	BranchName  *string `json:"branchName" query:"branchName"`   // 网点名称
 }
 
 // CabinetECRes 电柜耗电列表响应
 type CabinetECRes struct {
-	Serial  string  `json:"serial"`  // 电柜编号
-	StartAt string  `json:"startAt"` // 开始时间
-	EndAt   string  `json:"endAt"`   // 结束时间
-	StartEc float64 `json:"startEc"` // 开始电量
-	EndEc   float64 `json:"endEc"`   // 结束电量
-	Totoal  float64 `json:"total"`   // 总电量
+	Serial      string  `json:"serial"`      // 电柜编号
+	StartAt     string  `json:"startAt"`     // 开始时间
+	EndAt       string  `json:"endAt"`       // 结束时间
+	StartEc     float64 `json:"startEc"`     // 开始电量
+	EndEc       float64 `json:"endEc"`       // 结束电量
+	Totoal      float64 `json:"total"`       // 总电量
+	CityName    string  `json:"cityName"`    // 城市名称
+	CabinetName string  `json:"cabinetName"` // 电柜名称
+	BranchName  string  `json:"branchName"`  // 网点名称
 }
 
 // GroupCabinetECData 电柜能耗分组数据
 type GroupCabinetECData struct {
-	Max   *CabinetECData
-	Min   *CabinetECData
-	Total float64
+	Max   *CabinetECData // 最大读数
+	Min   *CabinetECData // 最小读数
+	Total float64        // 总电量
 }
 
 // CabinetECReq 电柜耗电量明细

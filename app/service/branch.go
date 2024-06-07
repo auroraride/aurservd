@@ -599,7 +599,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 			// 业务可用
 			batteryNum = availableBatteryNum - reserveActiveNum - reserveContinueNum
 			// 业务可用空仓数
-			emptyBinNum = availableBatteryNum - reservePauseNum - reserveUnsubscribeNum
+			emptyBinNum = availableEmptyBinNum - reservePauseNum - reserveUnsubscribeNum
 
 			fa.EmptyBinNum = emptyBinNum
 			fa.ExchangNum = batteryNum

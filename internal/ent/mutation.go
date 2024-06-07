@@ -22695,24 +22695,26 @@ func (m *CabinetMutation) ResetEdge(name string) error {
 // CabinetEcMutation represents an operation that mutates the CabinetEc nodes in the graph.
 type CabinetEcMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	serial        *string
-	date          *time.Time
-	start         *float64
-	addstart      *float64
-	end           *float64
-	addend        *float64
-	total         *float64
-	addtotal      *float64
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*CabinetEc, error)
-	predicates    []predicate.CabinetEc
+	op             Op
+	typ            string
+	id             *uint64
+	created_at     *time.Time
+	updated_at     *time.Time
+	deleted_at     *time.Time
+	serial         *string
+	date           *string
+	start          *float64
+	addstart       *float64
+	end            *float64
+	addend         *float64
+	total          *float64
+	addtotal       *float64
+	clearedFields  map[string]struct{}
+	cabinet        *uint64
+	clearedcabinet bool
+	done           bool
+	oldValue       func(context.Context) (*CabinetEc, error)
+	predicates     []predicate.CabinetEc
 }
 
 var _ ent.Mutation = (*CabinetEcMutation)(nil)
@@ -22934,6 +22936,55 @@ func (m *CabinetEcMutation) ResetDeletedAt() {
 	delete(m.clearedFields, cabinetec.FieldDeletedAt)
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (m *CabinetEcMutation) SetCabinetID(u uint64) {
+	m.cabinet = &u
+}
+
+// CabinetID returns the value of the "cabinet_id" field in the mutation.
+func (m *CabinetEcMutation) CabinetID() (r uint64, exists bool) {
+	v := m.cabinet
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCabinetID returns the old "cabinet_id" field's value of the CabinetEc entity.
+// If the CabinetEc object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetEcMutation) OldCabinetID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCabinetID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCabinetID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCabinetID: %w", err)
+	}
+	return oldValue.CabinetID, nil
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (m *CabinetEcMutation) ClearCabinetID() {
+	m.cabinet = nil
+	m.clearedFields[cabinetec.FieldCabinetID] = struct{}{}
+}
+
+// CabinetIDCleared returns if the "cabinet_id" field was cleared in this mutation.
+func (m *CabinetEcMutation) CabinetIDCleared() bool {
+	_, ok := m.clearedFields[cabinetec.FieldCabinetID]
+	return ok
+}
+
+// ResetCabinetID resets all changes to the "cabinet_id" field.
+func (m *CabinetEcMutation) ResetCabinetID() {
+	m.cabinet = nil
+	delete(m.clearedFields, cabinetec.FieldCabinetID)
+}
+
 // SetSerial sets the "serial" field.
 func (m *CabinetEcMutation) SetSerial(s string) {
 	m.serial = &s
@@ -22971,12 +23022,12 @@ func (m *CabinetEcMutation) ResetSerial() {
 }
 
 // SetDate sets the "date" field.
-func (m *CabinetEcMutation) SetDate(t time.Time) {
-	m.date = &t
+func (m *CabinetEcMutation) SetDate(s string) {
+	m.date = &s
 }
 
 // Date returns the value of the "date" field in the mutation.
-func (m *CabinetEcMutation) Date() (r time.Time, exists bool) {
+func (m *CabinetEcMutation) Date() (r string, exists bool) {
 	v := m.date
 	if v == nil {
 		return
@@ -22987,7 +23038,7 @@ func (m *CabinetEcMutation) Date() (r time.Time, exists bool) {
 // OldDate returns the old "date" field's value of the CabinetEc entity.
 // If the CabinetEc object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetEcMutation) OldDate(ctx context.Context) (v time.Time, err error) {
+func (m *CabinetEcMutation) OldDate(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDate is only allowed on UpdateOne operations")
 	}
@@ -23188,6 +23239,33 @@ func (m *CabinetEcMutation) ResetTotal() {
 	m.addtotal = nil
 }
 
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (m *CabinetEcMutation) ClearCabinet() {
+	m.clearedcabinet = true
+	m.clearedFields[cabinetec.FieldCabinetID] = struct{}{}
+}
+
+// CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
+func (m *CabinetEcMutation) CabinetCleared() bool {
+	return m.CabinetIDCleared() || m.clearedcabinet
+}
+
+// CabinetIDs returns the "cabinet" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CabinetID instead. It exists only for internal usage by the builders.
+func (m *CabinetEcMutation) CabinetIDs() (ids []uint64) {
+	if id := m.cabinet; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCabinet resets all changes to the "cabinet" edge.
+func (m *CabinetEcMutation) ResetCabinet() {
+	m.cabinet = nil
+	m.clearedcabinet = false
+}
+
 // Where appends a list predicates to the CabinetEcMutation builder.
 func (m *CabinetEcMutation) Where(ps ...predicate.CabinetEc) {
 	m.predicates = append(m.predicates, ps...)
@@ -23222,7 +23300,7 @@ func (m *CabinetEcMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CabinetEcMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, cabinetec.FieldCreatedAt)
 	}
@@ -23231,6 +23309,9 @@ func (m *CabinetEcMutation) Fields() []string {
 	}
 	if m.deleted_at != nil {
 		fields = append(fields, cabinetec.FieldDeletedAt)
+	}
+	if m.cabinet != nil {
+		fields = append(fields, cabinetec.FieldCabinetID)
 	}
 	if m.serial != nil {
 		fields = append(fields, cabinetec.FieldSerial)
@@ -23261,6 +23342,8 @@ func (m *CabinetEcMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case cabinetec.FieldDeletedAt:
 		return m.DeletedAt()
+	case cabinetec.FieldCabinetID:
+		return m.CabinetID()
 	case cabinetec.FieldSerial:
 		return m.Serial()
 	case cabinetec.FieldDate:
@@ -23286,6 +23369,8 @@ func (m *CabinetEcMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldUpdatedAt(ctx)
 	case cabinetec.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
+	case cabinetec.FieldCabinetID:
+		return m.OldCabinetID(ctx)
 	case cabinetec.FieldSerial:
 		return m.OldSerial(ctx)
 	case cabinetec.FieldDate:
@@ -23326,6 +23411,13 @@ func (m *CabinetEcMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
+	case cabinetec.FieldCabinetID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCabinetID(v)
+		return nil
 	case cabinetec.FieldSerial:
 		v, ok := value.(string)
 		if !ok {
@@ -23334,7 +23426,7 @@ func (m *CabinetEcMutation) SetField(name string, value ent.Value) error {
 		m.SetSerial(v)
 		return nil
 	case cabinetec.FieldDate:
-		v, ok := value.(time.Time)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -23433,6 +23525,9 @@ func (m *CabinetEcMutation) ClearedFields() []string {
 	if m.FieldCleared(cabinetec.FieldDeletedAt) {
 		fields = append(fields, cabinetec.FieldDeletedAt)
 	}
+	if m.FieldCleared(cabinetec.FieldCabinetID) {
+		fields = append(fields, cabinetec.FieldCabinetID)
+	}
 	if m.FieldCleared(cabinetec.FieldEnd) {
 		fields = append(fields, cabinetec.FieldEnd)
 	}
@@ -23453,6 +23548,9 @@ func (m *CabinetEcMutation) ClearField(name string) error {
 	case cabinetec.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
+	case cabinetec.FieldCabinetID:
+		m.ClearCabinetID()
+		return nil
 	case cabinetec.FieldEnd:
 		m.ClearEnd()
 		return nil
@@ -23472,6 +23570,9 @@ func (m *CabinetEcMutation) ResetField(name string) error {
 		return nil
 	case cabinetec.FieldDeletedAt:
 		m.ResetDeletedAt()
+		return nil
+	case cabinetec.FieldCabinetID:
+		m.ResetCabinetID()
 		return nil
 	case cabinetec.FieldSerial:
 		m.ResetSerial()
@@ -23494,19 +23595,28 @@ func (m *CabinetEcMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CabinetEcMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.cabinet != nil {
+		edges = append(edges, cabinetec.EdgeCabinet)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *CabinetEcMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case cabinetec.EdgeCabinet:
+		if id := m.cabinet; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CabinetEcMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
 	return edges
 }
 
@@ -23518,25 +23628,42 @@ func (m *CabinetEcMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CabinetEcMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedcabinet {
+		edges = append(edges, cabinetec.EdgeCabinet)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *CabinetEcMutation) EdgeCleared(name string) bool {
+	switch name {
+	case cabinetec.EdgeCabinet:
+		return m.clearedcabinet
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *CabinetEcMutation) ClearEdge(name string) error {
+	switch name {
+	case cabinetec.EdgeCabinet:
+		m.ClearCabinet()
+		return nil
+	}
 	return fmt.Errorf("unknown CabinetEc unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *CabinetEcMutation) ResetEdge(name string) error {
+	switch name {
+	case cabinetec.EdgeCabinet:
+		m.ResetCabinet()
+		return nil
+	}
 	return fmt.Errorf("unknown CabinetEc edge %s", name)
 }
 

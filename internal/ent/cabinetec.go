@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 )
 
@@ -23,17 +24,42 @@ type CabinetEc struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	// 电柜ID
+	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// 电柜原始编号
 	Serial string `json:"serial,omitempty"`
-	// 日期
-	Date time.Time `json:"date,omitempty"`
+	// 日期 YYYY-MM
+	Date string `json:"date,omitempty"`
 	// 开始电量
 	Start float64 `json:"start,omitempty"`
 	// 结束电量
 	End float64 `json:"end,omitempty"`
 	// 耗电量
-	Total        float64 `json:"total,omitempty"`
+	Total float64 `json:"total,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the CabinetEcQuery when eager-loading is set.
+	Edges        CabinetEcEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// CabinetEcEdges holds the relations/edges for other nodes in the graph.
+type CabinetEcEdges struct {
+	// Cabinet holds the value of the cabinet edge.
+	Cabinet *Cabinet `json:"cabinet,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// CabinetOrErr returns the Cabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CabinetEcEdges) CabinetOrErr() (*Cabinet, error) {
+	if e.Cabinet != nil {
+		return e.Cabinet, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: cabinet.Label}
+	}
+	return nil, &NotLoadedError{edge: "cabinet"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -43,11 +69,11 @@ func (*CabinetEc) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case cabinetec.FieldStart, cabinetec.FieldEnd, cabinetec.FieldTotal:
 			values[i] = new(sql.NullFloat64)
-		case cabinetec.FieldID:
+		case cabinetec.FieldID, cabinetec.FieldCabinetID:
 			values[i] = new(sql.NullInt64)
-		case cabinetec.FieldSerial:
+		case cabinetec.FieldSerial, cabinetec.FieldDate:
 			values[i] = new(sql.NullString)
-		case cabinetec.FieldCreatedAt, cabinetec.FieldUpdatedAt, cabinetec.FieldDeletedAt, cabinetec.FieldDate:
+		case cabinetec.FieldCreatedAt, cabinetec.FieldUpdatedAt, cabinetec.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -89,6 +115,13 @@ func (ce *CabinetEc) assignValues(columns []string, values []any) error {
 				ce.DeletedAt = new(time.Time)
 				*ce.DeletedAt = value.Time
 			}
+		case cabinetec.FieldCabinetID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field cabinet_id", values[i])
+			} else if value.Valid {
+				ce.CabinetID = new(uint64)
+				*ce.CabinetID = uint64(value.Int64)
+			}
 		case cabinetec.FieldSerial:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field serial", values[i])
@@ -96,10 +129,10 @@ func (ce *CabinetEc) assignValues(columns []string, values []any) error {
 				ce.Serial = value.String
 			}
 		case cabinetec.FieldDate:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field date", values[i])
 			} else if value.Valid {
-				ce.Date = value.Time
+				ce.Date = value.String
 			}
 		case cabinetec.FieldStart:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -130,6 +163,11 @@ func (ce *CabinetEc) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (ce *CabinetEc) Value(name string) (ent.Value, error) {
 	return ce.selectValues.Get(name)
+}
+
+// QueryCabinet queries the "cabinet" edge of the CabinetEc entity.
+func (ce *CabinetEc) QueryCabinet() *CabinetQuery {
+	return NewCabinetEcClient(ce.config).QueryCabinet(ce)
 }
 
 // Update returns a builder for updating this CabinetEc.
@@ -166,11 +204,16 @@ func (ce *CabinetEc) String() string {
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
+	if v := ce.CabinetID; v != nil {
+		builder.WriteString("cabinet_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("serial=")
 	builder.WriteString(ce.Serial)
 	builder.WriteString(", ")
 	builder.WriteString("date=")
-	builder.WriteString(ce.Date.Format(time.ANSIC))
+	builder.WriteString(ce.Date)
 	builder.WriteString(", ")
 	builder.WriteString("start=")
 	builder.WriteString(fmt.Sprintf("%v", ce.Start))

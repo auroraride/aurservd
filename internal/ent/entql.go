@@ -502,8 +502,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinetec.FieldCreatedAt: {Type: field.TypeTime, Column: cabinetec.FieldCreatedAt},
 			cabinetec.FieldUpdatedAt: {Type: field.TypeTime, Column: cabinetec.FieldUpdatedAt},
 			cabinetec.FieldDeletedAt: {Type: field.TypeTime, Column: cabinetec.FieldDeletedAt},
+			cabinetec.FieldCabinetID: {Type: field.TypeUint64, Column: cabinetec.FieldCabinetID},
 			cabinetec.FieldSerial:    {Type: field.TypeString, Column: cabinetec.FieldSerial},
-			cabinetec.FieldDate:      {Type: field.TypeTime, Column: cabinetec.FieldDate},
+			cabinetec.FieldDate:      {Type: field.TypeString, Column: cabinetec.FieldDate},
 			cabinetec.FieldStart:     {Type: field.TypeFloat64, Column: cabinetec.FieldStart},
 			cabinetec.FieldEnd:       {Type: field.TypeFloat64, Column: cabinetec.FieldEnd},
 			cabinetec.FieldTotal:     {Type: field.TypeFloat64, Column: cabinetec.FieldTotal},
@@ -3063,6 +3064,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Cabinet",
 		"Enterprise",
+	)
+	graph.MustAddE(
+		"cabinet",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinetec.CabinetTable,
+			Columns: []string{cabinetec.CabinetColumn},
+			Bidi:    false,
+		},
+		"CabinetEc",
+		"Cabinet",
 	)
 	graph.MustAddE(
 		"city",
@@ -8677,13 +8690,18 @@ func (f *CabinetEcFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(cabinetec.FieldDeletedAt))
 }
 
+// WhereCabinetID applies the entql uint64 predicate on the cabinet_id field.
+func (f *CabinetEcFilter) WhereCabinetID(p entql.Uint64P) {
+	f.Where(p.Field(cabinetec.FieldCabinetID))
+}
+
 // WhereSerial applies the entql string predicate on the serial field.
 func (f *CabinetEcFilter) WhereSerial(p entql.StringP) {
 	f.Where(p.Field(cabinetec.FieldSerial))
 }
 
-// WhereDate applies the entql time.Time predicate on the date field.
-func (f *CabinetEcFilter) WhereDate(p entql.TimeP) {
+// WhereDate applies the entql string predicate on the date field.
+func (f *CabinetEcFilter) WhereDate(p entql.StringP) {
 	f.Where(p.Field(cabinetec.FieldDate))
 }
 
@@ -8700,6 +8718,20 @@ func (f *CabinetEcFilter) WhereEnd(p entql.Float64P) {
 // WhereTotal applies the entql float64 predicate on the total field.
 func (f *CabinetEcFilter) WhereTotal(p entql.Float64P) {
 	f.Where(p.Field(cabinetec.FieldTotal))
+}
+
+// WhereHasCabinet applies a predicate to check if query has an edge cabinet.
+func (f *CabinetEcFilter) WhereHasCabinet() {
+	f.Where(entql.HasEdge("cabinet"))
+}
+
+// WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
+func (f *CabinetEcFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // addPredicate implements the predicateAdder interface.

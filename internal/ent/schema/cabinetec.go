@@ -60,7 +60,7 @@ func (CabinetEc) Annotations() []schema.Annotation {
 func (CabinetEc) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("serial").Comment("电柜原始编号"),
-		field.Time("date").Comment("日期"),
+		field.String("date").Comment("日期 YYYY-MM"),
 		field.Float("start").Comment("开始电量"),
 		field.Float("end").Optional().Comment("结束电量"),
 		field.Float("total").Comment("耗电量"),
@@ -76,6 +76,7 @@ func (CabinetEc) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
 		internal.DeleteMixin{},
+		CabinetMixin{Optional: true},
 	}
 }
 

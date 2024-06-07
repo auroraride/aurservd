@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 
 	"github.com/rs/xid"
 	"go.uber.org/zap"
@@ -64,7 +65,7 @@ func (b *riderBiz) ChangePhone(r *ent.Rider, req *definition.RiderChangePhoneReq
 }
 
 // Signin 登录
-func (b *riderBiz) Signin(device *model.Device, req *definition.RiderSignupReq) (res *model.RiderSigninRes, err error) {
+func (b *riderBiz) Signin(device *model.Device, req *definition.RiderSignupReq) (res *definition.RiderSigninRes, err error) {
 	// 兼容老版本
 	if req.SigninType == nil {
 		req.SigninType = silk.UInt64(model.SigninTypeSms)
@@ -125,18 +126,10 @@ func (b *riderBiz) Signin(device *model.Device, req *definition.RiderSignupReq) 
 		service.NewRider().SetNewDevice(u, device)
 	}
 
-	res = service.NewRider().Profile(u, device, token)
-
-	effectiveContract := service.NewContract().QueryEffectiveContract(u)
-	if effectiveContract != nil {
-		encryptDocID, err := utils.EncryptAES([]byte(ar.Config.Contract.EncryptKey), effectiveContract.DocID)
-		if err != nil || encryptDocID == "" {
-			zap.L().Error("加密合同编号失败", zap.Error(err))
-			return nil, err
-		}
-		res.ContractDocID = encryptDocID
+	res, err = b.Profile(u, device, token)
+	if err != nil {
+		return nil, err
 	}
-
 	// 设置登录token
 	service.NewRider().ExtendTokenTime(u.ID, token)
 
@@ -161,4 +154,74 @@ func (b *riderBiz) SetMobPushId(u *ent.Rider, req *definition.RiderSetMobPushReq
 		return err
 	}
 	return
+}
+
+// Profile 获取用户资料
+func (b *riderBiz) Profile(u *ent.Rider, device *model.Device, token string) (*definition.RiderSigninRes, error) {
+	s := service.NewRider()
+	subd, sub := service.NewSubscribe().RecentDetail(u.ID)
+	profile := &definition.RiderSigninRes{
+		ID:              u.ID,
+		Phone:           u.Phone,
+		IsNewDevice:     s.IsNewDevice(u, device),
+		IsContactFilled: u.Contact != nil,
+		IsAuthed:        s.IsAuthed(u),
+		Contact:         u.Contact,
+		Qrcode:          s.GetQrcode(u.ID),
+		Token:           token,
+	}
+
+	// 站点
+	stat := u.Edges.Station
+	if stat != nil {
+		profile.Station = &model.EnterpriseStation{
+			ID:   stat.ID,
+			Name: stat.Name,
+		}
+	}
+
+	// 订阅
+	if sub != nil && slices.Contains(model.SubscribeNotUnSubscribed(), sub.Status) {
+		profile.Subscribe = subd
+		profile.CabinetBusiness = u.EnterpriseID == nil && sub.BrandID == nil
+	}
+	if u.Edges.Person != nil {
+		profile.Name = u.Edges.Person.Name
+	}
+	en := u.Edges.Enterprise
+	if en != nil {
+		profile.Enterprise = &model.Enterprise{
+			ID:    en.ID,
+			Name:  en.Name,
+			Agent: en.Agent,
+		}
+		profile.UseStore = !en.Agent || en.UseStore
+		if en.Agent {
+			profile.EnterpriseContact = &model.EnterpriseContact{
+				Name:  en.ContactName,
+				Phone: en.ContactPhone,
+			}
+		}
+		// 判断是否能退出团签
+		if subd != nil && (subd.Status == model.SubscribeStatusInactive || subd.Status == model.SubscribeStatusUnSubscribed) {
+			profile.ExitEnterprise = true
+		}
+
+	} else {
+		profile.OrderNotActived = silk.Bool(subd != nil && subd.Status == model.SubscribeStatusInactive)
+		profile.Deposit = s.Deposit(u.ID)
+		profile.UseStore = true
+	}
+
+	effectiveContract := service.NewContract().QueryEffectiveContract(u)
+	if effectiveContract != nil {
+		encryptDocID, err := utils.EncryptAES([]byte(ar.Config.Contract.EncryptKey), effectiveContract.DocID)
+		if err != nil || encryptDocID == "" {
+			zap.L().Error("加密合同编号失败", zap.Error(err))
+			return nil, err
+		}
+		profile.ContractDocID = encryptDocID
+	}
+
+	return profile, nil
 }
