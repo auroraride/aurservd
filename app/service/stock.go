@@ -395,7 +395,7 @@ func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []mod
 func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (sk *ent.Stock, err error) {
 	num := model.StockNumberOfRiderBusiness(req.StockType)
 
-	if req.EbikeStoreID == nil && req.BatStoreID == nil && req.CabinetID == nil && req.EnterpriseID == nil && req.StationID == nil {
+	if req.StoreID == nil && req.EbikeStoreID == nil && req.BatStoreID == nil && req.CabinetID == nil && req.EnterpriseID == nil && req.StationID == nil {
 		err = errors.New("参数校验错误")
 		return
 	}
@@ -414,15 +414,6 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 	case req.BatStoreID != nil:
 		// 退租电池返回门店（退租时电池是查询出来的一定不会为空，所以此处无需上面的判定非智能电池库存）
 		creator.SetStoreID(*req.BatStoreID)
-	}
-
-	// 判定电柜库存
-	if req.CabinetID != nil {
-		creator.SetCabinetID(*req.CabinetID)
-		if num < 0 && !s.CheckCabinet(*req.CabinetID, req.Model, int(math.Round(math.Abs(float64(num))))) {
-			err = errors.New("电池库存不足")
-			return
-		}
 	}
 
 	// 判定团签库存
@@ -446,6 +437,15 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 		SetNillableAgentID(req.AgentID)
 
 	son := creator.Clone()
+
+	// 判定电柜库存
+	if req.CabinetID != nil {
+		creator.SetCabinetID(*req.CabinetID)
+		if num < 0 && !s.CheckCabinet(*req.CabinetID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+			err = errors.New("电池库存不足")
+			return
+		}
+	}
 
 	var batID *uint64
 	if req.Battery != nil {
