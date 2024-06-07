@@ -493,17 +493,6 @@ func (r *rider) FaceResult() {}
 
 func (r *rider) Demo() {}
 
-// Profile
-// @ID		Profile
-// @Router	/rider/v2/profile [GET]
-// @Summary	获取个人信息
-// @Tags	Rider - 骑手
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string					true	"骑手校验token"
-// @Success	200				{object}	model.RiderSigninRes	"请求成功"
-func (r *rider) Profile() {}
-
 // Deposit
 // @ID		Deposit
 // @Router	/rider/v2/deposit [GET]

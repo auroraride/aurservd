@@ -71,3 +71,19 @@ func (*rider) SetMobPushId(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.RiderSetMobPushReq](c)
 	return ctx.SendResponse(biz.NewRiderBiz().SetMobPushId(ctx.Rider, req))
 }
+
+// Profile
+// @ID		Profile
+// @Router	/rider/v2/profile [GET]
+// @Summary 获取个人信息
+// @Tags	Rider - 骑手
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Success	200				{object}	model.RiderSigninRes	"请求成功"
+func (*rider) Profile(c echo.Context) error {
+	ctx := c.(*app.RiderContext)
+	profile, err := biz.NewRiderBiz().Profile(ctx.Rider, ctx.Device, ctx.Token)
+	profile.Token = ctx.Token
+	return ctx.SendResponse(profile, err)
+}
