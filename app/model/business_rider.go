@@ -18,6 +18,10 @@ type BusinessSubscribeReq struct {
 	Remark        *string  `json:"remark"`                      // 备注
 
 	Rto *bool `json:"rto"` // 管理员强制退租 - 是否参与以租代购
+
+	RtoRemark    *string `json:"rtoRemark"`                     // 以租代购备注
+	EbikeStoreID *uint64 `json:"ebikeStoreID" trans:"电车退租门店ID"` // 强制退租电车选择门店ID
+	BatStoreID   *uint64 `json:"batStoreID" trans:"电池退租门店ID"`   // 强制退租电池选择门店ID
 }
 
 type BusinessCabinetReq struct {

@@ -42,12 +42,14 @@ type businessRiderService struct {
 	cabinet      *ent.Cabinet
 	cabinetInfo  *model.CabinetBasicInfo
 	store        *ent.Store
+	ebikeStore   *ent.Store
+	batStore     *ent.Store
 	subscribe    *ent.Subscribe
 	reserve      *ent.Reserve
 
 	cabTask func() (*model.BinInfo, *model.Battery, error) // 电柜任务
 
-	storeID, employeeID, cabinetID, subscribeID, agentID *uint64
+	storeID, employeeID, cabinetID, subscribeID, agentID, ebikeStoreID, batStoreID *uint64
 
 	// 电车信息
 	ebikeInfo *model.EbikeBusinessInfo
@@ -97,6 +99,22 @@ func (s *businessRiderService) SetCabinetID(id *uint64) *businessRiderService {
 func (s *businessRiderService) SetStoreID(id *uint64) *businessRiderService {
 	if id != nil {
 		s.store = NewStore().Query(*id)
+	}
+	return s
+}
+
+// SetEbikeStoreID 设置电车门店ID（退租使用）
+func (s *businessRiderService) SetEbikeStoreID(id *uint64) *businessRiderService {
+	if id != nil {
+		s.ebikeStore = NewStore().Query(*id)
+	}
+	return s
+}
+
+// SetBatStoreID 设置电池门店ID（退租使用）
+func (s *businessRiderService) SetBatStoreID(id *uint64) *businessRiderService {
+	if id != nil {
+		s.batStore = NewStore().Query(*id)
 	}
 	return s
 }
@@ -374,10 +392,18 @@ func (s *businessRiderService) Preprocess(bt model.BusinessType, sub *ent.Subscr
 		s.cabinetID = silk.Pointer(s.cabinet.ID)
 	}
 
+	// 以租代购管理员强制退租专用
+	if s.ebikeStore != nil {
+		s.ebikeStoreID = silk.Pointer(s.ebikeStore.ID)
+	}
+	if s.batStore != nil {
+		s.batStoreID = silk.Pointer(s.batStore.ID)
+	}
+
 	// 判定是否满足业务调键
 	// 代理站点的骑手无需门店或电柜
 	// 反之则必须门店或电柜
-	if sub.StationID == nil && s.store == nil && s.cabinet == nil {
+	if sub.StationID == nil && s.store == nil && s.cabinet == nil && s.ebikeStore == nil && s.batStore == nil {
 		snag.Panic("条件不满足")
 	}
 
@@ -385,20 +411,23 @@ func (s *businessRiderService) Preprocess(bt model.BusinessType, sub *ent.Subscr
 		s.employeeID = silk.Pointer(s.employee.ID)
 	}
 
-	if s.employee == nil && s.store == nil && s.modifier == nil && s.cabinet == nil && sub.StationID == nil {
+	if s.employee == nil && s.store == nil && s.modifier == nil && s.cabinet == nil && sub.StationID == nil && s.ebikeStore == nil && s.batStore == nil {
 		snag.Panic("操作权限校验失败")
 	}
 
 	// 校验权限
 	if s.employee != nil {
 		NewBusinessWithEmployee(s.employee).CheckCity(s.subscribe.CityID, s.store)
+		// 以租代购专用检验电车退租门店、电池退租门店
+		NewBusinessWithEmployee(s.employee).CheckCity(s.subscribe.CityID, s.ebikeStore)
+		NewBusinessWithEmployee(s.employee).CheckCity(s.subscribe.CityID, s.batStore)
 	}
 
 	// 车电订阅检查
 	if sub.BrandID != nil {
 		// 车电订阅无法办理寄存相关业务
-		// 车电订阅无法使用电柜
-		if (bt != model.BusinessTypeActive && bt != model.BusinessTypeUnsubscribe) || s.cabinetID != nil {
+		// 车电订阅无法使用电柜（以租代购退租时，车电业务存在电车还门店、电池还电柜/门店情况）
+		if bt != model.BusinessTypeActive && bt != model.BusinessTypeUnsubscribe {
 			snag.Panic("车电订阅无法办理此业务")
 		}
 	}
@@ -497,7 +526,7 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 			cb(tx)
 
 			// 需要进行业务出入库
-			if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil {
+			if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil || s.ebikeStoreID != nil || s.batStoreID != nil {
 				sk, err = NewStockWithModifier(s.modifier).RiderBusiness(
 					tx,
 					&model.StockBusinessReq{
@@ -518,7 +547,9 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 						Ebike:   s.ebikeInfo,
 						Battery: bat,
 
-						Rto: doReq.Rto,
+						Rto:          doReq.Rto,
+						EbikeStoreID: s.ebikeStoreID,
+						BatStoreID:   s.batStoreID,
 					},
 				)
 
@@ -543,20 +574,47 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 
 		// 保存业务日志
 		var b *ent.Business
-		bq := NewBusinessLog(s.subscribe).
-			SetModifier(s.modifier).
-			SetEmployee(s.employee).
-			SetCabinet(s.cabinet).
-			SetStore(s.store).
-			SetBinInfo(bin).
-			SetStock(sk).
-			SetBattery(bat).
-			SetAgentId(s.agentID)
-		if doReq.Rto && s.ebikeInfo != nil {
-			bq.SetRtoEbikeID(s.ebikeInfo.ID)
+		var bq *businessLogService
+		// 车电套餐退租时，电车和电池单独退
+		switch {
+		case s.ebikeStore != nil || s.batStore != nil:
+			// 电车单独归还
+			if s.ebikeStore != nil {
+				bq = NewBusinessLog(s.subscribe).
+					SetModifier(s.modifier).
+					SetEmployee(s.employee).
+					SetStore(s.ebikeStore).
+					SetStock(sk).
+					SetAgentId(s.agentID)
+				// 电车满足以租代购
+				if doReq.Rto && s.ebikeInfo != nil {
+					bq.SetRtoEbikeID(s.ebikeInfo.ID)
+				}
+			}
+			// 电池单独归还
+			if s.batStore != nil {
+				bq = NewBusinessLog(s.subscribe).
+					SetModifier(s.modifier).
+					SetEmployee(s.employee).
+					SetStore(s.batStore).
+					SetBinInfo(bin).
+					SetStock(sk).
+					SetBattery(bat).
+					SetAgentId(s.agentID)
+			}
+		default:
+			bq = NewBusinessLog(s.subscribe).
+				SetModifier(s.modifier).
+				SetEmployee(s.employee).
+				SetCabinet(s.cabinet).
+				SetStore(s.store).
+				SetBinInfo(bin).
+				SetStock(sk).
+				SetBattery(bat).
+				SetAgentId(s.agentID)
 		}
-
 		b, _ = bq.Save(doReq.Type)
+
 		var bussinessID *uint64
 		revStatus := model.ReserveStatusFail
 		if b != nil {
@@ -783,7 +841,7 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 					ClearRiderID().
 					SetNillableStoreID(s.storeID).
 					SetRtoRiderID(sub.RiderID).
-					SetNillableRemark(req.Remark).
+					SetNillableRemark(req.RtoRemark).
 					Exec(s.ctx)
 				snag.PanicIfError(err)
 			} else {
@@ -792,6 +850,7 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 					ClearRiderID().
 					SetStatus(model.EbikeStatusInStock).
 					SetNillableStoreID(s.storeID).
+					SetNillableRemark(req.RtoRemark).
 					Exec(s.ctx)
 				snag.PanicIfError(err)
 			}
