@@ -89,6 +89,7 @@ func (*subscribe) Halt(c echo.Context) (err error) {
 				RefundDeposit: req.RefundDeposit,
 				DepositAmount: req.DepositAmount,
 				Remark:        req.Remark,
+				Rto:           req.Rto,
 				RtoRemark:     req.RtoRemark,
 			},
 		)
