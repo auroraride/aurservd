@@ -2807,6 +2807,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/plan/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Plan - 骑士卡"
+                ],
+                "summary": "骑士卡详情",
+                "operationId": "PlanDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.PlanDetailRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/profile": {
             "get": {
                 "consumes": [
@@ -4415,6 +4447,46 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.PlanDetailRes": {
+            "type": "object",
+            "properties": {
+                "days": {
+                    "description": "骑士卡天数",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "骑士卡ID",
+                    "type": "integer"
+                },
+                "intelligent": {
+                    "description": "是否智能电柜套餐",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "骑士卡名称",
+                    "type": "string"
+                },
+                "notes": {
+                    "description": "购买须知",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "description": "售价",
+                    "type": "number"
+                },
+                "type": {
+                    "description": "类别",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PlanType"
+                        }
+                    ]
+                }
+            }
+        },
         "definition.PlanNewlyRes": {
             "type": "object",
             "properties": {
@@ -4733,6 +4805,10 @@ const docTemplate = `{
                 },
                 "createdAt": {
                     "description": "创建时间",
+                    "type": "string"
+                },
+                "downloadLink": {
+                    "description": "下载链接(Android)",
                     "type": "string"
                 },
                 "force": {

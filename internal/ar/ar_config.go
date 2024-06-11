@@ -304,6 +304,7 @@ type config struct {
 		ApiKey        string
 		EccDatastream string
 	}
+	AppDownloadUrl string
 }
 
 type AlipayConfig struct {

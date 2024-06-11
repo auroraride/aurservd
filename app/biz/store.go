@@ -30,13 +30,13 @@ func NewStore() *storeBiz {
 }
 
 // List 门店列表
-func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDetail, err error) {
+func (b *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDetail, err error) {
 	res = make([]*definition.StoreDetail, 0)
 	maxDistance := 50000.0
 	if req.Distance != nil && *req.Distance < maxDistance {
 		maxDistance = *req.Distance
 	}
-	q := s.orm.QueryNotDeleted().
+	q := b.orm.QueryNotDeleted().
 		WithCity().
 		WithEmployee().
 		WithStocks().
@@ -77,14 +77,14 @@ func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 		q.Where(store.NameContains(*req.Keyword))
 	}
 
-	list, _ := q.All(s.ctx)
+	list, _ := q.All(b.ctx)
 	if len(list) == 0 {
 		return res, nil
 	}
 
 	var pl *ent.Plan
 	if req.PlanID != nil {
-		pl, _ = ent.Database.Plan.QueryNotDeleted().Where(plan.ID(*req.PlanID)).First(s.ctx)
+		pl, _ = ent.Database.Plan.QueryNotDeleted().Where(plan.ID(*req.PlanID)).First(b.ctx)
 		if pl == nil {
 			return nil, errors.New("未找到有效套餐")
 		}
@@ -97,20 +97,20 @@ func (s *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 	for _, v := range list {
 		// 查询门店库存
 		if req.PlanID != nil && pl != nil {
-			ebikeNum, batteryNum := s.queryStocks(v, pl)
+			ebikeNum, batteryNum := b.queryStocks(v, pl)
 			// 电车或电池库存为0则不展示
 			if ebikeNum <= 0 || batteryNum <= 0 {
 				continue
 			}
 		}
-		res = append(res, s.detail(v))
+		res = append(res, b.detail(v))
 	}
 	return
 }
 
 // Detail 门店详情
-func (s *storeBiz) Detail(req *definition.StoreDetailReq) (res *definition.StoreDetail) {
-	q, _ := s.orm.QueryNotDeleted().
+func (b *storeBiz) Detail(req *definition.StoreDetailReq) (res *definition.StoreDetail) {
+	q, _ := b.orm.QueryNotDeleted().
 		Where(store.ID(req.ID)).
 		WithCity().
 		WithEmployee().
@@ -119,14 +119,14 @@ func (s *storeBiz) Detail(req *definition.StoreDetailReq) (res *definition.Store
 			sel.AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'))`, req.Lng, req.Lat)), "distance").
 				OrderBy(sql.Asc("distance"))
 		}).
-		First(s.ctx)
+		First(b.ctx)
 	if q == nil {
 		return nil
 	}
-	return s.detailForStock(q)
+	return b.detailForStock(q)
 }
 
-func (s *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
+func (b *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 	res = &definition.StoreDetail{
 		ID:            item.ID,
 		Name:          item.Name,
@@ -167,7 +167,7 @@ func (s *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 }
 
 // 查询门店电车库存
-func (s *storeBiz) queryStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, batteryNum int) {
+func (b *storeBiz) queryStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, batteryNum int) {
 	bikes := make(map[string]*model.StockMaterial)
 	batteries := make(map[string]*model.StockMaterial)
 	for _, st := range item.Edges.Stocks {
@@ -191,7 +191,7 @@ func (s *storeBiz) queryStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, battery
 }
 
 // StoreBySubscribe 根据订阅查询门店
-func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreDetailReq) (res *definition.StoreDetail, err error) {
+func (b *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreDetailReq) (res *definition.StoreDetail, err error) {
 	q, _ := ent.Database.Subscribe.QueryNotDeleted().
 		Where(subscribe.ID(req.ID), subscribe.RiderID(r.ID)).
 		WithStore(
@@ -203,7 +203,7 @@ func (s *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreDetailReq
 		sel.
 			AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'))`, req.Lng, req.Lat)), "distance").
 			OrderBy(sql.Asc("distance"))
-	}).First(s.ctx)
+	}).First(b.ctx)
 	if q == nil || q.Edges.Store == nil {
 		return nil, errors.New("未找到门店")
 	}
