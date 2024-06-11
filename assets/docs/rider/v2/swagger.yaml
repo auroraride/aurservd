@@ -684,6 +684,70 @@ definitions:
     required:
     - pushId
     type: object
+  definition.RiderSigninRes:
+    properties:
+      cabinetBusiness:
+        description: 是否可以自主使用电柜办理业务
+        type: boolean
+      contact:
+        allOf:
+          - $ref: '#/definitions/model.RiderContact'
+        description: 联系人
+      contractDocId:
+        description: 签署合同编号
+        type: string
+      deposit:
+        description: 需缴押金
+        type: number
+      enterprise:
+        allOf:
+          - $ref: '#/definitions/model.Enterprise'
+        description: 所属企业
+      enterpriseContact:
+        allOf:
+          - $ref: '#/definitions/model.EnterpriseContact'
+        description: 团签联系方式
+      exitEnterprise:
+        description: 判断能否退出团签
+        type: boolean
+      id:
+        type: integer
+      isAuthed:
+        description: 是否已认证
+        type: boolean
+      isContactFilled:
+        description: 联系人是否添加
+        type: boolean
+      isNewDevice:
+        description: 是否新设备
+        type: boolean
+      name:
+        description: 姓名, 实名认证后才会有
+        type: string
+      orderNotActived:
+        description: 是否存在未激活订单
+        type: boolean
+      phone:
+        description: 电话
+        type: string
+      qrcode:
+        description: 二维码
+        type: string
+      station:
+        allOf:
+          - $ref: '#/definitions/model.EnterpriseStation'
+        description: 站点
+      subscribe:
+        allOf:
+          - $ref: '#/definitions/model.Subscribe'
+        description: 骑士卡
+      token:
+        description: 认证token
+        type: string
+      useStore:
+        description: 是否可使用门店办理业务
+        type: boolean
+    type: object
   definition.RiderSignupReq:
     properties:
       authCode:
@@ -2457,67 +2521,6 @@ definitions:
         type: array
       overdue:
         description: 是否需要支付逾期费用
-        type: boolean
-    type: object
-  model.RiderSigninRes:
-    properties:
-      cabinetBusiness:
-        description: 是否可以自主使用电柜办理业务
-        type: boolean
-      contact:
-        allOf:
-        - $ref: '#/definitions/model.RiderContact'
-        description: 联系人
-      deposit:
-        description: 需缴押金
-        type: number
-      enterprise:
-        allOf:
-        - $ref: '#/definitions/model.Enterprise'
-        description: 所属企业
-      enterpriseContact:
-        allOf:
-        - $ref: '#/definitions/model.EnterpriseContact'
-        description: 团签联系方式
-      exitEnterprise:
-        description: 判断能否退出团签
-        type: boolean
-      id:
-        type: integer
-      isAuthed:
-        description: 是否已认证
-        type: boolean
-      isContactFilled:
-        description: 联系人是否添加
-        type: boolean
-      isNewDevice:
-        description: 是否新设备
-        type: boolean
-      name:
-        description: 姓名, 实名认证后才会有
-        type: string
-      orderNotActived:
-        description: 是否存在未激活订单
-        type: boolean
-      phone:
-        description: 电话
-        type: string
-      qrcode:
-        description: 二维码
-        type: string
-      station:
-        allOf:
-        - $ref: '#/definitions/model.EnterpriseStation'
-        description: 站点
-      subscribe:
-        allOf:
-        - $ref: '#/definitions/model.Subscribe'
-        description: 骑士卡
-      token:
-        description: 认证token
-        type: string
-      useStore:
-        description: 是否可使用门店办理业务
         type: boolean
     type: object
   model.SettingPlanDescription:
@@ -4706,7 +4709,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.RiderSigninRes'
+            $ref: '#/definitions/definition.RiderSigninRes'
       summary: 获取个人信息
       tags:
       - Rider - 骑手
@@ -4935,7 +4938,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.RiderSigninRes'
+            $ref: '#/definitions/definition.RiderSigninRes'
       summary: 登录或注册
       tags:
       - Rider - 骑手
