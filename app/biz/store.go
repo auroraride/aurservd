@@ -287,6 +287,7 @@ func (b *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail)
 		BusinessHours: item.BusinessHours,
 		Rest:          item.Rest,
 		Photos:        item.Photos,
+		Phone:         item.Phone,
 	}
 	if item.Edges.Employee != nil {
 		res.Employee = &model.Employee{
