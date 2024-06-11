@@ -596,13 +596,16 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 
 		// 单独退车
 		if s.ebikeStore != nil {
-			_, err = NewBusinessLog(s.subscribe).
+			es := NewBusinessLog(s.subscribe).
 				SetModifier(s.modifier).
 				SetEmployee(s.employee).
 				SetStore(s.ebikeStore).
 				SetStock(ebikeSk).
-				SetAgentId(s.agentID).
-				Save(doReq.Type)
+				SetAgentId(s.agentID)
+			if doReq.Remark != nil {
+				es.SetRemark(*doReq.Remark)
+			}
+			_, _ = es.Save(doReq.Type)
 		}
 
 		var bussinessID *uint64
@@ -786,8 +789,9 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 
 	// 判定是否以租代购
 	doReq := model.BusinessRiderServiceDoReq{
-		Rto:  req.Rto != nil && *req.Rto,
-		Type: model.BusinessTypeUnsubscribe,
+		Rto:    req.Rto != nil && *req.Rto,
+		Type:   model.BusinessTypeUnsubscribe,
+		Remark: req.RtoRemark,
 	}
 
 	s.do(doReq, func(tx *ent.Tx) {
@@ -831,7 +835,6 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 					ClearRiderID().
 					SetNillableStoreID(s.storeID).
 					SetRtoRiderID(sub.RiderID).
-					SetNillableRemark(req.RtoRemark).
 					Exec(s.ctx)
 				snag.PanicIfError(err)
 			} else {
@@ -840,7 +843,6 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 					ClearRiderID().
 					SetStatus(model.EbikeStatusInStock).
 					SetNillableStoreID(s.storeID).
-					SetNillableRemark(req.RtoRemark).
 					Exec(s.ctx)
 				snag.PanicIfError(err)
 			}

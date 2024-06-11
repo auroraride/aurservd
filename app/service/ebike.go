@@ -202,10 +202,11 @@ func (s *ebikeService) listFilter(req model.EbikeListFilter) (q *ent.EbikeQuery,
 		switch *req.Rto {
 		case true:
 			info["是否以租代购"] = true
+			q.Where(ebike.RtoRiderIDNotNil())
 		default:
 			info["是否以租代购"] = false
+			q.Where(ebike.RtoRiderIDIsNil())
 		}
-		q.Where(ebike.RtoRiderIDNotNil())
 	}
 
 	return
