@@ -4736,6 +4736,10 @@ const docTemplate = `{
                     "description": "门店名称",
                     "type": "string"
                 },
+                "phone": {
+                    "description": "门店电话",
+                    "type": "string"
+                },
                 "photos": {
                     "description": "门店照片",
                     "type": "array",

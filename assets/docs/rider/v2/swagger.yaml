@@ -580,7 +580,7 @@ definitions:
         type: number
       type:
         allOf:
-          - $ref: '#/definitions/model.PlanType'
+        - $ref: '#/definitions/model.PlanType'
         description: 类别
     type: object
   definition.PlanNewlyRes:
@@ -752,6 +752,9 @@ definitions:
         type: number
       name:
         description: 门店名称
+        type: string
+      phone:
+        description: 门店电话
         type: string
       photos:
         description: 门店照片
@@ -4638,20 +4641,20 @@ paths:
             $ref: '#/definitions/definition.PlanNewlyRes'
       summary: 新购骑士卡
       tags:
-        - Plan - 骑士卡
+      - Plan - 骑士卡
   /rider/v2/plan/{id}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: PlanDetail
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
