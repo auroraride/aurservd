@@ -303,7 +303,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 				store.StatusIn(model.StoreStatusOpen.Value(), model.StoreStatusClose.Value()),
 				store.Rest(true),
 			)
-		case req.StoreStatus != nil:
+		case req.StoreStatus != nil || req.StoreBusiness != nil:
 			// 传入门店筛选条件-门店状态
 			switch *req.StoreStatus {
 			case model.StoreStatusOpen.Value():
@@ -312,37 +312,16 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 				storeQuery.Where(store.Status(model.StoreStatusClose.Value()))
 			default:
 			}
-		case req.StoreBusiness != nil:
 			// 传入门店筛选条件-门店业务
 			switch *req.StoreBusiness {
 			case model.StoreBusinessTypeObtain:
-				storeQuery.Where(
-					store.EbikeObtain(true),
-					store.EbikeRepair(false),
-					store.EbikeSale(false),
-					store.Rest(false),
-				)
+				storeQuery.Where(store.EbikeObtain(true))
 			case model.StoreBusinessTypeRepair:
-				storeQuery.Where(
-					store.EbikeObtain(false),
-					store.EbikeRepair(true),
-					store.EbikeSale(false),
-					store.Rest(false),
-				)
+				storeQuery.Where(store.EbikeRepair(true))
 			case model.StoreBusinessTypeSale:
-				storeQuery.Where(
-					store.EbikeObtain(false),
-					store.EbikeRepair(false),
-					store.EbikeSale(true),
-					store.Rest(false),
-				)
+				storeQuery.Where(store.EbikeSale(true))
 			case model.StoreBusinessTypeRest:
-				storeQuery.Where(
-					store.EbikeObtain(false),
-					store.EbikeRepair(false),
-					store.EbikeSale(false),
-					store.Rest(true),
-				)
+				storeQuery.Where(store.Rest(true))
 			}
 		}
 	}
