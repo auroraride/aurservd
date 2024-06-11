@@ -12,3 +12,14 @@ type PlanNewlyRes struct {
 
 	RtoBrands []*model.PlanEbikeBrandOption `json:"rtoBrands,omitempty"` // 以租代购车电选项
 }
+
+// PlanDetailReq 套餐详情
+type PlanDetailReq struct {
+	model.IDParamReq
+}
+
+// PlanDetailRes 套餐详情
+type PlanDetailRes struct {
+	model.Plan
+	Notes []string `json:"notes"` // 购买须知
+}

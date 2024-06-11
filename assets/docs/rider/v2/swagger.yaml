@@ -556,6 +556,33 @@ definitions:
     required:
     - identity
     type: object
+  definition.PlanDetailRes:
+    properties:
+      days:
+        description: 骑士卡天数
+        type: integer
+      id:
+        description: 骑士卡ID
+        type: integer
+      intelligent:
+        description: 是否智能电柜套餐
+        type: boolean
+      name:
+        description: 骑士卡名称
+        type: string
+      notes:
+        description: 购买须知
+        items:
+          type: string
+        type: array
+      price:
+        description: 售价
+        type: number
+      type:
+        allOf:
+          - $ref: '#/definitions/model.PlanType'
+        description: 类别
+    type: object
   definition.PlanNewlyRes:
     properties:
       batteryDescription:
@@ -772,6 +799,9 @@ definitions:
         type: string
       createdAt:
         description: 创建时间
+        type: string
+      downloadLink:
+        description: 下载链接(Android)
         type: string
       force:
         description: 是否强制更新
@@ -4607,6 +4637,27 @@ paths:
           schema:
             $ref: '#/definitions/definition.PlanNewlyRes'
       summary: 新购骑士卡
+      tags:
+        - Plan - 骑士卡
+  /rider/v2/plan/{id}:
+    get:
+      consumes:
+        - application/json
+      operationId: PlanDetail
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.PlanDetailRes'
+      summary: 骑士卡详情
       tags:
       - Plan - 骑士卡
   /rider/v2/plan/renewly:

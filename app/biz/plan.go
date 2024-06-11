@@ -410,3 +410,27 @@ func (s *planBiz) EbikeList(brandIds []uint64) (res definition.PlanNewlyRes) {
 
 	return
 }
+
+// Detail 套餐详情
+func (s *planBiz) Detail(req *definition.PlanDetailReq) (*definition.PlanDetailRes, error) {
+	d, _ := s.orm.QueryNotDeleted().
+		Where(plan.ID(req.ID)).
+		WithBrand().
+		First(s.ctx)
+	if d == nil {
+		return nil, nil
+	}
+	res := &definition.PlanDetailRes{
+		Plan: model.Plan{
+			ID:          d.ID,
+			Name:        d.Name,
+			Price:       d.Price,
+			Days:        d.Days,
+			Intelligent: d.Intelligent,
+			Type:        model.PlanType(d.Type),
+		},
+		Notes: d.Notes,
+	}
+
+	return res, nil
+}

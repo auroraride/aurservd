@@ -130,6 +130,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	plan := g.Group("/plan")
 	plan.GET("", rapi.Plan.List)                    // 套餐列表
 	plan.GET("/renewly", v1.Plan.Renewly, person()) // 续费列表
+	plan.GET("/:id", rapi.Plan.Detail)              // 套餐详情
 
 	// 电池
 	battery := g.Group("/battery", person())
