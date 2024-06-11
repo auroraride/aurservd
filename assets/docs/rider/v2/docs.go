@@ -2872,7 +2872,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.RiderSigninRes"
+                            "$ref": "#/definitions/definition.RiderSigninRes"
                         }
                     }
                 }
@@ -3219,7 +3219,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.RiderSigninRes"
+                            "$ref": "#/definitions/definition.RiderSigninRes"
                         }
                     }
                 }
@@ -4641,6 +4641,106 @@ const docTemplate = `{
                 "pushId": {
                     "description": "骑手推送ID",
                     "type": "string"
+                }
+            }
+        },
+        "definition.RiderSigninRes": {
+            "type": "object",
+            "properties": {
+                "cabinetBusiness": {
+                    "description": "是否可以自主使用电柜办理业务",
+                    "type": "boolean"
+                },
+                "contact": {
+                    "description": "联系人",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderContact"
+                        }
+                    ]
+                },
+                "contractDocId": {
+                    "description": "签署合同编号",
+                    "type": "string"
+                },
+                "deposit": {
+                    "description": "需缴押金",
+                    "type": "number"
+                },
+                "enterprise": {
+                    "description": "所属企业",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Enterprise"
+                        }
+                    ]
+                },
+                "enterpriseContact": {
+                    "description": "团签联系方式",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseContact"
+                        }
+                    ]
+                },
+                "exitEnterprise": {
+                    "description": "判断能否退出团签",
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isAuthed": {
+                    "description": "是否已认证",
+                    "type": "boolean"
+                },
+                "isContactFilled": {
+                    "description": "联系人是否添加",
+                    "type": "boolean"
+                },
+                "isNewDevice": {
+                    "description": "是否新设备",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "姓名, 实名认证后才会有",
+                    "type": "string"
+                },
+                "orderNotActived": {
+                    "description": "是否存在未激活订单",
+                    "type": "boolean"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "qrcode": {
+                    "description": "二维码",
+                    "type": "string"
+                },
+                "station": {
+                    "description": "站点",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseStation"
+                        }
+                    ]
+                },
+                "subscribe": {
+                    "description": "骑士卡",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Subscribe"
+                        }
+                    ]
+                },
+                "token": {
+                    "description": "认证token",
+                    "type": "string"
+                },
+                "useStore": {
+                    "description": "是否可使用门店办理业务",
+                    "type": "boolean"
                 }
             }
         },
@@ -7202,102 +7302,6 @@ const docTemplate = `{
                 },
                 "overdue": {
                     "description": "是否需要支付逾期费用",
-                    "type": "boolean"
-                }
-            }
-        },
-        "model.RiderSigninRes": {
-            "type": "object",
-            "properties": {
-                "cabinetBusiness": {
-                    "description": "是否可以自主使用电柜办理业务",
-                    "type": "boolean"
-                },
-                "contact": {
-                    "description": "联系人",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.RiderContact"
-                        }
-                    ]
-                },
-                "deposit": {
-                    "description": "需缴押金",
-                    "type": "number"
-                },
-                "enterprise": {
-                    "description": "所属企业",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.Enterprise"
-                        }
-                    ]
-                },
-                "enterpriseContact": {
-                    "description": "团签联系方式",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.EnterpriseContact"
-                        }
-                    ]
-                },
-                "exitEnterprise": {
-                    "description": "判断能否退出团签",
-                    "type": "boolean"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "isAuthed": {
-                    "description": "是否已认证",
-                    "type": "boolean"
-                },
-                "isContactFilled": {
-                    "description": "联系人是否添加",
-                    "type": "boolean"
-                },
-                "isNewDevice": {
-                    "description": "是否新设备",
-                    "type": "boolean"
-                },
-                "name": {
-                    "description": "姓名, 实名认证后才会有",
-                    "type": "string"
-                },
-                "orderNotActived": {
-                    "description": "是否存在未激活订单",
-                    "type": "boolean"
-                },
-                "phone": {
-                    "description": "电话",
-                    "type": "string"
-                },
-                "qrcode": {
-                    "description": "二维码",
-                    "type": "string"
-                },
-                "station": {
-                    "description": "站点",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.EnterpriseStation"
-                        }
-                    ]
-                },
-                "subscribe": {
-                    "description": "骑士卡",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.Subscribe"
-                        }
-                    ]
-                },
-                "token": {
-                    "description": "认证token",
-                    "type": "string"
-                },
-                "useStore": {
-                    "description": "是否可使用门店办理业务",
                     "type": "boolean"
                 }
             }
