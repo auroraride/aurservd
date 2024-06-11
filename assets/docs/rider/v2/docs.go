@@ -2827,6 +2827,13 @@ const docTemplate = `{
                         "name": "X-Rider-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑士卡ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
