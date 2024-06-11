@@ -206,6 +206,10 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
 		res.EndAt = "-"
 	}
 
+	if sub.StartAt != nil {
+		res.EndAt = tools.NewTime().WillEnd(*sub.StartAt, res.Days).Format(carbon.DateLayout)
+	}
+
 	// 已取消(退款)不显示到期日期
 	if res.Status == model.SubscribeStatusCanceled {
 		res.EndAt = "-"
