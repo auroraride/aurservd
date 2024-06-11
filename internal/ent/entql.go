@@ -2121,6 +2121,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldRest:          {Type: field.TypeBool, Column: store.FieldRest},
 			store.FieldBusinessHours: {Type: field.TypeString, Column: store.FieldBusinessHours},
 			store.FieldPhotos:        {Type: field.TypeJSON, Column: store.FieldPhotos},
+			store.FieldPhone:         {Type: field.TypeString, Column: store.FieldPhone},
 		},
 	}
 	graph.Nodes[75] = &sqlgraph.Node{
@@ -18156,6 +18157,11 @@ func (f *StoreFilter) WhereBusinessHours(p entql.StringP) {
 // WherePhotos applies the entql json.RawMessage predicate on the photos field.
 func (f *StoreFilter) WherePhotos(p entql.BytesP) {
 	f.Where(p.Field(store.FieldPhotos))
+}
+
+// WherePhone applies the entql string predicate on the phone field.
+func (f *StoreFilter) WherePhone(p entql.StringP) {
+	f.Where(p.Field(store.FieldPhone))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.

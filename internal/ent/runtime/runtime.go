@@ -1890,6 +1890,12 @@ func init() {
 	storeDescRest := storeFields[11].Descriptor()
 	// store.DefaultRest holds the default value on creation for the rest field.
 	store.DefaultRest = storeDescRest.Default.(bool)
+	// storeDescPhone is the schema descriptor for phone field.
+	storeDescPhone := storeFields[14].Descriptor()
+	// store.DefaultPhone holds the default value on creation for the phone field.
+	store.DefaultPhone = storeDescPhone.Default.(string)
+	// store.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
+	store.PhoneValidator = storeDescPhone.Validators[0].(func(string) error)
 	storegoodsMixin := schema.StoreGoods{}.Mixin()
 	storegoodsMixinFields0 := storegoodsMixin[0].Fields()
 	_ = storegoodsMixinFields0

@@ -95,24 +95,24 @@
                         "required": true
                     },
                     {
-                      "type": "string",
-                      "description": "网点名称",
-                      "name": "branchName",
-                      "in": "query"
+                        "type": "string",
+                        "description": "网点名称",
+                        "name": "branchName",
+                        "in": "query"
                     },
-                  {
-                    "type": "string",
-                    "description": "电柜名称",
-                    "name": "cabinetName",
-                    "in": "query"
-                  },
-                  {
-                    "type": "integer",
-                    "description": "城市ID",
-                    "name": "cityID",
-                    "in": "query"
-                  },
-                  {
+                    {
+                        "type": "string",
+                        "description": "电柜名称",
+                        "name": "cabinetName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityID",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
@@ -237,18 +237,18 @@
         "definition.CabinetECMonthExportReq": {
             "type": "object",
             "properties": {
-              "branchName": {
-                "description": "网点名称",
-                "type": "string"
-              },
-              "cabinetName": {
-                "description": "电柜名称",
-                "type": "string"
-              },
-              "cityID": {
-                "description": "城市ID",
-                "type": "integer"
-              },
+                "branchName": {
+                    "description": "网点名称",
+                    "type": "string"
+                },
+                "cabinetName": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "cityID": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
                 "date": {
                     "description": "日期 yyyy-MM",
                     "type": "string"
@@ -291,18 +291,18 @@
         "definition.CabinetECRes": {
             "type": "object",
             "properties": {
-              "branchName": {
-                "description": "网点名称",
-                "type": "string"
-              },
-              "cabinetName": {
-                "description": "电柜名称",
-                "type": "string"
-              },
-              "cityName": {
-                "description": "城市名称",
-                "type": "string"
-              },
+                "branchName": {
+                    "description": "网点名称",
+                    "type": "string"
+                },
+                "cabinetName": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "cityName": {
+                    "description": "城市名称",
+                    "type": "string"
+                },
                 "endAt": {
                     "description": "结束时间",
                     "type": "string"

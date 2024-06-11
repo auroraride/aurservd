@@ -329,6 +329,20 @@ func (su *StoreUpdate) ClearPhotos() *StoreUpdate {
 	return su
 }
 
+// SetPhone sets the "phone" field.
+func (su *StoreUpdate) SetPhone(s string) *StoreUpdate {
+	su.mutation.SetPhone(s)
+	return su
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (su *StoreUpdate) SetNillablePhone(s *string) *StoreUpdate {
+	if s != nil {
+		su.SetPhone(*s)
+	}
+	return su
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (su *StoreUpdate) SetCity(c *City) *StoreUpdate {
 	return su.SetCityID(c.ID)
@@ -555,6 +569,11 @@ func (su *StoreUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (su *StoreUpdate) check() error {
+	if v, ok := su.mutation.Phone(); ok {
+		if err := store.PhoneValidator(v); err != nil {
+			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "Store.phone": %w`, err)}
+		}
+	}
 	if _, ok := su.mutation.CityID(); su.mutation.CityCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Store.city"`)
 	}
@@ -658,6 +677,9 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if su.mutation.PhotosCleared() {
 		_spec.ClearField(store.FieldPhotos, field.TypeJSON)
+	}
+	if value, ok := su.mutation.Phone(); ok {
+		_spec.SetField(store.FieldPhone, field.TypeString, value)
 	}
 	if su.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1239,6 +1261,20 @@ func (suo *StoreUpdateOne) ClearPhotos() *StoreUpdateOne {
 	return suo
 }
 
+// SetPhone sets the "phone" field.
+func (suo *StoreUpdateOne) SetPhone(s string) *StoreUpdateOne {
+	suo.mutation.SetPhone(s)
+	return suo
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillablePhone(s *string) *StoreUpdateOne {
+	if s != nil {
+		suo.SetPhone(*s)
+	}
+	return suo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (suo *StoreUpdateOne) SetCity(c *City) *StoreUpdateOne {
 	return suo.SetCityID(c.ID)
@@ -1478,6 +1514,11 @@ func (suo *StoreUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (suo *StoreUpdateOne) check() error {
+	if v, ok := suo.mutation.Phone(); ok {
+		if err := store.PhoneValidator(v); err != nil {
+			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "Store.phone": %w`, err)}
+		}
+	}
 	if _, ok := suo.mutation.CityID(); suo.mutation.CityCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Store.city"`)
 	}
@@ -1598,6 +1639,9 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 	}
 	if suo.mutation.PhotosCleared() {
 		_spec.ClearField(store.FieldPhotos, field.TypeJSON)
+	}
+	if value, ok := suo.mutation.Phone(); ok {
+		_spec.SetField(store.FieldPhone, field.TypeString, value)
 	}
 	if suo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{

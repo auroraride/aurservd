@@ -244,6 +244,20 @@ func (sc *StoreCreate) SetPhotos(s []string) *StoreCreate {
 	return sc
 }
 
+// SetPhone sets the "phone" field.
+func (sc *StoreCreate) SetPhone(s string) *StoreCreate {
+	sc.mutation.SetPhone(s)
+	return sc
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (sc *StoreCreate) SetNillablePhone(s *string) *StoreCreate {
+	if s != nil {
+		sc.SetPhone(*s)
+	}
+	return sc
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (sc *StoreCreate) SetCity(c *City) *StoreCreate {
 	return sc.SetCityID(c.ID)
@@ -390,6 +404,10 @@ func (sc *StoreCreate) defaults() error {
 		v := store.DefaultRest
 		sc.mutation.SetRest(v)
 	}
+	if _, ok := sc.mutation.Phone(); !ok {
+		v := store.DefaultPhone
+		sc.mutation.SetPhone(v)
+	}
 	return nil
 }
 
@@ -436,6 +454,14 @@ func (sc *StoreCreate) check() error {
 	}
 	if _, ok := sc.mutation.Rest(); !ok {
 		return &ValidationError{Name: "rest", err: errors.New(`ent: missing required field "Store.rest"`)}
+	}
+	if _, ok := sc.mutation.Phone(); !ok {
+		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "Store.phone"`)}
+	}
+	if v, ok := sc.mutation.Phone(); ok {
+		if err := store.PhoneValidator(v); err != nil {
+			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "Store.phone": %w`, err)}
+		}
 	}
 	if _, ok := sc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Store.city"`)}
@@ -541,6 +567,10 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.Photos(); ok {
 		_spec.SetField(store.FieldPhotos, field.TypeJSON, value)
 		_node.Photos = value
+	}
+	if value, ok := sc.mutation.Phone(); ok {
+		_spec.SetField(store.FieldPhone, field.TypeString, value)
+		_node.Phone = value
 	}
 	if nodes := sc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -979,6 +1009,18 @@ func (u *StoreUpsert) ClearPhotos() *StoreUpsert {
 	return u
 }
 
+// SetPhone sets the "phone" field.
+func (u *StoreUpsert) SetPhone(v string) *StoreUpsert {
+	u.Set(store.FieldPhone, v)
+	return u
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *StoreUpsert) UpdatePhone() *StoreUpsert {
+	u.SetExcluded(store.FieldPhone)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1342,6 +1384,20 @@ func (u *StoreUpsertOne) UpdatePhotos() *StoreUpsertOne {
 func (u *StoreUpsertOne) ClearPhotos() *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
 		s.ClearPhotos()
+	})
+}
+
+// SetPhone sets the "phone" field.
+func (u *StoreUpsertOne) SetPhone(v string) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetPhone(v)
+	})
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdatePhone() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdatePhone()
 	})
 }
 
@@ -1874,6 +1930,20 @@ func (u *StoreUpsertBulk) UpdatePhotos() *StoreUpsertBulk {
 func (u *StoreUpsertBulk) ClearPhotos() *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
 		s.ClearPhotos()
+	})
+}
+
+// SetPhone sets the "phone" field.
+func (u *StoreUpsertBulk) SetPhone(v string) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetPhone(v)
+	})
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdatePhone() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdatePhone()
 	})
 }
 

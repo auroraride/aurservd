@@ -85,6 +85,7 @@ func (Store) Fields() []ent.Field {
 		field.Bool("rest").Default(false).Comment("是否拥有驿站"),
 		field.String("business_hours").Optional().Comment("营业时间"),
 		field.Strings("photos").Optional().Comment("门店照片"),
+		field.String("phone").Default("4000290929").MaxLen(20).Comment("门店电话"),
 	}
 }
 

@@ -6294,6 +6294,10 @@ definitions:
       name:
         description: 门店名称
         type: string
+      phone:
+        description: 门店电话, 门店电话
+        maxLength: 20
+        type: string
       photos:
         description: 门店照片, 门店照片
         items:
@@ -6314,6 +6318,7 @@ definitions:
     required:
     - branchId
     - name
+    - phone
     - photos
     - status
     type: object
@@ -6348,6 +6353,9 @@ definitions:
         type: integer
       name:
         description: 门店名称
+        type: string
+      phone:
+        description: 门店电话
         type: string
       photos:
         description: 照片
@@ -6385,8 +6393,12 @@ definitions:
       name:
         description: 门店名称
         type: string
+      phone:
+        description: 门店电话
+        maxLength: 20
+        type: string
       photos:
-        description: 门店照片, 门店照片
+        description: 门店照片
         items:
           type: string
         type: array

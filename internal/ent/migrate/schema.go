@@ -5318,6 +5318,7 @@ var (
 		{Name: "rest", Type: field.TypeBool, Comment: "是否拥有驿站", Default: false},
 		{Name: "business_hours", Type: field.TypeString, Nullable: true, Comment: "营业时间"},
 		{Name: "photos", Type: field.TypeJSON, Nullable: true, Comment: "门店照片"},
+		{Name: "phone", Type: field.TypeString, Size: 20, Comment: "门店电话", Default: "4000290929"},
 		{Name: "branch_id", Type: field.TypeUint64, Comment: "网点ID"},
 		{Name: "employee_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "上班员工ID"},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
@@ -5330,19 +5331,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "store_branch_stores",
-				Columns:    []*schema.Column{StoreColumns[19]},
+				Columns:    []*schema.Column{StoreColumns[20]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "store_employee_store",
-				Columns:    []*schema.Column{StoreColumns[20]},
+				Columns:    []*schema.Column{StoreColumns[21]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "store_city_city",
-				Columns:    []*schema.Column{StoreColumns[21]},
+				Columns:    []*schema.Column{StoreColumns[22]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -5361,17 +5362,17 @@ var (
 			{
 				Name:    "store_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{StoreColumns[21]},
+				Columns: []*schema.Column{StoreColumns[22]},
 			},
 			{
 				Name:    "store_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{StoreColumns[19]},
+				Columns: []*schema.Column{StoreColumns[20]},
 			},
 			{
 				Name:    "store_employee_id",
 				Unique:  false,
-				Columns: []*schema.Column{StoreColumns[20]},
+				Columns: []*schema.Column{StoreColumns[21]},
 			},
 			{
 				Name:    "store_status",

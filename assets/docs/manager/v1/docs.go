@@ -22831,6 +22831,7 @@ const docTemplate = `{
             "required": [
                 "branchId",
                 "name",
+                "phone",
                 "photos",
                 "status"
             ],
@@ -22865,6 +22866,11 @@ const docTemplate = `{
                 "name": {
                     "description": "门店名称",
                     "type": "string"
+                },
+                "phone": {
+                    "description": "门店电话, 门店电话",
+                    "type": "string",
+                    "maxLength": 20
                 },
                 "photos": {
                     "description": "门店照片, 门店照片",
@@ -22942,6 +22948,10 @@ const docTemplate = `{
                     "description": "门店名称",
                     "type": "string"
                 },
+                "phone": {
+                    "description": "门店电话",
+                    "type": "string"
+                },
                 "photos": {
                     "description": "照片",
                     "type": "array",
@@ -22994,8 +23004,13 @@ const docTemplate = `{
                     "description": "门店名称",
                     "type": "string"
                 },
+                "phone": {
+                    "description": "门店电话",
+                    "type": "string",
+                    "maxLength": 20
+                },
                 "photos": {
-                    "description": "门店照片, 门店照片",
+                    "description": "门店照片",
                     "type": "array",
                     "items": {
                         "type": "string"
