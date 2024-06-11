@@ -1932,6 +1932,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Plan'
         description: 骑士卡, 团签无此字段
+      remark:
+        description: 备注
+        type: string
       rtoEbikeSn:
         description: 以租代购成功车架号
         type: string

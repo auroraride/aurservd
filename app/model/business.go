@@ -89,6 +89,7 @@ type BusinessEmployeeListRes struct {
 	Enterprise        *Enterprise        `json:"enterprise,omitempty"`        // 团签企业, 个签无此字段
 	EnterpriseStation *EnterpriseStation `json:"enterpriseStation,omitempty"` // 站点
 	RtoEbikeSn        *string            `json:"rtoEbikeSn,omitempty"`        // 以租代购成功车架号
+	Remark            *string            `json:"remark,omitempty"`            // 备注
 }
 
 type BusinessListRes struct {
