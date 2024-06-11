@@ -521,13 +521,13 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 
 		// 库存管理
 		// TODO 智能电池
-		var sk *ent.Stock
+		var batSk, ebikeSk *ent.Stock
 		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 			cb(tx)
 
 			// 需要进行业务出入库
 			if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil || s.ebikeStoreID != nil || s.batStoreID != nil {
-				sk, err = NewStockWithModifier(s.modifier).RiderBusiness(
+				batSk, ebikeSk, err = NewStockWithModifier(s.modifier).RiderBusiness(
 					tx,
 					&model.StockBusinessReq{
 						RiderID:   s.subscribe.RiderID,
@@ -568,7 +568,7 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 				zap.L().Error("骑手业务取出电池后任务执行失败: "+doReq.Type.String(), zap.Error(err))
 			}
 			if bat != nil && s.cabinet.Intelligent {
-				_ = sk.Update().SetBatteryID(bat.ID).Exec(s.ctx)
+				_ = batSk.Update().SetBatteryID(bat.ID).Exec(s.ctx)
 			}
 		}
 
@@ -576,44 +576,34 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 		var b *ent.Business
 		var bq *businessLogService
 		// 车电套餐退租时，电车和电池单独退
-		switch {
-		case s.ebikeStore != nil || s.batStore != nil:
-			// 电车单独归还
-			if s.ebikeStore != nil {
-				bq = NewBusinessLog(s.subscribe).
-					SetModifier(s.modifier).
-					SetEmployee(s.employee).
-					SetStore(s.ebikeStore).
-					SetStock(sk).
-					SetAgentId(s.agentID)
-				// 电车满足以租代购
-				if doReq.Rto && s.ebikeInfo != nil {
-					bq.SetRtoEbikeID(s.ebikeInfo.ID)
-				}
-			}
-			// 电池单独归还
-			if s.batStore != nil {
-				bq = NewBusinessLog(s.subscribe).
-					SetModifier(s.modifier).
-					SetEmployee(s.employee).
-					SetStore(s.batStore).
-					SetBinInfo(bin).
-					SetStock(sk).
-					SetBattery(bat).
-					SetAgentId(s.agentID)
-			}
-		default:
-			bq = NewBusinessLog(s.subscribe).
-				SetModifier(s.modifier).
-				SetEmployee(s.employee).
-				SetCabinet(s.cabinet).
-				SetStore(s.store).
-				SetBinInfo(bin).
-				SetStock(sk).
-				SetBattery(bat).
-				SetAgentId(s.agentID)
+		bq = NewBusinessLog(s.subscribe).
+			SetModifier(s.modifier).
+			SetEmployee(s.employee).
+			SetCabinet(s.cabinet).
+			SetStore(s.store).
+			SetBinInfo(bin).
+			SetStock(batSk).
+			SetBattery(bat).
+			SetAgentId(s.agentID)
+		if s.batStore != nil {
+			bq.SetStore(s.batStore)
+		}
+		// 满足以租代购
+		if doReq.Rto && s.ebikeInfo != nil {
+			bq.SetRtoEbikeID(s.ebikeInfo.ID)
 		}
 		b, _ = bq.Save(doReq.Type)
+
+		// 单独退车
+		if s.ebikeStore != nil {
+			_, err = NewBusinessLog(s.subscribe).
+				SetModifier(s.modifier).
+				SetEmployee(s.employee).
+				SetStore(s.ebikeStore).
+				SetStock(ebikeSk).
+				SetAgentId(s.agentID).
+				Save(doReq.Type)
+		}
 
 		var bussinessID *uint64
 		revStatus := model.ReserveStatusFail
