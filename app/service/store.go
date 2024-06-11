@@ -94,6 +94,7 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
 		SetBusinessHours(req.BusinessHours).
 		SetRest(req.Rest).
 		SetPhotos(req.Photos).
+		SetPhone(req.Phone).
 		SaveX(s.ctx)
 
 	if len(req.Materials) > 0 {
@@ -143,6 +144,9 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
 	}
 	if req.Photos != nil {
 		q.SetPhotos(*req.Photos)
+	}
+	if req.Phone != nil {
+		q.SetPhone(*req.Phone)
 	}
 	q.SaveX(s.ctx)
 	return s.Detail(item.ID)

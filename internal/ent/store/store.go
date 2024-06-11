@@ -57,6 +57,8 @@ const (
 	FieldBusinessHours = "business_hours"
 	// FieldPhotos holds the string denoting the photos field in the database.
 	FieldPhotos = "photos"
+	// FieldPhone holds the string denoting the phone field in the database.
+	FieldPhone = "phone"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
@@ -148,6 +150,7 @@ var Columns = []string{
 	FieldRest,
 	FieldBusinessHours,
 	FieldPhotos,
+	FieldPhone,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -183,6 +186,10 @@ var (
 	DefaultEbikeSale bool
 	// DefaultRest holds the default value on creation for the "rest" field.
 	DefaultRest bool
+	// DefaultPhone holds the default value on creation for the "phone" field.
+	DefaultPhone string
+	// PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
+	PhoneValidator func(string) error
 )
 
 // OrderOption defines the ordering options for the Store queries.
@@ -281,6 +288,11 @@ func ByRest(opts ...sql.OrderTermOption) OrderOption {
 // ByBusinessHours orders the results by the business_hours field.
 func ByBusinessHours(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBusinessHours, opts...).ToFunc()
+}
+
+// ByPhone orders the results by the phone field.
+func ByPhone(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPhone, opts...).ToFunc()
 }
 
 // ByCityField orders the results by city field.

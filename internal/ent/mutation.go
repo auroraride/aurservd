@@ -107625,6 +107625,7 @@ type StoreMutation struct {
 	business_hours     *string
 	photos             *[]string
 	appendphotos       []string
+	phone              *string
 	clearedFields      map[string]struct{}
 	city               *uint64
 	clearedcity        bool
@@ -108670,6 +108671,42 @@ func (m *StoreMutation) ResetPhotos() {
 	delete(m.clearedFields, store.FieldPhotos)
 }
 
+// SetPhone sets the "phone" field.
+func (m *StoreMutation) SetPhone(s string) {
+	m.phone = &s
+}
+
+// Phone returns the value of the "phone" field in the mutation.
+func (m *StoreMutation) Phone() (r string, exists bool) {
+	v := m.phone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPhone returns the old "phone" field's value of the Store entity.
+// If the Store object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StoreMutation) OldPhone(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPhone is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPhone requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPhone: %w", err)
+	}
+	return oldValue.Phone, nil
+}
+
+// ResetPhone resets all changes to the "phone" field.
+func (m *StoreMutation) ResetPhone() {
+	m.phone = nil
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *StoreMutation) ClearCity() {
 	m.clearedcity = true
@@ -109001,7 +109038,7 @@ func (m *StoreMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StoreMutation) Fields() []string {
-	fields := make([]string, 0, 21)
+	fields := make([]string, 0, 22)
 	if m.created_at != nil {
 		fields = append(fields, store.FieldCreatedAt)
 	}
@@ -109065,6 +109102,9 @@ func (m *StoreMutation) Fields() []string {
 	if m.photos != nil {
 		fields = append(fields, store.FieldPhotos)
 	}
+	if m.phone != nil {
+		fields = append(fields, store.FieldPhone)
+	}
 	return fields
 }
 
@@ -109115,6 +109155,8 @@ func (m *StoreMutation) Field(name string) (ent.Value, bool) {
 		return m.BusinessHours()
 	case store.FieldPhotos:
 		return m.Photos()
+	case store.FieldPhone:
+		return m.Phone()
 	}
 	return nil, false
 }
@@ -109166,6 +109208,8 @@ func (m *StoreMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldBusinessHours(ctx)
 	case store.FieldPhotos:
 		return m.OldPhotos(ctx)
+	case store.FieldPhone:
+		return m.OldPhone(ctx)
 	}
 	return nil, fmt.Errorf("unknown Store field %s", name)
 }
@@ -109321,6 +109365,13 @@ func (m *StoreMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPhotos(v)
+		return nil
+	case store.FieldPhone:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPhone(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Store field %s", name)
@@ -109517,6 +109568,9 @@ func (m *StoreMutation) ResetField(name string) error {
 		return nil
 	case store.FieldPhotos:
 		m.ResetPhotos()
+		return nil
+	case store.FieldPhone:
+		m.ResetPhone()
 		return nil
 	}
 	return fmt.Errorf("unknown Store field %s", name)

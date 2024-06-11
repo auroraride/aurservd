@@ -64,6 +64,8 @@ type Store struct {
 	BusinessHours string `json:"business_hours,omitempty"`
 	// 门店照片
 	Photos []string `json:"photos,omitempty"`
+	// 门店电话
+	Phone string `json:"phone,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StoreQuery when eager-loading is set.
 	Edges        StoreEdges `json:"edges"`
@@ -173,7 +175,7 @@ func (*Store) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case store.FieldID, store.FieldCityID, store.FieldEmployeeID, store.FieldBranchID, store.FieldStatus:
 			values[i] = new(sql.NullInt64)
-		case store.FieldRemark, store.FieldSn, store.FieldName, store.FieldAddress, store.FieldBusinessHours:
+		case store.FieldRemark, store.FieldSn, store.FieldName, store.FieldAddress, store.FieldBusinessHours, store.FieldPhone:
 			values[i] = new(sql.NullString)
 		case store.FieldCreatedAt, store.FieldUpdatedAt, store.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -332,6 +334,12 @@ func (s *Store) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field photos: %w", err)
 				}
 			}
+		case store.FieldPhone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field phone", values[i])
+			} else if value.Valid {
+				s.Phone = value.String
+			}
 		default:
 			s.selectValues.Set(columns[i], values[i])
 		}
@@ -469,6 +477,9 @@ func (s *Store) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("photos=")
 	builder.WriteString(fmt.Sprintf("%v", s.Photos))
+	builder.WriteString(", ")
+	builder.WriteString("phone=")
+	builder.WriteString(s.Phone)
 	builder.WriteByte(')')
 	return builder.String()
 }
