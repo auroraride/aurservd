@@ -61,6 +61,7 @@ type BusinessPauseInfoRes struct {
 }
 
 type BusinessRiderServiceDoReq struct {
-	Rto  bool         `json:"rto"` // 是否满足并参与以租代购
-	Type BusinessType `json:"bt"`  // 业务类型
+	Rto    bool         `json:"rto"`    // 是否满足并参与以租代购
+	Type   BusinessType `json:"bt"`     // 业务类型
+	Remark *string      `json:"remark"` // 业务记录备注
 }
