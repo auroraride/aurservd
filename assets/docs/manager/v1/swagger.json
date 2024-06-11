@@ -14994,10 +14994,10 @@
                     "description": "创建时间",
                     "type": "string"
                 },
-              "downloadLink": {
-                "description": "下载链接(Android)",
-                "type": "string"
-              },
+                "downloadLink": {
+                    "description": "下载链接(Android)",
+                    "type": "string"
+                },
                 "force": {
                     "description": "是否强制更新",
                     "type": "boolean"
@@ -16649,6 +16649,10 @@
                             "$ref": "#/definitions/model.Plan"
                         }
                     ]
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
                 },
                 "rtoEbikeSn": {
                     "description": "以租代购成功车架号",

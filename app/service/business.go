@@ -282,6 +282,10 @@ func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmp
 		res.RtoEbikeSn = &rtoBike.Sn
 	}
 
+	if item.Remark != "" {
+		res.Remark = &item.Remark
+	}
+
 	return
 }
 

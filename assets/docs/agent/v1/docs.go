@@ -3316,6 +3316,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
                 "rtoEbikeSn": {
                     "description": "以租代购成功车架号",
                     "type": "string"
