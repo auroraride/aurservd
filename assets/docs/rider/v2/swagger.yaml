@@ -4653,6 +4653,11 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
+      - description: 骑士卡ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
