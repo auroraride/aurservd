@@ -227,3 +227,33 @@ func (s *settingService) DailyRent(items map[string]float64, cityID uint64, batt
 	}
 	return
 }
+
+// SettingDailyRentToPlan 配置表日租金导入骑士卡表
+func (s *settingService) SettingDailyRentToPlan() (err error) {
+	items := s.DailyRentItems()
+	// 查询当前所有骑士卡
+	var key string
+	var plans []*ent.Plan
+	plans, err = ent.Database.Plan.QueryNotDeleted().WithCities().All(s.ctx)
+	for _, plan := range plans {
+		for _, city := range plan.Edges.Cities {
+			key = strconv.FormatInt(int64(city.ID), 10) + "_" + plan.Model
+			if plan.BrandID != nil {
+				key += "_" + strconv.FormatInt(int64(*plan.BrandID), 10)
+			}
+			// 取出配置日租价
+			v := items[key]
+			if v > 0 {
+				// 更新配置日租价格
+				_, err = ent.Database.Plan.UpdateOneID(plan.ID).
+					SetOverdueFee(v).Save(s.ctx)
+				if err != nil {
+					return err
+				}
+			}
+
+		}
+
+	}
+	return
+}
