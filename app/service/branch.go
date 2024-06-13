@@ -251,7 +251,12 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 			}
 		})
 	if req.Model != nil {
-		q.Where(branch.HasCabinetsWith(cabinet.HasModelsWith(batterymodel.Model(*req.Model))))
+		q.Where(
+			branch.Or(
+				branch.HasCabinetsWith(cabinet.HasModelsWith(batterymodel.Model(*req.Model))),
+				branch.HasStoresWith(store.Rest(true)),
+			),
+		)
 	}
 	err := q.Scan(s.ctx, &temps)
 	if err != nil || len(temps) == 0 {
@@ -295,7 +300,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 
 	// 门店查询
 	// 当没有传入电池型号、电柜业务、filter查询参数时，需查询驿站或者门店数据 （骑手订阅后首页地图查询需要展示驿站门店数据）
-	if (filter == "" && req.Model == nil && req.Business == "") || sub != nil {
+	if (filter == "" && req.Business == "") || sub != nil {
 		switch {
 		case req.StoreStatus == nil && req.StoreBusiness == nil:
 			// 未传入门店筛选条件只查询驿站数据
@@ -458,32 +463,30 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 	}
 
 	// 门店数据（骑手订阅后首页地图查询需要展示驿站门店数据）
-	if (req.Business == "" && req.Model == nil) || sub != nil {
-		for _, es := range stores {
-			var eState uint
-			switch es.Status {
-			case model.StoreStatusOpen.Value():
-				eState = model.BranchFacilityStateOnline
-			case model.StoreStatusClose.Value():
-				eState = model.BranchFacilityStateOffline
-			default:
-				continue
-			}
-
-			esType := model.BranchFacilityTypeStore
-			if es.Rest {
-				esType = model.BranchFacilityTypeRest
-			}
-
-			s.facility(itemsMap[es.BranchID].FacilityMap, model.BranchFacility{
-				ID:    es.ID,
-				Type:  esType,
-				Name:  es.Name,
-				State: eState,
-				Num:   0,
-				Fid:   s.EncodeFacility(es, nil),
-			})
+	for _, es := range stores {
+		var eState uint
+		switch es.Status {
+		case model.StoreStatusOpen.Value():
+			eState = model.BranchFacilityStateOnline
+		case model.StoreStatusClose.Value():
+			eState = model.BranchFacilityStateOffline
+		default:
+			continue
 		}
+
+		esType := model.BranchFacilityTypeStore
+		if es.Rest {
+			esType = model.BranchFacilityTypeRest
+		}
+
+		s.facility(itemsMap[es.BranchID].FacilityMap, model.BranchFacility{
+			ID:    es.ID,
+			Type:  esType,
+			Name:  es.Name,
+			State: eState,
+			Num:   0,
+			Fid:   s.EncodeFacility(es, nil),
+		})
 	}
 
 	// 电柜id
