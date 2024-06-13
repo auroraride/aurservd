@@ -279,6 +279,7 @@ type config struct {
 
 	Tencent struct {
 		WbFace struct {
+			Disable bool
 			AppId   string
 			Secret  string
 			Licence string
