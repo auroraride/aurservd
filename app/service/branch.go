@@ -184,6 +184,7 @@ func (s *branchService) Modify(req *model.BranchModifyReq) {
 	b, _ := s.orm.QueryNotDeleted().Where(branch.ID(req.ID)).First(s.ctx)
 	if b == nil {
 		snag.Panic("网点不存在")
+		return
 	}
 
 	// 从结构体更新
@@ -257,8 +258,6 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 				branch.HasStoresWith(store.Rest(true)),
 			),
 		)
-	} else {
-		q.Where(branch.HasStoresWith(store.Rest(true)))
 	}
 	err := q.Scan(s.ctx, &temps)
 	if err != nil || len(temps) == 0 {
@@ -270,68 +269,52 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 	}
 
 	storeQuery := ent.Database.Store.QueryNotDeleted().Where(store.BranchIDIn(ids...))
-	filter := req.Filter
-	switch filter {
-	case model.BranchFacilityTypeStore.String():
-		break
-	case model.BranchFacilityFilterEbikeObtain:
-		storeQuery.Where(store.EbikeObtain(true))
-	case model.BranchFacilityFilterEbikeRepair:
-		storeQuery.Where(store.EbikeRepair(true))
-	case model.BranchFacilityFilterEbike:
+
+	// 未传入门店筛选条件时
+	if req.StoreStatus == nil && req.StoreBusiness == nil {
+		// 需要查询驿站
 		storeQuery.Where(
-			store.Or(
-				store.EbikeObtain(true),
-				store.EbikeRepair(true),
-			),
+			store.StatusIn(model.StoreStatusOpen.Value(), model.StoreStatusClose.Value()),
+			store.Rest(true),
 		)
-	default:
+
 		// 电柜查询
-		// 当没有传入门店相关参数时需查询电柜数据
-		if req.StoreStatus == nil && req.StoreBusiness == nil {
-			cabQuery := ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithModels()
-			if sub != nil && !v2 {
-				cabQuery.Where(cabinet.Intelligent(sub.Intelligent), cabinet.HasModelsWith(batterymodel.Model(sub.Model)))
-			}
-			if v2 && req.Model != nil {
-				cabQuery.Where(cabinet.HasModelsWith(batterymodel.Model(*req.Model)))
-			}
-			cabinets = cabQuery.AllX(s.ctx)
+		cabQuery := ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithModels()
+		if sub != nil && !v2 {
+			cabQuery.Where(cabinet.Intelligent(sub.Intelligent), cabinet.HasModelsWith(batterymodel.Model(sub.Model)))
+		}
+		if v2 && req.Model != nil {
+			cabQuery.Where(cabinet.HasModelsWith(batterymodel.Model(*req.Model)))
+		}
+
+		cabinets = cabQuery.AllX(s.ctx)
+	}
+
+	// 传入门店查询条件时只需查询门店数据
+	// 传入门店筛选条件-门店状态
+	if req.StoreStatus != nil {
+		switch *req.StoreStatus {
+		case model.StoreStatusOpen.Value():
+			storeQuery.Where(store.Status(model.StoreStatusOpen.Value()))
+		case model.StoreStatusClose.Value():
+			storeQuery.Where(store.Status(model.StoreStatusClose.Value()))
+		default:
+		}
+	}
+	// 传入门店筛选条件-门店业务
+	if req.StoreBusiness != nil {
+		switch *req.StoreBusiness {
+		case model.StoreBusinessTypeObtain:
+			storeQuery.Where(store.EbikeObtain(true))
+		case model.StoreBusinessTypeRepair:
+			storeQuery.Where(store.EbikeRepair(true))
+		case model.StoreBusinessTypeSale:
+			storeQuery.Where(store.EbikeSale(true))
+		case model.StoreBusinessTypeRest:
+			storeQuery.Where(store.Rest(true))
 		}
 	}
 
-	// 门店查询
-	// 当没有传入电池型号、电柜业务、filter查询参数时，需查询驿站或者门店数据 （骑手订阅后首页地图查询需要展示驿站门店数据）
-	if (filter == "" && req.Business == "") || sub != nil {
-		switch {
-		case req.StoreStatus == nil && req.StoreBusiness == nil:
-			// 未传入门店筛选条件只查询驿站数据
-			storeQuery.Where(
-				store.StatusIn(model.StoreStatusOpen.Value(), model.StoreStatusClose.Value()),
-				store.Rest(true),
-			)
-		case req.StoreStatus != nil || req.StoreBusiness != nil:
-			// 传入门店筛选条件-门店状态
-			switch *req.StoreStatus {
-			case model.StoreStatusOpen.Value():
-				storeQuery.Where(store.Status(model.StoreStatusOpen.Value()))
-			case model.StoreStatusClose.Value():
-				storeQuery.Where(store.Status(model.StoreStatusClose.Value()))
-			default:
-			}
-			// 传入门店筛选条件-门店业务
-			switch *req.StoreBusiness {
-			case model.StoreBusinessTypeObtain:
-				storeQuery.Where(store.EbikeObtain(true))
-			case model.StoreBusinessTypeRepair:
-				storeQuery.Where(store.EbikeRepair(true))
-			case model.StoreBusinessTypeSale:
-				storeQuery.Where(store.EbikeSale(true))
-			case model.StoreBusinessTypeRest:
-				storeQuery.Where(store.Rest(true))
-			}
-		}
-	}
 	stores = storeQuery.AllX(s.ctx)
 	return
 }
@@ -499,7 +482,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 	// 每个网点可用业务
 	branchBusinessesMap := make(map[uint64]map[uint64][]string)
 
-	if req.Business != "" {
+	if req.Business != nil {
 		for _, c := range cabinets {
 			cabIDs = append(cabIDs, c.ID)
 		}
@@ -513,8 +496,8 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 	for _, c := range cabinets {
 		// 预约检查 = 非预约筛选 或 电柜可满足预约并且如果订阅非空则电柜电池型号满足订阅型号
 		// resvcheck := req.Business == "" || (c.ReserveAble(model.BusinessType(req.Business), rm[c.ID]) && (sub == nil || NewCabinet().ModelInclude(c, sub.Model)))
-		resvcheck := req.Business == ""
-		if c.ReserveAble(model.BusinessType(req.Business), rm) {
+		resvcheck := req.Business == nil
+		if req.Business != nil && c.ReserveAble(model.BusinessType(*req.Business), rm) {
 			resvcheck = sub == nil || NewCabinet().ModelInclude(c, sub.Model)
 		}
 
@@ -671,6 +654,7 @@ func (s *branchService) Sheet(req *model.BranchContractSheetReq) {
 	bc, _ := ent.Database.BranchContract.QueryNotDeleted().Where(branchcontract.ID(req.ID)).First(s.ctx)
 	if bc == nil {
 		snag.Panic("未找到合同信息")
+		return
 	}
 	bc.Update().SetSheets(req.Sheets).SaveX(s.ctx)
 }
@@ -875,6 +859,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 				case model.SubscribeStatusUsing:
 					// 使用中可办理寄存和退租业务
 					c.Businesses = []string{model.BusinessTypePause.String(), model.BusinessTypeUnsubscribe.String()}
+				default:
 				}
 			}
 
