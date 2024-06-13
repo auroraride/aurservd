@@ -257,6 +257,8 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 				branch.HasStoresWith(store.Rest(true)),
 			),
 		)
+	} else {
+		q.Where(branch.HasStoresWith(store.Rest(true)))
 	}
 	err := q.Scan(s.ctx, &temps)
 	if err != nil || len(temps) == 0 {
