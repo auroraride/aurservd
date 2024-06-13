@@ -156,7 +156,7 @@ type PlanListRiderReq struct {
 	EbikeBrandID *uint64 `json:"ebikeBrandId" swaggerignore:"true"` // 电车型号
 	Intelligent  bool    `json:"intelligent" swaggerignore:"true"`  // 是否智能
 
-	StoreId *uint64 `json:"storeId"` // 门店ID
+	StoreId *uint64 `json:"storeId"  query:"storeId"` // 门店ID
 }
 
 // RiderPlanItem 骑士返回数据
