@@ -294,7 +294,7 @@ func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertif
 
 	if identity.OcrResult != nil {
 		// 判定证件有效期
-		if identity.OcrResult.ValidExpireDate != "" {
+		if identity.OcrResult.ValidExpireDate != "" && identity.OcrResult.ValidExpireDate != "长期" {
 			expireDate := carbon.Parse(identity.OcrResult.ValidExpireDate).StdTime()
 			if expireDate.Before(time.Now()) {
 				return nil, errors.New("证件已过期")
@@ -480,7 +480,7 @@ func (b *personBiz) CertificationSupplement(r *ent.Rider, req *definition.Person
 	// 获取生日
 	birth := result.IdCardNumber[7:14]
 	// 判定证件有效期
-	if result.ValidExpireDate != "" {
+	if result.ValidExpireDate != "" && result.ValidExpireDate != "长期" {
 		expireDate := carbon.Parse(result.ValidExpireDate).StdTime()
 		if expireDate.Before(time.Now()) {
 			return errors.New("证件已过期")
