@@ -553,8 +553,9 @@ func (s *subscribeService) OverdueFee(sub *ent.Subscribe) (fee float64, formula 
 	remaining := -sub.Remaining
 
 	dr := model.DailyRentDefault
-	if sub.Edges.Plan != nil {
-		dr = sub.Edges.Plan.OverdueFee
+	pl, _ := sub.QueryPlan().First(s.ctx)
+	if pl != nil {
+		dr = pl.OverdueFee
 	}
 
 	fee, _ = decimal.NewFromFloat(dr).Mul(decimal.NewFromInt(int64(remaining))).Float64()
