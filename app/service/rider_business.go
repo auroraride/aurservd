@@ -212,7 +212,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, version str
 	}
 
 	// 激活限制城市
-	if s.cabinet != nil && s.subscribe != nil {
+	if s.cabinet != nil && s.subscribe != nil && s.subscribe.PlanID != nil {
 		citys, err := NewPlan().PlanCity(*s.subscribe.PlanID)
 		if err != nil {
 			snag.Panic("未找到套餐")
@@ -240,7 +240,7 @@ func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.Bus
 	}
 
 	// 限制城市
-	if s.cabinet != nil && s.subscribe != nil {
+	if s.cabinet != nil && s.subscribe != nil && s.subscribe.PlanID != nil {
 		citys, err := NewPlan().PlanCity(*s.subscribe.PlanID)
 		if err != nil {
 			snag.Panic("未找到套餐")
@@ -279,7 +279,7 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
 		snag.Panic("骑士卡状态异常")
 	}
 
-	if s.cabinet != nil && s.subscribe != nil {
+	if s.cabinet != nil && s.subscribe != nil && s.subscribe.PlanID != nil {
 		citys, err := NewPlan().PlanCity(*s.subscribe.PlanID)
 		if err != nil {
 			snag.Panic("未找到套餐")
@@ -317,7 +317,7 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
 		snag.Panic("当前剩余时间不足, 无法寄存")
 	}
 
-	if s.cabinet != nil && s.subscribe != nil {
+	if s.cabinet != nil && s.subscribe != nil && s.subscribe.PlanID != nil {
 		citys, err := NewPlan().PlanCity(*s.subscribe.PlanID)
 		if err != nil {
 			snag.Panic("未找到套餐")
