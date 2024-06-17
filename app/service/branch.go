@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/LucaTheHacker/go-haversine"
@@ -505,14 +504,15 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 			fa := model.BranchFacility{
 				ID:         c.ID,
 				Name:       c.Name,
-				State:      model.BranchFacilityStateOffline,
 				Type:       model.BranchFacilityTypeV72,
 				Fid:        s.EncodeFacility(nil, c),
 				CabinetNum: 1,
 			}
 			// 获取健康状态
-			// 5分钟未更新视为离线
-			if c.Health == model.CabinetHealthStatusOnline && time.Since(c.UpdatedAt).Minutes() < 5 {
+			switch c.Health {
+			case model.CabinetHealthStatusOffline, model.CabinetHealthStatusFault:
+				fa.State = model.BranchFacilityStateOffline
+			case model.CabinetHealthStatusOnline:
 				fa.State = model.BranchFacilityStateOnline
 			}
 			// 计算可用电池数量
