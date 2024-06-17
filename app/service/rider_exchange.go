@@ -70,7 +70,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 	}
 
 	// 限制换电城市
-	if cab != nil {
+	if cab != nil && sub.PlanID != nil {
 		citys, err := NewPlan().PlanCity(*sub.PlanID)
 		if err != nil {
 			snag.Panic("未找到套餐")
