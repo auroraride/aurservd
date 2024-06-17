@@ -540,7 +540,6 @@ func (s *cabinetService) Businessable(cab *ent.Cabinet) (health bool, maintenanc
 	health = cab.UsingMicroService() ||
 		(model.CabinetStatus(cab.Status) == model.CabinetStatusNormal &&
 			cab.Health == model.CabinetHealthStatusOnline &&
-			time.Since(cab.UpdatedAt).Minutes() < 5 &&
 			len(cab.Bin) > 0)
 	return
 }
