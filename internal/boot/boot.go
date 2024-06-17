@@ -71,7 +71,9 @@ func Bootstrap() {
 	assets.LoadTemplates()
 
 	// 初始化腾讯人身核验
-	tencent.BootWbFace(ar.Redis)
+	if !ar.Config.Tencent.WbFace.Disable {
+		tencent.BootWbFace(ar.Redis)
+	}
 
 	// // 初始化腾讯faceid
 	// tencent.BootFaceId()

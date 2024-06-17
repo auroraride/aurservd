@@ -1,0 +1,312 @@
+basePath: /
+definitions:
+  definition.CabinetECMonthExportReq:
+    properties:
+      branchName:
+        description: 网点名称
+        type: string
+      cabinetName:
+        description: 电柜名称
+        type: string
+      cityID:
+        description: 城市ID
+        type: integer
+      date:
+        description: 日期 yyyy-MM
+        type: string
+      remark:
+        description: 备注
+        type: string
+      serial:
+        description: 电柜编号
+        type: string
+    type: object
+  definition.CabinetECReq:
+    properties:
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      end:
+        description: 结束时间
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      serial:
+        description: 电柜编号
+        type: string
+      start:
+        description: 开始时间
+        type: string
+    type: object
+  definition.CabinetECRes:
+    properties:
+      branchName:
+        description: 网点名称
+        type: string
+      cabinetName:
+        description: 电柜名称
+        type: string
+      cityName:
+        description: 城市名称
+        type: string
+      endAt:
+        description: 结束时间
+        type: string
+      endEc:
+        description: 结束电量
+        type: number
+      serial:
+        description: 电柜编号
+        type: string
+      startAt:
+        description: 开始时间
+        type: string
+      startEc:
+        description: 开始电量
+        type: number
+      total:
+        description: 总电量
+        type: number
+    type: object
+  model.ExportRes:
+    properties:
+      sn:
+        description: 导出编号
+        type: string
+    type: object
+info:
+  contact: {}
+  description: |
+    ### 说明
+    接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。
+    <br>
+    接口返回说明查看 **[返回](#返回)**
+    <br>
+    图片/附件前缀 `https://cdn.auroraride.com/`
+
+    <br />
+
+    <br />
+
+    ### 接口编号
+
+    第一位代表接口端分类
+
+    - M 管理端
+    - R 骑手端
+    - E 门店端
+    - C 通用
+
+    第二位代表子分类（36进制）
+
+    后三位代表子编号（10进制）
+
+    <br />
+
+    <br />
+
+
+    ### 认证
+    项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`
+    |  header   |  类型  |  接口  |
+    | :-----: | :----: | :--: |
+    |  X-Rider-Token   |  string   |  骑手API  |
+    | X-Manager-Token | string |  后台API  |
+    |  X-Employee-Token   | string |  员工API  |
+
+    <br />
+
+    <br />
+
+    ### 返回
+
+    一个标准的返回应包含以下结构
+
+    |  字段   |  类型  |  必填  |  说明  |
+    | :-----: | :----: | :--: | :--: |
+    |  code   |  int   |  是  |  返回代码  |
+    | message | string |  是  |  返回消息  |
+    |  data   | object |  是  |  返回数据  |
+
+    `code`代码取值说明
+
+    | 十进制 | 十六进制 | 说明 |
+    | :----: | :------: | :--: |
+    | 0  |  0x000  | 请求成功 |
+    | 256 |  0x100  | 请求失败 |
+    | 512 |  0x200  | *需要认证(跳转登录) |
+    | 768 |  0x300  | *用户被封禁 |
+    | 1024 |  0x400  | 资源未获 |
+    | 1280 |  0x500  | 未知错误 |
+    | 1536 |  0x600  | *需要实名 |
+    | 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |
+    | 2048 |  0x800  | *需要联系人 |
+    | 2304 |  0x900  | 请求过期 |
+
+    > 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{"url": "string"}`, 直接跳转url
+
+
+    比如：
+    > 默认成功返回
+    ```json
+    {
+      "code": 0,
+      "message": "OK",
+      "data": {
+        "status": true
+      }
+    }
+    ```
+  title: 极光出行API - 后台api
+  version: "2.0"
+paths:
+  /manager/v2/cabinet/ec:
+    get:
+      consumes:
+      - application/json
+      operationId: CabinetListEC
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 电柜编号
+        in: query
+        name: serial
+        type: string
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.CabinetECRes'
+            type: array
+      summary: 查询电柜能耗
+      tags:
+      - 电柜
+  /manager/v2/cabinet/ec/month:
+    get:
+      consumes:
+      - application/json
+      operationId: CabinetListECMonth
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 网点名称
+        in: query
+        name: branchName
+        type: string
+      - description: 电柜名称
+        in: query
+        name: cabinetName
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityID
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 日期 yyyy-MM
+        in: query
+        name: date
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 电柜编号
+        in: query
+        name: serial
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.CabinetECRes'
+            type: array
+      summary: 查询电柜月能耗
+      tags:
+      - 电柜
+  /manager/v2/export/cabinet/ec:
+    post:
+      consumes:
+      - application/json
+      operationId: ExportCabinetEc
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.CabinetECReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: 导出电柜能耗详情
+      tags:
+      - 导出
+  /manager/v2/export/cabinet/ec/month:
+    post:
+      consumes:
+      - application/json
+      operationId: ExportCabinetECMonth
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.CabinetECMonthExportReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: 导出电柜能耗
+      tags:
+      - 导出
+swagger: "2.0"

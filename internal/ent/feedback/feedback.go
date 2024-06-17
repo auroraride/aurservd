@@ -24,6 +24,8 @@ const (
 	FieldAgentID = "agent_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
+	// FieldCityID holds the string denoting the city_id field in the database.
+	FieldCityID = "city_id"
 	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
 	// FieldType holds the string denoting the type field in the database.
@@ -36,12 +38,16 @@ const (
 	FieldName = "name"
 	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
+	// FieldVersionInfo holds the string denoting the version_info field in the database.
+	FieldVersionInfo = "version_info"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
 	// EdgeAgent holds the string denoting the agent edge name in mutations.
 	EdgeAgent = "agent"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
+	// EdgeCity holds the string denoting the city edge name in mutations.
+	EdgeCity = "city"
 	// Table holds the table name of the feedback in the database.
 	Table = "feedback"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
@@ -65,6 +71,13 @@ const (
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
+	// CityTable is the table that holds the city relation/edge.
+	CityTable = "feedback"
+	// CityInverseTable is the table name for the City entity.
+	// It exists in this package in order to avoid circular dependency with the "city" package.
+	CityInverseTable = "city"
+	// CityColumn is the table column denoting the city relation/edge.
+	CityColumn = "city_id"
 )
 
 // Columns holds all SQL columns for feedback fields.
@@ -75,12 +88,14 @@ var Columns = []string{
 	FieldEnterpriseID,
 	FieldAgentID,
 	FieldRiderID,
+	FieldCityID,
 	FieldContent,
 	FieldType,
 	FieldSource,
 	FieldURL,
 	FieldName,
 	FieldPhone,
+	FieldVersionInfo,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -139,6 +154,11 @@ func ByRiderID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRiderID, opts...).ToFunc()
 }
 
+// ByCityID orders the results by the city_id field.
+func ByCityID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCityID, opts...).ToFunc()
+}
+
 // ByContent orders the results by the content field.
 func ByContent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldContent, opts...).ToFunc()
@@ -184,6 +204,13 @@ func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newRiderStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByCityField orders the results by city field.
+func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCityStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newEnterpriseStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -203,5 +230,12 @@ func newRiderStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RiderInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
+	)
+}
+func newCityStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CityInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
 	)
 }

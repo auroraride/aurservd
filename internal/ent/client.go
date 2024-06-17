@@ -28,6 +28,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
@@ -52,6 +53,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
+	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/instructions"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
@@ -88,6 +90,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -129,6 +132,8 @@ type Client struct {
 	Business *BusinessClient
 	// Cabinet is the client for interacting with the Cabinet builders.
 	Cabinet *CabinetClient
+	// CabinetEc is the client for interacting with the CabinetEc builders.
+	CabinetEc *CabinetEcClient
 	// CabinetFault is the client for interacting with the CabinetFault builders.
 	CabinetFault *CabinetFaultClient
 	// City is the client for interacting with the City builders.
@@ -177,6 +182,8 @@ type Client struct {
 	Fault *FaultClient
 	// Feedback is the client for interacting with the Feedback builders.
 	Feedback *FeedbackClient
+	// Goods is the client for interacting with the Goods builders.
+	Goods *GoodsClient
 	// Instructions is the client for interacting with the Instructions builders.
 	Instructions *InstructionsClient
 	// Inventory is the client for interacting with the Inventory builders.
@@ -249,6 +256,8 @@ type Client struct {
 	StockSummary *StockSummaryClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
+	// StoreGoods is the client for interacting with the StoreGoods builders.
+	StoreGoods *StoreGoodsClient
 	// Subscribe is the client for interacting with the Subscribe builders.
 	Subscribe *SubscribeClient
 	// SubscribeAlter is the client for interacting with the SubscribeAlter builders.
@@ -285,6 +294,7 @@ func (c *Client) init() {
 	c.BranchContract = NewBranchContractClient(c.config)
 	c.Business = NewBusinessClient(c.config)
 	c.Cabinet = NewCabinetClient(c.config)
+	c.CabinetEc = NewCabinetEcClient(c.config)
 	c.CabinetFault = NewCabinetFaultClient(c.config)
 	c.City = NewCityClient(c.config)
 	c.Commission = NewCommissionClient(c.config)
@@ -309,6 +319,7 @@ func (c *Client) init() {
 	c.Export = NewExportClient(c.config)
 	c.Fault = NewFaultClient(c.config)
 	c.Feedback = NewFeedbackClient(c.config)
+	c.Goods = NewGoodsClient(c.config)
 	c.Instructions = NewInstructionsClient(c.config)
 	c.Inventory = NewInventoryClient(c.config)
 	c.Maintainer = NewMaintainerClient(c.config)
@@ -345,6 +356,7 @@ func (c *Client) init() {
 	c.Stock = NewStockClient(c.config)
 	c.StockSummary = NewStockSummaryClient(c.config)
 	c.Store = NewStoreClient(c.config)
+	c.StoreGoods = NewStoreGoodsClient(c.config)
 	c.Subscribe = NewSubscribeClient(c.config)
 	c.SubscribeAlter = NewSubscribeAlterClient(c.config)
 	c.SubscribePause = NewSubscribePauseClient(c.config)
@@ -456,6 +468,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		BranchContract:             NewBranchContractClient(cfg),
 		Business:                   NewBusinessClient(cfg),
 		Cabinet:                    NewCabinetClient(cfg),
+		CabinetEc:                  NewCabinetEcClient(cfg),
 		CabinetFault:               NewCabinetFaultClient(cfg),
 		City:                       NewCityClient(cfg),
 		Commission:                 NewCommissionClient(cfg),
@@ -480,6 +493,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Export:                     NewExportClient(cfg),
 		Fault:                      NewFaultClient(cfg),
 		Feedback:                   NewFeedbackClient(cfg),
+		Goods:                      NewGoodsClient(cfg),
 		Instructions:               NewInstructionsClient(cfg),
 		Inventory:                  NewInventoryClient(cfg),
 		Maintainer:                 NewMaintainerClient(cfg),
@@ -516,6 +530,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Stock:                      NewStockClient(cfg),
 		StockSummary:               NewStockSummaryClient(cfg),
 		Store:                      NewStoreClient(cfg),
+		StoreGoods:                 NewStoreGoodsClient(cfg),
 		Subscribe:                  NewSubscribeClient(cfg),
 		SubscribeAlter:             NewSubscribeAlterClient(cfg),
 		SubscribePause:             NewSubscribePauseClient(cfg),
@@ -554,6 +569,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		BranchContract:             NewBranchContractClient(cfg),
 		Business:                   NewBusinessClient(cfg),
 		Cabinet:                    NewCabinetClient(cfg),
+		CabinetEc:                  NewCabinetEcClient(cfg),
 		CabinetFault:               NewCabinetFaultClient(cfg),
 		City:                       NewCityClient(cfg),
 		Commission:                 NewCommissionClient(cfg),
@@ -578,6 +594,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Export:                     NewExportClient(cfg),
 		Fault:                      NewFaultClient(cfg),
 		Feedback:                   NewFeedbackClient(cfg),
+		Goods:                      NewGoodsClient(cfg),
 		Instructions:               NewInstructionsClient(cfg),
 		Inventory:                  NewInventoryClient(cfg),
 		Maintainer:                 NewMaintainerClient(cfg),
@@ -614,6 +631,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Stock:                      NewStockClient(cfg),
 		StockSummary:               NewStockSummaryClient(cfg),
 		Store:                      NewStoreClient(cfg),
+		StoreGoods:                 NewStoreGoodsClient(cfg),
 		Subscribe:                  NewSubscribeClient(cfg),
 		SubscribeAlter:             NewSubscribeAlterClient(cfg),
 		SubscribePause:             NewSubscribePauseClient(cfg),
@@ -651,13 +669,13 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Assistance, c.Attendance,
 		c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract,
-		c.Business, c.Cabinet, c.CabinetFault, c.City, c.Commission, c.Contract,
-		c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate, c.Ebike,
-		c.EbikeBrand, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
+		c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City, c.Commission,
+		c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate,
+		c.Ebike, c.EbikeBrand, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
 		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
 		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
-		c.Exchange, c.Export, c.Fault, c.Feedback, c.Instructions, c.Inventory,
-		c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
+		c.Exchange, c.Export, c.Fault, c.Feedback, c.Goods, c.Instructions,
+		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
 		c.PlanIntroduce, c.PointLog, c.PromotionAchievement, c.PromotionBankCard,
 		c.PromotionCommission, c.PromotionCommissionPlan, c.PromotionEarnings,
 		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
@@ -665,8 +683,8 @@ func (c *Client) Use(hooks ...Hook) {
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
 		c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
-		c.Subscribe, c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder,
-		c.SubscribeSuspend, c.Version,
+		c.StoreGoods, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
+		c.SubscribeReminder, c.SubscribeSuspend, c.Version,
 	} {
 		n.Use(hooks...)
 	}
@@ -678,13 +696,13 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Assistance, c.Attendance,
 		c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract,
-		c.Business, c.Cabinet, c.CabinetFault, c.City, c.Commission, c.Contract,
-		c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate, c.Ebike,
-		c.EbikeBrand, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
+		c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City, c.Commission,
+		c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate,
+		c.Ebike, c.EbikeBrand, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
 		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
 		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
-		c.Exchange, c.Export, c.Fault, c.Feedback, c.Instructions, c.Inventory,
-		c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
+		c.Exchange, c.Export, c.Fault, c.Feedback, c.Goods, c.Instructions,
+		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
 		c.PlanIntroduce, c.PointLog, c.PromotionAchievement, c.PromotionBankCard,
 		c.PromotionCommission, c.PromotionCommissionPlan, c.PromotionEarnings,
 		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
@@ -692,8 +710,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
 		c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
-		c.Subscribe, c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder,
-		c.SubscribeSuspend, c.Version,
+		c.StoreGoods, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
+		c.SubscribeReminder, c.SubscribeSuspend, c.Version,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -728,6 +746,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Business.mutate(ctx, m)
 	case *CabinetMutation:
 		return c.Cabinet.mutate(ctx, m)
+	case *CabinetEcMutation:
+		return c.CabinetEc.mutate(ctx, m)
 	case *CabinetFaultMutation:
 		return c.CabinetFault.mutate(ctx, m)
 	case *CityMutation:
@@ -776,6 +796,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Fault.mutate(ctx, m)
 	case *FeedbackMutation:
 		return c.Feedback.mutate(ctx, m)
+	case *GoodsMutation:
+		return c.Goods.mutate(ctx, m)
 	case *InstructionsMutation:
 		return c.Instructions.mutate(ctx, m)
 	case *InventoryMutation:
@@ -848,6 +870,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.StockSummary.mutate(ctx, m)
 	case *StoreMutation:
 		return c.Store.mutate(ctx, m)
+	case *StoreGoodsMutation:
+		return c.StoreGoods.mutate(ctx, m)
 	case *SubscribeMutation:
 		return c.Subscribe.mutate(ctx, m)
 	case *SubscribeAlterMutation:
@@ -3244,6 +3268,22 @@ func (c *BusinessClient) QueryAgent(b *Business) *AgentQuery {
 	return query
 }
 
+// QueryRtoEbike queries the rto_ebike edge of a Business.
+func (c *BusinessClient) QueryRtoEbike(b *Business) *EbikeQuery {
+	query := (&EbikeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(ebike.Table, ebike.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, business.RtoEbikeTable, business.RtoEbikeColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *BusinessClient) Hooks() []Hook {
 	hooks := c.hooks.Business
@@ -3561,6 +3601,155 @@ func (c *CabinetClient) mutate(ctx context.Context, m *CabinetMutation) (Value, 
 		return (&CabinetDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Cabinet mutation op: %q", m.Op())
+	}
+}
+
+// CabinetEcClient is a client for the CabinetEc schema.
+type CabinetEcClient struct {
+	config
+}
+
+// NewCabinetEcClient returns a client for the CabinetEc from the given config.
+func NewCabinetEcClient(c config) *CabinetEcClient {
+	return &CabinetEcClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `cabinetec.Hooks(f(g(h())))`.
+func (c *CabinetEcClient) Use(hooks ...Hook) {
+	c.hooks.CabinetEc = append(c.hooks.CabinetEc, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `cabinetec.Intercept(f(g(h())))`.
+func (c *CabinetEcClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CabinetEc = append(c.inters.CabinetEc, interceptors...)
+}
+
+// Create returns a builder for creating a CabinetEc entity.
+func (c *CabinetEcClient) Create() *CabinetEcCreate {
+	mutation := newCabinetEcMutation(c.config, OpCreate)
+	return &CabinetEcCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CabinetEc entities.
+func (c *CabinetEcClient) CreateBulk(builders ...*CabinetEcCreate) *CabinetEcCreateBulk {
+	return &CabinetEcCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CabinetEcClient) MapCreateBulk(slice any, setFunc func(*CabinetEcCreate, int)) *CabinetEcCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CabinetEcCreateBulk{err: fmt.Errorf("calling to CabinetEcClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CabinetEcCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CabinetEcCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CabinetEc.
+func (c *CabinetEcClient) Update() *CabinetEcUpdate {
+	mutation := newCabinetEcMutation(c.config, OpUpdate)
+	return &CabinetEcUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CabinetEcClient) UpdateOne(ce *CabinetEc) *CabinetEcUpdateOne {
+	mutation := newCabinetEcMutation(c.config, OpUpdateOne, withCabinetEc(ce))
+	return &CabinetEcUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CabinetEcClient) UpdateOneID(id uint64) *CabinetEcUpdateOne {
+	mutation := newCabinetEcMutation(c.config, OpUpdateOne, withCabinetEcID(id))
+	return &CabinetEcUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CabinetEc.
+func (c *CabinetEcClient) Delete() *CabinetEcDelete {
+	mutation := newCabinetEcMutation(c.config, OpDelete)
+	return &CabinetEcDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CabinetEcClient) DeleteOne(ce *CabinetEc) *CabinetEcDeleteOne {
+	return c.DeleteOneID(ce.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CabinetEcClient) DeleteOneID(id uint64) *CabinetEcDeleteOne {
+	builder := c.Delete().Where(cabinetec.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CabinetEcDeleteOne{builder}
+}
+
+// Query returns a query builder for CabinetEc.
+func (c *CabinetEcClient) Query() *CabinetEcQuery {
+	return &CabinetEcQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCabinetEc},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CabinetEc entity by its id.
+func (c *CabinetEcClient) Get(ctx context.Context, id uint64) (*CabinetEc, error) {
+	return c.Query().Where(cabinetec.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CabinetEcClient) GetX(ctx context.Context, id uint64) *CabinetEc {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCabinet queries the cabinet edge of a CabinetEc.
+func (c *CabinetEcClient) QueryCabinet(ce *CabinetEc) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ce.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinetec.Table, cabinetec.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, cabinetec.CabinetTable, cabinetec.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(ce.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CabinetEcClient) Hooks() []Hook {
+	return c.hooks.CabinetEc
+}
+
+// Interceptors returns the client interceptors.
+func (c *CabinetEcClient) Interceptors() []Interceptor {
+	return c.inters.CabinetEc
+}
+
+func (c *CabinetEcClient) mutate(ctx context.Context, m *CabinetEcMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CabinetEcCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CabinetEcUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CabinetEcUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CabinetEcDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CabinetEc mutation op: %q", m.Op())
 	}
 }
 
@@ -5233,6 +5422,22 @@ func (c *EbikeClient) QueryAllocates(e *Ebike) *AllocateQuery {
 			sqlgraph.From(ebike.Table, ebike.FieldID, id),
 			sqlgraph.To(allocate.Table, allocate.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ebike.AllocatesTable, ebike.AllocatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRtoRider queries the rto_rider edge of a Ebike.
+func (c *EbikeClient) QueryRtoRider(e *Ebike) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebike.RtoRiderTable, ebike.RtoRiderColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -8400,6 +8605,22 @@ func (c *FeedbackClient) QueryRider(f *Feedback) *RiderQuery {
 	return query
 }
 
+// QueryCity queries the city edge of a Feedback.
+func (c *FeedbackClient) QueryCity(f *Feedback) *CityQuery {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(feedback.Table, feedback.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, feedback.CityTable, feedback.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *FeedbackClient) Hooks() []Hook {
 	return c.hooks.Feedback
@@ -8422,6 +8643,156 @@ func (c *FeedbackClient) mutate(ctx context.Context, m *FeedbackMutation) (Value
 		return (&FeedbackDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Feedback mutation op: %q", m.Op())
+	}
+}
+
+// GoodsClient is a client for the Goods schema.
+type GoodsClient struct {
+	config
+}
+
+// NewGoodsClient returns a client for the Goods from the given config.
+func NewGoodsClient(c config) *GoodsClient {
+	return &GoodsClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `goods.Hooks(f(g(h())))`.
+func (c *GoodsClient) Use(hooks ...Hook) {
+	c.hooks.Goods = append(c.hooks.Goods, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `goods.Intercept(f(g(h())))`.
+func (c *GoodsClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Goods = append(c.inters.Goods, interceptors...)
+}
+
+// Create returns a builder for creating a Goods entity.
+func (c *GoodsClient) Create() *GoodsCreate {
+	mutation := newGoodsMutation(c.config, OpCreate)
+	return &GoodsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Goods entities.
+func (c *GoodsClient) CreateBulk(builders ...*GoodsCreate) *GoodsCreateBulk {
+	return &GoodsCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *GoodsClient) MapCreateBulk(slice any, setFunc func(*GoodsCreate, int)) *GoodsCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &GoodsCreateBulk{err: fmt.Errorf("calling to GoodsClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*GoodsCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &GoodsCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Goods.
+func (c *GoodsClient) Update() *GoodsUpdate {
+	mutation := newGoodsMutation(c.config, OpUpdate)
+	return &GoodsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *GoodsClient) UpdateOne(_go *Goods) *GoodsUpdateOne {
+	mutation := newGoodsMutation(c.config, OpUpdateOne, withGoods(_go))
+	return &GoodsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *GoodsClient) UpdateOneID(id uint64) *GoodsUpdateOne {
+	mutation := newGoodsMutation(c.config, OpUpdateOne, withGoodsID(id))
+	return &GoodsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Goods.
+func (c *GoodsClient) Delete() *GoodsDelete {
+	mutation := newGoodsMutation(c.config, OpDelete)
+	return &GoodsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *GoodsClient) DeleteOne(_go *Goods) *GoodsDeleteOne {
+	return c.DeleteOneID(_go.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *GoodsClient) DeleteOneID(id uint64) *GoodsDeleteOne {
+	builder := c.Delete().Where(goods.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &GoodsDeleteOne{builder}
+}
+
+// Query returns a query builder for Goods.
+func (c *GoodsClient) Query() *GoodsQuery {
+	return &GoodsQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeGoods},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Goods entity by its id.
+func (c *GoodsClient) Get(ctx context.Context, id uint64) (*Goods, error) {
+	return c.Query().Where(goods.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *GoodsClient) GetX(ctx context.Context, id uint64) *Goods {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryStores queries the stores edge of a Goods.
+func (c *GoodsClient) QueryStores(_go *Goods) *StoreGoodsQuery {
+	query := (&StoreGoodsClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _go.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(goods.Table, goods.FieldID, id),
+			sqlgraph.To(storegoods.Table, storegoods.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, goods.StoresTable, goods.StoresColumn),
+		)
+		fromV = sqlgraph.Neighbors(_go.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *GoodsClient) Hooks() []Hook {
+	hooks := c.hooks.Goods
+	return append(hooks[:len(hooks):len(hooks)], goods.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *GoodsClient) Interceptors() []Interceptor {
+	return c.inters.Goods
+}
+
+func (c *GoodsClient) mutate(ctx context.Context, m *GoodsMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&GoodsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&GoodsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&GoodsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&GoodsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Goods mutation op: %q", m.Op())
 	}
 }
 
@@ -14911,6 +15282,22 @@ func (c *StoreClient) QueryExceptions(s *Store) *ExceptionQuery {
 	return query
 }
 
+// QueryGoods queries the goods edge of a Store.
+func (c *StoreClient) QueryGoods(s *Store) *StoreGoodsQuery {
+	query := (&StoreGoodsClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, id),
+			sqlgraph.To(storegoods.Table, storegoods.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, store.GoodsTable, store.GoodsColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *StoreClient) Hooks() []Hook {
 	hooks := c.hooks.Store
@@ -14934,6 +15321,171 @@ func (c *StoreClient) mutate(ctx context.Context, m *StoreMutation) (Value, erro
 		return (&StoreDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Store mutation op: %q", m.Op())
+	}
+}
+
+// StoreGoodsClient is a client for the StoreGoods schema.
+type StoreGoodsClient struct {
+	config
+}
+
+// NewStoreGoodsClient returns a client for the StoreGoods from the given config.
+func NewStoreGoodsClient(c config) *StoreGoodsClient {
+	return &StoreGoodsClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `storegoods.Hooks(f(g(h())))`.
+func (c *StoreGoodsClient) Use(hooks ...Hook) {
+	c.hooks.StoreGoods = append(c.hooks.StoreGoods, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `storegoods.Intercept(f(g(h())))`.
+func (c *StoreGoodsClient) Intercept(interceptors ...Interceptor) {
+	c.inters.StoreGoods = append(c.inters.StoreGoods, interceptors...)
+}
+
+// Create returns a builder for creating a StoreGoods entity.
+func (c *StoreGoodsClient) Create() *StoreGoodsCreate {
+	mutation := newStoreGoodsMutation(c.config, OpCreate)
+	return &StoreGoodsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of StoreGoods entities.
+func (c *StoreGoodsClient) CreateBulk(builders ...*StoreGoodsCreate) *StoreGoodsCreateBulk {
+	return &StoreGoodsCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *StoreGoodsClient) MapCreateBulk(slice any, setFunc func(*StoreGoodsCreate, int)) *StoreGoodsCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &StoreGoodsCreateBulk{err: fmt.Errorf("calling to StoreGoodsClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*StoreGoodsCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &StoreGoodsCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for StoreGoods.
+func (c *StoreGoodsClient) Update() *StoreGoodsUpdate {
+	mutation := newStoreGoodsMutation(c.config, OpUpdate)
+	return &StoreGoodsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *StoreGoodsClient) UpdateOne(sg *StoreGoods) *StoreGoodsUpdateOne {
+	mutation := newStoreGoodsMutation(c.config, OpUpdateOne, withStoreGoods(sg))
+	return &StoreGoodsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *StoreGoodsClient) UpdateOneID(id uint64) *StoreGoodsUpdateOne {
+	mutation := newStoreGoodsMutation(c.config, OpUpdateOne, withStoreGoodsID(id))
+	return &StoreGoodsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for StoreGoods.
+func (c *StoreGoodsClient) Delete() *StoreGoodsDelete {
+	mutation := newStoreGoodsMutation(c.config, OpDelete)
+	return &StoreGoodsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *StoreGoodsClient) DeleteOne(sg *StoreGoods) *StoreGoodsDeleteOne {
+	return c.DeleteOneID(sg.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *StoreGoodsClient) DeleteOneID(id uint64) *StoreGoodsDeleteOne {
+	builder := c.Delete().Where(storegoods.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &StoreGoodsDeleteOne{builder}
+}
+
+// Query returns a query builder for StoreGoods.
+func (c *StoreGoodsClient) Query() *StoreGoodsQuery {
+	return &StoreGoodsQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeStoreGoods},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a StoreGoods entity by its id.
+func (c *StoreGoodsClient) Get(ctx context.Context, id uint64) (*StoreGoods, error) {
+	return c.Query().Where(storegoods.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *StoreGoodsClient) GetX(ctx context.Context, id uint64) *StoreGoods {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryGoods queries the goods edge of a StoreGoods.
+func (c *StoreGoodsClient) QueryGoods(sg *StoreGoods) *GoodsQuery {
+	query := (&GoodsClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := sg.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(storegoods.Table, storegoods.FieldID, id),
+			sqlgraph.To(goods.Table, goods.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, storegoods.GoodsTable, storegoods.GoodsColumn),
+		)
+		fromV = sqlgraph.Neighbors(sg.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a StoreGoods.
+func (c *StoreGoodsClient) QueryStore(sg *StoreGoods) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := sg.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(storegoods.Table, storegoods.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, storegoods.StoreTable, storegoods.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(sg.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *StoreGoodsClient) Hooks() []Hook {
+	return c.hooks.StoreGoods
+}
+
+// Interceptors returns the client interceptors.
+func (c *StoreGoodsClient) Interceptors() []Interceptor {
+	return c.inters.StoreGoods
+}
+
+func (c *StoreGoodsClient) mutate(ctx context.Context, m *StoreGoodsMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&StoreGoodsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&StoreGoodsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&StoreGoodsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&StoreGoodsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown StoreGoods mutation op: %q", m.Op())
 	}
 }
 
@@ -16385,11 +16937,11 @@ type (
 	hooks struct {
 		Activity, Agent, Agreement, Allocate, Assistance, Attendance, Battery,
 		BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
-		CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
+		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
 		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee, Enterprise,
 		EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
 		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
-		Exception, Exchange, Export, Fault, Feedback, Instructions, Inventory,
+		Exception, Exchange, Export, Fault, Feedback, Goods, Instructions, Inventory,
 		Maintainer, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce, PointLog,
 		PromotionAchievement, PromotionBankCard, PromotionCommission,
 		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
@@ -16397,17 +16949,17 @@ type (
 		PromotionPerson, PromotionPrivilege, PromotionReferrals,
 		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
 		QuestionCategory, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
-		StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
+		StockSummary, Store, StoreGoods, Subscribe, SubscribeAlter, SubscribePause,
 		SubscribeReminder, SubscribeSuspend, Version []ent.Hook
 	}
 	inters struct {
 		Activity, Agent, Agreement, Allocate, Assistance, Attendance, Battery,
 		BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
-		CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
+		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
 		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee, Enterprise,
 		EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
 		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
-		Exception, Exchange, Export, Fault, Feedback, Instructions, Inventory,
+		Exception, Exchange, Export, Fault, Feedback, Goods, Instructions, Inventory,
 		Maintainer, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce, PointLog,
 		PromotionAchievement, PromotionBankCard, PromotionCommission,
 		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
@@ -16415,7 +16967,7 @@ type (
 		PromotionPerson, PromotionPrivilege, PromotionReferrals,
 		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
 		QuestionCategory, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
-		StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
+		StockSummary, Store, StoreGoods, Subscribe, SubscribeAlter, SubscribePause,
 		SubscribeReminder, SubscribeSuspend, Version []ent.Interceptor
 	}
 )

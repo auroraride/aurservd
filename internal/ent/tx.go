@@ -40,6 +40,8 @@ type Tx struct {
 	Business *BusinessClient
 	// Cabinet is the client for interacting with the Cabinet builders.
 	Cabinet *CabinetClient
+	// CabinetEc is the client for interacting with the CabinetEc builders.
+	CabinetEc *CabinetEcClient
 	// CabinetFault is the client for interacting with the CabinetFault builders.
 	CabinetFault *CabinetFaultClient
 	// City is the client for interacting with the City builders.
@@ -88,6 +90,8 @@ type Tx struct {
 	Fault *FaultClient
 	// Feedback is the client for interacting with the Feedback builders.
 	Feedback *FeedbackClient
+	// Goods is the client for interacting with the Goods builders.
+	Goods *GoodsClient
 	// Instructions is the client for interacting with the Instructions builders.
 	Instructions *InstructionsClient
 	// Inventory is the client for interacting with the Inventory builders.
@@ -160,6 +164,8 @@ type Tx struct {
 	StockSummary *StockSummaryClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
+	// StoreGoods is the client for interacting with the StoreGoods builders.
+	StoreGoods *StoreGoodsClient
 	// Subscribe is the client for interacting with the Subscribe builders.
 	Subscribe *SubscribeClient
 	// SubscribeAlter is the client for interacting with the SubscribeAlter builders.
@@ -316,6 +322,7 @@ func (tx *Tx) init() {
 	tx.BranchContract = NewBranchContractClient(tx.config)
 	tx.Business = NewBusinessClient(tx.config)
 	tx.Cabinet = NewCabinetClient(tx.config)
+	tx.CabinetEc = NewCabinetEcClient(tx.config)
 	tx.CabinetFault = NewCabinetFaultClient(tx.config)
 	tx.City = NewCityClient(tx.config)
 	tx.Commission = NewCommissionClient(tx.config)
@@ -340,6 +347,7 @@ func (tx *Tx) init() {
 	tx.Export = NewExportClient(tx.config)
 	tx.Fault = NewFaultClient(tx.config)
 	tx.Feedback = NewFeedbackClient(tx.config)
+	tx.Goods = NewGoodsClient(tx.config)
 	tx.Instructions = NewInstructionsClient(tx.config)
 	tx.Inventory = NewInventoryClient(tx.config)
 	tx.Maintainer = NewMaintainerClient(tx.config)
@@ -376,6 +384,7 @@ func (tx *Tx) init() {
 	tx.Stock = NewStockClient(tx.config)
 	tx.StockSummary = NewStockSummaryClient(tx.config)
 	tx.Store = NewStoreClient(tx.config)
+	tx.StoreGoods = NewStoreGoodsClient(tx.config)
 	tx.Subscribe = NewSubscribeClient(tx.config)
 	tx.SubscribeAlter = NewSubscribeAlterClient(tx.config)
 	tx.SubscribePause = NewSubscribePauseClient(tx.config)

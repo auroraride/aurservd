@@ -241,6 +241,20 @@ func (ec *EbikeCreate) SetExFactory(s string) *EbikeCreate {
 	return ec
 }
 
+// SetRtoRiderID sets the "rto_rider_id" field.
+func (ec *EbikeCreate) SetRtoRiderID(u uint64) *EbikeCreate {
+	ec.mutation.SetRtoRiderID(u)
+	return ec
+}
+
+// SetNillableRtoRiderID sets the "rto_rider_id" field if the given value is not nil.
+func (ec *EbikeCreate) SetNillableRtoRiderID(u *uint64) *EbikeCreate {
+	if u != nil {
+		ec.SetRtoRiderID(*u)
+	}
+	return ec
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (ec *EbikeCreate) SetBrand(e *EbikeBrand) *EbikeCreate {
 	return ec.SetBrandID(e.ID)
@@ -279,6 +293,11 @@ func (ec *EbikeCreate) AddAllocates(a ...*Allocate) *EbikeCreate {
 		ids[i] = a[i].ID
 	}
 	return ec.AddAllocateIDs(ids...)
+}
+
+// SetRtoRider sets the "rto_rider" edge to the Rider entity.
+func (ec *EbikeCreate) SetRtoRider(r *Rider) *EbikeCreate {
+	return ec.SetRtoRiderID(r.ID)
 }
 
 // Mutation returns the EbikeMutation object of the builder.
@@ -554,6 +573,23 @@ func (ec *EbikeCreate) createSpec() (*Ebike, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.RtoRiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.RtoRiderTable,
+			Columns: []string{ebike.RtoRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RtoRiderID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -851,6 +887,24 @@ func (u *EbikeUpsert) SetExFactory(v string) *EbikeUpsert {
 // UpdateExFactory sets the "ex_factory" field to the value that was provided on create.
 func (u *EbikeUpsert) UpdateExFactory() *EbikeUpsert {
 	u.SetExcluded(ebike.FieldExFactory)
+	return u
+}
+
+// SetRtoRiderID sets the "rto_rider_id" field.
+func (u *EbikeUpsert) SetRtoRiderID(v uint64) *EbikeUpsert {
+	u.Set(ebike.FieldRtoRiderID, v)
+	return u
+}
+
+// UpdateRtoRiderID sets the "rto_rider_id" field to the value that was provided on create.
+func (u *EbikeUpsert) UpdateRtoRiderID() *EbikeUpsert {
+	u.SetExcluded(ebike.FieldRtoRiderID)
+	return u
+}
+
+// ClearRtoRiderID clears the value of the "rto_rider_id" field.
+func (u *EbikeUpsert) ClearRtoRiderID() *EbikeUpsert {
+	u.SetNull(ebike.FieldRtoRiderID)
 	return u
 }
 
@@ -1186,6 +1240,27 @@ func (u *EbikeUpsertOne) SetExFactory(v string) *EbikeUpsertOne {
 func (u *EbikeUpsertOne) UpdateExFactory() *EbikeUpsertOne {
 	return u.Update(func(s *EbikeUpsert) {
 		s.UpdateExFactory()
+	})
+}
+
+// SetRtoRiderID sets the "rto_rider_id" field.
+func (u *EbikeUpsertOne) SetRtoRiderID(v uint64) *EbikeUpsertOne {
+	return u.Update(func(s *EbikeUpsert) {
+		s.SetRtoRiderID(v)
+	})
+}
+
+// UpdateRtoRiderID sets the "rto_rider_id" field to the value that was provided on create.
+func (u *EbikeUpsertOne) UpdateRtoRiderID() *EbikeUpsertOne {
+	return u.Update(func(s *EbikeUpsert) {
+		s.UpdateRtoRiderID()
+	})
+}
+
+// ClearRtoRiderID clears the value of the "rto_rider_id" field.
+func (u *EbikeUpsertOne) ClearRtoRiderID() *EbikeUpsertOne {
+	return u.Update(func(s *EbikeUpsert) {
+		s.ClearRtoRiderID()
 	})
 }
 
@@ -1687,6 +1762,27 @@ func (u *EbikeUpsertBulk) SetExFactory(v string) *EbikeUpsertBulk {
 func (u *EbikeUpsertBulk) UpdateExFactory() *EbikeUpsertBulk {
 	return u.Update(func(s *EbikeUpsert) {
 		s.UpdateExFactory()
+	})
+}
+
+// SetRtoRiderID sets the "rto_rider_id" field.
+func (u *EbikeUpsertBulk) SetRtoRiderID(v uint64) *EbikeUpsertBulk {
+	return u.Update(func(s *EbikeUpsert) {
+		s.SetRtoRiderID(v)
+	})
+}
+
+// UpdateRtoRiderID sets the "rto_rider_id" field to the value that was provided on create.
+func (u *EbikeUpsertBulk) UpdateRtoRiderID() *EbikeUpsertBulk {
+	return u.Update(func(s *EbikeUpsert) {
+		s.UpdateRtoRiderID()
+	})
+}
+
+// ClearRtoRiderID clears the value of the "rto_rider_id" field.
+func (u *EbikeUpsertBulk) ClearRtoRiderID() *EbikeUpsertBulk {
+	return u.Update(func(s *EbikeUpsert) {
+		s.ClearRtoRiderID()
 	})
 }
 

@@ -3,7 +3,7 @@
 PORT=26615
 
 if [ "$1" == 'next' ]; then
-    PORT=0
+    PORT=26611
 fi
 
 echo "同步数据库: $PORT"
@@ -14,9 +14,9 @@ cd ~/Downloads/_sql/ || return
 rm -rf auroraride.sql
 unzip auroraride.sql.zip
 rm -rf auroraride.sql.zip
-dropdb -U $(whoami) auroraride
+dropdb -U "$(whoami)" auroraride
 createdb auroraride
-psql -d auroraride -U $(whoami) -c "SET timezone = 'Asia/Shanghai'; CREATE EXTENSION postgis; CREATE EXTENSION pg_trgm; CREATE EXTENSION btree_gin;"
-psql -d auroraride -U $(whoami) -f auroraride.sql
+psql -d auroraride -U "$(whoami)" -c "SET timezone = 'Asia/Shanghai'; CREATE EXTENSION postgis; CREATE EXTENSION pg_trgm; CREATE EXTENSION btree_gin;"
+psql -d auroraride -U "$(whoami)" -f auroraride.sql
 ssh root@118.116.4.16 -p "$PORT" "rm -rf /var/lib/postgresql/auroraride.sql.zip && rm -rf /var/lib/postgresql/auroraride.sql"
 #rm -rf ~/Downloads/_sql/auroraride.sql

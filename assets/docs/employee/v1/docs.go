@@ -1903,6 +1903,14 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "rtoEbikeSn": {
+                    "description": "以租代购成功车架号",
+                    "type": "string"
+                },
                 "time": {
                     "description": "业务时间",
                     "type": "string"
@@ -2409,15 +2417,18 @@ const docTemplate = `{
             "type": "integer",
             "enum": [
                 1,
-                2
+                2,
+                3
             ],
             "x-enum-comments": {
                 "PlanTypeBattery": "单电",
+                "PlanTypeEbikeRto": "以租代购",
                 "PlanTypeEbikeWithBattery": "车加电"
             },
             "x-enum-varnames": [
                 "PlanTypeBattery",
-                "PlanTypeEbikeWithBattery"
+                "PlanTypeEbikeWithBattery",
+                "PlanTypeEbikeRto"
             ]
         },
         "model.Rider": {
@@ -2650,6 +2661,27 @@ const docTemplate = `{
                 }
             }
         },
+        "model.StoreStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "StoreStatusClose": "休息中",
+                "StoreStatusHidden": "隐藏",
+                "StoreStatusMaintain": "维护中",
+                "StoreStatusOpen": "营业中"
+            },
+            "x-enum-varnames": [
+                "StoreStatusMaintain",
+                "StoreStatusOpen",
+                "StoreStatusClose",
+                "StoreStatusHidden"
+            ]
+        },
         "model.StoreSwtichStatusReq": {
             "type": "object",
             "required": [
@@ -2658,12 +2690,16 @@ const docTemplate = `{
             "properties": {
                 "status": {
                     "description": "状态 1:营业中 2:休息中",
-                    "type": "integer",
                     "maximum": 2,
                     "minimum": 1,
                     "enum": [
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreStatus"
+                        }
                     ]
                 }
             }
@@ -2680,7 +2716,11 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "门店状态",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreStatus"
+                        }
+                    ]
                 }
             }
         },

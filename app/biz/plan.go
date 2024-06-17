@@ -17,8 +17,10 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/setting"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 type planBiz struct {
@@ -39,7 +41,7 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 
 	today := carbon.Now().StartOfDay().StdTime()
 
-	items := s.orm.QueryNotDeleted().
+	q := s.orm.QueryNotDeleted().
 		Where(
 			plan.Enable(true),
 			plan.StartLTE(today),
@@ -51,12 +53,35 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 		WithBrand().
 		WithCities().
 		WithAgreement().
-		Order(ent.Asc(plan.FieldDays)).
-		AllX(s.ctx)
+		Order(ent.Asc(plan.FieldDays))
 
+	if req.StoreId != nil {
+		// 查询门店库存电车所属brandId
+		var brandIds []uint64
+		storeItem, _ := ent.Database.Store.QueryNotDeleted().
+			WithStocks().
+			Where(store.ID(*req.StoreId)).
+			First(s.ctx)
+		if storeItem.Edges.Stocks != nil {
+			for _, st := range storeItem.Edges.Stocks {
+				if st.BrandID != nil {
+					brandIds = append(brandIds, *st.BrandID)
+				}
+			}
+		}
+		if len(brandIds) > 0 {
+			q.Where(
+				plan.HasBrandWith(ebikebrand.IDIn(brandIds...)),
+			)
+		}
+	}
+
+	items := q.AllX(s.ctx)
 	mmap := make(map[string]*model.PlanModelOption)
 
 	bmap := make(map[uint64]*model.PlanEbikeBrandOption)
+
+	rbmap := make(map[uint64]*model.PlanEbikeBrandOption)
 
 	serv := service.NewPlanIntroduce()
 	intro := serv.QueryMap()
@@ -116,6 +141,7 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 			DepositAlipayAuthFreeze: item.DepositAlipayAuthFreeze,
 			DepositContract:         item.DepositContract,
 			DepositPay:              item.DepositPay,
+			RtoDays:                 item.RtoDays,
 		}
 		if item.Edges.Agreement != nil {
 			planDaysPriceOption.Agreement = &model.Agreement{
@@ -140,28 +166,56 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 		SortIDOptions(*m.Children)
 
 		if item.BrandID != nil {
-			var b *model.PlanEbikeBrandOption
-			bid := *item.BrandID
-			b, ok = bmap[bid]
-			if !ok {
-				brand := item.Edges.Brand
-				b = &model.PlanEbikeBrandOption{
-					Children: new(model.PlanModelOptions),
-					Name:     brand.Name,
-					Cover:    brand.Cover,
+			switch item.Type {
+			case model.PlanTypeEbikeWithBattery.Value():
+				var b *model.PlanEbikeBrandOption
+				bid := *item.BrandID
+				b, ok = bmap[bid]
+				if !ok {
+					brand := item.Edges.Brand
+					b = &model.PlanEbikeBrandOption{
+						Children: new(model.PlanModelOptions),
+						Name:     brand.Name,
+						Cover:    brand.Cover,
+					}
+					bmap[bid] = b
 				}
-				bmap[bid] = b
+
+				var exists bool
+				for _, c := range *b.Children {
+					if c.Model == item.Model {
+						exists = true
+					}
+				}
+				if !exists {
+					*b.Children = append(*b.Children, m)
+				}
+			case model.PlanTypeEbikeRto.Value():
+				var b *model.PlanEbikeBrandOption
+				bid := *item.BrandID
+				b, ok = rbmap[bid]
+				if !ok {
+					brand := item.Edges.Brand
+					b = &model.PlanEbikeBrandOption{
+						Children: new(model.PlanModelOptions),
+						Name:     brand.Name,
+						Cover:    brand.Cover,
+					}
+					rbmap[bid] = b
+				}
+
+				var exists bool
+				for _, c := range *b.Children {
+					if c.Model == item.Model {
+						exists = true
+					}
+				}
+				if !exists {
+					*b.Children = append(*b.Children, m)
+				}
+			default:
 			}
 
-			var exists bool
-			for _, c := range *b.Children {
-				if c.Model == item.Model {
-					exists = true
-				}
-			}
-			if !exists {
-				*b.Children = append(*b.Children, m)
-			}
 		}
 	}
 
@@ -202,8 +256,14 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 		SortPlanEbikeModelByName(*b.Children)
 	}
 
+	for _, rb := range rbmap {
+		res.RtoBrands = append(res.RtoBrands, rb)
+		SortPlanEbikeModelByName(*rb.Children)
+	}
+
 	SortPlanEbikeBrandByName(res.Brands)
 	SortPlanModelByName(res.Models)
+	SortPlanEbikeBrandByName(res.RtoBrands)
 
 	return res
 }
@@ -232,4 +292,145 @@ func SortIDOptions(options model.PlanDaysPriceOptions) {
 		numJ, _ := strconv.Atoi(strconv.FormatUint(options[j].ID, 10))
 		return numI < numJ
 	})
+}
+
+// EbikeList 车电套餐列表
+func (s *planBiz) EbikeList(brandIds []uint64) (res definition.PlanNewlyRes) {
+
+	today := carbon.Now().StartOfDay().StdTime()
+
+	items := s.orm.QueryNotDeleted().
+		Where(
+			plan.Enable(true),
+			plan.StartLTE(today),
+			plan.EndGTE(today),
+			plan.BrandIDIn(brandIds...),
+		).
+		WithBrand().
+		WithCities().
+		WithAgreement().
+		Order(ent.Asc(plan.FieldDays)).
+		AllX(s.ctx)
+
+	bmap := make(map[uint64]*model.PlanEbikeBrandOption)
+
+	rbmap := make(map[uint64]*model.PlanEbikeBrandOption)
+
+	serv := service.NewPlanIntroduce()
+	intro := serv.QueryMap()
+
+	for _, item := range items {
+		// 可用城市
+		var cs []string
+		for _, c := range item.Edges.Cities {
+			cs = append(cs, c.Name)
+		}
+		// 封装电池型号
+		m := &model.PlanModelOption{
+			Children: new(model.PlanDaysPriceOptions),
+			Model:    item.Model,
+			Intro:    intro[serv.Key(item.Model, item.BrandID)],
+			Notes:    append(item.Notes, fmt.Sprintf("仅限 %s 使用", strings.Join(cs, " / "))),
+		}
+		switch item.Type {
+		case model.PlanTypeEbikeWithBattery.Value():
+			var b *model.PlanEbikeBrandOption
+			bid := *item.BrandID
+			b, ok := bmap[bid]
+			if !ok {
+				brand := item.Edges.Brand
+				b = &model.PlanEbikeBrandOption{
+					Children: new(model.PlanModelOptions),
+					Name:     brand.Name,
+					Cover:    brand.Cover,
+				}
+				bmap[bid] = b
+			}
+
+			var exists bool
+			for _, c := range *b.Children {
+				if c.Model == item.Model {
+					exists = true
+				}
+			}
+			if !exists {
+				*b.Children = append(*b.Children, m)
+			}
+		case model.PlanTypeEbikeRto.Value():
+			var b *model.PlanEbikeBrandOption
+			bid := *item.BrandID
+			b, ok := rbmap[bid]
+			if !ok {
+				brand := item.Edges.Brand
+				b = &model.PlanEbikeBrandOption{
+					Children: new(model.PlanModelOptions),
+					Name:     brand.Name,
+					Cover:    brand.Cover,
+				}
+				rbmap[bid] = b
+			}
+
+			var exists bool
+			for _, c := range *b.Children {
+				if c.Model == item.Model {
+					exists = true
+				}
+			}
+			if !exists {
+				*b.Children = append(*b.Children, m)
+			}
+		default:
+		}
+	}
+
+	settings, _ := ent.Database.Setting.Query().Where(setting.KeyIn(model.SettingPlanEbikeDescriptionKey)).All(context.Background())
+	for _, sm := range settings {
+		var v model.SettingPlanDescription
+		err := jsoniter.Unmarshal([]byte(sm.Content), &v)
+		if err == nil {
+			switch sm.Key {
+			case model.SettingPlanEbikeDescriptionKey:
+				res.EbikeDescription = v
+			}
+		}
+	}
+
+	for _, b := range bmap {
+		res.Brands = append(res.Brands, b)
+		SortPlanEbikeModelByName(*b.Children)
+	}
+
+	for _, rb := range rbmap {
+		res.RtoBrands = append(res.RtoBrands, rb)
+		SortPlanEbikeModelByName(*rb.Children)
+	}
+
+	SortPlanEbikeBrandByName(res.Brands)
+	SortPlanEbikeBrandByName(res.RtoBrands)
+
+	return
+}
+
+// Detail 套餐详情
+func (s *planBiz) Detail(req *definition.PlanDetailReq) (*definition.PlanDetailRes, error) {
+	d, _ := s.orm.QueryNotDeleted().
+		Where(plan.ID(req.ID)).
+		WithBrand().
+		First(s.ctx)
+	if d == nil {
+		return nil, nil
+	}
+	res := &definition.PlanDetailRes{
+		Plan: model.Plan{
+			ID:          d.ID,
+			Name:        d.Name,
+			Price:       d.Price,
+			Days:        d.Days,
+			Intelligent: d.Intelligent,
+			Type:        model.PlanType(d.Type),
+		},
+		Notes: d.Notes,
+	}
+
+	return res, nil
 }

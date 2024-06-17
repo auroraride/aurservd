@@ -403,6 +403,36 @@ const docTemplate = `{
                         "description": "电池型号",
                         "name": "model",
                         "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "StoreBusinessTypeObtain": "领取车辆(租车)",
+                            "StoreBusinessTypeRepair": "维修",
+                            "StoreBusinessTypeRest": "驿站",
+                            "StoreBusinessTypeSale": "购买"
+                        },
+                        "x-enum-varnames": [
+                            "StoreBusinessTypeObtain",
+                            "StoreBusinessTypeRepair",
+                            "StoreBusinessTypeSale",
+                            "StoreBusinessTypeRest"
+                        ],
+                        "description": "门店业务 0-全部 1-租车，2-修车，3-买车，4-驿站 （首页地图不要传入此值）",
+                        "name": "storeBusiness",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店状态 0-全部 1-营业 2-休息 （首页地图不要传入此值）",
+                        "name": "storeStatus",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2009,6 +2039,12 @@ const docTemplate = `{
                         "name": "cityId",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2740,6 +2776,14 @@ const docTemplate = `{
                     "description": "电柜数量",
                     "type": "integer"
                 },
+                "emptyBinNum": {
+                    "description": "可用空仓数量",
+                    "type": "integer"
+                },
+                "exchangNum": {
+                    "description": "可换电池数量",
+                    "type": "integer"
+                },
                 "fid": {
                     "description": "设施标识",
                     "type": "string"
@@ -2768,8 +2812,12 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "type": {
-                    "description": "类别",
-                    "type": "string"
+                    "description": "类别  all:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.BranchFacilityType"
+                        }
+                    ]
                 }
             }
         },
@@ -2841,8 +2889,16 @@ const docTemplate = `{
                     "description": "充电数量",
                     "type": "integer"
                 },
+                "emptyBinNum": {
+                    "description": "可用空仓数量",
+                    "type": "integer"
+                },
+                "exchangNum": {
+                    "description": "可换电池数量",
+                    "type": "integer"
+                },
                 "fully": {
-                    "description": "可换数量",
+                    "description": "满电数量",
                     "type": "integer"
                 },
                 "voltage": {
@@ -2942,6 +2998,23 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.BranchFacilityType": {
+            "type": "string",
+            "enum": [
+                "all",
+                "store",
+                "v72",
+                "v60",
+                "rest"
+            ],
+            "x-enum-varnames": [
+                "BranchFacilityTypeAll",
+                "BranchFacilityTypeStore",
+                "BranchFacilityTypeV72",
+                "BranchFacilityTypeV60",
+                "BranchFacilityTypeRest"
+            ]
         },
         "model.BranchRidingRes": {
             "type": "object",
@@ -4041,6 +4114,10 @@ const docTemplate = `{
                 "price": {
                     "description": "价格, 应支付价格 = 价格 - 新签优惠",
                     "type": "number"
+                },
+                "rtoDays": {
+                    "description": "以租代购最小使用天数",
+                    "type": "integer"
                 }
             }
         },
@@ -4142,15 +4219,18 @@ const docTemplate = `{
             "type": "integer",
             "enum": [
                 1,
-                2
+                2,
+                3
             ],
             "x-enum-comments": {
                 "PlanTypeBattery": "单电",
+                "PlanTypeEbikeRto": "以租代购",
                 "PlanTypeEbikeWithBattery": "车加电"
             },
             "x-enum-varnames": [
                 "PlanTypeBattery",
-                "PlanTypeEbikeWithBattery"
+                "PlanTypeEbikeWithBattery",
+                "PlanTypeEbikeRto"
             ]
         },
         "model.PointLogListRes": {
@@ -4784,6 +4864,27 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.StoreBusinessType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "x-enum-comments": {
+                "StoreBusinessTypeObtain": "领取车辆(租车)",
+                "StoreBusinessTypeRepair": "维修",
+                "StoreBusinessTypeRest": "驿站",
+                "StoreBusinessTypeSale": "购买"
+            },
+            "x-enum-varnames": [
+                "StoreBusinessTypeObtain",
+                "StoreBusinessTypeRepair",
+                "StoreBusinessTypeSale",
+                "StoreBusinessTypeRest"
+            ]
         },
         "model.StoreLngLat": {
             "type": "object",

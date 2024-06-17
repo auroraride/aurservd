@@ -725,6 +725,11 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 			remaining = tools.NewTime().LastDaysToNow(*sub.AgentEndAt)
 		}
 
+		var pastDay int
+		if sub.StartAt != nil {
+			pastDay = tools.NewTime().UsedDaysToNow(*sub.StartAt)
+		}
+
 		ri.Subscribe = &model.RiderItemSubscribe{
 			ID:          sub.ID,
 			Status:      sub.Status,
@@ -735,7 +740,13 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 			Type:        model.SubscribeTypeBattery,
 			Ebike:       NewEbike().Detail(sub.Edges.Ebike, sub.Edges.Brand),
 			Intelligent: sub.Intelligent,
+			PastDay:     pastDay,
 		}
+
+		if sub.Edges.Plan != nil {
+			ri.Subscribe.RtoDays = sub.Edges.Plan.RtoDays
+		}
+
 		if sub.BrandID != nil {
 			ri.Subscribe.Type = model.SubscribeTypeEbike
 		}
@@ -885,7 +896,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 
 			bizList, _ := ent.Database.Business.QueryNotDeleted().
 				WithEmployee().WithStore().WithAgent().
-				Where(business.RiderID(item.ID), business.TypeIn(business.TypeActive, business.TypeUnsubscribe)).
+				Where(business.RiderID(item.ID), business.TypeIn(model.BusinessTypeActive, model.BusinessTypeUnsubscribe)).
 				Order(ent.Desc(business.FieldCreatedAt)).
 				Limit(2).
 				All(s.ctx)
@@ -920,12 +931,12 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 				}
 
 				// 记录激活操作人
-				if biz.Type == business.TypeActive {
+				if biz.Type == model.BusinessTypeActive {
 					activeOperator = operator
 				}
 
 				// 最新记录为退租业务时记录退租操作人
-				if biz.Type == business.TypeUnsubscribe && i == 0 {
+				if biz.Type == model.BusinessTypeUnsubscribe && i == 0 {
 					unsubscribeOperator = operator
 				}
 			}

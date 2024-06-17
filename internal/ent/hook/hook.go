@@ -165,6 +165,18 @@ func (f CabinetFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CabinetMutation", m)
 }
 
+// The CabinetEcFunc type is an adapter to allow the use of ordinary
+// function as CabinetEc mutator.
+type CabinetEcFunc func(context.Context, *ent.CabinetEcMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CabinetEcFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CabinetEcMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CabinetEcMutation", m)
+}
+
 // The CabinetFaultFunc type is an adapter to allow the use of ordinary
 // function as CabinetFault mutator.
 type CabinetFaultFunc func(context.Context, *ent.CabinetFaultMutation) (ent.Value, error)
@@ -451,6 +463,18 @@ func (f FeedbackFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FeedbackMutation", m)
+}
+
+// The GoodsFunc type is an adapter to allow the use of ordinary
+// function as Goods mutator.
+type GoodsFunc func(context.Context, *ent.GoodsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f GoodsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.GoodsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GoodsMutation", m)
 }
 
 // The InstructionsFunc type is an adapter to allow the use of ordinary
@@ -883,6 +907,18 @@ func (f StoreFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StoreMutation", m)
+}
+
+// The StoreGoodsFunc type is an adapter to allow the use of ordinary
+// function as StoreGoods mutator.
+type StoreGoodsFunc func(context.Context, *ent.StoreGoodsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f StoreGoodsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.StoreGoodsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StoreGoodsMutation", m)
 }
 
 // The SubscribeFunc type is an adapter to allow the use of ordinary

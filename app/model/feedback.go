@@ -7,9 +7,11 @@ const (
 
 // FeedbackReq 反馈请求参数
 type FeedbackReq struct {
-	Content string   `json:"content" validate:"required"` // 反馈内容
-	Url     []string `json:"url"`                         // 反馈图片
-	Type    uint8    `json:"type" validate:"required"`    // 反馈类型
+	Content     string       `json:"content" validate:"required"` // 反馈内容
+	Url         []string     `json:"url"`                         // 反馈图片
+	Type        uint8        `json:"type" validate:"required"`    // 反馈类型
+	CityID      *uint64      `json:"cityId" `                     // 城市ID
+	VersionInfo *VersionInfo `json:"versionInfo"`                 // 版本信息
 }
 
 // FeedbackListReq 反馈列表请求参数
@@ -26,14 +28,24 @@ type FeedbackListReq struct {
 
 // FeedbackDetail 反馈详情
 type FeedbackDetail struct {
-	ID             uint64   `json:"id"`                       // 反馈ID
-	Content        string   `json:"content"`                  // 反馈内容
-	Url            []string `json:"url"`                      // 反馈图片
-	Type           uint8    `json:"type"`                     // 反馈类型
-	Source         uint8    `json:"source,omitempty"`         // 反馈来源
-	EnterpriseID   uint64   `json:"enterpriseId,omitempty"`   // 反馈用户团签id
-	EnterpriseName string   `json:"enterpriseName,omitempty"` // 反馈用户团签名称
-	Name           string   `json:"name"`                     // 反馈用户名称
-	Phone          string   `json:"phone"`                    // 反馈用户电话
-	CreatedAt      string   `json:"createdAt"`                // 反馈时间
+	ID             uint64      `json:"id"`                       // 反馈ID
+	Content        string      `json:"content"`                  // 反馈内容
+	Url            []string    `json:"url"`                      // 反馈图片
+	Type           uint8       `json:"type"`                     // 反馈类型
+	Source         uint8       `json:"source,omitempty"`         // 反馈来源
+	EnterpriseID   uint64      `json:"enterpriseId,omitempty"`   // 反馈用户团签id
+	EnterpriseName string      `json:"enterpriseName,omitempty"` // 反馈用户团签名称
+	Name           string      `json:"name"`                     // 反馈用户名称
+	Phone          string      `json:"phone"`                    // 反馈用户电话
+	CreatedAt      string      `json:"createdAt"`                // 反馈时间
+	CityName       string      `json:"cityName"`                 // 城市名称
+	VersionInfo    VersionInfo `json:"versionInfo"`              // 版本信息
+}
+
+// VersionInfo 版本信息
+type VersionInfo struct {
+	Version   string `json:"version"`   // 版本号
+	CommId    string `json:"commitId"`  // 提交ID
+	BuildTime string `json:"buildTime"` // 编译时间
+	CiJobId   string `json:"ciJobId"`   // CI任务ID
 }

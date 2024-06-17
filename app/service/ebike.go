@@ -198,6 +198,17 @@ func (s *ebikeService) listFilter(req model.EbikeListFilter) (q *ent.EbikeQuery,
 		)
 	}
 
+	if req.Rto != nil {
+		switch *req.Rto {
+		case true:
+			info["是否以租代购"] = true
+			q.Where(ebike.RtoRiderIDNotNil())
+		default:
+			info["是否以租代购"] = false
+			q.Where(ebike.RtoRiderIDIsNil())
+		}
+	}
+
 	return
 }
 
@@ -220,6 +231,7 @@ func (s *ebikeService) List(req *model.EbikeListReq) *model.PaginationRes {
 				Sim:     item.Sim,
 				Color:   silk.Pointer(item.Color),
 			},
+			Rto: item.RtoRiderID != nil,
 		}
 		if eb != nil {
 			res.Brand = eb.Name

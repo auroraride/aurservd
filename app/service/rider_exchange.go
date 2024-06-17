@@ -69,6 +69,17 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 		snag.Panic("电池型号不匹配，请更换电柜重试")
 	}
 
+	// 限制换电城市
+	if cab != nil {
+		citys, err := NewPlan().PlanCity(*sub.PlanID)
+		if err != nil {
+			snag.Panic("未找到套餐")
+		}
+		if !NewRiderBusiness(s.rider).IsCabinetCityInCities(citys, *cab.CityID) {
+			snag.Panic("请在指定城市办理业务")
+		}
+	}
+
 	var (
 		info  *model.RiderCabinetOperateProcess
 		fully *model.BinInfo

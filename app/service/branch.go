@@ -23,9 +23,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
-	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -184,6 +184,7 @@ func (s *branchService) Modify(req *model.BranchModifyReq) {
 	b, _ := s.orm.QueryNotDeleted().Where(branch.ID(req.ID)).First(s.ctx)
 	if b == nil {
 		snag.Panic("网点不存在")
+		return
 	}
 
 	// 从结构体更新
@@ -240,8 +241,8 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 				GroupBy(bt.C(branch.FieldID)).
 				OrderBy(sql.Asc("distance"))
 			if req.Distance != nil {
-				if *req.Distance > 100000 {
-					*req.Distance = 100000
+				if *req.Distance > 50000 {
+					*req.Distance = 50000
 				}
 				sel.Where(sql.P(func(b *sql.Builder) {
 					b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, branch.FieldGeom, *req.Lng, *req.Lat, *req.Distance))
@@ -251,7 +252,12 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 			}
 		})
 	if req.Model != nil {
-		q.Where(branch.HasCabinetsWith(cabinet.HasModelsWith(batterymodel.Model(*req.Model))))
+		q.Where(
+			branch.Or(
+				branch.HasCabinetsWith(cabinet.HasModelsWith(batterymodel.Model(*req.Model))),
+				branch.HasStoresWith(store.Rest(true)),
+			),
+		)
 	}
 	err := q.Scan(s.ctx, &temps)
 	if err != nil || len(temps) == 0 {
@@ -263,22 +269,16 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 	}
 
 	storeQuery := ent.Database.Store.QueryNotDeleted().Where(store.BranchIDIn(ids...))
-	filter := req.Filter
-	switch filter {
-	case model.BranchFacilityTypeStore:
-		break
-	case model.BranchFacilityFilterEbikeObtain:
-		storeQuery.Where(store.EbikeObtain(true))
-	case model.BranchFacilityFilterEbikeRepair:
-		storeQuery.Where(store.EbikeRepair(true))
-	case model.BranchFacilityFilterEbike:
+
+	// 未传入门店筛选条件时
+	if req.StoreStatus == nil && req.StoreBusiness == nil {
+		// 需要查询驿站
 		storeQuery.Where(
-			store.Or(
-				store.EbikeObtain(true),
-				store.EbikeRepair(true),
-			),
+			store.StatusIn(model.StoreStatusOpen.Value(), model.StoreStatusClose.Value()),
+			store.Rest(true),
 		)
-	default:
+
+		// 电柜查询
 		cabQuery := ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithModels()
 		if sub != nil && !v2 {
 			cabQuery.Where(cabinet.Intelligent(sub.Intelligent), cabinet.HasModelsWith(batterymodel.Model(sub.Model)))
@@ -286,8 +286,35 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 		if v2 && req.Model != nil {
 			cabQuery.Where(cabinet.HasModelsWith(batterymodel.Model(*req.Model)))
 		}
+
 		cabinets = cabQuery.AllX(s.ctx)
 	}
+
+	// 传入门店查询条件时只需查询门店数据
+	// 传入门店筛选条件-门店状态
+	if req.StoreStatus != nil {
+		switch *req.StoreStatus {
+		case model.StoreStatusOpen.Value():
+			storeQuery.Where(store.Status(model.StoreStatusOpen.Value()))
+		case model.StoreStatusClose.Value():
+			storeQuery.Where(store.Status(model.StoreStatusClose.Value()))
+		default:
+		}
+	}
+	// 传入门店筛选条件-门店业务
+	if req.StoreBusiness != nil {
+		switch *req.StoreBusiness {
+		case model.StoreBusinessTypeObtain:
+			storeQuery.Where(store.EbikeObtain(true))
+		case model.StoreBusinessTypeRepair:
+			storeQuery.Where(store.EbikeRepair(true))
+		case model.StoreBusinessTypeSale:
+			storeQuery.Where(store.EbikeSale(true))
+		case model.StoreBusinessTypeRest:
+			storeQuery.Where(store.Rest(true))
+		}
+	}
+
 	stores = storeQuery.AllX(s.ctx)
 	return
 }
@@ -304,7 +331,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 	}
 	distance := req.Distance
 	if distance == 0 {
-		distance = 100000
+		distance = 50000
 	}
 	temps, stores, cabinets := s.ListByDistance(&model.BranchWithDistanceReq{
 		Lng:      &lng,
@@ -323,7 +350,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 			Stores:   make([]model.StoreWithStatus, 0),
 		}
 	}
-	if req.Type == 0 || req.Type == 1 {
+	if req.Type == "" || req.Type == model.BranchFacilityTypeStore || req.Type == model.BranchFacilityTypeRest {
 		for _, st := range stores {
 			if strings.Contains(st.Name, req.Name) {
 				if b, ok := bmap[st.BranchID]; ok {
@@ -332,21 +359,19 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 							ID:   st.ID,
 							Name: st.Name,
 						},
-						Status: st.Status,
+						Status: model.StoreStatus(st.Status),
 					})
 				}
 			}
 		}
 	}
-	if req.Type == 0 || req.Type > 1 {
+	if req.Type == "" || req.Type == model.BranchFacilityTypeV72 || req.Type == model.BranchFacilityTypeV60 {
 		var mt string
-		if req.Type > 1 {
-			switch req.Type {
-			case 60:
-				mt = "V60"
-			case 72:
-				mt = "V72"
-			}
+		switch req.Type {
+		case model.BranchFacilityTypeV72:
+			mt = "72V"
+		case model.BranchFacilityTypeV60:
+			mt = "60V"
 		}
 		for _, cab := range cabinets {
 			if strings.Contains(cab.Name, req.Name) {
@@ -395,16 +420,16 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 
 	// TODO 业务获取限制
 	// if sub != nil {
-	//     if req.Business == business.TypeActive && sub.Status != model.SubscribeStatusInactive {}
-	//     if req.Business == business.TypePause && sub.Status != model.SubscribeStatusUsing {}
-	//     if req.Business == business.TypeContinue && sub.Status != model.SubscribeStatusPaused {}
-	//     if req.Business == business.TypeUnsubscribe && sub.Status != model.SubscribeStatusUsing {}
+	//     if req.Business == model.BusinessTypeActive && sub.Status != model.SubscribeStatusInactive {}
+	//     if req.Business == model.BusinessTypePause && sub.Status != model.SubscribeStatusUsing {}
+	//     if req.Business == model.BusinessTypeContinue && sub.Status != model.SubscribeStatusPaused {}
+	//     if req.Business == model.BusinessTypeUnsubscribe && sub.Status != model.SubscribeStatusUsing {}
 	// }
 
 	temps, stores, cabinets := s.ListByDistance(req, sub, v2)
 
 	items = make([]*model.BranchWithDistanceRes, 0)
-	// 三种设备类别
+	// 四种设备类别
 	itemsMap := make(map[uint64]*model.BranchWithDistanceRes, len(temps))
 	for _, temp := range temps {
 		itemsMap[temp.ID] = &model.BranchWithDistanceRes{
@@ -422,37 +447,47 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 		}
 	}
 
-	// 进行关联查询
-	// 门店
-	if req.Business == "" {
-		for _, es := range stores {
-			if es.Status == model.StoreStatusOpen {
-				s.facility(itemsMap[es.BranchID].FacilityMap, model.BranchFacility{
-					ID:    es.ID,
-					Type:  model.BranchFacilityTypeStore,
-					Name:  es.Name,
-					State: model.BranchFacilityStateOnline,
-					Num:   0,
-					Fid:   s.EncodeFacility(es, nil),
-				})
-			}
+	// 门店数据（骑手订阅后首页地图查询需要展示驿站门店数据）
+	for _, es := range stores {
+		var eState uint
+		switch es.Status {
+		case model.StoreStatusOpen.Value():
+			eState = model.BranchFacilityStateOnline
+		case model.StoreStatusClose.Value():
+			eState = model.BranchFacilityStateOffline
+		default:
+			continue
 		}
+
+		esType := model.BranchFacilityTypeStore
+		if es.Rest {
+			esType = model.BranchFacilityTypeRest
+		}
+
+		s.facility(itemsMap[es.BranchID].FacilityMap, model.BranchFacility{
+			ID:    es.ID,
+			Type:  esType,
+			Name:  es.Name,
+			State: eState,
+			Num:   0,
+			Fid:   s.EncodeFacility(es, nil),
+		})
 	}
 
 	// 电柜id
 	var cabIDs []uint64
 	// 预约数量map
-	var rm map[uint64]int
+	var rm map[model.ReserveBusinessKey]int
 
 	// 每个网点可用业务
 	branchBusinessesMap := make(map[uint64]map[uint64][]string)
 
-	if req.Business != "" {
+	if req.Business != nil {
 		for _, c := range cabinets {
 			cabIDs = append(cabIDs, c.ID)
 		}
 
-		rm = NewReserve().CabinetCounts(cabIDs, business.Type(req.Business))
+		rm = NewReserve().CabinetCounts(cabIDs)
 	}
 
 	// 电柜
@@ -460,9 +495,9 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 	NewCabinet().SyncCabinets(cabinets)
 	for _, c := range cabinets {
 		// 预约检查 = 非预约筛选 或 电柜可满足预约并且如果订阅非空则电柜电池型号满足订阅型号
-		// resvcheck := req.Business == "" || (c.ReserveAble(business.Type(req.Business), rm[c.ID]) && (sub == nil || NewCabinet().ModelInclude(c, sub.Model)))
-		resvcheck := req.Business == ""
-		if c.ReserveAble(business.Type(req.Business), rm[c.ID]) {
+		// resvcheck := req.Business == "" || (c.ReserveAble(model.BusinessType(req.Business), rm[c.ID]) && (sub == nil || NewCabinet().ModelInclude(c, sub.Model)))
+		resvcheck := req.Business == nil
+		if req.Business != nil && c.ReserveAble(model.BusinessType(*req.Business), rm) {
 			resvcheck = sub == nil || NewCabinet().ModelInclude(c, sub.Model)
 		}
 
@@ -481,6 +516,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 				fa.State = model.BranchFacilityStateOnline
 			}
 			// 计算可用电池数量
+			var availableBatteryNum, availableEmptyBinNum int
 			for _, bin := range c.Bin {
 				fa.Total += 1
 				// TODO 替换
@@ -489,6 +525,14 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 				}
 				if bin.Battery {
 					fa.BatteryNum += 1
+				}
+				// 可用电池数量,可用空仓数量 锁仓不算可用
+				if bin.DoorHealth && bin.Electricity.Value() >= cache.Float64(model.SettingExchangeMinBatteryKey) {
+					availableBatteryNum += 1
+				}
+				// 可用空仓数量 锁仓不算可用
+				if !bin.Battery && bin.DoorHealth {
+					availableEmptyBinNum += 1
 				}
 			}
 
@@ -505,40 +549,39 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 				fa.Type = model.BranchFacilityTypeV60
 			}
 
-			s.facility(itemsMap[*c.BranchID].FacilityMap, fa)
-
 			// 电柜可办理业务
 			if branchBusinessesMap[*c.BranchID] == nil {
 				branchBusinessesMap[*c.BranchID] = make(map[uint64][]string)
 			}
 
 			// active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
-			// 查询激活预约数
-			reserveActiveNum := NewReserve().CabinetCounts([]uint64{c.ID}, "active")
-			// 查询结束寄存
-			reserveContinueNum := NewReserve().CabinetCounts([]uint64{c.ID}, "continue")
-			// 查询寄存
-			reservePauseNum := NewReserve().CabinetCounts([]uint64{c.ID}, "pause")
-			// 查询退租
-			reserveUnsubscribeNum := NewReserve().CabinetCounts([]uint64{c.ID}, "unsubscribe")
+			reserveNum := NewReserve().CabinetCounts([]uint64{c.ID})
+			// 电柜可办理业务
+			var batteryNum, emptyBinNum int
+			reserveActiveNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeActive)]
+			reserveContinueNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeContinue)]
+			reservePauseNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypePause)]
+			reserveUnsubscribeNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeUnsubscribe)]
 
-			var batteryFullNum, emptyBinNum int
+			// 业务可用
+			batteryNum = availableBatteryNum - reserveActiveNum - reserveContinueNum
+			// 业务可用空仓数
+			emptyBinNum = availableEmptyBinNum - reservePauseNum - reserveUnsubscribeNum
 
-			// 可用电池数
-			batteryFullNum = c.BatteryFullNum - reserveActiveNum[c.ID] - reserveContinueNum[c.ID]
-			// 可用空仓数
-			emptyBinNum = c.EmptyBinNum - reservePauseNum[c.ID] - reserveUnsubscribeNum[c.ID]
+			fa.EmptyBinNum = emptyBinNum
+			fa.ExchangNum = batteryNum
 
-			// 电柜可办业务展示规则：
+			s.facility(itemsMap[*c.BranchID].FacilityMap, fa)
+			// 电柜可办业务展示规则： 电池可用数据定义 (未锁仓的仓位且电量大于等于最低换电量) 空仓数据定义 (未锁仓且无电池)
 			//  1）激活：电柜可用电池数 ≥ 2
 			//  2）退租：电柜空仓数 ≥ 2
 			//  3）寄存：电柜空仓数 ≥ 2
 			//  4）结束寄存：电柜可用电池数 ≥ 2
-			if batteryFullNum >= 2 {
-				branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], business.TypeActive.String(), business.TypeContinue.String())
+			if batteryNum >= 2 {
+				branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], model.BusinessTypeActive.String(), model.BusinessTypeContinue.String())
 			}
 			if emptyBinNum >= 2 {
-				branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], business.TypePause.String(), business.TypeUnsubscribe.String())
+				branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], model.BusinessTypePause.String(), model.BusinessTypeUnsubscribe.String())
 			}
 		}
 	}
@@ -569,6 +612,11 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 			}
 			m.Facility = append(m.Facility, fa)
 		}
+		// 排序设施 (v60,v72,store,rest)
+		sort.Slice(m.Facility, func(i, j int) bool {
+			return strings.Compare(m.Facility[i].Type.String()[2:3], m.Facility[j].Type.String()[2:3]) < 0
+		})
+
 		if len(m.Facility) > 0 {
 			items = append(items, m)
 		}
@@ -581,17 +629,24 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 }
 
 func (s *branchService) facility(mp map[string]*model.BranchFacility, info model.BranchFacility) {
-	fa, ok := mp[info.Type]
+	fa, ok := mp[info.Type.String()]
 	if ok {
-		// 合并电柜满电数量
-		if info.Type != model.BranchFacilityTypeStore {
+		switch info.Type {
+		case model.BranchFacilityTypeV72, model.BranchFacilityTypeV60:
+			// 电柜状态 只要有一个在线就是在线
+			if info.State == model.BranchFacilityStateOnline {
+				fa.State = model.BranchFacilityStateOnline
+			}
+			// 合并电柜满电数量
 			fa.Num += info.Num
 			fa.Total += info.Total
 			fa.CabinetNum += info.CabinetNum
+			fa.EmptyBinNum += info.EmptyBinNum
+			fa.ExchangNum += info.ExchangNum
 		}
 	} else {
 		fa = &info
-		mp[info.Type] = fa
+		mp[info.Type.String()] = fa
 	}
 }
 
@@ -599,6 +654,7 @@ func (s *branchService) Sheet(req *model.BranchContractSheetReq) {
 	bc, _ := ent.Database.BranchContract.QueryNotDeleted().Where(branchcontract.ID(req.ID)).First(s.ctx)
 	if bc == nil {
 		snag.Panic("未找到合同信息")
+		return
 	}
 	bc.Update().SetSheets(req.Sheets).SaveX(s.ctx)
 }
@@ -752,6 +808,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 			}
 
 			// 获取仓位详情
+			var availableBatteryNum, availableEmptyBinNum int
 			for bi, bin := range cab.Bin {
 				// 锁仓
 				if !bin.DoorHealth {
@@ -776,9 +833,13 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 					}
 				}
 				c.Bins[bi].BatterySN = bin.BatterySN
+				if bin.DoorHealth && bin.Electricity.Value() >= cache.Float64(model.SettingExchangeMinBatteryKey) {
+					availableBatteryNum += 1
+				}
+				if !bin.Battery && bin.DoorHealth {
+					availableEmptyBinNum += 1
+				}
 			}
-
-			c.Batteries = []model.BranchFacilityCabinetBattery{batInfo}
 
 			// 当前预约
 			if rev != nil && rev.CabinetID == cab.ID {
@@ -791,37 +852,39 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 				switch sub.Status {
 				case model.SubscribeStatusInactive:
 					// 未激活时仅能办理激活业务
-					c.Businesses = []string{business.TypeActive.String()}
+					c.Businesses = []string{model.BusinessTypeActive.String()}
 				case model.SubscribeStatusPaused:
 					// 寄存中时仅能办理取消寄存业务
-					c.Businesses = []string{business.TypeContinue.String()}
+					c.Businesses = []string{model.BusinessTypeContinue.String()}
 				case model.SubscribeStatusUsing:
 					// 使用中可办理寄存和退租业务
-					c.Businesses = []string{business.TypePause.String(), business.TypeUnsubscribe.String()}
+					c.Businesses = []string{model.BusinessTypePause.String(), model.BusinessTypeUnsubscribe.String()}
+				default:
 				}
 			}
 
 			// 电柜可办理业务
-			reserveActiveNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "active")
-			// 查询结束寄存
-			reserveContinueNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "continue")
-			// 查询寄存
-			reservePauseNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "pause")
-			// 查询退租
-			reserveUnsubscribeNum := NewReserve().CabinetCounts([]uint64{cab.ID}, "unsubscribe")
-
-			var batteryFullNum, emptyBinNum int
+			reserveNum := NewReserve().CabinetCounts([]uint64{cab.ID})
+			var batteryNum, emptyBinNum int
+			reserveActiveNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeActive)]
+			reserveContinueNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeContinue)]
+			reservePauseNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypePause)]
+			reserveUnsubscribeNum := reserveNum[model.NewReserveBusinessKey(c.ID, model.BusinessTypeUnsubscribe)]
 
 			// 可用电池数
-			batteryFullNum = cab.BatteryFullNum - reserveActiveNum[c.ID] - reserveContinueNum[c.ID]
+			batteryNum = availableBatteryNum - reserveActiveNum - reserveContinueNum
 			// 可用空仓数
-			emptyBinNum = cab.EmptyBinNum - reservePauseNum[c.ID] - reserveUnsubscribeNum[c.ID]
+			emptyBinNum = availableEmptyBinNum - reservePauseNum - reserveUnsubscribeNum
 
-			if batteryFullNum >= 2 {
-				c.CabinetBusinesses = append(c.CabinetBusinesses, business.TypeActive.String(), business.TypeContinue.String())
+			batInfo.ExchangNum = batteryNum
+			batInfo.EmptyBinNum = emptyBinNum
+			c.Batteries = []model.BranchFacilityCabinetBattery{batInfo}
+
+			if batteryNum >= 2 {
+				c.CabinetBusinesses = append(c.CabinetBusinesses, model.BusinessTypeActive.String(), model.BusinessTypeContinue.String())
 			}
 			if emptyBinNum >= 2 {
-				c.CabinetBusinesses = append(c.CabinetBusinesses, business.TypePause.String(), business.TypeUnsubscribe.String())
+				c.CabinetBusinesses = append(c.CabinetBusinesses, model.BusinessTypePause.String(), model.BusinessTypeUnsubscribe.String())
 			}
 
 			data.Cabinet = append(data.Cabinet, c)

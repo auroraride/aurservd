@@ -122,6 +122,8 @@ type RiderItemSubscribe struct {
 	Formula     *string `json:"formula,omitempty"` // 订阅天数计算公式
 	Ebike       *Ebike  `json:"ebike,omitempty"`   // 电车信息
 	Intelligent bool    `json:"intelligent"`       // 是否智能电柜订阅
+	PastDay     int     `json:"pastDay"`           // 骑手当前订阅已使用天数
+	RtoDays     *uint   `json:"rtoDays,omitempty"` // 已租代购天数条件
 }
 
 // RiderItem 骑手信息

@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -43,6 +44,7 @@ type BusinessQuery struct {
 	withCabinet    *CabinetQuery
 	withBattery    *BatteryQuery
 	withAgent      *AgentQuery
+	withRtoEbike   *EbikeQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -322,6 +324,28 @@ func (bq *BusinessQuery) QueryAgent() *AgentQuery {
 	return query
 }
 
+// QueryRtoEbike chains the current query on the "rto_ebike" edge.
+func (bq *BusinessQuery) QueryRtoEbike() *EbikeQuery {
+	query := (&EbikeClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, selector),
+			sqlgraph.To(ebike.Table, ebike.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, business.RtoEbikeTable, business.RtoEbikeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Business entity from the query.
 // Returns a *NotFoundError when no Business was found.
 func (bq *BusinessQuery) First(ctx context.Context) (*Business, error) {
@@ -525,6 +549,7 @@ func (bq *BusinessQuery) Clone() *BusinessQuery {
 		withCabinet:    bq.withCabinet.Clone(),
 		withBattery:    bq.withBattery.Clone(),
 		withAgent:      bq.withAgent.Clone(),
+		withRtoEbike:   bq.withRtoEbike.Clone(),
 		// clone intermediate query.
 		sql:  bq.sql.Clone(),
 		path: bq.path,
@@ -652,6 +677,17 @@ func (bq *BusinessQuery) WithAgent(opts ...func(*AgentQuery)) *BusinessQuery {
 	return bq
 }
 
+// WithRtoEbike tells the query-builder to eager-load the nodes that are connected to
+// the "rto_ebike" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BusinessQuery) WithRtoEbike(opts ...func(*EbikeQuery)) *BusinessQuery {
+	query := (&EbikeClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withRtoEbike = query
+	return bq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -730,7 +766,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 	var (
 		nodes       = []*Business{}
 		_spec       = bq.querySpec()
-		loadedTypes = [11]bool{
+		loadedTypes = [12]bool{
 			bq.withRider != nil,
 			bq.withCity != nil,
 			bq.withSubscribe != nil,
@@ -742,6 +778,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 			bq.withCabinet != nil,
 			bq.withBattery != nil,
 			bq.withAgent != nil,
+			bq.withRtoEbike != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -828,6 +865,12 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 	if query := bq.withAgent; query != nil {
 		if err := bq.loadAgent(ctx, query, nodes, nil,
 			func(n *Business, e *Agent) { n.Edges.Agent = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withRtoEbike; query != nil {
+		if err := bq.loadRtoEbike(ctx, query, nodes, nil,
+			func(n *Business, e *Ebike) { n.Edges.RtoEbike = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1177,6 +1220,38 @@ func (bq *BusinessQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes
 	}
 	return nil
 }
+func (bq *BusinessQuery) loadRtoEbike(ctx context.Context, query *EbikeQuery, nodes []*Business, init func(*Business), assign func(*Business, *Ebike)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Business)
+	for i := range nodes {
+		if nodes[i].RtoEbikeID == nil {
+			continue
+		}
+		fk := *nodes[i].RtoEbikeID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(ebike.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "rto_ebike_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (bq *BusinessQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := bq.querySpec()
@@ -1238,6 +1313,9 @@ func (bq *BusinessQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if bq.withAgent != nil {
 			_spec.Node.AddColumnOnce(business.FieldAgentID)
+		}
+		if bq.withRtoEbike != nil {
+			_spec.Node.AddColumnOnce(business.FieldRtoEbikeID)
 		}
 	}
 	if ps := bq.predicates; len(ps) > 0 {
@@ -1318,6 +1396,7 @@ var (
 	BusinessQueryWithCabinet    BusinessQueryWith = "Cabinet"
 	BusinessQueryWithBattery    BusinessQueryWith = "Battery"
 	BusinessQueryWithAgent      BusinessQueryWith = "Agent"
+	BusinessQueryWithRtoEbike   BusinessQueryWith = "RtoEbike"
 )
 
 func (bq *BusinessQuery) With(withEdges ...BusinessQueryWith) *BusinessQuery {
@@ -1345,6 +1424,8 @@ func (bq *BusinessQuery) With(withEdges ...BusinessQueryWith) *BusinessQuery {
 			bq.WithBattery()
 		case BusinessQueryWithAgent:
 			bq.WithAgent()
+		case BusinessQueryWithRtoEbike:
+			bq.WithRtoEbike()
 		}
 	}
 	return bq

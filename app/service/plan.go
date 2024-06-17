@@ -150,6 +150,9 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 	var bms []string
 	mms := make(map[string]bool)
 	for _, c := range req.Complexes {
+		if req.Type == model.PlanTypeEbikeRto && c.RtoDays == nil {
+			snag.Panic("以租代购最小使用天数必填")
+		}
 		if c.Model == "" {
 			snag.Panic("电池型号必选")
 		}
@@ -209,7 +212,13 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 				SetCommission(cl.Commission).
 				SetDesc(cl.Desc).
 				SetDays(cl.Days).
-				SetDiscountNewly(cl.DiscountNewly)
+				SetDiscountNewly(cl.DiscountNewly).
+				SetOverdueFee(cl.OverdueFee)
+
+			if req.Type == model.PlanTypeEbikeRto && cl.RtoDays != nil {
+				c.SetRtoDays(*cl.RtoDays)
+			}
+
 			if i > 0 {
 				c.SetParent(parent)
 			}
@@ -399,6 +408,8 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 			m[child.Model] = r
 		}
 
+		rtoDays := child.RtoDays
+
 		pc := model.PlanComplex{
 			ID:            child.ID,
 			Price:         child.Price,
@@ -408,6 +419,8 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 			Commission:    child.Commission,
 			Model:         child.Model,
 			DiscountNewly: child.DiscountNewly,
+			RtoDays:       rtoDays,
+			OverdueFee:    child.OverdueFee,
 		}
 
 		if len(child.Edges.Commissions) > 0 {
@@ -786,4 +799,20 @@ func (s *planService) ModifyTime(req *model.PlanModifyTimeReq) {
 		SetEnd(carbon.CreateFromStdTime(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().ToStdTime()).
 		SetStart(tools.NewTime().ParseDateStringX(req.Start)).
 		ExecX(s.ctx)
+}
+
+// PlanCity 查询套餐城市
+func (s *planService) PlanCity(id uint64) (res []uint64, err error) {
+	pl, _ := s.orm.QueryNotDeleted().Where(plan.ID(id)).WithCities().First(s.ctx)
+	if pl == nil {
+		return nil, fmt.Errorf("套餐不存在")
+	}
+	if pl.Edges.Cities == nil {
+		return nil, fmt.Errorf("套餐城市不存在")
+	}
+
+	for _, v := range pl.Edges.Cities {
+		res = append(res, v.ID)
+	}
+	return res, nil
 }

@@ -11,9 +11,12 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/auroraride/adapter/log"
 	"github.com/go-resty/resty/v2"
 	jsoniter "github.com/json-iterator/go"
+	"go.uber.org/zap"
 
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/utils"
@@ -22,6 +25,7 @@ import (
 const (
 	mapBaseUrl = "https://api.map.baidu.com"
 	ridingUrl  = `/direction/v2/riding?ak=%s&destination=%s&origin=%s`
+	rectifyUrl = `/rectify/v1/track`
 )
 
 type mapClient struct {
@@ -38,6 +42,10 @@ func NewMap() *mapClient {
 		apiKey: cfg.ApiKey,
 	}
 }
+
+const (
+	MapCoordType = "gcj02"
+)
 
 // var keys = map[string]string{
 // 	"%21": "!",
@@ -69,6 +77,14 @@ func (c *mapClient) getSignedUrl(u string) string {
 	v.Add("sn", sn)
 	result := fmt.Sprintf("%s%s?%s", mapBaseUrl, x.Path, v.Encode())
 	return result
+}
+
+func (c *mapClient) getSignedSn(u string) string {
+	x, _ := url.Parse(u)
+	v := x.Query()
+	str := x.Path + "?" + v.Encode() + c.sk
+	sn := utils.Md5String(url.QueryEscape(str))
+	return sn
 }
 
 type MapRes[T any] struct {
@@ -152,6 +168,32 @@ type Riding struct {
 	} `json:"destination,omitempty"`
 }
 
+type Rectify struct {
+	Status           int      `json:"status"`
+	Message          string   `json:"message"`
+	Total            int      `json:"total"`
+	Distance         float64  `json:"distance"`
+	TollDistance     int      `json:"toll_distance"`
+	LowSpeedDistance int      `json:"low_speed_distance"`
+	Points           []Points `json:"points"`
+}
+type Points struct {
+	LocTime   int     `json:"loc_time"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Speed     float64 `json:"speed"`
+	Direction float64 `json:"direction"`
+}
+
+type Point struct {
+	LocTime        int32   `json:"loc_time"`
+	Longitude      float64 `json:"longitude"`
+	Latitude       float64 `json:"latitude"`
+	CoordTypeInput string  `json:"coord_type_input"`
+}
+
+type Track []Point
+
 func (c *mapClient) Riding(origin, destination string) (*Riding, error) {
 	u := fmt.Sprintf(ridingUrl+"&riding_type=1&timestamp=%d", c.ak, destination, origin, time.Now().Unix())
 	var res MapRes[*Riding]
@@ -197,4 +239,48 @@ func (c *mapClient) RidingPlanX(origin, destination string) (seconds int, distan
 		snag.Panic(err)
 	}
 	return
+}
+
+// TrackRectify 轨迹纠偏
+func (c *mapClient) TrackRectify(req Track) (res *model.BatteryTrackRes, err error) {
+	uri := fmt.Sprintf(mapBaseUrl + rectifyUrl)
+	rectify := new(Rectify)
+	res = new(model.BatteryTrackRes)
+	// 纠偏参数
+	option := "need_mapmatch:1|transport_mode:riding|denoise_grade:1|vacuate_grade:1"
+	pointList, err := jsoniter.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+	u := fmt.Sprintf(uri+"?point_list=%s&rectify_option=%s&coord_type_output=%s&ak=%s", string(pointList), option, MapCoordType, c.ak)
+	var r *resty.Response
+	r, err = resty.New().R().
+		SetFormData(map[string]string{
+			"point_list":        string(pointList),
+			"rectify_option":    option,
+			"ak":                c.ak,
+			"sn":                c.getSignedSn(u),
+			"coord_type_output": MapCoordType,
+		}).
+		Post(uri)
+	if err != nil {
+		return nil, err
+	}
+	zap.L().Info("获取轨迹纠偏", log.ResponseBody(r.Body()))
+	_ = jsoniter.Unmarshal(r.Body(), &rectify)
+	if rectify == nil || rectify != nil && rectify.Status != 0 {
+		return nil, fmt.Errorf("获取轨迹纠偏失败: %s", rectify.Message)
+	}
+
+	points := make([]model.BatteryPoint, 0, len(rectify.Points))
+	for _, l := range rectify.Points {
+		points = append(points,
+			model.BatteryPoint{
+				LocTime:   int32(l.LocTime),
+				Longitude: l.Longitude,
+				Latitude:  l.Latitude,
+			})
+	}
+	res.Points = points
+	return res, nil
 }

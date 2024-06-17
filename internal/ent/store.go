@@ -59,9 +59,13 @@ type Store struct {
 	// 是否可以购买车辆
 	EbikeSale bool `json:"ebike_sale,omitempty"`
 	// 是否拥有驿站
-	EbikeStage bool `json:"ebike_stage,omitempty"`
+	Rest bool `json:"rest,omitempty"`
 	// 营业时间
 	BusinessHours string `json:"business_hours,omitempty"`
+	// 门店照片
+	Photos []string `json:"photos,omitempty"`
+	// 门店电话
+	Phone string `json:"phone,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StoreQuery when eager-loading is set.
 	Edges        StoreEdges `json:"edges"`
@@ -82,9 +86,11 @@ type StoreEdges struct {
 	Attendances []*Attendance `json:"attendances,omitempty"`
 	// Exceptions holds the value of the exceptions edge.
 	Exceptions []*Exception `json:"exceptions,omitempty"`
+	// Goods holds the value of the goods edge.
+	Goods []*StoreGoods `json:"goods,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [7]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -147,20 +153,29 @@ func (e StoreEdges) ExceptionsOrErr() ([]*Exception, error) {
 	return nil, &NotLoadedError{edge: "exceptions"}
 }
 
+// GoodsOrErr returns the Goods value or an error if the edge
+// was not loaded in eager-loading.
+func (e StoreEdges) GoodsOrErr() ([]*StoreGoods, error) {
+	if e.loadedTypes[6] {
+		return e.Goods, nil
+	}
+	return nil, &NotLoadedError{edge: "goods"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Store) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case store.FieldCreator, store.FieldLastModifier:
+		case store.FieldCreator, store.FieldLastModifier, store.FieldPhotos:
 			values[i] = new([]byte)
-		case store.FieldEbikeObtain, store.FieldEbikeRepair, store.FieldEbikeSale, store.FieldEbikeStage:
+		case store.FieldEbikeObtain, store.FieldEbikeRepair, store.FieldEbikeSale, store.FieldRest:
 			values[i] = new(sql.NullBool)
 		case store.FieldLng, store.FieldLat:
 			values[i] = new(sql.NullFloat64)
 		case store.FieldID, store.FieldCityID, store.FieldEmployeeID, store.FieldBranchID, store.FieldStatus:
 			values[i] = new(sql.NullInt64)
-		case store.FieldRemark, store.FieldSn, store.FieldName, store.FieldAddress, store.FieldBusinessHours:
+		case store.FieldRemark, store.FieldSn, store.FieldName, store.FieldAddress, store.FieldBusinessHours, store.FieldPhone:
 			values[i] = new(sql.NullString)
 		case store.FieldCreatedAt, store.FieldUpdatedAt, store.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -299,17 +314,31 @@ func (s *Store) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.EbikeSale = value.Bool
 			}
-		case store.FieldEbikeStage:
+		case store.FieldRest:
 			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field ebike_stage", values[i])
+				return fmt.Errorf("unexpected type %T for field rest", values[i])
 			} else if value.Valid {
-				s.EbikeStage = value.Bool
+				s.Rest = value.Bool
 			}
 		case store.FieldBusinessHours:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field business_hours", values[i])
 			} else if value.Valid {
 				s.BusinessHours = value.String
+			}
+		case store.FieldPhotos:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field photos", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &s.Photos); err != nil {
+					return fmt.Errorf("unmarshal field photos: %w", err)
+				}
+			}
+		case store.FieldPhone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field phone", values[i])
+			} else if value.Valid {
+				s.Phone = value.String
 			}
 		default:
 			s.selectValues.Set(columns[i], values[i])
@@ -352,6 +381,11 @@ func (s *Store) QueryAttendances() *AttendanceQuery {
 // QueryExceptions queries the "exceptions" edge of the Store entity.
 func (s *Store) QueryExceptions() *ExceptionQuery {
 	return NewStoreClient(s.config).QueryExceptions(s)
+}
+
+// QueryGoods queries the "goods" edge of the Store entity.
+func (s *Store) QueryGoods() *StoreGoodsQuery {
+	return NewStoreClient(s.config).QueryGoods(s)
 }
 
 // Update returns a builder for updating this Store.
@@ -435,11 +469,17 @@ func (s *Store) String() string {
 	builder.WriteString("ebike_sale=")
 	builder.WriteString(fmt.Sprintf("%v", s.EbikeSale))
 	builder.WriteString(", ")
-	builder.WriteString("ebike_stage=")
-	builder.WriteString(fmt.Sprintf("%v", s.EbikeStage))
+	builder.WriteString("rest=")
+	builder.WriteString(fmt.Sprintf("%v", s.Rest))
 	builder.WriteString(", ")
 	builder.WriteString("business_hours=")
 	builder.WriteString(s.BusinessHours)
+	builder.WriteString(", ")
+	builder.WriteString("photos=")
+	builder.WriteString(fmt.Sprintf("%v", s.Photos))
+	builder.WriteString(", ")
+	builder.WriteString("phone=")
+	builder.WriteString(s.Phone)
 	builder.WriteByte(')')
 	return builder.String()
 }

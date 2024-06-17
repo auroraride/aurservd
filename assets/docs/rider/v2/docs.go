@@ -477,6 +477,36 @@ const docTemplate = `{
                         "description": "电池型号",
                         "name": "model",
                         "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "StoreBusinessTypeObtain": "领取车辆(租车)",
+                            "StoreBusinessTypeRepair": "维修",
+                            "StoreBusinessTypeRest": "驿站",
+                            "StoreBusinessTypeSale": "购买"
+                        },
+                        "x-enum-varnames": [
+                            "StoreBusinessTypeObtain",
+                            "StoreBusinessTypeRepair",
+                            "StoreBusinessTypeSale",
+                            "StoreBusinessTypeRest"
+                        ],
+                        "description": "门店业务 0-全部 1-租车，2-修车，3-买车，4-驿站 （首页地图不要传入此值）",
+                        "name": "storeBusiness",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店状态 0-全部 1-营业 2-休息 （首页地图不要传入此值）",
+                        "name": "storeStatus",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1277,6 +1307,45 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/definition.ContractSignNewRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/contract/{docId}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Contract - 合同"
+                ],
+                "summary": "查看合同",
+                "operationId": "ContractDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "合同ID",
+                        "name": "docId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.ContractDetailRes"
                         }
                     }
                 }
@@ -2202,6 +2271,88 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/goods": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Goods - 商品"
+                ],
+                "summary": "商品列表",
+                "operationId": "GoodsList",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "城市ID, 城市ID",
+                        "name": "cityId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            1
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "GoodsTypeEbike": "电车"
+                        },
+                        "x-enum-varnames": [
+                            "GoodsTypeEbike"
+                        ],
+                        "description": "商品类型, 商品类型 1-电车",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.GoodsDetail"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/goods/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Goods - 商品"
+                ],
+                "summary": "商品详情",
+                "operationId": "GoodsDetail",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "商品ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.GoodsDetail"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/instructions/{key}": {
             "get": {
                 "consumes": [
@@ -2264,7 +2415,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "微信code",
+                        "description": "支付宝code",
                         "name": "code",
                         "in": "query",
                         "required": true
@@ -2275,6 +2426,47 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.OpenidRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/mobpush": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rider - 骑手"
+                ],
+                "summary": "设置推送ID",
+                "operationId": "RiderSetMobPush",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.RiderSetMobPushReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -2565,6 +2757,12 @@ const docTemplate = `{
                         "name": "cityId",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2609,6 +2807,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/plan/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Plan - 骑士卡"
+                ],
+                "summary": "骑士卡详情",
+                "operationId": "PlanDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑士卡ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.PlanDetailRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/profile": {
             "get": {
                 "consumes": [
@@ -2635,7 +2872,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.RiderSigninRes"
+                            "$ref": "#/definitions/definition.RiderSigninRes"
                         }
                     }
                 }
@@ -2982,7 +3219,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.RiderSigninRes"
+                            "$ref": "#/definitions/definition.RiderSigninRes"
                         }
                     }
                 }
@@ -3003,6 +3240,30 @@ const docTemplate = `{
                 "operationId": "StoreList",
                 "parameters": [
                     {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "StoreBusinessTypeObtain": "领取车辆(租车)",
+                            "StoreBusinessTypeRepair": "维修",
+                            "StoreBusinessTypeRest": "驿站",
+                            "StoreBusinessTypeSale": "购买"
+                        },
+                        "x-enum-varnames": [
+                            "StoreBusinessTypeObtain",
+                            "StoreBusinessTypeRepair",
+                            "StoreBusinessTypeSale",
+                            "StoreBusinessTypeRest"
+                        ],
+                        "description": "门店业务 1租车 2修车 3买车 4驿站",
+                        "name": "businessType",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "城市ID",
                         "name": "cityId",
@@ -3012,6 +3273,12 @@ const docTemplate = `{
                         "type": "number",
                         "description": "距离",
                         "name": "distance",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
                         "in": "query"
                     },
                     {
@@ -3035,7 +3302,25 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
                         "type": "integer",
+                        "x-enum-comments": {
+                            "StoreStatusClose": "休息中",
+                            "StoreStatusHidden": "隐藏",
+                            "StoreStatusMaintain": "维护中",
+                            "StoreStatusOpen": "营业中"
+                        },
+                        "x-enum-varnames": [
+                            "StoreStatusMaintain",
+                            "StoreStatusOpen",
+                            "StoreStatusClose",
+                            "StoreStatusHidden"
+                        ],
                         "description": "门店状态 0维护 1营业 2休息 3隐藏",
                         "name": "status",
                         "in": "query"
@@ -3560,8 +3845,16 @@ const docTemplate = `{
                     "description": "距离",
                     "type": "number"
                 },
+                "emptyBinNum": {
+                    "description": "可用空仓数量",
+                    "type": "integer"
+                },
                 "emptyNum": {
                     "description": "空仓数量",
+                    "type": "integer"
+                },
+                "exchangNum": {
+                    "description": "可换电池数量",
                     "type": "integer"
                 },
                 "fid": {
@@ -3647,6 +3940,15 @@ const docTemplate = `{
                 "needRealName": {
                     "description": "是否需要实名认证   true:需要  false:不需要",
                     "type": "boolean"
+                }
+            }
+        },
+        "definition.ContractDetailRes": {
+            "type": "object",
+            "properties": {
+                "link": {
+                    "description": "合同链接",
+                    "type": "string"
                 }
             }
         },
@@ -3765,6 +4067,120 @@ const docTemplate = `{
                 "FaultTypeOther"
             ]
         },
+        "definition.GoodsDetail": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "headPic": {
+                    "description": "商品头图",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "intro": {
+                    "description": "商品介绍",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "lables": {
+                    "description": "商品标签",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "description": "商品名称",
+                    "type": "string"
+                },
+                "photos": {
+                    "description": "商品图片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "description": "商品价格",
+                    "type": "number"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "商品编号",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "商品状态 0-已下架 1-已上架",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.GoodsStatus"
+                        }
+                    ]
+                },
+                "storeIds": {
+                    "description": "门店Ids",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "stores": {
+                    "description": "配置店铺信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Store"
+                    }
+                },
+                "type": {
+                    "description": "商品类型 1-电车",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.GoodsType"
+                        }
+                    ]
+                },
+                "weight": {
+                    "description": "商品权重",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.GoodsStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1
+            ],
+            "x-enum-comments": {
+                "GoodsStatusOffline": "下架",
+                "GoodsStatusOnline": "上架"
+            },
+            "x-enum-varnames": [
+                "GoodsStatusOffline",
+                "GoodsStatusOnline"
+            ]
+        },
+        "definition.GoodsType": {
+            "type": "integer",
+            "enum": [
+                1
+            ],
+            "x-enum-comments": {
+                "GoodsTypeEbike": "电车"
+            },
+            "x-enum-varnames": [
+                "GoodsTypeEbike"
+            ]
+        },
         "definition.InstructionsRes": {
             "type": "object",
             "properties": {
@@ -3808,7 +4224,7 @@ const docTemplate = `{
                     }
                 },
                 "depositAlipayAuthFreeze": {
-                    "description": "以下字段仅限V2使用",
+                    "description": "是否使用支付宝预授权信用分支付押金 \t// 以下字段仅限V2使用",
                     "type": "boolean"
                 },
                 "depositOrderNo": {
@@ -4038,6 +4454,46 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.PlanDetailRes": {
+            "type": "object",
+            "properties": {
+                "days": {
+                    "description": "骑士卡天数",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "骑士卡ID",
+                    "type": "integer"
+                },
+                "intelligent": {
+                    "description": "是否智能电柜套餐",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "骑士卡名称",
+                    "type": "string"
+                },
+                "notes": {
+                    "description": "购买须知",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "description": "售价",
+                    "type": "number"
+                },
+                "type": {
+                    "description": "类别",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PlanType"
+                        }
+                    ]
+                }
+            }
+        },
         "definition.PlanNewlyRes": {
             "type": "object",
             "properties": {
@@ -4077,6 +4533,13 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.PlanModelOption"
+                    }
+                },
+                "rtoBrands": {
+                    "description": "以租代购车电选项",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanEbikeBrandOption"
                     }
                 }
             }
@@ -4169,11 +4632,120 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.RiderSignupReq": {
+        "definition.RiderSetMobPushReq": {
             "type": "object",
             "required": [
-                "signinType"
+                "pushId"
             ],
+            "properties": {
+                "pushId": {
+                    "description": "骑手推送ID",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.RiderSigninRes": {
+            "type": "object",
+            "properties": {
+                "cabinetBusiness": {
+                    "description": "是否可以自主使用电柜办理业务",
+                    "type": "boolean"
+                },
+                "contact": {
+                    "description": "联系人",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderContact"
+                        }
+                    ]
+                },
+                "contractDocId": {
+                    "description": "签署合同编号",
+                    "type": "string"
+                },
+                "deposit": {
+                    "description": "需缴押金",
+                    "type": "number"
+                },
+                "enterprise": {
+                    "description": "所属企业",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Enterprise"
+                        }
+                    ]
+                },
+                "enterpriseContact": {
+                    "description": "团签联系方式",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseContact"
+                        }
+                    ]
+                },
+                "exitEnterprise": {
+                    "description": "判断能否退出团签",
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isAuthed": {
+                    "description": "是否已认证",
+                    "type": "boolean"
+                },
+                "isContactFilled": {
+                    "description": "联系人是否添加",
+                    "type": "boolean"
+                },
+                "isNewDevice": {
+                    "description": "是否新设备",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "姓名, 实名认证后才会有",
+                    "type": "string"
+                },
+                "orderNotActived": {
+                    "description": "是否存在未激活订单",
+                    "type": "boolean"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "qrcode": {
+                    "description": "二维码",
+                    "type": "string"
+                },
+                "station": {
+                    "description": "站点",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseStation"
+                        }
+                    ]
+                },
+                "subscribe": {
+                    "description": "骑士卡",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Subscribe"
+                        }
+                    ]
+                },
+                "token": {
+                    "description": "认证token",
+                    "type": "string"
+                },
+                "useStore": {
+                    "description": "是否可使用门店办理业务",
+                    "type": "boolean"
+                }
+            }
+        },
+        "definition.RiderSignupReq": {
+            "type": "object",
             "properties": {
                 "authCode": {
                     "description": "授权码",
@@ -4181,11 +4753,7 @@ const docTemplate = `{
                 },
                 "authType": {
                     "description": "授权类型 1:微信 2:支付宝",
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
+                    "type": "integer"
                 },
                 "encryptedData": {
                     "description": "支付宝获取手机加密数据",
@@ -4197,11 +4765,7 @@ const docTemplate = `{
                 },
                 "signinType": {
                     "description": "登录类型 1:短信登录 2:授权登录",
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
+                    "type": "integer"
                 },
                 "smsCode": {
                     "description": "验证码, 验证码",
@@ -4219,6 +4783,13 @@ const docTemplate = `{
                 "address": {
                     "description": "地址",
                     "type": "string"
+                },
+                "brands": {
+                    "description": "租车车电选项",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanEbikeBrandOption"
+                    }
                 },
                 "businessHours": {
                     "description": "营业时间",
@@ -4248,10 +4819,6 @@ const docTemplate = `{
                     "description": "是否可以买车",
                     "type": "boolean"
                 },
-                "ebikeStage": {
-                    "description": "是否拥有驿站",
-                    "type": "boolean"
-                },
                 "employee": {
                     "description": "店员, 有可能不存在",
                     "allOf": [
@@ -4276,9 +4843,42 @@ const docTemplate = `{
                     "description": "门店名称",
                     "type": "string"
                 },
+                "phone": {
+                    "description": "门店电话",
+                    "type": "string"
+                },
+                "photos": {
+                    "description": "门店照片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "rest": {
+                    "description": "是否拥有驿站",
+                    "type": "boolean"
+                },
+                "rtoBrands": {
+                    "description": "以租代购车电选项",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanEbikeBrandOption"
+                    }
+                },
+                "saleGoods": {
+                    "description": "买车列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.GoodsDetail"
+                    }
+                },
                 "status": {
-                    "description": "状态",
-                    "type": "integer"
+                    "description": "门店状态 0维护 1营业 2休息 3隐藏",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreStatus"
+                        }
+                    ]
                 }
             }
         },
@@ -4316,6 +4916,10 @@ const docTemplate = `{
                 },
                 "createdAt": {
                     "description": "创建时间",
+                    "type": "string"
+                },
+                "downloadLink": {
+                    "description": "下载链接(Android)",
                     "type": "string"
                 },
                 "force": {
@@ -4592,6 +5196,14 @@ const docTemplate = `{
                     "description": "电柜数量",
                     "type": "integer"
                 },
+                "emptyBinNum": {
+                    "description": "可用空仓数量",
+                    "type": "integer"
+                },
+                "exchangNum": {
+                    "description": "可换电池数量",
+                    "type": "integer"
+                },
                 "fid": {
                     "description": "设施标识",
                     "type": "string"
@@ -4620,8 +5232,12 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "type": {
-                    "description": "类别",
-                    "type": "string"
+                    "description": "类别  all:全部 store-门店 v72-v72电柜 v60-v60电柜 rest-驿站门店",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.BranchFacilityType"
+                        }
+                    ]
                 }
             }
         },
@@ -4693,8 +5309,16 @@ const docTemplate = `{
                     "description": "充电数量",
                     "type": "integer"
                 },
+                "emptyBinNum": {
+                    "description": "可用空仓数量",
+                    "type": "integer"
+                },
+                "exchangNum": {
+                    "description": "可换电池数量",
+                    "type": "integer"
+                },
                 "fully": {
-                    "description": "可换数量",
+                    "description": "满电数量",
                     "type": "integer"
                 },
                 "voltage": {
@@ -4794,6 +5418,23 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.BranchFacilityType": {
+            "type": "string",
+            "enum": [
+                "all",
+                "store",
+                "v72",
+                "v60",
+                "rest"
+            ],
+            "x-enum-varnames": [
+                "BranchFacilityTypeAll",
+                "BranchFacilityTypeStore",
+                "BranchFacilityTypeV72",
+                "BranchFacilityTypeV60",
+                "BranchFacilityTypeRest"
+            ]
         },
         "model.BranchRidingRes": {
             "type": "object",
@@ -5674,6 +6315,10 @@ const docTemplate = `{
         "model.FeedbackDetail": {
             "type": "object",
             "properties": {
+                "cityName": {
+                    "description": "城市名称",
+                    "type": "string"
+                },
                 "content": {
                     "description": "反馈内容",
                     "type": "string"
@@ -5716,6 +6361,14 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "versionInfo": {
+                    "description": "版本信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.VersionInfo"
+                        }
+                    ]
                 }
             }
         },
@@ -5726,6 +6379,10 @@ const docTemplate = `{
                 "type"
             ],
             "properties": {
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
                 "content": {
                     "description": "反馈内容",
                     "type": "string"
@@ -5740,6 +6397,14 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "versionInfo": {
+                    "description": "版本信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.VersionInfo"
+                        }
+                    ]
                 }
             }
         },
@@ -6120,6 +6785,10 @@ const docTemplate = `{
                 "price": {
                     "description": "价格, 应支付价格 = 价格 - 新签优惠",
                     "type": "number"
+                },
+                "rtoDays": {
+                    "description": "以租代购最小使用天数",
+                    "type": "integer"
                 }
             }
         },
@@ -6174,15 +6843,18 @@ const docTemplate = `{
             "type": "integer",
             "enum": [
                 1,
-                2
+                2,
+                3
             ],
             "x-enum-comments": {
                 "PlanTypeBattery": "单电",
+                "PlanTypeEbikeRto": "以租代购",
                 "PlanTypeEbikeWithBattery": "车加电"
             },
             "x-enum-varnames": [
                 "PlanTypeBattery",
-                "PlanTypeEbikeWithBattery"
+                "PlanTypeEbikeWithBattery",
+                "PlanTypeEbikeRto"
             ]
         },
         "model.PointLogListRes": {
@@ -6634,102 +7306,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.RiderSigninRes": {
-            "type": "object",
-            "properties": {
-                "cabinetBusiness": {
-                    "description": "是否可以自主使用电柜办理业务",
-                    "type": "boolean"
-                },
-                "contact": {
-                    "description": "联系人",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.RiderContact"
-                        }
-                    ]
-                },
-                "deposit": {
-                    "description": "需缴押金",
-                    "type": "number"
-                },
-                "enterprise": {
-                    "description": "所属企业",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.Enterprise"
-                        }
-                    ]
-                },
-                "enterpriseContact": {
-                    "description": "团签联系方式",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.EnterpriseContact"
-                        }
-                    ]
-                },
-                "exitEnterprise": {
-                    "description": "判断能否退出团签",
-                    "type": "boolean"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "isAuthed": {
-                    "description": "是否已认证",
-                    "type": "boolean"
-                },
-                "isContactFilled": {
-                    "description": "联系人是否添加",
-                    "type": "boolean"
-                },
-                "isNewDevice": {
-                    "description": "是否新设备",
-                    "type": "boolean"
-                },
-                "name": {
-                    "description": "姓名, 实名认证后才会有",
-                    "type": "string"
-                },
-                "orderNotActived": {
-                    "description": "是否存在未激活订单",
-                    "type": "boolean"
-                },
-                "phone": {
-                    "description": "电话",
-                    "type": "string"
-                },
-                "qrcode": {
-                    "description": "二维码",
-                    "type": "string"
-                },
-                "station": {
-                    "description": "站点",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.EnterpriseStation"
-                        }
-                    ]
-                },
-                "subscribe": {
-                    "description": "骑士卡",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.Subscribe"
-                        }
-                    ]
-                },
-                "token": {
-                    "description": "认证token",
-                    "type": "string"
-                },
-                "useStore": {
-                    "description": "是否可使用门店办理业务",
-                    "type": "boolean"
-                }
-            }
-        },
         "model.SettingPlanDescription": {
             "type": "object",
             "properties": {
@@ -6797,6 +7373,27 @@ const docTemplate = `{
                 }
             }
         },
+        "model.StoreBusinessType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "x-enum-comments": {
+                "StoreBusinessTypeObtain": "领取车辆(租车)",
+                "StoreBusinessTypeRepair": "维修",
+                "StoreBusinessTypeRest": "驿站",
+                "StoreBusinessTypeSale": "购买"
+            },
+            "x-enum-varnames": [
+                "StoreBusinessTypeObtain",
+                "StoreBusinessTypeRepair",
+                "StoreBusinessTypeSale",
+                "StoreBusinessTypeRest"
+            ]
+        },
         "model.StoreLngLat": {
             "type": "object",
             "properties": {
@@ -6814,6 +7411,27 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.StoreStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "StoreStatusClose": "休息中",
+                "StoreStatusHidden": "隐藏",
+                "StoreStatusMaintain": "维护中",
+                "StoreStatusOpen": "营业中"
+            },
+            "x-enum-varnames": [
+                "StoreStatusMaintain",
+                "StoreStatusOpen",
+                "StoreStatusClose",
+                "StoreStatusHidden"
+            ]
         },
         "model.Subscribe": {
             "type": "object",
@@ -7048,6 +7666,27 @@ const docTemplate = `{
                 "TaskStatusSuccess",
                 "TaskStatusFail"
             ]
+        },
+        "model.VersionInfo": {
+            "type": "object",
+            "properties": {
+                "buildTime": {
+                    "description": "编译时间",
+                    "type": "string"
+                },
+                "ciJobId": {
+                    "description": "CI任务ID",
+                    "type": "string"
+                },
+                "commitId": {
+                    "description": "提交ID",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "string"
+                }
+            }
         },
         "model.WalletOverview": {
             "type": "object",

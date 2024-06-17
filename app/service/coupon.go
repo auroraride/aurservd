@@ -330,12 +330,12 @@ func (s *couponService) Allocate(req *model.CouponAllocateReq) {
 func (s *couponService) RiderDetail(item *ent.Coupon) (res model.CouponRider) {
 	res = model.CouponRider{
 		Name:      item.Name,
-		ExpiredAt: item.ExpiresAt.Format("2006.1.2 15:04:05"),
+		ExpiredAt: item.ExpiresAt.Format(time.DateTime),
 		Amount:    item.Amount,
 		Code:      model.CouponCode(item.Code).Humanity(),
 	}
 	if item.UsedAt != nil {
-		res.UsedAt = item.UsedAt.Format("2006.1.2 15:04:05")
+		res.UsedAt = item.UsedAt.Format(time.DateTime)
 	}
 
 	isExclusive := item.Rule == model.CouponRuleExclusive.Value()

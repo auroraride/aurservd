@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
@@ -44,6 +45,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
+	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/instructions"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -80,6 +82,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -388,6 +391,21 @@ func init() {
 	cabinetDescLockedBinNum := cabinetFields[23].Descriptor()
 	// cabinet.DefaultLockedBinNum holds the default value on creation for the locked_bin_num field.
 	cabinet.DefaultLockedBinNum = cabinetDescLockedBinNum.Default.(int)
+	cabinetecMixin := schema.CabinetEc{}.Mixin()
+	cabinetecMixinFields0 := cabinetecMixin[0].Fields()
+	_ = cabinetecMixinFields0
+	cabinetecFields := schema.CabinetEc{}.Fields()
+	_ = cabinetecFields
+	// cabinetecDescCreatedAt is the schema descriptor for created_at field.
+	cabinetecDescCreatedAt := cabinetecMixinFields0[0].Descriptor()
+	// cabinetec.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cabinetec.DefaultCreatedAt = cabinetecDescCreatedAt.Default.(func() time.Time)
+	// cabinetecDescUpdatedAt is the schema descriptor for updated_at field.
+	cabinetecDescUpdatedAt := cabinetecMixinFields0[1].Descriptor()
+	// cabinetec.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cabinetec.DefaultUpdatedAt = cabinetecDescUpdatedAt.Default.(func() time.Time)
+	// cabinetec.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cabinetec.UpdateDefaultUpdatedAt = cabinetecDescUpdatedAt.UpdateDefault.(func() time.Time)
 	cabinetfaultMixin := schema.CabinetFault{}.Mixin()
 	cabinetfaultMixinHooks2 := cabinetfaultMixin[2].Hooks()
 	cabinetfault.Hooks[0] = cabinetfaultMixinHooks2[0]
@@ -966,6 +984,31 @@ func init() {
 	feedbackDescSource := feedbackFields[2].Descriptor()
 	// feedback.DefaultSource holds the default value on creation for the source field.
 	feedback.DefaultSource = feedbackDescSource.Default.(uint8)
+	goodsMixin := schema.Goods{}.Mixin()
+	goodsMixinHooks2 := goodsMixin[2].Hooks()
+	goods.Hooks[0] = goodsMixinHooks2[0]
+	goodsMixinFields0 := goodsMixin[0].Fields()
+	_ = goodsMixinFields0
+	goodsFields := schema.Goods{}.Fields()
+	_ = goodsFields
+	// goodsDescCreatedAt is the schema descriptor for created_at field.
+	goodsDescCreatedAt := goodsMixinFields0[0].Descriptor()
+	// goods.DefaultCreatedAt holds the default value on creation for the created_at field.
+	goods.DefaultCreatedAt = goodsDescCreatedAt.Default.(func() time.Time)
+	// goodsDescUpdatedAt is the schema descriptor for updated_at field.
+	goodsDescUpdatedAt := goodsMixinFields0[1].Descriptor()
+	// goods.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	goods.DefaultUpdatedAt = goodsDescUpdatedAt.Default.(func() time.Time)
+	// goods.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	goods.UpdateDefaultUpdatedAt = goodsDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// goodsDescType is the schema descriptor for type field.
+	goodsDescType := goodsFields[2].Descriptor()
+	// goods.DefaultType holds the default value on creation for the type field.
+	goods.DefaultType = goodsDescType.Default.(uint8)
+	// goodsDescStatus is the schema descriptor for status field.
+	goodsDescStatus := goodsFields[9].Descriptor()
+	// goods.DefaultStatus holds the default value on creation for the status field.
+	goods.DefaultStatus = goodsDescStatus.Default.(uint8)
 	instructionsMixin := schema.Instructions{}.Mixin()
 	instructionsMixinHooks2 := instructionsMixin[2].Hooks()
 	instructions.Hooks[0] = instructionsMixinHooks2[0]
@@ -1171,6 +1214,10 @@ func init() {
 	planDescDepositPay := planFields[20].Descriptor()
 	// plan.DefaultDepositPay holds the default value on creation for the deposit_pay field.
 	plan.DefaultDepositPay = planDescDepositPay.Default.(bool)
+	// planDescOverdueFee is the schema descriptor for overdue_fee field.
+	planDescOverdueFee := planFields[22].Descriptor()
+	// plan.DefaultOverdueFee holds the default value on creation for the overdue_fee field.
+	plan.DefaultOverdueFee = planDescOverdueFee.Default.(float64)
 	planintroduceMixin := schema.PlanIntroduce{}.Mixin()
 	planintroduceMixinFields0 := planintroduceMixin[0].Fields()
 	_ = planintroduceMixinFields0
@@ -1839,10 +1886,31 @@ func init() {
 	storeDescEbikeSale := storeFields[10].Descriptor()
 	// store.DefaultEbikeSale holds the default value on creation for the ebike_sale field.
 	store.DefaultEbikeSale = storeDescEbikeSale.Default.(bool)
-	// storeDescEbikeStage is the schema descriptor for ebike_stage field.
-	storeDescEbikeStage := storeFields[11].Descriptor()
-	// store.DefaultEbikeStage holds the default value on creation for the ebike_stage field.
-	store.DefaultEbikeStage = storeDescEbikeStage.Default.(bool)
+	// storeDescRest is the schema descriptor for rest field.
+	storeDescRest := storeFields[11].Descriptor()
+	// store.DefaultRest holds the default value on creation for the rest field.
+	store.DefaultRest = storeDescRest.Default.(bool)
+	// storeDescPhone is the schema descriptor for phone field.
+	storeDescPhone := storeFields[14].Descriptor()
+	// store.DefaultPhone holds the default value on creation for the phone field.
+	store.DefaultPhone = storeDescPhone.Default.(string)
+	// store.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
+	store.PhoneValidator = storeDescPhone.Validators[0].(func(string) error)
+	storegoodsMixin := schema.StoreGoods{}.Mixin()
+	storegoodsMixinFields0 := storegoodsMixin[0].Fields()
+	_ = storegoodsMixinFields0
+	storegoodsFields := schema.StoreGoods{}.Fields()
+	_ = storegoodsFields
+	// storegoodsDescCreatedAt is the schema descriptor for created_at field.
+	storegoodsDescCreatedAt := storegoodsMixinFields0[0].Descriptor()
+	// storegoods.DefaultCreatedAt holds the default value on creation for the created_at field.
+	storegoods.DefaultCreatedAt = storegoodsDescCreatedAt.Default.(func() time.Time)
+	// storegoodsDescUpdatedAt is the schema descriptor for updated_at field.
+	storegoodsDescUpdatedAt := storegoodsMixinFields0[1].Descriptor()
+	// storegoods.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	storegoods.DefaultUpdatedAt = storegoodsDescUpdatedAt.Default.(func() time.Time)
+	// storegoods.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	storegoods.UpdateDefaultUpdatedAt = storegoodsDescUpdatedAt.UpdateDefault.(func() time.Time)
 	subscribeMixin := schema.Subscribe{}.Mixin()
 	subscribeMixinHooks2 := subscribeMixin[2].Hooks()
 	subscribeHooks := schema.Subscribe{}.Hooks()

@@ -81,13 +81,16 @@ func (*subscribe) Halt(c echo.Context) (err error) {
 	service.NewBusinessRider(nil).
 		SetModifier(ctx.Modifier).
 		SetCabinetID(req.CabinetID).
-		SetStoreID(req.StoreID).
+		SetEbikeStoreID(req.EbikeStoreID).
+		SetBatStoreID(req.BatStoreID).
 		UnSubscribe(
 			&model.BusinessSubscribeReq{
 				ID:            req.ID,
 				RefundDeposit: req.RefundDeposit,
 				DepositAmount: req.DepositAmount,
 				Remark:        req.Remark,
+				Rto:           req.Rto,
+				RtoRemark:     req.RtoRemark,
 			},
 		)
 	return ctx.SendResponse()

@@ -136,6 +136,11 @@ func ExFactory(v string) predicate.Ebike {
 	return predicate.Ebike(sql.FieldEQ(FieldExFactory, v))
 }
 
+// RtoRiderID applies equality check predicate on the "rto_rider_id" field. It's identical to RtoRiderIDEQ.
+func RtoRiderID(v uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldEQ(FieldRtoRiderID, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Ebike {
 	return predicate.Ebike(sql.FieldEQ(FieldCreatedAt, v))
@@ -921,6 +926,36 @@ func ExFactoryContainsFold(v string) predicate.Ebike {
 	return predicate.Ebike(sql.FieldContainsFold(FieldExFactory, v))
 }
 
+// RtoRiderIDEQ applies the EQ predicate on the "rto_rider_id" field.
+func RtoRiderIDEQ(v uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldEQ(FieldRtoRiderID, v))
+}
+
+// RtoRiderIDNEQ applies the NEQ predicate on the "rto_rider_id" field.
+func RtoRiderIDNEQ(v uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldNEQ(FieldRtoRiderID, v))
+}
+
+// RtoRiderIDIn applies the In predicate on the "rto_rider_id" field.
+func RtoRiderIDIn(vs ...uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldIn(FieldRtoRiderID, vs...))
+}
+
+// RtoRiderIDNotIn applies the NotIn predicate on the "rto_rider_id" field.
+func RtoRiderIDNotIn(vs ...uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldNotIn(FieldRtoRiderID, vs...))
+}
+
+// RtoRiderIDIsNil applies the IsNil predicate on the "rto_rider_id" field.
+func RtoRiderIDIsNil() predicate.Ebike {
+	return predicate.Ebike(sql.FieldIsNull(FieldRtoRiderID))
+}
+
+// RtoRiderIDNotNil applies the NotNil predicate on the "rto_rider_id" field.
+func RtoRiderIDNotNil() predicate.Ebike {
+	return predicate.Ebike(sql.FieldNotNull(FieldRtoRiderID))
+}
+
 // HasBrand applies the HasEdge predicate on the "brand" edge.
 func HasBrand() predicate.Ebike {
 	return predicate.Ebike(func(s *sql.Selector) {
@@ -1051,6 +1086,29 @@ func HasAllocates() predicate.Ebike {
 func HasAllocatesWith(preds ...predicate.Allocate) predicate.Ebike {
 	return predicate.Ebike(func(s *sql.Selector) {
 		step := newAllocatesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRtoRider applies the HasEdge predicate on the "rto_rider" edge.
+func HasRtoRider() predicate.Ebike {
+	return predicate.Ebike(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RtoRiderTable, RtoRiderColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRtoRiderWith applies the HasEdge predicate on the "rto_rider" edge with a given conditions (other predicates).
+func HasRtoRiderWith(preds ...predicate.Rider) predicate.Ebike {
+	return predicate.Ebike(func(s *sql.Selector) {
+		step := newRtoRiderStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -204,6 +204,9 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
 		res.EndAt = sub.EndAt.Format(carbon.DateLayout)
 	} else {
 		res.EndAt = "-"
+		if sub.StartAt != nil {
+			res.EndAt = tools.NewTime().WillEnd(*sub.StartAt, res.Days).Format(carbon.DateLayout)
+		}
 	}
 
 	// 已取消(退款)不显示到期日期
@@ -550,12 +553,26 @@ func (s *subscribeService) OverdueFee(sub *ent.Subscribe) (fee float64, formula 
 	remaining := -sub.Remaining
 
 	_, dr := NewSetting().DailyRent(nil, sub.CityID, sub.Model, sub.BrandID)
+	// 查询最近一次购买骑士卡的滞纳金
+	// TODO: 需要优化滞纳金逻辑
+	o, _ := ent.Database.Order.QueryNotDeleted().
+		Where(
+			order.RiderID(sub.RiderID),
+			order.PlanIDNotNil(),
+		).
+		Order(ent.Desc(order.FieldCreatedAt)).
+		WithPlan().
+		First(s.ctx)
+	if o != nil && o.Edges.Plan != nil {
+		dr = o.Edges.Plan.OverdueFee
+	} else {
+		dr = model.DailyRentDefault
+	}
+
 	fee, _ = decimal.NewFromFloat(dr).Mul(decimal.NewFromInt(int64(remaining))).Float64()
-	// fee, _ = decimal.NewFromFloat(dr).Mul(decimal.NewFromInt(int64(remaining))).Mul(decimal.NewFromFloat(1.24)).Float64()
 	fee = math.Round(fee*100) / 100
 
-	formula = fmt.Sprintf("该骑士卡日租价格 %.2f元 × 逾期天数 %d天 = 逾期费用 %.2f元", dr, remaining, fee)
-	// formula = fmt.Sprintf("该骑士卡日租价格 %.2f元 × 逾期天数 %d天 × 1.24 = 逾期费用 %.2f元", dr, remaining, fee)
+	formula = fmt.Sprintf("该骑士卡滞纳金单价 %.2f元/日 × %d天 = 逾期费用 %.2f元", dr, remaining, fee)
 	return
 }
 

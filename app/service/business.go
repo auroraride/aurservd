@@ -45,20 +45,20 @@ func NewBusiness() *businessService {
 }
 
 func (s *businessService) Text(str interface{}) string {
-	var t business.Type
+	var t model.BusinessType
 	switch x := str.(type) {
-	case business.Type:
+	case model.BusinessType:
 		t = x
 	case string:
-		t = business.Type(x)
+		t = model.BusinessType(x)
 	case *string:
-		t = business.Type(*x)
+		t = model.BusinessType(*x)
 	}
-	m := map[business.Type]string{
-		business.TypeActive:      "激活",
-		business.TypeUnsubscribe: "退租",
-		business.TypePause:       "寄存",
-		business.TypeContinue:    "结束寄存",
+	m := map[model.BusinessType]string{
+		model.BusinessTypeActive:      "激活",
+		model.BusinessTypeUnsubscribe: "退租",
+		model.BusinessTypePause:       "寄存",
+		model.BusinessTypeContinue:    "结束寄存",
 	}
 	return m[t]
 }
@@ -168,7 +168,7 @@ func (s *businessService) listFilter(req model.BusinessFilter) (q *ent.BusinessQ
 
 	if req.Type != nil {
 		info["业务类型"] = s.Text(req.Type)
-		q.Where(business.TypeEQ(business.Type(*req.Type)))
+		q.Where(business.TypeEQ(model.BusinessType(*req.Type)))
 	}
 
 	if req.Start != nil {
@@ -276,6 +276,16 @@ func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmp
 			Name: es.Name,
 		}
 	}
+
+	rtoBike := item.Edges.RtoEbike
+	if rtoBike != nil {
+		res.RtoEbikeSn = &rtoBike.Sn
+	}
+
+	if item.Remark != "" {
+		res.Remark = &item.Remark
+	}
+
 	return
 }
 
@@ -365,7 +375,7 @@ func (s *businessService) detailInfo(item *ent.Business) model.BusinessListRes {
 // ListManager 业务列表 - 后台
 func (s *businessService) ListManager(req *model.BusinessListReq) *model.PaginationRes {
 	q, _ := s.listFilter(req.BusinessFilter)
-	q.WithEmployee().WithCabinet().WithStore().WithAgent().WithPlan()
+	q.WithEmployee().WithCabinet().WithStore().WithAgent().WithPlan().WithRtoEbike()
 
 	return model.ParsePaginationResponse(
 		q,
@@ -635,17 +645,17 @@ func (s *businessService) Export(req *model.BusinessExportReq) model.ExportRes {
 	})
 }
 
-func (s *businessService) Convert(bus business.Type) (adapter.Business, error) {
+func (s *businessService) Convert(bus model.BusinessType) (adapter.Business, error) {
 	switch bus {
 	default:
 		return "", adapter.ErrorBusiness
-	case business.TypeActive:
+	case model.BusinessTypeActive:
 		return adapter.BusinessActive, nil
-	case business.TypePause:
+	case model.BusinessTypePause:
 		return adapter.BusinessPause, nil
-	case business.TypeContinue:
+	case model.BusinessTypeContinue:
 		return adapter.BusinessContinue, nil
-	case business.TypeUnsubscribe:
+	case model.BusinessTypeUnsubscribe:
 		return adapter.BusinessUnsubscribe, nil
 	}
 }

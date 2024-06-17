@@ -16,6 +16,12 @@ type BusinessSubscribeReq struct {
 	RefundDeposit *bool    `json:"refundDeposit" trans:"是否退押金"` // 是否退押金(后台使用)
 	DepositAmount *float64 `json:"depositAmount"`               // 退押金金额(后台使用)
 	Remark        *string  `json:"remark"`                      // 备注
+
+	Rto *bool `json:"rto"` // 管理员强制退租 - 是否参与以租代购
+
+	RtoRemark    *string `json:"rtoRemark"`                     // 以租代购备注
+	EbikeStoreID *uint64 `json:"ebikeStoreID" trans:"电车退租门店ID"` // 强制退租电车选择门店ID
+	BatStoreID   *uint64 `json:"batStoreID" trans:"电池退租门店ID"`   // 强制退租电池选择门店ID
 }
 
 type BusinessCabinetReq struct {
@@ -52,4 +58,10 @@ type BusinessPauseInfoRes struct {
 	Days      int    `json:"days"`              // 寄存天数
 	Overdue   int    `json:"overdue,omitempty"` // 超期天数, 当此字段不存在时或为空时, 前端不显示`超出单词最长寄存时长`
 	Remaining int    `json:"remaining"`         // 剩余天数
+}
+
+type BusinessRiderServiceDoReq struct {
+	Rto    bool         `json:"rto"`    // 是否满足并参与以租代购
+	Type   BusinessType `json:"bt"`     // 业务类型
+	Remark *string      `json:"remark"` // 业务记录备注
 }

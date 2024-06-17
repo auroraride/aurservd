@@ -96,6 +96,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.GET("/instructions/:key", rapi.Instructions.Detail) // 买前必读 积分 优惠券使用说明
 
 	g.GET("/mini/openid", rapi.Rider.GetOpenid) // 获取openid
+
 	// 电柜
 	cabinet := g.Group("/cabinet")
 	cabinet.GET("", rapi.Cabinet.List)           // 电柜列表
@@ -118,16 +119,18 @@ func LoadRiderV2Routes(root *echo.Group) {
 	certification.POST("/supplement", rapi.Person.CertificationSupplement) // 补充实名信息
 
 	// 骑手
-	g.GET("/profile", v1.Rider.Profile, logged())             // 获取用户信息
+	g.GET("/profile", rapi.Rider.Profile, logged())           // 获取用户信息
 	g.GET("/deposit", v1.Rider.Deposit, logged())             // 获取押金信息
 	g.DELETE("/deregister", v1.Rider.Deregister, logged())    // 注销账户
 	g.POST("/change/phone", rapi.Rider.ChangePhone, logged()) // 修改手机号
 	g.POST("/contact", v1.Rider.Contact, logged())            // 编辑紧急联系人
+	g.POST("/mobpush", rapi.Rider.SetMobPushId, logged())     // 绑定骑手推送ID
 
 	// 骑士卡
 	plan := g.Group("/plan")
 	plan.GET("", rapi.Plan.List)                    // 套餐列表
 	plan.GET("/renewly", v1.Plan.Renewly, person()) // 续费列表
+	plan.GET("/:id", rapi.Plan.Detail)              // 套餐详情
 
 	// 电池
 	battery := g.Group("/battery", person())
@@ -186,7 +189,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	contract := g.Group("/contract", person())
 	contract.POST("/sign", rapi.Contract.Sign)     // 签署合同
 	contract.POST("/create", rapi.Contract.Create) // 创建合同
-
+	contract.GET("/:docId", rapi.Contract.Detail)  // 查看合同
 	// 业务
 	business := g.Group("/business", person())
 	business.POST("/active", rapi.Business.Active)         // 激活骑士卡
@@ -214,6 +217,11 @@ func LoadRiderV2Routes(root *echo.Group) {
 	subscribe := g.Group("/subscribe", person())
 	subscribe.PUT("/store", rapi.Subscribe.StoreModify)      // 车电套餐修改激活门店
 	subscribe.GET("/status", rapi.Subscribe.SubscribeStatus) // 查询订阅是否激活
+
+	// 商品
+	goods := g.Group("/goods")
+	goods.GET("", rapi.Goods.List)       // 商品列表
+	goods.GET("/:id", rapi.Goods.Detail) // 商品详情
 
 	// 协议
 	agreement := g.Group("/agreement")

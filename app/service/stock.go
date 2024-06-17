@@ -392,15 +392,10 @@ func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []mod
 
 // RiderBusiness 骑手业务 电池 / 电车 出入库
 // 此方法操作库存
-func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (sk *ent.Stock, err error) {
+func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (batSk, ebikeSk *ent.Stock, err error) {
 	num := model.StockNumberOfRiderBusiness(req.StockType)
 
-	if req.Ebike != nil && req.CabinetID != nil {
-		err = errors.New("车电业务无法使用电柜")
-		return
-	}
-
-	if req.StoreID == nil && req.CabinetID == nil && req.EnterpriseID == nil && req.StationID == nil {
+	if req.StoreID == nil && req.EbikeStoreID == nil && req.BatStoreID == nil && req.CabinetID == nil && req.EnterpriseID == nil && req.StationID == nil {
 		err = errors.New("参数校验错误")
 		return
 	}
@@ -408,19 +403,18 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 	creator := tx.Stock.Create()
 
 	// TODO 平台管理员可操作性时处理出入库逻辑
-	if req.StoreID != nil {
+	switch {
+	case req.StoreID != nil:
 		creator.SetStoreID(*req.StoreID)
 		// 判定非智能电池库存
 		if req.Battery == nil && num < 0 && !s.CheckStore(*req.StoreID, req.Model, int(math.Round(math.Abs(float64(num))))) {
 			err = errors.New("电池库存不足")
 			return
 		}
-	}
-
-	// 判定电柜库存
-	if req.CabinetID != nil {
-		creator.SetCabinetID(*req.CabinetID)
-		if num < 0 && !s.CheckCabinet(*req.CabinetID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+	case req.BatStoreID != nil:
+		// 退租电池返回门店（退租时电池是查询出来的一定不会为空，所以此处无需上面的判定非智能电池库存）
+		creator.SetStoreID(*req.BatStoreID)
+		if req.Battery == nil && num < 0 && !s.CheckStore(*req.StoreID, req.Model, int(math.Round(math.Abs(float64(num))))) {
 			err = errors.New("电池库存不足")
 			return
 		}
@@ -448,11 +442,20 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 
 	son := creator.Clone()
 
+	// 判定电柜库存
+	if req.CabinetID != nil {
+		creator.SetCabinetID(*req.CabinetID)
+		if num < 0 && !s.CheckCabinet(*req.CabinetID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+			err = errors.New("电池库存不足")
+			return
+		}
+	}
+
 	var batID *uint64
 	if req.Battery != nil {
 		batID = silk.UInt64(req.Battery.ID)
 	}
-	sk, err = creator.SetName(req.Model).
+	batSk, err = creator.SetName(req.Model).
 		SetModel(req.Model).
 		SetMaterial(stock.MaterialBattery).
 		SetSn(tools.NewUnique().NewSN()).
@@ -464,14 +467,23 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 
 	time.Sleep(10 * time.Millisecond)
 
-	if req.Ebike != nil {
-		err = son.SetParent(sk).
+	// 当电车需要参与出入库时
+	if req.Ebike != nil && !req.Rto {
+		ebq := son.SetParent(batSk).
 			SetEbikeID(req.Ebike.ID).
 			SetName(req.Ebike.BrandName).
 			SetBrandID(req.Ebike.BrandID).
 			SetMaterial(stock.MaterialEbike).
-			SetSn(tools.NewUnique().NewSN()).
-			Exec(s.ctx)
+			SetSn(tools.NewUnique().NewSN())
+
+		if req.EbikeStoreID != nil {
+			ebq.SetStoreID(*req.EbikeStoreID)
+		}
+
+		ebikeSk, err = ebq.Save(s.ctx)
+		if err != nil {
+			return
+		}
 	}
 
 	return

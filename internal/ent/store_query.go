@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 )
 
 // StoreQuery is the builder for querying Store entities.
@@ -34,6 +35,7 @@ type StoreQuery struct {
 	withStocks      *StockQuery
 	withAttendances *AttendanceQuery
 	withExceptions  *ExceptionQuery
+	withGoods       *StoreGoodsQuery
 	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -196,6 +198,28 @@ func (sq *StoreQuery) QueryExceptions() *ExceptionQuery {
 			sqlgraph.From(store.Table, store.FieldID, selector),
 			sqlgraph.To(exception.Table, exception.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, store.ExceptionsTable, store.ExceptionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryGoods chains the current query on the "goods" edge.
+func (sq *StoreQuery) QueryGoods() *StoreGoodsQuery {
+	query := (&StoreGoodsClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, selector),
+			sqlgraph.To(storegoods.Table, storegoods.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, store.GoodsTable, store.GoodsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -401,6 +425,7 @@ func (sq *StoreQuery) Clone() *StoreQuery {
 		withStocks:      sq.withStocks.Clone(),
 		withAttendances: sq.withAttendances.Clone(),
 		withExceptions:  sq.withExceptions.Clone(),
+		withGoods:       sq.withGoods.Clone(),
 		// clone intermediate query.
 		sql:  sq.sql.Clone(),
 		path: sq.path,
@@ -470,6 +495,17 @@ func (sq *StoreQuery) WithExceptions(opts ...func(*ExceptionQuery)) *StoreQuery 
 		opt(query)
 	}
 	sq.withExceptions = query
+	return sq
+}
+
+// WithGoods tells the query-builder to eager-load the nodes that are connected to
+// the "goods" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StoreQuery) WithGoods(opts ...func(*StoreGoodsQuery)) *StoreQuery {
+	query := (&StoreGoodsClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withGoods = query
 	return sq
 }
 
@@ -551,13 +587,14 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 	var (
 		nodes       = []*Store{}
 		_spec       = sq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [7]bool{
 			sq.withCity != nil,
 			sq.withBranch != nil,
 			sq.withEmployee != nil,
 			sq.withStocks != nil,
 			sq.withAttendances != nil,
 			sq.withExceptions != nil,
+			sq.withGoods != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -617,6 +654,13 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 		if err := sq.loadExceptions(ctx, query, nodes,
 			func(n *Store) { n.Edges.Exceptions = []*Exception{} },
 			func(n *Store, e *Exception) { n.Edges.Exceptions = append(n.Edges.Exceptions, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withGoods; query != nil {
+		if err := sq.loadGoods(ctx, query, nodes,
+			func(n *Store) { n.Edges.Goods = []*StoreGoods{} },
+			func(n *Store, e *StoreGoods) { n.Edges.Goods = append(n.Edges.Goods, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -807,6 +851,36 @@ func (sq *StoreQuery) loadExceptions(ctx context.Context, query *ExceptionQuery,
 	}
 	return nil
 }
+func (sq *StoreQuery) loadGoods(ctx context.Context, query *StoreGoodsQuery, nodes []*Store, init func(*Store), assign func(*Store, *StoreGoods)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Store)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(storegoods.FieldStoreID)
+	}
+	query.Where(predicate.StoreGoods(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(store.GoodsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.StoreID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "store_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (sq *StoreQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := sq.querySpec()
@@ -919,6 +993,7 @@ var (
 	StoreQueryWithStocks      StoreQueryWith = "Stocks"
 	StoreQueryWithAttendances StoreQueryWith = "Attendances"
 	StoreQueryWithExceptions  StoreQueryWith = "Exceptions"
+	StoreQueryWithGoods       StoreQueryWith = "Goods"
 )
 
 func (sq *StoreQuery) With(withEdges ...StoreQueryWith) *StoreQuery {
@@ -936,6 +1011,8 @@ func (sq *StoreQuery) With(withEdges ...StoreQueryWith) *StoreQuery {
 			sq.WithAttendances()
 		case StoreQueryWithExceptions:
 			sq.WithExceptions()
+		case StoreQueryWithGoods:
+			sq.WithGoods()
 		}
 	}
 	return sq

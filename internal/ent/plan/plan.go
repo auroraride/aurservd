@@ -73,6 +73,10 @@ const (
 	FieldDepositContract = "deposit_contract"
 	// FieldDepositPay holds the string denoting the deposit_pay field in the database.
 	FieldDepositPay = "deposit_pay"
+	// FieldRtoDays holds the string denoting the rto_days field in the database.
+	FieldRtoDays = "rto_days"
+	// FieldOverdueFee holds the string denoting the overdue_fee field in the database.
+	FieldOverdueFee = "overdue_fee"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
 	// EdgeAgreement holds the string denoting the agreement edge name in mutations.
@@ -155,6 +159,8 @@ var Columns = []string{
 	FieldDepositAlipayAuthFreeze,
 	FieldDepositContract,
 	FieldDepositPay,
+	FieldRtoDays,
+	FieldOverdueFee,
 }
 
 var (
@@ -202,6 +208,8 @@ var (
 	DefaultDepositContract bool
 	// DefaultDepositPay holds the default value on creation for the "deposit_pay" field.
 	DefaultDepositPay bool
+	// DefaultOverdueFee holds the default value on creation for the "overdue_fee" field.
+	DefaultOverdueFee float64
 )
 
 // OrderOption defines the ordering options for the Plan queries.
@@ -340,6 +348,16 @@ func ByDepositContract(opts ...sql.OrderTermOption) OrderOption {
 // ByDepositPay orders the results by the deposit_pay field.
 func ByDepositPay(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDepositPay, opts...).ToFunc()
+}
+
+// ByRtoDays orders the results by the rto_days field.
+func ByRtoDays(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRtoDays, opts...).ToFunc()
+}
+
+// ByOverdueFee orders the results by the overdue_fee field.
+func ByOverdueFee(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOverdueFee, opts...).ToFunc()
 }
 
 // ByBrandField orders the results by brand field.

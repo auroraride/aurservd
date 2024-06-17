@@ -62,7 +62,7 @@ func (Plan) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("model").Optional().Comment("电池型号"),
 		field.Bool("enable").Comment("是否启用"),
-		field.Uint8("type").Default(model.PlanTypeBattery.Value()).Comment("骑士卡类别 1:单电 2:车加电"),
+		field.Uint8("type").Default(model.PlanTypeBattery.Value()).Comment("骑士卡类别 1:单电 2:车加电 3:以租代购"),
 		field.String("name").Comment("骑士卡名称"),
 		field.Time("start").Comment("有效期开始日期"),
 		field.Time("end").Comment("有效期结束日期"),
@@ -81,6 +81,8 @@ func (Plan) Fields() []ent.Field {
 		field.Bool("deposit_alipay_auth_freeze").Optional().Default(false).Comment("预授权信用免押金"),
 		field.Bool("deposit_contract").Optional().Default(false).Comment("合同免押金"),
 		field.Bool("deposit_pay").Optional().Default(false).Comment("支付押金"),
+		field.Uint("rto_days").Optional().Nillable().Comment("以租代购天数条件"),
+		field.Float("overdue_fee").Default(model.DailyRentDefault).Comment("滞纳金单价"),
 	}
 }
 

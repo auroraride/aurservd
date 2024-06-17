@@ -7,6 +7,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/auroraride/adapter"
@@ -18,7 +19,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
-	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -37,7 +37,7 @@ type riderBusinessService struct {
 	cabinet   *ent.Cabinet
 	subscribe *ent.Subscribe
 
-	bt business.Type
+	bt model.BusinessType
 
 	battery *ent.Battery
 
@@ -55,7 +55,7 @@ func NewRiderBusiness(rider *ent.Rider) *riderBusinessService {
 }
 
 // preprocess 预处理业务
-func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
+func (s *riderBusinessService) preprocess(serial string, bt model.BusinessType) {
 	NewSetting().SystemMaintainX()
 
 	cs := NewCabinet()
@@ -91,6 +91,19 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 	// 转换业务
 	bus, _ := NewBusiness().Convert(bt)
 
+	// 验证电柜是否可办理业务
+	NewCabinet().Sync(cab)
+	m := NewReserve().CabinetCounts([]uint64{cab.ID})
+	// 查询自己预约数据
+	reserve := NewReserve().RiderUnfinished(s.rider.ID)
+	// 排除自己预约的电柜
+	if m[model.NewReserveBusinessKey(cab.ID, bt)] > 0 && reserve != nil && reserve.Status == model.ReserveStatusPending.Value() {
+		m[model.NewReserveBusinessKey(cab.ID, bt)] = m[model.NewReserveBusinessKey(cab.ID, bt)] - 1
+	}
+	if !cab.ReserveAble(bt, m) {
+		snag.Panic(fmt.Sprintf("该电柜无法办理%s业务", model.BusinessTypeText(bt.String())))
+	}
+
 	// 查询电柜业务是否可被允许
 	// 代理商管理的电柜只允许非本代理商骑手进行换电业务
 	// if cab.EnterpriseID != nil && cab.EnterpriseID != sub.EnterpriseID && bus != adapter.BusinessExchange {
@@ -117,7 +130,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 // TODO 分配信息是否需要记录电池编号
 func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, version string) model.BusinessCabinetStatus {
 	// 预处理
-	s.preprocess(req.Serial, business.TypeActive)
+	s.preprocess(req.Serial, model.BusinessTypeActive)
 
 	// 检查骑士卡状态
 	if s.subscribe.Status != model.SubscribeStatusInactive {
@@ -198,6 +211,17 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, version str
 		snag.Panic("请先分配物资")
 	}
 
+	// 激活限制城市
+	if s.cabinet != nil && s.subscribe != nil {
+		citys, err := NewPlan().PlanCity(*s.subscribe.PlanID)
+		if err != nil {
+			snag.Panic("未找到套餐")
+		}
+		if !s.IsCabinetCityInCities(citys, *s.cabinet.CityID) {
+			snag.Panic("请在指定城市办理业务")
+		}
+	}
+
 	NewBusinessRider(s.rider).
 		SetCabinet(s.cabinet).
 		SetCabinetTask(func() (*model.BinInfo, *model.Battery, error) {
@@ -210,9 +234,20 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, version str
 }
 
 func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
-	s.preprocess(req.Serial, business.TypeContinue)
+	s.preprocess(req.Serial, model.BusinessTypeContinue)
 	if s.subscribe.Status != model.SubscribeStatusPaused {
 		snag.Panic("骑士卡状态错误")
+	}
+
+	// 限制城市
+	if s.cabinet != nil && s.subscribe != nil {
+		citys, err := NewPlan().PlanCity(*s.subscribe.PlanID)
+		if err != nil {
+			snag.Panic("未找到套餐")
+		}
+		if !s.IsCabinetCityInCities(citys, *s.cabinet.CityID) {
+			snag.Panic("请在指定城市办理业务")
+		}
 	}
 
 	// ↓ 2023-01-02 添加了异步操作
@@ -238,10 +273,20 @@ func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.Bus
 }
 
 func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
-	s.preprocess(req.Serial, business.TypeUnsubscribe)
+	s.preprocess(req.Serial, model.BusinessTypeUnsubscribe)
 
 	if s.subscribe.Status != model.SubscribeStatusUsing {
 		snag.Panic("骑士卡状态异常")
+	}
+
+	if s.cabinet != nil && s.subscribe != nil {
+		citys, err := NewPlan().PlanCity(*s.subscribe.PlanID)
+		if err != nil {
+			snag.Panic("未找到套餐")
+		}
+		if !s.IsCabinetCityInCities(citys, *s.cabinet.CityID) {
+			snag.Panic("请在指定城市办理业务")
+		}
 	}
 
 	go func() {
@@ -263,13 +308,23 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
 }
 
 func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
-	s.preprocess(req.Serial, business.TypePause)
+	s.preprocess(req.Serial, model.BusinessTypePause)
 	if s.subscribe.Status != model.SubscribeStatusUsing {
 		snag.Panic("骑士卡未在计费中")
 	}
 
 	if s.subscribe.Remaining < 1 {
 		snag.Panic("当前剩余时间不足, 无法寄存")
+	}
+
+	if s.cabinet != nil && s.subscribe != nil {
+		citys, err := NewPlan().PlanCity(*s.subscribe.PlanID)
+		if err != nil {
+			snag.Panic("未找到套餐")
+		}
+		if !s.IsCabinetCityInCities(citys, *s.cabinet.CityID) {
+			snag.Panic("请在指定城市办理业务")
+		}
 	}
 
 	go func() {
@@ -318,16 +373,16 @@ func (s *riderBusinessService) Status(req *model.BusinessCabinetStatusReq) (res 
 }
 
 // Executable 业务是否可执行
-func (s *riderBusinessService) Executable(sub *ent.Subscribe, typ business.Type) bool {
+func (s *riderBusinessService) Executable(sub *ent.Subscribe, typ model.BusinessType) bool {
 	if sub == nil {
 		return false
 	}
 	switch typ {
-	case business.TypePause, business.TypeUnsubscribe:
+	case model.BusinessTypePause, model.BusinessTypeUnsubscribe:
 		return sub.Status == model.SubscribeStatusUsing
-	case business.TypeActive:
+	case model.BusinessTypeActive:
 		return sub.Status == model.SubscribeStatusInactive
-	case business.TypeContinue:
+	case model.BusinessTypeContinue:
 		return sub.Status == model.SubscribeStatusPaused
 	}
 	return false
@@ -372,4 +427,14 @@ func (s *riderBusinessService) PauseInfo() (res model.BusinessPauseInfoRes) {
 	}
 
 	return
+}
+
+// IsCabinetCityInCities 电柜城市是否在购买套餐的城市列表中
+func (s *riderBusinessService) IsCabinetCityInCities(cities []uint64, cabinetCityID uint64) bool {
+	for _, city := range cities {
+		if city == cabinetCityID {
+			return true
+		}
+	}
+	return false
 }

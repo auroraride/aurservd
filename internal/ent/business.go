@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -65,11 +66,13 @@ type Business struct {
 	// AgentID holds the value of the "agent_id" field.
 	AgentID *uint64 `json:"agent_id,omitempty"`
 	// 业务类型
-	Type business.Type `json:"type,omitempty"`
+	Type model.BusinessType `json:"type,omitempty"`
 	// 仓位信息
 	BinInfo *model.BinInfo `json:"bin_info,omitempty"`
 	// 出入库编码
 	StockSn string `json:"stock_sn,omitempty"`
+	// 以租代购车辆ID，生成后禁止修改
+	RtoEbikeID *uint64 `json:"rto_ebike_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BusinessQuery when eager-loading is set.
 	Edges        BusinessEdges `json:"edges"`
@@ -100,9 +103,11 @@ type BusinessEdges struct {
 	Battery *Battery `json:"battery,omitempty"`
 	// Agent holds the value of the agent edge.
 	Agent *Agent `json:"agent,omitempty"`
+	// RtoEbike holds the value of the rto_ebike edge.
+	RtoEbike *Ebike `json:"rto_ebike,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [11]bool
+	loadedTypes [12]bool
 }
 
 // RiderOrErr returns the Rider value or an error if the edge
@@ -226,6 +231,17 @@ func (e BusinessEdges) AgentOrErr() (*Agent, error) {
 	return nil, &NotLoadedError{edge: "agent"}
 }
 
+// RtoEbikeOrErr returns the RtoEbike value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e BusinessEdges) RtoEbikeOrErr() (*Ebike, error) {
+	if e.RtoEbike != nil {
+		return e.RtoEbike, nil
+	} else if e.loadedTypes[11] {
+		return nil, &NotFoundError{label: ebike.Label}
+	}
+	return nil, &NotLoadedError{edge: "rto_ebike"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Business) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -233,9 +249,11 @@ func (*Business) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case business.FieldCreator, business.FieldLastModifier, business.FieldBinInfo:
 			values[i] = new([]byte)
-		case business.FieldID, business.FieldRiderID, business.FieldCityID, business.FieldSubscribeID, business.FieldEmployeeID, business.FieldStoreID, business.FieldPlanID, business.FieldEnterpriseID, business.FieldStationID, business.FieldCabinetID, business.FieldBatteryID, business.FieldAgentID:
+		case business.FieldType:
+			values[i] = new(model.BusinessType)
+		case business.FieldID, business.FieldRiderID, business.FieldCityID, business.FieldSubscribeID, business.FieldEmployeeID, business.FieldStoreID, business.FieldPlanID, business.FieldEnterpriseID, business.FieldStationID, business.FieldCabinetID, business.FieldBatteryID, business.FieldAgentID, business.FieldRtoEbikeID:
 			values[i] = new(sql.NullInt64)
-		case business.FieldRemark, business.FieldType, business.FieldStockSn:
+		case business.FieldRemark, business.FieldStockSn:
 			values[i] = new(sql.NullString)
 		case business.FieldCreatedAt, business.FieldUpdatedAt, business.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -376,10 +394,10 @@ func (b *Business) assignValues(columns []string, values []any) error {
 				*b.AgentID = uint64(value.Int64)
 			}
 		case business.FieldType:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*model.BusinessType); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
-			} else if value.Valid {
-				b.Type = business.Type(value.String)
+			} else if value != nil {
+				b.Type = *value
 			}
 		case business.FieldBinInfo:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -394,6 +412,13 @@ func (b *Business) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field stock_sn", values[i])
 			} else if value.Valid {
 				b.StockSn = value.String
+			}
+		case business.FieldRtoEbikeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field rto_ebike_id", values[i])
+			} else if value.Valid {
+				b.RtoEbikeID = new(uint64)
+				*b.RtoEbikeID = uint64(value.Int64)
 			}
 		default:
 			b.selectValues.Set(columns[i], values[i])
@@ -461,6 +486,11 @@ func (b *Business) QueryBattery() *BatteryQuery {
 // QueryAgent queries the "agent" edge of the Business entity.
 func (b *Business) QueryAgent() *AgentQuery {
 	return NewBusinessClient(b.config).QueryAgent(b)
+}
+
+// QueryRtoEbike queries the "rto_ebike" edge of the Business entity.
+func (b *Business) QueryRtoEbike() *EbikeQuery {
+	return NewBusinessClient(b.config).QueryRtoEbike(b)
 }
 
 // Update returns a builder for updating this Business.
@@ -563,6 +593,11 @@ func (b *Business) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("stock_sn=")
 	builder.WriteString(b.StockSn)
+	builder.WriteString(", ")
+	if v := b.RtoEbikeID; v != nil {
+		builder.WriteString("rto_ebike_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

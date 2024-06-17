@@ -219,3 +219,18 @@ func (*battery) Fault(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatteryFaultReq](c)
 	return ctx.SendResponse(service.NewBatteryBms().FaultList(req))
 }
+
+// TrackRectify
+// @ID		ManagerBatteryTrackRectify
+// @Router	/manager/v1/battery/track/rectify [POST]
+// @Summary	电池轨迹纠偏
+// @Tags	电池
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	body			body		model.BatteryTrackReq	true	"轨迹点"
+// @Success	200				{object}	model.BatteryTrackRes	"请求成功"
+func (*battery) TrackRectify(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.BatteryTrackReq](c)
+	return ctx.SendResponse(service.NewBatteryBms().TrackRectify(req))
+}

@@ -279,6 +279,7 @@ type config struct {
 
 	Tencent struct {
 		WbFace struct {
+			Disable bool
 			AppId   string
 			Secret  string
 			Licence string
@@ -296,7 +297,15 @@ type config struct {
 			Personal   string
 			Enterprise string
 		}
+		EncryptKey string // 合同加密key
 	}
+
+	Elastic struct {
+		Addresses     []string
+		ApiKey        string
+		EccDatastream string
+	}
+	AppDownloadUrl string
 }
 
 type AlipayConfig struct {

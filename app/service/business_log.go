@@ -10,7 +10,6 @@ import (
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
 
@@ -106,11 +105,11 @@ func (s *businessLogService) SetBattery(bat *model.Battery) *businessLogService 
 	return s
 }
 
-func (s *businessLogService) Save(typ business.Type) (*ent.Business, error) {
+func (s *businessLogService) Save(typ model.BusinessType) (*ent.Business, error) {
 	return s.creator.SetType(typ).Save(s.ctx)
 }
 
-func (s *businessLogService) SaveX(typ business.Type) *ent.Business {
+func (s *businessLogService) SaveX(typ model.BusinessType) *ent.Business {
 	biz, err := s.Save(typ)
 	if err != nil {
 		snag.Panic("日志保存失败")
@@ -121,5 +120,17 @@ func (s *businessLogService) SaveX(typ business.Type) *ent.Business {
 // SetAgentId 设置代理人
 func (s *businessLogService) SetAgentId(agentId *uint64) *businessLogService {
 	s.creator.SetNillableAgentID(agentId)
+	return s
+}
+
+// SetRtoEbikeID 设置以租代购电车ID
+func (s *businessLogService) SetRtoEbikeID(id uint64) *businessLogService {
+	s.creator.SetRtoEbikeID(id)
+	return s
+}
+
+// SetRemark 设置备注
+func (s *businessLogService) SetRemark(remark string) *businessLogService {
+	s.creator.SetRemark(remark)
 	return s
 }

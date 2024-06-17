@@ -11,6 +11,7 @@ import (
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/version"
 )
@@ -101,11 +102,17 @@ func (s *versionBiz) LatestVersion(req *definition.LatestVersionReq) *definition
 	if q == nil {
 		return nil
 	}
+
+	var link string
+	if q.Platform == model.AppPlatformAndroid {
+		link = ar.Config.AppDownloadUrl
+	}
 	return &definition.Version{
-		AppPlatform: q.Platform,
-		Version:     q.Version,
-		Content:     q.Content,
-		Force:       q.Force,
-		CreatedAt:   q.CreatedAt.Format(carbon.DateTimeLayout),
+		AppPlatform:  q.Platform,
+		Version:      q.Version,
+		Content:      q.Content,
+		Force:        q.Force,
+		CreatedAt:    q.CreatedAt.Format(carbon.DateTimeLayout),
+		DownloadLink: link,
 	}
 }

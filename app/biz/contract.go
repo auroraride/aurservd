@@ -21,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/tools"
+	"github.com/auroraride/aurservd/pkg/utils"
 )
 
 type Contract struct {
@@ -428,4 +429,25 @@ func numberToString(num interface{}) (string, error) {
 		return strconv.FormatFloat(v, 'f', 2, 64), nil
 	}
 	return "", errors.New("类型错误")
+}
+
+// Detail 查看合同
+func (s *Contract) Detail(r *ent.Rider, req *definition.ContractDetailReq) (*definition.ContractDetailRes, error) {
+	cfg := ar.Config.Contract.EncryptKey
+	docId, err := utils.DecryptAES([]byte(cfg), req.DocId)
+	if err != nil || docId == "" {
+		zap.L().Error("解密失败", zap.Error(err), zap.String("docId", req.DocId))
+		return nil, errors.New("解密失败")
+	}
+	co, _ := s.orm.QueryNotDeleted().Where(contract.DocID(docId), contract.RiderID(r.ID)).First(s.ctx)
+	if co == nil {
+		return nil, errors.New("未找到合同信息")
+	}
+
+	if len(co.Files) > 0 {
+		return &definition.ContractDetailRes{
+			Link: co.Files[0],
+		}, nil
+	}
+	return nil, errors.New("未找到合同文件")
 }

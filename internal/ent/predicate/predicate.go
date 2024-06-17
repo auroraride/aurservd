@@ -45,6 +45,9 @@ type Business func(*sql.Selector)
 // Cabinet is the predicate function for cabinet builders.
 type Cabinet func(*sql.Selector)
 
+// CabinetEc is the predicate function for cabinetec builders.
+type CabinetEc func(*sql.Selector)
+
 // CabinetFault is the predicate function for cabinetfault builders.
 type CabinetFault func(*sql.Selector)
 
@@ -116,6 +119,9 @@ type Fault func(*sql.Selector)
 
 // Feedback is the predicate function for feedback builders.
 type Feedback func(*sql.Selector)
+
+// Goods is the predicate function for goods builders.
+type Goods func(*sql.Selector)
 
 // Instructions is the predicate function for instructions builders.
 type Instructions func(*sql.Selector)
@@ -224,6 +230,9 @@ type StockSummary func(*sql.Selector)
 
 // Store is the predicate function for store builders.
 type Store func(*sql.Selector)
+
+// StoreGoods is the predicate function for storegoods builders.
+type StoreGoods func(*sql.Selector)
 
 // Subscribe is the predicate function for subscribe builders.
 type Subscribe func(*sql.Selector)

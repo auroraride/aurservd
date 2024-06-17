@@ -80,7 +80,7 @@ func (*timeTool) ParseDateString(str string) (time.Time, error) {
 	if res.Error != nil {
 		return time.Time{}, res.Error
 	}
-	return res.StartOfDay().ToStdTime(), nil
+	return res.StartOfDay().StdTime(), nil
 }
 
 func (t *timeTool) ParseDateStringX(str string) time.Time {
@@ -97,7 +97,7 @@ func (t *timeTool) ParseNextDateString(str string) (time.Time, error) {
 	if res.Error != nil {
 		return time.Time{}, res.Error
 	}
-	return res.StartOfDay().AddDay().ToStdTime(), nil
+	return res.StartOfDay().AddDay().StdTime(), nil
 }
 
 func (t *timeTool) ParseNextDateStringX(str string) time.Time {
@@ -111,10 +111,10 @@ func (t *timeTool) ParseNextDateStringX(str string) time.Time {
 // PauseBeginning 暂停或寄存开始日期计算
 // start 暂停或寄存开始时间
 func (t *timeTool) PauseBeginning(start time.Time) time.Time {
-	startDay := carbon.CreateFromStdTime(start).StartOfDay().ToStdTime()
+	startDay := carbon.CreateFromStdTime(start).StartOfDay().StdTime()
 	// 判定开始时间是否0点
 	if startDay.Equal(start) {
 		return startDay
 	}
-	return carbon.CreateFromStdTime(startDay).Tomorrow().ToStdTime()
+	return carbon.CreateFromStdTime(startDay).Tomorrow().StdTime()
 }

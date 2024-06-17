@@ -142,6 +142,13 @@ func (c *CabinetClient) ModifyOne(old *Cabinet, data any) *CabinetUpdateOne {
 	return EntitySetAttributes[CabinetUpdateOne, Cabinet](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for CabinetEc.
+func (c *CabinetEcClient) ModifyOne(old *CabinetEc, data any) *CabinetEcUpdateOne {
+	mutation := newCabinetEcMutation(c.config, OpUpdateOne, withCabinetEc(old))
+	up := &CabinetEcUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[CabinetEcUpdateOne, CabinetEc](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for CabinetFault.
 func (c *CabinetFaultClient) ModifyOne(old *CabinetFault, data any) *CabinetFaultUpdateOne {
 	mutation := newCabinetFaultMutation(c.config, OpUpdateOne, withCabinetFault(old))
@@ -308,6 +315,13 @@ func (c *FeedbackClient) ModifyOne(old *Feedback, data any) *FeedbackUpdateOne {
 	mutation := newFeedbackMutation(c.config, OpUpdateOne, withFeedback(old))
 	up := &FeedbackUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return EntitySetAttributes[FeedbackUpdateOne, Feedback](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for Goods.
+func (c *GoodsClient) ModifyOne(old *Goods, data any) *GoodsUpdateOne {
+	mutation := newGoodsMutation(c.config, OpUpdateOne, withGoods(old))
+	up := &GoodsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[GoodsUpdateOne, Goods](up, old, data)
 }
 
 // ModifyOne returns an update with pointer struct builder for Instructions.
@@ -560,6 +574,13 @@ func (c *StoreClient) ModifyOne(old *Store, data any) *StoreUpdateOne {
 	mutation := newStoreMutation(c.config, OpUpdateOne, withStore(old))
 	up := &StoreUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return EntitySetAttributes[StoreUpdateOne, Store](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for StoreGoods.
+func (c *StoreGoodsClient) ModifyOne(old *StoreGoods, data any) *StoreGoodsUpdateOne {
+	mutation := newStoreGoodsMutation(c.config, OpUpdateOne, withStoreGoods(old))
+	up := &StoreGoodsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[StoreGoodsUpdateOne, StoreGoods](up, old, data)
 }
 
 // ModifyOne returns an update with pointer struct builder for Subscribe.

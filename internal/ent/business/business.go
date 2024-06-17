@@ -3,7 +3,6 @@
 package business
 
 import (
-	"fmt"
 	"time"
 
 	"entgo.io/ent"
@@ -56,6 +55,8 @@ const (
 	FieldBinInfo = "bin_info"
 	// FieldStockSn holds the string denoting the stock_sn field in the database.
 	FieldStockSn = "stock_sn"
+	// FieldRtoEbikeID holds the string denoting the rto_ebike_id field in the database.
+	FieldRtoEbikeID = "rto_ebike_id"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -78,6 +79,8 @@ const (
 	EdgeBattery = "battery"
 	// EdgeAgent holds the string denoting the agent edge name in mutations.
 	EdgeAgent = "agent"
+	// EdgeRtoEbike holds the string denoting the rto_ebike edge name in mutations.
+	EdgeRtoEbike = "rto_ebike"
 	// Table holds the table name of the business in the database.
 	Table = "business"
 	// RiderTable is the table that holds the rider relation/edge.
@@ -157,6 +160,13 @@ const (
 	AgentInverseTable = "agent"
 	// AgentColumn is the table column denoting the agent relation/edge.
 	AgentColumn = "agent_id"
+	// RtoEbikeTable is the table that holds the rto_ebike relation/edge.
+	RtoEbikeTable = "business"
+	// RtoEbikeInverseTable is the table name for the Ebike entity.
+	// It exists in this package in order to avoid circular dependency with the "ebike" package.
+	RtoEbikeInverseTable = "ebike"
+	// RtoEbikeColumn is the table column denoting the rto_ebike relation/edge.
+	RtoEbikeColumn = "rto_ebike_id"
 )
 
 // Columns holds all SQL columns for business fields.
@@ -182,6 +192,7 @@ var Columns = []string{
 	FieldType,
 	FieldBinInfo,
 	FieldStockSn,
+	FieldRtoEbikeID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -208,31 +219,6 @@ var (
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
 )
-
-// Type defines the type for the "type" enum field.
-type Type string
-
-// Type values.
-const (
-	TypeActive      Type = "active"
-	TypePause       Type = "pause"
-	TypeContinue    Type = "continue"
-	TypeUnsubscribe Type = "unsubscribe"
-)
-
-func (_type Type) String() string {
-	return string(_type)
-}
-
-// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
-func TypeValidator(_type Type) error {
-	switch _type {
-	case TypeActive, TypePause, TypeContinue, TypeUnsubscribe:
-		return nil
-	default:
-		return fmt.Errorf("business: invalid enum value for type field: %q", _type)
-	}
-}
 
 // OrderOption defines the ordering options for the Business queries.
 type OrderOption func(*sql.Selector)
@@ -327,6 +313,11 @@ func ByStockSn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStockSn, opts...).ToFunc()
 }
 
+// ByRtoEbikeID orders the results by the rto_ebike_id field.
+func ByRtoEbikeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRtoEbikeID, opts...).ToFunc()
+}
+
 // ByRiderField orders the results by rider field.
 func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -401,6 +392,13 @@ func ByBatteryField(field string, opts ...sql.OrderTermOption) OrderOption {
 func ByAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newAgentStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByRtoEbikeField orders the results by rto_ebike field.
+func ByRtoEbikeField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRtoEbikeStep(), sql.OrderByField(field, opts...))
 	}
 }
 func newRiderStep() *sqlgraph.Step {
@@ -478,5 +476,12 @@ func newAgentStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AgentInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
+	)
+}
+func newRtoEbikeStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RtoEbikeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RtoEbikeTable, RtoEbikeColumn),
 	)
 }

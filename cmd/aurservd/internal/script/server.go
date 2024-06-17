@@ -58,6 +58,9 @@ func serverCommand() *cobra.Command {
 			// 启动 order task
 			go task.NewOrder().Start()
 
+			// 启动 cabinet耗电统计任务
+			go task.NewCabinet().Start()
+
 			// 启动电柜任务
 			go ec.Start()
 

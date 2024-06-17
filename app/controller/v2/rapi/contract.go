@@ -41,3 +41,18 @@ func (*contract) Create(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.ContractCreateReq](c)
 	return ctx.SendResponse(biz.NewContract().Create(ctx.Rider, req))
 }
+
+// Detail
+// @ID		ContractDetail
+// @Router	/rider/v2/contract/{docId} [GET]
+// @Summary	查看合同
+// @Tags	Contract - 合同
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string							true	"骑手校验token"
+// @Param	docId			path		string							true	"合同ID"
+// @Success	200				{object}	definition.ContractDetailRes	"请求成功"
+func (*contract) Detail(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.ContractDetailReq](c)
+	return ctx.SendResponse(biz.NewContract().Detail(ctx.Rider, req))
+}

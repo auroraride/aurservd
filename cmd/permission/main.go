@@ -30,51 +30,55 @@ var (
 )
 
 func main() {
-	d := "./app/controller/v1/mapi"
-	files, _ := os.ReadDir(d)
+	ds := []string{
+		"./app/controller/v1/mapi",
+		"./app/controller/v2/mapi",
+	}
 	m := make(map[string]*permission.Group)
-	for _, f := range files {
-		if f.IsDir() || f.Name() == "mapi.go" {
-			continue
-		}
-		name := strings.TrimSuffix(f.Name(), filepath.Ext(f.Name()))
-		if nameSkipper[name] {
-			continue
-		}
-
-		pg, ok := m[name]
-		if !ok {
-			pg = &permission.Group{
-				Name: name,
-				Desc: "",
-			}
-			m[name] = pg
-		}
-
-		// 已经保存的desc获取
-		if x, ok := permission.Groups[name]; ok {
-			pg.Desc = x.Desc
-		}
-
-		doc, _ := os.ReadFile(filepath.Join(d, f.Name()))
-		re := regexp.MustCompile(`(?m)// @Router\s+(.*) \[(.*)][\S\s]*?@Summary\s+(.*)\s+(.*)`)
-		bs := re.FindAllStringSubmatch(string(doc), -1)
-		for _, sub := range bs {
-			api := sub[1]
-			if apiSkipper[api] {
+	for _, d := range ds {
+		files, _ := os.ReadDir(d)
+		for _, f := range files {
+			if f.IsDir() || f.Name() == "mapi.go" {
 				continue
 			}
-			method := sub[2]
-			desc := sub[3]
-			pg.Permissions = append(pg.Permissions, permission.Item{
-				Key:    permission.GetKey(method, api),
-				Method: method,
-				Api:    api,
-				Desc:   desc,
-			})
+			name := strings.TrimSuffix(f.Name(), filepath.Ext(f.Name()))
+			if nameSkipper[name] {
+				continue
+			}
+
+			pg, ok := m[name]
+			if !ok {
+				pg = &permission.Group{
+					Name: name,
+					Desc: "",
+				}
+				m[name] = pg
+			}
+
+			// 已经保存的desc获取
+			if x, ok := permission.Groups[name]; ok {
+				pg.Desc = x.Desc
+			}
+
+			doc, _ := os.ReadFile(filepath.Join(d, f.Name()))
+			re := regexp.MustCompile(`(?m)// @Router\s+(.*) \[(.*)][\S\s]*?@Summary\s+(.*)\s+(.*)`)
+			bs := re.FindAllStringSubmatch(string(doc), -1)
+			for _, sub := range bs {
+				api := sub[1]
+				if apiSkipper[api] {
+					continue
+				}
+				method := sub[2]
+				desc := sub[3]
+				pg.Permissions = append(pg.Permissions, permission.Item{
+					Key:    permission.GetKey(method, api),
+					Method: method,
+					Api:    api,
+					Desc:   desc,
+				})
+			}
 		}
 	}
-
 	permission.Save(m)
 
 	addrs := []string{

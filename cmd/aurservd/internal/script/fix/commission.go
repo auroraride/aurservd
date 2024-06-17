@@ -9,9 +9,11 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/spf13/cobra"
+
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/business"
-	"github.com/spf13/cobra"
 )
 
 func Commission() *cobra.Command {
@@ -35,7 +37,7 @@ func Commission() *cobra.Command {
 					fmt.Printf("%d [O:%d] 未找到订单\n", item.ID, o.ID)
 					continue
 				}
-				b, _ := ent.Database.Business.QueryNotDeleted().Where(business.SubscribeID(sub.ID), business.TypeEQ(business.TypeActive)).First(ctx)
+				b, _ := ent.Database.Business.QueryNotDeleted().Where(business.SubscribeID(sub.ID), business.TypeEQ(model.BusinessTypeActive)).First(ctx)
 				if b == nil {
 					fmt.Printf("%d [O:%d, S:%d] 未找到业务\n", item.ID, o.ID, sub.ID)
 					continue

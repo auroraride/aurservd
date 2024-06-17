@@ -333,6 +333,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "boolean",
+                        "description": "是否以租代购",
+                        "name": "rto",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "站点ID",
                         "name": "stationId",
@@ -3310,6 +3316,14 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "rtoEbikeSn": {
+                    "description": "以租代购成功车架号",
+                    "type": "string"
+                },
                 "store": {
                     "description": "门店, 可能为空",
                     "allOf": [
@@ -3338,6 +3352,10 @@ const docTemplate = `{
                     "description": "代理商ID",
                     "type": "integer"
                 },
+                "batStoreID": {
+                    "description": "电池退租门店ID, 强制退租电池选择门店ID",
+                    "type": "integer"
+                },
                 "cabinetId": {
                     "description": "电柜ID",
                     "type": "integer"
@@ -3345,6 +3363,10 @@ const docTemplate = `{
                 "depositAmount": {
                     "description": "退押金金额(后台使用)",
                     "type": "number"
+                },
+                "ebikeStoreID": {
+                    "description": "电车退租门店ID, 强制退租电车选择门店ID",
+                    "type": "integer"
                 },
                 "id": {
                     "description": "订阅ID",
@@ -3356,6 +3378,14 @@ const docTemplate = `{
                 },
                 "remark": {
                     "description": "备注",
+                    "type": "string"
+                },
+                "rto": {
+                    "description": "管理员强制退租 - 是否参与以租代购",
+                    "type": "boolean"
+                },
+                "rtoRemark": {
+                    "description": "以租代购备注",
                     "type": "string"
                 },
                 "storeId": {
@@ -3544,6 +3574,10 @@ const docTemplate = `{
                 "rider": {
                     "description": "骑手",
                     "type": "string"
+                },
+                "rto": {
+                    "description": "是否以租代购",
+                    "type": "boolean"
                 },
                 "sim": {
                     "description": "SIM卡号",
@@ -3949,6 +3983,10 @@ const docTemplate = `{
                 "type"
             ],
             "properties": {
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
                 "content": {
                     "description": "反馈内容",
                     "type": "string"
@@ -3963,6 +4001,14 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "versionInfo": {
+                    "description": "版本信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.VersionInfo"
+                        }
+                    ]
                 }
             }
         },
@@ -4085,15 +4131,18 @@ const docTemplate = `{
             "type": "integer",
             "enum": [
                 1,
-                2
+                2,
+                3
             ],
             "x-enum-comments": {
                 "PlanTypeBattery": "单电",
+                "PlanTypeEbikeRto": "以租代购",
                 "PlanTypeEbikeWithBattery": "车加电"
             },
             "x-enum-varnames": [
                 "PlanTypeBattery",
-                "PlanTypeEbikeWithBattery"
+                "PlanTypeEbikeWithBattery",
+                "PlanTypeEbikeRto"
             ]
         },
         "model.PrepaymentListRes": {
@@ -4228,8 +4277,16 @@ const docTemplate = `{
                     "description": "骑士卡可用电池型号",
                     "type": "string"
                 },
+                "pastDay": {
+                    "description": "骑手当前订阅已使用天数",
+                    "type": "integer"
+                },
                 "remaining": {
                     "description": "剩余天数",
+                    "type": "integer"
+                },
+                "rtoDays": {
+                    "description": "已租代购天数条件",
                     "type": "integer"
                 },
                 "status": {
@@ -4565,6 +4622,27 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                }
+            }
+        },
+        "model.VersionInfo": {
+            "type": "object",
+            "properties": {
+                "buildTime": {
+                    "description": "编译时间",
+                    "type": "string"
+                },
+                "ciJobId": {
+                    "description": "CI任务ID",
+                    "type": "string"
+                },
+                "commitId": {
+                    "description": "提交ID",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "string"
                 }
             }
         }

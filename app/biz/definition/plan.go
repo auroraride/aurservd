@@ -9,4 +9,17 @@ type PlanNewlyRes struct {
 
 	BatteryDescription model.SettingPlanDescription `json:"batteryDescription"` // 单电介绍
 	EbikeDescription   model.SettingPlanDescription `json:"ebikeDescription"`   // 车电介绍
+
+	RtoBrands []*model.PlanEbikeBrandOption `json:"rtoBrands,omitempty"` // 以租代购车电选项
+}
+
+// PlanDetailReq 套餐详情
+type PlanDetailReq struct {
+	model.IDParamReq
+}
+
+// PlanDetailRes 套餐详情
+type PlanDetailRes struct {
+	model.Plan
+	Notes []string `json:"notes"` // 购买须知
 }
