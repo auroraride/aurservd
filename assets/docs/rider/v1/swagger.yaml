@@ -2171,10 +2171,6 @@ paths:
         in: query
         name: distance
         type: number
-      - description: 额外筛选参数
-        in: query
-        name: filter
-        type: string
       - description: 纬度
         in: query
         name: lat

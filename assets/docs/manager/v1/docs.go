@@ -10343,6 +10343,13 @@ const docTemplate = `{
                         "name": "X-Manager-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "分类ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
