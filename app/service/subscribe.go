@@ -553,24 +553,19 @@ func (s *subscribeService) OverdueFee(sub *ent.Subscribe) (fee float64, formula 
 	remaining := -sub.Remaining
 
 	_, dr := NewSetting().DailyRent(nil, sub.CityID, sub.Model, sub.BrandID)
-	// pl, _ := sub.QueryPlan().First(s.ctx)
-	// if pl != nil {
-	// 	dr = pl.OverdueFee
-	// }
 	// 查询最近一次购买骑士卡的滞纳金
-	o := ent.Database.Order.QueryNotDeleted().
+	// TODO: 需要优化滞纳金逻辑
+	o, _ := ent.Database.Order.QueryNotDeleted().
 		Where(
 			order.RiderID(sub.RiderID),
 			order.PlanIDNotNil(),
 		).
 		Order(ent.Desc(order.FieldCreatedAt)).
 		WithPlan().
-		FirstX(s.ctx)
-	if o != nil {
+		First(s.ctx)
+	if o != nil && o.Edges.Plan != nil {
 		dr = o.Edges.Plan.OverdueFee
-	}
-
-	if dr == 0 {
+	} else {
 		dr = model.DailyRentDefault
 	}
 
