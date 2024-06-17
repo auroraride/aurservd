@@ -420,6 +420,7 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 			Model:         child.Model,
 			DiscountNewly: child.DiscountNewly,
 			RtoDays:       rtoDays,
+			OverdueFee:    child.OverdueFee,
 		}
 
 		if len(child.Edges.Commissions) > 0 {
