@@ -99,7 +99,7 @@ func (s *planService) QueryEffectiveList() ent.Plans {
 }
 
 // checkDuplicate 查询骑士卡是否冲突
-func (s *planService) checkDuplicate(brandID uint64, cities []uint64, models []string, start, end time.Time, params ...uint64) {
+func (s *planService) checkDuplicate(brandID uint64, cities []uint64, models []string, start, end time.Time, ty model.PlanType, params ...uint64) {
 	q := s.orm.QueryNotDeleted().
 		Where(
 			plan.Enable(true),
@@ -119,6 +119,14 @@ func (s *planService) checkDuplicate(brandID uint64, cities []uint64, models []s
 		q.Where(plan.BrandID(brandID))
 	} else {
 		q.Where(plan.BrandIDIsNil())
+	}
+
+	if ty.Value() == model.PlanTypeEbikeRto.Value() {
+		// 以租代购 类型不能重复
+		q.Where(plan.Type(model.PlanTypeEbikeRto.Value()))
+	} else {
+		// 单电和车 不能重复
+		q.Where(plan.TypeIn(model.PlanTypeBattery.Value(), model.PlanTypeEbikeWithBattery.Value()))
 	}
 
 	exists, _ := q.Exist(s.ctx)
@@ -165,7 +173,7 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 	NewBatteryModel().QueryModelsX(bms)
 
 	// 查询是否重复
-	s.checkDuplicate(req.BrandID, req.Cities, bms, start, end)
+	s.checkDuplicate(req.BrandID, req.Cities, bms, start, end, req.Type)
 
 	// 排序
 	sort.Slice(req.Complexes, func(i, j int) bool {
@@ -511,7 +519,7 @@ func (s *planService) renewalMapKey(m string, brandID *uint64) string {
 // Renewal 续签选项
 func (s *planService) Renewal(req *model.PlanListRiderReq) map[string]*[]model.RiderPlanItem {
 	rmap := make(map[string]*[]model.RiderPlanItem)
-	today := carbon.Now().StartOfDay().ToStdTime()
+	today := carbon.Now().StartOfDay().StdTime()
 
 	q := s.orm.QueryNotDeleted().
 		Where(
@@ -526,6 +534,10 @@ func (s *planService) Renewal(req *model.PlanListRiderReq) map[string]*[]model.R
 			plan.Intelligent(req.Intelligent),
 		).
 		Order(ent.Asc(plan.FieldDays))
+
+	if req.PlanType != nil {
+		q.Where(plan.Type(req.PlanType.Value()))
+	}
 
 	if req.EbikeBrandID != nil {
 		q.Where(plan.BrandID(*req.EbikeBrandID))
@@ -753,12 +765,19 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
 		min = uint(0 - sub.Remaining)
 	}
 
+	pl, _ := sub.QueryPlan().First(s.ctx)
+	if pl == nil {
+		snag.Panic("未找到骑士卡")
+	}
+
+	planType := model.PlanType(pl.Type)
 	rmap := s.Renewal(&model.PlanListRiderReq{
 		CityID:       sub.CityID,
 		Min:          min,
 		Model:        sub.Model,
 		EbikeBrandID: sub.BrandID,
 		Intelligent:  sub.Intelligent,
+		PlanType:     &planType,
 	})
 
 	items := make([]model.RiderPlanItem, 0)

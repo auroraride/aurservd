@@ -175,7 +175,7 @@ func (s *reserveService) Create(req *model.ReserveCreateReq) *model.ReserveUnfin
 	// 同步电柜并返回电柜详情
 	NewCabinet().Sync(cab)
 	// 预约限制城市
-	if cab != nil && sub != nil {
+	if cab != nil && sub != nil && sub.PlanID != nil {
 		citys, err := NewPlan().PlanCity(*sub.PlanID)
 		if err != nil {
 			snag.Panic("未找到套餐")

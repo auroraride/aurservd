@@ -453,12 +453,6 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "string",
-                        "description": "额外筛选参数",
-                        "name": "filter",
-                        "in": "query"
-                    },
-                    {
                         "type": "number",
                         "description": "纬度",
                         "name": "lat",
