@@ -552,18 +552,15 @@ func (s *subscribeService) OverdueFee(sub *ent.Subscribe) (fee float64, formula 
 
 	remaining := -sub.Remaining
 
-	// _, dr := NewSetting().DailyRent(nil, sub.CityID, sub.Model, sub.BrandID)
 	dr := model.DailyRentDefault
 	if sub.Edges.Plan != nil {
 		dr = sub.Edges.Plan.OverdueFee
 	}
 
 	fee, _ = decimal.NewFromFloat(dr).Mul(decimal.NewFromInt(int64(remaining))).Float64()
-	// fee, _ = decimal.NewFromFloat(dr).Mul(decimal.NewFromInt(int64(remaining))).Mul(decimal.NewFromFloat(1.24)).Float64()
 	fee = math.Round(fee*100) / 100
 
-	formula = fmt.Sprintf("该骑士卡日租价格 %.2f元 × 逾期天数 %d天 = 逾期费用 %.2f元", dr, remaining, fee)
-	// formula = fmt.Sprintf("该骑士卡日租价格 %.2f元 × 逾期天数 %d天 × 1.24 = 逾期费用 %.2f元", dr, remaining, fee)
+	formula = fmt.Sprintf("该骑士卡滞纳金单价 %.2f元/日 × %d天 = 逾期费用 %.2f元", dr, remaining, fee)
 	return
 }
 
