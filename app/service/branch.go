@@ -349,7 +349,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 			Stores:   make([]model.StoreWithStatus, 0),
 		}
 	}
-	if req.Type == "" || req.Type == model.BranchFacilityTypeStore || req.Type == model.BranchFacilityTypeRest {
+	if req.Type == model.BranchFacilityTypeAll || req.Type == "" || req.Type == model.BranchFacilityTypeStore || req.Type == model.BranchFacilityTypeRest {
 		for _, st := range stores {
 			if strings.Contains(st.Name, req.Name) {
 				if b, ok := bmap[st.BranchID]; ok {
@@ -364,7 +364,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 			}
 		}
 	}
-	if req.Type == "" || req.Type == model.BranchFacilityTypeV72 || req.Type == model.BranchFacilityTypeV60 {
+	if req.Type == model.BranchFacilityTypeAll || req.Type == "" || req.Type == model.BranchFacilityTypeV72 || req.Type == model.BranchFacilityTypeV60 {
 		var mt string
 		switch req.Type {
 		case model.BranchFacilityTypeV72:
