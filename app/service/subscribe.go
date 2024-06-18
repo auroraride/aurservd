@@ -583,15 +583,17 @@ func (s *subscribeService) OverdueFee(sub *ent.Subscribe) (fee float64, formula 
 
 		latest := NewPlan().FilterEffectiveItems(options...)
 		var days []int
+		items := make(map[int]float64)
 		// 以防找不到对应天数的骑士卡，查询最接近的天数
 		for _, item := range latest {
 			d := int(math.Abs(float64(item.Days) - float64(sub.InitialDays)))
+			items[d] = item.OverdueFee
 			days = append(days, d)
 		}
 		sort.Ints(days)
 
 		if len(days) > 0 {
-			dr = latest[days[0]].OverdueFee
+			dr = items[days[0]]
 		}
 	}
 
