@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"sort"
 	"strconv"
 	"time"
 
@@ -552,31 +553,43 @@ func (s *subscribeService) OverdueFee(sub *ent.Subscribe) (fee float64, formula 
 		return
 	}
 
+	p := sub.Edges.Plan
+	if p == nil && sub.PlanID != nil {
+		p, _ = ent.Database.Plan.Query().Where(plan.ID(*sub.PlanID)).First(s.ctx)
+	}
+
 	remaining := -sub.Remaining
 
-	_, dr := NewSetting().DailyRent(nil, sub.CityID, sub.Model, sub.BrandID)
+	// 如果没有找到对应的骑士卡滞纳金，则使用默认滞纳金（默认滞纳金令人难以忍受）
+	dr := model.DailyRentDefault
 
 	// 查询最新骑士卡滞纳金
 	// TODO: 需要优化滞纳金逻辑
-	options := []predicate.Plan{
-		plan.HasCitiesWith(city.ID(sub.CityID)),
-		plan.Model(sub.Model),
-	}
-	if sub.BrandID != nil {
-		options = append(options, plan.BrandID(*sub.BrandID))
-	}
-	if sub.InitialDays > 0 {
-		// 以防找不到对应天数的骑士卡，查询小于等于初始天数的骑士卡
-		options = append(options, plan.DaysLTE(uint(sub.InitialDays)))
-	}
-	latest := NewPlan().FilterEffectiveItems(options...)
-	if len(latest) > 0 {
-		dr = latest[len(latest)-1].OverdueFee
-	}
+	if p != nil {
+		options := []predicate.Plan{
+			plan.HasCitiesWith(city.ID(sub.CityID)),
+			plan.Model(sub.Model),
+			plan.Type(p.Type),
+		}
+		if sub.BrandID != nil {
+			options = append(options, plan.BrandID(*sub.BrandID))
+		}
+		if sub.InitialDays > 0 {
+			// 以防找不到对应天数的骑士卡，查询小于等于初始天数的骑士卡
+			options = append(options, plan.DaysLTE(uint(sub.InitialDays)))
+		}
 
-	// 如果没有找到对应的骑士卡滞纳金，则使用默认滞纳金（默认滞纳金令人难以忍受）
-	if dr == 0 {
-		dr = model.DailyRentDefault
+		latest := NewPlan().FilterEffectiveItems(options...)
+		var days []int
+		for _, item := range latest {
+			d := int(math.Abs(float64(item.Days) - float64(sub.InitialDays)))
+			days = append(days, d)
+		}
+		sort.Ints(days)
+
+		if len(days) > 0 {
+			dr = latest[days[0]].OverdueFee
+		}
 	}
 
 	fee, _ = decimal.NewFromFloat(dr).Mul(decimal.NewFromInt(int64(remaining))).Float64()
