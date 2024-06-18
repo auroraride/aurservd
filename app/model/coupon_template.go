@@ -58,10 +58,10 @@ type CouponDuration struct {
 // toRider 是否发放到骑手
 func (d *CouponDuration) ExpiresAt(toRider bool) *time.Time {
 	if d.DurationRule == CouponDurationFixed {
-		return silk.Pointer(carbon.CreateFromStdTime(tools.NewTime().ParseDateStringX(d.DurationTime)).EndOfDay().ToStdTime())
+		return silk.Pointer(carbon.CreateFromStdTime(tools.NewTime().ParseDateStringX(d.DurationTime)).EndOfDay().StdTime())
 	}
 	if toRider {
-		return silk.Pointer(carbon.Now().AddDays(d.DurationDays).EndOfDay().ToStdTime())
+		return silk.Pointer(carbon.Now().AddDays(d.DurationDays).EndOfDay().StdTime())
 	}
 	return nil
 }

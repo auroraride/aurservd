@@ -45,8 +45,8 @@ func (t *branchTask) Start() {
 
 func (*branchTask) Do() {
 	items, _ := ent.Database.BranchContract.QueryNotDeleted().Where(
-		branchcontract.EndTimeGTE(carbon.Now().StartOfDay().AddDays(3).ToStdTime()),
-		branchcontract.EndTimeLTE(carbon.Now().EndOfDay().AddDays(3).ToStdTime()),
+		branchcontract.EndTimeGTE(carbon.Now().StartOfDay().AddDays(3).StdTime()),
+		branchcontract.EndTimeLTE(carbon.Now().EndOfDay().AddDays(3).StdTime()),
 	).WithBranch(func(bq *ent.BranchQuery) {
 		bq.WithCity()
 	}).All(context.Background())

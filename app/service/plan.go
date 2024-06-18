@@ -771,26 +771,28 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
 	sub, _ := NewSubscribe().QueryEffective(s.rider.ID)
 	if sub == nil {
 		snag.Panic("骑手无生效中的订阅, 无法续费")
+		return model.RiderPlanRenewalRes{}
 	}
 
 	var fee float64
 	var formula string
-	var min uint
+	var minDays uint
 
 	if sub.Remaining < 0 {
 		fee, formula, _ = NewSubscribe().CalculateOverdueFee(sub)
-		min = uint(0 - sub.Remaining)
+		minDays = uint(0 - sub.Remaining)
 	}
 
 	pl, _ := sub.QueryPlan().First(s.ctx)
 	if pl == nil {
 		snag.Panic("未找到骑士卡")
+		return model.RiderPlanRenewalRes{}
 	}
 
 	planType := model.PlanType(pl.Type)
 	rmap := s.Renewal(&model.PlanListRiderReq{
 		CityID:       sub.CityID,
-		Min:          min,
+		Min:          minDays,
 		Model:        sub.Model,
 		EbikeBrandID: sub.BrandID,
 		Intelligent:  sub.Intelligent,
@@ -809,7 +811,7 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
 		Overdue:   sub.Remaining < 0,
 		Fee:       fee,
 		Formula:   formula,
-		Days:      min,
+		Days:      minDays,
 		Items:     items,
 		Configure: NewPayment(s.rider).Configure(),
 	}

@@ -57,7 +57,7 @@ func (s *subscribeAlterService) AlterDays(r *ent.Rider, req *model.SubscribeAlte
 		SetSubscribeID(sub.ID).
 		SetDays(req.Days).
 		SetStatus(model.SubscribeAlterStatusPending).
-		SetSubscribeEndAt(carbon.CreateFromStdTime(*sub.AgentEndAt).EndOfDay().ToStdTime()).
+		SetSubscribeEndAt(carbon.CreateFromStdTime(*sub.AgentEndAt).EndOfDay().StdTime()).
 		Save(s.ctx)
 	if err != nil {
 		snag.Panic("申请失败")
