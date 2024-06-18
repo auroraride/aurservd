@@ -21,10 +21,12 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/task/reminder"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -474,7 +476,7 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlterReq) (res model.Ri
 			SetReviewTime(time.Now())
 
 		if sub.AgentEndAt != nil {
-			tsa.SetSubscribeEndAt(carbon.CreateFromStdTime(*sub.AgentEndAt).EndOfDay().ToStdTime())
+			tsa.SetSubscribeEndAt(carbon.CreateFromStdTime(*sub.AgentEndAt).EndOfDay().StdTime())
 		}
 		if sub.EnterpriseID != nil {
 			tsa.SetEnterpriseID(*sub.EnterpriseID).SetAgentID(req.AgentID)
@@ -553,19 +555,27 @@ func (s *subscribeService) OverdueFee(sub *ent.Subscribe) (fee float64, formula 
 	remaining := -sub.Remaining
 
 	_, dr := NewSetting().DailyRent(nil, sub.CityID, sub.Model, sub.BrandID)
-	// 查询最近一次购买骑士卡的滞纳金
+
+	// 查询最新骑士卡滞纳金
 	// TODO: 需要优化滞纳金逻辑
-	o, _ := ent.Database.Order.QueryNotDeleted().
-		Where(
-			order.RiderID(sub.RiderID),
-			order.PlanIDNotNil(),
-		).
-		Order(ent.Desc(order.FieldCreatedAt)).
-		WithPlan().
-		First(s.ctx)
-	if o != nil && o.Edges.Plan != nil {
-		dr = o.Edges.Plan.OverdueFee
-	} else {
+	options := []predicate.Plan{
+		plan.HasCitiesWith(city.ID(sub.CityID)),
+		plan.Model(sub.Model),
+	}
+	if sub.BrandID != nil {
+		options = append(options, plan.BrandID(*sub.BrandID))
+	}
+	if sub.InitialDays > 0 {
+		// 以防找不到对应天数的骑士卡，查询小于等于初始天数的骑士卡
+		options = append(options, plan.DaysLTE(uint(sub.InitialDays)))
+	}
+	latest := NewPlan().FilterEffectiveItems(options...)
+	if len(latest) > 0 {
+		dr = latest[len(latest)-1].OverdueFee
+	}
+
+	// 如果没有找到对应的骑士卡滞纳金，则使用默认滞纳金（默认滞纳金令人难以忍受）
+	if dr == 0 {
 		dr = model.DailyRentDefault
 	}
 

@@ -22,6 +22,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommissionplan"
 	"github.com/auroraride/aurservd/internal/ent/setting"
@@ -69,7 +70,7 @@ func (s *planService) Query(id uint64) *ent.Plan {
 
 // QueryEffectiveWithID 获取当前生效的骑行卡
 func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
-	today := carbon.Now().StartOfDay().ToStdTime()
+	today := carbon.Now().StartOfDay().StdTime()
 	item, err := s.orm.QueryNotDeleted().
 		Where(
 			plan.Enable(true),
@@ -85,8 +86,24 @@ func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
 	return item
 }
 
+// FilterEffectiveItems 按照指定条件过滤生效中的骑士卡
+// 排序为按天数正序排列
+func (s *planService) FilterEffectiveItems(ps ...predicate.Plan) []*ent.Plan {
+	today := carbon.Now().StartOfDay().StdTime()
+	plans, _ := s.orm.QueryNotDeleted().
+		Where(ps...).
+		Where(
+			plan.Enable(true),
+			plan.StartLTE(today),
+			plan.EndGTE(today),
+		).
+		Order(ent.Asc(plan.FieldDays)).
+		All(s.ctx)
+	return plans
+}
+
 func (s *planService) QueryEffectiveList() ent.Plans {
-	today := carbon.Now().StartOfDay().ToStdTime()
+	today := carbon.Now().StartOfDay().StdTime()
 	items, _ := s.orm.QueryNotDeleted().
 		Where(
 			plan.Enable(true),
@@ -152,7 +169,7 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 	}
 
 	start := tools.NewTime().ParseDateStringX(req.Start)
-	end := carbon.CreateFromStdTime(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().ToStdTime()
+	end := carbon.CreateFromStdTime(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().StdTime()
 
 	// 获取型号列表
 	var bms []string
@@ -286,8 +303,8 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 //         snag.Panic("骑士卡子项无法单独修改, 请携带原始骑士卡ID")
 //     }
 //
-//     start := carbon.ParseByLayout(req.Start, carbon.DateLayout).ToStdTime()
-//     end := carbon.ParseByLayout(req.End, carbon.DateLayout).ToStdTime()
+//     start := carbon.ParseByLayout(req.Start, carbon.DateLayout).StdTime()
+//     end := carbon.ParseByLayout(req.End, carbon.DateLayout).StdTime()
 //
 //     // 查询是否重复
 //     s.checkDuplicate(req.Cities, req.Models, start, end, req.ID)
@@ -592,7 +609,7 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 	// 需缴纳押金金额
 	deposit := NewRider().Deposit(s.rider.ID)
 
-	today := carbon.Now().StartOfDay().ToStdTime()
+	today := carbon.Now().StartOfDay().StdTime()
 
 	items := s.orm.QueryNotDeleted().
 		Where(
@@ -815,7 +832,7 @@ func (s *planService) ModifyTime(req *model.PlanModifyTimeReq) {
 				plan.ParentID(req.ID),
 			),
 		).
-		SetEnd(carbon.CreateFromStdTime(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().ToStdTime()).
+		SetEnd(carbon.CreateFromStdTime(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().StdTime()).
 		SetStart(tools.NewTime().ParseDateStringX(req.Start)).
 		ExecX(s.ctx)
 }

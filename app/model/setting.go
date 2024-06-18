@@ -9,7 +9,7 @@ const (
 	IntelligentBatteryFullSoc  float64 = 95.0 // 智能电池定义满电soc TODO: 具体数值待定义
 	CabinetBusinessScanExpires int64   = 30   // 电柜业务 - 扫码有效期(s)
 	CabinetBusinessStepTimeout int64   = 200  // 电柜业务 - 操作超时(s)
-	DailyRentDefault           float64 = 999.0
+	DailyRentDefault           float64 = 99999.0
 )
 
 const (
