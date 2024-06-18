@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"sort"
 	"strconv"
 	"time"
 
@@ -21,10 +22,12 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/task/reminder"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -474,7 +477,7 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlterReq) (res model.Ri
 			SetReviewTime(time.Now())
 
 		if sub.AgentEndAt != nil {
-			tsa.SetSubscribeEndAt(carbon.CreateFromStdTime(*sub.AgentEndAt).EndOfDay().ToStdTime())
+			tsa.SetSubscribeEndAt(carbon.CreateFromStdTime(*sub.AgentEndAt).EndOfDay().StdTime())
 		}
 		if sub.EnterpriseID != nil {
 			tsa.SetEnterpriseID(*sub.EnterpriseID).SetAgentID(req.AgentID)
@@ -552,9 +555,10 @@ func (s *subscribeService) OverdueFee(sub *ent.Subscribe) (fee float64, formula 
 
 	remaining := -sub.Remaining
 
-	_, dr := NewSetting().DailyRent(nil, sub.CityID, sub.Model, sub.BrandID)
-	// 查询最近一次购买骑士卡的滞纳金
-	// TODO: 需要优化滞纳金逻辑
+	// 如果没有找到对应的骑士卡滞纳金，则使用默认滞纳金（默认滞纳金令人难以忍受）
+	dr := model.DailyRentDefault
+
+	// 查询上次购买订单
 	o, _ := ent.Database.Order.QueryNotDeleted().
 		Where(
 			order.RiderID(sub.RiderID),
@@ -564,9 +568,33 @@ func (s *subscribeService) OverdueFee(sub *ent.Subscribe) (fee float64, formula 
 		WithPlan().
 		First(s.ctx)
 	if o != nil && o.Edges.Plan != nil {
-		dr = o.Edges.Plan.OverdueFee
-	} else {
-		dr = model.DailyRentDefault
+		p := o.Edges.Plan
+
+		// 查询最新骑士卡滞纳金
+		// TODO: 需要优化滞纳金逻辑
+		options := []predicate.Plan{
+			plan.HasCitiesWith(city.ID(sub.CityID)),
+			plan.Model(sub.Model),
+			plan.Type(p.Type),
+		}
+		if sub.BrandID != nil {
+			options = append(options, plan.BrandID(*sub.BrandID))
+		}
+
+		latest := NewPlan().FilterEffectiveItems(options...)
+		var days []int
+		items := make(map[int]float64)
+		// 以防找不到对应天数的骑士卡，查询最接近的天数
+		for _, item := range latest {
+			d := int(math.Abs(float64(item.Days) - float64(sub.InitialDays)))
+			items[d] = item.OverdueFee
+			days = append(days, d)
+		}
+		sort.Ints(days)
+
+		if len(days) > 0 {
+			dr = items[days[0]]
+		}
 	}
 
 	fee, _ = decimal.NewFromFloat(dr).Mul(decimal.NewFromInt(int64(remaining))).Float64()

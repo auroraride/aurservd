@@ -22,6 +22,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommissionplan"
 	"github.com/auroraride/aurservd/internal/ent/setting"
@@ -69,7 +70,7 @@ func (s *planService) Query(id uint64) *ent.Plan {
 
 // QueryEffectiveWithID 获取当前生效的骑行卡
 func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
-	today := carbon.Now().StartOfDay().ToStdTime()
+	today := carbon.Now().StartOfDay().StdTime()
 	item, err := s.orm.QueryNotDeleted().
 		Where(
 			plan.Enable(true),
@@ -85,8 +86,24 @@ func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
 	return item
 }
 
+// FilterEffectiveItems 按照指定条件过滤生效中的骑士卡
+// 排序为按天数正序排列
+func (s *planService) FilterEffectiveItems(ps ...predicate.Plan) []*ent.Plan {
+	today := carbon.Now().StartOfDay().StdTime()
+	plans, _ := s.orm.QueryNotDeleted().
+		Where(ps...).
+		Where(
+			plan.Enable(true),
+			plan.StartLTE(today),
+			plan.EndGTE(today),
+		).
+		Order(ent.Asc(plan.FieldDays)).
+		All(s.ctx)
+	return plans
+}
+
 func (s *planService) QueryEffectiveList() ent.Plans {
-	today := carbon.Now().StartOfDay().ToStdTime()
+	today := carbon.Now().StartOfDay().StdTime()
 	items, _ := s.orm.QueryNotDeleted().
 		Where(
 			plan.Enable(true),
@@ -99,7 +116,7 @@ func (s *planService) QueryEffectiveList() ent.Plans {
 }
 
 // checkDuplicate 查询骑士卡是否冲突
-func (s *planService) checkDuplicate(brandID uint64, cities []uint64, models []string, start, end time.Time, params ...uint64) {
+func (s *planService) checkDuplicate(brandID uint64, cities []uint64, models []string, start, end time.Time, ty model.PlanType, params ...uint64) {
 	q := s.orm.QueryNotDeleted().
 		Where(
 			plan.Enable(true),
@@ -119,6 +136,14 @@ func (s *planService) checkDuplicate(brandID uint64, cities []uint64, models []s
 		q.Where(plan.BrandID(brandID))
 	} else {
 		q.Where(plan.BrandIDIsNil())
+	}
+
+	if ty.Value() == model.PlanTypeEbikeRto.Value() {
+		// 以租代购 类型不能重复
+		q.Where(plan.Type(model.PlanTypeEbikeRto.Value()))
+	} else {
+		// 单电和车 不能重复
+		q.Where(plan.TypeIn(model.PlanTypeBattery.Value(), model.PlanTypeEbikeWithBattery.Value()))
 	}
 
 	exists, _ := q.Exist(s.ctx)
@@ -144,7 +169,7 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 	}
 
 	start := tools.NewTime().ParseDateStringX(req.Start)
-	end := carbon.CreateFromStdTime(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().ToStdTime()
+	end := carbon.CreateFromStdTime(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().StdTime()
 
 	// 获取型号列表
 	var bms []string
@@ -165,7 +190,7 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 	NewBatteryModel().QueryModelsX(bms)
 
 	// 查询是否重复
-	s.checkDuplicate(req.BrandID, req.Cities, bms, start, end)
+	s.checkDuplicate(req.BrandID, req.Cities, bms, start, end, req.Type)
 
 	// 排序
 	sort.Slice(req.Complexes, func(i, j int) bool {
@@ -278,8 +303,8 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 //         snag.Panic("骑士卡子项无法单独修改, 请携带原始骑士卡ID")
 //     }
 //
-//     start := carbon.ParseByLayout(req.Start, carbon.DateLayout).ToStdTime()
-//     end := carbon.ParseByLayout(req.End, carbon.DateLayout).ToStdTime()
+//     start := carbon.ParseByLayout(req.Start, carbon.DateLayout).StdTime()
+//     end := carbon.ParseByLayout(req.End, carbon.DateLayout).StdTime()
 //
 //     // 查询是否重复
 //     s.checkDuplicate(req.Cities, req.Models, start, end, req.ID)
@@ -511,7 +536,7 @@ func (s *planService) renewalMapKey(m string, brandID *uint64) string {
 // Renewal 续签选项
 func (s *planService) Renewal(req *model.PlanListRiderReq) map[string]*[]model.RiderPlanItem {
 	rmap := make(map[string]*[]model.RiderPlanItem)
-	today := carbon.Now().StartOfDay().ToStdTime()
+	today := carbon.Now().StartOfDay().StdTime()
 
 	q := s.orm.QueryNotDeleted().
 		Where(
@@ -526,6 +551,10 @@ func (s *planService) Renewal(req *model.PlanListRiderReq) map[string]*[]model.R
 			plan.Intelligent(req.Intelligent),
 		).
 		Order(ent.Asc(plan.FieldDays))
+
+	if req.PlanType != nil {
+		q.Where(plan.Type(req.PlanType.Value()))
+	}
 
 	if req.EbikeBrandID != nil {
 		q.Where(plan.BrandID(*req.EbikeBrandID))
@@ -580,7 +609,7 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 	// 需缴纳押金金额
 	deposit := NewRider().Deposit(s.rider.ID)
 
-	today := carbon.Now().StartOfDay().ToStdTime()
+	today := carbon.Now().StartOfDay().StdTime()
 
 	items := s.orm.QueryNotDeleted().
 		Where(
@@ -742,23 +771,32 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
 	sub, _ := NewSubscribe().QueryEffective(s.rider.ID)
 	if sub == nil {
 		snag.Panic("骑手无生效中的订阅, 无法续费")
+		return model.RiderPlanRenewalRes{}
 	}
 
 	var fee float64
 	var formula string
-	var min uint
+	var minDays uint
 
 	if sub.Remaining < 0 {
 		fee, formula, _ = NewSubscribe().CalculateOverdueFee(sub)
-		min = uint(0 - sub.Remaining)
+		minDays = uint(0 - sub.Remaining)
 	}
 
+	pl, _ := sub.QueryPlan().First(s.ctx)
+	if pl == nil {
+		snag.Panic("未找到骑士卡")
+		return model.RiderPlanRenewalRes{}
+	}
+
+	planType := model.PlanType(pl.Type)
 	rmap := s.Renewal(&model.PlanListRiderReq{
 		CityID:       sub.CityID,
-		Min:          min,
+		Min:          minDays,
 		Model:        sub.Model,
 		EbikeBrandID: sub.BrandID,
 		Intelligent:  sub.Intelligent,
+		PlanType:     &planType,
 	})
 
 	items := make([]model.RiderPlanItem, 0)
@@ -773,7 +811,7 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
 		Overdue:   sub.Remaining < 0,
 		Fee:       fee,
 		Formula:   formula,
-		Days:      min,
+		Days:      minDays,
 		Items:     items,
 		Configure: NewPayment(s.rider).Configure(),
 	}
@@ -796,7 +834,7 @@ func (s *planService) ModifyTime(req *model.PlanModifyTimeReq) {
 				plan.ParentID(req.ID),
 			),
 		).
-		SetEnd(carbon.CreateFromStdTime(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().ToStdTime()).
+		SetEnd(carbon.CreateFromStdTime(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().StdTime()).
 		SetStart(tools.NewTime().ParseDateStringX(req.Start)).
 		ExecX(s.ctx)
 }

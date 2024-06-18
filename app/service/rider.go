@@ -232,7 +232,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 
 	var remark string
 	// 判定是否年满18周岁
-	birthday := carbon.Parse(detail.Birthday).ToStdTime().AddDate(18, 0, 0)
+	birthday := carbon.Parse(detail.Birthday).StdTime().AddDate(18, 0, 0)
 	// 未年满18岁认证标记为失败
 	if birthday.After(time.Now()) {
 		remark = "未年满18岁"
@@ -526,8 +526,8 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 					subscribe.And(
 						subscribe.EnterpriseIDNotNil(),
 						subscribe.Status(model.SubscribeStatusUsing),
-						subscribe.AgentEndAtLTE(carbon.CreateFromStdTime(tools.NewTime().WillEnd(time.Now(), 3, true)).EndOfDay().ToStdTime()),
-						subscribe.AgentEndAtGTE(carbon.CreateFromStdTime(tools.NewTime().WillEnd(time.Now(), 0, true)).StartOfDay().ToStdTime()),
+						subscribe.AgentEndAtLTE(carbon.CreateFromStdTime(tools.NewTime().WillEnd(time.Now(), 3, true)).EndOfDay().StdTime()),
+						subscribe.AgentEndAtGTE(carbon.CreateFromStdTime(tools.NewTime().WillEnd(time.Now(), 0, true)).StartOfDay().StdTime()),
 					),
 				),
 			)

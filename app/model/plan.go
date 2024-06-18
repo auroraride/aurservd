@@ -156,7 +156,8 @@ type PlanListRiderReq struct {
 	EbikeBrandID *uint64 `json:"ebikeBrandId" swaggerignore:"true"` // 电车型号
 	Intelligent  bool    `json:"intelligent" swaggerignore:"true"`  // 是否智能
 
-	StoreId *uint64 `json:"storeId"  query:"storeId"` // 门店ID
+	StoreId  *uint64   `json:"storeId"  query:"storeId"`                // 门店ID
+	PlanType *PlanType `json:"planType" query:"planType" enums:"1,2,3"` // 骑士卡类别 1:单电 2:车加电 3:以租代购
 }
 
 // RiderPlanItem 骑士返回数据

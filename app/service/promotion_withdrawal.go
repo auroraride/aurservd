@@ -268,8 +268,8 @@ func (s *promotionWithdrawalService) Export(req *promotion.WithdrawalExportReq) 
 	} else {
 		// 默认查询最近一个月的数据
 		q.Where(
-			promotionwithdrawal.CreatedAtGTE(carbon.Now().SubMonth().ToStdTime()),
-			promotionwithdrawal.CreatedAtLTE(carbon.Now().ToStdTime()),
+			promotionwithdrawal.CreatedAtGTE(carbon.Now().SubMonth().StdTime()),
+			promotionwithdrawal.CreatedAtLTE(carbon.Now().StdTime()),
 		)
 
 	}

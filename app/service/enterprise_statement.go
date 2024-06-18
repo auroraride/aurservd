@@ -62,7 +62,7 @@ func (s *enterpriseStatementService) Current(e *ent.Enterprise) *ent.EnterpriseS
 	if res == nil {
 		res, _ = s.orm.Create().
 			SetEnterpriseID(e.ID).
-			SetStart(carbon.CreateFromStdTime(e.CreatedAt).StartOfDay().ToStdTime()).
+			SetStart(carbon.CreateFromStdTime(e.CreatedAt).StartOfDay().StdTime()).
 			Save(s.ctx)
 	}
 	return res
@@ -71,7 +71,7 @@ func (s *enterpriseStatementService) Current(e *ent.Enterprise) *ent.EnterpriseS
 func (s *enterpriseStatementService) GetBill(req *model.StatementBillReq) *model.StatementBillRes {
 	// 判定结算日是否早于当天
 	end := tools.NewTime().ParseDateStringX(req.End)
-	if !end.Before(carbon.Now().StartOfDay().ToStdTime()) {
+	if !end.Before(carbon.Now().StartOfDay().StdTime()) {
 		snag.Panic("结算日必须早于当天")
 	}
 
@@ -176,7 +176,7 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
 	}
 
 	// 下个账单开始日
-	next := carbon.CreateFromStdTime(end).StartOfDay().AddDay().ToStdTime()
+	next := carbon.CreateFromStdTime(end).StartOfDay().AddDay().StdTime()
 
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 		_, err = tx.EnterpriseStatement.
@@ -386,12 +386,12 @@ func (s *enterpriseStatementService) usageFilter(e *ent.Enterprise, req model.St
 	var bw []predicate.EnterpriseBill
 
 	if req.Start == "" {
-		start = carbon.CreateFromStdTime(e.CreatedAt).StartOfDay().ToStdTime()
+		start = carbon.CreateFromStdTime(e.CreatedAt).StartOfDay().StdTime()
 	} else {
 		start = tools.NewTime().ParseDateStringX(req.Start)
 	}
 
-	today := carbon.Now().StartOfDay().ToStdTime()
+	today := carbon.Now().StartOfDay().StdTime()
 
 	q.Where(
 		subscribe.Or(
@@ -402,7 +402,7 @@ func (s *enterpriseStatementService) usageFilter(e *ent.Enterprise, req model.St
 	bw = append(bw, enterprisebill.EndGTE(start))
 
 	if req.End == "" {
-		end = carbon.Now().StartOfDay().ToStdTime()
+		end = carbon.Now().StartOfDay().StdTime()
 	} else {
 		end = tools.NewTime().ParseDateStringX(req.End)
 	}
@@ -525,7 +525,7 @@ func (s *enterpriseStatementService) usageDetail(en *ent.Enterprise, item *ent.S
 	}
 
 	status := model.SubscribeStatusText(item.Status)
-	today := carbon.Now().StartOfDay().ToStdTime()
+	today := carbon.Now().StartOfDay().StdTime()
 	if en.Agent && item.AgentEndAt != nil && item.AgentEndAt.Before(today) {
 		status = "已超期"
 	}

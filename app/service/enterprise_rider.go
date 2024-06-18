@@ -288,7 +288,7 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
 					if sub.LastBillDate == nil {
 						res.Unsettled += days
 					} else {
-						res.Unsettled += tt.UsedDaysToNow(carbon.CreateFromStdTime(*sub.LastBillDate).StartOfDay().AddDay().ToStdTime())
+						res.Unsettled += tt.UsedDaysToNow(carbon.CreateFromStdTime(*sub.LastBillDate).StartOfDay().AddDay().StdTime())
 					}
 				}
 			}

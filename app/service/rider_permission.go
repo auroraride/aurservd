@@ -79,7 +79,7 @@ func (s *riderPermissionService) SubscribeX(typ model.RiderPermissionType, sub *
 		snag.Panic("未找到有效骑士卡")
 	}
 	// 判断代理是否到期
-	if sub.AgentEndAt != nil && sub.AgentEndAt.Before(carbon.Now().StartOfDay().ToStdTime()) {
+	if sub.AgentEndAt != nil && sub.AgentEndAt.Before(carbon.Now().StartOfDay().StdTime()) {
 		snag.Panic("骑士卡已超期")
 	}
 	// 当骑士卡暂停时无法办理任何业务

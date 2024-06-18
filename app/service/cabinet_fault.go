@@ -121,7 +121,7 @@ func (s *cabinetFaultService) List(req *model.CabinetFaultListReq) (res *model.P
 		if start.Error != nil {
 			snag.Panic("日期格式错误")
 		}
-		q.Where(cabinetfault.CreatedAtGTE(start.ToStdTime()))
+		q.Where(cabinetfault.CreatedAtGTE(start.StdTime()))
 	}
 	if req.End != nil {
 		end := carbon.ParseByLayout(*req.End, carbon.DateLayout)
@@ -129,7 +129,7 @@ func (s *cabinetFaultService) List(req *model.CabinetFaultListReq) (res *model.P
 			snag.Panic("日期格式错误")
 		}
 		end.AddDay()
-		q.Where(cabinetfault.CreatedAtLT(end.ToStdTime()))
+		q.Where(cabinetfault.CreatedAtLT(end.StdTime()))
 	}
 	res = &model.PaginationRes{Pagination: q.PaginationResult(req.PaginationReq)}
 	items := q.Pagination(req.PaginationReq).AllX(s.ctx)
