@@ -592,21 +592,30 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 		if doReq.Rto && s.ebikeInfo != nil {
 			bq.SetRtoEbikeID(s.ebikeInfo.ID)
 		}
-		b, _ = bq.Save(doReq.Type)
 
-		// 单独退车
-		if s.ebikeStore != nil {
-			es := NewBusinessLog(s.subscribe).
-				SetModifier(s.modifier).
-				SetEmployee(s.employee).
-				SetStore(s.ebikeStore).
-				SetStock(ebikeSk).
-				SetAgentId(s.agentID)
-			if doReq.Remark != nil {
-				es.SetRemark(*doReq.Remark)
+		// 不参与以租代购且为车电套餐时
+		if !doReq.Rto && s.ebikeStoreID != nil {
+			// 电归还电柜时，车归还门店需单独新增业务记录；车电归还不同门店也需新增车归还业务记录；
+			if s.batStore == nil || (*s.ebikeStoreID != *s.batStoreID) {
+				es := NewBusinessLog(s.subscribe).
+					SetModifier(s.modifier).
+					SetEmployee(s.employee).
+					SetStore(s.ebikeStore).
+					SetStock(ebikeSk).
+					SetAgentId(s.agentID)
+				if doReq.Remark != nil {
+					es.SetRemark(*doReq.Remark)
+				}
+				_, _ = es.Save(doReq.Type)
+			} else {
+				// 车电归还同一门店，无需新增车归还业务记录
+				if doReq.Remark != nil {
+					bq.SetRemark(*doReq.Remark)
+				}
 			}
-			_, _ = es.Save(doReq.Type)
 		}
+
+		b, _ = bq.Save(doReq.Type)
 
 		var bussinessID *uint64
 		revStatus := model.ReserveStatusFail
