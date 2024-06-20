@@ -588,8 +588,12 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 		if s.batStoreID != nil && s.ebikeStoreID != nil && *s.batStoreID != *s.ebikeStoreID {
 			snag.Panic("电池退租门店必须与车辆选择门店一致")
 		}
-		// 电池归还电柜，电车归还门店
-		if s.cabinet != nil && s.ebikeStore != nil {
+		// 电池单独归还门店(单电退租，满足以租代购退租)
+		if s.batStoreID != nil {
+			bq.SetStore(s.batStore)
+		}
+		// 电车归还门店
+		if s.ebikeStore != nil {
 			bq.SetStore(s.ebikeStore)
 		}
 		// 满足以租代购
@@ -828,6 +832,7 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 				// 当前属于以租代购
 				ebu := tx.Ebike.UpdateOneID(*sub.EbikeID).
 					ClearRiderID().
+					ClearStoreID().
 					SetRtoRiderID(sub.RiderID)
 				err = ebu.Exec(s.ctx)
 				snag.PanicIfError(err)
