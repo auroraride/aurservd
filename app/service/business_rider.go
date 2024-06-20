@@ -592,8 +592,8 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 		if s.batStoreID != nil {
 			bq.SetStore(s.batStore)
 		}
-		// 电池归还电柜，电车归还门店
-		if s.cabinet != nil && s.ebikeStore != nil {
+		// 电车归还门店
+		if s.ebikeStore != nil {
 			bq.SetStore(s.ebikeStore)
 		}
 		// 满足以租代购
