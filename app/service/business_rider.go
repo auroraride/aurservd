@@ -521,13 +521,13 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 
 		// 库存管理
 		// TODO 智能电池
-		var batSk, ebikeSk *ent.Stock
+		var batSk *ent.Stock
 		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 			cb(tx)
 
 			// 需要进行业务出入库
 			if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil || s.ebikeStoreID != nil || s.batStoreID != nil {
-				batSk, ebikeSk, err = NewStockWithModifier(s.modifier).RiderBusiness(
+				batSk, _, err = NewStockWithModifier(s.modifier).RiderBusiness(
 					tx,
 					&model.StockBusinessReq{
 						RiderID:   s.subscribe.RiderID,
@@ -575,7 +575,6 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 		// 保存业务日志
 		var b *ent.Business
 		var bq *businessLogService
-		// 车电套餐退租时，电车和电池单独退
 		bq = NewBusinessLog(s.subscribe).
 			SetModifier(s.modifier).
 			SetEmployee(s.employee).
@@ -585,34 +584,16 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 			SetStock(batSk).
 			SetBattery(bat).
 			SetAgentId(s.agentID)
-		if s.batStore != nil {
-			bq.SetStore(s.batStore)
+		if s.ebikeStoreID != nil {
+			bq.SetStore(s.ebikeStore)
 		}
 		// 满足以租代购
 		if doReq.Rto && s.ebikeInfo != nil {
 			bq.SetRtoEbikeID(s.ebikeInfo.ID)
 		}
 
-		// 不参与以租代购且为车电套餐时
-		if !doReq.Rto && s.ebikeStoreID != nil {
-			// 电归还电柜时，车归还门店需单独新增业务记录；车电归还不同门店也需新增车归还业务记录；
-			if s.batStore == nil || (*s.ebikeStoreID != *s.batStoreID) {
-				es := NewBusinessLog(s.subscribe).
-					SetModifier(s.modifier).
-					SetEmployee(s.employee).
-					SetStore(s.ebikeStore).
-					SetStock(ebikeSk).
-					SetAgentId(s.agentID)
-				if doReq.Remark != nil {
-					es.SetRemark(*doReq.Remark)
-				}
-				_, _ = es.Save(doReq.Type)
-			} else {
-				// 车电归还同一门店，无需新增车归还业务记录
-				if doReq.Remark != nil {
-					bq.SetRemark(*doReq.Remark)
-				}
-			}
+		if doReq.Remark != nil {
+			bq.SetRemark(*doReq.Remark)
 		}
 
 		b, _ = bq.Save(doReq.Type)
@@ -840,19 +821,21 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 		if sub.EbikeID != nil {
 			if doReq.Rto {
 				// 当前属于以租代购
-				err = tx.Ebike.UpdateOneID(*sub.EbikeID).
+				ebu := tx.Ebike.UpdateOneID(*sub.EbikeID).
 					ClearRiderID().
-					SetNillableStoreID(s.storeID).
-					SetRtoRiderID(sub.RiderID).
-					Exec(s.ctx)
+					SetRtoRiderID(sub.RiderID)
+				err = ebu.Exec(s.ctx)
 				snag.PanicIfError(err)
 			} else {
 				// 删除电车所属
-				err = tx.Ebike.UpdateOneID(*sub.EbikeID).
+				ebu := tx.Ebike.UpdateOneID(*sub.EbikeID).
 					ClearRiderID().
 					SetStatus(model.EbikeStatusInStock).
-					SetNillableStoreID(s.storeID).
-					Exec(s.ctx)
+					SetNillableStoreID(s.storeID)
+				if s.ebikeStoreID != nil {
+					ebu.SetNillableStoreID(s.ebikeStoreID)
+				}
+				err = ebu.Exec(s.ctx)
 				snag.PanicIfError(err)
 			}
 		}
