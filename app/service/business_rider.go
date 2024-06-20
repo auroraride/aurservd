@@ -584,7 +584,12 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 			SetStock(batSk).
 			SetBattery(bat).
 			SetAgentId(s.agentID)
-		if s.ebikeStoreID != nil {
+		// 电池归还门店必须保持与电车归还门店一致
+		if s.batStoreID != nil && s.ebikeStoreID != nil && *s.batStoreID != *s.ebikeStoreID {
+			snag.Panic("电池退租门店必须与车辆选择门店一致")
+		}
+		// 电池归还电柜，电车归还门店
+		if s.cabinet != nil && s.ebikeStore != nil {
 			bq.SetStore(s.ebikeStore)
 		}
 		// 满足以租代购
