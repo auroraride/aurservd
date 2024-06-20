@@ -325,10 +325,19 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 
 // UpdateEnable 修改骑士卡状态
 func (s *planService) UpdateEnable(req *model.PlanEnableModifyReq) {
+	if req.Enable == nil {
+		snag.Panic("启用参数有误")
+	}
 	item := s.Query(req.ID)
 	if item.ParentID != nil {
 		snag.Panic("子项不能单独操作")
 	}
+
+	// 判断已上架的骑士卡中是否存在相同类型的套餐数据
+	if *req.Enable {
+		s.CheckUpdateEnable(item)
+	}
+
 	s.orm.Update().
 		Where(plan.Or(
 			plan.ID(req.ID),
@@ -336,6 +345,36 @@ func (s *planService) UpdateEnable(req *model.PlanEnableModifyReq) {
 		)).
 		SetEnable(*req.Enable).
 		SaveX(s.ctx)
+}
+
+func (s *planService) CheckUpdateEnable(item *ent.Plan) {
+	// 获取城市ids
+	var cityIds []uint64
+	planCities, _ := item.QueryCities().All(s.ctx)
+	for _, ct := range planCities {
+		cityIds = append(cityIds, ct.ID)
+	}
+
+	// 获取型号列表
+	var bms []string
+	mms := make(map[string]bool)
+	bms = append(bms, item.Model)
+	mms[item.Model] = true
+	cps, _ := item.QueryComplexes().All(s.ctx)
+	for _, c := range cps {
+		if !mms[c.Model] {
+			bms = append(bms, c.Model)
+			mms[c.Model] = true
+		}
+	}
+	NewBatteryModel().QueryModelsX(bms)
+
+	var bId uint64
+	if item.BrandID != nil {
+		bId = *item.BrandID
+	}
+
+	s.checkDuplicate(bId, cityIds, bms, item.Start, item.End, model.PlanType(item.Type))
 }
 
 // Delete 软删除骑士卡
