@@ -880,7 +880,7 @@ func (s *planService) ModifyTime(req *model.PlanModifyTimeReq) {
 
 // PlanCity 查询套餐城市
 func (s *planService) PlanCity(id uint64) (res []uint64, err error) {
-	pl, _ := s.orm.QueryNotDeleted().Where(plan.ID(id)).WithCities().First(s.ctx)
+	pl, _ := s.orm.Query().Where(plan.ID(id)).WithCities().First(s.ctx)
 	if pl == nil {
 		return nil, fmt.Errorf("套餐不存在")
 	}
