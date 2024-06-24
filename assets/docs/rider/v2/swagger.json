@@ -1401,6 +1401,72 @@
                 }
             }
         },
+      "/rider/v2/ebike/brand/{id}": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "Ebike - 电车"
+          ],
+          "summary": "电车品牌详情",
+          "operationId": "EbikeBrandDetail",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "骑手校验token",
+              "name": "X-Rider-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "integer",
+              "description": "电车品牌ID",
+              "name": "id",
+              "in": "path",
+              "required": true
+            },
+            {
+              "type": "number",
+              "description": "纬度",
+              "name": "lat",
+              "in": "query",
+              "required": true
+            },
+            {
+              "type": "number",
+              "description": "经度",
+              "name": "lng",
+              "in": "query",
+              "required": true
+            },
+            {
+              "type": "integer",
+              "description": "套餐ID",
+              "name": "planId",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "门店ID",
+              "name": "storeId",
+              "in": "query",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/definition.EbikeDetailRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/enterprise/battery": {
             "get": {
                 "consumes": [
@@ -2745,6 +2811,27 @@
                         "required": true
                     },
                     {
+                      "enum": [
+                        1,
+                        2,
+                        3
+                      ],
+                      "type": "integer",
+                      "x-enum-comments": {
+                        "PlanTypeBattery": "单电",
+                        "PlanTypeEbikeRto": "以租代购",
+                        "PlanTypeEbikeWithBattery": "车加电"
+                      },
+                      "x-enum-varnames": [
+                        "PlanTypeBattery",
+                        "PlanTypeEbikeWithBattery",
+                        "PlanTypeEbikeRto"
+                      ],
+                      "description": "骑士卡类别 1:单电 2:车加电 3:以租代购",
+                      "name": "planType",
+                      "in": "query"
+                    },
+                  {
                         "type": "integer",
                         "description": "门店ID",
                         "name": "storeId",
@@ -3968,6 +4055,54 @@
                     "type": "string"
                 }
             }
+        },
+      "definition.EbikeDetailRes": {
+        "type": "object",
+        "properties": {
+          "brand": {
+            "description": "车电品牌",
+            "allOf": [
+              {
+                "$ref": "#/definitions/model.EbikeBrand"
+              }
+            ]
+          },
+          "plan": {
+            "description": "套餐",
+            "allOf": [
+              {
+                "$ref": "#/definitions/model.Plan"
+              }
+            ]
+          },
+          "store": {
+            "description": "门店",
+            "type": "object",
+            "properties": {
+              "address": {
+                "description": "地址",
+                "type": "string"
+              },
+              "distance": {
+                "description": "距离",
+                "type": "number"
+              },
+              "id": {
+                "type": "integer"
+              },
+              "lat": {
+                "type": "number"
+              },
+              "lng": {
+                "type": "number"
+              },
+              "name": {
+                "description": "门店名称",
+                "type": "string"
+              }
+            }
+          }
+        }
         },
         "definition.FaultCauseRes": {
             "type": "object",
@@ -6004,6 +6139,13 @@
         "model.EbikeBrand": {
             "type": "object",
             "properties": {
+              "brandAttribute": {
+                "description": "品牌属性",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/model.EbikeBrandAttribute"
+                }
+              },
                 "cover": {
                     "description": "封面图",
                     "type": "string"
@@ -6011,9 +6153,31 @@
                 "id": {
                     "type": "integer"
                 },
+              "mainPic": {
+                "description": "主图",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
                 "name": {
                     "description": "名称",
                     "type": "string"
+                }
+            }
+        },
+      "model.EbikeBrandAttribute": {
+        "type": "object",
+        "required": [
+          "name",
+          "value"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
                 }
             }
         },

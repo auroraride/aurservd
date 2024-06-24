@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -11,17 +12,21 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrandattribute"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
 // EbikeBrandQuery is the builder for querying EbikeBrand entities.
 type EbikeBrandQuery struct {
 	config
-	ctx        *QueryContext
-	order      []ebikebrand.OrderOption
-	inters     []Interceptor
-	predicates []predicate.EbikeBrand
-	modifiers  []func(*sql.Selector)
+	ctx                *QueryContext
+	order              []ebikebrand.OrderOption
+	inters             []Interceptor
+	predicates         []predicate.EbikeBrand
+	withBrandAttribute *EbikeBrandAttributeQuery
+	withPlans          *PlanQuery
+	modifiers          []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -56,6 +61,50 @@ func (ebq *EbikeBrandQuery) Unique(unique bool) *EbikeBrandQuery {
 func (ebq *EbikeBrandQuery) Order(o ...ebikebrand.OrderOption) *EbikeBrandQuery {
 	ebq.order = append(ebq.order, o...)
 	return ebq
+}
+
+// QueryBrandAttribute chains the current query on the "brand_attribute" edge.
+func (ebq *EbikeBrandQuery) QueryBrandAttribute() *EbikeBrandAttributeQuery {
+	query := (&EbikeBrandAttributeClient{config: ebq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ebq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ebq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebikebrand.Table, ebikebrand.FieldID, selector),
+			sqlgraph.To(ebikebrandattribute.Table, ebikebrandattribute.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ebikebrand.BrandAttributeTable, ebikebrand.BrandAttributeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ebq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPlans chains the current query on the "plans" edge.
+func (ebq *EbikeBrandQuery) QueryPlans() *PlanQuery {
+	query := (&PlanClient{config: ebq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ebq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ebq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebikebrand.Table, ebikebrand.FieldID, selector),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ebikebrand.PlansTable, ebikebrand.PlansColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ebq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first EbikeBrand entity from the query.
@@ -245,15 +294,39 @@ func (ebq *EbikeBrandQuery) Clone() *EbikeBrandQuery {
 		return nil
 	}
 	return &EbikeBrandQuery{
-		config:     ebq.config,
-		ctx:        ebq.ctx.Clone(),
-		order:      append([]ebikebrand.OrderOption{}, ebq.order...),
-		inters:     append([]Interceptor{}, ebq.inters...),
-		predicates: append([]predicate.EbikeBrand{}, ebq.predicates...),
+		config:             ebq.config,
+		ctx:                ebq.ctx.Clone(),
+		order:              append([]ebikebrand.OrderOption{}, ebq.order...),
+		inters:             append([]Interceptor{}, ebq.inters...),
+		predicates:         append([]predicate.EbikeBrand{}, ebq.predicates...),
+		withBrandAttribute: ebq.withBrandAttribute.Clone(),
+		withPlans:          ebq.withPlans.Clone(),
 		// clone intermediate query.
 		sql:  ebq.sql.Clone(),
 		path: ebq.path,
 	}
+}
+
+// WithBrandAttribute tells the query-builder to eager-load the nodes that are connected to
+// the "brand_attribute" edge. The optional arguments are used to configure the query builder of the edge.
+func (ebq *EbikeBrandQuery) WithBrandAttribute(opts ...func(*EbikeBrandAttributeQuery)) *EbikeBrandQuery {
+	query := (&EbikeBrandAttributeClient{config: ebq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	ebq.withBrandAttribute = query
+	return ebq
+}
+
+// WithPlans tells the query-builder to eager-load the nodes that are connected to
+// the "plans" edge. The optional arguments are used to configure the query builder of the edge.
+func (ebq *EbikeBrandQuery) WithPlans(opts ...func(*PlanQuery)) *EbikeBrandQuery {
+	query := (&PlanClient{config: ebq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	ebq.withPlans = query
+	return ebq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -332,8 +405,12 @@ func (ebq *EbikeBrandQuery) prepareQuery(ctx context.Context) error {
 
 func (ebq *EbikeBrandQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*EbikeBrand, error) {
 	var (
-		nodes = []*EbikeBrand{}
-		_spec = ebq.querySpec()
+		nodes       = []*EbikeBrand{}
+		_spec       = ebq.querySpec()
+		loadedTypes = [2]bool{
+			ebq.withBrandAttribute != nil,
+			ebq.withPlans != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*EbikeBrand).scanValues(nil, columns)
@@ -341,6 +418,7 @@ func (ebq *EbikeBrandQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &EbikeBrand{config: ebq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(ebq.modifiers) > 0 {
@@ -355,7 +433,87 @@ func (ebq *EbikeBrandQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := ebq.withBrandAttribute; query != nil {
+		if err := ebq.loadBrandAttribute(ctx, query, nodes,
+			func(n *EbikeBrand) { n.Edges.BrandAttribute = []*EbikeBrandAttribute{} },
+			func(n *EbikeBrand, e *EbikeBrandAttribute) {
+				n.Edges.BrandAttribute = append(n.Edges.BrandAttribute, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := ebq.withPlans; query != nil {
+		if err := ebq.loadPlans(ctx, query, nodes,
+			func(n *EbikeBrand) { n.Edges.Plans = []*Plan{} },
+			func(n *EbikeBrand, e *Plan) { n.Edges.Plans = append(n.Edges.Plans, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (ebq *EbikeBrandQuery) loadBrandAttribute(ctx context.Context, query *EbikeBrandAttributeQuery, nodes []*EbikeBrand, init func(*EbikeBrand), assign func(*EbikeBrand, *EbikeBrandAttribute)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*EbikeBrand)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(ebikebrandattribute.FieldBrandID)
+	}
+	query.Where(predicate.EbikeBrandAttribute(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(ebikebrand.BrandAttributeColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.BrandID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "brand_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (ebq *EbikeBrandQuery) loadPlans(ctx context.Context, query *PlanQuery, nodes []*EbikeBrand, init func(*EbikeBrand), assign func(*EbikeBrand, *Plan)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*EbikeBrand)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(plan.FieldBrandID)
+	}
+	query.Where(predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(ebikebrand.PlansColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.BrandID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "brand_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "brand_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (ebq *EbikeBrandQuery) sqlCount(ctx context.Context) (int, error) {
@@ -453,11 +611,18 @@ func (ebq *EbikeBrandQuery) Modify(modifiers ...func(s *sql.Selector)) *EbikeBra
 
 type EbikeBrandQueryWith string
 
-var ()
+var (
+	EbikeBrandQueryWithBrandAttribute EbikeBrandQueryWith = "BrandAttribute"
+	EbikeBrandQueryWithPlans          EbikeBrandQueryWith = "Plans"
+)
 
 func (ebq *EbikeBrandQuery) With(withEdges ...EbikeBrandQueryWith) *EbikeBrandQuery {
 	for _, v := range withEdges {
 		switch v {
+		case EbikeBrandQueryWithBrandAttribute:
+			ebq.WithBrandAttribute()
+		case EbikeBrandQueryWithPlans:
+			ebq.WithPlans()
 		}
 	}
 	return ebq

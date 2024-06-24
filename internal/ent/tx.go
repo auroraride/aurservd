@@ -62,6 +62,8 @@ type Tx struct {
 	Ebike *EbikeClient
 	// EbikeBrand is the client for interacting with the EbikeBrand builders.
 	EbikeBrand *EbikeBrandClient
+	// EbikeBrandAttribute is the client for interacting with the EbikeBrandAttribute builders.
+	EbikeBrandAttribute *EbikeBrandAttributeClient
 	// Employee is the client for interacting with the Employee builders.
 	Employee *EmployeeClient
 	// Enterprise is the client for interacting with the Enterprise builders.
@@ -333,6 +335,7 @@ func (tx *Tx) init() {
 	tx.CouponTemplate = NewCouponTemplateClient(tx.config)
 	tx.Ebike = NewEbikeClient(tx.config)
 	tx.EbikeBrand = NewEbikeBrandClient(tx.config)
+	tx.EbikeBrandAttribute = NewEbikeBrandAttributeClient(tx.config)
 	tx.Employee = NewEmployeeClient(tx.config)
 	tx.Enterprise = NewEnterpriseClient(tx.config)
 	tx.EnterpriseBatterySwap = NewEnterpriseBatterySwapClient(tx.config)

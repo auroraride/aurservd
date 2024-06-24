@@ -222,6 +222,36 @@ definitions:
         description: 合同链接
         type: string
     type: object
+  definition.EbikeDetailRes:
+    properties:
+      brand:
+        allOf:
+          - $ref: '#/definitions/model.EbikeBrand'
+        description: 车电品牌
+      plan:
+        allOf:
+          - $ref: '#/definitions/model.Plan'
+        description: 套餐
+      store:
+        description: 门店
+        properties:
+          address:
+            description: 地址
+            type: string
+          distance:
+            description: 距离
+            type: number
+          id:
+            type: integer
+          lat:
+            type: number
+          lng:
+            type: number
+          name:
+            description: 门店名称
+            type: string
+        type: object
+    type: object
   definition.FaultCauseRes:
     properties:
       key:
@@ -1644,14 +1674,34 @@ definitions:
     type: object
   model.EbikeBrand:
     properties:
+      brandAttribute:
+        description: 品牌属性
+        items:
+          $ref: '#/definitions/model.EbikeBrandAttribute'
+        type: array
       cover:
         description: 封面图
         type: string
       id:
         type: integer
+      mainPic:
+        description: 主图
+        items:
+          type: string
+        type: array
       name:
         description: 名称
         type: string
+    type: object
+  model.EbikeBrandAttribute:
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+    required:
+      - name
+      - value
     type: object
   model.Employee:
     properties:
@@ -3752,6 +3802,51 @@ paths:
       summary: 注销账户
       tags:
       - Rider - 骑手
+  /rider/v2/ebike/brand/{id}:
+    get:
+      consumes:
+        - application/json
+      operationId: EbikeBrandDetail
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: 电车品牌ID
+          in: path
+          name: id
+          required: true
+          type: integer
+        - description: 纬度
+          in: query
+          name: lat
+          required: true
+          type: number
+        - description: 经度
+          in: query
+          name: lng
+          required: true
+          type: number
+        - description: 套餐ID
+          in: query
+          name: planId
+          type: integer
+        - description: 门店ID
+          in: query
+          name: storeId
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.EbikeDetailRes'
+      summary: 电车品牌详情
+      tags:
+        - Ebike - 电车
   /rider/v2/enterprise/battery:
     get:
       consumes:
@@ -4627,6 +4722,22 @@ paths:
         name: cityId
         required: true
         type: integer
+      - description: 骑士卡类别 1:单电 2:车加电 3:以租代购
+        enum:
+          - 1
+          - 2
+          - 3
+        in: query
+        name: planType
+        type: integer
+        x-enum-comments:
+          PlanTypeBattery: 单电
+          PlanTypeEbikeRto: 以租代购
+          PlanTypeEbikeWithBattery: 车加电
+        x-enum-varnames:
+          - PlanTypeBattery
+          - PlanTypeEbikeWithBattery
+          - PlanTypeEbikeRto
       - description: 门店ID
         in: query
         name: storeId

@@ -39,6 +39,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrandattribute"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
@@ -154,6 +155,8 @@ type Client struct {
 	Ebike *EbikeClient
 	// EbikeBrand is the client for interacting with the EbikeBrand builders.
 	EbikeBrand *EbikeBrandClient
+	// EbikeBrandAttribute is the client for interacting with the EbikeBrandAttribute builders.
+	EbikeBrandAttribute *EbikeBrandAttributeClient
 	// Employee is the client for interacting with the Employee builders.
 	Employee *EmployeeClient
 	// Enterprise is the client for interacting with the Enterprise builders.
@@ -305,6 +308,7 @@ func (c *Client) init() {
 	c.CouponTemplate = NewCouponTemplateClient(c.config)
 	c.Ebike = NewEbikeClient(c.config)
 	c.EbikeBrand = NewEbikeBrandClient(c.config)
+	c.EbikeBrandAttribute = NewEbikeBrandAttributeClient(c.config)
 	c.Employee = NewEmployeeClient(c.config)
 	c.Enterprise = NewEnterpriseClient(c.config)
 	c.EnterpriseBatterySwap = NewEnterpriseBatterySwapClient(c.config)
@@ -479,6 +483,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		CouponTemplate:             NewCouponTemplateClient(cfg),
 		Ebike:                      NewEbikeClient(cfg),
 		EbikeBrand:                 NewEbikeBrandClient(cfg),
+		EbikeBrandAttribute:        NewEbikeBrandAttributeClient(cfg),
 		Employee:                   NewEmployeeClient(cfg),
 		Enterprise:                 NewEnterpriseClient(cfg),
 		EnterpriseBatterySwap:      NewEnterpriseBatterySwapClient(cfg),
@@ -580,6 +585,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		CouponTemplate:             NewCouponTemplateClient(cfg),
 		Ebike:                      NewEbikeClient(cfg),
 		EbikeBrand:                 NewEbikeBrandClient(cfg),
+		EbikeBrandAttribute:        NewEbikeBrandAttributeClient(cfg),
 		Employee:                   NewEmployeeClient(cfg),
 		Enterprise:                 NewEnterpriseClient(cfg),
 		EnterpriseBatterySwap:      NewEnterpriseBatterySwapClient(cfg),
@@ -671,14 +677,15 @@ func (c *Client) Use(hooks ...Hook) {
 		c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract,
 		c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City, c.Commission,
 		c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate,
-		c.Ebike, c.EbikeBrand, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
-		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
-		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
-		c.Exchange, c.Export, c.Fault, c.Feedback, c.Goods, c.Instructions,
-		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
-		c.PlanIntroduce, c.PointLog, c.PromotionAchievement, c.PromotionBankCard,
-		c.PromotionCommission, c.PromotionCommissionPlan, c.PromotionEarnings,
-		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
+		c.Ebike, c.EbikeBrand, c.EbikeBrandAttribute, c.Employee, c.Enterprise,
+		c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
+		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
+		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
+		c.Goods, c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Order,
+		c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog,
+		c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
+		c.PromotionCommissionPlan, c.PromotionEarnings, c.PromotionGrowth,
+		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
@@ -698,14 +705,15 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract,
 		c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City, c.Commission,
 		c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate,
-		c.Ebike, c.EbikeBrand, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
-		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
-		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
-		c.Exchange, c.Export, c.Fault, c.Feedback, c.Goods, c.Instructions,
-		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
-		c.PlanIntroduce, c.PointLog, c.PromotionAchievement, c.PromotionBankCard,
-		c.PromotionCommission, c.PromotionCommissionPlan, c.PromotionEarnings,
-		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
+		c.Ebike, c.EbikeBrand, c.EbikeBrandAttribute, c.Employee, c.Enterprise,
+		c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
+		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
+		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
+		c.Goods, c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Order,
+		c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog,
+		c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
+		c.PromotionCommissionPlan, c.PromotionEarnings, c.PromotionGrowth,
+		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
@@ -768,6 +776,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Ebike.mutate(ctx, m)
 	case *EbikeBrandMutation:
 		return c.EbikeBrand.mutate(ctx, m)
+	case *EbikeBrandAttributeMutation:
+		return c.EbikeBrandAttribute.mutate(ctx, m)
 	case *EmployeeMutation:
 		return c.Employee.mutate(ctx, m)
 	case *EnterpriseMutation:
@@ -5579,6 +5589,38 @@ func (c *EbikeBrandClient) GetX(ctx context.Context, id uint64) *EbikeBrand {
 	return obj
 }
 
+// QueryBrandAttribute queries the brand_attribute edge of a EbikeBrand.
+func (c *EbikeBrandClient) QueryBrandAttribute(eb *EbikeBrand) *EbikeBrandAttributeQuery {
+	query := (&EbikeBrandAttributeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := eb.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebikebrand.Table, ebikebrand.FieldID, id),
+			sqlgraph.To(ebikebrandattribute.Table, ebikebrandattribute.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ebikebrand.BrandAttributeTable, ebikebrand.BrandAttributeColumn),
+		)
+		fromV = sqlgraph.Neighbors(eb.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlans queries the plans edge of a EbikeBrand.
+func (c *EbikeBrandClient) QueryPlans(eb *EbikeBrand) *PlanQuery {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := eb.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebikebrand.Table, ebikebrand.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ebikebrand.PlansTable, ebikebrand.PlansColumn),
+		)
+		fromV = sqlgraph.Neighbors(eb.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EbikeBrandClient) Hooks() []Hook {
 	hooks := c.hooks.EbikeBrand
@@ -5602,6 +5644,156 @@ func (c *EbikeBrandClient) mutate(ctx context.Context, m *EbikeBrandMutation) (V
 		return (&EbikeBrandDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown EbikeBrand mutation op: %q", m.Op())
+	}
+}
+
+// EbikeBrandAttributeClient is a client for the EbikeBrandAttribute schema.
+type EbikeBrandAttributeClient struct {
+	config
+}
+
+// NewEbikeBrandAttributeClient returns a client for the EbikeBrandAttribute from the given config.
+func NewEbikeBrandAttributeClient(c config) *EbikeBrandAttributeClient {
+	return &EbikeBrandAttributeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `ebikebrandattribute.Hooks(f(g(h())))`.
+func (c *EbikeBrandAttributeClient) Use(hooks ...Hook) {
+	c.hooks.EbikeBrandAttribute = append(c.hooks.EbikeBrandAttribute, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `ebikebrandattribute.Intercept(f(g(h())))`.
+func (c *EbikeBrandAttributeClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EbikeBrandAttribute = append(c.inters.EbikeBrandAttribute, interceptors...)
+}
+
+// Create returns a builder for creating a EbikeBrandAttribute entity.
+func (c *EbikeBrandAttributeClient) Create() *EbikeBrandAttributeCreate {
+	mutation := newEbikeBrandAttributeMutation(c.config, OpCreate)
+	return &EbikeBrandAttributeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EbikeBrandAttribute entities.
+func (c *EbikeBrandAttributeClient) CreateBulk(builders ...*EbikeBrandAttributeCreate) *EbikeBrandAttributeCreateBulk {
+	return &EbikeBrandAttributeCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EbikeBrandAttributeClient) MapCreateBulk(slice any, setFunc func(*EbikeBrandAttributeCreate, int)) *EbikeBrandAttributeCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EbikeBrandAttributeCreateBulk{err: fmt.Errorf("calling to EbikeBrandAttributeClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EbikeBrandAttributeCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EbikeBrandAttributeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EbikeBrandAttribute.
+func (c *EbikeBrandAttributeClient) Update() *EbikeBrandAttributeUpdate {
+	mutation := newEbikeBrandAttributeMutation(c.config, OpUpdate)
+	return &EbikeBrandAttributeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EbikeBrandAttributeClient) UpdateOne(eba *EbikeBrandAttribute) *EbikeBrandAttributeUpdateOne {
+	mutation := newEbikeBrandAttributeMutation(c.config, OpUpdateOne, withEbikeBrandAttribute(eba))
+	return &EbikeBrandAttributeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EbikeBrandAttributeClient) UpdateOneID(id uint64) *EbikeBrandAttributeUpdateOne {
+	mutation := newEbikeBrandAttributeMutation(c.config, OpUpdateOne, withEbikeBrandAttributeID(id))
+	return &EbikeBrandAttributeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EbikeBrandAttribute.
+func (c *EbikeBrandAttributeClient) Delete() *EbikeBrandAttributeDelete {
+	mutation := newEbikeBrandAttributeMutation(c.config, OpDelete)
+	return &EbikeBrandAttributeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EbikeBrandAttributeClient) DeleteOne(eba *EbikeBrandAttribute) *EbikeBrandAttributeDeleteOne {
+	return c.DeleteOneID(eba.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EbikeBrandAttributeClient) DeleteOneID(id uint64) *EbikeBrandAttributeDeleteOne {
+	builder := c.Delete().Where(ebikebrandattribute.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EbikeBrandAttributeDeleteOne{builder}
+}
+
+// Query returns a query builder for EbikeBrandAttribute.
+func (c *EbikeBrandAttributeClient) Query() *EbikeBrandAttributeQuery {
+	return &EbikeBrandAttributeQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEbikeBrandAttribute},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a EbikeBrandAttribute entity by its id.
+func (c *EbikeBrandAttributeClient) Get(ctx context.Context, id uint64) (*EbikeBrandAttribute, error) {
+	return c.Query().Where(ebikebrandattribute.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EbikeBrandAttributeClient) GetX(ctx context.Context, id uint64) *EbikeBrandAttribute {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryBrand queries the brand edge of a EbikeBrandAttribute.
+func (c *EbikeBrandAttributeClient) QueryBrand(eba *EbikeBrandAttribute) *EbikeBrandQuery {
+	query := (&EbikeBrandClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := eba.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebikebrandattribute.Table, ebikebrandattribute.FieldID, id),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ebikebrandattribute.BrandTable, ebikebrandattribute.BrandColumn),
+		)
+		fromV = sqlgraph.Neighbors(eba.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EbikeBrandAttributeClient) Hooks() []Hook {
+	hooks := c.hooks.EbikeBrandAttribute
+	return append(hooks[:len(hooks):len(hooks)], ebikebrandattribute.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *EbikeBrandAttributeClient) Interceptors() []Interceptor {
+	return c.inters.EbikeBrandAttribute
+}
+
+func (c *EbikeBrandAttributeClient) mutate(ctx context.Context, m *EbikeBrandAttributeMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EbikeBrandAttributeCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EbikeBrandAttributeUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EbikeBrandAttributeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EbikeBrandAttributeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EbikeBrandAttribute mutation op: %q", m.Op())
 	}
 }
 
@@ -10113,22 +10305,6 @@ func (c *PlanClient) GetX(ctx context.Context, id uint64) *Plan {
 	return obj
 }
 
-// QueryBrand queries the brand edge of a Plan.
-func (c *PlanClient) QueryBrand(pl *Plan) *EbikeBrandQuery {
-	query := (&EbikeBrandClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := pl.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(plan.Table, plan.FieldID, id),
-			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, plan.BrandTable, plan.BrandColumn),
-		)
-		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryAgreement queries the agreement edge of a Plan.
 func (c *PlanClient) QueryAgreement(pl *Plan) *AgreementQuery {
 	query := (&AgreementClient{config: c.config}).Query()
@@ -10202,6 +10378,22 @@ func (c *PlanClient) QueryCommissions(pl *Plan) *PromotionCommissionPlanQuery {
 			sqlgraph.From(plan.Table, plan.FieldID, id),
 			sqlgraph.To(promotioncommissionplan.Table, promotioncommissionplan.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, plan.CommissionsTable, plan.CommissionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBrand queries the brand edge of a Plan.
+func (c *PlanClient) QueryBrand(pl *Plan) *EbikeBrandQuery {
+	query := (&EbikeBrandClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, plan.BrandTable, plan.BrandColumn),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil
@@ -16938,37 +17130,39 @@ type (
 		Activity, Agent, Agreement, Allocate, Assistance, Attendance, Battery,
 		BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
 		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
-		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee, Enterprise,
-		EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
-		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
-		Exception, Exchange, Export, Fault, Feedback, Goods, Instructions, Inventory,
-		Maintainer, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce, PointLog,
-		PromotionAchievement, PromotionBankCard, PromotionCommission,
-		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
-		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
-		PromotionPerson, PromotionPrivilege, PromotionReferrals,
-		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
-		QuestionCategory, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
-		StockSummary, Store, StoreGoods, Subscribe, SubscribeAlter, SubscribePause,
-		SubscribeReminder, SubscribeSuspend, Version []ent.Hook
+		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, EbikeBrandAttribute,
+		Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
+		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
+		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Goods,
+		Instructions, Inventory, Maintainer, Manager, Order, OrderRefund, Person, Plan,
+		PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
+		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
+		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
+		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
+		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
+		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
+		Role, Setting, Stock, StockSummary, Store, StoreGoods, Subscribe,
+		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		Version []ent.Hook
 	}
 	inters struct {
 		Activity, Agent, Agreement, Allocate, Assistance, Attendance, Battery,
 		BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
 		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
-		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee, Enterprise,
-		EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
-		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
-		Exception, Exchange, Export, Fault, Feedback, Goods, Instructions, Inventory,
-		Maintainer, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce, PointLog,
-		PromotionAchievement, PromotionBankCard, PromotionCommission,
-		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
-		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
-		PromotionPerson, PromotionPrivilege, PromotionReferrals,
-		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
-		QuestionCategory, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
-		StockSummary, Store, StoreGoods, Subscribe, SubscribeAlter, SubscribePause,
-		SubscribeReminder, SubscribeSuspend, Version []ent.Interceptor
+		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, EbikeBrandAttribute,
+		Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
+		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
+		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Goods,
+		Instructions, Inventory, Maintainer, Manager, Order, OrderRefund, Person, Plan,
+		PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
+		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
+		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
+		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
+		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
+		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
+		Role, Setting, Stock, StockSummary, Store, StoreGoods, Subscribe,
+		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		Version []ent.Interceptor
 	}
 )
 

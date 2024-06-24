@@ -2035,6 +2035,27 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "enum": [
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "PlanTypeBattery": "单电",
+                            "PlanTypeEbikeRto": "以租代购",
+                            "PlanTypeEbikeWithBattery": "车加电"
+                        },
+                        "x-enum-varnames": [
+                            "PlanTypeBattery",
+                            "PlanTypeEbikeWithBattery",
+                            "PlanTypeEbikeRto"
+                        ],
+                        "description": "骑士卡类别 1:单电 2:车加电 3:以租代购",
+                        "name": "planType",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "门店ID",
                         "name": "storeId",
@@ -3395,6 +3416,13 @@ const docTemplate = `{
         "model.EbikeBrand": {
             "type": "object",
             "properties": {
+                "brandAttribute": {
+                    "description": "品牌属性",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EbikeBrandAttribute"
+                    }
+                },
                 "cover": {
                     "description": "封面图",
                     "type": "string"
@@ -3402,8 +3430,30 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "mainPic": {
+                    "description": "主图",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "name": {
                     "description": "名称",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EbikeBrandAttribute": {
+            "type": "object",
+            "required": [
+                "name",
+                "value"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
                     "type": "string"
                 }
             }

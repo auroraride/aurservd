@@ -753,6 +753,37 @@ func (ebq *EbikeBrandQuery) PaginationResult(req model.PaginationReq) model.Pagi
 	}
 }
 
+// Pagination returns pagination query builder for EbikeBrandAttributeQuery.
+func (ebaq *EbikeBrandAttributeQuery) Pagination(req model.PaginationReq) *EbikeBrandAttributeQuery {
+	ebaq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return ebaq
+}
+
+// PaginationItems returns pagination query builder for EbikeBrandAttributeQuery.
+func (ebaq *EbikeBrandAttributeQuery) PaginationItemsX(req model.PaginationReq) any {
+	return ebaq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for EbikeBrandAttributeQuery.
+func (ebaq *EbikeBrandAttributeQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := ebaq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for EmployeeQuery.
 func (eq *EmployeeQuery) Pagination(req model.PaginationReq) *EmployeeQuery {
 	eq.Offset(req.GetOffset()).Limit(req.GetLimit())

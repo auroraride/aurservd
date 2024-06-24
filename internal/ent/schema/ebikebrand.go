@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
+
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -60,12 +61,16 @@ func (EbikeBrand) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").Unique().Comment("名称"),
 		field.String("cover").Comment("封面缩略图"),
+		field.Strings("main_pic").Optional().Comment("主图"),
 	}
 }
 
 // Edges of the EbikeBrand.
 func (EbikeBrand) Edges() []ent.Edge {
-	return []ent.Edge{}
+	return []ent.Edge{
+		edge.To("brand_attribute", EbikeBrandAttribute.Type),
+		edge.To("plans", Plan.Type),
+	}
 }
 
 func (EbikeBrand) Mixin() []ent.Mixin {

@@ -43,8 +43,7 @@ func (*ebike) BrandList(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse		"请求成功"
 func (*ebike) BrandCreate(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.EbikeBrandCreateReq](c)
-	service.NewEbikeBrand(ctx.Modifier).Create(req)
-	return ctx.SendResponse()
+	return ctx.SendResponse(service.NewEbikeBrand(ctx.Modifier).Create(req))
 }
 
 // BrandModify
@@ -60,8 +59,7 @@ func (*ebike) BrandCreate(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse		"请求成功"
 func (*ebike) BrandModify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.EbikeBrandModifyReq](c)
-	service.NewEbikeBrand(ctx.Modifier).Modify(req)
-	return ctx.SendResponse()
+	return ctx.SendResponse(service.NewEbikeBrand(ctx.Modifier).Modify(req))
 }
 
 // List

@@ -68,6 +68,11 @@ func (t *cabinetTask) Do() {
 		if item.Value > group.Max.Value {
 			group.Max = item
 		}
+
+		if item.Value < 0 {
+			item.Value = 0
+		}
+
 		if item.Value < group.Min.Value {
 			group.Min = item
 		}
@@ -110,7 +115,7 @@ func (t *cabinetTask) Do() {
 			continue
 		}
 		// 更新当月数据
-		err := ec.Update().SetEnd(decimal.NewFromFloat(v.Max.Value).Round(2).InexactFloat64()).SetTotal(tools.NewDecimal().Sum(ec.Total, v.Total)).Exec(ctx)
+		err := ec.Update().SetEnd(decimal.NewFromFloat(v.Max.Value).Round(2).InexactFloat64()).SetTotal(tools.NewDecimal().Sub(v.Max.Value, ec.Start)).Exec(ctx)
 		if err != nil {
 			zap.L().Error("更新电柜耗电量失败", zap.Error(err))
 			return

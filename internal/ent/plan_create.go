@@ -95,20 +95,6 @@ func (pc *PlanCreate) SetNillableRemark(s *string) *PlanCreate {
 	return pc
 }
 
-// SetBrandID sets the "brand_id" field.
-func (pc *PlanCreate) SetBrandID(u uint64) *PlanCreate {
-	pc.mutation.SetBrandID(u)
-	return pc
-}
-
-// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
-func (pc *PlanCreate) SetNillableBrandID(u *uint64) *PlanCreate {
-	if u != nil {
-		pc.SetBrandID(*u)
-	}
-	return pc
-}
-
 // SetAgreementID sets the "agreement_id" field.
 func (pc *PlanCreate) SetAgreementID(u uint64) *PlanCreate {
 	pc.mutation.SetAgreementID(u)
@@ -381,9 +367,18 @@ func (pc *PlanCreate) SetNillableOverdueFee(f *float64) *PlanCreate {
 	return pc
 }
 
-// SetBrand sets the "brand" edge to the EbikeBrand entity.
-func (pc *PlanCreate) SetBrand(e *EbikeBrand) *PlanCreate {
-	return pc.SetBrandID(e.ID)
+// SetBrandID sets the "brand_id" field.
+func (pc *PlanCreate) SetBrandID(u uint64) *PlanCreate {
+	pc.mutation.SetBrandID(u)
+	return pc
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableBrandID(u *uint64) *PlanCreate {
+	if u != nil {
+		pc.SetBrandID(*u)
+	}
+	return pc
 }
 
 // SetAgreement sets the "agreement" edge to the Agreement entity.
@@ -439,6 +434,11 @@ func (pc *PlanCreate) AddCommissions(p ...*PromotionCommissionPlan) *PlanCreate 
 		ids[i] = p[i].ID
 	}
 	return pc.AddCommissionIDs(ids...)
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (pc *PlanCreate) SetBrand(e *EbikeBrand) *PlanCreate {
+	return pc.SetBrandID(e.ID)
 }
 
 // Mutation returns the PlanMutation object of the builder.
@@ -714,23 +714,6 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 		_spec.SetField(plan.FieldOverdueFee, field.TypeFloat64, value)
 		_node.OverdueFee = value
 	}
-	if nodes := pc.mutation.BrandIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   plan.BrandTable,
-			Columns: []string{plan.BrandColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.BrandID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := pc.mutation.AgreementIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -811,6 +794,23 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   plan.BrandTable,
+			Columns: []string{plan.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.BrandID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -928,24 +928,6 @@ func (u *PlanUpsert) UpdateRemark() *PlanUpsert {
 // ClearRemark clears the value of the "remark" field.
 func (u *PlanUpsert) ClearRemark() *PlanUpsert {
 	u.SetNull(plan.FieldRemark)
-	return u
-}
-
-// SetBrandID sets the "brand_id" field.
-func (u *PlanUpsert) SetBrandID(v uint64) *PlanUpsert {
-	u.Set(plan.FieldBrandID, v)
-	return u
-}
-
-// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
-func (u *PlanUpsert) UpdateBrandID() *PlanUpsert {
-	u.SetExcluded(plan.FieldBrandID)
-	return u
-}
-
-// ClearBrandID clears the value of the "brand_id" field.
-func (u *PlanUpsert) ClearBrandID() *PlanUpsert {
-	u.SetNull(plan.FieldBrandID)
 	return u
 }
 
@@ -1363,6 +1345,24 @@ func (u *PlanUpsert) AddOverdueFee(v float64) *PlanUpsert {
 	return u
 }
 
+// SetBrandID sets the "brand_id" field.
+func (u *PlanUpsert) SetBrandID(v uint64) *PlanUpsert {
+	u.Set(plan.FieldBrandID, v)
+	return u
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateBrandID() *PlanUpsert {
+	u.SetExcluded(plan.FieldBrandID)
+	return u
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *PlanUpsert) ClearBrandID() *PlanUpsert {
+	u.SetNull(plan.FieldBrandID)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1485,27 +1485,6 @@ func (u *PlanUpsertOne) UpdateRemark() *PlanUpsertOne {
 func (u *PlanUpsertOne) ClearRemark() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearRemark()
-	})
-}
-
-// SetBrandID sets the "brand_id" field.
-func (u *PlanUpsertOne) SetBrandID(v uint64) *PlanUpsertOne {
-	return u.Update(func(s *PlanUpsert) {
-		s.SetBrandID(v)
-	})
-}
-
-// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
-func (u *PlanUpsertOne) UpdateBrandID() *PlanUpsertOne {
-	return u.Update(func(s *PlanUpsert) {
-		s.UpdateBrandID()
-	})
-}
-
-// ClearBrandID clears the value of the "brand_id" field.
-func (u *PlanUpsertOne) ClearBrandID() *PlanUpsertOne {
-	return u.Update(func(s *PlanUpsert) {
-		s.ClearBrandID()
 	})
 }
 
@@ -1992,6 +1971,27 @@ func (u *PlanUpsertOne) UpdateOverdueFee() *PlanUpsertOne {
 	})
 }
 
+// SetBrandID sets the "brand_id" field.
+func (u *PlanUpsertOne) SetBrandID(v uint64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetBrandID(v)
+	})
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateBrandID() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateBrandID()
+	})
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *PlanUpsertOne) ClearBrandID() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearBrandID()
+	})
+}
+
 // Exec executes the query.
 func (u *PlanUpsertOne) Exec(ctx context.Context) error {
 	if len(u.create.conflict) == 0 {
@@ -2280,27 +2280,6 @@ func (u *PlanUpsertBulk) UpdateRemark() *PlanUpsertBulk {
 func (u *PlanUpsertBulk) ClearRemark() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearRemark()
-	})
-}
-
-// SetBrandID sets the "brand_id" field.
-func (u *PlanUpsertBulk) SetBrandID(v uint64) *PlanUpsertBulk {
-	return u.Update(func(s *PlanUpsert) {
-		s.SetBrandID(v)
-	})
-}
-
-// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
-func (u *PlanUpsertBulk) UpdateBrandID() *PlanUpsertBulk {
-	return u.Update(func(s *PlanUpsert) {
-		s.UpdateBrandID()
-	})
-}
-
-// ClearBrandID clears the value of the "brand_id" field.
-func (u *PlanUpsertBulk) ClearBrandID() *PlanUpsertBulk {
-	return u.Update(func(s *PlanUpsert) {
-		s.ClearBrandID()
 	})
 }
 
@@ -2784,6 +2763,27 @@ func (u *PlanUpsertBulk) AddOverdueFee(v float64) *PlanUpsertBulk {
 func (u *PlanUpsertBulk) UpdateOverdueFee() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateOverdueFee()
+	})
+}
+
+// SetBrandID sets the "brand_id" field.
+func (u *PlanUpsertBulk) SetBrandID(v uint64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetBrandID(v)
+	})
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateBrandID() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateBrandID()
+	})
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *PlanUpsertBulk) ClearBrandID() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearBrandID()
 	})
 }
 
