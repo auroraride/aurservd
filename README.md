@@ -1,6 +1,13 @@
 # 极光出行
 
 
+## 代码查重
+```shell
+go install github.com/mibk/dupl@master
+dupl -html $(find . -name '*.go' -not -path "./internal/ent/*"  -not -path "./assets/docs/*") > ~/Downloads/aurservd-dupl.html
+dupl -html -t 50 $(find ./app/service ./app/model ./app/biz -name '*.go') > ~/Downloads/aurservd-dupl.html
+```
+
 
 ## 项目依赖第三方
 
@@ -13,7 +20,7 @@
 
 ```shell
 mkdir -p /var/lib/redis/modules
-rm -rf build 
+rm -rf build
 mkdir build
 cd build
 cmake -DSLAB_MODE=yes ../
