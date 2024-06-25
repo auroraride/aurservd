@@ -15,25 +15,27 @@ type StoreListReq struct {
 
 // StoreDetail 门店信息
 type StoreDetail struct {
-	ID            uint64                        `json:"id"`                  // 门店ID
-	Name          string                        `json:"name"`                // 门店名称
-	Status        model.StoreStatus             `json:"status"`              // 门店状态 0维护 1营业 2休息 3隐藏
-	City          model.City                    `json:"city"`                // 城市
-	Employee      *model.Employee               `json:"employee,omitempty"`  // 店员, 有可能不存在
-	EbikeObtain   bool                          `json:"ebikeObtain"`         // 是否可以领取车辆
-	EbikeRepair   bool                          `json:"ebikeRepair"`         // 是否可以维修车辆
-	EbikeSale     bool                          `json:"ebikeSale"`           // 是否可以买车
-	BusinessHours string                        `json:"businessHours"`       // 营业时间
-	Lng           float64                       `json:"lng"`                 // 经度
-	Lat           float64                       `json:"lat"`                 // 纬度
-	Distance      float64                       `json:"distance"`            // 距离(米)
-	Address       string                        `json:"address"`             // 地址
-	Rest          bool                          `json:"rest"`                // 是否拥有驿站
-	Photos        []string                      `json:"photos"`              // 门店照片
-	Brands        []*model.PlanEbikeBrandOption `json:"brands,omitempty"`    // 租车车电选项
-	SaleGoods     []*GoodsDetail                `json:"saleGoods,omitempty"` // 买车列表
-	RtoBrands     []*model.PlanEbikeBrandOption `json:"rtoBrands,omitempty"` // 以租代购车电选项
-	Phone         string                        `json:"phone"`               // 门店电话
+	ID            uint64                        `json:"id"`                    // 门店ID
+	Name          string                        `json:"name"`                  // 门店名称
+	Status        model.StoreStatus             `json:"status"`                // 门店状态 0维护 1营业 2休息 3隐藏
+	City          model.City                    `json:"city"`                  // 城市
+	Employee      *model.Employee               `json:"employee,omitempty"`    // 店员, 有可能不存在
+	EbikeObtain   bool                          `json:"ebikeObtain"`           // 是否可以领取车辆
+	EbikeRepair   bool                          `json:"ebikeRepair"`           // 是否可以维修车辆
+	EbikeSale     bool                          `json:"ebikeSale"`             // 是否可以买车
+	BusinessHours string                        `json:"businessHours"`         // 营业时间
+	Lng           float64                       `json:"lng"`                   // 经度
+	Lat           float64                       `json:"lat"`                   // 纬度
+	Distance      float64                       `json:"distance"`              // 距离(米)
+	Address       string                        `json:"address"`               // 地址
+	Rest          bool                          `json:"rest"`                  // 是否拥有驿站
+	Photos        []string                      `json:"photos"`                // 门店照片
+	Brands        []*model.PlanEbikeBrandOption `json:"brands,omitempty"`      // 租车车电选项
+	SaleGoods     []*GoodsDetail                `json:"saleGoods,omitempty"`   // 买车列表
+	RtoBrands     []*model.PlanEbikeBrandOption `json:"rtoBrands,omitempty"`   // 以租代购车电选项
+	Phone         string                        `json:"phone"`                 // 门店电话
+	HeadPic       string                        `json:"headPic"`               // 门店头图
+	StoreBrands   []*StoreEbikePlan             `json:"storeBrands,omitempty"` // 门店新租车列表
 }
 
 // StoreDetailReq 门店详情请求

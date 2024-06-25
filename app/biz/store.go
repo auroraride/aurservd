@@ -141,6 +141,7 @@ func (b *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 		Rest:          item.Rest,
 		Photos:        item.Photos,
 		Phone:         item.Phone,
+		HeadPic:       item.HeadPic,
 	}
 	if item.Edges.Employee != nil {
 		res.Employee = &model.Employee{
@@ -319,13 +320,9 @@ func (b *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail)
 			}
 		}
 
-		// 查询门店存在库存的电车数据
-		sBids := b.queryStocksByStore(item, brandIds)
-		ebikeRes := NewPlanBiz().EbikeList(sBids)
-		if ebikeRes.Brands != nil {
-			res.Brands = ebikeRes.Brands
-			res.RtoBrands = ebikeRes.RtoBrands
-		}
+		// 新租车列表
+		res.StoreBrands = NewPlanBiz().ListByStoreById(item.ID)
+
 	}
 
 	// 查询门店商品

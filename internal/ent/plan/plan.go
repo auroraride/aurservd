@@ -77,6 +77,8 @@ const (
 	FieldOverdueFee = "overdue_fee"
 	// FieldBrandID holds the string denoting the brand_id field in the database.
 	FieldBrandID = "brand_id"
+	// FieldDaily holds the string denoting the daily field in the database.
+	FieldDaily = "daily"
 	// EdgeAgreement holds the string denoting the agreement edge name in mutations.
 	EdgeAgreement = "agreement"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
@@ -161,6 +163,7 @@ var Columns = []string{
 	FieldRtoDays,
 	FieldOverdueFee,
 	FieldBrandID,
+	FieldDaily,
 }
 
 var (
@@ -210,6 +213,8 @@ var (
 	DefaultDepositPay bool
 	// DefaultOverdueFee holds the default value on creation for the "overdue_fee" field.
 	DefaultOverdueFee float64
+	// DefaultDaily holds the default value on creation for the "daily" field.
+	DefaultDaily bool
 )
 
 // OrderOption defines the ordering options for the Plan queries.
@@ -358,6 +363,11 @@ func ByOverdueFee(opts ...sql.OrderTermOption) OrderOption {
 // ByBrandID orders the results by the brand_id field.
 func ByBrandID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBrandID, opts...).ToFunc()
+}
+
+// ByDaily orders the results by the daily field.
+func ByDaily(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDaily, opts...).ToFunc()
 }
 
 // ByAgreementField orders the results by agreement field.

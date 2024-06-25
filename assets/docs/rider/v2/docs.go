@@ -2856,6 +2856,32 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/plan/brand": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Plan - 车型列表"
+                ],
+                "summary": "车型列表",
+                "operationId": "PlanEbikeBrand",
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/plan/renewly": {
             "get": {
                 "consumes": [
@@ -2883,6 +2909,138 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.RiderPlanRenewalRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/plan/store": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Plan - 门店租车套餐"
+                ],
+                "summary": "门店租车套餐列表",
+                "operationId": "PlanByStore",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电车品牌ID",
+                        "name": "brandId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市",
+                        "name": "cityId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "距离",
+                        "name": "distance",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "纬度",
+                        "name": "lat",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "经度",
+                        "name": "lng",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "StorePlanSortTypeDistance": "距离排序",
+                            "StorePlanSortTypePrice": "价格排序"
+                        },
+                        "x-enum-varnames": [
+                            "StorePlanSortTypeDistance",
+                            "StorePlanSortTypePrice"
+                        ],
+                        "description": "排序方式 1-距离优先 2-价格优先",
+                        "name": "sortType",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.StoreEbikePlan"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/plan/store/detail": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Plan - 门店租车套餐详情"
+                ],
+                "summary": "门店租车套餐详情",
+                "operationId": "PlanByStoreDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "套餐ID",
+                        "name": "planId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.StorePlanDetail"
                         }
                     }
                 }
@@ -4956,6 +5114,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "headPic": {
+                    "description": "门店头图",
+                    "type": "string"
+                },
                 "id": {
                     "description": "门店ID",
                     "type": "integer"
@@ -5008,8 +5170,115 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.StoreStatus"
                         }
                     ]
+                },
+                "storeBrands": {
+                    "description": "门店新租车列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.StoreEbikePlan"
+                    }
                 }
             }
+        },
+        "definition.StoreEbikePlan": {
+            "type": "object",
+            "properties": {
+                "brandId": {
+                    "description": "品牌ID",
+                    "type": "integer"
+                },
+                "brandName": {
+                    "description": "品牌名称",
+                    "type": "string"
+                },
+                "cover": {
+                    "description": "品牌封面图",
+                    "type": "string"
+                },
+                "daily": {
+                    "description": "是否日租套餐",
+                    "type": "boolean"
+                },
+                "dailyPrice": {
+                    "description": "套餐日租价格",
+                    "type": "number"
+                },
+                "distance": {
+                    "description": "门店距离",
+                    "type": "number"
+                },
+                "monthPrice": {
+                    "description": "套餐月租价格",
+                    "type": "number"
+                },
+                "planId": {
+                    "description": "套餐ID",
+                    "type": "integer"
+                },
+                "rto": {
+                    "description": "是否以租代购套餐",
+                    "type": "boolean"
+                },
+                "storeId": {
+                    "description": "门店ID",
+                    "type": "integer"
+                },
+                "storeName": {
+                    "description": "门店名称",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.StorePlanDetail": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "子项",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanModelOption"
+                    }
+                },
+                "configure": {
+                    "description": "支付配置",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PaymentConfigure"
+                        }
+                    ]
+                },
+                "cover": {
+                    "description": "封面图",
+                    "type": "string"
+                },
+                "ebikeDescription": {
+                    "description": "车电介绍",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.SettingPlanDescription"
+                        }
+                    ]
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.StorePlanSortType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "StorePlanSortTypeDistance": "距离排序",
+                "StorePlanSortTypePrice": "价格排序"
+            },
+            "x-enum-varnames": [
+                "StorePlanSortTypeDistance",
+                "StorePlanSortTypePrice"
+            ]
         },
         "definition.SubscribeStoreModifyReq": {
             "type": "object",
@@ -7461,6 +7730,23 @@ const docTemplate = `{
                 "overdue": {
                     "description": "是否需要支付逾期费用",
                     "type": "boolean"
+                }
+            }
+        },
+        "model.SelectOption": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "label": {
+                    "description": "选择项名称",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "选择项值 (ID)",
+                    "type": "integer"
                 }
             }
         },

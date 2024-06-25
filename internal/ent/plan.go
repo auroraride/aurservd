@@ -83,6 +83,8 @@ type Plan struct {
 	OverdueFee float64 `json:"overdue_fee,omitempty"`
 	// 品牌ID
 	BrandID *uint64 `json:"brand_id,omitempty"`
+	// 是否日租
+	Daily bool `json:"daily,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlanQuery when eager-loading is set.
 	Edges        PlanEdges `json:"edges"`
@@ -175,7 +177,7 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case plan.FieldCreator, plan.FieldLastModifier, plan.FieldNotes:
 			values[i] = new([]byte)
-		case plan.FieldEnable, plan.FieldIntelligent, plan.FieldDeposit, plan.FieldDepositWechatPayscore, plan.FieldDepositAlipayAuthFreeze, plan.FieldDepositContract, plan.FieldDepositPay:
+		case plan.FieldEnable, plan.FieldIntelligent, plan.FieldDeposit, plan.FieldDepositWechatPayscore, plan.FieldDepositAlipayAuthFreeze, plan.FieldDepositContract, plan.FieldDepositPay, plan.FieldDaily:
 			values[i] = new(sql.NullBool)
 		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal, plan.FieldDiscountNewly, plan.FieldDepositAmount, plan.FieldOverdueFee:
 			values[i] = new(sql.NullFloat64)
@@ -403,6 +405,12 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 				pl.BrandID = new(uint64)
 				*pl.BrandID = uint64(value.Int64)
 			}
+		case plan.FieldDaily:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field daily", values[i])
+			} else if value.Valid {
+				pl.Daily = value.Bool
+			}
 		default:
 			pl.selectValues.Set(columns[i], values[i])
 		}
@@ -571,6 +579,9 @@ func (pl *Plan) String() string {
 		builder.WriteString("brand_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("daily=")
+	builder.WriteString(fmt.Sprintf("%v", pl.Daily))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -1236,6 +1236,10 @@ func init() {
 	planDescOverdueFee := planFields[22].Descriptor()
 	// plan.DefaultOverdueFee holds the default value on creation for the overdue_fee field.
 	plan.DefaultOverdueFee = planDescOverdueFee.Default.(float64)
+	// planDescDaily is the schema descriptor for daily field.
+	planDescDaily := planFields[24].Descriptor()
+	// plan.DefaultDaily holds the default value on creation for the daily field.
+	plan.DefaultDaily = planDescDaily.Default.(bool)
 	planintroduceMixin := schema.PlanIntroduce{}.Mixin()
 	planintroduceMixinFields0 := planintroduceMixin[0].Fields()
 	_ = planintroduceMixinFields0
@@ -1914,6 +1918,10 @@ func init() {
 	store.DefaultPhone = storeDescPhone.Default.(string)
 	// store.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
 	store.PhoneValidator = storeDescPhone.Validators[0].(func(string) error)
+	// storeDescHeadPic is the schema descriptor for head_pic field.
+	storeDescHeadPic := storeFields[15].Descriptor()
+	// store.DefaultHeadPic holds the default value on creation for the head_pic field.
+	store.DefaultHeadPic = storeDescHeadPic.Default.(string)
 	storegoodsMixin := schema.StoreGoods{}.Mixin()
 	storegoodsMixinFields0 := storegoodsMixin[0].Fields()
 	_ = storegoodsMixinFields0

@@ -128,9 +128,12 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 骑士卡
 	plan := g.Group("/plan")
-	plan.GET("", rapi.Plan.List)                    // 套餐列表
-	plan.GET("/renewly", v1.Plan.Renewly, person()) // 续费列表
-	plan.GET("/:id", rapi.Plan.Detail)              // 套餐详情
+	plan.GET("", rapi.Plan.List)                       // 套餐列表
+	plan.GET("/renewly", v1.Plan.Renewly, person())    // 续费列表
+	plan.GET("/:id", rapi.Plan.Detail)                 // 套餐详情
+	plan.GET("/store", rapi.Plan.ByStore)              // 门店套餐列表
+	plan.GET("/store/detail", rapi.Plan.ByStoreDetail) // 门店套餐详情
+	plan.GET("/brand", rapi.Plan.EbikeBrand)           // 电车品牌列表
 
 	// 电池
 	battery := g.Group("/battery", person())

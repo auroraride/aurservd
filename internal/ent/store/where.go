@@ -150,6 +150,11 @@ func Phone(v string) predicate.Store {
 	return predicate.Store(sql.FieldEQ(FieldPhone, v))
 }
 
+// HeadPic applies equality check predicate on the "head_pic" field. It's identical to HeadPicEQ.
+func HeadPic(v string) predicate.Store {
+	return predicate.Store(sql.FieldEQ(FieldHeadPic, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Store {
 	return predicate.Store(sql.FieldEQ(FieldCreatedAt, v))
@@ -948,6 +953,71 @@ func PhoneEqualFold(v string) predicate.Store {
 // PhoneContainsFold applies the ContainsFold predicate on the "phone" field.
 func PhoneContainsFold(v string) predicate.Store {
 	return predicate.Store(sql.FieldContainsFold(FieldPhone, v))
+}
+
+// HeadPicEQ applies the EQ predicate on the "head_pic" field.
+func HeadPicEQ(v string) predicate.Store {
+	return predicate.Store(sql.FieldEQ(FieldHeadPic, v))
+}
+
+// HeadPicNEQ applies the NEQ predicate on the "head_pic" field.
+func HeadPicNEQ(v string) predicate.Store {
+	return predicate.Store(sql.FieldNEQ(FieldHeadPic, v))
+}
+
+// HeadPicIn applies the In predicate on the "head_pic" field.
+func HeadPicIn(vs ...string) predicate.Store {
+	return predicate.Store(sql.FieldIn(FieldHeadPic, vs...))
+}
+
+// HeadPicNotIn applies the NotIn predicate on the "head_pic" field.
+func HeadPicNotIn(vs ...string) predicate.Store {
+	return predicate.Store(sql.FieldNotIn(FieldHeadPic, vs...))
+}
+
+// HeadPicGT applies the GT predicate on the "head_pic" field.
+func HeadPicGT(v string) predicate.Store {
+	return predicate.Store(sql.FieldGT(FieldHeadPic, v))
+}
+
+// HeadPicGTE applies the GTE predicate on the "head_pic" field.
+func HeadPicGTE(v string) predicate.Store {
+	return predicate.Store(sql.FieldGTE(FieldHeadPic, v))
+}
+
+// HeadPicLT applies the LT predicate on the "head_pic" field.
+func HeadPicLT(v string) predicate.Store {
+	return predicate.Store(sql.FieldLT(FieldHeadPic, v))
+}
+
+// HeadPicLTE applies the LTE predicate on the "head_pic" field.
+func HeadPicLTE(v string) predicate.Store {
+	return predicate.Store(sql.FieldLTE(FieldHeadPic, v))
+}
+
+// HeadPicContains applies the Contains predicate on the "head_pic" field.
+func HeadPicContains(v string) predicate.Store {
+	return predicate.Store(sql.FieldContains(FieldHeadPic, v))
+}
+
+// HeadPicHasPrefix applies the HasPrefix predicate on the "head_pic" field.
+func HeadPicHasPrefix(v string) predicate.Store {
+	return predicate.Store(sql.FieldHasPrefix(FieldHeadPic, v))
+}
+
+// HeadPicHasSuffix applies the HasSuffix predicate on the "head_pic" field.
+func HeadPicHasSuffix(v string) predicate.Store {
+	return predicate.Store(sql.FieldHasSuffix(FieldHeadPic, v))
+}
+
+// HeadPicEqualFold applies the EqualFold predicate on the "head_pic" field.
+func HeadPicEqualFold(v string) predicate.Store {
+	return predicate.Store(sql.FieldEqualFold(FieldHeadPic, v))
+}
+
+// HeadPicContainsFold applies the ContainsFold predicate on the "head_pic" field.
+func HeadPicContainsFold(v string) predicate.Store {
+	return predicate.Store(sql.FieldContainsFold(FieldHeadPic, v))
 }
 
 // HasCity applies the HasEdge predicate on the "city" edge.
