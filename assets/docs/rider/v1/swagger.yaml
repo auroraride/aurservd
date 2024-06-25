@@ -662,8 +662,8 @@ definitions:
       value:
         type: string
     required:
-      - name
-      - value
+    - name
+    - value
     type: object
   model.Employee:
     properties:
@@ -3285,9 +3285,9 @@ paths:
         type: integer
       - description: 骑士卡类别 1:单电 2:车加电 3:以租代购
         enum:
-          - 1
-          - 2
-          - 3
+        - 1
+        - 2
+        - 3
         in: query
         name: planType
         type: integer
@@ -3296,9 +3296,9 @@ paths:
           PlanTypeEbikeRto: 以租代购
           PlanTypeEbikeWithBattery: 车加电
         x-enum-varnames:
-          - PlanTypeBattery
-          - PlanTypeEbikeWithBattery
-          - PlanTypeEbikeRto
+        - PlanTypeBattery
+        - PlanTypeEbikeWithBattery
+        - PlanTypeEbikeRto
       - description: 门店ID
         in: query
         name: storeId

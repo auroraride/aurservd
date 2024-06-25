@@ -258,6 +258,20 @@ func (sc *StoreCreate) SetNillablePhone(s *string) *StoreCreate {
 	return sc
 }
 
+// SetHeadPic sets the "head_pic" field.
+func (sc *StoreCreate) SetHeadPic(s string) *StoreCreate {
+	sc.mutation.SetHeadPic(s)
+	return sc
+}
+
+// SetNillableHeadPic sets the "head_pic" field if the given value is not nil.
+func (sc *StoreCreate) SetNillableHeadPic(s *string) *StoreCreate {
+	if s != nil {
+		sc.SetHeadPic(*s)
+	}
+	return sc
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (sc *StoreCreate) SetCity(c *City) *StoreCreate {
 	return sc.SetCityID(c.ID)
@@ -408,6 +422,10 @@ func (sc *StoreCreate) defaults() error {
 		v := store.DefaultPhone
 		sc.mutation.SetPhone(v)
 	}
+	if _, ok := sc.mutation.HeadPic(); !ok {
+		v := store.DefaultHeadPic
+		sc.mutation.SetHeadPic(v)
+	}
 	return nil
 }
 
@@ -462,6 +480,9 @@ func (sc *StoreCreate) check() error {
 		if err := store.PhoneValidator(v); err != nil {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "Store.phone": %w`, err)}
 		}
+	}
+	if _, ok := sc.mutation.HeadPic(); !ok {
+		return &ValidationError{Name: "head_pic", err: errors.New(`ent: missing required field "Store.head_pic"`)}
 	}
 	if _, ok := sc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Store.city"`)}
@@ -571,6 +592,10 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.Phone(); ok {
 		_spec.SetField(store.FieldPhone, field.TypeString, value)
 		_node.Phone = value
+	}
+	if value, ok := sc.mutation.HeadPic(); ok {
+		_spec.SetField(store.FieldHeadPic, field.TypeString, value)
+		_node.HeadPic = value
 	}
 	if nodes := sc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1021,6 +1046,18 @@ func (u *StoreUpsert) UpdatePhone() *StoreUpsert {
 	return u
 }
 
+// SetHeadPic sets the "head_pic" field.
+func (u *StoreUpsert) SetHeadPic(v string) *StoreUpsert {
+	u.Set(store.FieldHeadPic, v)
+	return u
+}
+
+// UpdateHeadPic sets the "head_pic" field to the value that was provided on create.
+func (u *StoreUpsert) UpdateHeadPic() *StoreUpsert {
+	u.SetExcluded(store.FieldHeadPic)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1398,6 +1435,20 @@ func (u *StoreUpsertOne) SetPhone(v string) *StoreUpsertOne {
 func (u *StoreUpsertOne) UpdatePhone() *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdatePhone()
+	})
+}
+
+// SetHeadPic sets the "head_pic" field.
+func (u *StoreUpsertOne) SetHeadPic(v string) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetHeadPic(v)
+	})
+}
+
+// UpdateHeadPic sets the "head_pic" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdateHeadPic() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateHeadPic()
 	})
 }
 
@@ -1944,6 +1995,20 @@ func (u *StoreUpsertBulk) SetPhone(v string) *StoreUpsertBulk {
 func (u *StoreUpsertBulk) UpdatePhone() *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdatePhone()
+	})
+}
+
+// SetHeadPic sets the "head_pic" field.
+func (u *StoreUpsertBulk) SetHeadPic(v string) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetHeadPic(v)
+	})
+}
+
+// UpdateHeadPic sets the "head_pic" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdateHeadPic() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateHeadPic()
 	})
 }
 

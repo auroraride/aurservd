@@ -238,7 +238,8 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 				SetDesc(cl.Desc).
 				SetDays(cl.Days).
 				SetDiscountNewly(cl.DiscountNewly).
-				SetOverdueFee(cl.OverdueFee)
+				SetOverdueFee(cl.OverdueFee).
+				SetDaily(cl.Daily)
 
 			if req.Type == model.PlanTypeEbikeRto && cl.RtoDays != nil {
 				c.SetRtoDays(*cl.RtoDays)
@@ -485,6 +486,7 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 			DiscountNewly: child.DiscountNewly,
 			RtoDays:       rtoDays,
 			OverdueFee:    child.OverdueFee,
+			Daily:         child.Daily,
 		}
 
 		if len(child.Edges.Commissions) > 0 {

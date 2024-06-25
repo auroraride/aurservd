@@ -381,6 +381,20 @@ func (pc *PlanCreate) SetNillableBrandID(u *uint64) *PlanCreate {
 	return pc
 }
 
+// SetDaily sets the "daily" field.
+func (pc *PlanCreate) SetDaily(b bool) *PlanCreate {
+	pc.mutation.SetDaily(b)
+	return pc
+}
+
+// SetNillableDaily sets the "daily" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableDaily(b *bool) *PlanCreate {
+	if b != nil {
+		pc.SetDaily(*b)
+	}
+	return pc
+}
+
 // SetAgreement sets the "agreement" edge to the Agreement entity.
 func (pc *PlanCreate) SetAgreement(a *Agreement) *PlanCreate {
 	return pc.SetAgreementID(a.ID)
@@ -528,6 +542,10 @@ func (pc *PlanCreate) defaults() error {
 		v := plan.DefaultOverdueFee
 		pc.mutation.SetOverdueFee(v)
 	}
+	if _, ok := pc.mutation.Daily(); !ok {
+		v := plan.DefaultDaily
+		pc.mutation.SetDaily(v)
+	}
 	return nil
 }
 
@@ -574,6 +592,9 @@ func (pc *PlanCreate) check() error {
 	}
 	if _, ok := pc.mutation.OverdueFee(); !ok {
 		return &ValidationError{Name: "overdue_fee", err: errors.New(`ent: missing required field "Plan.overdue_fee"`)}
+	}
+	if _, ok := pc.mutation.Daily(); !ok {
+		return &ValidationError{Name: "daily", err: errors.New(`ent: missing required field "Plan.daily"`)}
 	}
 	return nil
 }
@@ -713,6 +734,10 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.OverdueFee(); ok {
 		_spec.SetField(plan.FieldOverdueFee, field.TypeFloat64, value)
 		_node.OverdueFee = value
+	}
+	if value, ok := pc.mutation.Daily(); ok {
+		_spec.SetField(plan.FieldDaily, field.TypeBool, value)
+		_node.Daily = value
 	}
 	if nodes := pc.mutation.AgreementIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1363,6 +1388,18 @@ func (u *PlanUpsert) ClearBrandID() *PlanUpsert {
 	return u
 }
 
+// SetDaily sets the "daily" field.
+func (u *PlanUpsert) SetDaily(v bool) *PlanUpsert {
+	u.Set(plan.FieldDaily, v)
+	return u
+}
+
+// UpdateDaily sets the "daily" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateDaily() *PlanUpsert {
+	u.SetExcluded(plan.FieldDaily)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1989,6 +2026,20 @@ func (u *PlanUpsertOne) UpdateBrandID() *PlanUpsertOne {
 func (u *PlanUpsertOne) ClearBrandID() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearBrandID()
+	})
+}
+
+// SetDaily sets the "daily" field.
+func (u *PlanUpsertOne) SetDaily(v bool) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDaily(v)
+	})
+}
+
+// UpdateDaily sets the "daily" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateDaily() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDaily()
 	})
 }
 
@@ -2784,6 +2835,20 @@ func (u *PlanUpsertBulk) UpdateBrandID() *PlanUpsertBulk {
 func (u *PlanUpsertBulk) ClearBrandID() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearBrandID()
+	})
+}
+
+// SetDaily sets the "daily" field.
+func (u *PlanUpsertBulk) SetDaily(v bool) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDaily(v)
+	})
+}
+
+// UpdateDaily sets the "daily" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateDaily() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDaily()
 	})
 }
 

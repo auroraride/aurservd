@@ -20684,6 +20684,7 @@ const docTemplate = `{
         "model.PlanComplex": {
             "type": "object",
             "required": [
+                "daily",
                 "days",
                 "model",
                 "overdueFee",
@@ -20701,6 +20702,10 @@ const docTemplate = `{
                 "commissionName": {
                     "description": "佣金方案名称",
                     "type": "string"
+                },
+                "daily": {
+                    "description": "是否日租",
+                    "type": "boolean"
                 },
                 "days": {
                     "description": "有效天数",
@@ -22906,6 +22911,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "branchId",
+                "headPic",
                 "name",
                 "phone",
                 "photos",
@@ -22931,6 +22937,10 @@ const docTemplate = `{
                 "ebikeSale": {
                     "description": "是否可以买车",
                     "type": "boolean"
+                },
+                "headPic": {
+                    "description": "门店头图, 门店头图",
+                    "type": "string"
                 },
                 "materials": {
                     "description": "门店物资",
@@ -23017,6 +23027,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "headPic": {
+                    "description": "门店头图",
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -23075,6 +23089,10 @@ const docTemplate = `{
                 "ebikeSale": {
                     "description": "是否可以买车",
                     "type": "boolean"
+                },
+                "headPic": {
+                    "description": "门店头图",
+                    "type": "string"
                 },
                 "name": {
                     "description": "门店名称",

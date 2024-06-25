@@ -72639,6 +72639,7 @@ type PlanMutation struct {
 	addrto_days                *int
 	overdue_fee                *float64
 	addoverdue_fee             *float64
+	daily                      *bool
 	clearedFields              map[string]struct{}
 	agreement                  *uint64
 	clearedagreement           bool
@@ -74294,6 +74295,42 @@ func (m *PlanMutation) ResetBrandID() {
 	delete(m.clearedFields, plan.FieldBrandID)
 }
 
+// SetDaily sets the "daily" field.
+func (m *PlanMutation) SetDaily(b bool) {
+	m.daily = &b
+}
+
+// Daily returns the value of the "daily" field in the mutation.
+func (m *PlanMutation) Daily() (r bool, exists bool) {
+	v := m.daily
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDaily returns the old "daily" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldDaily(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDaily is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDaily requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDaily: %w", err)
+	}
+	return oldValue.Daily, nil
+}
+
+// ResetDaily resets all changes to the "daily" field.
+func (m *PlanMutation) ResetDaily() {
+	m.daily = nil
+}
+
 // ClearAgreement clears the "agreement" edge to the Agreement entity.
 func (m *PlanMutation) ClearAgreement() {
 	m.clearedagreement = true
@@ -74571,7 +74608,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 31)
+	fields := make([]string, 0, 32)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -74665,6 +74702,9 @@ func (m *PlanMutation) Fields() []string {
 	if m.brand != nil {
 		fields = append(fields, plan.FieldBrandID)
 	}
+	if m.daily != nil {
+		fields = append(fields, plan.FieldDaily)
+	}
 	return fields
 }
 
@@ -74735,6 +74775,8 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.OverdueFee()
 	case plan.FieldBrandID:
 		return m.BrandID()
+	case plan.FieldDaily:
+		return m.Daily()
 	}
 	return nil, false
 }
@@ -74806,6 +74848,8 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldOverdueFee(ctx)
 	case plan.FieldBrandID:
 		return m.OldBrandID(ctx)
+	case plan.FieldDaily:
+		return m.OldDaily(ctx)
 	}
 	return nil, fmt.Errorf("unknown Plan field %s", name)
 }
@@ -75031,6 +75075,13 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBrandID(v)
+		return nil
+	case plan.FieldDaily:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDaily(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
@@ -75389,6 +75440,9 @@ func (m *PlanMutation) ResetField(name string) error {
 		return nil
 	case plan.FieldBrandID:
 		m.ResetBrandID()
+		return nil
+	case plan.FieldDaily:
+		m.ResetDaily()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
@@ -108807,6 +108861,7 @@ type StoreMutation struct {
 	photos             *[]string
 	appendphotos       []string
 	phone              *string
+	head_pic           *string
 	clearedFields      map[string]struct{}
 	city               *uint64
 	clearedcity        bool
@@ -109888,6 +109943,42 @@ func (m *StoreMutation) ResetPhone() {
 	m.phone = nil
 }
 
+// SetHeadPic sets the "head_pic" field.
+func (m *StoreMutation) SetHeadPic(s string) {
+	m.head_pic = &s
+}
+
+// HeadPic returns the value of the "head_pic" field in the mutation.
+func (m *StoreMutation) HeadPic() (r string, exists bool) {
+	v := m.head_pic
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHeadPic returns the old "head_pic" field's value of the Store entity.
+// If the Store object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StoreMutation) OldHeadPic(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHeadPic is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHeadPic requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHeadPic: %w", err)
+	}
+	return oldValue.HeadPic, nil
+}
+
+// ResetHeadPic resets all changes to the "head_pic" field.
+func (m *StoreMutation) ResetHeadPic() {
+	m.head_pic = nil
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *StoreMutation) ClearCity() {
 	m.clearedcity = true
@@ -110219,7 +110310,7 @@ func (m *StoreMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StoreMutation) Fields() []string {
-	fields := make([]string, 0, 22)
+	fields := make([]string, 0, 23)
 	if m.created_at != nil {
 		fields = append(fields, store.FieldCreatedAt)
 	}
@@ -110286,6 +110377,9 @@ func (m *StoreMutation) Fields() []string {
 	if m.phone != nil {
 		fields = append(fields, store.FieldPhone)
 	}
+	if m.head_pic != nil {
+		fields = append(fields, store.FieldHeadPic)
+	}
 	return fields
 }
 
@@ -110338,6 +110432,8 @@ func (m *StoreMutation) Field(name string) (ent.Value, bool) {
 		return m.Photos()
 	case store.FieldPhone:
 		return m.Phone()
+	case store.FieldHeadPic:
+		return m.HeadPic()
 	}
 	return nil, false
 }
@@ -110391,6 +110487,8 @@ func (m *StoreMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPhotos(ctx)
 	case store.FieldPhone:
 		return m.OldPhone(ctx)
+	case store.FieldHeadPic:
+		return m.OldHeadPic(ctx)
 	}
 	return nil, fmt.Errorf("unknown Store field %s", name)
 }
@@ -110553,6 +110651,13 @@ func (m *StoreMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPhone(v)
+		return nil
+	case store.FieldHeadPic:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHeadPic(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Store field %s", name)
@@ -110752,6 +110857,9 @@ func (m *StoreMutation) ResetField(name string) error {
 		return nil
 	case store.FieldPhone:
 		m.ResetPhone()
+		return nil
+	case store.FieldHeadPic:
+		m.ResetHeadPic()
 		return nil
 	}
 	return fmt.Errorf("unknown Store field %s", name)

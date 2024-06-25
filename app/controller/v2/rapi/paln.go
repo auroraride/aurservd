@@ -7,6 +7,7 @@ import (
 	"github.com/auroraride/aurservd/app/biz"
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
 )
 
 type plan struct{}
@@ -53,4 +54,47 @@ func (*plan) Renewly() {}
 func (*plan) Detail(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.PlanDetailReq](c)
 	return ctx.SendResponse(biz.NewPlanBiz().Detail(req))
+}
+
+// ByStore
+// @ID		PlanByStore
+// @Router	/rider/v2/plan/store [GET]
+// @Summary	门店租车套餐列表
+// @Tags	Plan - 门店租车套餐
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string						true	"骑手校验token"
+// @Param	query			query		definition.StorePlanReq		true	"门店租车列表请求参数"
+// @Success	200				{object}	definition.ListByStoreRes	"请求成功"
+func (*plan) ByStore(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.StorePlanReq](c)
+	return ctx.SendResponse(biz.NewPlanBiz().ListByStore(req))
+}
+
+// ByStoreDetail
+// @ID		PlanByStoreDetail
+// @Router	/rider/v2/plan/store/detail [GET]
+// @Summary	门店租车套餐详情
+// @Tags	Plan - 门店租车套餐详情
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string							true	"骑手校验token"
+// @Param	query			query		definition.StorePlanDetailReq	true	"门店套餐详情请求参数"
+// @Success	200				{object}	definition.StorePlanDetail		"请求成功"
+func (*plan) ByStoreDetail(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.StorePlanDetailReq](c)
+	return ctx.SendResponse(biz.NewPlanBiz().StorePlanDetail(ctx.Rider, req))
+}
+
+// EbikeBrand
+// @ID		PlanEbikeBrand
+// @Router	/rider/v2/plan/brand [GET]
+// @Summary	车型列表
+// @Tags	Plan - 车型列表
+// @Accept	json
+// @Produce	json
+// @Success	200	{object}	definition.ListByStoreRes	"请求成功"
+func (*plan) EbikeBrand(c echo.Context) (err error) {
+	ctx := app.Context(c)
+	return ctx.SendResponse(service.NewSelection().EbikeBrand())
 }

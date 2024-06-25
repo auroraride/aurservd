@@ -95,6 +95,7 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
 		SetRest(req.Rest).
 		SetPhotos(req.Photos).
 		SetPhone(req.Phone).
+		SetHeadPic(req.HeadPic).
 		SaveX(s.ctx)
 
 	if len(req.Materials) > 0 {
@@ -148,6 +149,9 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
 	if req.Phone != nil {
 		q.SetPhone(*req.Phone)
 	}
+	if req.HeadPic != nil {
+		q.SetHeadPic(*req.HeadPic)
+	}
 	q.SaveX(s.ctx)
 	return s.Detail(item.ID)
 }
@@ -176,6 +180,10 @@ func (s *storeService) Detail(id uint64) model.StoreItem {
 			ID:   city.ID,
 			Name: city.Name,
 		},
+		Rest:    item.Rest,
+		Photos:  item.Photos,
+		Phone:   item.Phone,
+		HeadPic: item.HeadPic,
 	}
 	if item.Edges.Employee != nil {
 		ee := item.Edges.Employee

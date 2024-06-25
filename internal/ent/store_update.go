@@ -343,6 +343,20 @@ func (su *StoreUpdate) SetNillablePhone(s *string) *StoreUpdate {
 	return su
 }
 
+// SetHeadPic sets the "head_pic" field.
+func (su *StoreUpdate) SetHeadPic(s string) *StoreUpdate {
+	su.mutation.SetHeadPic(s)
+	return su
+}
+
+// SetNillableHeadPic sets the "head_pic" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableHeadPic(s *string) *StoreUpdate {
+	if s != nil {
+		su.SetHeadPic(*s)
+	}
+	return su
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (su *StoreUpdate) SetCity(c *City) *StoreUpdate {
 	return su.SetCityID(c.ID)
@@ -680,6 +694,9 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.Phone(); ok {
 		_spec.SetField(store.FieldPhone, field.TypeString, value)
+	}
+	if value, ok := su.mutation.HeadPic(); ok {
+		_spec.SetField(store.FieldHeadPic, field.TypeString, value)
 	}
 	if su.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1275,6 +1292,20 @@ func (suo *StoreUpdateOne) SetNillablePhone(s *string) *StoreUpdateOne {
 	return suo
 }
 
+// SetHeadPic sets the "head_pic" field.
+func (suo *StoreUpdateOne) SetHeadPic(s string) *StoreUpdateOne {
+	suo.mutation.SetHeadPic(s)
+	return suo
+}
+
+// SetNillableHeadPic sets the "head_pic" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableHeadPic(s *string) *StoreUpdateOne {
+	if s != nil {
+		suo.SetHeadPic(*s)
+	}
+	return suo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (suo *StoreUpdateOne) SetCity(c *City) *StoreUpdateOne {
 	return suo.SetCityID(c.ID)
@@ -1642,6 +1673,9 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 	}
 	if value, ok := suo.mutation.Phone(); ok {
 		_spec.SetField(store.FieldPhone, field.TypeString, value)
+	}
+	if value, ok := suo.mutation.HeadPic(); ok {
+		_spec.SetField(store.FieldHeadPic, field.TypeString, value)
 	}
 	if suo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{

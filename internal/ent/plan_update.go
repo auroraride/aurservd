@@ -582,6 +582,20 @@ func (pu *PlanUpdate) ClearBrandID() *PlanUpdate {
 	return pu
 }
 
+// SetDaily sets the "daily" field.
+func (pu *PlanUpdate) SetDaily(b bool) *PlanUpdate {
+	pu.mutation.SetDaily(b)
+	return pu
+}
+
+// SetNillableDaily sets the "daily" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDaily(b *bool) *PlanUpdate {
+	if b != nil {
+		pu.SetDaily(*b)
+	}
+	return pu
+}
+
 // SetAgreement sets the "agreement" edge to the Agreement entity.
 func (pu *PlanUpdate) SetAgreement(a *Agreement) *PlanUpdate {
 	return pu.SetAgreementID(a.ID)
@@ -936,6 +950,9 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.AddedOverdueFee(); ok {
 		_spec.AddField(plan.FieldOverdueFee, field.TypeFloat64, value)
+	}
+	if value, ok := pu.mutation.Daily(); ok {
+		_spec.SetField(plan.FieldDaily, field.TypeBool, value)
 	}
 	if pu.mutation.AgreementCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1728,6 +1745,20 @@ func (puo *PlanUpdateOne) ClearBrandID() *PlanUpdateOne {
 	return puo
 }
 
+// SetDaily sets the "daily" field.
+func (puo *PlanUpdateOne) SetDaily(b bool) *PlanUpdateOne {
+	puo.mutation.SetDaily(b)
+	return puo
+}
+
+// SetNillableDaily sets the "daily" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDaily(b *bool) *PlanUpdateOne {
+	if b != nil {
+		puo.SetDaily(*b)
+	}
+	return puo
+}
+
 // SetAgreement sets the "agreement" edge to the Agreement entity.
 func (puo *PlanUpdateOne) SetAgreement(a *Agreement) *PlanUpdateOne {
 	return puo.SetAgreementID(a.ID)
@@ -2112,6 +2143,9 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 	}
 	if value, ok := puo.mutation.AddedOverdueFee(); ok {
 		_spec.AddField(plan.FieldOverdueFee, field.TypeFloat64, value)
+	}
+	if value, ok := puo.mutation.Daily(); ok {
+		_spec.SetField(plan.FieldDaily, field.TypeBool, value)
 	}
 	if puo.mutation.AgreementCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -195,6 +195,11 @@ func BrandID(v uint64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldBrandID, v))
 }
 
+// Daily applies equality check predicate on the "daily" field. It's identical to DailyEQ.
+func Daily(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDaily, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldCreatedAt, v))
@@ -1313,6 +1318,16 @@ func BrandIDIsNil() predicate.Plan {
 // BrandIDNotNil applies the NotNil predicate on the "brand_id" field.
 func BrandIDNotNil() predicate.Plan {
 	return predicate.Plan(sql.FieldNotNull(FieldBrandID))
+}
+
+// DailyEQ applies the EQ predicate on the "daily" field.
+func DailyEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDaily, v))
+}
+
+// DailyNEQ applies the NEQ predicate on the "daily" field.
+func DailyNEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldDaily, v))
 }
 
 // HasAgreement applies the HasEdge predicate on the "agreement" edge.

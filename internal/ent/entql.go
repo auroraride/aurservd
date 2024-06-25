@@ -1456,6 +1456,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldRtoDays:                 {Type: field.TypeUint, Column: plan.FieldRtoDays},
 			plan.FieldOverdueFee:              {Type: field.TypeFloat64, Column: plan.FieldOverdueFee},
 			plan.FieldBrandID:                 {Type: field.TypeUint64, Column: plan.FieldBrandID},
+			plan.FieldDaily:                   {Type: field.TypeBool, Column: plan.FieldDaily},
 		},
 	}
 	graph.Nodes[48] = &sqlgraph.Node{
@@ -2146,6 +2147,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldBusinessHours: {Type: field.TypeString, Column: store.FieldBusinessHours},
 			store.FieldPhotos:        {Type: field.TypeJSON, Column: store.FieldPhotos},
 			store.FieldPhone:         {Type: field.TypeString, Column: store.FieldPhone},
+			store.FieldHeadPic:       {Type: field.TypeString, Column: store.FieldHeadPic},
 		},
 	}
 	graph.Nodes[76] = &sqlgraph.Node{
@@ -14444,6 +14446,11 @@ func (f *PlanFilter) WhereBrandID(p entql.Uint64P) {
 	f.Where(p.Field(plan.FieldBrandID))
 }
 
+// WhereDaily applies the entql bool predicate on the daily field.
+func (f *PlanFilter) WhereDaily(p entql.BoolP) {
+	f.Where(p.Field(plan.FieldDaily))
+}
+
 // WhereHasAgreement applies a predicate to check if query has an edge agreement.
 func (f *PlanFilter) WhereHasAgreement() {
 	f.Where(entql.HasEdge("agreement"))
@@ -18354,6 +18361,11 @@ func (f *StoreFilter) WherePhotos(p entql.BytesP) {
 // WherePhone applies the entql string predicate on the phone field.
 func (f *StoreFilter) WherePhone(p entql.StringP) {
 	f.Where(p.Field(store.FieldPhone))
+}
+
+// WhereHeadPic applies the entql string predicate on the head_pic field.
+func (f *StoreFilter) WhereHeadPic(p entql.StringP) {
+	f.Where(p.Field(store.FieldHeadPic))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.

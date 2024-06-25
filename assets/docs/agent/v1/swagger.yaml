@@ -824,8 +824,8 @@ definitions:
       value:
         type: string
     required:
-      - name
-      - value
+    - name
+    - value
     type: object
   model.EbikeGoal:
     enum:
