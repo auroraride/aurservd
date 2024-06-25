@@ -757,3 +757,130 @@ func SortPlanEbikeModelByDailyPrice(options []*definition.StoreEbikePlan) {
 		return options[i].DailyPrice < options[j].DailyPrice
 	})
 }
+
+// ListByStoreById 通过门店ID查询门店的套餐列表
+func (s *planBiz) ListByStoreById(storeId uint64) *definition.ListByStoreRes {
+	stq := ent.Database.Store.QueryNotDeleted().
+		Where(
+			store.ID(storeId),
+			store.HasStocksWith(stock.BrandIDNotNil()),
+		).
+		WithCity().
+		WithEmployee().
+		WithStocks()
+
+	str, _ := stq.First(s.ctx)
+	if str == nil {
+		return &definition.ListByStoreRes{StorePlan: make([]*definition.StoreEbikePlan, 0)}
+	}
+
+	storeMap := make(map[uint64]*ent.Store)
+	storeMap[storeId] = str
+
+	// 门店电车库存品牌ID
+	var brandIds []uint64
+	// 门店电车品牌集合
+	cityBrand2StoreExist := make(map[string]bool)
+	cityBrand2StoresMap := make(map[string][]uint64)
+	if str.Edges.Stocks != nil {
+		for _, stc := range str.Edges.Stocks {
+			if stc.BrandID != nil {
+				existKey := fmt.Sprintf("%d-%d-%d", str.CityID, str.ID, *stc.BrandID)
+				if !cityBrand2StoreExist[existKey] {
+					cbKey := fmt.Sprintf("%d-%d", str.CityID, *stc.BrandID)
+					cityBrand2StoresMap[cbKey] = append(cityBrand2StoresMap[cbKey], str.ID)
+					brandIds = append(brandIds, *stc.BrandID)
+				}
+			}
+		}
+	}
+
+	// 查询车电套餐
+	today := carbon.Now().StartOfDay().StdTime()
+	q := s.orm.QueryNotDeleted().
+		Where(
+			plan.TypeIn(model.PlanTypeEbikeWithBattery.Value(), model.PlanTypeEbikeRto.Value()),
+			plan.Enable(true),
+			plan.StartLTE(today),
+			plan.EndGTE(today),
+			plan.HasBrandWith(ebikebrand.IDIn(brandIds...)),
+			plan.HasCitiesWith(city.ID(str.CityID)),
+		).
+		WithBrand().
+		WithCities().
+		WithAgreement().
+		Order(ent.Asc(plan.FieldDays))
+
+	items := q.AllX(s.ctx)
+
+	storeEbikePlansMap := make(map[uint64][]*definition.StoreEbikePlan)
+
+	// 所有门店骑士卡车电套餐
+	for _, item := range items {
+		// 查找骑士卡所属门店
+		storeIds := cityBrand2StoresMap[fmt.Sprintf("%d-%d", str.CityID, *item.BrandID)]
+		if len(storeIds) != 0 {
+			for _, storeId := range storeIds {
+				if storeMap[storeId] == nil {
+					continue
+				}
+
+				// 赋值
+				sep := &definition.StoreEbikePlan{
+					StoreId:    storeId,
+					StoreName:  storeMap[storeId].Name,
+					PlanId:     item.ID,
+					Rto:        item.Type == model.PlanTypeEbikeRto.Value(),
+					Daily:      item.Daily,
+					DailyPrice: item.Price / float64(item.Days),
+					MonthPrice: 30 * item.Price / float64(item.Days),
+				}
+
+				brand := item.Edges.Brand
+				if brand != nil {
+					sep.BrandId = brand.ID
+					sep.BrandName = brand.Name
+					sep.Cover = brand.Cover
+				}
+
+				distance, err := storeMap[storeId].Value("distance")
+				if distance != nil || err == nil {
+					distanceFloat, ok := distance.(float64)
+					if ok {
+						sep.Distance = distanceFloat
+					}
+				}
+				storeEbikePlansMap[storeId] = append(storeEbikePlansMap[storeId], sep)
+			}
+		}
+	}
+
+	// 筛选门店租车套餐数据
+	var allPlans []*definition.StoreEbikePlan
+	seps := storeEbikePlansMap[str.ID]
+	if len(seps) > 0 {
+		// 区分不同的套餐日租、月租
+		storePlanMap := make(map[string]bool)
+		for _, sep := range seps {
+			spmType := "month"
+			if sep.Daily {
+				spmType = "daily"
+			}
+			spmKey := fmt.Sprintf("%d-%d-%s", sep.StoreId, sep.PlanId, spmType)
+
+			if !storePlanMap[spmKey] {
+				allPlans = append(allPlans, sep)
+				storePlanMap[spmKey] = true
+			}
+
+		}
+	}
+
+	var res = definition.ListByStoreRes{
+		StorePlan: []*definition.StoreEbikePlan{},
+	}
+
+	res.StorePlan = allPlans
+
+	return &res
+}

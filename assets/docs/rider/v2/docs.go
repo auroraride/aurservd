@@ -5176,6 +5176,13 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.StoreStatus"
                         }
                     ]
+                },
+                "storeBrands": {
+                    "description": "门店新租车列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.StoreEbikePlan"
+                    }
                 }
             }
         },

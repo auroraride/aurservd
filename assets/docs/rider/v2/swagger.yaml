@@ -883,6 +883,11 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.StoreStatus'
         description: 门店状态 0维护 1营业 2休息 3隐藏
+      storeBrands:
+        description: 门店新租车列表
+        items:
+          $ref: '#/definitions/definition.StoreEbikePlan'
+        type: array
     type: object
   definition.StoreEbikePlan:
     properties:
