@@ -2856,32 +2856,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v2/plan/brand": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Plan - 车型列表"
-                ],
-                "summary": "车型列表",
-                "operationId": "PlanEbikeBrand",
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.SelectOption"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v2/plan/renewly": {
             "get": {
                 "consumes": [
@@ -3292,6 +3266,32 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/selection/brand": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 车型列表"
+                ],
+                "summary": "获取车型列表选择",
+                "operationId": "SelectionBrand",
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
                         }
                     }
                 }

@@ -7,7 +7,6 @@ import (
 	"github.com/auroraride/aurservd/app/biz"
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/app/service"
 )
 
 type plan struct{}
@@ -84,17 +83,4 @@ func (*plan) ByStore(c echo.Context) (err error) {
 func (*plan) ByStoreDetail(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.StorePlanDetailReq](c)
 	return ctx.SendResponse(biz.NewPlanBiz().StorePlanDetail(ctx.Rider, req))
-}
-
-// EbikeBrand
-// @ID		PlanEbikeBrand
-// @Router	/rider/v2/plan/brand [GET]
-// @Summary	车型列表
-// @Tags	Plan - 车型列表
-// @Accept	json
-// @Produce	json
-// @Success	200	{object}	[]model.SelectOption	"请求成功"
-func (*plan) EbikeBrand(c echo.Context) (err error) {
-	ctx := app.Context(c)
-	return ctx.SendResponse(service.NewSelection().EbikeBrand())
 }
