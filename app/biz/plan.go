@@ -438,7 +438,7 @@ func (s *planBiz) Detail(req *definition.PlanDetailReq) (*definition.PlanDetailR
 }
 
 // ListByStore 基于门店的套餐列表
-func (s *planBiz) ListByStore(req *definition.StorePlanReq) *definition.ListByStoreRes {
+func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreEbikePlan {
 	// 查询附近门店数据
 	maxDistance := 50000.0
 	if req.Distance != nil && *req.Distance < maxDistance {
@@ -463,7 +463,7 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) *definition.ListBySt
 
 	storelist, _ := stq.All(s.ctx)
 	if len(storelist) == 0 {
-		return &definition.ListByStoreRes{StorePlan: make([]*definition.StoreEbikePlan, 0)}
+		return []*definition.StoreEbikePlan{}
 	}
 
 	storeMap := make(map[uint64]*ent.Store)
@@ -584,13 +584,7 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) *definition.ListBySt
 		SortPlanEbikeModelByDailyPrice(allPlans)
 	}
 
-	var res = definition.ListByStoreRes{
-		StorePlan: []*definition.StoreEbikePlan{},
-	}
-
-	res.StorePlan = allPlans
-
-	return &res
+	return allPlans
 }
 
 // StorePlanDetail 基于门店的套餐列表详情
@@ -759,7 +753,7 @@ func SortPlanEbikeModelByDailyPrice(options []*definition.StoreEbikePlan) {
 }
 
 // ListByStoreById 通过门店ID查询门店的套餐列表
-func (s *planBiz) ListByStoreById(storeId uint64) *definition.ListByStoreRes {
+func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 	stq := ent.Database.Store.QueryNotDeleted().
 		Where(
 			store.ID(storeId),
@@ -771,7 +765,7 @@ func (s *planBiz) ListByStoreById(storeId uint64) *definition.ListByStoreRes {
 
 	str, _ := stq.First(s.ctx)
 	if str == nil {
-		return &definition.ListByStoreRes{StorePlan: make([]*definition.StoreEbikePlan, 0)}
+		return []*definition.StoreEbikePlan{}
 	}
 
 	storeMap := make(map[uint64]*ent.Store)
@@ -875,12 +869,5 @@ func (s *planBiz) ListByStoreById(storeId uint64) *definition.ListByStoreRes {
 
 		}
 	}
-
-	var res = definition.ListByStoreRes{
-		StorePlan: []*definition.StoreEbikePlan{},
-	}
-
-	res.StorePlan = allPlans
-
-	return &res
+	return allPlans
 }

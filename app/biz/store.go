@@ -321,10 +321,8 @@ func (b *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail)
 		}
 
 		// 新租车列表
-		storePlanRes := NewPlanBiz().ListByStoreById(item.ID)
-		if storePlanRes != nil {
-			res.StoreBrands = storePlanRes.StorePlan
-		}
+		res.StoreBrands = NewPlanBiz().ListByStoreById(item.ID)
+
 	}
 
 	// 查询门店商品

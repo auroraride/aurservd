@@ -65,7 +65,7 @@ func (*plan) Detail(c echo.Context) (err error) {
 // @Produce	json
 // @Param	X-Rider-Token	header		string						true	"骑手校验token"
 // @Param	query			query		definition.StorePlanReq		true	"门店租车列表请求参数"
-// @Success	200				{object}	definition.ListByStoreRes	"请求成功"
+// @Success	200				{object}	[]definition.StoreEbikePlan	"请求成功"
 func (*plan) ByStore(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.StorePlanReq](c)
 	return ctx.SendResponse(biz.NewPlanBiz().ListByStore(req))

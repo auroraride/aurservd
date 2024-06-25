@@ -2988,7 +2988,10 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.ListByStoreRes"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.StoreEbikePlan"
+                            }
                         }
                     }
                 }
