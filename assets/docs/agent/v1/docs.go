@@ -3503,6 +3503,13 @@ const docTemplate = `{
         "model.EbikeBrand": {
             "type": "object",
             "properties": {
+                "brandAttribute": {
+                    "description": "品牌属性",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EbikeBrandAttribute"
+                    }
+                },
                 "cover": {
                     "description": "封面图",
                     "type": "string"
@@ -3510,8 +3517,30 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "mainPic": {
+                    "description": "主图",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "name": {
                     "description": "名称",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EbikeBrandAttribute": {
+            "type": "object",
+            "required": [
+                "name",
+                "value"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
                     "type": "string"
                 }
             }

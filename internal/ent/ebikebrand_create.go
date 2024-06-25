@@ -13,6 +13,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrandattribute"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 )
 
 // EbikeBrandCreate is the builder for creating a EbikeBrand entity.
@@ -101,6 +103,42 @@ func (ebc *EbikeBrandCreate) SetName(s string) *EbikeBrandCreate {
 func (ebc *EbikeBrandCreate) SetCover(s string) *EbikeBrandCreate {
 	ebc.mutation.SetCover(s)
 	return ebc
+}
+
+// SetMainPic sets the "main_pic" field.
+func (ebc *EbikeBrandCreate) SetMainPic(s []string) *EbikeBrandCreate {
+	ebc.mutation.SetMainPic(s)
+	return ebc
+}
+
+// AddBrandAttributeIDs adds the "brand_attribute" edge to the EbikeBrandAttribute entity by IDs.
+func (ebc *EbikeBrandCreate) AddBrandAttributeIDs(ids ...uint64) *EbikeBrandCreate {
+	ebc.mutation.AddBrandAttributeIDs(ids...)
+	return ebc
+}
+
+// AddBrandAttribute adds the "brand_attribute" edges to the EbikeBrandAttribute entity.
+func (ebc *EbikeBrandCreate) AddBrandAttribute(e ...*EbikeBrandAttribute) *EbikeBrandCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ebc.AddBrandAttributeIDs(ids...)
+}
+
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (ebc *EbikeBrandCreate) AddPlanIDs(ids ...uint64) *EbikeBrandCreate {
+	ebc.mutation.AddPlanIDs(ids...)
+	return ebc
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (ebc *EbikeBrandCreate) AddPlans(p ...*Plan) *EbikeBrandCreate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ebc.AddPlanIDs(ids...)
 }
 
 // Mutation returns the EbikeBrandMutation object of the builder.
@@ -229,6 +267,42 @@ func (ebc *EbikeBrandCreate) createSpec() (*EbikeBrand, *sqlgraph.CreateSpec) {
 	if value, ok := ebc.mutation.Cover(); ok {
 		_spec.SetField(ebikebrand.FieldCover, field.TypeString, value)
 		_node.Cover = value
+	}
+	if value, ok := ebc.mutation.MainPic(); ok {
+		_spec.SetField(ebikebrand.FieldMainPic, field.TypeJSON, value)
+		_node.MainPic = value
+	}
+	if nodes := ebc.mutation.BrandAttributeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebikebrand.BrandAttributeTable,
+			Columns: []string{ebikebrand.BrandAttributeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrandattribute.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ebc.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebikebrand.PlansTable,
+			Columns: []string{ebikebrand.PlansColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -369,6 +443,24 @@ func (u *EbikeBrandUpsert) SetCover(v string) *EbikeBrandUpsert {
 // UpdateCover sets the "cover" field to the value that was provided on create.
 func (u *EbikeBrandUpsert) UpdateCover() *EbikeBrandUpsert {
 	u.SetExcluded(ebikebrand.FieldCover)
+	return u
+}
+
+// SetMainPic sets the "main_pic" field.
+func (u *EbikeBrandUpsert) SetMainPic(v []string) *EbikeBrandUpsert {
+	u.Set(ebikebrand.FieldMainPic, v)
+	return u
+}
+
+// UpdateMainPic sets the "main_pic" field to the value that was provided on create.
+func (u *EbikeBrandUpsert) UpdateMainPic() *EbikeBrandUpsert {
+	u.SetExcluded(ebikebrand.FieldMainPic)
+	return u
+}
+
+// ClearMainPic clears the value of the "main_pic" field.
+func (u *EbikeBrandUpsert) ClearMainPic() *EbikeBrandUpsert {
+	u.SetNull(ebikebrand.FieldMainPic)
 	return u
 }
 
@@ -522,6 +614,27 @@ func (u *EbikeBrandUpsertOne) SetCover(v string) *EbikeBrandUpsertOne {
 func (u *EbikeBrandUpsertOne) UpdateCover() *EbikeBrandUpsertOne {
 	return u.Update(func(s *EbikeBrandUpsert) {
 		s.UpdateCover()
+	})
+}
+
+// SetMainPic sets the "main_pic" field.
+func (u *EbikeBrandUpsertOne) SetMainPic(v []string) *EbikeBrandUpsertOne {
+	return u.Update(func(s *EbikeBrandUpsert) {
+		s.SetMainPic(v)
+	})
+}
+
+// UpdateMainPic sets the "main_pic" field to the value that was provided on create.
+func (u *EbikeBrandUpsertOne) UpdateMainPic() *EbikeBrandUpsertOne {
+	return u.Update(func(s *EbikeBrandUpsert) {
+		s.UpdateMainPic()
+	})
+}
+
+// ClearMainPic clears the value of the "main_pic" field.
+func (u *EbikeBrandUpsertOne) ClearMainPic() *EbikeBrandUpsertOne {
+	return u.Update(func(s *EbikeBrandUpsert) {
+		s.ClearMainPic()
 	})
 }
 
@@ -841,6 +954,27 @@ func (u *EbikeBrandUpsertBulk) SetCover(v string) *EbikeBrandUpsertBulk {
 func (u *EbikeBrandUpsertBulk) UpdateCover() *EbikeBrandUpsertBulk {
 	return u.Update(func(s *EbikeBrandUpsert) {
 		s.UpdateCover()
+	})
+}
+
+// SetMainPic sets the "main_pic" field.
+func (u *EbikeBrandUpsertBulk) SetMainPic(v []string) *EbikeBrandUpsertBulk {
+	return u.Update(func(s *EbikeBrandUpsert) {
+		s.SetMainPic(v)
+	})
+}
+
+// UpdateMainPic sets the "main_pic" field to the value that was provided on create.
+func (u *EbikeBrandUpsertBulk) UpdateMainPic() *EbikeBrandUpsertBulk {
+	return u.Update(func(s *EbikeBrandUpsert) {
+		s.UpdateMainPic()
+	})
+}
+
+// ClearMainPic clears the value of the "main_pic" field.
+func (u *EbikeBrandUpsertBulk) ClearMainPic() *EbikeBrandUpsertBulk {
+	return u.Update(func(s *EbikeBrandUpsert) {
+		s.ClearMainPic()
 	})
 }
 

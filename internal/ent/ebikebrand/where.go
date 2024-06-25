@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -437,6 +438,62 @@ func CoverEqualFold(v string) predicate.EbikeBrand {
 // CoverContainsFold applies the ContainsFold predicate on the "cover" field.
 func CoverContainsFold(v string) predicate.EbikeBrand {
 	return predicate.EbikeBrand(sql.FieldContainsFold(FieldCover, v))
+}
+
+// MainPicIsNil applies the IsNil predicate on the "main_pic" field.
+func MainPicIsNil() predicate.EbikeBrand {
+	return predicate.EbikeBrand(sql.FieldIsNull(FieldMainPic))
+}
+
+// MainPicNotNil applies the NotNil predicate on the "main_pic" field.
+func MainPicNotNil() predicate.EbikeBrand {
+	return predicate.EbikeBrand(sql.FieldNotNull(FieldMainPic))
+}
+
+// HasBrandAttribute applies the HasEdge predicate on the "brand_attribute" edge.
+func HasBrandAttribute() predicate.EbikeBrand {
+	return predicate.EbikeBrand(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, BrandAttributeTable, BrandAttributeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBrandAttributeWith applies the HasEdge predicate on the "brand_attribute" edge with a given conditions (other predicates).
+func HasBrandAttributeWith(preds ...predicate.EbikeBrandAttribute) predicate.EbikeBrand {
+	return predicate.EbikeBrand(func(s *sql.Selector) {
+		step := newBrandAttributeStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPlans applies the HasEdge predicate on the "plans" edge.
+func HasPlans() predicate.EbikeBrand {
+	return predicate.EbikeBrand(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PlansTable, PlansColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPlansWith applies the HasEdge predicate on the "plans" edge with a given conditions (other predicates).
+func HasPlansWith(preds ...predicate.Plan) predicate.EbikeBrand {
+	return predicate.EbikeBrand(func(s *sql.Selector) {
+		step := newPlansStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

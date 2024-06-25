@@ -798,14 +798,34 @@ definitions:
     type: object
   model.EbikeBrand:
     properties:
+      brandAttribute:
+        description: 品牌属性
+        items:
+          $ref: '#/definitions/model.EbikeBrandAttribute'
+        type: array
       cover:
         description: 封面图
         type: string
       id:
         type: integer
+      mainPic:
+        description: 主图
+        items:
+          type: string
+        type: array
       name:
         description: 名称
         type: string
+    type: object
+  model.EbikeBrandAttribute:
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+    required:
+      - name
+      - value
     type: object
   model.EbikeGoal:
     enum:

@@ -286,6 +286,20 @@ func (eb *EbikeBrand) GetName() string {
 	return eb.Name
 }
 
+// GetTableName returns table name for EbikeBrandAttribute.
+func (eba *EbikeBrandAttribute) GetTableName() string {
+	return "ebike_brand_attribute"
+}
+
+// GetID returns id for EbikeBrandAttribute.
+func (eba *EbikeBrandAttribute) GetID() uint64 {
+	return eba.ID
+}
+
+func (eba *EbikeBrandAttribute) GetName() string {
+	return eba.Name
+}
+
 // GetTableName returns table name for Employee.
 func (e *Employee) GetTableName() string {
 	return "employee"

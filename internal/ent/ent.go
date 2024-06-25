@@ -36,6 +36,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrandattribute"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
@@ -178,6 +179,7 @@ func checkColumn(table, column string) error {
 			coupontemplate.Table:             coupontemplate.ValidColumn,
 			ebike.Table:                      ebike.ValidColumn,
 			ebikebrand.Table:                 ebikebrand.ValidColumn,
+			ebikebrandattribute.Table:        ebikebrandattribute.ValidColumn,
 			employee.Table:                   employee.ValidColumn,
 			enterprise.Table:                 enterprise.ValidColumn,
 			enterprisebatteryswap.Table:      enterprisebatteryswap.ValidColumn,

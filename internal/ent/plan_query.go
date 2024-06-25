@@ -26,12 +26,12 @@ type PlanQuery struct {
 	order           []plan.OrderOption
 	inters          []Interceptor
 	predicates      []predicate.Plan
-	withBrand       *EbikeBrandQuery
 	withAgreement   *AgreementQuery
 	withCities      *CityQuery
 	withParent      *PlanQuery
 	withComplexes   *PlanQuery
 	withCommissions *PromotionCommissionPlanQuery
+	withBrand       *EbikeBrandQuery
 	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -67,28 +67,6 @@ func (pq *PlanQuery) Unique(unique bool) *PlanQuery {
 func (pq *PlanQuery) Order(o ...plan.OrderOption) *PlanQuery {
 	pq.order = append(pq.order, o...)
 	return pq
-}
-
-// QueryBrand chains the current query on the "brand" edge.
-func (pq *PlanQuery) QueryBrand() *EbikeBrandQuery {
-	query := (&EbikeBrandClient{config: pq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := pq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := pq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(plan.Table, plan.FieldID, selector),
-			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, plan.BrandTable, plan.BrandColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // QueryAgreement chains the current query on the "agreement" edge.
@@ -194,6 +172,28 @@ func (pq *PlanQuery) QueryCommissions() *PromotionCommissionPlanQuery {
 			sqlgraph.From(plan.Table, plan.FieldID, selector),
 			sqlgraph.To(promotioncommissionplan.Table, promotioncommissionplan.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, plan.CommissionsTable, plan.CommissionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBrand chains the current query on the "brand" edge.
+func (pq *PlanQuery) QueryBrand() *EbikeBrandQuery {
+	query := (&EbikeBrandClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, selector),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, plan.BrandTable, plan.BrandColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -393,27 +393,16 @@ func (pq *PlanQuery) Clone() *PlanQuery {
 		order:           append([]plan.OrderOption{}, pq.order...),
 		inters:          append([]Interceptor{}, pq.inters...),
 		predicates:      append([]predicate.Plan{}, pq.predicates...),
-		withBrand:       pq.withBrand.Clone(),
 		withAgreement:   pq.withAgreement.Clone(),
 		withCities:      pq.withCities.Clone(),
 		withParent:      pq.withParent.Clone(),
 		withComplexes:   pq.withComplexes.Clone(),
 		withCommissions: pq.withCommissions.Clone(),
+		withBrand:       pq.withBrand.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
 	}
-}
-
-// WithBrand tells the query-builder to eager-load the nodes that are connected to
-// the "brand" edge. The optional arguments are used to configure the query builder of the edge.
-func (pq *PlanQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *PlanQuery {
-	query := (&EbikeBrandClient{config: pq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	pq.withBrand = query
-	return pq
 }
 
 // WithAgreement tells the query-builder to eager-load the nodes that are connected to
@@ -468,6 +457,17 @@ func (pq *PlanQuery) WithCommissions(opts ...func(*PromotionCommissionPlanQuery)
 		opt(query)
 	}
 	pq.withCommissions = query
+	return pq
+}
+
+// WithBrand tells the query-builder to eager-load the nodes that are connected to
+// the "brand" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlanQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *PlanQuery {
+	query := (&EbikeBrandClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withBrand = query
 	return pq
 }
 
@@ -550,12 +550,12 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 		nodes       = []*Plan{}
 		_spec       = pq.querySpec()
 		loadedTypes = [6]bool{
-			pq.withBrand != nil,
 			pq.withAgreement != nil,
 			pq.withCities != nil,
 			pq.withParent != nil,
 			pq.withComplexes != nil,
 			pq.withCommissions != nil,
+			pq.withBrand != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -578,12 +578,6 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
-	}
-	if query := pq.withBrand; query != nil {
-		if err := pq.loadBrand(ctx, query, nodes, nil,
-			func(n *Plan, e *EbikeBrand) { n.Edges.Brand = e }); err != nil {
-			return nil, err
-		}
 	}
 	if query := pq.withAgreement; query != nil {
 		if err := pq.loadAgreement(ctx, query, nodes, nil,
@@ -618,41 +612,15 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 			return nil, err
 		}
 	}
+	if query := pq.withBrand; query != nil {
+		if err := pq.loadBrand(ctx, query, nodes, nil,
+			func(n *Plan, e *EbikeBrand) { n.Edges.Brand = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
-func (pq *PlanQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *EbikeBrand)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Plan)
-	for i := range nodes {
-		if nodes[i].BrandID == nil {
-			continue
-		}
-		fk := *nodes[i].BrandID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(ebikebrand.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "brand_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
 func (pq *PlanQuery) loadAgreement(ctx context.Context, query *AgreementQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *Agreement)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Plan)
@@ -841,6 +809,38 @@ func (pq *PlanQuery) loadCommissions(ctx context.Context, query *PromotionCommis
 	}
 	return nil
 }
+func (pq *PlanQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *EbikeBrand)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Plan)
+	for i := range nodes {
+		if nodes[i].BrandID == nil {
+			continue
+		}
+		fk := *nodes[i].BrandID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(ebikebrand.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "brand_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (pq *PlanQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := pq.querySpec()
@@ -870,14 +870,14 @@ func (pq *PlanQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if pq.withBrand != nil {
-			_spec.Node.AddColumnOnce(plan.FieldBrandID)
-		}
 		if pq.withAgreement != nil {
 			_spec.Node.AddColumnOnce(plan.FieldAgreementID)
 		}
 		if pq.withParent != nil {
 			_spec.Node.AddColumnOnce(plan.FieldParentID)
+		}
+		if pq.withBrand != nil {
+			_spec.Node.AddColumnOnce(plan.FieldBrandID)
 		}
 	}
 	if ps := pq.predicates; len(ps) > 0 {
@@ -947,19 +947,17 @@ func (pq *PlanQuery) Modify(modifiers ...func(s *sql.Selector)) *PlanSelect {
 type PlanQueryWith string
 
 var (
-	PlanQueryWithBrand       PlanQueryWith = "Brand"
 	PlanQueryWithAgreement   PlanQueryWith = "Agreement"
 	PlanQueryWithCities      PlanQueryWith = "Cities"
 	PlanQueryWithParent      PlanQueryWith = "Parent"
 	PlanQueryWithComplexes   PlanQueryWith = "Complexes"
 	PlanQueryWithCommissions PlanQueryWith = "Commissions"
+	PlanQueryWithBrand       PlanQueryWith = "Brand"
 )
 
 func (pq *PlanQuery) With(withEdges ...PlanQueryWith) *PlanQuery {
 	for _, v := range withEdges {
 		switch v {
-		case PlanQueryWithBrand:
-			pq.WithBrand()
 		case PlanQueryWithAgreement:
 			pq.WithAgreement()
 		case PlanQueryWithCities:
@@ -970,6 +968,8 @@ func (pq *PlanQuery) With(withEdges ...PlanQueryWith) *PlanQuery {
 			pq.WithComplexes()
 		case PlanQueryWithCommissions:
 			pq.WithCommissions()
+		case PlanQueryWithBrand:
+			pq.WithBrand()
 		}
 	}
 	return pq

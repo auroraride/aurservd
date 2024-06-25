@@ -31,6 +31,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrandattribute"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
@@ -668,6 +669,23 @@ func init() {
 	ebikebrand.DefaultUpdatedAt = ebikebrandDescUpdatedAt.Default.(func() time.Time)
 	// ebikebrand.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	ebikebrand.UpdateDefaultUpdatedAt = ebikebrandDescUpdatedAt.UpdateDefault.(func() time.Time)
+	ebikebrandattributeMixin := schema.EbikeBrandAttribute{}.Mixin()
+	ebikebrandattributeMixinHooks2 := ebikebrandattributeMixin[2].Hooks()
+	ebikebrandattribute.Hooks[0] = ebikebrandattributeMixinHooks2[0]
+	ebikebrandattributeMixinFields0 := ebikebrandattributeMixin[0].Fields()
+	_ = ebikebrandattributeMixinFields0
+	ebikebrandattributeFields := schema.EbikeBrandAttribute{}.Fields()
+	_ = ebikebrandattributeFields
+	// ebikebrandattributeDescCreatedAt is the schema descriptor for created_at field.
+	ebikebrandattributeDescCreatedAt := ebikebrandattributeMixinFields0[0].Descriptor()
+	// ebikebrandattribute.DefaultCreatedAt holds the default value on creation for the created_at field.
+	ebikebrandattribute.DefaultCreatedAt = ebikebrandattributeDescCreatedAt.Default.(func() time.Time)
+	// ebikebrandattributeDescUpdatedAt is the schema descriptor for updated_at field.
+	ebikebrandattributeDescUpdatedAt := ebikebrandattributeMixinFields0[1].Descriptor()
+	// ebikebrandattribute.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	ebikebrandattribute.DefaultUpdatedAt = ebikebrandattributeDescUpdatedAt.Default.(func() time.Time)
+	// ebikebrandattribute.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	ebikebrandattribute.UpdateDefaultUpdatedAt = ebikebrandattributeDescUpdatedAt.UpdateDefault.(func() time.Time)
 	employeeMixin := schema.Employee{}.Mixin()
 	employeeMixinHooks2 := employeeMixin[2].Hooks()
 	employee.Hooks[0] = employeeMixinHooks2[0]

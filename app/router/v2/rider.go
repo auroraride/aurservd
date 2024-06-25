@@ -227,4 +227,6 @@ func LoadRiderV2Routes(root *echo.Group) {
 	agreement := g.Group("/agreement")
 	agreement.GET("/enterprise/price/:id", rapi.Agreement.QueryAgreementByEnterprisePriceID) // 根据企业价格ID查询协议
 
+	// 车电品牌
+	g.GET("/ebike/brand/:id", rapi.Ebike.EbikeBrandDetail) // 车电品牌详情
 }

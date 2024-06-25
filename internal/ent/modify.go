@@ -219,6 +219,13 @@ func (c *EbikeBrandClient) ModifyOne(old *EbikeBrand, data any) *EbikeBrandUpdat
 	return EntitySetAttributes[EbikeBrandUpdateOne, EbikeBrand](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for EbikeBrandAttribute.
+func (c *EbikeBrandAttributeClient) ModifyOne(old *EbikeBrandAttribute, data any) *EbikeBrandAttributeUpdateOne {
+	mutation := newEbikeBrandAttributeMutation(c.config, OpUpdateOne, withEbikeBrandAttribute(old))
+	up := &EbikeBrandAttributeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[EbikeBrandAttributeUpdateOne, EbikeBrandAttribute](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Employee.
 func (c *EmployeeClient) ModifyOne(old *Employee, data any) *EmployeeUpdateOne {
 	mutation := newEmployeeMutation(c.config, OpUpdateOne, withEmployee(old))

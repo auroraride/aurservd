@@ -34,8 +34,42 @@ type EbikeBrand struct {
 	// 名称
 	Name string `json:"name,omitempty"`
 	// 封面缩略图
-	Cover        string `json:"cover,omitempty"`
+	Cover string `json:"cover,omitempty"`
+	// 主图
+	MainPic []string `json:"main_pic,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the EbikeBrandQuery when eager-loading is set.
+	Edges        EbikeBrandEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// EbikeBrandEdges holds the relations/edges for other nodes in the graph.
+type EbikeBrandEdges struct {
+	// BrandAttribute holds the value of the brand_attribute edge.
+	BrandAttribute []*EbikeBrandAttribute `json:"brand_attribute,omitempty"`
+	// Plans holds the value of the plans edge.
+	Plans []*Plan `json:"plans,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [2]bool
+}
+
+// BrandAttributeOrErr returns the BrandAttribute value or an error if the edge
+// was not loaded in eager-loading.
+func (e EbikeBrandEdges) BrandAttributeOrErr() ([]*EbikeBrandAttribute, error) {
+	if e.loadedTypes[0] {
+		return e.BrandAttribute, nil
+	}
+	return nil, &NotLoadedError{edge: "brand_attribute"}
+}
+
+// PlansOrErr returns the Plans value or an error if the edge
+// was not loaded in eager-loading.
+func (e EbikeBrandEdges) PlansOrErr() ([]*Plan, error) {
+	if e.loadedTypes[1] {
+		return e.Plans, nil
+	}
+	return nil, &NotLoadedError{edge: "plans"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -43,7 +77,7 @@ func (*EbikeBrand) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case ebikebrand.FieldCreator, ebikebrand.FieldLastModifier:
+		case ebikebrand.FieldCreator, ebikebrand.FieldLastModifier, ebikebrand.FieldMainPic:
 			values[i] = new([]byte)
 		case ebikebrand.FieldID:
 			values[i] = new(sql.NullInt64)
@@ -125,6 +159,14 @@ func (eb *EbikeBrand) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				eb.Cover = value.String
 			}
+		case ebikebrand.FieldMainPic:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field main_pic", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &eb.MainPic); err != nil {
+					return fmt.Errorf("unmarshal field main_pic: %w", err)
+				}
+			}
 		default:
 			eb.selectValues.Set(columns[i], values[i])
 		}
@@ -136,6 +178,16 @@ func (eb *EbikeBrand) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (eb *EbikeBrand) Value(name string) (ent.Value, error) {
 	return eb.selectValues.Get(name)
+}
+
+// QueryBrandAttribute queries the "brand_attribute" edge of the EbikeBrand entity.
+func (eb *EbikeBrand) QueryBrandAttribute() *EbikeBrandAttributeQuery {
+	return NewEbikeBrandClient(eb.config).QueryBrandAttribute(eb)
+}
+
+// QueryPlans queries the "plans" edge of the EbikeBrand entity.
+func (eb *EbikeBrand) QueryPlans() *PlanQuery {
+	return NewEbikeBrandClient(eb.config).QueryPlans(eb)
 }
 
 // Update returns a builder for updating this EbikeBrand.
@@ -186,6 +238,9 @@ func (eb *EbikeBrand) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("cover=")
 	builder.WriteString(eb.Cover)
+	builder.WriteString(", ")
+	builder.WriteString("main_pic=")
+	builder.WriteString(fmt.Sprintf("%v", eb.MainPic))
 	builder.WriteByte(')')
 	return builder.String()
 }
