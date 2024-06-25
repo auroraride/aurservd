@@ -4867,23 +4867,6 @@ paths:
       summary: 骑士卡详情
       tags:
       - Plan - 骑士卡
-  /rider/v2/plan/brand:
-    get:
-      consumes:
-      - application/json
-      operationId: PlanEbikeBrand
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            items:
-              $ref: '#/definitions/model.SelectOption'
-            type: array
-      summary: 车型列表
-      tags:
-      - Plan - 车型列表
   /rider/v2/plan/renewly:
     get:
       consumes:
@@ -5135,6 +5118,23 @@ paths:
       summary: 取消预约
       tags:
       - Reserve - 预约
+  /rider/v2/selection/brand:
+    get:
+      consumes:
+      - application/json
+      operationId: SelectionBrand
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: 获取车型列表选择
+      tags:
+      - Selection - 车型列表
   /rider/v2/selection/model:
     get:
       consumes:
