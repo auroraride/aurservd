@@ -403,14 +403,6 @@ definitions:
         description: 标题
         type: string
     type: object
-  definition.ListByStoreRes:
-    properties:
-      storePlan:
-        description: 门店车电套餐
-        items:
-          $ref: '#/definitions/definition.StoreEbikePlan'
-        type: array
-    type: object
   definition.OrderCreateReq:
     properties:
       agreementHash:
@@ -2658,6 +2650,18 @@ definitions:
         description: 是否需要支付逾期费用
         type: boolean
     type: object
+  model.SelectOption:
+    properties:
+      desc:
+        description: 描述
+        type: string
+      label:
+        description: 选择项名称
+        type: string
+      value:
+        description: 选择项值 (ID)
+        type: integer
+    type: object
   model.SettingPlanDescription:
     properties:
       attention:
@@ -4874,7 +4878,9 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/definition.ListByStoreRes'
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
       summary: 车型列表
       tags:
       - Plan - 车型列表

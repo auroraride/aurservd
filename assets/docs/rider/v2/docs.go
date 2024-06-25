@@ -2873,7 +2873,10 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.ListByStoreRes"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
                         }
                     }
                 }
@@ -4478,18 +4481,6 @@ const docTemplate = `{
                 "title": {
                     "description": "标题",
                     "type": "string"
-                }
-            }
-        },
-        "definition.ListByStoreRes": {
-            "type": "object",
-            "properties": {
-                "storePlan": {
-                    "description": "门店车电套餐",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.StoreEbikePlan"
-                    }
                 }
             }
         },
@@ -7739,6 +7730,23 @@ const docTemplate = `{
                 "overdue": {
                     "description": "是否需要支付逾期费用",
                     "type": "boolean"
+                }
+            }
+        },
+        "model.SelectOption": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "label": {
+                    "description": "选择项名称",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "选择项值 (ID)",
+                    "type": "integer"
                 }
             }
         },

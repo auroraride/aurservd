@@ -93,7 +93,7 @@ func (*plan) ByStoreDetail(c echo.Context) (err error) {
 // @Tags	Plan - 车型列表
 // @Accept	json
 // @Produce	json
-// @Success	200	{object}	definition.ListByStoreRes	"请求成功"
+// @Success	200	{object}	[]model.SelectOption	"请求成功"
 func (*plan) EbikeBrand(c echo.Context) (err error) {
 	ctx := app.Context(c)
 	return ctx.SendResponse(service.NewSelection().EbikeBrand())
