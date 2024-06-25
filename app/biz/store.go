@@ -141,6 +141,7 @@ func (b *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 		Rest:          item.Rest,
 		Photos:        item.Photos,
 		Phone:         item.Phone,
+		HeadPic:       item.HeadPic,
 	}
 	if item.Edges.Employee != nil {
 		res.Employee = &model.Employee{

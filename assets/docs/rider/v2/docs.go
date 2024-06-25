@@ -5120,6 +5120,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "headPic": {
+                    "description": "门店头图",
+                    "type": "string"
+                },
                 "id": {
                     "description": "门店ID",
                     "type": "integer"

@@ -843,6 +843,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Employee'
         description: 店员, 有可能不存在
+      headPic:
+        description: 门店头图
+        type: string
       id:
         description: 门店ID
         type: integer

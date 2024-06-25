@@ -34,6 +34,7 @@ type StoreDetail struct {
 	SaleGoods     []*GoodsDetail                `json:"saleGoods,omitempty"` // 买车列表
 	RtoBrands     []*model.PlanEbikeBrandOption `json:"rtoBrands,omitempty"` // 以租代购车电选项
 	Phone         string                        `json:"phone"`               // 门店电话
+	HeadPic       string                        `json:"headPic"`             // 门店头图
 }
 
 // StoreDetailReq 门店详情请求
