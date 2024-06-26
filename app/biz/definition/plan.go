@@ -54,6 +54,7 @@ type StoreEbikePlan struct {
 	StoreName  string  `json:"storeName"`       // 门店名称
 	Distance   float64 `json:"distance"`        // 门店距离
 	PlanId     uint64  `json:"planId"`          // 套餐ID
+	PlanName   string  `json:"planName"`        // 套餐名称
 	BrandId    uint64  `json:"brandId"`         // 品牌ID
 	BrandName  string  `json:"brandName"`       // 品牌名称
 	Cover      string  `json:"cover,omitempty"` // 品牌封面图
