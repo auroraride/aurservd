@@ -859,6 +859,9 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 	for _, item := range items {
 		// 查找骑士卡所属门店
 		storeCheckMap := make(map[uint64]bool)
+		if item.BrandID == nil {
+			continue
+		}
 		storeIds := cityBrand2StoresMap[fmt.Sprintf("%d-%d", str.CityID, *item.BrandID)]
 		if len(storeIds) != 0 {
 			for _, stId := range storeIds {
