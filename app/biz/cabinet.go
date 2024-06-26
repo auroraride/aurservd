@@ -47,7 +47,7 @@ func NewCabinet() *cabinetBiz {
 
 // ListByRider  查询电柜
 func (b *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderReq) (res []definition.CabinetByRiderRes, err error) {
-	maxDistance := 50000.0
+	maxDistance := definition.DefaultMaxDistance
 	if req.Distance != nil && *req.Distance < maxDistance {
 		maxDistance = *req.Distance
 	}
