@@ -452,7 +452,6 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 			store.HasStocksWith(stock.BrandIDNotNil()),
 		).
 		WithCity().
-		WithEmployee().
 		WithStocks().
 		Modify(func(sel *sql.Selector) {
 			sel.
@@ -476,16 +475,20 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 	// 门店电车库存品牌ID
 	var brandIds []uint64
 	// 门店电车品牌集合
-	cityBrand2StoreExist := make(map[string]bool)
+	cityStoreBrandExist := make(map[string]bool)
 	cityBrand2StoresMap := make(map[string][]uint64)
 	for _, st := range storelist {
+		// 计算该门店电车品牌库存
+		brandStockMap := s.CalStoreEbikeStock(st.Edges.Stocks)
 		for _, stc := range st.Edges.Stocks {
 			if stc.BrandID != nil {
 				existKey := fmt.Sprintf("%d-%d-%d", req.CityId, st.ID, *stc.BrandID)
-				if !cityBrand2StoreExist[existKey] {
+				if !cityStoreBrandExist[existKey] && brandStockMap[*stc.BrandID] > 0 {
+					cityStoreBrandExist[existKey] = true
+					brandIds = append(brandIds, *stc.BrandID)
+					// 保存存在库存的电车门店对应门店ID
 					cbKey := fmt.Sprintf("%d-%d", req.CityId, *stc.BrandID)
 					cityBrand2StoresMap[cbKey] = append(cityBrand2StoresMap[cbKey], st.ID)
-					brandIds = append(brandIds, *stc.BrandID)
 				}
 			}
 		}
@@ -523,9 +526,18 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 	for _, item := range items {
 		// 查找骑士卡所属门店
 		storeCheckMap := make(map[uint64]bool)
+		if item.BrandID == nil {
+			continue
+		}
 		storeIds := cityBrand2StoresMap[fmt.Sprintf("%d-%d", req.CityId, *item.BrandID)]
 		for _, storeId := range storeIds {
+			// 判断门店信息是否有效
 			if storeMap[storeId] == nil {
+				continue
+			}
+
+			// 门店电车品牌库存验证
+			if !cityStoreBrandExist[fmt.Sprintf("%d-%d-%d", req.CityId, storeId, *item.BrandID)] {
 				continue
 			}
 
@@ -778,16 +790,20 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 	// 门店电车库存品牌ID
 	var brandIds []uint64
 	// 门店电车品牌集合
-	cityBrand2StoreExist := make(map[string]bool)
+	cityStoreBrandExist := make(map[string]bool)
 	cityBrand2StoresMap := make(map[string][]uint64)
 	if str.Edges.Stocks != nil {
+		// 计算该门店电车品牌库存
+		brandStockMap := s.CalStoreEbikeStock(str.Edges.Stocks)
 		for _, stc := range str.Edges.Stocks {
 			if stc.BrandID != nil {
 				existKey := fmt.Sprintf("%d-%d-%d", str.CityID, str.ID, *stc.BrandID)
-				if !cityBrand2StoreExist[existKey] {
+				if !cityStoreBrandExist[existKey] && brandStockMap[*stc.BrandID] > 0 {
+					cityStoreBrandExist[existKey] = true
+					brandIds = append(brandIds, *stc.BrandID)
+					// 保存存在库存的电车门店对应门店ID
 					cbKey := fmt.Sprintf("%d-%d", str.CityID, *stc.BrandID)
 					cityBrand2StoresMap[cbKey] = append(cityBrand2StoresMap[cbKey], str.ID)
-					brandIds = append(brandIds, *stc.BrandID)
 				}
 			}
 		}
@@ -823,7 +839,13 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 		storeIds := cityBrand2StoresMap[fmt.Sprintf("%d-%d", str.CityID, *item.BrandID)]
 		if len(storeIds) != 0 {
 			for _, stId := range storeIds {
-				if storeMap[stId] == nil {
+				// 判断门店信息是否有效
+				if storeMap[storeId] == nil {
+					continue
+				}
+
+				// 门店电车品牌库存验证
+				if !cityStoreBrandExist[fmt.Sprintf("%d-%d-%d", str.CityID, storeId, *item.BrandID)] {
 					continue
 				}
 
@@ -867,6 +889,17 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 	allPlans = append(allPlans, storeEbikePlansMap[str.ID]...)
 
 	return allPlans
+}
+
+// CalStoreEbikeStock 计算库存数
+func (s *planBiz) CalStoreEbikeStock(stocks []*ent.Stock) map[uint64]int {
+	resMap := make(map[uint64]int)
+	for _, stc := range stocks {
+		if stc.BrandID != nil {
+			resMap[*stc.BrandID] += stc.Num
+		}
+	}
+	return resMap
 }
 
 func (s *planBiz) FilterPlanForStore(plans []*ent.Plan) []*ent.Plan {
