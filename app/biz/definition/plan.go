@@ -24,6 +24,8 @@ type PlanDetailRes struct {
 	Notes []string `json:"notes"` // 购买须知
 }
 
+var DefaultMaxDistance = 50000.0
+
 type StorePlanSortType uint8
 
 const (

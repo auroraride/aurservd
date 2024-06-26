@@ -440,7 +440,7 @@ func (s *planBiz) Detail(req *definition.PlanDetailReq) (*definition.PlanDetailR
 // ListByStore 基于门店的套餐列表
 func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreEbikePlan {
 	// 查询附近门店数据
-	maxDistance := 50000.0
+	maxDistance := definition.DefaultMaxDistance
 	if req.Distance != nil && *req.Distance < maxDistance {
 		maxDistance = *req.Distance
 	}
@@ -610,7 +610,7 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 		Where(store.ID(req.StoreId)).
 		First(s.ctx)
 	if storeItem == nil {
-		return &definition.StorePlanDetail{}
+		return nil
 	}
 
 	if storeItem.Edges.Stocks != nil {
