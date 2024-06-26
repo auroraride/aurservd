@@ -334,7 +334,7 @@ func (s *assistanceService) Nearby(req *model.IDQueryReq) (items []model.Assista
 			func(sel *sql.Selector) {
 				sel.Select(sel.C(store.FieldID), sel.C(store.FieldLng), sel.C(store.FieldLat), sel.C(store.FieldName)).
 					Where(sql.P(func(b *sql.Builder) {
-						b.WriteString(fmt.Sprintf(`ST_DWithin(ST_GeogFromText('SRID=4326;POINT('||%s||' '||%s||')'), ST_GeogFromText('POINT(%f %f)'), %f)`, sel.C(store.FieldLng), sel.C(store.FieldLat), ass.Lng, ass.Lat, 50000.0))
+						b.WriteString(fmt.Sprintf(`ST_DWithin(ST_GeogFromText('SRID=4326;POINT('||%s||' '||%s||')'), ST_GeogFromText('POINT(%f %f)'), %f)`, sel.C(store.FieldLng), sel.C(store.FieldLat), ass.Lng, ass.Lat, model.DefaultMaxDistance))
 					})).
 					AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeogFromText('SRID=4326;POINT('||%s||' '||%s||')'), ST_GeogFromText('POINT(%f %f)'))`, sel.C(store.FieldLng), sel.C(store.FieldLat), ass.Lng, ass.Lat)), "distance").
 					OrderBy(sql.Asc("distance"))

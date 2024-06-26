@@ -32,7 +32,7 @@ func NewStore() *storeBiz {
 // List 门店列表
 func (b *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDetail, err error) {
 	res = make([]*definition.StoreDetail, 0)
-	maxDistance := 50000.0
+	maxDistance := definition.DefaultMaxDistance
 	if req.Distance != nil && *req.Distance < maxDistance {
 		maxDistance = *req.Distance
 	}

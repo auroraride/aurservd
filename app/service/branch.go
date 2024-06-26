@@ -240,8 +240,8 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 				GroupBy(bt.C(branch.FieldID)).
 				OrderBy(sql.Asc("distance"))
 			if req.Distance != nil {
-				if *req.Distance > 50000 {
-					*req.Distance = 50000
+				if *req.Distance > model.DefaultMaxDistance {
+					*req.Distance = model.DefaultMaxDistance
 				}
 				sel.Where(sql.P(func(b *sql.Builder) {
 					b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, branch.FieldGeom, *req.Lng, *req.Lat, *req.Distance))
@@ -330,7 +330,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 	}
 	distance := req.Distance
 	if distance == 0 {
-		distance = 50000
+		distance = model.DefaultMaxDistance
 	}
 	temps, stores, cabinets := s.ListByDistance(&model.BranchWithDistanceReq{
 		Lng:      &lng,
