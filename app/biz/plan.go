@@ -609,6 +609,10 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 		WithStocks().
 		Where(store.ID(req.StoreId)).
 		First(s.ctx)
+	if storeItem == nil {
+		return &definition.StorePlanDetail{}
+	}
+
 	if storeItem.Edges.Stocks != nil {
 		for _, st := range storeItem.Edges.Stocks {
 			if st.BrandID != nil {
