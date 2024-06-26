@@ -24,7 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
-	"github.com/auroraride/aurservd/pkg/utils"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type planBiz struct {
@@ -555,8 +555,8 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 				PlanName:   item.Name,
 				Rto:        item.Type == model.PlanTypeEbikeRto.Value(),
 				Daily:      item.Daily,
-				DailyPrice: utils.NewNumber().Decimal(item.Price / float64(item.Days)),
-				MonthPrice: utils.NewNumber().Decimal(30 * item.Price / float64(item.Days)),
+				DailyPrice: tools.NewDecimal().Div(item.Price, float64(item.Days)),
+				MonthPrice: tools.NewDecimal().Div(tools.NewDecimal().Mul(30.0, item.Price), float64(item.Days)),
 			}
 
 			brand := item.Edges.Brand
@@ -605,11 +605,17 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 
 	q := s.orm.QueryNotDeleted().
 		Where(
-			plan.Or(
-				plan.ParentID(req.PlanId),
-				plan.ID(req.PlanId),
-			),
+			plan.ID(req.PlanId),
 		).
+		WithParent(func(query *ent.PlanQuery) {
+			query.
+				WithComplexes().
+				WithBrand().
+				WithCities().
+				WithAgreement().
+				Order(ent.Asc(plan.FieldDays))
+		}).
+		WithComplexes().
 		WithBrand().
 		WithCities().
 		WithAgreement().
@@ -638,10 +644,22 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 		)
 	}
 
-	item := q.FirstX(s.ctx)
-	mmap := make(map[string]*model.PlanModelOption)
+	pl, _ := q.First(s.ctx)
 
-	var res definition.StorePlanDetail
+	// 整理当前套餐所属骑士卡所有数据
+	items := make([]*ent.Plan, 0)
+	switch {
+	case pl != nil && pl.Edges.Parent != nil:
+		// 当前plan为子级
+		items = append(items, pl.Edges.Parent)
+		items = append(items, pl.Edges.Parent.Edges.Complexes...)
+	case pl != nil && pl.Edges.Parent == nil:
+		// 当前plan为父级
+		items = append(items, pl)
+		items = append(items, pl.Edges.Complexes...)
+	}
+
+	mmap := make(map[string]*model.PlanModelOption)
 
 	serv := service.NewPlanIntroduce()
 	intro := serv.QueryMap()
@@ -654,94 +672,97 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 			agreement.IsDefault(true),
 		).First(s.ctx)
 
-	key := serv.Key(item.Model, item.BrandID)
-	m, ok := mmap[key]
-	if !ok {
-		// 可用城市
-		var cs []string
-		for _, c := range item.Edges.Cities {
-			cs = append(cs, c.Name)
-		}
-		// 封装电池型号
-		m = &model.PlanModelOption{
-			Children: new(model.PlanDaysPriceOptions),
-			Model:    item.Model,
-			Intro:    intro[serv.Key(item.Model, item.BrandID)],
-			Notes:    append(item.Notes, fmt.Sprintf("仅限 %s 使用", strings.Join(cs, " / "))),
-		}
-		mmap[key] = m
-	}
+	var res definition.StorePlanDetail
 
-	var ramount float64
-	if r != nil {
-		// 判断是否有生效订阅
-		_, sub := service.NewSubscribe().RecentDetail(r.ID)
-		if sub != nil && slices.Contains(model.SubscribeNotUnSubscribed(), sub.Status) {
-			ramount = 0
-		} else {
-			state, _ = service.NewOrder().PreconditionNewly(sub)
-			if state == model.OrderTypeNewly && item.DiscountNewly > 0 {
-				ramount = item.DiscountNewly
+	for _, item := range items {
+		key := serv.Key(item.Model, item.BrandID)
+		m, ok := mmap[key]
+		if !ok {
+			// 可用城市
+			var cs []string
+			for _, c := range item.Edges.Cities {
+				cs = append(cs, c.Name)
+			}
+			// 封装电池型号
+			m = &model.PlanModelOption{
+				Children: new(model.PlanDaysPriceOptions),
+				Model:    item.Model,
+				Intro:    intro[serv.Key(item.Model, item.BrandID)],
+				Notes:    append(item.Notes, fmt.Sprintf("仅限 %s 使用", strings.Join(cs, " / "))),
+			}
+			mmap[key] = m
+		}
+
+		var ramount float64
+		if r != nil {
+			// 判断是否有生效订阅
+			_, sub := service.NewSubscribe().RecentDetail(r.ID)
+			if sub != nil && slices.Contains(model.SubscribeNotUnSubscribed(), sub.Status) {
+				ramount = 0
+			} else {
+				state, _ = service.NewOrder().PreconditionNewly(sub)
+				if state == model.OrderTypeNewly && item.DiscountNewly > 0 {
+					ramount = item.DiscountNewly
+				}
 			}
 		}
-	}
 
-	planDaysPriceOption := model.PlanDaysPriceOption{
-		ID:                      item.ID,
-		Name:                    item.Name,
-		Price:                   item.Price,
-		Days:                    item.Days,
-		Original:                item.Original,
-		DiscountNewly:           ramount,
-		HasEbike:                item.BrandID != nil,
-		Deposit:                 item.Deposit,
-		DepositAmount:           item.DepositAmount,
-		DepositWechatPayscore:   item.DepositWechatPayscore,
-		DepositAlipayAuthFreeze: item.DepositAlipayAuthFreeze,
-		DepositContract:         item.DepositContract,
-		DepositPay:              item.DepositPay,
-		RtoDays:                 item.RtoDays,
-	}
-	if item.Edges.Agreement != nil {
-		planDaysPriceOption.Agreement = &model.Agreement{
-			ID:            item.Edges.Agreement.ID,
-			Name:          item.Edges.Agreement.Name,
-			URL:           item.Edges.Agreement.URL,
-			Hash:          item.Edges.Agreement.Hash,
-			ForceReadTime: item.Edges.Agreement.ForceReadTime,
+		planDaysPriceOption := model.PlanDaysPriceOption{
+			ID:                      item.ID,
+			Name:                    item.Name,
+			Price:                   item.Price,
+			Days:                    item.Days,
+			Original:                item.Original,
+			DiscountNewly:           ramount,
+			HasEbike:                item.BrandID != nil,
+			Deposit:                 item.Deposit,
+			DepositAmount:           item.DepositAmount,
+			DepositWechatPayscore:   item.DepositWechatPayscore,
+			DepositAlipayAuthFreeze: item.DepositAlipayAuthFreeze,
+			DepositContract:         item.DepositContract,
+			DepositPay:              item.DepositPay,
+			RtoDays:                 item.RtoDays,
 		}
-	} else if defaultAgreement != nil {
-		planDaysPriceOption.Agreement = &model.Agreement{
-			ID:            defaultAgreement.ID,
-			Name:          defaultAgreement.Name,
-			URL:           defaultAgreement.URL,
-			Hash:          defaultAgreement.Hash,
-			ForceReadTime: defaultAgreement.ForceReadTime,
-		}
-	}
-
-	*m.Children = append(*m.Children, planDaysPriceOption)
-
-	SortIDOptions(*m.Children)
-
-	if item.BrandID != nil {
-		brand := item.Edges.Brand
-		res = definition.StorePlanDetail{
-			Children: new(model.PlanModelOptions),
-			Name:     brand.Name,
-			Cover:    brand.Cover,
-		}
-
-		var exists bool
-		for _, c := range *res.Children {
-			if c.Model == item.Model {
-				exists = true
+		if item.Edges.Agreement != nil {
+			planDaysPriceOption.Agreement = &model.Agreement{
+				ID:            item.Edges.Agreement.ID,
+				Name:          item.Edges.Agreement.Name,
+				URL:           item.Edges.Agreement.URL,
+				Hash:          item.Edges.Agreement.Hash,
+				ForceReadTime: item.Edges.Agreement.ForceReadTime,
+			}
+		} else if defaultAgreement != nil {
+			planDaysPriceOption.Agreement = &model.Agreement{
+				ID:            defaultAgreement.ID,
+				Name:          defaultAgreement.Name,
+				URL:           defaultAgreement.URL,
+				Hash:          defaultAgreement.Hash,
+				ForceReadTime: defaultAgreement.ForceReadTime,
 			}
 		}
-		if !exists {
-			*res.Children = append(*res.Children, m)
-		}
 
+		*m.Children = append(*m.Children, planDaysPriceOption)
+
+		SortIDOptions(*m.Children)
+
+		if item.Edges.Brand != nil {
+			brand := item.Edges.Brand
+			res = definition.StorePlanDetail{
+				Children: new(model.PlanModelOptions),
+				Name:     brand.Name,
+				Cover:    brand.Cover,
+			}
+
+			var exists bool
+			for _, c := range *res.Children {
+				if c.Model == item.Model {
+					exists = true
+				}
+			}
+			if !exists {
+				*res.Children = append(*res.Children, m)
+			}
+		}
 	}
 
 	if r != nil {
@@ -757,7 +778,9 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 		}
 	}
 
-	SortPlanEbikeModelByName(*res.Children)
+	if res.Children != nil {
+		SortPlanEbikeModelByName(*res.Children)
+	}
 
 	return &res
 }
@@ -862,8 +885,8 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 					PlanName:   item.Name,
 					Rto:        item.Type == model.PlanTypeEbikeRto.Value(),
 					Daily:      item.Daily,
-					DailyPrice: utils.NewNumber().Decimal(item.Price / float64(item.Days)),
-					MonthPrice: utils.NewNumber().Decimal(30 * item.Price / float64(item.Days)),
+					DailyPrice: tools.NewDecimal().Div(item.Price, float64(item.Days)),
+					MonthPrice: tools.NewDecimal().Div(tools.NewDecimal().Mul(30.0, item.Price), float64(item.Days)),
 				}
 
 				brand := item.Edges.Brand
