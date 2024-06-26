@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	"fmt"
+	"math"
 	"slices"
 	"sort"
 	"strconv"
@@ -23,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/pkg/utils"
 )
 
 type planBiz struct {
@@ -477,15 +479,13 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 	cityBrand2StoreExist := make(map[string]bool)
 	cityBrand2StoresMap := make(map[string][]uint64)
 	for _, st := range storelist {
-		if st.Edges.Stocks != nil {
-			for _, stc := range st.Edges.Stocks {
-				if stc.BrandID != nil {
-					existKey := fmt.Sprintf("%d-%d-%d", req.CityId, st.ID, *stc.BrandID)
-					if !cityBrand2StoreExist[existKey] {
-						cbKey := fmt.Sprintf("%d-%d", req.CityId, *stc.BrandID)
-						cityBrand2StoresMap[cbKey] = append(cityBrand2StoresMap[cbKey], st.ID)
-						brandIds = append(brandIds, *stc.BrandID)
-					}
+		for _, stc := range st.Edges.Stocks {
+			if stc.BrandID != nil {
+				existKey := fmt.Sprintf("%d-%d-%d", req.CityId, st.ID, *stc.BrandID)
+				if !cityBrand2StoreExist[existKey] {
+					cbKey := fmt.Sprintf("%d-%d", req.CityId, *stc.BrandID)
+					cityBrand2StoresMap[cbKey] = append(cityBrand2StoresMap[cbKey], st.ID)
+					brandIds = append(brandIds, *stc.BrandID)
 				}
 			}
 		}
@@ -499,7 +499,6 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 			plan.Enable(true),
 			plan.StartLTE(today),
 			plan.EndGTE(today),
-			plan.HasBrandWith(ebikebrand.IDIn(brandIds...)),
 			plan.HasCitiesWith(city.ID(req.CityId)),
 		).
 		WithBrand().
@@ -507,52 +506,68 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 		WithAgreement().
 		Order(ent.Asc(plan.FieldDays))
 
+	if req.BrandId != nil {
+		q.Where(plan.HasBrandWith(ebikebrand.ID(*req.BrandId)))
+	} else {
+		q.Where(plan.HasBrandWith(ebikebrand.IDIn(brandIds...)))
+	}
+
 	items := q.AllX(s.ctx)
+
+	// 骑士卡筛选
+	items = s.FilterPlanForStore(items)
 
 	storeEbikePlansMap := make(map[uint64][]*definition.StoreEbikePlan)
 
 	// 所有门店骑士卡车电套餐
 	for _, item := range items {
 		// 查找骑士卡所属门店
+		storeCheckMap := make(map[uint64]bool)
 		storeIds := cityBrand2StoresMap[fmt.Sprintf("%d-%d", req.CityId, *item.BrandID)]
-		if len(storeIds) != 0 {
-			for _, storeId := range storeIds {
-				if storeMap[storeId] == nil {
-					continue
-				}
-
-				// 赋值
-				sep := &definition.StoreEbikePlan{
-					StoreId:    storeId,
-					StoreName:  storeMap[storeId].Name,
-					PlanId:     item.ID,
-					Rto:        item.Type == model.PlanTypeEbikeRto.Value(),
-					Daily:      item.Daily,
-					DailyPrice: item.Price / float64(item.Days),
-					MonthPrice: 30 * item.Price / float64(item.Days),
-				}
-
-				brand := item.Edges.Brand
-				if brand != nil {
-					sep.BrandId = brand.ID
-					sep.BrandName = brand.Name
-					sep.Cover = brand.Cover
-				}
-
-				distance, err := storeMap[storeId].Value("distance")
-				if distance != nil || err == nil {
-					distanceFloat, ok := distance.(float64)
-					if ok {
-						sep.Distance = distanceFloat
-					}
-				}
-				storeEbikePlansMap[storeId] = append(storeEbikePlansMap[storeId], sep)
+		for _, storeId := range storeIds {
+			if storeMap[storeId] == nil {
+				continue
 			}
+
+			// 门店查重
+			if storeCheckMap[storeId] {
+				continue
+			}
+			storeCheckMap[storeId] = true
+
+			// 赋值
+			sep := &definition.StoreEbikePlan{
+				StoreId:    storeId,
+				StoreName:  storeMap[storeId].Name,
+				PlanId:     item.ID,
+				PlanName:   item.Name,
+				Rto:        item.Type == model.PlanTypeEbikeRto.Value(),
+				Daily:      item.Daily,
+				DailyPrice: utils.NewNumber().Decimal(item.Price / float64(item.Days)),
+				MonthPrice: utils.NewNumber().Decimal(30 * item.Price / float64(item.Days)),
+			}
+
+			brand := item.Edges.Brand
+			if brand != nil {
+				sep.BrandId = brand.ID
+				sep.BrandName = brand.Name
+				sep.Cover = brand.Cover
+			}
+
+			distance, err := storeMap[storeId].Value("distance")
+			if distance != nil || err == nil {
+				distanceFloat, ok := distance.(float64)
+				if ok {
+					sep.Distance = distanceFloat
+				}
+			}
+			storeEbikePlansMap[storeId] = append(storeEbikePlansMap[storeId], sep)
 		}
 	}
 
-	// 筛选门店租车套餐数据
 	var allPlans []*definition.StoreEbikePlan
+
+	// 按照门店分组排序
 	for _, v := range storelist {
 		seps := storeEbikePlansMap[v.ID]
 		if len(seps) > 0 {
@@ -560,22 +575,7 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 			if req.SortType != nil && *req.SortType == definition.StorePlanSortTypePrice {
 				SortPlanEbikeModelByDailyPrice(seps)
 			}
-
-			// 区分不同的套餐日租、月租
-			storePlanMap := make(map[string]bool)
-			for _, sep := range seps {
-				spmType := "month"
-				if sep.Daily {
-					spmType = "daily"
-				}
-				spmKey := fmt.Sprintf("%d-%d-%s", sep.StoreId, sep.PlanId, spmType)
-
-				if !storePlanMap[spmKey] {
-					allPlans = append(allPlans, sep)
-					storePlanMap[spmKey] = true
-				}
-
-			}
+			allPlans = append(allPlans, seps...)
 		}
 	}
 
@@ -811,27 +811,37 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 
 	items := q.AllX(s.ctx)
 
+	// 骑士卡筛选
+	items = s.FilterPlanForStore(items)
+
 	storeEbikePlansMap := make(map[uint64][]*definition.StoreEbikePlan)
 
 	// 所有门店骑士卡车电套餐
 	for _, item := range items {
 		// 查找骑士卡所属门店
+		storeCheckMap := make(map[uint64]bool)
 		storeIds := cityBrand2StoresMap[fmt.Sprintf("%d-%d", str.CityID, *item.BrandID)]
 		if len(storeIds) != 0 {
-			for _, storeId := range storeIds {
-				if storeMap[storeId] == nil {
+			for _, stId := range storeIds {
+				if storeMap[stId] == nil {
+					continue
+				}
+
+				// 门店查重
+				if storeCheckMap[storeId] {
 					continue
 				}
 
 				// 赋值
 				sep := &definition.StoreEbikePlan{
-					StoreId:    storeId,
-					StoreName:  storeMap[storeId].Name,
+					StoreId:    stId,
+					StoreName:  storeMap[stId].Name,
 					PlanId:     item.ID,
+					PlanName:   item.Name,
 					Rto:        item.Type == model.PlanTypeEbikeRto.Value(),
 					Daily:      item.Daily,
-					DailyPrice: item.Price / float64(item.Days),
-					MonthPrice: 30 * item.Price / float64(item.Days),
+					DailyPrice: utils.NewNumber().Decimal(item.Price / float64(item.Days)),
+					MonthPrice: utils.NewNumber().Decimal(30 * item.Price / float64(item.Days)),
 				}
 
 				brand := item.Edges.Brand
@@ -841,37 +851,69 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 					sep.Cover = brand.Cover
 				}
 
-				distance, err := storeMap[storeId].Value("distance")
+				distance, err := storeMap[stId].Value("distance")
 				if distance != nil || err == nil {
 					distanceFloat, ok := distance.(float64)
 					if ok {
 						sep.Distance = distanceFloat
 					}
 				}
-				storeEbikePlansMap[storeId] = append(storeEbikePlansMap[storeId], sep)
+				storeEbikePlansMap[stId] = append(storeEbikePlansMap[stId], sep)
 			}
 		}
 	}
 
-	// 筛选门店租车套餐数据
 	var allPlans []*definition.StoreEbikePlan
-	seps := storeEbikePlansMap[str.ID]
-	if len(seps) > 0 {
-		// 区分不同的套餐日租、月租
-		storePlanMap := make(map[string]bool)
-		for _, sep := range seps {
-			spmType := "month"
-			if sep.Daily {
-				spmType = "daily"
-			}
-			spmKey := fmt.Sprintf("%d-%d-%s", sep.StoreId, sep.PlanId, spmType)
+	allPlans = append(allPlans, storeEbikePlansMap[str.ID]...)
 
-			if !storePlanMap[spmKey] {
-				allPlans = append(allPlans, sep)
-				storePlanMap[spmKey] = true
-			}
+	return allPlans
+}
 
+func (s *planBiz) FilterPlanForStore(plans []*ent.Plan) []*ent.Plan {
+	result := make([]*ent.Plan, 0)
+
+	// 首先按照父子级整理数据
+	parentPlanIds := make([]uint64, 0)
+	planMap := make(map[uint64][]*ent.Plan)
+	for _, pl := range plans {
+		if pl.ParentID == nil {
+			parentPlanIds = append(parentPlanIds, pl.ID)
+			planMap[pl.ID] = append(planMap[pl.ID], pl)
+		} else {
+			planMap[*pl.ParentID] = append(planMap[*pl.ParentID], pl)
 		}
 	}
-	return allPlans
+
+	// 每一个骑士卡集合开始筛选符合要求的骑士卡（日租套餐都需保留，月租套餐保留最接近30天的数据）
+	for _, pId := range parentPlanIds {
+		// 轮询同一骑士卡的所有套餐数据
+		var minDiffDay float64
+		var nearMonthPlan ent.Plan
+		for _, pl := range planMap[pId] {
+			// 日租直接放进结果集
+			if pl.Daily {
+				result = append(result, pl)
+				continue
+			}
+
+			absDays := math.Abs(float64(pl.Days - 30))
+
+			// 月套餐初始化
+			if nearMonthPlan.ID == 0 {
+				minDiffDay = absDays
+				nearMonthPlan = *pl
+				continue
+			}
+
+			// 找出与30天最接近的套餐
+			if absDays < minDiffDay {
+				minDiffDay = math.Abs(float64(pl.Days - 30))
+				nearMonthPlan = *pl
+			}
+		}
+		// 结果集加入筛选后的月套餐
+		result = append(result, &nearMonthPlan)
+	}
+
+	return result
 }

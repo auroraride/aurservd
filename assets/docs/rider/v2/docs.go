@@ -5215,6 +5215,10 @@ const docTemplate = `{
                     "description": "套餐ID",
                     "type": "integer"
                 },
+                "planName": {
+                    "description": "套餐名称",
+                    "type": "string"
+                },
                 "rto": {
                     "description": "是否以租代购套餐",
                     "type": "boolean"
