@@ -42,7 +42,7 @@ type StorePlanReq struct {
 	Lat      float64            `json:"lat" query:"lat" validate:"required" trans:"纬度"`
 	Distance *float64           `json:"distance" query:"distance"`             // 距离
 	SortType *StorePlanSortType `json:"sortType" query:"sortType" enums:"1,2"` // 排序方式 1-距离优先 2-价格优先
-	BrandId  *uint64            `json:"brandId"`                               // 电车品牌ID
+	BrandId  *uint64            `json:"brandId" query:"brandId"`               // 电车品牌ID
 }
 
 type ListByStoreRes struct {
@@ -62,6 +62,7 @@ type StoreEbikePlan struct {
 	Daily      bool    `json:"daily"`           // 是否日租套餐
 	DailyPrice float64 `json:"dailyPrice"`      // 套餐日租价格
 	MonthPrice float64 `json:"monthPrice"`      // 套餐月租价格
+	ShowPrice  float64
 }
 
 // StorePlanDetailReq 门店套餐详情请求
