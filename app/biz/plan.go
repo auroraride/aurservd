@@ -595,7 +595,7 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 		}
 	}
 
-	var allPlans []*definition.StoreEbikePlan
+	allPlans := make([]*definition.StoreEbikePlan, 0)
 
 	// 按照门店分组排序
 	for _, v := range storelist {
@@ -930,7 +930,7 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 		}
 	}
 
-	var allPlans []*definition.StoreEbikePlan
+	allPlans := make([]*definition.StoreEbikePlan, 0)
 	allPlans = append(allPlans, storeEbikePlansMap[str.ID]...)
 	SortPlanEbikeModelByShowPrice(allPlans)
 	return allPlans
