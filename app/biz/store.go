@@ -97,7 +97,7 @@ func (b *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 	for _, v := range list {
 		// 查询门店库存
 		if req.PlanID != nil && pl != nil {
-			ebikeNum, batteryNum := b.queryStocks(v, pl)
+			ebikeNum, batteryNum := b.QueryStocks(v, pl)
 			// 电车或电池库存为0则不展示
 			if ebikeNum <= 0 || batteryNum <= 0 {
 				continue
@@ -168,8 +168,8 @@ func (b *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 
 }
 
-// 查询门店电车库存
-func (b *storeBiz) queryStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, batteryNum int) {
+// QueryStocks 查询门店电车库存
+func (b *storeBiz) QueryStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, batteryNum int) {
 	bikes := make(map[string]*model.StockMaterial)
 	batteries := make(map[string]*model.StockMaterial)
 	for _, st := range item.Edges.Stocks {

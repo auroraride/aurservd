@@ -9,8 +9,8 @@ type EbikeBrand struct {
 	ID             uint64                 `json:"id" bson:"id"`
 	Name           string                 `json:"name" bson:"name"`                       // 名称
 	Cover          string                 `json:"cover,omitempty" bson:"cover,omitempty"` // 封面图
-	MainPic        []string               `json:"mainPic"`                                // 主图
-	BrandAttribute []*EbikeBrandAttribute `json:"brandAttribute"`                         // 品牌属性
+	MainPic        []string               `json:"mainPic,omitempty"`                      // 主图
+	BrandAttribute []*EbikeBrandAttribute `json:"brandAttribute,omitempty"`               // 品牌属性
 }
 
 type EbikeBrandCreateReq struct {
