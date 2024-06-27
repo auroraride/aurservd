@@ -62,14 +62,21 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 	if req.StoreId != nil {
 		// 查询门店库存电车所属brandId
 		var brandIds []uint64
+		storeBrandExist := make(map[string]bool)
 		storeItem, _ := ent.Database.Store.QueryNotDeleted().
 			WithStocks().
 			Where(store.ID(*req.StoreId)).
 			First(s.ctx)
-		if storeItem.Edges.Stocks != nil {
+		if storeItem != nil && storeItem.Edges.Stocks != nil {
+			// 计算该门店电车品牌库存
+			brandStockMap := s.CalStoreEbikeStock(storeItem.Edges.Stocks)
 			for _, st := range storeItem.Edges.Stocks {
 				if st.BrandID != nil {
-					brandIds = append(brandIds, *st.BrandID)
+					existKey := fmt.Sprintf("%d-%d", storeItem.ID, *st.BrandID)
+					if !storeBrandExist[existKey] && brandStockMap[*st.BrandID] > 0 {
+						brandIds = append(brandIds, *st.BrandID)
+						storeBrandExist[existKey] = true
+					}
 				}
 			}
 		}
@@ -510,9 +517,9 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 		Order(ent.Asc(plan.FieldDays))
 
 	if req.BrandId != nil {
-		q.Where(plan.HasBrandWith(ebikebrand.ID(*req.BrandId)))
+		q.Where(plan.BrandID(*req.BrandId))
 	} else {
-		q.Where(plan.HasBrandWith(ebikebrand.IDIn(brandIds...)))
+		q.Where(plan.BrandIDIn(brandIds...))
 	}
 
 	items := q.AllX(s.ctx)
@@ -559,6 +566,12 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 				MonthPrice: tools.NewDecimal().Div(tools.NewDecimal().Mul(30.0, item.Price), float64(item.Days)),
 			}
 
+			if sep.Daily {
+				sep.ShowPrice = sep.DailyPrice
+			} else {
+				sep.ShowPrice = sep.MonthPrice
+			}
+
 			brand := item.Edges.Brand
 			if brand != nil {
 				sep.BrandId = brand.ID
@@ -585,7 +598,7 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 		if len(seps) > 0 {
 			// 是否需要价格排序
 			if req.SortType != nil && *req.SortType == definition.StorePlanSortTypePrice {
-				SortPlanEbikeModelByDailyPrice(seps)
+				SortPlanEbikeModelByShowPrice(seps)
 			}
 			allPlans = append(allPlans, seps...)
 		}
@@ -593,7 +606,7 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 
 	// 再次判断排序方式，重新排序数据
 	if req.SortType != nil && *req.SortType == definition.StorePlanSortTypePrice {
-		SortPlanEbikeModelByDailyPrice(allPlans)
+		SortPlanEbikeModelByShowPrice(allPlans)
 	}
 
 	return allPlans
@@ -785,9 +798,9 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 	return &res
 }
 
-func SortPlanEbikeModelByDailyPrice(options []*definition.StoreEbikePlan) {
+func SortPlanEbikeModelByShowPrice(options []*definition.StoreEbikePlan) {
 	sort.Slice(options, func(i, j int) bool {
-		return options[i].DailyPrice < options[j].DailyPrice
+		return options[i].ShowPrice < options[j].ShowPrice
 	})
 }
 
@@ -892,6 +905,12 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 					MonthPrice: tools.NewDecimal().Div(tools.NewDecimal().Mul(30.0, item.Price), float64(item.Days)),
 				}
 
+				if sep.Daily {
+					sep.ShowPrice = sep.DailyPrice
+				} else {
+					sep.ShowPrice = sep.MonthPrice
+				}
+
 				brand := item.Edges.Brand
 				if brand != nil {
 					sep.BrandId = brand.ID
@@ -913,7 +932,7 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 
 	var allPlans []*definition.StoreEbikePlan
 	allPlans = append(allPlans, storeEbikePlansMap[str.ID]...)
-
+	SortPlanEbikeModelByShowPrice(allPlans)
 	return allPlans
 }
 
