@@ -547,6 +547,11 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 			if !cityStoreBrandExist[fmt.Sprintf("%d-%d-%d", req.CityId, storeId, *item.BrandID)] {
 				continue
 			}
+			ebikeNum, batteryNum := s.queryStoreStocks(storeMap[storeId], item)
+			// 电车或电池库存为0则不加入套餐列表
+			if ebikeNum <= 0 || batteryNum <= 0 {
+				continue
+			}
 
 			// 门店查重
 			if storeCheckMap[storeId] {
@@ -887,6 +892,11 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 				if !cityStoreBrandExist[fmt.Sprintf("%d-%d-%d", str.CityID, storeId, *item.BrandID)] {
 					continue
 				}
+				ebikeNum, batteryNum := s.queryStoreStocks(storeMap[storeId], item)
+				// 电车或电池库存为0则不加入套餐列表
+				if ebikeNum <= 0 || batteryNum <= 0 {
+					continue
+				}
 
 				// 门店查重
 				if storeCheckMap[storeId] {
@@ -994,4 +1004,28 @@ func (s *planBiz) FilterPlanForStore(plans []*ent.Plan) []*ent.Plan {
 	}
 
 	return result
+}
+
+// 查询门店电车库存
+func (b *planBiz) queryStoreStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, batteryNum int) {
+	bikes := make(map[string]*model.StockMaterial)
+	batteries := make(map[string]*model.StockMaterial)
+	for _, st := range item.Edges.Stocks {
+		switch true {
+		case st.BrandID != nil && *st.BrandID == *pl.BrandID:
+			// 电车
+			service.NewStock().Calculate(bikes, st)
+		case st.Model != nil && *st.Model == pl.Model:
+			// 电池
+			service.NewStock().Calculate(batteries, st)
+		}
+	}
+	for _, bike := range bikes {
+		ebikeNum += bike.Surplus
+	}
+
+	for _, battery := range batteries {
+		batteryNum += battery.Surplus
+	}
+	return
 }
