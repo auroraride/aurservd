@@ -627,7 +627,12 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 		).
 		WithParent(func(query *ent.PlanQuery) {
 			query.
-				WithComplexes().
+				WithComplexes(func(query *ent.PlanQuery) {
+					query.WithBrand().
+						WithCities().
+						WithAgreement().
+						Order(ent.Asc(plan.FieldDays))
+				}).
 				WithBrand().
 				WithCities().
 				WithAgreement().
@@ -681,6 +686,7 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 		).First(s.ctx)
 
 	var res definition.StorePlanDetail
+	res.Children = new(model.PlanModelOptions)
 
 	for _, item := range items {
 		key := serv.Key(item.Model, item.BrandID)
@@ -755,11 +761,8 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 
 		if item.Edges.Brand != nil {
 			brand := item.Edges.Brand
-			res = definition.StorePlanDetail{
-				Children: new(model.PlanModelOptions),
-				Name:     brand.Name,
-				Cover:    brand.Cover,
-			}
+			res.Name = brand.Name
+			res.Cover = brand.Cover
 
 			var exists bool
 			for _, c := range *res.Children {
