@@ -6,7 +6,7 @@ import "github.com/auroraride/aurservd/app/model"
 type EbikeDetailReq struct {
 	model.IDParamReq
 	StoreID uint64  `json:"storeId" validate:"required" query:"storeId"` // 门店ID
-	PlanID  *uint64 `json:"planId" query:"planId"`                       // 套餐ID
+	PlanID  uint64  `json:"planId" query:"planId" validate:"required"`   // 套餐ID
 	Lat     float64 `json:"lat" validate:"required" query:"lat"`         // 纬度
 	Lng     float64 `json:"lng" validate:"required" query:"lng"`         // 经度
 }

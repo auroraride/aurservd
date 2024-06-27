@@ -2,7 +2,9 @@ package biz
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"sort"
 
 	"entgo.io/ent/dialect/sql"
 
@@ -31,11 +33,6 @@ func (s *ebikeBiz) EbikeBrandDetail(req *definition.EbikeDetailReq) (*definition
 	d, _ := ent.Database.EbikeBrand.QueryNotDeleted().
 		Where(ebikebrand.ID(req.ID)).
 		WithBrandAttribute().
-		WithPlans(func(query *ent.PlanQuery) {
-			if req.PlanID != nil {
-				query.Where(plan.ID(*req.PlanID)).Order(ent.Asc(plan.FieldPrice))
-			}
-		}).
 		First(s.ctx)
 	if d == nil {
 		return nil, nil
@@ -51,7 +48,13 @@ func (s *ebikeBiz) EbikeBrandDetail(req *definition.EbikeDetailReq) (*definition
 		}).
 		First(s.ctx)
 
-	pl := d.Edges.Plans
+	pl, _ := ent.Database.Plan.QueryNotDeleted().Where(plan.ID(req.PlanID)).WithComplexes().WithParent(func(query *ent.PlanQuery) {
+		query.WithComplexes()
+	}).First(s.ctx)
+	if pl == nil {
+		return nil, errors.New("套餐不存在")
+	}
+
 	res := &definition.EbikeDetailRes{
 
 		Brand: model.EbikeBrand{
@@ -63,14 +66,19 @@ func (s *ebikeBiz) EbikeBrandDetail(req *definition.EbikeDetailReq) (*definition
 		},
 	}
 
-	if len(pl) > 0 {
+	slPlan := NewPlanBiz().GetPlanItems(pl)
+	if len(slPlan) > 0 {
+		// 排序 价格升序
+		sort.Slice(slPlan, func(i, j int) bool {
+			return slPlan[i].Price < slPlan[j].Price
+		})
 		res.Plan = model.Plan{
-			ID:          pl[0].ID,
-			Name:        pl[0].Name,
-			Price:       pl[0].Price,
-			Days:        pl[0].Days,
-			Intelligent: pl[0].Intelligent,
-			Type:        model.PlanType(pl[0].Type),
+			ID:          slPlan[0].ID,
+			Name:        slPlan[0].Name,
+			Price:       slPlan[0].Price,
+			Days:        slPlan[0].Days,
+			Intelligent: slPlan[0].Intelligent,
+			Type:        model.PlanType(slPlan[0].Type),
 		}
 	}
 

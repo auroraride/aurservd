@@ -547,7 +547,7 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 			if !cityStoreBrandExist[fmt.Sprintf("%d-%d-%d", req.CityId, storeId, *item.BrandID)] {
 				continue
 			}
-			ebikeNum, batteryNum := s.queryStoreStocks(storeMap[storeId], item)
+			ebikeNum, batteryNum := NewStore().QueryStocks(storeMap[storeId], item)
 			// 电车或电池库存为0则不加入套餐列表
 			if ebikeNum <= 0 || batteryNum <= 0 {
 				continue
@@ -665,17 +665,7 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 	pl, _ := q.First(s.ctx)
 
 	// 整理当前套餐所属骑士卡所有数据
-	items := make([]*ent.Plan, 0)
-	switch {
-	case pl != nil && pl.Edges.Parent != nil:
-		// 当前plan为子级
-		items = append(items, pl.Edges.Parent)
-		items = append(items, pl.Edges.Parent.Edges.Complexes...)
-	case pl != nil && pl.Edges.Parent == nil:
-		// 当前plan为父级
-		items = append(items, pl)
-		items = append(items, pl.Edges.Complexes...)
-	}
+	items := s.GetPlanItems(pl)
 
 	mmap := make(map[string]*model.PlanModelOption)
 
@@ -892,7 +882,7 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 				if !cityStoreBrandExist[fmt.Sprintf("%d-%d-%d", str.CityID, storeId, *item.BrandID)] {
 					continue
 				}
-				ebikeNum, batteryNum := s.queryStoreStocks(storeMap[storeId], item)
+				ebikeNum, batteryNum := NewStore().QueryStocks(storeMap[storeId], item)
 				// 电车或电池库存为0则不加入套餐列表
 				if ebikeNum <= 0 || batteryNum <= 0 {
 					continue
@@ -1006,26 +996,18 @@ func (s *planBiz) FilterPlanForStore(plans []*ent.Plan) []*ent.Plan {
 	return result
 }
 
-// 查询门店电车库存
-func (b *planBiz) queryStoreStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, batteryNum int) {
-	bikes := make(map[string]*model.StockMaterial)
-	batteries := make(map[string]*model.StockMaterial)
-	for _, st := range item.Edges.Stocks {
-		switch true {
-		case st.BrandID != nil && *st.BrandID == *pl.BrandID:
-			// 电车
-			service.NewStock().Calculate(bikes, st)
-		case st.Model != nil && *st.Model == pl.Model:
-			// 电池
-			service.NewStock().Calculate(batteries, st)
-		}
+// GetPlanItems 获取当前套餐的所有父级和子级
+func (s *planBiz) GetPlanItems(pl *ent.Plan) []*ent.Plan {
+	items := make([]*ent.Plan, 0)
+	switch {
+	case pl != nil && pl.Edges.Parent != nil:
+		// 当前plan为子级
+		items = append(items, pl.Edges.Parent)
+		items = append(items, pl.Edges.Parent.Edges.Complexes...)
+	case pl != nil && pl.Edges.Parent == nil:
+		// 当前plan为父级
+		items = append(items, pl)
+		items = append(items, pl.Edges.Complexes...)
 	}
-	for _, bike := range bikes {
-		ebikeNum += bike.Surplus
-	}
-
-	for _, battery := range batteries {
-		batteryNum += battery.Surplus
-	}
-	return
+	return items
 }
