@@ -1455,7 +1455,8 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "套餐ID",
                         "name": "planId",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "integer",
@@ -3310,6 +3311,13 @@ const docTemplate = `{
                 ],
                 "summary": "获取电池型号选择",
                 "operationId": "SelectionModel",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "cityId",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
@@ -5222,6 +5230,9 @@ const docTemplate = `{
                 "rto": {
                     "description": "是否以租代购套餐",
                     "type": "boolean"
+                },
+                "showPrice": {
+                    "type": "number"
                 },
                 "storeId": {
                     "description": "门店ID",
