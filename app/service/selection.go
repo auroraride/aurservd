@@ -573,6 +573,7 @@ func (s *selectionService) QuestionCategory() (items []model.SelectOption) {
 
 // IndexModels 首页电池型号
 func (s *selectionService) IndexModels(req *model.SelectionIndexCabinetModelReq) (res []string) {
+	res = make([]string, 0)
 	q := ent.Database.Cabinet.QueryNotDeleted().
 		Where(cabinet.Status(model.CabinetStatusNormal.Value())).
 		WithModels()
@@ -581,7 +582,7 @@ func (s *selectionService) IndexModels(req *model.SelectionIndexCabinetModelReq)
 	}
 	list, _ := q.All(s.ctx)
 	if len(list) == 0 {
-		return nil
+		return res
 	}
 	// 并集电池型号
 	uniqueModels := make(map[string]struct{})
