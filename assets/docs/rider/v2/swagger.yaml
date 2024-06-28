@@ -913,6 +913,8 @@ definitions:
       rto:
         description: 是否以租代购套餐
         type: boolean
+      showPrice:
+        type: number
       storeId:
         description: 门店ID
         type: integer
@@ -3923,6 +3925,7 @@ paths:
       - description: 套餐ID
         in: query
         name: planId
+        required: true
         type: integer
       - description: 门店ID
         in: query
@@ -5143,6 +5146,10 @@ paths:
       consumes:
       - application/json
       operationId: SelectionModel
+      parameters:
+        - in: query
+          name: cityId
+          type: integer
       produces:
       - application/json
       responses:

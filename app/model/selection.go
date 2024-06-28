@@ -12,3 +12,7 @@ type SelectionPlanModelReq struct {
 type SelectionCabinetModelReq struct {
 	CabinetID uint64 `json:"cabinetId" validate:"required" trans:"电柜ID" query:"cabinetId"`
 }
+
+type SelectionIndexCabinetModelReq struct {
+	CityID *uint64 `json:"cityId" query:"cityId"`
+}

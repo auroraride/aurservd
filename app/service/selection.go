@@ -570,3 +570,30 @@ func (s *selectionService) QuestionCategory() (items []model.SelectOption) {
 	})
 	return
 }
+
+// IndexModels 首页电池型号
+func (s *selectionService) IndexModels(req *model.SelectionIndexCabinetModelReq) (res []string) {
+	q := ent.Database.Cabinet.QueryNotDeleted().
+		Where(cabinet.Status(model.CabinetStatusNormal.Value())).
+		WithModels()
+	if req.CityID != nil {
+		q.Where(cabinet.CityID(*req.CityID))
+	}
+	list, _ := q.All(s.ctx)
+	if len(list) == 0 {
+		return nil
+	}
+	// 并集电池型号
+	uniqueModels := make(map[string]struct{})
+	for _, v := range list {
+		for _, m := range v.Edges.Models {
+			uniqueModels[m.Model] = struct{}{}
+		}
+	}
+
+	res = make([]string, 0, len(uniqueModels))
+	for m := range uniqueModels {
+		res = append(res, m)
+	}
+	return res
+}
