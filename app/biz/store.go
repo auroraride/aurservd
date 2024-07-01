@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -75,6 +76,10 @@ func (b *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 
 	if req.Keyword != nil {
 		q.Where(store.NameContains(*req.Keyword))
+	}
+
+	if req.GoodsID != nil {
+		q.Where(store.HasGoodsWith(storegoods.GoodsID(*req.GoodsID)))
 	}
 
 	list, _ := q.All(b.ctx)

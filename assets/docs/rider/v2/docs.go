@@ -3523,6 +3523,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "商品ID",
+                        "name": "goodsId",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "关键字",
                         "name": "keyword",
