@@ -5147,9 +5147,9 @@ paths:
       - application/json
       operationId: SelectionModel
       parameters:
-        - in: query
-          name: cityId
-          type: integer
+      - in: query
+        name: cityId
+        type: integer
       produces:
       - application/json
       responses:
@@ -5288,6 +5288,10 @@ paths:
         in: query
         name: distance
         type: number
+      - description: 商品ID
+        in: query
+        name: goodsId
+        type: integer
       - description: 关键字
         in: query
         name: keyword

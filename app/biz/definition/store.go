@@ -11,6 +11,7 @@ type StoreListReq struct {
 	Status       *model.StoreStatus       `json:"status" query:"status"`               // 门店状态 0维护 1营业 2休息 3隐藏
 	BusinessType *model.StoreBusinessType `json:"businessType" query:"businessType"`   // 门店业务 1租车 2修车 3买车 4驿站
 	Keyword      *string                  `json:"keyword" query:"keyword"`             // 关键字
+	GoodsID      *uint64                  `json:"goodsId" query:"goodsId"`             // 商品ID
 }
 
 // StoreDetail 门店信息
