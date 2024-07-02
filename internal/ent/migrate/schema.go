@@ -1864,6 +1864,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "name", Type: field.TypeString, Unique: true, Comment: "名称"},
 		{Name: "cover", Type: field.TypeString, Comment: "封面缩略图"},
+		{Name: "main_pic", Type: field.TypeJSON, Nullable: true, Comment: "主图"},
 	}
 	// EbikeBrandTable holds the schema information for the "ebike_brand" table.
 	EbikeBrandTable = &schema.Table{
@@ -1880,6 +1881,45 @@ var (
 				Name:    "ebikebrand_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{EbikeBrandColumns[3]},
+			},
+		},
+	}
+	// EbikeBrandAttributeColumns holds the columns for the "ebike_brand_attribute" table.
+	EbikeBrandAttributeColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "name", Type: field.TypeString, Comment: "属性名称"},
+		{Name: "value", Type: field.TypeString, Comment: "属性值"},
+		{Name: "brand_id", Type: field.TypeUint64, Nullable: true, Comment: "品牌ID"},
+	}
+	// EbikeBrandAttributeTable holds the schema information for the "ebike_brand_attribute" table.
+	EbikeBrandAttributeTable = &schema.Table{
+		Name:       "ebike_brand_attribute",
+		Columns:    EbikeBrandAttributeColumns,
+		PrimaryKey: []*schema.Column{EbikeBrandAttributeColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "ebike_brand_attribute_ebike_brand_brand_attribute",
+				Columns:    []*schema.Column{EbikeBrandAttributeColumns[9]},
+				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "ebikebrandattribute_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeBrandAttributeColumns[1]},
+			},
+			{
+				Name:    "ebikebrandattribute_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeBrandAttributeColumns[3]},
 			},
 		},
 	}
@@ -3657,8 +3697,9 @@ var (
 		{Name: "deposit_contract", Type: field.TypeBool, Nullable: true, Comment: "合同免押金", Default: false},
 		{Name: "deposit_pay", Type: field.TypeBool, Nullable: true, Comment: "支付押金", Default: false},
 		{Name: "rto_days", Type: field.TypeUint, Nullable: true, Comment: "以租代购天数条件"},
-		{Name: "overdue_fee", Type: field.TypeFloat64, Comment: "滞纳金单价", Default: 999},
-		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "overdue_fee", Type: field.TypeFloat64, Comment: "滞纳金单价", Default: 99999},
+		{Name: "daily", Type: field.TypeBool, Comment: "是否日租", Default: false},
+		{Name: "brand_id", Type: field.TypeUint64, Nullable: true, Comment: "品牌ID"},
 		{Name: "agreement_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true, Comment: "父级"},
 	}
@@ -3669,20 +3710,20 @@ var (
 		PrimaryKey: []*schema.Column{PlanColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "plan_ebike_brand_brand",
-				Columns:    []*schema.Column{PlanColumns[29]},
+				Symbol:     "plan_ebike_brand_plans",
+				Columns:    []*schema.Column{PlanColumns[30]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "plan_agreement_agreement",
-				Columns:    []*schema.Column{PlanColumns[30]},
+				Columns:    []*schema.Column{PlanColumns[31]},
 				RefColumns: []*schema.Column{AgreementColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "plan_plan_complexes",
-				Columns:    []*schema.Column{PlanColumns[31]},
+				Columns:    []*schema.Column{PlanColumns[32]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3699,14 +3740,9 @@ var (
 				Columns: []*schema.Column{PlanColumns[3]},
 			},
 			{
-				Name:    "plan_brand_id",
-				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[29]},
-			},
-			{
 				Name:    "plan_agreement_id",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[30]},
+				Columns: []*schema.Column{PlanColumns[31]},
 			},
 			{
 				Name:    "plan_type",
@@ -5319,6 +5355,7 @@ var (
 		{Name: "business_hours", Type: field.TypeString, Nullable: true, Comment: "营业时间"},
 		{Name: "photos", Type: field.TypeJSON, Nullable: true, Comment: "门店照片"},
 		{Name: "phone", Type: field.TypeString, Size: 20, Comment: "门店电话", Default: "4000290929"},
+		{Name: "head_pic", Type: field.TypeString, Comment: "门店头图", Default: ""},
 		{Name: "branch_id", Type: field.TypeUint64, Comment: "网点ID"},
 		{Name: "employee_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "上班员工ID"},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
@@ -5331,19 +5368,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "store_branch_stores",
-				Columns:    []*schema.Column{StoreColumns[20]},
+				Columns:    []*schema.Column{StoreColumns[21]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "store_employee_store",
-				Columns:    []*schema.Column{StoreColumns[21]},
+				Columns:    []*schema.Column{StoreColumns[22]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "store_city_city",
-				Columns:    []*schema.Column{StoreColumns[22]},
+				Columns:    []*schema.Column{StoreColumns[23]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -5362,17 +5399,17 @@ var (
 			{
 				Name:    "store_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{StoreColumns[22]},
+				Columns: []*schema.Column{StoreColumns[23]},
 			},
 			{
 				Name:    "store_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{StoreColumns[20]},
+				Columns: []*schema.Column{StoreColumns[21]},
 			},
 			{
 				Name:    "store_employee_id",
 				Unique:  false,
-				Columns: []*schema.Column{StoreColumns[21]},
+				Columns: []*schema.Column{StoreColumns[22]},
 			},
 			{
 				Name:    "store_status",
@@ -6210,6 +6247,7 @@ var (
 		CouponTemplateTable,
 		EbikeTable,
 		EbikeBrandTable,
+		EbikeBrandAttributeTable,
 		EmployeeTable,
 		EnterpriseTable,
 		EnterpriseBatterySwapTable,
@@ -6423,6 +6461,10 @@ func init() {
 	}
 	EbikeBrandTable.Annotation = &entsql.Annotation{
 		Table: "ebike_brand",
+	}
+	EbikeBrandAttributeTable.ForeignKeys[0].RefTable = EbikeBrandTable
+	EbikeBrandAttributeTable.Annotation = &entsql.Annotation{
+		Table: "ebike_brand_attribute",
 	}
 	EmployeeTable.ForeignKeys[0].RefTable = CityTable
 	EmployeeTable.Annotation = &entsql.Annotation{

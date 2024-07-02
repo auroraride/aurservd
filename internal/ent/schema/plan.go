@@ -83,6 +83,8 @@ func (Plan) Fields() []ent.Field {
 		field.Bool("deposit_pay").Optional().Default(false).Comment("支付押金"),
 		field.Uint("rto_days").Optional().Nillable().Comment("以租代购天数条件"),
 		field.Float("overdue_fee").Default(model.DailyRentDefault).Comment("滞纳金单价"),
+		field.Uint64("brand_id").Optional().Nillable().Comment("品牌ID"),
+		field.Bool("daily").Default(false).Comment("是否日租"),
 	}
 }
 
@@ -93,6 +95,8 @@ func (Plan) Edges() []ent.Edge {
 		edge.To("complexes", Plan.Type).From("parent").Field("parent_id").Unique(),
 
 		edge.To("commissions", PromotionCommissionPlan.Type),
+
+		edge.From("brand", EbikeBrand.Type).Ref("plans").Field("brand_id").Unique(),
 	}
 }
 
@@ -101,7 +105,7 @@ func (Plan) Mixin() []ent.Mixin {
 		internal.TimeMixin{},
 		internal.DeleteMixin{},
 		internal.Modifier{},
-		EbikeBrandMixin{Optional: true},
+		// EbikeBrandMixin{Optional: true},
 		AgreementMixin{Optional: true},
 	}
 }

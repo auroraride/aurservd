@@ -222,6 +222,36 @@ definitions:
         description: 合同链接
         type: string
     type: object
+  definition.EbikeDetailRes:
+    properties:
+      brand:
+        allOf:
+        - $ref: '#/definitions/model.EbikeBrand'
+        description: 车电品牌
+      plan:
+        allOf:
+        - $ref: '#/definitions/model.Plan'
+        description: 套餐
+      store:
+        description: 门店
+        properties:
+          address:
+            description: 地址
+            type: string
+          distance:
+            description: 距离
+            type: number
+          id:
+            type: integer
+          lat:
+            type: number
+          lng:
+            type: number
+          name:
+            description: 门店名称
+            type: string
+        type: object
+    type: object
   definition.FaultCauseRes:
     properties:
       key:
@@ -691,7 +721,7 @@ definitions:
         type: boolean
       contact:
         allOf:
-          - $ref: '#/definitions/model.RiderContact'
+        - $ref: '#/definitions/model.RiderContact'
         description: 联系人
       contractDocId:
         description: 签署合同编号
@@ -701,11 +731,11 @@ definitions:
         type: number
       enterprise:
         allOf:
-          - $ref: '#/definitions/model.Enterprise'
+        - $ref: '#/definitions/model.Enterprise'
         description: 所属企业
       enterpriseContact:
         allOf:
-          - $ref: '#/definitions/model.EnterpriseContact'
+        - $ref: '#/definitions/model.EnterpriseContact'
         description: 团签联系方式
       exitEnterprise:
         description: 判断能否退出团签
@@ -735,11 +765,11 @@ definitions:
         type: string
       station:
         allOf:
-          - $ref: '#/definitions/model.EnterpriseStation'
+        - $ref: '#/definitions/model.EnterpriseStation'
         description: 站点
       subscribe:
         allOf:
-          - $ref: '#/definitions/model.Subscribe'
+        - $ref: '#/definitions/model.Subscribe'
         description: 骑士卡
       token:
         description: 认证token
@@ -805,6 +835,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Employee'
         description: 店员, 有可能不存在
+      headPic:
+        description: 门店头图
+        type: string
       id:
         description: 门店ID
         type: integer
@@ -842,7 +875,86 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.StoreStatus'
         description: 门店状态 0维护 1营业 2休息 3隐藏
+      storeBrands:
+        description: 门店新租车列表
+        items:
+          $ref: '#/definitions/definition.StoreEbikePlan'
+        type: array
     type: object
+  definition.StoreEbikePlan:
+    properties:
+      brandId:
+        description: 品牌ID
+        type: integer
+      brandName:
+        description: 品牌名称
+        type: string
+      cover:
+        description: 品牌封面图
+        type: string
+      daily:
+        description: 是否日租套餐
+        type: boolean
+      dailyPrice:
+        description: 套餐日租价格
+        type: number
+      distance:
+        description: 门店距离
+        type: number
+      monthPrice:
+        description: 套餐月租价格
+        type: number
+      planId:
+        description: 套餐ID
+        type: integer
+      planName:
+        description: 套餐名称
+        type: string
+      rto:
+        description: 是否以租代购套餐
+        type: boolean
+      showPrice:
+        type: number
+      storeId:
+        description: 门店ID
+        type: integer
+      storeName:
+        description: 门店名称
+        type: string
+    type: object
+  definition.StorePlanDetail:
+    properties:
+      children:
+        description: 子项
+        items:
+          $ref: '#/definitions/model.PlanModelOption'
+        type: array
+      configure:
+        allOf:
+        - $ref: '#/definitions/model.PaymentConfigure'
+        description: 支付配置
+      cover:
+        description: 封面图
+        type: string
+      ebikeDescription:
+        allOf:
+        - $ref: '#/definitions/model.SettingPlanDescription'
+        description: 车电介绍
+      name:
+        description: 名称
+        type: string
+    type: object
+  definition.StorePlanSortType:
+    enum:
+    - 1
+    - 2
+    type: integer
+    x-enum-comments:
+      StorePlanSortTypeDistance: 距离排序
+      StorePlanSortTypePrice: 价格排序
+    x-enum-varnames:
+    - StorePlanSortTypeDistance
+    - StorePlanSortTypePrice
   definition.SubscribeStoreModifyReq:
     properties:
       storeId:
@@ -1644,14 +1756,34 @@ definitions:
     type: object
   model.EbikeBrand:
     properties:
+      brandAttribute:
+        description: 品牌属性
+        items:
+          $ref: '#/definitions/model.EbikeBrandAttribute'
+        type: array
       cover:
         description: 封面图
         type: string
       id:
         type: integer
+      mainPic:
+        description: 主图
+        items:
+          type: string
+        type: array
       name:
         description: 名称
         type: string
+    type: object
+  model.EbikeBrandAttribute:
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+    required:
+    - name
+    - value
     type: object
   model.Employee:
     properties:
@@ -2522,6 +2654,18 @@ definitions:
       overdue:
         description: 是否需要支付逾期费用
         type: boolean
+    type: object
+  model.SelectOption:
+    properties:
+      desc:
+        description: 描述
+        type: string
+      label:
+        description: 选择项名称
+        type: string
+      value:
+        description: 选择项值 (ID)
+        type: integer
     type: object
   model.SettingPlanDescription:
     properties:
@@ -3752,6 +3896,52 @@ paths:
       summary: 注销账户
       tags:
       - Rider - 骑手
+  /rider/v2/ebike/brand/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: EbikeBrandDetail
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 电车品牌ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 纬度
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: 经度
+        in: query
+        name: lng
+        required: true
+        type: number
+      - description: 套餐ID
+        in: query
+        name: planId
+        required: true
+        type: integer
+      - description: 门店ID
+        in: query
+        name: storeId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.EbikeDetailRes'
+      summary: 电车品牌详情
+      tags:
+      - Ebike - 电车
   /rider/v2/enterprise/battery:
     get:
       consumes:
@@ -4627,6 +4817,22 @@ paths:
         name: cityId
         required: true
         type: integer
+      - description: 骑士卡类别 1:单电 2:车加电 3:以租代购
+        enum:
+        - 1
+        - 2
+        - 3
+        in: query
+        name: planType
+        type: integer
+        x-enum-comments:
+          PlanTypeBattery: 单电
+          PlanTypeEbikeRto: 以租代购
+          PlanTypeEbikeWithBattery: 车加电
+        x-enum-varnames:
+        - PlanTypeBattery
+        - PlanTypeEbikeWithBattery
+        - PlanTypeEbikeRto
       - description: 门店ID
         in: query
         name: storeId
@@ -4688,6 +4894,96 @@ paths:
       summary: 续费骑士卡
       tags:
       - Plan - 骑士卡
+  /rider/v2/plan/store:
+    get:
+      consumes:
+      - application/json
+      operationId: PlanByStore
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 电车品牌ID
+        in: query
+        name: brandId
+        type: integer
+      - description: 城市
+        in: query
+        name: cityId
+        required: true
+        type: integer
+      - description: 距离
+        in: query
+        name: distance
+        type: number
+      - description: 纬度
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: 经度
+        in: query
+        name: lng
+        required: true
+        type: number
+      - description: 排序方式 1-距离优先 2-价格优先
+        enum:
+        - 1
+        - 2
+        in: query
+        name: sortType
+        type: integer
+        x-enum-comments:
+          StorePlanSortTypeDistance: 距离排序
+          StorePlanSortTypePrice: 价格排序
+        x-enum-varnames:
+        - StorePlanSortTypeDistance
+        - StorePlanSortTypePrice
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.StoreEbikePlan'
+            type: array
+      summary: 门店租车套餐列表
+      tags:
+      - Plan - 门店租车套餐
+  /rider/v2/plan/store/detail:
+    get:
+      consumes:
+      - application/json
+      operationId: PlanByStoreDetail
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 套餐ID
+        in: query
+        name: planId
+        required: true
+        type: integer
+      - description: 门店ID
+        in: query
+        name: storeId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.StorePlanDetail'
+      summary: 门店租车套餐详情
+      tags:
+      - Plan - 门店租车套餐详情
   /rider/v2/profile:
     get:
       consumes:
@@ -4828,11 +5124,32 @@ paths:
       summary: 取消预约
       tags:
       - Reserve - 预约
+  /rider/v2/selection/brand:
+    get:
+      consumes:
+      - application/json
+      operationId: SelectionBrand
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: 获取车型列表选择
+      tags:
+      - Selection - 车型列表
   /rider/v2/selection/model:
     get:
       consumes:
       - application/json
       operationId: SelectionModel
+      parameters:
+      - in: query
+        name: cityId
+        type: integer
       produces:
       - application/json
       responses:
@@ -4971,6 +5288,10 @@ paths:
         in: query
         name: distance
         type: number
+      - description: 商品ID
+        in: query
+        name: goodsId
+        type: integer
       - description: 关键字
         in: query
         name: keyword

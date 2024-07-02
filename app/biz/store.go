@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegoods"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -32,7 +33,7 @@ func NewStore() *storeBiz {
 // List 门店列表
 func (b *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDetail, err error) {
 	res = make([]*definition.StoreDetail, 0)
-	maxDistance := 50000.0
+	maxDistance := definition.DefaultMaxDistance
 	if req.Distance != nil && *req.Distance < maxDistance {
 		maxDistance = *req.Distance
 	}
@@ -77,6 +78,10 @@ func (b *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 		q.Where(store.NameContains(*req.Keyword))
 	}
 
+	if req.GoodsID != nil {
+		q.Where(store.HasGoodsWith(storegoods.GoodsID(*req.GoodsID)))
+	}
+
 	list, _ := q.All(b.ctx)
 	if len(list) == 0 {
 		return res, nil
@@ -97,7 +102,7 @@ func (b *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 	for _, v := range list {
 		// 查询门店库存
 		if req.PlanID != nil && pl != nil {
-			ebikeNum, batteryNum := b.queryStocks(v, pl)
+			ebikeNum, batteryNum := b.QueryStocks(v, pl)
 			// 电车或电池库存为0则不展示
 			if ebikeNum <= 0 || batteryNum <= 0 {
 				continue
@@ -141,6 +146,7 @@ func (b *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 		Rest:          item.Rest,
 		Photos:        item.Photos,
 		Phone:         item.Phone,
+		HeadPic:       item.HeadPic,
 	}
 	if item.Edges.Employee != nil {
 		res.Employee = &model.Employee{
@@ -167,8 +173,8 @@ func (b *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 
 }
 
-// 查询门店电车库存
-func (b *storeBiz) queryStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, batteryNum int) {
+// QueryStocks 查询门店电车库存
+func (b *storeBiz) QueryStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, batteryNum int) {
 	bikes := make(map[string]*model.StockMaterial)
 	batteries := make(map[string]*model.StockMaterial)
 	for _, st := range item.Edges.Stocks {
@@ -319,13 +325,9 @@ func (b *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail)
 			}
 		}
 
-		// 查询门店存在库存的电车数据
-		sBids := b.queryStocksByStore(item, brandIds)
-		ebikeRes := NewPlanBiz().EbikeList(sBids)
-		if ebikeRes.Brands != nil {
-			res.Brands = ebikeRes.Brands
-			res.RtoBrands = ebikeRes.RtoBrands
-		}
+		// 新租车列表
+		res.StoreBrands = NewPlanBiz().ListByStoreById(item.ID)
+
 	}
 
 	// 查询门店商品

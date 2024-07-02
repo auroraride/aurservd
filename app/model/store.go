@@ -31,6 +31,7 @@ type StoreCreateReq struct {
 	Rest          bool                 `json:"rest"`                                          // 是否驿站
 	Photos        []string             `json:"photos" validate:"required" trans:"门店照片"`       // 门店照片
 	Phone         string               `json:"phone" validate:"required,max=20" trans:"门店电话"` // 门店电话
+	HeadPic       string               `json:"headPic" validate:"required" trans:"门店头图"`      // 门店头图
 }
 
 // StoreModifyReq 门店修改请求
@@ -46,6 +47,7 @@ type StoreModifyReq struct {
 	Rest          *bool        `json:"rest"`                    // 是否驿站
 	Photos        *[]string    `json:"photos"`                  // 门店照片
 	Phone         *string      `json:"phone" validate:"max=20"` // 门店电话
+	HeadPic       *string      `json:"headPic"`                 // 门店头图
 }
 
 type StoreItem struct {
@@ -64,6 +66,7 @@ type StoreItem struct {
 	Rest          bool     `json:"rest"`          // 是否驿站
 	Photos        []string `json:"photos"`        // 照片
 	Phone         string   `json:"phone"`         // 门店电话
+	HeadPic       string   `json:"headPic"`       // 门店头图
 }
 
 type Store struct {

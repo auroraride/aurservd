@@ -31,6 +31,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrandattribute"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
@@ -668,6 +669,23 @@ func init() {
 	ebikebrand.DefaultUpdatedAt = ebikebrandDescUpdatedAt.Default.(func() time.Time)
 	// ebikebrand.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	ebikebrand.UpdateDefaultUpdatedAt = ebikebrandDescUpdatedAt.UpdateDefault.(func() time.Time)
+	ebikebrandattributeMixin := schema.EbikeBrandAttribute{}.Mixin()
+	ebikebrandattributeMixinHooks2 := ebikebrandattributeMixin[2].Hooks()
+	ebikebrandattribute.Hooks[0] = ebikebrandattributeMixinHooks2[0]
+	ebikebrandattributeMixinFields0 := ebikebrandattributeMixin[0].Fields()
+	_ = ebikebrandattributeMixinFields0
+	ebikebrandattributeFields := schema.EbikeBrandAttribute{}.Fields()
+	_ = ebikebrandattributeFields
+	// ebikebrandattributeDescCreatedAt is the schema descriptor for created_at field.
+	ebikebrandattributeDescCreatedAt := ebikebrandattributeMixinFields0[0].Descriptor()
+	// ebikebrandattribute.DefaultCreatedAt holds the default value on creation for the created_at field.
+	ebikebrandattribute.DefaultCreatedAt = ebikebrandattributeDescCreatedAt.Default.(func() time.Time)
+	// ebikebrandattributeDescUpdatedAt is the schema descriptor for updated_at field.
+	ebikebrandattributeDescUpdatedAt := ebikebrandattributeMixinFields0[1].Descriptor()
+	// ebikebrandattribute.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	ebikebrandattribute.DefaultUpdatedAt = ebikebrandattributeDescUpdatedAt.Default.(func() time.Time)
+	// ebikebrandattribute.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	ebikebrandattribute.UpdateDefaultUpdatedAt = ebikebrandattributeDescUpdatedAt.UpdateDefault.(func() time.Time)
 	employeeMixin := schema.Employee{}.Mixin()
 	employeeMixinHooks2 := employeeMixin[2].Hooks()
 	employee.Hooks[0] = employeeMixinHooks2[0]
@@ -1218,6 +1236,10 @@ func init() {
 	planDescOverdueFee := planFields[22].Descriptor()
 	// plan.DefaultOverdueFee holds the default value on creation for the overdue_fee field.
 	plan.DefaultOverdueFee = planDescOverdueFee.Default.(float64)
+	// planDescDaily is the schema descriptor for daily field.
+	planDescDaily := planFields[24].Descriptor()
+	// plan.DefaultDaily holds the default value on creation for the daily field.
+	plan.DefaultDaily = planDescDaily.Default.(bool)
 	planintroduceMixin := schema.PlanIntroduce{}.Mixin()
 	planintroduceMixinFields0 := planintroduceMixin[0].Fields()
 	_ = planintroduceMixinFields0
@@ -1896,6 +1918,10 @@ func init() {
 	store.DefaultPhone = storeDescPhone.Default.(string)
 	// store.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
 	store.PhoneValidator = storeDescPhone.Validators[0].(func(string) error)
+	// storeDescHeadPic is the schema descriptor for head_pic field.
+	storeDescHeadPic := storeFields[15].Descriptor()
+	// store.DefaultHeadPic holds the default value on creation for the head_pic field.
+	store.DefaultHeadPic = storeDescHeadPic.Default.(string)
 	storegoodsMixin := schema.StoreGoods{}.Mixin()
 	storegoodsMixinFields0 := storegoodsMixin[0].Fields()
 	_ = storegoodsMixinFields0

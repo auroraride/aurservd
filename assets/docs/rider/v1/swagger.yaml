@@ -636,14 +636,34 @@ definitions:
     type: object
   model.EbikeBrand:
     properties:
+      brandAttribute:
+        description: 品牌属性
+        items:
+          $ref: '#/definitions/model.EbikeBrandAttribute'
+        type: array
       cover:
         description: 封面图
         type: string
       id:
         type: integer
+      mainPic:
+        description: 主图
+        items:
+          type: string
+        type: array
       name:
         description: 名称
         type: string
+    type: object
+  model.EbikeBrandAttribute:
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+    required:
+    - name
+    - value
     type: object
   model.Employee:
     properties:
@@ -3263,6 +3283,22 @@ paths:
         name: cityId
         required: true
         type: integer
+      - description: 骑士卡类别 1:单电 2:车加电 3:以租代购
+        enum:
+        - 1
+        - 2
+        - 3
+        in: query
+        name: planType
+        type: integer
+        x-enum-comments:
+          PlanTypeBattery: 单电
+          PlanTypeEbikeRto: 以租代购
+          PlanTypeEbikeWithBattery: 车加电
+        x-enum-varnames:
+        - PlanTypeBattery
+        - PlanTypeEbikeWithBattery
+        - PlanTypeEbikeRto
       - description: 门店ID
         in: query
         name: storeId

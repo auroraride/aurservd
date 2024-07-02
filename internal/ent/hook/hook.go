@@ -297,6 +297,18 @@ func (f EbikeBrandFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EbikeBrandMutation", m)
 }
 
+// The EbikeBrandAttributeFunc type is an adapter to allow the use of ordinary
+// function as EbikeBrandAttribute mutator.
+type EbikeBrandAttributeFunc func(context.Context, *ent.EbikeBrandAttributeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EbikeBrandAttributeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EbikeBrandAttributeMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EbikeBrandAttributeMutation", m)
+}
+
 // The EmployeeFunc type is an adapter to allow the use of ordinary
 // function as Employee mutator.
 type EmployeeFunc func(context.Context, *ent.EmployeeMutation) (ent.Value, error)

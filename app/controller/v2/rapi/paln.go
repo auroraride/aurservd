@@ -54,3 +54,33 @@ func (*plan) Detail(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.PlanDetailReq](c)
 	return ctx.SendResponse(biz.NewPlanBiz().Detail(req))
 }
+
+// ByStore
+// @ID		PlanByStore
+// @Router	/rider/v2/plan/store [GET]
+// @Summary	门店租车套餐列表
+// @Tags	Plan - 门店租车套餐
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string						true	"骑手校验token"
+// @Param	query			query		definition.StorePlanReq		true	"门店租车列表请求参数"
+// @Success	200				{object}	[]definition.StoreEbikePlan	"请求成功"
+func (*plan) ByStore(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.StorePlanReq](c)
+	return ctx.SendResponse(biz.NewPlanBiz().ListByStore(req))
+}
+
+// ByStoreDetail
+// @ID		PlanByStoreDetail
+// @Router	/rider/v2/plan/store/detail [GET]
+// @Summary	门店租车套餐详情
+// @Tags	Plan - 门店租车套餐详情
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string							true	"骑手校验token"
+// @Param	query			query		definition.StorePlanDetailReq	true	"门店套餐详情请求参数"
+// @Success	200				{object}	definition.StorePlanDetail		"请求成功"
+func (*plan) ByStoreDetail(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.StorePlanDetailReq](c)
+	return ctx.SendResponse(biz.NewPlanBiz().StorePlanDetail(ctx.Rider, req))
+}

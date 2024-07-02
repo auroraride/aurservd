@@ -87,6 +87,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	g.GET("/setting/version", rapi.Setting.LatestVersion) // App最新版本
 	g.GET("/selection/model", rapi.Selection.Model)       // 电池型号选择
+	g.GET("/selection/brand", rapi.Selection.Brand)       // 电车型号选择
 
 	g.GET("/activity", rapi.Activity.List) // 活动
 
@@ -128,9 +129,11 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 骑士卡
 	plan := g.Group("/plan")
-	plan.GET("", rapi.Plan.List)                    // 套餐列表
-	plan.GET("/renewly", v1.Plan.Renewly, person()) // 续费列表
-	plan.GET("/:id", rapi.Plan.Detail)              // 套餐详情
+	plan.GET("", rapi.Plan.List)                       // 套餐列表
+	plan.GET("/renewly", v1.Plan.Renewly, person())    // 续费列表
+	plan.GET("/:id", rapi.Plan.Detail)                 // 套餐详情
+	plan.GET("/store", rapi.Plan.ByStore)              // 门店套餐列表
+	plan.GET("/store/detail", rapi.Plan.ByStoreDetail) // 门店套餐详情
 
 	// 电池
 	battery := g.Group("/battery", person())
@@ -227,4 +230,6 @@ func LoadRiderV2Routes(root *echo.Group) {
 	agreement := g.Group("/agreement")
 	agreement.GET("/enterprise/price/:id", rapi.Agreement.QueryAgreementByEnterprisePriceID) // 根据企业价格ID查询协议
 
+	// 车电品牌
+	g.GET("/ebike/brand/:id", rapi.Ebike.EbikeBrandDetail) // 车电品牌详情
 }

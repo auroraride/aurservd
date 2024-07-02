@@ -69,6 +69,8 @@ type PlanComplex struct {
 
 	RtoDays    *uint   `json:"rtoDays"`                                      // 以租代购最小使用天数
 	OverdueFee float64 `json:"overdueFee" validate:"required" trans:"滞纳金单价"` // 滞纳金单价
+
+	Daily bool `json:"daily" validate:"required" trans:"是否日租"`
 }
 
 type PlanCreateReq struct {

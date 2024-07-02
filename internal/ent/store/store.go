@@ -59,6 +59,8 @@ const (
 	FieldPhotos = "photos"
 	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
+	// FieldHeadPic holds the string denoting the head_pic field in the database.
+	FieldHeadPic = "head_pic"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
@@ -151,6 +153,7 @@ var Columns = []string{
 	FieldBusinessHours,
 	FieldPhotos,
 	FieldPhone,
+	FieldHeadPic,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -190,6 +193,8 @@ var (
 	DefaultPhone string
 	// PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
 	PhoneValidator func(string) error
+	// DefaultHeadPic holds the default value on creation for the "head_pic" field.
+	DefaultHeadPic string
 )
 
 // OrderOption defines the ordering options for the Store queries.
@@ -293,6 +298,11 @@ func ByBusinessHours(opts ...sql.OrderTermOption) OrderOption {
 // ByPhone orders the results by the phone field.
 func ByPhone(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPhone, opts...).ToFunc()
+}
+
+// ByHeadPic orders the results by the head_pic field.
+func ByHeadPic(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHeadPic, opts...).ToFunc()
 }
 
 // ByCityField orders the results by city field.

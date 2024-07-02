@@ -10,9 +10,12 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrandattribute"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -116,9 +119,99 @@ func (ebu *EbikeBrandUpdate) SetNillableCover(s *string) *EbikeBrandUpdate {
 	return ebu
 }
 
+// SetMainPic sets the "main_pic" field.
+func (ebu *EbikeBrandUpdate) SetMainPic(s []string) *EbikeBrandUpdate {
+	ebu.mutation.SetMainPic(s)
+	return ebu
+}
+
+// AppendMainPic appends s to the "main_pic" field.
+func (ebu *EbikeBrandUpdate) AppendMainPic(s []string) *EbikeBrandUpdate {
+	ebu.mutation.AppendMainPic(s)
+	return ebu
+}
+
+// ClearMainPic clears the value of the "main_pic" field.
+func (ebu *EbikeBrandUpdate) ClearMainPic() *EbikeBrandUpdate {
+	ebu.mutation.ClearMainPic()
+	return ebu
+}
+
+// AddBrandAttributeIDs adds the "brand_attribute" edge to the EbikeBrandAttribute entity by IDs.
+func (ebu *EbikeBrandUpdate) AddBrandAttributeIDs(ids ...uint64) *EbikeBrandUpdate {
+	ebu.mutation.AddBrandAttributeIDs(ids...)
+	return ebu
+}
+
+// AddBrandAttribute adds the "brand_attribute" edges to the EbikeBrandAttribute entity.
+func (ebu *EbikeBrandUpdate) AddBrandAttribute(e ...*EbikeBrandAttribute) *EbikeBrandUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ebu.AddBrandAttributeIDs(ids...)
+}
+
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (ebu *EbikeBrandUpdate) AddPlanIDs(ids ...uint64) *EbikeBrandUpdate {
+	ebu.mutation.AddPlanIDs(ids...)
+	return ebu
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (ebu *EbikeBrandUpdate) AddPlans(p ...*Plan) *EbikeBrandUpdate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ebu.AddPlanIDs(ids...)
+}
+
 // Mutation returns the EbikeBrandMutation object of the builder.
 func (ebu *EbikeBrandUpdate) Mutation() *EbikeBrandMutation {
 	return ebu.mutation
+}
+
+// ClearBrandAttribute clears all "brand_attribute" edges to the EbikeBrandAttribute entity.
+func (ebu *EbikeBrandUpdate) ClearBrandAttribute() *EbikeBrandUpdate {
+	ebu.mutation.ClearBrandAttribute()
+	return ebu
+}
+
+// RemoveBrandAttributeIDs removes the "brand_attribute" edge to EbikeBrandAttribute entities by IDs.
+func (ebu *EbikeBrandUpdate) RemoveBrandAttributeIDs(ids ...uint64) *EbikeBrandUpdate {
+	ebu.mutation.RemoveBrandAttributeIDs(ids...)
+	return ebu
+}
+
+// RemoveBrandAttribute removes "brand_attribute" edges to EbikeBrandAttribute entities.
+func (ebu *EbikeBrandUpdate) RemoveBrandAttribute(e ...*EbikeBrandAttribute) *EbikeBrandUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ebu.RemoveBrandAttributeIDs(ids...)
+}
+
+// ClearPlans clears all "plans" edges to the Plan entity.
+func (ebu *EbikeBrandUpdate) ClearPlans() *EbikeBrandUpdate {
+	ebu.mutation.ClearPlans()
+	return ebu
+}
+
+// RemovePlanIDs removes the "plans" edge to Plan entities by IDs.
+func (ebu *EbikeBrandUpdate) RemovePlanIDs(ids ...uint64) *EbikeBrandUpdate {
+	ebu.mutation.RemovePlanIDs(ids...)
+	return ebu
+}
+
+// RemovePlans removes "plans" edges to Plan entities.
+func (ebu *EbikeBrandUpdate) RemovePlans(p ...*Plan) *EbikeBrandUpdate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ebu.RemovePlanIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -207,6 +300,107 @@ func (ebu *EbikeBrandUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ebu.mutation.Cover(); ok {
 		_spec.SetField(ebikebrand.FieldCover, field.TypeString, value)
+	}
+	if value, ok := ebu.mutation.MainPic(); ok {
+		_spec.SetField(ebikebrand.FieldMainPic, field.TypeJSON, value)
+	}
+	if value, ok := ebu.mutation.AppendedMainPic(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, ebikebrand.FieldMainPic, value)
+		})
+	}
+	if ebu.mutation.MainPicCleared() {
+		_spec.ClearField(ebikebrand.FieldMainPic, field.TypeJSON)
+	}
+	if ebu.mutation.BrandAttributeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebikebrand.BrandAttributeTable,
+			Columns: []string{ebikebrand.BrandAttributeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrandattribute.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ebu.mutation.RemovedBrandAttributeIDs(); len(nodes) > 0 && !ebu.mutation.BrandAttributeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebikebrand.BrandAttributeTable,
+			Columns: []string{ebikebrand.BrandAttributeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrandattribute.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ebu.mutation.BrandAttributeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebikebrand.BrandAttributeTable,
+			Columns: []string{ebikebrand.BrandAttributeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrandattribute.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ebu.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebikebrand.PlansTable,
+			Columns: []string{ebikebrand.PlansColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ebu.mutation.RemovedPlansIDs(); len(nodes) > 0 && !ebu.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebikebrand.PlansTable,
+			Columns: []string{ebikebrand.PlansColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ebu.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebikebrand.PlansTable,
+			Columns: []string{ebikebrand.PlansColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(ebu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ebu.driver, _spec); err != nil {
@@ -316,9 +510,99 @@ func (ebuo *EbikeBrandUpdateOne) SetNillableCover(s *string) *EbikeBrandUpdateOn
 	return ebuo
 }
 
+// SetMainPic sets the "main_pic" field.
+func (ebuo *EbikeBrandUpdateOne) SetMainPic(s []string) *EbikeBrandUpdateOne {
+	ebuo.mutation.SetMainPic(s)
+	return ebuo
+}
+
+// AppendMainPic appends s to the "main_pic" field.
+func (ebuo *EbikeBrandUpdateOne) AppendMainPic(s []string) *EbikeBrandUpdateOne {
+	ebuo.mutation.AppendMainPic(s)
+	return ebuo
+}
+
+// ClearMainPic clears the value of the "main_pic" field.
+func (ebuo *EbikeBrandUpdateOne) ClearMainPic() *EbikeBrandUpdateOne {
+	ebuo.mutation.ClearMainPic()
+	return ebuo
+}
+
+// AddBrandAttributeIDs adds the "brand_attribute" edge to the EbikeBrandAttribute entity by IDs.
+func (ebuo *EbikeBrandUpdateOne) AddBrandAttributeIDs(ids ...uint64) *EbikeBrandUpdateOne {
+	ebuo.mutation.AddBrandAttributeIDs(ids...)
+	return ebuo
+}
+
+// AddBrandAttribute adds the "brand_attribute" edges to the EbikeBrandAttribute entity.
+func (ebuo *EbikeBrandUpdateOne) AddBrandAttribute(e ...*EbikeBrandAttribute) *EbikeBrandUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ebuo.AddBrandAttributeIDs(ids...)
+}
+
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (ebuo *EbikeBrandUpdateOne) AddPlanIDs(ids ...uint64) *EbikeBrandUpdateOne {
+	ebuo.mutation.AddPlanIDs(ids...)
+	return ebuo
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (ebuo *EbikeBrandUpdateOne) AddPlans(p ...*Plan) *EbikeBrandUpdateOne {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ebuo.AddPlanIDs(ids...)
+}
+
 // Mutation returns the EbikeBrandMutation object of the builder.
 func (ebuo *EbikeBrandUpdateOne) Mutation() *EbikeBrandMutation {
 	return ebuo.mutation
+}
+
+// ClearBrandAttribute clears all "brand_attribute" edges to the EbikeBrandAttribute entity.
+func (ebuo *EbikeBrandUpdateOne) ClearBrandAttribute() *EbikeBrandUpdateOne {
+	ebuo.mutation.ClearBrandAttribute()
+	return ebuo
+}
+
+// RemoveBrandAttributeIDs removes the "brand_attribute" edge to EbikeBrandAttribute entities by IDs.
+func (ebuo *EbikeBrandUpdateOne) RemoveBrandAttributeIDs(ids ...uint64) *EbikeBrandUpdateOne {
+	ebuo.mutation.RemoveBrandAttributeIDs(ids...)
+	return ebuo
+}
+
+// RemoveBrandAttribute removes "brand_attribute" edges to EbikeBrandAttribute entities.
+func (ebuo *EbikeBrandUpdateOne) RemoveBrandAttribute(e ...*EbikeBrandAttribute) *EbikeBrandUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ebuo.RemoveBrandAttributeIDs(ids...)
+}
+
+// ClearPlans clears all "plans" edges to the Plan entity.
+func (ebuo *EbikeBrandUpdateOne) ClearPlans() *EbikeBrandUpdateOne {
+	ebuo.mutation.ClearPlans()
+	return ebuo
+}
+
+// RemovePlanIDs removes the "plans" edge to Plan entities by IDs.
+func (ebuo *EbikeBrandUpdateOne) RemovePlanIDs(ids ...uint64) *EbikeBrandUpdateOne {
+	ebuo.mutation.RemovePlanIDs(ids...)
+	return ebuo
+}
+
+// RemovePlans removes "plans" edges to Plan entities.
+func (ebuo *EbikeBrandUpdateOne) RemovePlans(p ...*Plan) *EbikeBrandUpdateOne {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ebuo.RemovePlanIDs(ids...)
 }
 
 // Where appends a list predicates to the EbikeBrandUpdate builder.
@@ -437,6 +721,107 @@ func (ebuo *EbikeBrandUpdateOne) sqlSave(ctx context.Context) (_node *EbikeBrand
 	}
 	if value, ok := ebuo.mutation.Cover(); ok {
 		_spec.SetField(ebikebrand.FieldCover, field.TypeString, value)
+	}
+	if value, ok := ebuo.mutation.MainPic(); ok {
+		_spec.SetField(ebikebrand.FieldMainPic, field.TypeJSON, value)
+	}
+	if value, ok := ebuo.mutation.AppendedMainPic(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, ebikebrand.FieldMainPic, value)
+		})
+	}
+	if ebuo.mutation.MainPicCleared() {
+		_spec.ClearField(ebikebrand.FieldMainPic, field.TypeJSON)
+	}
+	if ebuo.mutation.BrandAttributeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebikebrand.BrandAttributeTable,
+			Columns: []string{ebikebrand.BrandAttributeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrandattribute.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ebuo.mutation.RemovedBrandAttributeIDs(); len(nodes) > 0 && !ebuo.mutation.BrandAttributeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebikebrand.BrandAttributeTable,
+			Columns: []string{ebikebrand.BrandAttributeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrandattribute.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ebuo.mutation.BrandAttributeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebikebrand.BrandAttributeTable,
+			Columns: []string{ebikebrand.BrandAttributeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrandattribute.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ebuo.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebikebrand.PlansTable,
+			Columns: []string{ebikebrand.PlansColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ebuo.mutation.RemovedPlansIDs(); len(nodes) > 0 && !ebuo.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebikebrand.PlansTable,
+			Columns: []string{ebikebrand.PlansColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ebuo.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebikebrand.PlansTable,
+			Columns: []string{ebikebrand.PlansColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(ebuo.modifiers...)
 	_node = &EbikeBrand{config: ebuo.config}

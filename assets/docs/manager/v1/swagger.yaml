@@ -3175,35 +3175,78 @@ definitions:
     type: object
   model.EbikeBrand:
     properties:
+      brandAttribute:
+        description: 品牌属性
+        items:
+          $ref: '#/definitions/model.EbikeBrandAttribute'
+        type: array
       cover:
         description: 封面图
         type: string
       id:
         type: integer
+      mainPic:
+        description: 主图
+        items:
+          type: string
+        type: array
       name:
         description: 名称
         type: string
     type: object
+  model.EbikeBrandAttribute:
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+    required:
+    - name
+    - value
+    type: object
   model.EbikeBrandCreateReq:
     properties:
+      brandAttribute:
+        description: 品牌属性
+        items:
+          $ref: '#/definitions/model.EbikeBrandAttribute'
+        type: array
       cover:
         description: 封面图
         type: string
+      mainPic:
+        description: 主图
+        items:
+          type: string
+        type: array
       name:
         description: 名称
         type: string
     required:
     - cover
+    - mainPic
     - name
     type: object
   model.EbikeBrandModifyReq:
     properties:
+      brandAttribute:
+        description: 品牌属性
+        items:
+          $ref: '#/definitions/model.EbikeBrandAttribute'
+        type: array
       cover:
         description: 封面图
         type: string
+      mainPic:
+        description: 主图
+        items:
+          type: string
+        type: array
       name:
         description: 名称
         type: string
+    required:
+    - mainPic
     type: object
   model.EbikeCreateReq:
     properties:
@@ -4733,6 +4776,9 @@ definitions:
       commissionName:
         description: 佣金方案名称
         type: string
+      daily:
+        description: 是否日租
+        type: boolean
       days:
         description: 有效天数
         minimum: 1
@@ -4762,6 +4808,7 @@ definitions:
         description: 以租代购最小使用天数
         type: integer
     required:
+    - daily
     - days
     - model
     - overdueFee
@@ -6292,6 +6339,9 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
+      headPic:
+        description: 门店头图, 门店头图
+        type: string
       materials:
         description: 门店物资
         items:
@@ -6323,6 +6373,7 @@ definitions:
         - 3
     required:
     - branchId
+    - headPic
     - name
     - phone
     - photos
@@ -6355,6 +6406,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Employee'
         description: 店员, 有可能不存在
+      headPic:
+        description: 门店头图
+        type: string
       id:
         type: integer
       name:
@@ -6396,6 +6450,9 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
+      headPic:
+        description: 门店头图
+        type: string
       name:
         description: 门店名称
         type: string

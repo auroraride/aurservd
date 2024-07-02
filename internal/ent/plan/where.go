@@ -75,11 +75,6 @@ func Remark(v string) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldRemark, v))
 }
 
-// BrandID applies equality check predicate on the "brand_id" field. It's identical to BrandIDEQ.
-func BrandID(v uint64) predicate.Plan {
-	return predicate.Plan(sql.FieldEQ(FieldBrandID, v))
-}
-
 // AgreementID applies equality check predicate on the "agreement_id" field. It's identical to AgreementIDEQ.
 func AgreementID(v uint64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldAgreementID, v))
@@ -193,6 +188,16 @@ func RtoDays(v uint) predicate.Plan {
 // OverdueFee applies equality check predicate on the "overdue_fee" field. It's identical to OverdueFeeEQ.
 func OverdueFee(v float64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldOverdueFee, v))
+}
+
+// BrandID applies equality check predicate on the "brand_id" field. It's identical to BrandIDEQ.
+func BrandID(v uint64) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldBrandID, v))
+}
+
+// Daily applies equality check predicate on the "daily" field. It's identical to DailyEQ.
+func Daily(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDaily, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -418,36 +423,6 @@ func RemarkEqualFold(v string) predicate.Plan {
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.Plan {
 	return predicate.Plan(sql.FieldContainsFold(FieldRemark, v))
-}
-
-// BrandIDEQ applies the EQ predicate on the "brand_id" field.
-func BrandIDEQ(v uint64) predicate.Plan {
-	return predicate.Plan(sql.FieldEQ(FieldBrandID, v))
-}
-
-// BrandIDNEQ applies the NEQ predicate on the "brand_id" field.
-func BrandIDNEQ(v uint64) predicate.Plan {
-	return predicate.Plan(sql.FieldNEQ(FieldBrandID, v))
-}
-
-// BrandIDIn applies the In predicate on the "brand_id" field.
-func BrandIDIn(vs ...uint64) predicate.Plan {
-	return predicate.Plan(sql.FieldIn(FieldBrandID, vs...))
-}
-
-// BrandIDNotIn applies the NotIn predicate on the "brand_id" field.
-func BrandIDNotIn(vs ...uint64) predicate.Plan {
-	return predicate.Plan(sql.FieldNotIn(FieldBrandID, vs...))
-}
-
-// BrandIDIsNil applies the IsNil predicate on the "brand_id" field.
-func BrandIDIsNil() predicate.Plan {
-	return predicate.Plan(sql.FieldIsNull(FieldBrandID))
-}
-
-// BrandIDNotNil applies the NotNil predicate on the "brand_id" field.
-func BrandIDNotNil() predicate.Plan {
-	return predicate.Plan(sql.FieldNotNull(FieldBrandID))
 }
 
 // AgreementIDEQ applies the EQ predicate on the "agreement_id" field.
@@ -1315,27 +1290,44 @@ func OverdueFeeLTE(v float64) predicate.Plan {
 	return predicate.Plan(sql.FieldLTE(FieldOverdueFee, v))
 }
 
-// HasBrand applies the HasEdge predicate on the "brand" edge.
-func HasBrand() predicate.Plan {
-	return predicate.Plan(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
+// BrandIDEQ applies the EQ predicate on the "brand_id" field.
+func BrandIDEQ(v uint64) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldBrandID, v))
 }
 
-// HasBrandWith applies the HasEdge predicate on the "brand" edge with a given conditions (other predicates).
-func HasBrandWith(preds ...predicate.EbikeBrand) predicate.Plan {
-	return predicate.Plan(func(s *sql.Selector) {
-		step := newBrandStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
+// BrandIDNEQ applies the NEQ predicate on the "brand_id" field.
+func BrandIDNEQ(v uint64) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldBrandID, v))
+}
+
+// BrandIDIn applies the In predicate on the "brand_id" field.
+func BrandIDIn(vs ...uint64) predicate.Plan {
+	return predicate.Plan(sql.FieldIn(FieldBrandID, vs...))
+}
+
+// BrandIDNotIn applies the NotIn predicate on the "brand_id" field.
+func BrandIDNotIn(vs ...uint64) predicate.Plan {
+	return predicate.Plan(sql.FieldNotIn(FieldBrandID, vs...))
+}
+
+// BrandIDIsNil applies the IsNil predicate on the "brand_id" field.
+func BrandIDIsNil() predicate.Plan {
+	return predicate.Plan(sql.FieldIsNull(FieldBrandID))
+}
+
+// BrandIDNotNil applies the NotNil predicate on the "brand_id" field.
+func BrandIDNotNil() predicate.Plan {
+	return predicate.Plan(sql.FieldNotNull(FieldBrandID))
+}
+
+// DailyEQ applies the EQ predicate on the "daily" field.
+func DailyEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDaily, v))
+}
+
+// DailyNEQ applies the NEQ predicate on the "daily" field.
+func DailyNEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldDaily, v))
 }
 
 // HasAgreement applies the HasEdge predicate on the "agreement" edge.
@@ -1445,6 +1437,29 @@ func HasCommissions() predicate.Plan {
 func HasCommissionsWith(preds ...predicate.PromotionCommissionPlan) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		step := newCommissionsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBrand applies the HasEdge predicate on the "brand" edge.
+func HasBrand() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, BrandTable, BrandColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBrandWith applies the HasEdge predicate on the "brand" edge with a given conditions (other predicates).
+func HasBrandWith(preds ...predicate.EbikeBrand) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		step := newBrandStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

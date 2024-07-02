@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -30,8 +31,28 @@ const (
 	FieldName = "name"
 	// FieldCover holds the string denoting the cover field in the database.
 	FieldCover = "cover"
+	// FieldMainPic holds the string denoting the main_pic field in the database.
+	FieldMainPic = "main_pic"
+	// EdgeBrandAttribute holds the string denoting the brand_attribute edge name in mutations.
+	EdgeBrandAttribute = "brand_attribute"
+	// EdgePlans holds the string denoting the plans edge name in mutations.
+	EdgePlans = "plans"
 	// Table holds the table name of the ebikebrand in the database.
 	Table = "ebike_brand"
+	// BrandAttributeTable is the table that holds the brand_attribute relation/edge.
+	BrandAttributeTable = "ebike_brand_attribute"
+	// BrandAttributeInverseTable is the table name for the EbikeBrandAttribute entity.
+	// It exists in this package in order to avoid circular dependency with the "ebikebrandattribute" package.
+	BrandAttributeInverseTable = "ebike_brand_attribute"
+	// BrandAttributeColumn is the table column denoting the brand_attribute relation/edge.
+	BrandAttributeColumn = "brand_id"
+	// PlansTable is the table that holds the plans relation/edge.
+	PlansTable = "plan"
+	// PlansInverseTable is the table name for the Plan entity.
+	// It exists in this package in order to avoid circular dependency with the "plan" package.
+	PlansInverseTable = "plan"
+	// PlansColumn is the table column denoting the plans relation/edge.
+	PlansColumn = "brand_id"
 )
 
 // Columns holds all SQL columns for ebikebrand fields.
@@ -45,6 +66,7 @@ var Columns = []string{
 	FieldRemark,
 	FieldName,
 	FieldCover,
+	FieldMainPic,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -108,4 +130,46 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByCover orders the results by the cover field.
 func ByCover(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCover, opts...).ToFunc()
+}
+
+// ByBrandAttributeCount orders the results by brand_attribute count.
+func ByBrandAttributeCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newBrandAttributeStep(), opts...)
+	}
+}
+
+// ByBrandAttribute orders the results by brand_attribute terms.
+func ByBrandAttribute(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBrandAttributeStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByPlansCount orders the results by plans count.
+func ByPlansCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPlansStep(), opts...)
+	}
+}
+
+// ByPlans orders the results by plans terms.
+func ByPlans(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPlansStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newBrandAttributeStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BrandAttributeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, BrandAttributeTable, BrandAttributeColumn),
+	)
+}
+func newPlansStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PlansInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, PlansTable, PlansColumn),
+	)
 }

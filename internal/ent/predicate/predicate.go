@@ -78,6 +78,9 @@ type Ebike func(*sql.Selector)
 // EbikeBrand is the predicate function for ebikebrand builders.
 type EbikeBrand func(*sql.Selector)
 
+// EbikeBrandAttribute is the predicate function for ebikebrandattribute builders.
+type EbikeBrandAttribute func(*sql.Selector)
+
 // Employee is the predicate function for employee builders.
 type Employee func(*sql.Selector)
 

@@ -39,6 +39,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrandattribute"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
@@ -134,6 +135,7 @@ const (
 	TypeCouponTemplate             = "CouponTemplate"
 	TypeEbike                      = "Ebike"
 	TypeEbikeBrand                 = "EbikeBrand"
+	TypeEbikeBrandAttribute        = "EbikeBrandAttribute"
 	TypeEmployee                   = "Employee"
 	TypeEnterprise                 = "Enterprise"
 	TypeEnterpriseBatterySwap      = "EnterpriseBatterySwap"
@@ -36713,21 +36715,29 @@ func (m *EbikeMutation) ResetEdge(name string) error {
 // EbikeBrandMutation represents an operation that mutates the EbikeBrand nodes in the graph.
 type EbikeBrandMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	creator       **model.Modifier
-	last_modifier **model.Modifier
-	remark        *string
-	name          *string
-	cover         *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*EbikeBrand, error)
-	predicates    []predicate.EbikeBrand
+	op                     Op
+	typ                    string
+	id                     *uint64
+	created_at             *time.Time
+	updated_at             *time.Time
+	deleted_at             *time.Time
+	creator                **model.Modifier
+	last_modifier          **model.Modifier
+	remark                 *string
+	name                   *string
+	cover                  *string
+	main_pic               *[]string
+	appendmain_pic         []string
+	clearedFields          map[string]struct{}
+	brand_attribute        map[uint64]struct{}
+	removedbrand_attribute map[uint64]struct{}
+	clearedbrand_attribute bool
+	plans                  map[uint64]struct{}
+	removedplans           map[uint64]struct{}
+	clearedplans           bool
+	done                   bool
+	oldValue               func(context.Context) (*EbikeBrand, error)
+	predicates             []predicate.EbikeBrand
 }
 
 var _ ent.Mutation = (*EbikeBrandMutation)(nil)
@@ -37168,6 +37178,179 @@ func (m *EbikeBrandMutation) ResetCover() {
 	m.cover = nil
 }
 
+// SetMainPic sets the "main_pic" field.
+func (m *EbikeBrandMutation) SetMainPic(s []string) {
+	m.main_pic = &s
+	m.appendmain_pic = nil
+}
+
+// MainPic returns the value of the "main_pic" field in the mutation.
+func (m *EbikeBrandMutation) MainPic() (r []string, exists bool) {
+	v := m.main_pic
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMainPic returns the old "main_pic" field's value of the EbikeBrand entity.
+// If the EbikeBrand object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EbikeBrandMutation) OldMainPic(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMainPic is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMainPic requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMainPic: %w", err)
+	}
+	return oldValue.MainPic, nil
+}
+
+// AppendMainPic adds s to the "main_pic" field.
+func (m *EbikeBrandMutation) AppendMainPic(s []string) {
+	m.appendmain_pic = append(m.appendmain_pic, s...)
+}
+
+// AppendedMainPic returns the list of values that were appended to the "main_pic" field in this mutation.
+func (m *EbikeBrandMutation) AppendedMainPic() ([]string, bool) {
+	if len(m.appendmain_pic) == 0 {
+		return nil, false
+	}
+	return m.appendmain_pic, true
+}
+
+// ClearMainPic clears the value of the "main_pic" field.
+func (m *EbikeBrandMutation) ClearMainPic() {
+	m.main_pic = nil
+	m.appendmain_pic = nil
+	m.clearedFields[ebikebrand.FieldMainPic] = struct{}{}
+}
+
+// MainPicCleared returns if the "main_pic" field was cleared in this mutation.
+func (m *EbikeBrandMutation) MainPicCleared() bool {
+	_, ok := m.clearedFields[ebikebrand.FieldMainPic]
+	return ok
+}
+
+// ResetMainPic resets all changes to the "main_pic" field.
+func (m *EbikeBrandMutation) ResetMainPic() {
+	m.main_pic = nil
+	m.appendmain_pic = nil
+	delete(m.clearedFields, ebikebrand.FieldMainPic)
+}
+
+// AddBrandAttributeIDs adds the "brand_attribute" edge to the EbikeBrandAttribute entity by ids.
+func (m *EbikeBrandMutation) AddBrandAttributeIDs(ids ...uint64) {
+	if m.brand_attribute == nil {
+		m.brand_attribute = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.brand_attribute[ids[i]] = struct{}{}
+	}
+}
+
+// ClearBrandAttribute clears the "brand_attribute" edge to the EbikeBrandAttribute entity.
+func (m *EbikeBrandMutation) ClearBrandAttribute() {
+	m.clearedbrand_attribute = true
+}
+
+// BrandAttributeCleared reports if the "brand_attribute" edge to the EbikeBrandAttribute entity was cleared.
+func (m *EbikeBrandMutation) BrandAttributeCleared() bool {
+	return m.clearedbrand_attribute
+}
+
+// RemoveBrandAttributeIDs removes the "brand_attribute" edge to the EbikeBrandAttribute entity by IDs.
+func (m *EbikeBrandMutation) RemoveBrandAttributeIDs(ids ...uint64) {
+	if m.removedbrand_attribute == nil {
+		m.removedbrand_attribute = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.brand_attribute, ids[i])
+		m.removedbrand_attribute[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedBrandAttribute returns the removed IDs of the "brand_attribute" edge to the EbikeBrandAttribute entity.
+func (m *EbikeBrandMutation) RemovedBrandAttributeIDs() (ids []uint64) {
+	for id := range m.removedbrand_attribute {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// BrandAttributeIDs returns the "brand_attribute" edge IDs in the mutation.
+func (m *EbikeBrandMutation) BrandAttributeIDs() (ids []uint64) {
+	for id := range m.brand_attribute {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetBrandAttribute resets all changes to the "brand_attribute" edge.
+func (m *EbikeBrandMutation) ResetBrandAttribute() {
+	m.brand_attribute = nil
+	m.clearedbrand_attribute = false
+	m.removedbrand_attribute = nil
+}
+
+// AddPlanIDs adds the "plans" edge to the Plan entity by ids.
+func (m *EbikeBrandMutation) AddPlanIDs(ids ...uint64) {
+	if m.plans == nil {
+		m.plans = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.plans[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPlans clears the "plans" edge to the Plan entity.
+func (m *EbikeBrandMutation) ClearPlans() {
+	m.clearedplans = true
+}
+
+// PlansCleared reports if the "plans" edge to the Plan entity was cleared.
+func (m *EbikeBrandMutation) PlansCleared() bool {
+	return m.clearedplans
+}
+
+// RemovePlanIDs removes the "plans" edge to the Plan entity by IDs.
+func (m *EbikeBrandMutation) RemovePlanIDs(ids ...uint64) {
+	if m.removedplans == nil {
+		m.removedplans = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.plans, ids[i])
+		m.removedplans[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPlans returns the removed IDs of the "plans" edge to the Plan entity.
+func (m *EbikeBrandMutation) RemovedPlansIDs() (ids []uint64) {
+	for id := range m.removedplans {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PlansIDs returns the "plans" edge IDs in the mutation.
+func (m *EbikeBrandMutation) PlansIDs() (ids []uint64) {
+	for id := range m.plans {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPlans resets all changes to the "plans" edge.
+func (m *EbikeBrandMutation) ResetPlans() {
+	m.plans = nil
+	m.clearedplans = false
+	m.removedplans = nil
+}
+
 // Where appends a list predicates to the EbikeBrandMutation builder.
 func (m *EbikeBrandMutation) Where(ps ...predicate.EbikeBrand) {
 	m.predicates = append(m.predicates, ps...)
@@ -37202,7 +37385,7 @@ func (m *EbikeBrandMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EbikeBrandMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, ebikebrand.FieldCreatedAt)
 	}
@@ -37226,6 +37409,9 @@ func (m *EbikeBrandMutation) Fields() []string {
 	}
 	if m.cover != nil {
 		fields = append(fields, ebikebrand.FieldCover)
+	}
+	if m.main_pic != nil {
+		fields = append(fields, ebikebrand.FieldMainPic)
 	}
 	return fields
 }
@@ -37251,6 +37437,8 @@ func (m *EbikeBrandMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case ebikebrand.FieldCover:
 		return m.Cover()
+	case ebikebrand.FieldMainPic:
+		return m.MainPic()
 	}
 	return nil, false
 }
@@ -37276,6 +37464,8 @@ func (m *EbikeBrandMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldName(ctx)
 	case ebikebrand.FieldCover:
 		return m.OldCover(ctx)
+	case ebikebrand.FieldMainPic:
+		return m.OldMainPic(ctx)
 	}
 	return nil, fmt.Errorf("unknown EbikeBrand field %s", name)
 }
@@ -37341,6 +37531,13 @@ func (m *EbikeBrandMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCover(v)
 		return nil
+	case ebikebrand.FieldMainPic:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMainPic(v)
+		return nil
 	}
 	return fmt.Errorf("unknown EbikeBrand field %s", name)
 }
@@ -37383,6 +37580,9 @@ func (m *EbikeBrandMutation) ClearedFields() []string {
 	if m.FieldCleared(ebikebrand.FieldRemark) {
 		fields = append(fields, ebikebrand.FieldRemark)
 	}
+	if m.FieldCleared(ebikebrand.FieldMainPic) {
+		fields = append(fields, ebikebrand.FieldMainPic)
+	}
 	return fields
 }
 
@@ -37408,6 +37608,9 @@ func (m *EbikeBrandMutation) ClearField(name string) error {
 		return nil
 	case ebikebrand.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case ebikebrand.FieldMainPic:
+		m.ClearMainPic()
 		return nil
 	}
 	return fmt.Errorf("unknown EbikeBrand nullable field %s", name)
@@ -37441,56 +37644,1034 @@ func (m *EbikeBrandMutation) ResetField(name string) error {
 	case ebikebrand.FieldCover:
 		m.ResetCover()
 		return nil
+	case ebikebrand.FieldMainPic:
+		m.ResetMainPic()
+		return nil
 	}
 	return fmt.Errorf("unknown EbikeBrand field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EbikeBrandMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
+	if m.brand_attribute != nil {
+		edges = append(edges, ebikebrand.EdgeBrandAttribute)
+	}
+	if m.plans != nil {
+		edges = append(edges, ebikebrand.EdgePlans)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *EbikeBrandMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case ebikebrand.EdgeBrandAttribute:
+		ids := make([]ent.Value, 0, len(m.brand_attribute))
+		for id := range m.brand_attribute {
+			ids = append(ids, id)
+		}
+		return ids
+	case ebikebrand.EdgePlans:
+		ids := make([]ent.Value, 0, len(m.plans))
+		for id := range m.plans {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EbikeBrandMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
+	if m.removedbrand_attribute != nil {
+		edges = append(edges, ebikebrand.EdgeBrandAttribute)
+	}
+	if m.removedplans != nil {
+		edges = append(edges, ebikebrand.EdgePlans)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *EbikeBrandMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case ebikebrand.EdgeBrandAttribute:
+		ids := make([]ent.Value, 0, len(m.removedbrand_attribute))
+		for id := range m.removedbrand_attribute {
+			ids = append(ids, id)
+		}
+		return ids
+	case ebikebrand.EdgePlans:
+		ids := make([]ent.Value, 0, len(m.removedplans))
+		for id := range m.removedplans {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EbikeBrandMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
+	if m.clearedbrand_attribute {
+		edges = append(edges, ebikebrand.EdgeBrandAttribute)
+	}
+	if m.clearedplans {
+		edges = append(edges, ebikebrand.EdgePlans)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *EbikeBrandMutation) EdgeCleared(name string) bool {
+	switch name {
+	case ebikebrand.EdgeBrandAttribute:
+		return m.clearedbrand_attribute
+	case ebikebrand.EdgePlans:
+		return m.clearedplans
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *EbikeBrandMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown EbikeBrand unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *EbikeBrandMutation) ResetEdge(name string) error {
+	switch name {
+	case ebikebrand.EdgeBrandAttribute:
+		m.ResetBrandAttribute()
+		return nil
+	case ebikebrand.EdgePlans:
+		m.ResetPlans()
+		return nil
+	}
 	return fmt.Errorf("unknown EbikeBrand edge %s", name)
+}
+
+// EbikeBrandAttributeMutation represents an operation that mutates the EbikeBrandAttribute nodes in the graph.
+type EbikeBrandAttributeMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uint64
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	creator       **model.Modifier
+	last_modifier **model.Modifier
+	remark        *string
+	name          *string
+	value         *string
+	clearedFields map[string]struct{}
+	brand         *uint64
+	clearedbrand  bool
+	done          bool
+	oldValue      func(context.Context) (*EbikeBrandAttribute, error)
+	predicates    []predicate.EbikeBrandAttribute
+}
+
+var _ ent.Mutation = (*EbikeBrandAttributeMutation)(nil)
+
+// ebikebrandattributeOption allows management of the mutation configuration using functional options.
+type ebikebrandattributeOption func(*EbikeBrandAttributeMutation)
+
+// newEbikeBrandAttributeMutation creates new mutation for the EbikeBrandAttribute entity.
+func newEbikeBrandAttributeMutation(c config, op Op, opts ...ebikebrandattributeOption) *EbikeBrandAttributeMutation {
+	m := &EbikeBrandAttributeMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeEbikeBrandAttribute,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withEbikeBrandAttributeID sets the ID field of the mutation.
+func withEbikeBrandAttributeID(id uint64) ebikebrandattributeOption {
+	return func(m *EbikeBrandAttributeMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *EbikeBrandAttribute
+		)
+		m.oldValue = func(ctx context.Context) (*EbikeBrandAttribute, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().EbikeBrandAttribute.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withEbikeBrandAttribute sets the old EbikeBrandAttribute of the mutation.
+func withEbikeBrandAttribute(node *EbikeBrandAttribute) ebikebrandattributeOption {
+	return func(m *EbikeBrandAttributeMutation) {
+		m.oldValue = func(context.Context) (*EbikeBrandAttribute, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m EbikeBrandAttributeMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m EbikeBrandAttributeMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *EbikeBrandAttributeMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *EbikeBrandAttributeMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().EbikeBrandAttribute.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *EbikeBrandAttributeMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *EbikeBrandAttributeMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the EbikeBrandAttribute entity.
+// If the EbikeBrandAttribute object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EbikeBrandAttributeMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *EbikeBrandAttributeMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *EbikeBrandAttributeMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *EbikeBrandAttributeMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the EbikeBrandAttribute entity.
+// If the EbikeBrandAttribute object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EbikeBrandAttributeMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *EbikeBrandAttributeMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *EbikeBrandAttributeMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *EbikeBrandAttributeMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the EbikeBrandAttribute entity.
+// If the EbikeBrandAttribute object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EbikeBrandAttributeMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *EbikeBrandAttributeMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[ebikebrandattribute.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *EbikeBrandAttributeMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[ebikebrandattribute.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *EbikeBrandAttributeMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, ebikebrandattribute.FieldDeletedAt)
+}
+
+// SetCreator sets the "creator" field.
+func (m *EbikeBrandAttributeMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *EbikeBrandAttributeMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the EbikeBrandAttribute entity.
+// If the EbikeBrandAttribute object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EbikeBrandAttributeMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *EbikeBrandAttributeMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[ebikebrandattribute.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *EbikeBrandAttributeMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[ebikebrandattribute.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *EbikeBrandAttributeMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, ebikebrandattribute.FieldCreator)
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (m *EbikeBrandAttributeMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
+}
+
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *EbikeBrandAttributeMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastModifier returns the old "last_modifier" field's value of the EbikeBrandAttribute entity.
+// If the EbikeBrandAttribute object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EbikeBrandAttributeMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
+	}
+	return oldValue.LastModifier, nil
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *EbikeBrandAttributeMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[ebikebrandattribute.FieldLastModifier] = struct{}{}
+}
+
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *EbikeBrandAttributeMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[ebikebrandattribute.FieldLastModifier]
+	return ok
+}
+
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *EbikeBrandAttributeMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, ebikebrandattribute.FieldLastModifier)
+}
+
+// SetRemark sets the "remark" field.
+func (m *EbikeBrandAttributeMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *EbikeBrandAttributeMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the EbikeBrandAttribute entity.
+// If the EbikeBrandAttribute object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EbikeBrandAttributeMutation) OldRemark(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (m *EbikeBrandAttributeMutation) ClearRemark() {
+	m.remark = nil
+	m.clearedFields[ebikebrandattribute.FieldRemark] = struct{}{}
+}
+
+// RemarkCleared returns if the "remark" field was cleared in this mutation.
+func (m *EbikeBrandAttributeMutation) RemarkCleared() bool {
+	_, ok := m.clearedFields[ebikebrandattribute.FieldRemark]
+	return ok
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *EbikeBrandAttributeMutation) ResetRemark() {
+	m.remark = nil
+	delete(m.clearedFields, ebikebrandattribute.FieldRemark)
+}
+
+// SetName sets the "name" field.
+func (m *EbikeBrandAttributeMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *EbikeBrandAttributeMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the EbikeBrandAttribute entity.
+// If the EbikeBrandAttribute object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EbikeBrandAttributeMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *EbikeBrandAttributeMutation) ResetName() {
+	m.name = nil
+}
+
+// SetValue sets the "value" field.
+func (m *EbikeBrandAttributeMutation) SetValue(s string) {
+	m.value = &s
+}
+
+// Value returns the value of the "value" field in the mutation.
+func (m *EbikeBrandAttributeMutation) Value() (r string, exists bool) {
+	v := m.value
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldValue returns the old "value" field's value of the EbikeBrandAttribute entity.
+// If the EbikeBrandAttribute object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EbikeBrandAttributeMutation) OldValue(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldValue is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldValue requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldValue: %w", err)
+	}
+	return oldValue.Value, nil
+}
+
+// ResetValue resets all changes to the "value" field.
+func (m *EbikeBrandAttributeMutation) ResetValue() {
+	m.value = nil
+}
+
+// SetBrandID sets the "brand_id" field.
+func (m *EbikeBrandAttributeMutation) SetBrandID(u uint64) {
+	m.brand = &u
+}
+
+// BrandID returns the value of the "brand_id" field in the mutation.
+func (m *EbikeBrandAttributeMutation) BrandID() (r uint64, exists bool) {
+	v := m.brand
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBrandID returns the old "brand_id" field's value of the EbikeBrandAttribute entity.
+// If the EbikeBrandAttribute object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EbikeBrandAttributeMutation) OldBrandID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBrandID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBrandID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBrandID: %w", err)
+	}
+	return oldValue.BrandID, nil
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (m *EbikeBrandAttributeMutation) ClearBrandID() {
+	m.brand = nil
+	m.clearedFields[ebikebrandattribute.FieldBrandID] = struct{}{}
+}
+
+// BrandIDCleared returns if the "brand_id" field was cleared in this mutation.
+func (m *EbikeBrandAttributeMutation) BrandIDCleared() bool {
+	_, ok := m.clearedFields[ebikebrandattribute.FieldBrandID]
+	return ok
+}
+
+// ResetBrandID resets all changes to the "brand_id" field.
+func (m *EbikeBrandAttributeMutation) ResetBrandID() {
+	m.brand = nil
+	delete(m.clearedFields, ebikebrandattribute.FieldBrandID)
+}
+
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (m *EbikeBrandAttributeMutation) ClearBrand() {
+	m.clearedbrand = true
+	m.clearedFields[ebikebrandattribute.FieldBrandID] = struct{}{}
+}
+
+// BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
+func (m *EbikeBrandAttributeMutation) BrandCleared() bool {
+	return m.BrandIDCleared() || m.clearedbrand
+}
+
+// BrandIDs returns the "brand" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BrandID instead. It exists only for internal usage by the builders.
+func (m *EbikeBrandAttributeMutation) BrandIDs() (ids []uint64) {
+	if id := m.brand; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBrand resets all changes to the "brand" edge.
+func (m *EbikeBrandAttributeMutation) ResetBrand() {
+	m.brand = nil
+	m.clearedbrand = false
+}
+
+// Where appends a list predicates to the EbikeBrandAttributeMutation builder.
+func (m *EbikeBrandAttributeMutation) Where(ps ...predicate.EbikeBrandAttribute) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the EbikeBrandAttributeMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *EbikeBrandAttributeMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.EbikeBrandAttribute, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *EbikeBrandAttributeMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *EbikeBrandAttributeMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (EbikeBrandAttribute).
+func (m *EbikeBrandAttributeMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *EbikeBrandAttributeMutation) Fields() []string {
+	fields := make([]string, 0, 9)
+	if m.created_at != nil {
+		fields = append(fields, ebikebrandattribute.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, ebikebrandattribute.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, ebikebrandattribute.FieldDeletedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, ebikebrandattribute.FieldCreator)
+	}
+	if m.last_modifier != nil {
+		fields = append(fields, ebikebrandattribute.FieldLastModifier)
+	}
+	if m.remark != nil {
+		fields = append(fields, ebikebrandattribute.FieldRemark)
+	}
+	if m.name != nil {
+		fields = append(fields, ebikebrandattribute.FieldName)
+	}
+	if m.value != nil {
+		fields = append(fields, ebikebrandattribute.FieldValue)
+	}
+	if m.brand != nil {
+		fields = append(fields, ebikebrandattribute.FieldBrandID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *EbikeBrandAttributeMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case ebikebrandattribute.FieldCreatedAt:
+		return m.CreatedAt()
+	case ebikebrandattribute.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case ebikebrandattribute.FieldDeletedAt:
+		return m.DeletedAt()
+	case ebikebrandattribute.FieldCreator:
+		return m.Creator()
+	case ebikebrandattribute.FieldLastModifier:
+		return m.LastModifier()
+	case ebikebrandattribute.FieldRemark:
+		return m.Remark()
+	case ebikebrandattribute.FieldName:
+		return m.Name()
+	case ebikebrandattribute.FieldValue:
+		return m.Value()
+	case ebikebrandattribute.FieldBrandID:
+		return m.BrandID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *EbikeBrandAttributeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case ebikebrandattribute.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case ebikebrandattribute.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case ebikebrandattribute.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case ebikebrandattribute.FieldCreator:
+		return m.OldCreator(ctx)
+	case ebikebrandattribute.FieldLastModifier:
+		return m.OldLastModifier(ctx)
+	case ebikebrandattribute.FieldRemark:
+		return m.OldRemark(ctx)
+	case ebikebrandattribute.FieldName:
+		return m.OldName(ctx)
+	case ebikebrandattribute.FieldValue:
+		return m.OldValue(ctx)
+	case ebikebrandattribute.FieldBrandID:
+		return m.OldBrandID(ctx)
+	}
+	return nil, fmt.Errorf("unknown EbikeBrandAttribute field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EbikeBrandAttributeMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case ebikebrandattribute.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case ebikebrandattribute.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case ebikebrandattribute.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case ebikebrandattribute.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
+		return nil
+	case ebikebrandattribute.FieldLastModifier:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastModifier(v)
+		return nil
+	case ebikebrandattribute.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
+		return nil
+	case ebikebrandattribute.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case ebikebrandattribute.FieldValue:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetValue(v)
+		return nil
+	case ebikebrandattribute.FieldBrandID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBrandID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown EbikeBrandAttribute field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *EbikeBrandAttributeMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *EbikeBrandAttributeMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EbikeBrandAttributeMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown EbikeBrandAttribute numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *EbikeBrandAttributeMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(ebikebrandattribute.FieldDeletedAt) {
+		fields = append(fields, ebikebrandattribute.FieldDeletedAt)
+	}
+	if m.FieldCleared(ebikebrandattribute.FieldCreator) {
+		fields = append(fields, ebikebrandattribute.FieldCreator)
+	}
+	if m.FieldCleared(ebikebrandattribute.FieldLastModifier) {
+		fields = append(fields, ebikebrandattribute.FieldLastModifier)
+	}
+	if m.FieldCleared(ebikebrandattribute.FieldRemark) {
+		fields = append(fields, ebikebrandattribute.FieldRemark)
+	}
+	if m.FieldCleared(ebikebrandattribute.FieldBrandID) {
+		fields = append(fields, ebikebrandattribute.FieldBrandID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *EbikeBrandAttributeMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *EbikeBrandAttributeMutation) ClearField(name string) error {
+	switch name {
+	case ebikebrandattribute.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case ebikebrandattribute.FieldCreator:
+		m.ClearCreator()
+		return nil
+	case ebikebrandattribute.FieldLastModifier:
+		m.ClearLastModifier()
+		return nil
+	case ebikebrandattribute.FieldRemark:
+		m.ClearRemark()
+		return nil
+	case ebikebrandattribute.FieldBrandID:
+		m.ClearBrandID()
+		return nil
+	}
+	return fmt.Errorf("unknown EbikeBrandAttribute nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *EbikeBrandAttributeMutation) ResetField(name string) error {
+	switch name {
+	case ebikebrandattribute.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case ebikebrandattribute.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case ebikebrandattribute.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case ebikebrandattribute.FieldCreator:
+		m.ResetCreator()
+		return nil
+	case ebikebrandattribute.FieldLastModifier:
+		m.ResetLastModifier()
+		return nil
+	case ebikebrandattribute.FieldRemark:
+		m.ResetRemark()
+		return nil
+	case ebikebrandattribute.FieldName:
+		m.ResetName()
+		return nil
+	case ebikebrandattribute.FieldValue:
+		m.ResetValue()
+		return nil
+	case ebikebrandattribute.FieldBrandID:
+		m.ResetBrandID()
+		return nil
+	}
+	return fmt.Errorf("unknown EbikeBrandAttribute field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *EbikeBrandAttributeMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.brand != nil {
+		edges = append(edges, ebikebrandattribute.EdgeBrand)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *EbikeBrandAttributeMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case ebikebrandattribute.EdgeBrand:
+		if id := m.brand; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *EbikeBrandAttributeMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *EbikeBrandAttributeMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *EbikeBrandAttributeMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedbrand {
+		edges = append(edges, ebikebrandattribute.EdgeBrand)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *EbikeBrandAttributeMutation) EdgeCleared(name string) bool {
+	switch name {
+	case ebikebrandattribute.EdgeBrand:
+		return m.clearedbrand
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *EbikeBrandAttributeMutation) ClearEdge(name string) error {
+	switch name {
+	case ebikebrandattribute.EdgeBrand:
+		m.ClearBrand()
+		return nil
+	}
+	return fmt.Errorf("unknown EbikeBrandAttribute unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *EbikeBrandAttributeMutation) ResetEdge(name string) error {
+	switch name {
+	case ebikebrandattribute.EdgeBrand:
+		m.ResetBrand()
+		return nil
+	}
+	return fmt.Errorf("unknown EbikeBrandAttribute edge %s", name)
 }
 
 // EmployeeMutation represents an operation that mutates the Employee nodes in the graph.
@@ -71458,9 +72639,8 @@ type PlanMutation struct {
 	addrto_days                *int
 	overdue_fee                *float64
 	addoverdue_fee             *float64
+	daily                      *bool
 	clearedFields              map[string]struct{}
-	brand                      *uint64
-	clearedbrand               bool
 	agreement                  *uint64
 	clearedagreement           bool
 	cities                     map[uint64]struct{}
@@ -71474,6 +72654,8 @@ type PlanMutation struct {
 	commissions                map[uint64]struct{}
 	removedcommissions         map[uint64]struct{}
 	clearedcommissions         bool
+	brand                      *uint64
+	clearedbrand               bool
 	done                       bool
 	oldValue                   func(context.Context) (*Plan, error)
 	predicates                 []predicate.Plan
@@ -71843,55 +73025,6 @@ func (m *PlanMutation) RemarkCleared() bool {
 func (m *PlanMutation) ResetRemark() {
 	m.remark = nil
 	delete(m.clearedFields, plan.FieldRemark)
-}
-
-// SetBrandID sets the "brand_id" field.
-func (m *PlanMutation) SetBrandID(u uint64) {
-	m.brand = &u
-}
-
-// BrandID returns the value of the "brand_id" field in the mutation.
-func (m *PlanMutation) BrandID() (r uint64, exists bool) {
-	v := m.brand
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldBrandID returns the old "brand_id" field's value of the Plan entity.
-// If the Plan object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PlanMutation) OldBrandID(ctx context.Context) (v *uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBrandID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBrandID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBrandID: %w", err)
-	}
-	return oldValue.BrandID, nil
-}
-
-// ClearBrandID clears the value of the "brand_id" field.
-func (m *PlanMutation) ClearBrandID() {
-	m.brand = nil
-	m.clearedFields[plan.FieldBrandID] = struct{}{}
-}
-
-// BrandIDCleared returns if the "brand_id" field was cleared in this mutation.
-func (m *PlanMutation) BrandIDCleared() bool {
-	_, ok := m.clearedFields[plan.FieldBrandID]
-	return ok
-}
-
-// ResetBrandID resets all changes to the "brand_id" field.
-func (m *PlanMutation) ResetBrandID() {
-	m.brand = nil
-	delete(m.clearedFields, plan.FieldBrandID)
 }
 
 // SetAgreementID sets the "agreement_id" field.
@@ -73113,31 +74246,89 @@ func (m *PlanMutation) ResetOverdueFee() {
 	m.addoverdue_fee = nil
 }
 
-// ClearBrand clears the "brand" edge to the EbikeBrand entity.
-func (m *PlanMutation) ClearBrand() {
-	m.clearedbrand = true
+// SetBrandID sets the "brand_id" field.
+func (m *PlanMutation) SetBrandID(u uint64) {
+	m.brand = &u
+}
+
+// BrandID returns the value of the "brand_id" field in the mutation.
+func (m *PlanMutation) BrandID() (r uint64, exists bool) {
+	v := m.brand
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBrandID returns the old "brand_id" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldBrandID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBrandID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBrandID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBrandID: %w", err)
+	}
+	return oldValue.BrandID, nil
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (m *PlanMutation) ClearBrandID() {
+	m.brand = nil
 	m.clearedFields[plan.FieldBrandID] = struct{}{}
 }
 
-// BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
-func (m *PlanMutation) BrandCleared() bool {
-	return m.BrandIDCleared() || m.clearedbrand
+// BrandIDCleared returns if the "brand_id" field was cleared in this mutation.
+func (m *PlanMutation) BrandIDCleared() bool {
+	_, ok := m.clearedFields[plan.FieldBrandID]
+	return ok
 }
 
-// BrandIDs returns the "brand" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// BrandID instead. It exists only for internal usage by the builders.
-func (m *PlanMutation) BrandIDs() (ids []uint64) {
-	if id := m.brand; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetBrand resets all changes to the "brand" edge.
-func (m *PlanMutation) ResetBrand() {
+// ResetBrandID resets all changes to the "brand_id" field.
+func (m *PlanMutation) ResetBrandID() {
 	m.brand = nil
-	m.clearedbrand = false
+	delete(m.clearedFields, plan.FieldBrandID)
+}
+
+// SetDaily sets the "daily" field.
+func (m *PlanMutation) SetDaily(b bool) {
+	m.daily = &b
+}
+
+// Daily returns the value of the "daily" field in the mutation.
+func (m *PlanMutation) Daily() (r bool, exists bool) {
+	v := m.daily
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDaily returns the old "daily" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldDaily(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDaily is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDaily requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDaily: %w", err)
+	}
+	return oldValue.Daily, nil
+}
+
+// ResetDaily resets all changes to the "daily" field.
+func (m *PlanMutation) ResetDaily() {
+	m.daily = nil
 }
 
 // ClearAgreement clears the "agreement" edge to the Agreement entity.
@@ -73356,6 +74547,33 @@ func (m *PlanMutation) ResetCommissions() {
 	m.removedcommissions = nil
 }
 
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (m *PlanMutation) ClearBrand() {
+	m.clearedbrand = true
+	m.clearedFields[plan.FieldBrandID] = struct{}{}
+}
+
+// BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
+func (m *PlanMutation) BrandCleared() bool {
+	return m.BrandIDCleared() || m.clearedbrand
+}
+
+// BrandIDs returns the "brand" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BrandID instead. It exists only for internal usage by the builders.
+func (m *PlanMutation) BrandIDs() (ids []uint64) {
+	if id := m.brand; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBrand resets all changes to the "brand" edge.
+func (m *PlanMutation) ResetBrand() {
+	m.brand = nil
+	m.clearedbrand = false
+}
+
 // Where appends a list predicates to the PlanMutation builder.
 func (m *PlanMutation) Where(ps ...predicate.Plan) {
 	m.predicates = append(m.predicates, ps...)
@@ -73390,7 +74608,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 31)
+	fields := make([]string, 0, 32)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -73408,9 +74626,6 @@ func (m *PlanMutation) Fields() []string {
 	}
 	if m.remark != nil {
 		fields = append(fields, plan.FieldRemark)
-	}
-	if m.brand != nil {
-		fields = append(fields, plan.FieldBrandID)
 	}
 	if m.agreement != nil {
 		fields = append(fields, plan.FieldAgreementID)
@@ -73484,6 +74699,12 @@ func (m *PlanMutation) Fields() []string {
 	if m.overdue_fee != nil {
 		fields = append(fields, plan.FieldOverdueFee)
 	}
+	if m.brand != nil {
+		fields = append(fields, plan.FieldBrandID)
+	}
+	if m.daily != nil {
+		fields = append(fields, plan.FieldDaily)
+	}
 	return fields
 }
 
@@ -73504,8 +74725,6 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case plan.FieldRemark:
 		return m.Remark()
-	case plan.FieldBrandID:
-		return m.BrandID()
 	case plan.FieldAgreementID:
 		return m.AgreementID()
 	case plan.FieldModel:
@@ -73554,6 +74773,10 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.RtoDays()
 	case plan.FieldOverdueFee:
 		return m.OverdueFee()
+	case plan.FieldBrandID:
+		return m.BrandID()
+	case plan.FieldDaily:
+		return m.Daily()
 	}
 	return nil, false
 }
@@ -73575,8 +74798,6 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldLastModifier(ctx)
 	case plan.FieldRemark:
 		return m.OldRemark(ctx)
-	case plan.FieldBrandID:
-		return m.OldBrandID(ctx)
 	case plan.FieldAgreementID:
 		return m.OldAgreementID(ctx)
 	case plan.FieldModel:
@@ -73625,6 +74846,10 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldRtoDays(ctx)
 	case plan.FieldOverdueFee:
 		return m.OldOverdueFee(ctx)
+	case plan.FieldBrandID:
+		return m.OldBrandID(ctx)
+	case plan.FieldDaily:
+		return m.OldDaily(ctx)
 	}
 	return nil, fmt.Errorf("unknown Plan field %s", name)
 }
@@ -73675,13 +74900,6 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRemark(v)
-		return nil
-	case plan.FieldBrandID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetBrandID(v)
 		return nil
 	case plan.FieldAgreementID:
 		v, ok := value.(uint64)
@@ -73851,6 +75069,20 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetOverdueFee(v)
 		return nil
+	case plan.FieldBrandID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBrandID(v)
+		return nil
+	case plan.FieldDaily:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDaily(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
 }
@@ -74004,9 +75236,6 @@ func (m *PlanMutation) ClearedFields() []string {
 	if m.FieldCleared(plan.FieldRemark) {
 		fields = append(fields, plan.FieldRemark)
 	}
-	if m.FieldCleared(plan.FieldBrandID) {
-		fields = append(fields, plan.FieldBrandID)
-	}
 	if m.FieldCleared(plan.FieldAgreementID) {
 		fields = append(fields, plan.FieldAgreementID)
 	}
@@ -74043,6 +75272,9 @@ func (m *PlanMutation) ClearedFields() []string {
 	if m.FieldCleared(plan.FieldRtoDays) {
 		fields = append(fields, plan.FieldRtoDays)
 	}
+	if m.FieldCleared(plan.FieldBrandID) {
+		fields = append(fields, plan.FieldBrandID)
+	}
 	return fields
 }
 
@@ -74068,9 +75300,6 @@ func (m *PlanMutation) ClearField(name string) error {
 		return nil
 	case plan.FieldRemark:
 		m.ClearRemark()
-		return nil
-	case plan.FieldBrandID:
-		m.ClearBrandID()
 		return nil
 	case plan.FieldAgreementID:
 		m.ClearAgreementID()
@@ -74108,6 +75337,9 @@ func (m *PlanMutation) ClearField(name string) error {
 	case plan.FieldRtoDays:
 		m.ClearRtoDays()
 		return nil
+	case plan.FieldBrandID:
+		m.ClearBrandID()
+		return nil
 	}
 	return fmt.Errorf("unknown Plan nullable field %s", name)
 }
@@ -74133,9 +75365,6 @@ func (m *PlanMutation) ResetField(name string) error {
 		return nil
 	case plan.FieldRemark:
 		m.ResetRemark()
-		return nil
-	case plan.FieldBrandID:
-		m.ResetBrandID()
 		return nil
 	case plan.FieldAgreementID:
 		m.ResetAgreementID()
@@ -74209,6 +75438,12 @@ func (m *PlanMutation) ResetField(name string) error {
 	case plan.FieldOverdueFee:
 		m.ResetOverdueFee()
 		return nil
+	case plan.FieldBrandID:
+		m.ResetBrandID()
+		return nil
+	case plan.FieldDaily:
+		m.ResetDaily()
+		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
 }
@@ -74216,9 +75451,6 @@ func (m *PlanMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlanMutation) AddedEdges() []string {
 	edges := make([]string, 0, 6)
-	if m.brand != nil {
-		edges = append(edges, plan.EdgeBrand)
-	}
 	if m.agreement != nil {
 		edges = append(edges, plan.EdgeAgreement)
 	}
@@ -74234,6 +75466,9 @@ func (m *PlanMutation) AddedEdges() []string {
 	if m.commissions != nil {
 		edges = append(edges, plan.EdgeCommissions)
 	}
+	if m.brand != nil {
+		edges = append(edges, plan.EdgeBrand)
+	}
 	return edges
 }
 
@@ -74241,10 +75476,6 @@ func (m *PlanMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *PlanMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case plan.EdgeBrand:
-		if id := m.brand; id != nil {
-			return []ent.Value{*id}
-		}
 	case plan.EdgeAgreement:
 		if id := m.agreement; id != nil {
 			return []ent.Value{*id}
@@ -74271,6 +75502,10 @@ func (m *PlanMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case plan.EdgeBrand:
+		if id := m.brand; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
@@ -74319,9 +75554,6 @@ func (m *PlanMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlanMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 6)
-	if m.clearedbrand {
-		edges = append(edges, plan.EdgeBrand)
-	}
 	if m.clearedagreement {
 		edges = append(edges, plan.EdgeAgreement)
 	}
@@ -74337,6 +75569,9 @@ func (m *PlanMutation) ClearedEdges() []string {
 	if m.clearedcommissions {
 		edges = append(edges, plan.EdgeCommissions)
 	}
+	if m.clearedbrand {
+		edges = append(edges, plan.EdgeBrand)
+	}
 	return edges
 }
 
@@ -74344,8 +75579,6 @@ func (m *PlanMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *PlanMutation) EdgeCleared(name string) bool {
 	switch name {
-	case plan.EdgeBrand:
-		return m.clearedbrand
 	case plan.EdgeAgreement:
 		return m.clearedagreement
 	case plan.EdgeCities:
@@ -74356,6 +75589,8 @@ func (m *PlanMutation) EdgeCleared(name string) bool {
 		return m.clearedcomplexes
 	case plan.EdgeCommissions:
 		return m.clearedcommissions
+	case plan.EdgeBrand:
+		return m.clearedbrand
 	}
 	return false
 }
@@ -74364,14 +75599,14 @@ func (m *PlanMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *PlanMutation) ClearEdge(name string) error {
 	switch name {
-	case plan.EdgeBrand:
-		m.ClearBrand()
-		return nil
 	case plan.EdgeAgreement:
 		m.ClearAgreement()
 		return nil
 	case plan.EdgeParent:
 		m.ClearParent()
+		return nil
+	case plan.EdgeBrand:
+		m.ClearBrand()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan unique edge %s", name)
@@ -74381,9 +75616,6 @@ func (m *PlanMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *PlanMutation) ResetEdge(name string) error {
 	switch name {
-	case plan.EdgeBrand:
-		m.ResetBrand()
-		return nil
 	case plan.EdgeAgreement:
 		m.ResetAgreement()
 		return nil
@@ -74398,6 +75630,9 @@ func (m *PlanMutation) ResetEdge(name string) error {
 		return nil
 	case plan.EdgeCommissions:
 		m.ResetCommissions()
+		return nil
+	case plan.EdgeBrand:
+		m.ResetBrand()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan edge %s", name)
@@ -107626,6 +108861,7 @@ type StoreMutation struct {
 	photos             *[]string
 	appendphotos       []string
 	phone              *string
+	head_pic           *string
 	clearedFields      map[string]struct{}
 	city               *uint64
 	clearedcity        bool
@@ -108707,6 +109943,42 @@ func (m *StoreMutation) ResetPhone() {
 	m.phone = nil
 }
 
+// SetHeadPic sets the "head_pic" field.
+func (m *StoreMutation) SetHeadPic(s string) {
+	m.head_pic = &s
+}
+
+// HeadPic returns the value of the "head_pic" field in the mutation.
+func (m *StoreMutation) HeadPic() (r string, exists bool) {
+	v := m.head_pic
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHeadPic returns the old "head_pic" field's value of the Store entity.
+// If the Store object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StoreMutation) OldHeadPic(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHeadPic is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHeadPic requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHeadPic: %w", err)
+	}
+	return oldValue.HeadPic, nil
+}
+
+// ResetHeadPic resets all changes to the "head_pic" field.
+func (m *StoreMutation) ResetHeadPic() {
+	m.head_pic = nil
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *StoreMutation) ClearCity() {
 	m.clearedcity = true
@@ -109038,7 +110310,7 @@ func (m *StoreMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StoreMutation) Fields() []string {
-	fields := make([]string, 0, 22)
+	fields := make([]string, 0, 23)
 	if m.created_at != nil {
 		fields = append(fields, store.FieldCreatedAt)
 	}
@@ -109105,6 +110377,9 @@ func (m *StoreMutation) Fields() []string {
 	if m.phone != nil {
 		fields = append(fields, store.FieldPhone)
 	}
+	if m.head_pic != nil {
+		fields = append(fields, store.FieldHeadPic)
+	}
 	return fields
 }
 
@@ -109157,6 +110432,8 @@ func (m *StoreMutation) Field(name string) (ent.Value, bool) {
 		return m.Photos()
 	case store.FieldPhone:
 		return m.Phone()
+	case store.FieldHeadPic:
+		return m.HeadPic()
 	}
 	return nil, false
 }
@@ -109210,6 +110487,8 @@ func (m *StoreMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPhotos(ctx)
 	case store.FieldPhone:
 		return m.OldPhone(ctx)
+	case store.FieldHeadPic:
+		return m.OldHeadPic(ctx)
 	}
 	return nil, fmt.Errorf("unknown Store field %s", name)
 }
@@ -109372,6 +110651,13 @@ func (m *StoreMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPhone(v)
+		return nil
+	case store.FieldHeadPic:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHeadPic(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Store field %s", name)
@@ -109571,6 +110857,9 @@ func (m *StoreMutation) ResetField(name string) error {
 		return nil
 	case store.FieldPhone:
 		m.ResetPhone()
+		return nil
+	case store.FieldHeadPic:
+		m.ResetHeadPic()
 		return nil
 	}
 	return fmt.Errorf("unknown Store field %s", name)

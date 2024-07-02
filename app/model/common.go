@@ -132,3 +132,5 @@ const (
 	AuthTypeWechat uint8 = iota + 1 // 微信
 	AuthTypeAlipay                  // 支付宝
 )
+
+const DefaultMaxDistance = 50000.0

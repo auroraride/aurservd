@@ -18434,6 +18434,13 @@ const docTemplate = `{
         "model.EbikeBrand": {
             "type": "object",
             "properties": {
+                "brandAttribute": {
+                    "description": "品牌属性",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EbikeBrandAttribute"
+                    }
+                },
                 "cover": {
                     "description": "封面图",
                     "type": "string"
@@ -18441,8 +18448,30 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "mainPic": {
+                    "description": "主图",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "name": {
                     "description": "名称",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EbikeBrandAttribute": {
+            "type": "object",
+            "required": [
+                "name",
+                "value"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
                     "type": "string"
                 }
             }
@@ -18451,12 +18480,27 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "cover",
+                "mainPic",
                 "name"
             ],
             "properties": {
+                "brandAttribute": {
+                    "description": "品牌属性",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EbikeBrandAttribute"
+                    }
+                },
                 "cover": {
                     "description": "封面图",
                     "type": "string"
+                },
+                "mainPic": {
+                    "description": "主图",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "name": {
                     "description": "名称",
@@ -18466,10 +18510,27 @@ const docTemplate = `{
         },
         "model.EbikeBrandModifyReq": {
             "type": "object",
+            "required": [
+                "mainPic"
+            ],
             "properties": {
+                "brandAttribute": {
+                    "description": "品牌属性",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EbikeBrandAttribute"
+                    }
+                },
                 "cover": {
                     "description": "封面图",
                     "type": "string"
+                },
+                "mainPic": {
+                    "description": "主图",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "name": {
                     "description": "名称",
@@ -20623,6 +20684,7 @@ const docTemplate = `{
         "model.PlanComplex": {
             "type": "object",
             "required": [
+                "daily",
                 "days",
                 "model",
                 "overdueFee",
@@ -20640,6 +20702,10 @@ const docTemplate = `{
                 "commissionName": {
                     "description": "佣金方案名称",
                     "type": "string"
+                },
+                "daily": {
+                    "description": "是否日租",
+                    "type": "boolean"
                 },
                 "days": {
                     "description": "有效天数",
@@ -22845,6 +22911,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "branchId",
+                "headPic",
                 "name",
                 "phone",
                 "photos",
@@ -22870,6 +22937,10 @@ const docTemplate = `{
                 "ebikeSale": {
                     "description": "是否可以买车",
                     "type": "boolean"
+                },
+                "headPic": {
+                    "description": "门店头图, 门店头图",
+                    "type": "string"
                 },
                 "materials": {
                     "description": "门店物资",
@@ -22956,6 +23027,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "headPic": {
+                    "description": "门店头图",
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -23014,6 +23089,10 @@ const docTemplate = `{
                 "ebikeSale": {
                     "description": "是否可以买车",
                     "type": "boolean"
+                },
+                "headPic": {
+                    "description": "门店头图",
+                    "type": "string"
                 },
                 "name": {
                     "description": "门店名称",

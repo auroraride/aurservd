@@ -27,8 +27,6 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
-	// FieldBrandID holds the string denoting the brand_id field in the database.
-	FieldBrandID = "brand_id"
 	// FieldAgreementID holds the string denoting the agreement_id field in the database.
 	FieldAgreementID = "agreement_id"
 	// FieldModel holds the string denoting the model field in the database.
@@ -77,8 +75,10 @@ const (
 	FieldRtoDays = "rto_days"
 	// FieldOverdueFee holds the string denoting the overdue_fee field in the database.
 	FieldOverdueFee = "overdue_fee"
-	// EdgeBrand holds the string denoting the brand edge name in mutations.
-	EdgeBrand = "brand"
+	// FieldBrandID holds the string denoting the brand_id field in the database.
+	FieldBrandID = "brand_id"
+	// FieldDaily holds the string denoting the daily field in the database.
+	FieldDaily = "daily"
 	// EdgeAgreement holds the string denoting the agreement edge name in mutations.
 	EdgeAgreement = "agreement"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
@@ -89,15 +89,10 @@ const (
 	EdgeComplexes = "complexes"
 	// EdgeCommissions holds the string denoting the commissions edge name in mutations.
 	EdgeCommissions = "commissions"
+	// EdgeBrand holds the string denoting the brand edge name in mutations.
+	EdgeBrand = "brand"
 	// Table holds the table name of the plan in the database.
 	Table = "plan"
-	// BrandTable is the table that holds the brand relation/edge.
-	BrandTable = "plan"
-	// BrandInverseTable is the table name for the EbikeBrand entity.
-	// It exists in this package in order to avoid circular dependency with the "ebikebrand" package.
-	BrandInverseTable = "ebike_brand"
-	// BrandColumn is the table column denoting the brand relation/edge.
-	BrandColumn = "brand_id"
 	// AgreementTable is the table that holds the agreement relation/edge.
 	AgreementTable = "plan"
 	// AgreementInverseTable is the table name for the Agreement entity.
@@ -125,6 +120,13 @@ const (
 	CommissionsInverseTable = "promotion_commission_plan"
 	// CommissionsColumn is the table column denoting the commissions relation/edge.
 	CommissionsColumn = "plan_id"
+	// BrandTable is the table that holds the brand relation/edge.
+	BrandTable = "plan"
+	// BrandInverseTable is the table name for the EbikeBrand entity.
+	// It exists in this package in order to avoid circular dependency with the "ebikebrand" package.
+	BrandInverseTable = "ebike_brand"
+	// BrandColumn is the table column denoting the brand relation/edge.
+	BrandColumn = "brand_id"
 )
 
 // Columns holds all SQL columns for plan fields.
@@ -136,7 +138,6 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
-	FieldBrandID,
 	FieldAgreementID,
 	FieldModel,
 	FieldEnable,
@@ -161,6 +162,8 @@ var Columns = []string{
 	FieldDepositPay,
 	FieldRtoDays,
 	FieldOverdueFee,
+	FieldBrandID,
+	FieldDaily,
 }
 
 var (
@@ -210,6 +213,8 @@ var (
 	DefaultDepositPay bool
 	// DefaultOverdueFee holds the default value on creation for the "overdue_fee" field.
 	DefaultOverdueFee float64
+	// DefaultDaily holds the default value on creation for the "daily" field.
+	DefaultDaily bool
 )
 
 // OrderOption defines the ordering options for the Plan queries.
@@ -238,11 +243,6 @@ func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByRemark orders the results by the remark field.
 func ByRemark(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRemark, opts...).ToFunc()
-}
-
-// ByBrandID orders the results by the brand_id field.
-func ByBrandID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBrandID, opts...).ToFunc()
 }
 
 // ByAgreementID orders the results by the agreement_id field.
@@ -360,11 +360,14 @@ func ByOverdueFee(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOverdueFee, opts...).ToFunc()
 }
 
-// ByBrandField orders the results by brand field.
-func ByBrandField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newBrandStep(), sql.OrderByField(field, opts...))
-	}
+// ByBrandID orders the results by the brand_id field.
+func ByBrandID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBrandID, opts...).ToFunc()
+}
+
+// ByDaily orders the results by the daily field.
+func ByDaily(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDaily, opts...).ToFunc()
 }
 
 // ByAgreementField orders the results by agreement field.
@@ -422,12 +425,12 @@ func ByCommissions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCommissionsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-func newBrandStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(BrandInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
-	)
+
+// ByBrandField orders the results by brand field.
+func ByBrandField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBrandStep(), sql.OrderByField(field, opts...))
+	}
 }
 func newAgreementStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
@@ -462,5 +465,12 @@ func newCommissionsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CommissionsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CommissionsTable, CommissionsColumn),
+	)
+}
+func newBrandStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BrandInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, BrandTable, BrandColumn),
 	)
 }
