@@ -59,6 +59,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
+	"github.com/auroraride/aurservd/internal/ent/riderphonedevice"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -2179,6 +2180,46 @@ func (c *RiderFollowUpClient) GetNotDeleted(ctx context.Context, id uint64) (*Ri
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *RiderFollowUpClient) GetNotDeletedX(ctx context.Context, id uint64) *RiderFollowUp {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for RiderPhoneDevice.
+func (c *RiderPhoneDeviceClient) SoftDelete() *RiderPhoneDeviceUpdate {
+	mutation := newRiderPhoneDeviceMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &RiderPhoneDeviceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *RiderPhoneDeviceClient) SoftDeleteOne(rpd *RiderPhoneDevice) *RiderPhoneDeviceUpdateOne {
+	mutation := newRiderPhoneDeviceMutation(c.config, OpUpdateOne, withRiderPhoneDevice(rpd))
+	mutation.SetDeletedAt(time.Now())
+	return &RiderPhoneDeviceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *RiderPhoneDeviceClient) SoftDeleteOneID(id uint64) *RiderPhoneDeviceUpdateOne {
+	mutation := newRiderPhoneDeviceMutation(c.config, OpUpdateOne, withRiderPhoneDeviceID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &RiderPhoneDeviceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for RiderPhoneDevice.
+func (c *RiderPhoneDeviceClient) QueryNotDeleted() *RiderPhoneDeviceQuery {
+	return c.Query().Where(riderphonedevice.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a RiderPhoneDevice not deleted entity by its id.
+func (c *RiderPhoneDeviceClient) GetNotDeleted(ctx context.Context, id uint64) (*RiderPhoneDevice, error) {
+	return c.Query().Where(riderphonedevice.ID(id), riderphonedevice.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *RiderPhoneDeviceClient) GetNotDeletedX(ctx context.Context, id uint64) *RiderPhoneDevice {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

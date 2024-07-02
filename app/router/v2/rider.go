@@ -120,12 +120,13 @@ func LoadRiderV2Routes(root *echo.Group) {
 	certification.POST("/supplement", rapi.Person.CertificationSupplement) // 补充实名信息
 
 	// 骑手
-	g.GET("/profile", rapi.Rider.Profile, logged())           // 获取用户信息
-	g.GET("/deposit", v1.Rider.Deposit, logged())             // 获取押金信息
-	g.DELETE("/deregister", v1.Rider.Deregister, logged())    // 注销账户
-	g.POST("/change/phone", rapi.Rider.ChangePhone, logged()) // 修改手机号
-	g.POST("/contact", v1.Rider.Contact, logged())            // 编辑紧急联系人
-	g.POST("/mobpush", rapi.Rider.SetMobPushId, logged())     // 绑定骑手推送ID
+	g.GET("/profile", rapi.Rider.Profile, logged())                        // 获取用户信息
+	g.GET("/deposit", v1.Rider.Deposit, logged())                          // 获取押金信息
+	g.DELETE("/deregister", v1.Rider.Deregister, logged())                 // 注销账户
+	g.POST("/change/phone", rapi.Rider.ChangePhone, logged())              // 修改手机号
+	g.POST("/contact", v1.Rider.Contact, logged())                         // 编辑紧急联系人
+	g.POST("/mobpush", rapi.Rider.SetMobPushId, logged())                  // 绑定骑手推送ID
+	g.POST("/report/phone/device", rapi.Rider.ReportPhoneDevice, logged()) // 上报手机型号
 
 	// 骑士卡
 	plan := g.Group("/plan")

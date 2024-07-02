@@ -706,6 +706,33 @@ definitions:
     - smsCode
     - smsId
     type: object
+  definition.RiderPhoneDeviceReq:
+    properties:
+      brand:
+        description: 手机品牌
+        type: string
+      deviceSn:
+        description: 设备编号
+        type: string
+      imei:
+        description: IMEI
+        type: string
+      model:
+        description: 手机型号
+        type: string
+      osName:
+        description: 系统名称
+        type: string
+      osVersion:
+        description: 系统版本
+        type: string
+      screenHeight:
+        description: 屏幕高度
+        type: integer
+      screenWidth:
+        description: 屏幕宽度
+        type: integer
+    type: object
   definition.RiderSetMobPushReq:
     properties:
       pushId:
@@ -4796,6 +4823,33 @@ paths:
       summary: 订单支付状态
       tags:
       - Order - 订单
+  /rider/v2/phone/device:
+    post:
+      consumes:
+        - application/json
+      operationId: ReportPhoneDevice
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.RiderPhoneDeviceReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 上报手机设备信息
+      tags:
+        - Rider - 骑手
   /rider/v2/plan:
     get:
       consumes:

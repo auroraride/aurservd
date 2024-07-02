@@ -4980,6 +4980,40 @@ var (
 			},
 		},
 	}
+	// RiderPhoneDeviceColumns holds the columns for the "rider_phone_device" table.
+	RiderPhoneDeviceColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "device_sn", Type: field.TypeString, Nullable: true, Comment: "设备编号"},
+		{Name: "model", Type: field.TypeString, Nullable: true, Comment: "手机型号"},
+		{Name: "brand", Type: field.TypeString, Nullable: true, Comment: "手机品牌"},
+		{Name: "os_version", Type: field.TypeString, Nullable: true, Comment: "系统版本"},
+		{Name: "os_name", Type: field.TypeString, Nullable: true, Comment: "系统名称"},
+		{Name: "screen_width", Type: field.TypeUint64, Nullable: true, Comment: "屏幕宽度"},
+		{Name: "screen_height", Type: field.TypeUint64, Nullable: true, Comment: "屏幕高度"},
+		{Name: "imei", Type: field.TypeString, Nullable: true, Comment: "IMEI"},
+		{Name: "rider_id", Type: field.TypeUint64, Unique: true, Comment: "骑手ID"},
+	}
+	// RiderPhoneDeviceTable holds the schema information for the "rider_phone_device" table.
+	RiderPhoneDeviceTable = &schema.Table{
+		Name:       "rider_phone_device",
+		Columns:    RiderPhoneDeviceColumns,
+		PrimaryKey: []*schema.Column{RiderPhoneDeviceColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "riderphonedevice_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{RiderPhoneDeviceColumns[1]},
+			},
+			{
+				Name:    "riderphonedevice_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{RiderPhoneDeviceColumns[3]},
+			},
+		},
+	}
 	// RoleColumns holds the columns for the "role" table.
 	RoleColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -6294,6 +6328,7 @@ var (
 		ReserveTable,
 		RiderTable,
 		RiderFollowUpTable,
+		RiderPhoneDeviceTable,
 		RoleTable,
 		SettingTable,
 		StockTable,
@@ -6702,6 +6737,9 @@ func init() {
 	RiderFollowUpTable.ForeignKeys[1].RefTable = ManagerTable
 	RiderFollowUpTable.Annotation = &entsql.Annotation{
 		Table: "rider_follow_up",
+	}
+	RiderPhoneDeviceTable.Annotation = &entsql.Annotation{
+		Table: "rider_phone_device",
 	}
 	RoleTable.Annotation = &entsql.Annotation{
 		Table: "role",

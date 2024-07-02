@@ -87,6 +87,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
+	"github.com/auroraride/aurservd/internal/ent/riderphonedevice"
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -182,6 +183,7 @@ const (
 	TypeReserve                    = "Reserve"
 	TypeRider                      = "Rider"
 	TypeRiderFollowUp              = "RiderFollowUp"
+	TypeRiderPhoneDevice           = "RiderPhoneDevice"
 	TypeRole                       = "Role"
 	TypeSetting                    = "Setting"
 	TypeStock                      = "Stock"
@@ -103163,6 +103165,1204 @@ func (m *RiderFollowUpMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown RiderFollowUp edge %s", name)
+}
+
+// RiderPhoneDeviceMutation represents an operation that mutates the RiderPhoneDevice nodes in the graph.
+type RiderPhoneDeviceMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *uint64
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	device_sn        *string
+	model            *string
+	brand            *string
+	os_version       *string
+	os_name          *string
+	screen_width     *uint64
+	addscreen_width  *int64
+	screen_height    *uint64
+	addscreen_height *int64
+	imei             *string
+	rider_id         *uint64
+	addrider_id      *int64
+	clearedFields    map[string]struct{}
+	done             bool
+	oldValue         func(context.Context) (*RiderPhoneDevice, error)
+	predicates       []predicate.RiderPhoneDevice
+}
+
+var _ ent.Mutation = (*RiderPhoneDeviceMutation)(nil)
+
+// riderphonedeviceOption allows management of the mutation configuration using functional options.
+type riderphonedeviceOption func(*RiderPhoneDeviceMutation)
+
+// newRiderPhoneDeviceMutation creates new mutation for the RiderPhoneDevice entity.
+func newRiderPhoneDeviceMutation(c config, op Op, opts ...riderphonedeviceOption) *RiderPhoneDeviceMutation {
+	m := &RiderPhoneDeviceMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeRiderPhoneDevice,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withRiderPhoneDeviceID sets the ID field of the mutation.
+func withRiderPhoneDeviceID(id uint64) riderphonedeviceOption {
+	return func(m *RiderPhoneDeviceMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *RiderPhoneDevice
+		)
+		m.oldValue = func(ctx context.Context) (*RiderPhoneDevice, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().RiderPhoneDevice.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withRiderPhoneDevice sets the old RiderPhoneDevice of the mutation.
+func withRiderPhoneDevice(node *RiderPhoneDevice) riderphonedeviceOption {
+	return func(m *RiderPhoneDeviceMutation) {
+		m.oldValue = func(context.Context) (*RiderPhoneDevice, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m RiderPhoneDeviceMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m RiderPhoneDeviceMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *RiderPhoneDeviceMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *RiderPhoneDeviceMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().RiderPhoneDevice.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *RiderPhoneDeviceMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *RiderPhoneDeviceMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the RiderPhoneDevice entity.
+// If the RiderPhoneDevice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderPhoneDeviceMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *RiderPhoneDeviceMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *RiderPhoneDeviceMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *RiderPhoneDeviceMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the RiderPhoneDevice entity.
+// If the RiderPhoneDevice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderPhoneDeviceMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *RiderPhoneDeviceMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *RiderPhoneDeviceMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *RiderPhoneDeviceMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the RiderPhoneDevice entity.
+// If the RiderPhoneDevice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderPhoneDeviceMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *RiderPhoneDeviceMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[riderphonedevice.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *RiderPhoneDeviceMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[riderphonedevice.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *RiderPhoneDeviceMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, riderphonedevice.FieldDeletedAt)
+}
+
+// SetDeviceSn sets the "device_sn" field.
+func (m *RiderPhoneDeviceMutation) SetDeviceSn(s string) {
+	m.device_sn = &s
+}
+
+// DeviceSn returns the value of the "device_sn" field in the mutation.
+func (m *RiderPhoneDeviceMutation) DeviceSn() (r string, exists bool) {
+	v := m.device_sn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeviceSn returns the old "device_sn" field's value of the RiderPhoneDevice entity.
+// If the RiderPhoneDevice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderPhoneDeviceMutation) OldDeviceSn(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeviceSn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeviceSn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeviceSn: %w", err)
+	}
+	return oldValue.DeviceSn, nil
+}
+
+// ClearDeviceSn clears the value of the "device_sn" field.
+func (m *RiderPhoneDeviceMutation) ClearDeviceSn() {
+	m.device_sn = nil
+	m.clearedFields[riderphonedevice.FieldDeviceSn] = struct{}{}
+}
+
+// DeviceSnCleared returns if the "device_sn" field was cleared in this mutation.
+func (m *RiderPhoneDeviceMutation) DeviceSnCleared() bool {
+	_, ok := m.clearedFields[riderphonedevice.FieldDeviceSn]
+	return ok
+}
+
+// ResetDeviceSn resets all changes to the "device_sn" field.
+func (m *RiderPhoneDeviceMutation) ResetDeviceSn() {
+	m.device_sn = nil
+	delete(m.clearedFields, riderphonedevice.FieldDeviceSn)
+}
+
+// SetModel sets the "model" field.
+func (m *RiderPhoneDeviceMutation) SetModel(s string) {
+	m.model = &s
+}
+
+// Model returns the value of the "model" field in the mutation.
+func (m *RiderPhoneDeviceMutation) Model() (r string, exists bool) {
+	v := m.model
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldModel returns the old "model" field's value of the RiderPhoneDevice entity.
+// If the RiderPhoneDevice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderPhoneDeviceMutation) OldModel(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldModel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldModel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldModel: %w", err)
+	}
+	return oldValue.Model, nil
+}
+
+// ClearModel clears the value of the "model" field.
+func (m *RiderPhoneDeviceMutation) ClearModel() {
+	m.model = nil
+	m.clearedFields[riderphonedevice.FieldModel] = struct{}{}
+}
+
+// ModelCleared returns if the "model" field was cleared in this mutation.
+func (m *RiderPhoneDeviceMutation) ModelCleared() bool {
+	_, ok := m.clearedFields[riderphonedevice.FieldModel]
+	return ok
+}
+
+// ResetModel resets all changes to the "model" field.
+func (m *RiderPhoneDeviceMutation) ResetModel() {
+	m.model = nil
+	delete(m.clearedFields, riderphonedevice.FieldModel)
+}
+
+// SetBrand sets the "brand" field.
+func (m *RiderPhoneDeviceMutation) SetBrand(s string) {
+	m.brand = &s
+}
+
+// Brand returns the value of the "brand" field in the mutation.
+func (m *RiderPhoneDeviceMutation) Brand() (r string, exists bool) {
+	v := m.brand
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBrand returns the old "brand" field's value of the RiderPhoneDevice entity.
+// If the RiderPhoneDevice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderPhoneDeviceMutation) OldBrand(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBrand is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBrand requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBrand: %w", err)
+	}
+	return oldValue.Brand, nil
+}
+
+// ClearBrand clears the value of the "brand" field.
+func (m *RiderPhoneDeviceMutation) ClearBrand() {
+	m.brand = nil
+	m.clearedFields[riderphonedevice.FieldBrand] = struct{}{}
+}
+
+// BrandCleared returns if the "brand" field was cleared in this mutation.
+func (m *RiderPhoneDeviceMutation) BrandCleared() bool {
+	_, ok := m.clearedFields[riderphonedevice.FieldBrand]
+	return ok
+}
+
+// ResetBrand resets all changes to the "brand" field.
+func (m *RiderPhoneDeviceMutation) ResetBrand() {
+	m.brand = nil
+	delete(m.clearedFields, riderphonedevice.FieldBrand)
+}
+
+// SetOsVersion sets the "os_version" field.
+func (m *RiderPhoneDeviceMutation) SetOsVersion(s string) {
+	m.os_version = &s
+}
+
+// OsVersion returns the value of the "os_version" field in the mutation.
+func (m *RiderPhoneDeviceMutation) OsVersion() (r string, exists bool) {
+	v := m.os_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOsVersion returns the old "os_version" field's value of the RiderPhoneDevice entity.
+// If the RiderPhoneDevice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderPhoneDeviceMutation) OldOsVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOsVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOsVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOsVersion: %w", err)
+	}
+	return oldValue.OsVersion, nil
+}
+
+// ClearOsVersion clears the value of the "os_version" field.
+func (m *RiderPhoneDeviceMutation) ClearOsVersion() {
+	m.os_version = nil
+	m.clearedFields[riderphonedevice.FieldOsVersion] = struct{}{}
+}
+
+// OsVersionCleared returns if the "os_version" field was cleared in this mutation.
+func (m *RiderPhoneDeviceMutation) OsVersionCleared() bool {
+	_, ok := m.clearedFields[riderphonedevice.FieldOsVersion]
+	return ok
+}
+
+// ResetOsVersion resets all changes to the "os_version" field.
+func (m *RiderPhoneDeviceMutation) ResetOsVersion() {
+	m.os_version = nil
+	delete(m.clearedFields, riderphonedevice.FieldOsVersion)
+}
+
+// SetOsName sets the "os_name" field.
+func (m *RiderPhoneDeviceMutation) SetOsName(s string) {
+	m.os_name = &s
+}
+
+// OsName returns the value of the "os_name" field in the mutation.
+func (m *RiderPhoneDeviceMutation) OsName() (r string, exists bool) {
+	v := m.os_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOsName returns the old "os_name" field's value of the RiderPhoneDevice entity.
+// If the RiderPhoneDevice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderPhoneDeviceMutation) OldOsName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOsName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOsName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOsName: %w", err)
+	}
+	return oldValue.OsName, nil
+}
+
+// ClearOsName clears the value of the "os_name" field.
+func (m *RiderPhoneDeviceMutation) ClearOsName() {
+	m.os_name = nil
+	m.clearedFields[riderphonedevice.FieldOsName] = struct{}{}
+}
+
+// OsNameCleared returns if the "os_name" field was cleared in this mutation.
+func (m *RiderPhoneDeviceMutation) OsNameCleared() bool {
+	_, ok := m.clearedFields[riderphonedevice.FieldOsName]
+	return ok
+}
+
+// ResetOsName resets all changes to the "os_name" field.
+func (m *RiderPhoneDeviceMutation) ResetOsName() {
+	m.os_name = nil
+	delete(m.clearedFields, riderphonedevice.FieldOsName)
+}
+
+// SetScreenWidth sets the "screen_width" field.
+func (m *RiderPhoneDeviceMutation) SetScreenWidth(u uint64) {
+	m.screen_width = &u
+	m.addscreen_width = nil
+}
+
+// ScreenWidth returns the value of the "screen_width" field in the mutation.
+func (m *RiderPhoneDeviceMutation) ScreenWidth() (r uint64, exists bool) {
+	v := m.screen_width
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScreenWidth returns the old "screen_width" field's value of the RiderPhoneDevice entity.
+// If the RiderPhoneDevice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderPhoneDeviceMutation) OldScreenWidth(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScreenWidth is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScreenWidth requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScreenWidth: %w", err)
+	}
+	return oldValue.ScreenWidth, nil
+}
+
+// AddScreenWidth adds u to the "screen_width" field.
+func (m *RiderPhoneDeviceMutation) AddScreenWidth(u int64) {
+	if m.addscreen_width != nil {
+		*m.addscreen_width += u
+	} else {
+		m.addscreen_width = &u
+	}
+}
+
+// AddedScreenWidth returns the value that was added to the "screen_width" field in this mutation.
+func (m *RiderPhoneDeviceMutation) AddedScreenWidth() (r int64, exists bool) {
+	v := m.addscreen_width
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearScreenWidth clears the value of the "screen_width" field.
+func (m *RiderPhoneDeviceMutation) ClearScreenWidth() {
+	m.screen_width = nil
+	m.addscreen_width = nil
+	m.clearedFields[riderphonedevice.FieldScreenWidth] = struct{}{}
+}
+
+// ScreenWidthCleared returns if the "screen_width" field was cleared in this mutation.
+func (m *RiderPhoneDeviceMutation) ScreenWidthCleared() bool {
+	_, ok := m.clearedFields[riderphonedevice.FieldScreenWidth]
+	return ok
+}
+
+// ResetScreenWidth resets all changes to the "screen_width" field.
+func (m *RiderPhoneDeviceMutation) ResetScreenWidth() {
+	m.screen_width = nil
+	m.addscreen_width = nil
+	delete(m.clearedFields, riderphonedevice.FieldScreenWidth)
+}
+
+// SetScreenHeight sets the "screen_height" field.
+func (m *RiderPhoneDeviceMutation) SetScreenHeight(u uint64) {
+	m.screen_height = &u
+	m.addscreen_height = nil
+}
+
+// ScreenHeight returns the value of the "screen_height" field in the mutation.
+func (m *RiderPhoneDeviceMutation) ScreenHeight() (r uint64, exists bool) {
+	v := m.screen_height
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScreenHeight returns the old "screen_height" field's value of the RiderPhoneDevice entity.
+// If the RiderPhoneDevice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderPhoneDeviceMutation) OldScreenHeight(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScreenHeight is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScreenHeight requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScreenHeight: %w", err)
+	}
+	return oldValue.ScreenHeight, nil
+}
+
+// AddScreenHeight adds u to the "screen_height" field.
+func (m *RiderPhoneDeviceMutation) AddScreenHeight(u int64) {
+	if m.addscreen_height != nil {
+		*m.addscreen_height += u
+	} else {
+		m.addscreen_height = &u
+	}
+}
+
+// AddedScreenHeight returns the value that was added to the "screen_height" field in this mutation.
+func (m *RiderPhoneDeviceMutation) AddedScreenHeight() (r int64, exists bool) {
+	v := m.addscreen_height
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearScreenHeight clears the value of the "screen_height" field.
+func (m *RiderPhoneDeviceMutation) ClearScreenHeight() {
+	m.screen_height = nil
+	m.addscreen_height = nil
+	m.clearedFields[riderphonedevice.FieldScreenHeight] = struct{}{}
+}
+
+// ScreenHeightCleared returns if the "screen_height" field was cleared in this mutation.
+func (m *RiderPhoneDeviceMutation) ScreenHeightCleared() bool {
+	_, ok := m.clearedFields[riderphonedevice.FieldScreenHeight]
+	return ok
+}
+
+// ResetScreenHeight resets all changes to the "screen_height" field.
+func (m *RiderPhoneDeviceMutation) ResetScreenHeight() {
+	m.screen_height = nil
+	m.addscreen_height = nil
+	delete(m.clearedFields, riderphonedevice.FieldScreenHeight)
+}
+
+// SetImei sets the "imei" field.
+func (m *RiderPhoneDeviceMutation) SetImei(s string) {
+	m.imei = &s
+}
+
+// Imei returns the value of the "imei" field in the mutation.
+func (m *RiderPhoneDeviceMutation) Imei() (r string, exists bool) {
+	v := m.imei
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImei returns the old "imei" field's value of the RiderPhoneDevice entity.
+// If the RiderPhoneDevice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderPhoneDeviceMutation) OldImei(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImei is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImei requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImei: %w", err)
+	}
+	return oldValue.Imei, nil
+}
+
+// ClearImei clears the value of the "imei" field.
+func (m *RiderPhoneDeviceMutation) ClearImei() {
+	m.imei = nil
+	m.clearedFields[riderphonedevice.FieldImei] = struct{}{}
+}
+
+// ImeiCleared returns if the "imei" field was cleared in this mutation.
+func (m *RiderPhoneDeviceMutation) ImeiCleared() bool {
+	_, ok := m.clearedFields[riderphonedevice.FieldImei]
+	return ok
+}
+
+// ResetImei resets all changes to the "imei" field.
+func (m *RiderPhoneDeviceMutation) ResetImei() {
+	m.imei = nil
+	delete(m.clearedFields, riderphonedevice.FieldImei)
+}
+
+// SetRiderID sets the "rider_id" field.
+func (m *RiderPhoneDeviceMutation) SetRiderID(u uint64) {
+	m.rider_id = &u
+	m.addrider_id = nil
+}
+
+// RiderID returns the value of the "rider_id" field in the mutation.
+func (m *RiderPhoneDeviceMutation) RiderID() (r uint64, exists bool) {
+	v := m.rider_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRiderID returns the old "rider_id" field's value of the RiderPhoneDevice entity.
+// If the RiderPhoneDevice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderPhoneDeviceMutation) OldRiderID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRiderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
+	}
+	return oldValue.RiderID, nil
+}
+
+// AddRiderID adds u to the "rider_id" field.
+func (m *RiderPhoneDeviceMutation) AddRiderID(u int64) {
+	if m.addrider_id != nil {
+		*m.addrider_id += u
+	} else {
+		m.addrider_id = &u
+	}
+}
+
+// AddedRiderID returns the value that was added to the "rider_id" field in this mutation.
+func (m *RiderPhoneDeviceMutation) AddedRiderID() (r int64, exists bool) {
+	v := m.addrider_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRiderID resets all changes to the "rider_id" field.
+func (m *RiderPhoneDeviceMutation) ResetRiderID() {
+	m.rider_id = nil
+	m.addrider_id = nil
+}
+
+// Where appends a list predicates to the RiderPhoneDeviceMutation builder.
+func (m *RiderPhoneDeviceMutation) Where(ps ...predicate.RiderPhoneDevice) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the RiderPhoneDeviceMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *RiderPhoneDeviceMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.RiderPhoneDevice, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *RiderPhoneDeviceMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *RiderPhoneDeviceMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (RiderPhoneDevice).
+func (m *RiderPhoneDeviceMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *RiderPhoneDeviceMutation) Fields() []string {
+	fields := make([]string, 0, 12)
+	if m.created_at != nil {
+		fields = append(fields, riderphonedevice.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, riderphonedevice.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, riderphonedevice.FieldDeletedAt)
+	}
+	if m.device_sn != nil {
+		fields = append(fields, riderphonedevice.FieldDeviceSn)
+	}
+	if m.model != nil {
+		fields = append(fields, riderphonedevice.FieldModel)
+	}
+	if m.brand != nil {
+		fields = append(fields, riderphonedevice.FieldBrand)
+	}
+	if m.os_version != nil {
+		fields = append(fields, riderphonedevice.FieldOsVersion)
+	}
+	if m.os_name != nil {
+		fields = append(fields, riderphonedevice.FieldOsName)
+	}
+	if m.screen_width != nil {
+		fields = append(fields, riderphonedevice.FieldScreenWidth)
+	}
+	if m.screen_height != nil {
+		fields = append(fields, riderphonedevice.FieldScreenHeight)
+	}
+	if m.imei != nil {
+		fields = append(fields, riderphonedevice.FieldImei)
+	}
+	if m.rider_id != nil {
+		fields = append(fields, riderphonedevice.FieldRiderID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *RiderPhoneDeviceMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case riderphonedevice.FieldCreatedAt:
+		return m.CreatedAt()
+	case riderphonedevice.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case riderphonedevice.FieldDeletedAt:
+		return m.DeletedAt()
+	case riderphonedevice.FieldDeviceSn:
+		return m.DeviceSn()
+	case riderphonedevice.FieldModel:
+		return m.Model()
+	case riderphonedevice.FieldBrand:
+		return m.Brand()
+	case riderphonedevice.FieldOsVersion:
+		return m.OsVersion()
+	case riderphonedevice.FieldOsName:
+		return m.OsName()
+	case riderphonedevice.FieldScreenWidth:
+		return m.ScreenWidth()
+	case riderphonedevice.FieldScreenHeight:
+		return m.ScreenHeight()
+	case riderphonedevice.FieldImei:
+		return m.Imei()
+	case riderphonedevice.FieldRiderID:
+		return m.RiderID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *RiderPhoneDeviceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case riderphonedevice.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case riderphonedevice.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case riderphonedevice.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case riderphonedevice.FieldDeviceSn:
+		return m.OldDeviceSn(ctx)
+	case riderphonedevice.FieldModel:
+		return m.OldModel(ctx)
+	case riderphonedevice.FieldBrand:
+		return m.OldBrand(ctx)
+	case riderphonedevice.FieldOsVersion:
+		return m.OldOsVersion(ctx)
+	case riderphonedevice.FieldOsName:
+		return m.OldOsName(ctx)
+	case riderphonedevice.FieldScreenWidth:
+		return m.OldScreenWidth(ctx)
+	case riderphonedevice.FieldScreenHeight:
+		return m.OldScreenHeight(ctx)
+	case riderphonedevice.FieldImei:
+		return m.OldImei(ctx)
+	case riderphonedevice.FieldRiderID:
+		return m.OldRiderID(ctx)
+	}
+	return nil, fmt.Errorf("unknown RiderPhoneDevice field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *RiderPhoneDeviceMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case riderphonedevice.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case riderphonedevice.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case riderphonedevice.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case riderphonedevice.FieldDeviceSn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeviceSn(v)
+		return nil
+	case riderphonedevice.FieldModel:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetModel(v)
+		return nil
+	case riderphonedevice.FieldBrand:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBrand(v)
+		return nil
+	case riderphonedevice.FieldOsVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOsVersion(v)
+		return nil
+	case riderphonedevice.FieldOsName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOsName(v)
+		return nil
+	case riderphonedevice.FieldScreenWidth:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScreenWidth(v)
+		return nil
+	case riderphonedevice.FieldScreenHeight:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScreenHeight(v)
+		return nil
+	case riderphonedevice.FieldImei:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImei(v)
+		return nil
+	case riderphonedevice.FieldRiderID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRiderID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown RiderPhoneDevice field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *RiderPhoneDeviceMutation) AddedFields() []string {
+	var fields []string
+	if m.addscreen_width != nil {
+		fields = append(fields, riderphonedevice.FieldScreenWidth)
+	}
+	if m.addscreen_height != nil {
+		fields = append(fields, riderphonedevice.FieldScreenHeight)
+	}
+	if m.addrider_id != nil {
+		fields = append(fields, riderphonedevice.FieldRiderID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *RiderPhoneDeviceMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case riderphonedevice.FieldScreenWidth:
+		return m.AddedScreenWidth()
+	case riderphonedevice.FieldScreenHeight:
+		return m.AddedScreenHeight()
+	case riderphonedevice.FieldRiderID:
+		return m.AddedRiderID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *RiderPhoneDeviceMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case riderphonedevice.FieldScreenWidth:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddScreenWidth(v)
+		return nil
+	case riderphonedevice.FieldScreenHeight:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddScreenHeight(v)
+		return nil
+	case riderphonedevice.FieldRiderID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRiderID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown RiderPhoneDevice numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *RiderPhoneDeviceMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(riderphonedevice.FieldDeletedAt) {
+		fields = append(fields, riderphonedevice.FieldDeletedAt)
+	}
+	if m.FieldCleared(riderphonedevice.FieldDeviceSn) {
+		fields = append(fields, riderphonedevice.FieldDeviceSn)
+	}
+	if m.FieldCleared(riderphonedevice.FieldModel) {
+		fields = append(fields, riderphonedevice.FieldModel)
+	}
+	if m.FieldCleared(riderphonedevice.FieldBrand) {
+		fields = append(fields, riderphonedevice.FieldBrand)
+	}
+	if m.FieldCleared(riderphonedevice.FieldOsVersion) {
+		fields = append(fields, riderphonedevice.FieldOsVersion)
+	}
+	if m.FieldCleared(riderphonedevice.FieldOsName) {
+		fields = append(fields, riderphonedevice.FieldOsName)
+	}
+	if m.FieldCleared(riderphonedevice.FieldScreenWidth) {
+		fields = append(fields, riderphonedevice.FieldScreenWidth)
+	}
+	if m.FieldCleared(riderphonedevice.FieldScreenHeight) {
+		fields = append(fields, riderphonedevice.FieldScreenHeight)
+	}
+	if m.FieldCleared(riderphonedevice.FieldImei) {
+		fields = append(fields, riderphonedevice.FieldImei)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *RiderPhoneDeviceMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *RiderPhoneDeviceMutation) ClearField(name string) error {
+	switch name {
+	case riderphonedevice.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case riderphonedevice.FieldDeviceSn:
+		m.ClearDeviceSn()
+		return nil
+	case riderphonedevice.FieldModel:
+		m.ClearModel()
+		return nil
+	case riderphonedevice.FieldBrand:
+		m.ClearBrand()
+		return nil
+	case riderphonedevice.FieldOsVersion:
+		m.ClearOsVersion()
+		return nil
+	case riderphonedevice.FieldOsName:
+		m.ClearOsName()
+		return nil
+	case riderphonedevice.FieldScreenWidth:
+		m.ClearScreenWidth()
+		return nil
+	case riderphonedevice.FieldScreenHeight:
+		m.ClearScreenHeight()
+		return nil
+	case riderphonedevice.FieldImei:
+		m.ClearImei()
+		return nil
+	}
+	return fmt.Errorf("unknown RiderPhoneDevice nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *RiderPhoneDeviceMutation) ResetField(name string) error {
+	switch name {
+	case riderphonedevice.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case riderphonedevice.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case riderphonedevice.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case riderphonedevice.FieldDeviceSn:
+		m.ResetDeviceSn()
+		return nil
+	case riderphonedevice.FieldModel:
+		m.ResetModel()
+		return nil
+	case riderphonedevice.FieldBrand:
+		m.ResetBrand()
+		return nil
+	case riderphonedevice.FieldOsVersion:
+		m.ResetOsVersion()
+		return nil
+	case riderphonedevice.FieldOsName:
+		m.ResetOsName()
+		return nil
+	case riderphonedevice.FieldScreenWidth:
+		m.ResetScreenWidth()
+		return nil
+	case riderphonedevice.FieldScreenHeight:
+		m.ResetScreenHeight()
+		return nil
+	case riderphonedevice.FieldImei:
+		m.ResetImei()
+		return nil
+	case riderphonedevice.FieldRiderID:
+		m.ResetRiderID()
+		return nil
+	}
+	return fmt.Errorf("unknown RiderPhoneDevice field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *RiderPhoneDeviceMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *RiderPhoneDeviceMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *RiderPhoneDeviceMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *RiderPhoneDeviceMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *RiderPhoneDeviceMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *RiderPhoneDeviceMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *RiderPhoneDeviceMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown RiderPhoneDevice unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *RiderPhoneDeviceMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown RiderPhoneDevice edge %s", name)
 }
 
 // RoleMutation represents an operation that mutates the Role nodes in the graph.
