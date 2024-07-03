@@ -20,11 +20,11 @@ var Selection = new(selection)
 // @Tags	Selection - 筛选
 // @Accept	json
 // @Produce	json
-// @Param	query	query		model.SelectionIndexCabinetModelReq	true	"请求参数"
-// @Success	200		{object}	[]string							"请求成功"
+// @Param	query	query		model.SelectionCabinetModelByCityReq	true	"请求参数"
+// @Success	200		{object}	[]string								"请求成功"
 func (*selection) Model(c echo.Context) (err error) {
-	ctx, req := app.RiderContextAndBinding[model.SelectionIndexCabinetModelReq](c)
-	return ctx.SendResponse(service.NewSelection().IndexModels(req))
+	ctx, req := app.RiderContextAndBinding[model.SelectionCabinetModelByCityReq](c)
+	return ctx.SendResponse(service.NewSelection().ModelByCity(req))
 }
 
 // Brand
@@ -34,8 +34,9 @@ func (*selection) Model(c echo.Context) (err error) {
 // @Tags	Selection - 车型列表
 // @Accept	json
 // @Produce	json
-// @Success	200	{object}	[]model.SelectOption	"请求成功"
+// @Param	query	query		model.SelectionBrandByCityReq	true	"请求参数"
+// @Success	200		{object}	[]model.SelectOption			"请求成功"
 func (*selection) Brand(c echo.Context) (err error) {
-	ctx := app.Context(c)
-	return ctx.SendResponse(service.NewSelection().EbikeBrand())
+	ctx, req := app.RiderContextAndBinding[model.SelectionBrandByCityReq](c)
+	return ctx.SendResponse(service.NewSelection().EbikeBrandByCity(req))
 }

@@ -2791,6 +2791,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/phone/device": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rider - 骑手"
+                ],
+                "summary": "上报手机设备信息",
+                "operationId": "ReportPhoneDevice",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.RiderPhoneDeviceReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/plan": {
             "get": {
                 "consumes": [
@@ -3285,6 +3326,13 @@ const docTemplate = `{
                 ],
                 "summary": "获取车型列表选择",
                 "operationId": "SelectionBrand",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "cityId",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
@@ -4933,6 +4981,43 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.RiderPhoneDeviceReq": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "description": "手机品牌",
+                    "type": "string"
+                },
+                "deviceSn": {
+                    "description": "设备编号",
+                    "type": "string"
+                },
+                "imei": {
+                    "description": "IMEI",
+                    "type": "string"
+                },
+                "model": {
+                    "description": "手机型号",
+                    "type": "string"
+                },
+                "osName": {
+                    "description": "系统名称",
+                    "type": "string"
+                },
+                "osVersion": {
+                    "description": "系统版本",
+                    "type": "string"
+                },
+                "screenHeight": {
+                    "description": "屏幕高度",
+                    "type": "integer"
+                },
+                "screenWidth": {
+                    "description": "屏幕宽度",
+                    "type": "integer"
+                }
+            }
+        },
         "definition.RiderSetMobPushReq": {
             "type": "object",
             "required": [
@@ -5213,16 +5298,8 @@ const docTemplate = `{
                     "description": "是否日租套餐",
                     "type": "boolean"
                 },
-                "dailyPrice": {
-                    "description": "套餐日租价格",
-                    "type": "number"
-                },
                 "distance": {
                     "description": "门店距离",
-                    "type": "number"
-                },
-                "monthPrice": {
-                    "description": "套餐月租价格",
                     "type": "number"
                 },
                 "planId": {
@@ -5233,12 +5310,13 @@ const docTemplate = `{
                     "description": "套餐名称",
                     "type": "string"
                 },
+                "price": {
+                    "description": "套餐价格",
+                    "type": "number"
+                },
                 "rto": {
                     "description": "是否以租代购套餐",
                     "type": "boolean"
-                },
-                "showPrice": {
-                    "type": "number"
                 },
                 "storeId": {
                     "description": "门店ID",

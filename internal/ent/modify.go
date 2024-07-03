@@ -548,6 +548,13 @@ func (c *RiderFollowUpClient) ModifyOne(old *RiderFollowUp, data any) *RiderFoll
 	return EntitySetAttributes[RiderFollowUpUpdateOne, RiderFollowUp](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for RiderPhoneDevice.
+func (c *RiderPhoneDeviceClient) ModifyOne(old *RiderPhoneDevice, data any) *RiderPhoneDeviceUpdateOne {
+	mutation := newRiderPhoneDeviceMutation(c.config, OpUpdateOne, withRiderPhoneDevice(old))
+	up := &RiderPhoneDeviceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[RiderPhoneDeviceUpdateOne, RiderPhoneDevice](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Role.
 func (c *RoleClient) ModifyOne(old *Role, data any) *RoleUpdateOne {
 	mutation := newRoleMutation(c.config, OpUpdateOne, withRole(old))

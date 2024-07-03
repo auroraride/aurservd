@@ -844,6 +844,16 @@ func (rfu *RiderFollowUp) GetID() uint64 {
 	return rfu.ID
 }
 
+// GetTableName returns table name for RiderPhoneDevice.
+func (rpd *RiderPhoneDevice) GetTableName() string {
+	return "rider_phone_device"
+}
+
+// GetID returns id for RiderPhoneDevice.
+func (rpd *RiderPhoneDevice) GetID() uint64 {
+	return rpd.ID
+}
+
 // GetTableName returns table name for Role.
 func (r *Role) GetTableName() string {
 	return "role"

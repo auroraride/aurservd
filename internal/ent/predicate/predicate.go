@@ -219,6 +219,9 @@ type Rider func(*sql.Selector)
 // RiderFollowUp is the predicate function for riderfollowup builders.
 type RiderFollowUp func(*sql.Selector)
 
+// RiderPhoneDevice is the predicate function for riderphonedevice builders.
+type RiderPhoneDevice func(*sql.Selector)
+
 // Role is the predicate function for role builders.
 type Role func(*sql.Selector)
 

@@ -86,6 +86,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
+	"github.com/auroraride/aurservd/internal/ent/riderphonedevice"
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -249,6 +250,8 @@ type Client struct {
 	Rider *RiderClient
 	// RiderFollowUp is the client for interacting with the RiderFollowUp builders.
 	RiderFollowUp *RiderFollowUpClient
+	// RiderPhoneDevice is the client for interacting with the RiderPhoneDevice builders.
+	RiderPhoneDevice *RiderPhoneDeviceClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
 	// Setting is the client for interacting with the Setting builders.
@@ -355,6 +358,7 @@ func (c *Client) init() {
 	c.Reserve = NewReserveClient(c.config)
 	c.Rider = NewRiderClient(c.config)
 	c.RiderFollowUp = NewRiderFollowUpClient(c.config)
+	c.RiderPhoneDevice = NewRiderPhoneDeviceClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.Setting = NewSettingClient(c.config)
 	c.Stock = NewStockClient(c.config)
@@ -530,6 +534,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Reserve:                    NewReserveClient(cfg),
 		Rider:                      NewRiderClient(cfg),
 		RiderFollowUp:              NewRiderFollowUpClient(cfg),
+		RiderPhoneDevice:           NewRiderPhoneDeviceClient(cfg),
 		Role:                       NewRoleClient(cfg),
 		Setting:                    NewSettingClient(cfg),
 		Stock:                      NewStockClient(cfg),
@@ -632,6 +637,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Reserve:                    NewReserveClient(cfg),
 		Rider:                      NewRiderClient(cfg),
 		RiderFollowUp:              NewRiderFollowUpClient(cfg),
+		RiderPhoneDevice:           NewRiderPhoneDeviceClient(cfg),
 		Role:                       NewRoleClient(cfg),
 		Setting:                    NewSettingClient(cfg),
 		Stock:                      NewStockClient(cfg),
@@ -689,9 +695,9 @@ func (c *Client) Use(hooks ...Hook) {
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
-		c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
-		c.StoreGoods, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
-		c.SubscribeReminder, c.SubscribeSuspend, c.Version,
+		c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting, c.Stock,
+		c.StockSummary, c.Store, c.StoreGoods, c.Subscribe, c.SubscribeAlter,
+		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend, c.Version,
 	} {
 		n.Use(hooks...)
 	}
@@ -717,9 +723,9 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
-		c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
-		c.StoreGoods, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
-		c.SubscribeReminder, c.SubscribeSuspend, c.Version,
+		c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting, c.Stock,
+		c.StockSummary, c.Store, c.StoreGoods, c.Subscribe, c.SubscribeAlter,
+		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend, c.Version,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -870,6 +876,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Rider.mutate(ctx, m)
 	case *RiderFollowUpMutation:
 		return c.RiderFollowUp.mutate(ctx, m)
+	case *RiderPhoneDeviceMutation:
+		return c.RiderPhoneDevice.mutate(ctx, m)
 	case *RoleMutation:
 		return c.Role.mutate(ctx, m)
 	case *SettingMutation:
@@ -14400,6 +14408,139 @@ func (c *RiderFollowUpClient) mutate(ctx context.Context, m *RiderFollowUpMutati
 	}
 }
 
+// RiderPhoneDeviceClient is a client for the RiderPhoneDevice schema.
+type RiderPhoneDeviceClient struct {
+	config
+}
+
+// NewRiderPhoneDeviceClient returns a client for the RiderPhoneDevice from the given config.
+func NewRiderPhoneDeviceClient(c config) *RiderPhoneDeviceClient {
+	return &RiderPhoneDeviceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `riderphonedevice.Hooks(f(g(h())))`.
+func (c *RiderPhoneDeviceClient) Use(hooks ...Hook) {
+	c.hooks.RiderPhoneDevice = append(c.hooks.RiderPhoneDevice, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `riderphonedevice.Intercept(f(g(h())))`.
+func (c *RiderPhoneDeviceClient) Intercept(interceptors ...Interceptor) {
+	c.inters.RiderPhoneDevice = append(c.inters.RiderPhoneDevice, interceptors...)
+}
+
+// Create returns a builder for creating a RiderPhoneDevice entity.
+func (c *RiderPhoneDeviceClient) Create() *RiderPhoneDeviceCreate {
+	mutation := newRiderPhoneDeviceMutation(c.config, OpCreate)
+	return &RiderPhoneDeviceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of RiderPhoneDevice entities.
+func (c *RiderPhoneDeviceClient) CreateBulk(builders ...*RiderPhoneDeviceCreate) *RiderPhoneDeviceCreateBulk {
+	return &RiderPhoneDeviceCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *RiderPhoneDeviceClient) MapCreateBulk(slice any, setFunc func(*RiderPhoneDeviceCreate, int)) *RiderPhoneDeviceCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &RiderPhoneDeviceCreateBulk{err: fmt.Errorf("calling to RiderPhoneDeviceClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*RiderPhoneDeviceCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &RiderPhoneDeviceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for RiderPhoneDevice.
+func (c *RiderPhoneDeviceClient) Update() *RiderPhoneDeviceUpdate {
+	mutation := newRiderPhoneDeviceMutation(c.config, OpUpdate)
+	return &RiderPhoneDeviceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *RiderPhoneDeviceClient) UpdateOne(rpd *RiderPhoneDevice) *RiderPhoneDeviceUpdateOne {
+	mutation := newRiderPhoneDeviceMutation(c.config, OpUpdateOne, withRiderPhoneDevice(rpd))
+	return &RiderPhoneDeviceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *RiderPhoneDeviceClient) UpdateOneID(id uint64) *RiderPhoneDeviceUpdateOne {
+	mutation := newRiderPhoneDeviceMutation(c.config, OpUpdateOne, withRiderPhoneDeviceID(id))
+	return &RiderPhoneDeviceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for RiderPhoneDevice.
+func (c *RiderPhoneDeviceClient) Delete() *RiderPhoneDeviceDelete {
+	mutation := newRiderPhoneDeviceMutation(c.config, OpDelete)
+	return &RiderPhoneDeviceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *RiderPhoneDeviceClient) DeleteOne(rpd *RiderPhoneDevice) *RiderPhoneDeviceDeleteOne {
+	return c.DeleteOneID(rpd.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *RiderPhoneDeviceClient) DeleteOneID(id uint64) *RiderPhoneDeviceDeleteOne {
+	builder := c.Delete().Where(riderphonedevice.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &RiderPhoneDeviceDeleteOne{builder}
+}
+
+// Query returns a query builder for RiderPhoneDevice.
+func (c *RiderPhoneDeviceClient) Query() *RiderPhoneDeviceQuery {
+	return &RiderPhoneDeviceQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeRiderPhoneDevice},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a RiderPhoneDevice entity by its id.
+func (c *RiderPhoneDeviceClient) Get(ctx context.Context, id uint64) (*RiderPhoneDevice, error) {
+	return c.Query().Where(riderphonedevice.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *RiderPhoneDeviceClient) GetX(ctx context.Context, id uint64) *RiderPhoneDevice {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *RiderPhoneDeviceClient) Hooks() []Hook {
+	return c.hooks.RiderPhoneDevice
+}
+
+// Interceptors returns the client interceptors.
+func (c *RiderPhoneDeviceClient) Interceptors() []Interceptor {
+	return c.inters.RiderPhoneDevice
+}
+
+func (c *RiderPhoneDeviceClient) mutate(ctx context.Context, m *RiderPhoneDeviceMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&RiderPhoneDeviceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&RiderPhoneDeviceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&RiderPhoneDeviceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&RiderPhoneDeviceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown RiderPhoneDevice mutation op: %q", m.Op())
+	}
+}
+
 // RoleClient is a client for the Role schema.
 type RoleClient struct {
 	config
@@ -17141,8 +17282,8 @@ type (
 		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
 		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
 		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
-		Role, Setting, Stock, StockSummary, Store, StoreGoods, Subscribe,
-		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		RiderPhoneDevice, Role, Setting, Stock, StockSummary, Store, StoreGoods,
+		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
 		Version []ent.Hook
 	}
 	inters struct {
@@ -17160,8 +17301,8 @@ type (
 		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
 		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
 		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
-		Role, Setting, Stock, StockSummary, Store, StoreGoods, Subscribe,
-		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		RiderPhoneDevice, Role, Setting, Stock, StockSummary, Store, StoreGoods,
+		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
 		Version []ent.Interceptor
 	}
 )
