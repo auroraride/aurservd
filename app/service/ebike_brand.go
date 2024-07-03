@@ -90,8 +90,9 @@ func (s *ebikeBrandService) Modify(req *model.EbikeBrandModifyReq) error {
 	updater := s.orm.Update().Where(ebikebrand.ID(req.ID))
 	if req.Name != "" {
 		if eb, _ := s.orm.QueryNotDeleted().Where(ebikebrand.NameEQ(req.Name)).First(s.ctx); eb != nil && eb.ID != req.ID {
-			updater.SetName(req.Name)
+			return errors.New("电车品牌已存在")
 		}
+		updater.SetName(req.Name)
 	}
 	if req.Cover != "" {
 		updater.SetCover(req.Cover)
