@@ -157,6 +157,80 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/ebike/batch": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "电车"
+                ],
+                "summary": "批量修改电车",
+                "operationId": "ManagerEbikeBatchModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "电车信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.EbikeBatchModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/ebike/brand/:id": {
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "电车"
+                ],
+                "summary": "删除品牌",
+                "operationId": "ManagerEbikeBrandDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "品牌ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/export/cabinet/ec": {
             "post": {
                 "consumes": [
@@ -336,12 +410,40 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.EbikeBatchModifyReq": {
+            "type": "object",
+            "required": [
+                "brandId",
+                "sn"
+            ],
+            "properties": {
+                "brandId": {
+                    "description": "品牌ID",
+                    "type": "integer"
+                },
+                "sn": {
+                    "description": "车架号",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "model.ExportRes": {
             "type": "object",
             "properties": {
                 "sn": {
                     "description": "导出编号",
                     "type": "string"
+                }
+            }
+        },
+        "model.StatusResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "boolean"
                 }
             }
         }

@@ -1862,7 +1862,7 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
-		{Name: "name", Type: field.TypeString, Unique: true, Comment: "名称"},
+		{Name: "name", Type: field.TypeString, Comment: "名称"},
 		{Name: "cover", Type: field.TypeString, Comment: "封面缩略图"},
 		{Name: "main_pic", Type: field.TypeJSON, Nullable: true, Comment: "主图"},
 	}

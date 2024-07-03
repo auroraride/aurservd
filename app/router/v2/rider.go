@@ -126,7 +126,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.POST("/change/phone", rapi.Rider.ChangePhone, logged())              // 修改手机号
 	g.POST("/contact", v1.Rider.Contact, logged())                         // 编辑紧急联系人
 	g.POST("/mobpush", rapi.Rider.SetMobPushId, logged())                  // 绑定骑手推送ID
-	g.POST("/report/phone/device", rapi.Rider.ReportPhoneDevice, logged()) // 上报手机型号
+	g.POST("/report/phone/device", rapi.Rider.ReportPhoneDevice, logged()) // 上报手机设备信息
 
 	// 骑士卡
 	plan := g.Group("/plan")
