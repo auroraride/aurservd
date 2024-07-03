@@ -457,6 +457,8 @@ func (b *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 		Where(
 			store.CityID(req.CityId),
 			store.HasStocksWith(stock.BrandIDNotNil()),
+			store.StatusIn(model.StoreStatusOpen.Value(), model.StoreStatusClose.Value()),
+			store.EbikeObtain(true),
 		).
 		WithCity().
 		WithStocks().
