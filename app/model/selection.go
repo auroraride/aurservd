@@ -9,10 +9,10 @@ type SelectionPlanModelReq struct {
 	PlanID uint64 `json:"planId" validate:"required" trans:"骑行卡ID" query:"planId"`
 }
 
-type SelectionCabinetModelReq struct {
+type SelectionCabinetModelByCabinetReq struct {
 	CabinetID uint64 `json:"cabinetId" validate:"required" trans:"电柜ID" query:"cabinetId"`
 }
 
-type SelectionIndexCabinetModelReq struct {
+type SelectionCabinetModelByCityReq struct {
 	CityID *uint64 `json:"cityId" query:"cityId"`
 }

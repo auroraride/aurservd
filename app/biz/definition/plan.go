@@ -50,19 +50,17 @@ type ListByStoreRes struct {
 }
 
 type StoreEbikePlan struct {
-	StoreId    uint64  `json:"storeId"`         // 门店ID
-	StoreName  string  `json:"storeName"`       // 门店名称
-	Distance   float64 `json:"distance"`        // 门店距离
-	PlanId     uint64  `json:"planId"`          // 套餐ID
-	PlanName   string  `json:"planName"`        // 套餐名称
-	BrandId    uint64  `json:"brandId"`         // 品牌ID
-	BrandName  string  `json:"brandName"`       // 品牌名称
-	Cover      string  `json:"cover,omitempty"` // 品牌封面图
-	Rto        bool    `json:"rto"`             // 是否以租代购套餐
-	Daily      bool    `json:"daily"`           // 是否日租套餐
-	DailyPrice float64 `json:"dailyPrice"`      // 套餐日租价格
-	MonthPrice float64 `json:"monthPrice"`      // 套餐月租价格
-	ShowPrice  float64
+	StoreId   uint64  `json:"storeId"`         // 门店ID
+	StoreName string  `json:"storeName"`       // 门店名称
+	Distance  float64 `json:"distance"`        // 门店距离
+	PlanId    uint64  `json:"planId"`          // 套餐ID
+	PlanName  string  `json:"planName"`        // 套餐名称
+	BrandId   uint64  `json:"brandId"`         // 品牌ID
+	BrandName string  `json:"brandName"`       // 品牌名称
+	Cover     string  `json:"cover,omitempty"` // 品牌封面图
+	Rto       bool    `json:"rto"`             // 是否以租代购套餐
+	Daily     bool    `json:"daily"`           // 是否日租套餐
+	Price     float64 `json:"price"`           // 套餐价格
 }
 
 // StorePlanDetailReq 门店套餐详情请求

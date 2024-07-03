@@ -40,12 +40,12 @@ func NewPlanBiz() *planBiz {
 }
 
 // RiderListNewly 套餐列表
-func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *definition.PlanNewlyRes {
+func (b *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *definition.PlanNewlyRes {
 	var state uint
 
 	today := carbon.Now().StartOfDay().StdTime()
 
-	q := s.orm.QueryNotDeleted().
+	q := b.orm.QueryNotDeleted().
 		Where(
 			plan.Enable(true),
 			plan.StartLTE(today),
@@ -66,10 +66,10 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 		storeItem, _ := ent.Database.Store.QueryNotDeleted().
 			WithStocks().
 			Where(store.ID(*req.StoreId)).
-			First(s.ctx)
+			First(b.ctx)
 		if storeItem != nil && storeItem.Edges.Stocks != nil {
 			// 计算该门店电车品牌库存
-			brandStockMap := s.CalStoreEbikeStock(storeItem.Edges.Stocks)
+			brandStockMap := b.CalStoreEbikeStock(storeItem.Edges.Stocks)
 			for _, st := range storeItem.Edges.Stocks {
 				if st.BrandID != nil {
 					existKey := fmt.Sprintf("%d-%d", storeItem.ID, *st.BrandID)
@@ -87,7 +87,7 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 		}
 	}
 
-	items := q.AllX(s.ctx)
+	items := q.AllX(b.ctx)
 	mmap := make(map[string]*model.PlanModelOption)
 
 	bmap := make(map[uint64]*model.PlanEbikeBrandOption)
@@ -103,7 +103,7 @@ func (s *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 		Where(
 			agreement.UserType(model.AgreementUserTypePersonal.Value()),
 			agreement.IsDefault(true),
-		).First(s.ctx)
+		).First(b.ctx)
 
 	for _, item := range items {
 		key := serv.Key(item.Model, item.BrandID)
@@ -306,11 +306,11 @@ func SortIDOptions(options model.PlanDaysPriceOptions) {
 }
 
 // EbikeList 车电套餐列表
-func (s *planBiz) EbikeList(brandIds []uint64) (res definition.PlanNewlyRes) {
+func (b *planBiz) EbikeList(brandIds []uint64) (res definition.PlanNewlyRes) {
 
 	today := carbon.Now().StartOfDay().StdTime()
 
-	items := s.orm.QueryNotDeleted().
+	items := b.orm.QueryNotDeleted().
 		Where(
 			plan.Enable(true),
 			plan.StartLTE(today),
@@ -321,7 +321,7 @@ func (s *planBiz) EbikeList(brandIds []uint64) (res definition.PlanNewlyRes) {
 		WithCities().
 		WithAgreement().
 		Order(ent.Asc(plan.FieldDays)).
-		AllX(s.ctx)
+		AllX(b.ctx)
 
 	bmap := make(map[uint64]*model.PlanEbikeBrandOption)
 
@@ -423,11 +423,11 @@ func (s *planBiz) EbikeList(brandIds []uint64) (res definition.PlanNewlyRes) {
 }
 
 // Detail 套餐详情
-func (s *planBiz) Detail(req *definition.PlanDetailReq) (*definition.PlanDetailRes, error) {
-	d, _ := s.orm.QueryNotDeleted().
+func (b *planBiz) Detail(req *definition.PlanDetailReq) (*definition.PlanDetailRes, error) {
+	d, _ := b.orm.QueryNotDeleted().
 		Where(plan.ID(req.ID)).
 		WithBrand().
-		First(s.ctx)
+		First(b.ctx)
 	if d == nil {
 		return nil, nil
 	}
@@ -447,7 +447,7 @@ func (s *planBiz) Detail(req *definition.PlanDetailReq) (*definition.PlanDetailR
 }
 
 // ListByStore 基于门店的套餐列表
-func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreEbikePlan {
+func (b *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreEbikePlan {
 	// 查询附近门店数据
 	maxDistance := definition.DefaultMaxDistance
 	if req.Distance != nil && *req.Distance < maxDistance {
@@ -469,7 +469,7 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 				}))
 		})
 
-	storelist, _ := stq.All(s.ctx)
+	storelist, _ := stq.All(b.ctx)
 	if len(storelist) == 0 {
 		return []*definition.StoreEbikePlan{}
 	}
@@ -486,7 +486,7 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 	cityBrand2StoresMap := make(map[string][]uint64)
 	for _, st := range storelist {
 		// 计算该门店电车品牌库存
-		brandStockMap := s.CalStoreEbikeStock(st.Edges.Stocks)
+		brandStockMap := b.CalStoreEbikeStock(st.Edges.Stocks)
 		for _, stc := range st.Edges.Stocks {
 			if stc.BrandID != nil {
 				existKey := fmt.Sprintf("%d-%d-%d", req.CityId, st.ID, *stc.BrandID)
@@ -503,7 +503,7 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 
 	// 查询车电套餐
 	today := carbon.Now().StartOfDay().StdTime()
-	q := s.orm.QueryNotDeleted().
+	q := b.orm.QueryNotDeleted().
 		Where(
 			plan.TypeIn(model.PlanTypeEbikeWithBattery.Value(), model.PlanTypeEbikeRto.Value()),
 			plan.Enable(true),
@@ -522,10 +522,10 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 		q.Where(plan.BrandIDIn(brandIds...))
 	}
 
-	items := q.AllX(s.ctx)
+	items := q.AllX(b.ctx)
 
 	// 骑士卡筛选
-	items = s.FilterPlanForStore(items)
+	items = b.FilterPlanForStore(items)
 
 	storeEbikePlansMap := make(map[uint64][]*definition.StoreEbikePlan)
 
@@ -561,20 +561,18 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 
 			// 赋值
 			sep := &definition.StoreEbikePlan{
-				StoreId:    storeId,
-				StoreName:  storeMap[storeId].Name,
-				PlanId:     item.ID,
-				PlanName:   item.Name,
-				Rto:        item.Type == model.PlanTypeEbikeRto.Value(),
-				Daily:      item.Daily,
-				DailyPrice: tools.NewDecimal().Div(item.Price, float64(item.Days)),
-				MonthPrice: tools.NewDecimal().Div(tools.NewDecimal().Mul(30.0, item.Price), float64(item.Days)),
+				StoreId:   storeId,
+				StoreName: storeMap[storeId].Name,
+				PlanId:    item.ID,
+				PlanName:  item.Name,
+				Rto:       item.Type == model.PlanTypeEbikeRto.Value(),
+				Daily:     item.Daily,
 			}
 
 			if sep.Daily {
-				sep.ShowPrice = sep.DailyPrice
+				sep.Price = tools.NewDecimal().Div(item.Price, float64(item.Days))
 			} else {
-				sep.ShowPrice = sep.MonthPrice
+				sep.Price = tools.NewDecimal().Div(tools.NewDecimal().Mul(30.0, item.Price), float64(item.Days))
 			}
 
 			brand := item.Edges.Brand
@@ -591,6 +589,10 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 					sep.Distance = distanceFloat
 				}
 			}
+			// 初始化数组，防止null输出
+			if len(storeEbikePlansMap[storeId]) == 0 {
+				storeEbikePlansMap[storeId] = make([]*definition.StoreEbikePlan, 0)
+			}
 			storeEbikePlansMap[storeId] = append(storeEbikePlansMap[storeId], sep)
 		}
 	}
@@ -600,28 +602,23 @@ func (s *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 	// 按照门店分组排序
 	for _, v := range storelist {
 		seps := storeEbikePlansMap[v.ID]
-		if len(seps) > 0 {
-			// 是否需要价格排序
-			if req.SortType != nil && *req.SortType == definition.StorePlanSortTypePrice {
-				SortPlanEbikeModelByShowPrice(seps)
-			}
-			allPlans = append(allPlans, seps...)
-		}
+		b.sortListInStore(seps)
+		allPlans = append(allPlans, seps...)
 	}
 
 	// 再次判断排序方式，重新排序数据
 	if req.SortType != nil && *req.SortType == definition.StorePlanSortTypePrice {
-		SortPlanEbikeModelByShowPrice(allPlans)
+		b.sortListByShowPrice(allPlans)
 	}
 
 	return allPlans
 }
 
 // StorePlanDetail 基于门店的套餐列表详情
-func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailReq) *definition.StorePlanDetail {
+func (b *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailReq) *definition.StorePlanDetail {
 	var state uint
 
-	q := s.orm.QueryNotDeleted().
+	q := b.orm.QueryNotDeleted().
 		Where(
 			plan.ID(req.PlanId),
 		).
@@ -649,7 +646,7 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 	storeItem, _ := ent.Database.Store.QueryNotDeleted().
 		WithStocks().
 		Where(store.ID(req.StoreId)).
-		First(s.ctx)
+		First(b.ctx)
 	if storeItem == nil {
 		return nil
 	}
@@ -667,10 +664,10 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 		)
 	}
 
-	pl, _ := q.First(s.ctx)
+	pl, _ := q.First(b.ctx)
 
 	// 整理当前套餐所属骑士卡所有数据
-	items := s.GetPlanItems(pl)
+	items := b.GetPlanItems(pl)
 
 	mmap := make(map[string]*model.PlanModelOption)
 
@@ -683,7 +680,7 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 		Where(
 			agreement.UserType(model.AgreementUserTypePersonal.Value()),
 			agreement.IsDefault(true),
-		).First(s.ctx)
+		).First(b.ctx)
 
 	var res definition.StorePlanDetail
 	res.Children = new(model.PlanModelOptions)
@@ -796,14 +793,36 @@ func (s *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 	return &res
 }
 
-func SortPlanEbikeModelByShowPrice(options []*definition.StoreEbikePlan) {
-	sort.Slice(options, func(i, j int) bool {
-		return options[i].ShowPrice < options[j].ShowPrice
+// 按门店查询套餐列表
+func (b *planBiz) sortListByShowPrice(items []*definition.StoreEbikePlan) {
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].Price < items[j].Price
 	})
 }
 
+// 门店内套餐排序
+// 类型排序（月租、日租、以租代购）
+// 车型升序排序
+// 价格升序排序
+func (b *planBiz) sortListInStore(items []*definition.StoreEbikePlan) {
+	tools.NewSorter().
+		AddInt(func(i any) int {
+			item := i.(*definition.StoreEbikePlan)
+			if item.Rto {
+				return 3
+			}
+			if item.Daily {
+				return 2
+			}
+			return 1
+		}).
+		AddStr(func(i any) string { return i.(*definition.StoreEbikePlan).BrandName }).
+		AddFloat(func(i any) float64 { return i.(*definition.StoreEbikePlan).Price }).
+		SortStable(items)
+}
+
 // ListByStoreById 通过门店ID查询门店的套餐列表
-func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
+func (b *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 	stq := ent.Database.Store.QueryNotDeleted().
 		Where(
 			store.ID(storeId),
@@ -813,7 +832,7 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 		WithEmployee().
 		WithStocks()
 
-	str, _ := stq.First(s.ctx)
+	str, _ := stq.First(b.ctx)
 	if str == nil {
 		return []*definition.StoreEbikePlan{}
 	}
@@ -828,7 +847,7 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 	cityBrand2StoresMap := make(map[string][]uint64)
 	if str.Edges.Stocks != nil {
 		// 计算该门店电车品牌库存
-		brandStockMap := s.CalStoreEbikeStock(str.Edges.Stocks)
+		brandStockMap := b.CalStoreEbikeStock(str.Edges.Stocks)
 		for _, stc := range str.Edges.Stocks {
 			if stc.BrandID != nil {
 				existKey := fmt.Sprintf("%d-%d-%d", str.CityID, str.ID, *stc.BrandID)
@@ -845,7 +864,7 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 
 	// 查询车电套餐
 	today := carbon.Now().StartOfDay().StdTime()
-	q := s.orm.QueryNotDeleted().
+	q := b.orm.QueryNotDeleted().
 		Where(
 			plan.TypeIn(model.PlanTypeEbikeWithBattery.Value(), model.PlanTypeEbikeRto.Value()),
 			plan.Enable(true),
@@ -859,10 +878,10 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 		WithAgreement().
 		Order(ent.Asc(plan.FieldDays))
 
-	items := q.AllX(s.ctx)
+	items := q.AllX(b.ctx)
 
 	// 骑士卡筛选
-	items = s.FilterPlanForStore(items)
+	items = b.FilterPlanForStore(items)
 
 	storeEbikePlansMap := make(map[uint64][]*definition.StoreEbikePlan)
 
@@ -898,20 +917,18 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 
 				// 赋值
 				sep := &definition.StoreEbikePlan{
-					StoreId:    stId,
-					StoreName:  storeMap[stId].Name,
-					PlanId:     item.ID,
-					PlanName:   item.Name,
-					Rto:        item.Type == model.PlanTypeEbikeRto.Value(),
-					Daily:      item.Daily,
-					DailyPrice: tools.NewDecimal().Div(item.Price, float64(item.Days)),
-					MonthPrice: tools.NewDecimal().Div(tools.NewDecimal().Mul(30.0, item.Price), float64(item.Days)),
+					StoreId:   stId,
+					StoreName: storeMap[stId].Name,
+					PlanId:    item.ID,
+					PlanName:  item.Name,
+					Rto:       item.Type == model.PlanTypeEbikeRto.Value(),
+					Daily:     item.Daily,
 				}
 
 				if sep.Daily {
-					sep.ShowPrice = sep.DailyPrice
+					sep.Price = tools.NewDecimal().Div(item.Price, float64(item.Days))
 				} else {
-					sep.ShowPrice = sep.MonthPrice
+					sep.Price = tools.NewDecimal().Div(tools.NewDecimal().Mul(30.0, item.Price), float64(item.Days))
 				}
 
 				brand := item.Edges.Brand
@@ -935,12 +952,12 @@ func (s *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 
 	allPlans := make([]*definition.StoreEbikePlan, 0)
 	allPlans = append(allPlans, storeEbikePlansMap[str.ID]...)
-	SortPlanEbikeModelByShowPrice(allPlans)
+	b.sortListByShowPrice(allPlans)
 	return allPlans
 }
 
 // CalStoreEbikeStock 计算库存数
-func (s *planBiz) CalStoreEbikeStock(stocks []*ent.Stock) map[uint64]int {
+func (b *planBiz) CalStoreEbikeStock(stocks []*ent.Stock) map[uint64]int {
 	resMap := make(map[uint64]int)
 	for _, stc := range stocks {
 		if stc.BrandID != nil {
@@ -950,7 +967,7 @@ func (s *planBiz) CalStoreEbikeStock(stocks []*ent.Stock) map[uint64]int {
 	return resMap
 }
 
-func (s *planBiz) FilterPlanForStore(plans []*ent.Plan) []*ent.Plan {
+func (b *planBiz) FilterPlanForStore(plans []*ent.Plan) []*ent.Plan {
 	result := make([]*ent.Plan, 0)
 
 	// 首先按照父子级整理数据
@@ -1000,7 +1017,7 @@ func (s *planBiz) FilterPlanForStore(plans []*ent.Plan) []*ent.Plan {
 }
 
 // GetPlanItems 获取当前套餐的所有父级和子级
-func (s *planBiz) GetPlanItems(pl *ent.Plan) []*ent.Plan {
+func (b *planBiz) GetPlanItems(pl *ent.Plan) []*ent.Plan {
 	items := make([]*ent.Plan, 0)
 	switch {
 	case pl != nil && pl.Edges.Parent != nil:

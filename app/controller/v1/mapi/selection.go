@@ -183,11 +183,11 @@ func (*selection) PlanModel(c echo.Context) (err error) {
 // @Tags	筛选
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string							true	"管理员校验token"
-// @Param	query			query		model.SelectionCabinetModelReq	true	"选项"
-// @Success	200				{object}	[]string						"电池型号列表"
+// @Param	X-Manager-Token	header		string									true	"管理员校验token"
+// @Param	query			query		model.SelectionCabinetModelByCabinetReq	true	"选项"
+// @Success	200				{object}	[]string								"电池型号列表"
 func (*selection) CabinetModel(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.SelectionCabinetModelReq](c)
+	ctx, req := app.ManagerContextAndBinding[model.SelectionCabinetModelByCabinetReq](c)
 	return ctx.SendResponse(service.NewSelection().CabinetModel(req))
 }
 

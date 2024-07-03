@@ -407,7 +407,7 @@ func (s *selectionService) PlanModel(req *model.SelectionPlanModelReq) []string 
 	return []string{p.Model}
 }
 
-func (s *selectionService) CabinetModel(req *model.SelectionCabinetModelReq) (items []string) {
+func (s *selectionService) CabinetModel(req *model.SelectionCabinetModelByCabinetReq) (items []string) {
 	cab, _ := ent.Database.Cabinet.QueryNotDeleted().
 		WithModels().
 		Where(cabinet.ID(req.CabinetID)).
@@ -571,8 +571,8 @@ func (s *selectionService) QuestionCategory() (items []model.SelectOption) {
 	return
 }
 
-// IndexModels 首页电池型号
-func (s *selectionService) IndexModels(req *model.SelectionIndexCabinetModelReq) (res []string) {
+// ModelByCity 首页电池型号
+func (s *selectionService) ModelByCity(req *model.SelectionCabinetModelByCityReq) (res []string) {
 	res = make([]string, 0)
 	q := ent.Database.Cabinet.QueryNotDeleted().
 		Where(cabinet.Status(model.CabinetStatusNormal.Value())).
