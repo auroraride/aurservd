@@ -952,7 +952,7 @@ func (b *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 
 	allPlans := make([]*definition.StoreEbikePlan, 0)
 	allPlans = append(allPlans, storeEbikePlansMap[str.ID]...)
-	b.sortListByShowPrice(allPlans)
+	b.sortListInStore(allPlans)
 	return allPlans
 }
 
