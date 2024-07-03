@@ -599,6 +599,7 @@ func (s *selectionService) ModelByCity(req *model.SelectionCabinetModelByCityReq
 	return res
 }
 
+// EbikeBrandByCity 通过城市筛选品牌
 func (s *selectionService) EbikeBrandByCity(req *model.SelectionBrandByCityReq) (items []model.SelectOption) {
 	brands := NewEbikeBrand().All()
 	if req.CityID != nil {

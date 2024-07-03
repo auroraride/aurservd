@@ -117,6 +117,8 @@ func (s *ebikeBrandService) ListByCityAndPlan(cityID uint64) []model.EbikeBrand 
 		Where(
 			ebikebrand.HasPlansWith(
 				plan.HasCitiesWith(city.ID(cityID)),
+				plan.Enable(true),
+				plan.DeletedAtIsNil(),
 			),
 		).
 		All(s.ctx)
