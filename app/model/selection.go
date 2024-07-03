@@ -16,3 +16,7 @@ type SelectionCabinetModelByCabinetReq struct {
 type SelectionCabinetModelByCityReq struct {
 	CityID *uint64 `json:"cityId" query:"cityId"`
 }
+
+type SelectionBrandByCityReq struct {
+	CityID *uint64 `json:"cityId" query:"cityId"`
+}

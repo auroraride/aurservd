@@ -10,7 +10,9 @@ import (
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
 
@@ -107,4 +109,36 @@ func (s *ebikeBrandService) Modify(req *model.EbikeBrandModifyReq) error {
 		return err
 	}
 	return nil
+}
+
+// ListByCityAndPlan 查询城市套餐电车品牌
+func (s *ebikeBrandService) ListByCityAndPlan(cityID uint64) []model.EbikeBrand {
+	brands, _ := s.orm.QueryNotDeleted().
+		Where(
+			ebikebrand.HasPlansWith(
+				plan.HasCitiesWith(city.ID(cityID)),
+			),
+		).
+		All(s.ctx)
+
+	items := make([]model.EbikeBrand, len(brands))
+	for i, b := range brands {
+		attrs := make([]*model.EbikeBrandAttribute, 0)
+		if b.Edges.BrandAttribute != nil {
+			for _, ba := range b.Edges.BrandAttribute {
+				attrs = append(attrs, &model.EbikeBrandAttribute{
+					Name:  ba.Name,
+					Value: ba.Value,
+				})
+			}
+		}
+		items[i] = model.EbikeBrand{
+			ID:             b.ID,
+			Name:           b.Name,
+			Cover:          b.Cover,
+			MainPic:        b.MainPic,
+			BrandAttribute: attrs,
+		}
+	}
+	return items
 }

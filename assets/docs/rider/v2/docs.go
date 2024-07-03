@@ -3285,6 +3285,13 @@ const docTemplate = `{
                 ],
                 "summary": "获取车型列表选择",
                 "operationId": "SelectionBrand",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "cityId",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
@@ -5213,16 +5220,8 @@ const docTemplate = `{
                     "description": "是否日租套餐",
                     "type": "boolean"
                 },
-                "dailyPrice": {
-                    "description": "套餐日租价格",
-                    "type": "number"
-                },
                 "distance": {
                     "description": "门店距离",
-                    "type": "number"
-                },
-                "monthPrice": {
-                    "description": "套餐月租价格",
                     "type": "number"
                 },
                 "planId": {
@@ -5233,12 +5232,13 @@ const docTemplate = `{
                     "description": "套餐名称",
                     "type": "string"
                 },
+                "price": {
+                    "description": "套餐价格",
+                    "type": "number"
+                },
                 "rto": {
                     "description": "是否以租代购套餐",
                     "type": "boolean"
-                },
-                "showPrice": {
-                    "type": "number"
                 },
                 "storeId": {
                     "description": "门店ID",
