@@ -602,7 +602,7 @@ func (s *selectionService) ModelByCity(req *model.SelectionCabinetModelByCityReq
 func (s *selectionService) EbikeBrandByCity(req *model.SelectionBrandByCityReq) (items []model.SelectOption) {
 	brands := NewEbikeBrand().All()
 	if req.CityID != nil {
-		brands = NewEbikeBrand().AllByCity(*req.CityID)
+		brands = NewEbikeBrand().ListByCityAndPlan(*req.CityID)
 	}
 
 	items = make([]model.SelectOption, len(brands))

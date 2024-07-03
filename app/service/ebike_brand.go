@@ -10,9 +10,9 @@ import (
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
-	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
 
@@ -111,44 +111,22 @@ func (s *ebikeBrandService) Modify(req *model.EbikeBrandModifyReq) error {
 	return nil
 }
 
-func (s *ebikeBrandService) AllByCity(cityID uint64) []model.EbikeBrand {
-	// 查出城市的门店
-	stores, _ := ent.Database.Store.QueryNotDeleted().
+// ListByCityAndPlan 查询城市套餐电车品牌
+func (s *ebikeBrandService) ListByCityAndPlan(cityID uint64) []model.EbikeBrand {
+	brands, _ := s.orm.QueryNotDeleted().
 		Where(
-			store.CityID(cityID),
+			ebikebrand.HasPlansWith(
+				plan.HasCitiesWith(city.ID(cityID)),
+			),
 		).
 		All(s.ctx)
-	storeIds := make([]uint64, 0)
-	for _, st := range stores {
-		storeIds = append(storeIds, st.ID)
-	}
-
-	// 查询门店所有车辆及品牌信息
-	ebikes, _ := ent.Database.Ebike.Query().
-		Where(
-			ebike.Enable(true),
-			ebike.HasStoreWith(store.IDIn(storeIds...)),
-		).
-		WithBrand(func(query *ent.EbikeBrandQuery) {
-			query.WithBrandAttribute()
-		}).
-		All(s.ctx)
-
-	brands := make([]*ent.EbikeBrand, 0)
-	brandIdMap := make(map[uint64]bool)
-	for _, b := range ebikes {
-		if b.Edges.Brand != nil && !brandIdMap[b.Edges.Brand.ID] {
-			brands = append(brands, b.Edges.Brand)
-			brandIdMap[b.Edges.Brand.ID] = true
-		}
-	}
 
 	items := make([]model.EbikeBrand, len(brands))
 	for i, b := range brands {
-		brandAttribute := make([]*model.EbikeBrandAttribute, 0)
+		attrs := make([]*model.EbikeBrandAttribute, 0)
 		if b.Edges.BrandAttribute != nil {
 			for _, ba := range b.Edges.BrandAttribute {
-				brandAttribute = append(brandAttribute, &model.EbikeBrandAttribute{
+				attrs = append(attrs, &model.EbikeBrandAttribute{
 					Name:  ba.Name,
 					Value: ba.Value,
 				})
@@ -159,7 +137,7 @@ func (s *ebikeBrandService) AllByCity(cityID uint64) []model.EbikeBrand {
 			Name:           b.Name,
 			Cover:          b.Cover,
 			MainPic:        b.MainPic,
-			BrandAttribute: brandAttribute,
+			BrandAttribute: attrs,
 		}
 	}
 	return items
