@@ -21,3 +21,14 @@ type EbikeDetailRes struct {
 	} `json:"store"` // 门店
 	Brand model.EbikeBrand `json:"brand"` // 车电品牌
 }
+
+// EbikeBrandDeleteReq 删除车电品牌
+type EbikeBrandDeleteReq struct {
+	ID uint64 `json:"id" validate:"required" param:"id"` // 车电品牌ID
+}
+
+// EbikeBatchModifyReq 批量修改电车型号
+type EbikeBatchModifyReq struct {
+	SN      []string `json:"sn"  validate:"required"`     // 车架号
+	BrandID uint64   `json:"brandId" validate:"required"` // 品牌ID
+}

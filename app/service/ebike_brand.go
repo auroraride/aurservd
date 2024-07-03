@@ -66,16 +66,17 @@ func (s *ebikeBrandService) All() []model.EbikeBrand {
 
 // Create 创建电车品牌
 func (s *ebikeBrandService) Create(req *model.EbikeBrandCreateReq) error {
-	br, err := s.orm.Create().SetName(req.Name).SetCover(req.Cover).SetMainPic(req.MainPic).Save(s.ctx)
-	if err != nil && ent.IsConstraintError(err) {
+	eb, _ := s.orm.QueryNotDeleted().Where(ebikebrand.NameEQ(req.Name)).First(s.ctx)
+	if eb != nil {
 		return errors.New("电车品牌已存在")
 	}
+	br, _ := s.orm.Create().SetName(req.Name).SetCover(req.Cover).SetMainPic(req.MainPic).Save(s.ctx)
 
 	if br == nil {
 		return errors.New("创建电车品牌失败")
 	}
 
-	err = NewEbikeBrandAttribute().Create(&model.EbikeBrandAttributeCreateReq{
+	err := NewEbikeBrandAttribute().Create(&model.EbikeBrandAttributeCreateReq{
 		BrandAttribute: req.BrandAttribute,
 		BrandID:        br.ID,
 	})
@@ -88,7 +89,9 @@ func (s *ebikeBrandService) Create(req *model.EbikeBrandCreateReq) error {
 func (s *ebikeBrandService) Modify(req *model.EbikeBrandModifyReq) error {
 	updater := s.orm.Update().Where(ebikebrand.ID(req.ID))
 	if req.Name != "" {
-		updater.SetName(req.Name)
+		if eb, _ := s.orm.QueryNotDeleted().Where(ebikebrand.NameEQ(req.Name)).First(s.ctx); eb != nil && eb.ID != req.ID {
+			updater.SetName(req.Name)
+		}
 	}
 	if req.Cover != "" {
 		updater.SetCover(req.Cover)

@@ -156,6 +156,8 @@ type Tx struct {
 	Rider *RiderClient
 	// RiderFollowUp is the client for interacting with the RiderFollowUp builders.
 	RiderFollowUp *RiderFollowUpClient
+	// RiderPhoneDevice is the client for interacting with the RiderPhoneDevice builders.
+	RiderPhoneDevice *RiderPhoneDeviceClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
 	// Setting is the client for interacting with the Setting builders.
@@ -382,6 +384,7 @@ func (tx *Tx) init() {
 	tx.Reserve = NewReserveClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)
 	tx.RiderFollowUp = NewRiderFollowUpClient(tx.config)
+	tx.RiderPhoneDevice = NewRiderPhoneDeviceClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.Setting = NewSettingClient(tx.config)
 	tx.Stock = NewStockClient(tx.config)

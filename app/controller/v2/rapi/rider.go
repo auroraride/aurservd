@@ -87,3 +87,18 @@ func (r *rider) Profile(c echo.Context) (err error) {
 	profile.Token = ctx.Token
 	return ctx.SendResponse(profile, err)
 }
+
+// ReportPhoneDevice
+// @ID		ReportPhoneDevice
+// @Router	/rider/v2/phone/device [POST]
+// @Summary	上报手机设备信息
+// @Tags	Rider - 骑手
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string							true	"骑手校验token"
+// @Param	body			body		definition.RiderPhoneDeviceReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse			"请求成功"
+func (*rider) ReportPhoneDevice(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.RiderPhoneDeviceReq](c)
+	return ctx.SendResponse(biz.NewRiderPhoneDeviceBiz().ReportPhoneDevice(ctx, ctx.Rider, req))
+}

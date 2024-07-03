@@ -861,6 +861,18 @@ func (f RiderFollowUpFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RiderFollowUpMutation", m)
 }
 
+// The RiderPhoneDeviceFunc type is an adapter to allow the use of ordinary
+// function as RiderPhoneDevice mutator.
+type RiderPhoneDeviceFunc func(context.Context, *ent.RiderPhoneDeviceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f RiderPhoneDeviceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.RiderPhoneDeviceMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RiderPhoneDeviceMutation", m)
+}
+
 // The RoleFunc type is an adapter to allow the use of ordinary
 // function as Role mutator.
 type RoleFunc func(context.Context, *ent.RoleMutation) (ent.Value, error)

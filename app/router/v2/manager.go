@@ -25,4 +25,8 @@ func LoadManagerV2Routes(root *echo.Group) {
 	export.POST("/cabinet/ec/month", v2.Export.ExportCabinetECMonth) // 导出电柜能耗每月
 	export.POST("/cabinet/ec", v2.Export.ExportCabinetEc)            // 导出电柜能耗详情
 
+	ebike := g.Group("/ebike")
+	ebike.PUT("/batch", v2.Ebike.BatchModify)
+	ebike.DELETE("/brand/:id", v2.Ebike.DeleteBrand)
+
 }

@@ -77,6 +77,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
+	"github.com/auroraride/aurservd/internal/ent/riderphonedevice"
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/schema"
 	"github.com/auroraride/aurservd/internal/ent/setting"
@@ -1791,6 +1792,21 @@ func init() {
 	riderfollowup.DefaultUpdatedAt = riderfollowupDescUpdatedAt.Default.(func() time.Time)
 	// riderfollowup.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	riderfollowup.UpdateDefaultUpdatedAt = riderfollowupDescUpdatedAt.UpdateDefault.(func() time.Time)
+	riderphonedeviceMixin := schema.RiderPhoneDevice{}.Mixin()
+	riderphonedeviceMixinFields0 := riderphonedeviceMixin[0].Fields()
+	_ = riderphonedeviceMixinFields0
+	riderphonedeviceFields := schema.RiderPhoneDevice{}.Fields()
+	_ = riderphonedeviceFields
+	// riderphonedeviceDescCreatedAt is the schema descriptor for created_at field.
+	riderphonedeviceDescCreatedAt := riderphonedeviceMixinFields0[0].Descriptor()
+	// riderphonedevice.DefaultCreatedAt holds the default value on creation for the created_at field.
+	riderphonedevice.DefaultCreatedAt = riderphonedeviceDescCreatedAt.Default.(func() time.Time)
+	// riderphonedeviceDescUpdatedAt is the schema descriptor for updated_at field.
+	riderphonedeviceDescUpdatedAt := riderphonedeviceMixinFields0[1].Descriptor()
+	// riderphonedevice.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	riderphonedevice.DefaultUpdatedAt = riderphonedeviceDescUpdatedAt.Default.(func() time.Time)
+	// riderphonedevice.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	riderphonedevice.UpdateDefaultUpdatedAt = riderphonedeviceDescUpdatedAt.UpdateDefault.(func() time.Time)
 	roleFields := schema.Role{}.Fields()
 	_ = roleFields
 	// roleDescBuildin is the schema descriptor for buildin field.

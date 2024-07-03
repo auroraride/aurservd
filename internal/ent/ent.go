@@ -83,6 +83,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
+	"github.com/auroraride/aurservd/internal/ent/riderphonedevice"
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -226,6 +227,7 @@ func checkColumn(table, column string) error {
 			reserve.Table:                    reserve.ValidColumn,
 			rider.Table:                      rider.ValidColumn,
 			riderfollowup.Table:              riderfollowup.ValidColumn,
+			riderphonedevice.Table:           riderphonedevice.ValidColumn,
 			role.Table:                       role.ValidColumn,
 			setting.Table:                    setting.ValidColumn,
 			stock.Table:                      stock.ValidColumn,
