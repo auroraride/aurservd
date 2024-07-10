@@ -519,8 +519,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq, v2
 			var availableBatteryNum, availableEmptyBinNum int
 			for _, bin := range c.Bin {
 				fa.Total += 1
-				// TODO 替换
-				if bin.Electricity.IsBatteryFull() {
+				if bin.Electricity.IsBatteryFull() && bin.DoorHealth {
 					fa.Num += 1
 				}
 				if bin.Battery {
