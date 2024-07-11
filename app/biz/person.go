@@ -474,7 +474,7 @@ func (b *personBiz) CertificationSupplement(r *ent.Rider, req *definition.Person
 		return errors.New("未找到实名信息")
 	}
 
-	if per.IDCardNumber != "" && per.IDCardNumber != result.IdCardNumber || per.Name != "" && per.Name != result.Name {
+	if per.IDCardNumber == "" || per.Name == "" || per.IDCardNumber != result.IdCardNumber || per.Name != result.Name {
 		return errors.New("补充信息与原信息不一致")
 	}
 	// 获取生日
