@@ -207,6 +207,126 @@ func (f AllocateMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutati
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AllocateMutation", m)
 }
 
+// The AssetQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type AssetQueryRuleFunc func(context.Context, *ent.AssetQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f AssetQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AssetQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.AssetQuery", q)
+}
+
+// The AssetMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type AssetMutationRuleFunc func(context.Context, *ent.AssetMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f AssetMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.AssetMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AssetMutation", m)
+}
+
+// The AssetAttributeValuesQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type AssetAttributeValuesQueryRuleFunc func(context.Context, *ent.AssetAttributeValuesQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f AssetAttributeValuesQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AssetAttributeValuesQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.AssetAttributeValuesQuery", q)
+}
+
+// The AssetAttributeValuesMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type AssetAttributeValuesMutationRuleFunc func(context.Context, *ent.AssetAttributeValuesMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f AssetAttributeValuesMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.AssetAttributeValuesMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AssetAttributeValuesMutation", m)
+}
+
+// The AssetAttributesQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type AssetAttributesQueryRuleFunc func(context.Context, *ent.AssetAttributesQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f AssetAttributesQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AssetAttributesQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.AssetAttributesQuery", q)
+}
+
+// The AssetAttributesMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type AssetAttributesMutationRuleFunc func(context.Context, *ent.AssetAttributesMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f AssetAttributesMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.AssetAttributesMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AssetAttributesMutation", m)
+}
+
+// The AssetHistoryQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type AssetHistoryQueryRuleFunc func(context.Context, *ent.AssetHistoryQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f AssetHistoryQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AssetHistoryQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.AssetHistoryQuery", q)
+}
+
+// The AssetHistoryMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type AssetHistoryMutationRuleFunc func(context.Context, *ent.AssetHistoryMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f AssetHistoryMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.AssetHistoryMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AssetHistoryMutation", m)
+}
+
+// The AssetScrapQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type AssetScrapQueryRuleFunc func(context.Context, *ent.AssetScrapQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f AssetScrapQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AssetScrapQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.AssetScrapQuery", q)
+}
+
+// The AssetScrapMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type AssetScrapMutationRuleFunc func(context.Context, *ent.AssetScrapMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f AssetScrapMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.AssetScrapMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AssetScrapMutation", m)
+}
+
 // The AssistanceQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type AssistanceQueryRuleFunc func(context.Context, *ent.AssistanceQuery) error
@@ -327,28 +447,28 @@ func (f BatteryModelMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mu
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.BatteryModelMutation", m)
 }
 
-// The BatteryNewQueryRuleFunc type is an adapter to allow the use of ordinary
+// The BatteryModelNewQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
-type BatteryNewQueryRuleFunc func(context.Context, *ent.BatteryNewQuery) error
+type BatteryModelNewQueryRuleFunc func(context.Context, *ent.BatteryModelNewQuery) error
 
 // EvalQuery return f(ctx, q).
-func (f BatteryNewQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.BatteryNewQuery); ok {
+func (f BatteryModelNewQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.BatteryModelNewQuery); ok {
 		return f(ctx, q)
 	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.BatteryNewQuery", q)
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.BatteryModelNewQuery", q)
 }
 
-// The BatteryNewMutationRuleFunc type is an adapter to allow the use of ordinary
+// The BatteryModelNewMutationRuleFunc type is an adapter to allow the use of ordinary
 // functions as a mutation rule.
-type BatteryNewMutationRuleFunc func(context.Context, *ent.BatteryNewMutation) error
+type BatteryModelNewMutationRuleFunc func(context.Context, *ent.BatteryModelNewMutation) error
 
 // EvalMutation calls f(ctx, m).
-func (f BatteryNewMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.BatteryNewMutation); ok {
+func (f BatteryModelNewMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.BatteryModelNewMutation); ok {
 		return f(ctx, m)
 	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.BatteryNewMutation", m)
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.BatteryModelNewMutation", m)
 }
 
 // The BranchQueryRuleFunc type is an adapter to allow the use of ordinary
@@ -517,30 +637,6 @@ func (f CityMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) 
 		return f(ctx, m)
 	}
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.CityMutation", m)
-}
-
-// The CityNewQueryRuleFunc type is an adapter to allow the use of ordinary
-// functions as a query rule.
-type CityNewQueryRuleFunc func(context.Context, *ent.CityNewQuery) error
-
-// EvalQuery return f(ctx, q).
-func (f CityNewQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.CityNewQuery); ok {
-		return f(ctx, q)
-	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.CityNewQuery", q)
-}
-
-// The CityNewMutationRuleFunc type is an adapter to allow the use of ordinary
-// functions as a mutation rule.
-type CityNewMutationRuleFunc func(context.Context, *ent.CityNewMutation) error
-
-// EvalMutation calls f(ctx, m).
-func (f CityNewMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.CityNewMutation); ok {
-		return f(ctx, m)
-	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.CityNewMutation", m)
 }
 
 // The CommissionQueryRuleFunc type is an adapter to allow the use of ordinary
@@ -1213,6 +1309,30 @@ func (f ManagerMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutatio
 		return f(ctx, m)
 	}
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ManagerMutation", m)
+}
+
+// The MaterialQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type MaterialQueryRuleFunc func(context.Context, *ent.MaterialQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f MaterialQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.MaterialQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.MaterialQuery", q)
+}
+
+// The MaterialMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type MaterialMutationRuleFunc func(context.Context, *ent.MaterialMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f MaterialMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.MaterialMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.MaterialMutation", m)
 }
 
 // The OrderQueryRuleFunc type is an adapter to allow the use of ordinary
@@ -2175,6 +2295,30 @@ func (f VersionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutatio
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.VersionMutation", m)
 }
 
+// The WarehouseQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type WarehouseQueryRuleFunc func(context.Context, *ent.WarehouseQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f WarehouseQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.WarehouseQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.WarehouseQuery", q)
+}
+
+// The WarehouseMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type WarehouseMutationRuleFunc func(context.Context, *ent.WarehouseMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f WarehouseMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.WarehouseMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.WarehouseMutation", m)
+}
+
 type (
 	// Filter is the interface that wraps the Where function
 	// for filtering nodes in queries and mutations.
@@ -2218,6 +2362,16 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.AllocateQuery:
 		return q.Filter(), nil
+	case *ent.AssetQuery:
+		return q.Filter(), nil
+	case *ent.AssetAttributeValuesQuery:
+		return q.Filter(), nil
+	case *ent.AssetAttributesQuery:
+		return q.Filter(), nil
+	case *ent.AssetHistoryQuery:
+		return q.Filter(), nil
+	case *ent.AssetScrapQuery:
+		return q.Filter(), nil
 	case *ent.AssistanceQuery:
 		return q.Filter(), nil
 	case *ent.AttendanceQuery:
@@ -2228,7 +2382,7 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.BatteryModelQuery:
 		return q.Filter(), nil
-	case *ent.BatteryNewQuery:
+	case *ent.BatteryModelNewQuery:
 		return q.Filter(), nil
 	case *ent.BranchQuery:
 		return q.Filter(), nil
@@ -2243,8 +2397,6 @@ func queryFilter(q ent.Query) (Filter, error) {
 	case *ent.CabinetFaultQuery:
 		return q.Filter(), nil
 	case *ent.CityQuery:
-		return q.Filter(), nil
-	case *ent.CityNewQuery:
 		return q.Filter(), nil
 	case *ent.CommissionQuery:
 		return q.Filter(), nil
@@ -2301,6 +2453,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 	case *ent.MaintainerQuery:
 		return q.Filter(), nil
 	case *ent.ManagerQuery:
+		return q.Filter(), nil
+	case *ent.MaterialQuery:
 		return q.Filter(), nil
 	case *ent.OrderQuery:
 		return q.Filter(), nil
@@ -2382,6 +2536,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.VersionQuery:
 		return q.Filter(), nil
+	case *ent.WarehouseQuery:
+		return q.Filter(), nil
 	default:
 		return nil, Denyf("ent/privacy: unexpected query type %T for query filter", q)
 	}
@@ -2397,6 +2553,16 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 		return m.Filter(), nil
 	case *ent.AllocateMutation:
 		return m.Filter(), nil
+	case *ent.AssetMutation:
+		return m.Filter(), nil
+	case *ent.AssetAttributeValuesMutation:
+		return m.Filter(), nil
+	case *ent.AssetAttributesMutation:
+		return m.Filter(), nil
+	case *ent.AssetHistoryMutation:
+		return m.Filter(), nil
+	case *ent.AssetScrapMutation:
+		return m.Filter(), nil
 	case *ent.AssistanceMutation:
 		return m.Filter(), nil
 	case *ent.AttendanceMutation:
@@ -2407,7 +2573,7 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 		return m.Filter(), nil
 	case *ent.BatteryModelMutation:
 		return m.Filter(), nil
-	case *ent.BatteryNewMutation:
+	case *ent.BatteryModelNewMutation:
 		return m.Filter(), nil
 	case *ent.BranchMutation:
 		return m.Filter(), nil
@@ -2422,8 +2588,6 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.CabinetFaultMutation:
 		return m.Filter(), nil
 	case *ent.CityMutation:
-		return m.Filter(), nil
-	case *ent.CityNewMutation:
 		return m.Filter(), nil
 	case *ent.CommissionMutation:
 		return m.Filter(), nil
@@ -2480,6 +2644,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.MaintainerMutation:
 		return m.Filter(), nil
 	case *ent.ManagerMutation:
+		return m.Filter(), nil
+	case *ent.MaterialMutation:
 		return m.Filter(), nil
 	case *ent.OrderMutation:
 		return m.Filter(), nil
@@ -2560,6 +2726,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.SubscribeSuspendMutation:
 		return m.Filter(), nil
 	case *ent.VersionMutation:
+		return m.Filter(), nil
+	case *ent.WarehouseMutation:
 		return m.Filter(), nil
 	default:
 		return nil, Denyf("ent/privacy: unexpected mutation type %T for mutation filter", m)

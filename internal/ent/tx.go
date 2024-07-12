@@ -22,6 +22,16 @@ type Tx struct {
 	Agreement *AgreementClient
 	// Allocate is the client for interacting with the Allocate builders.
 	Allocate *AllocateClient
+	// Asset is the client for interacting with the Asset builders.
+	Asset *AssetClient
+	// AssetAttributeValues is the client for interacting with the AssetAttributeValues builders.
+	AssetAttributeValues *AssetAttributeValuesClient
+	// AssetAttributes is the client for interacting with the AssetAttributes builders.
+	AssetAttributes *AssetAttributesClient
+	// AssetHistory is the client for interacting with the AssetHistory builders.
+	AssetHistory *AssetHistoryClient
+	// AssetScrap is the client for interacting with the AssetScrap builders.
+	AssetScrap *AssetScrapClient
 	// Assistance is the client for interacting with the Assistance builders.
 	Assistance *AssistanceClient
 	// Attendance is the client for interacting with the Attendance builders.
@@ -32,8 +42,8 @@ type Tx struct {
 	BatteryFlow *BatteryFlowClient
 	// BatteryModel is the client for interacting with the BatteryModel builders.
 	BatteryModel *BatteryModelClient
-	// BatteryNew is the client for interacting with the BatteryNew builders.
-	BatteryNew *BatteryNewClient
+	// BatteryModelNew is the client for interacting with the BatteryModelNew builders.
+	BatteryModelNew *BatteryModelNewClient
 	// Branch is the client for interacting with the Branch builders.
 	Branch *BranchClient
 	// BranchContract is the client for interacting with the BranchContract builders.
@@ -48,8 +58,6 @@ type Tx struct {
 	CabinetFault *CabinetFaultClient
 	// City is the client for interacting with the City builders.
 	City *CityClient
-	// CityNew is the client for interacting with the CityNew builders.
-	CityNew *CityNewClient
 	// Commission is the client for interacting with the Commission builders.
 	Commission *CommissionClient
 	// Contract is the client for interacting with the Contract builders.
@@ -106,6 +114,8 @@ type Tx struct {
 	Maintainer *MaintainerClient
 	// Manager is the client for interacting with the Manager builders.
 	Manager *ManagerClient
+	// Material is the client for interacting with the Material builders.
+	Material *MaterialClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
 	// OrderRefund is the client for interacting with the OrderRefund builders.
@@ -186,6 +196,8 @@ type Tx struct {
 	SubscribeSuspend *SubscribeSuspendClient
 	// Version is the client for interacting with the Version builders.
 	Version *VersionClient
+	// Warehouse is the client for interacting with the Warehouse builders.
+	Warehouse *WarehouseClient
 
 	// lazily loaded.
 	client     *Client
@@ -321,12 +333,17 @@ func (tx *Tx) init() {
 	tx.Agent = NewAgentClient(tx.config)
 	tx.Agreement = NewAgreementClient(tx.config)
 	tx.Allocate = NewAllocateClient(tx.config)
+	tx.Asset = NewAssetClient(tx.config)
+	tx.AssetAttributeValues = NewAssetAttributeValuesClient(tx.config)
+	tx.AssetAttributes = NewAssetAttributesClient(tx.config)
+	tx.AssetHistory = NewAssetHistoryClient(tx.config)
+	tx.AssetScrap = NewAssetScrapClient(tx.config)
 	tx.Assistance = NewAssistanceClient(tx.config)
 	tx.Attendance = NewAttendanceClient(tx.config)
 	tx.Battery = NewBatteryClient(tx.config)
 	tx.BatteryFlow = NewBatteryFlowClient(tx.config)
 	tx.BatteryModel = NewBatteryModelClient(tx.config)
-	tx.BatteryNew = NewBatteryNewClient(tx.config)
+	tx.BatteryModelNew = NewBatteryModelNewClient(tx.config)
 	tx.Branch = NewBranchClient(tx.config)
 	tx.BranchContract = NewBranchContractClient(tx.config)
 	tx.Business = NewBusinessClient(tx.config)
@@ -334,7 +351,6 @@ func (tx *Tx) init() {
 	tx.CabinetEc = NewCabinetEcClient(tx.config)
 	tx.CabinetFault = NewCabinetFaultClient(tx.config)
 	tx.City = NewCityClient(tx.config)
-	tx.CityNew = NewCityNewClient(tx.config)
 	tx.Commission = NewCommissionClient(tx.config)
 	tx.Contract = NewContractClient(tx.config)
 	tx.ContractTemplate = NewContractTemplateClient(tx.config)
@@ -363,6 +379,7 @@ func (tx *Tx) init() {
 	tx.Inventory = NewInventoryClient(tx.config)
 	tx.Maintainer = NewMaintainerClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)
+	tx.Material = NewMaterialClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
 	tx.OrderRefund = NewOrderRefundClient(tx.config)
 	tx.Person = NewPersonClient(tx.config)
@@ -403,6 +420,7 @@ func (tx *Tx) init() {
 	tx.SubscribeReminder = NewSubscribeReminderClient(tx.config)
 	tx.SubscribeSuspend = NewSubscribeSuspendClient(tx.config)
 	tx.Version = NewVersionClient(tx.config)
+	tx.Warehouse = NewWarehouseClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

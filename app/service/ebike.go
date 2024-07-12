@@ -289,7 +289,10 @@ func (s *ebikeService) Modify(req *model.EbikeModifyReq) {
 // BatchCreate 批量创建
 // 0-型号:brand(需查询) 1-车架号:sn 2-生产批次:exFactory 3-车牌号:plate 4-终端编号:machine 5-SIM卡:sim 6-颜色:color
 func (s *ebikeService) BatchCreate(c echo.Context) []string {
-	rows, sns, failed := s.BaseService.GetXlsxRows(c, 2, 7, 1)
+	rows, sns, failed, err := s.BaseService.GetXlsxRows(c, 2, 7, 1)
+	if err != nil {
+		snag.Panic(err)
+	}
 	// 获取所有型号
 	brands := NewEbikeBrand().All()
 	bm := make(map[string]uint64)

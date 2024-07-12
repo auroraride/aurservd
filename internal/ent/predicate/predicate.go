@@ -18,6 +18,21 @@ type Agreement func(*sql.Selector)
 // Allocate is the predicate function for allocate builders.
 type Allocate func(*sql.Selector)
 
+// Asset is the predicate function for asset builders.
+type Asset func(*sql.Selector)
+
+// AssetAttributeValues is the predicate function for assetattributevalues builders.
+type AssetAttributeValues func(*sql.Selector)
+
+// AssetAttributes is the predicate function for assetattributes builders.
+type AssetAttributes func(*sql.Selector)
+
+// AssetHistory is the predicate function for assethistory builders.
+type AssetHistory func(*sql.Selector)
+
+// AssetScrap is the predicate function for assetscrap builders.
+type AssetScrap func(*sql.Selector)
+
 // Assistance is the predicate function for assistance builders.
 type Assistance func(*sql.Selector)
 
@@ -33,8 +48,8 @@ type BatteryFlow func(*sql.Selector)
 // BatteryModel is the predicate function for batterymodel builders.
 type BatteryModel func(*sql.Selector)
 
-// BatteryNew is the predicate function for batterynew builders.
-type BatteryNew func(*sql.Selector)
+// BatteryModelNew is the predicate function for batterymodelnew builders.
+type BatteryModelNew func(*sql.Selector)
 
 // Branch is the predicate function for branch builders.
 type Branch func(*sql.Selector)
@@ -56,9 +71,6 @@ type CabinetFault func(*sql.Selector)
 
 // City is the predicate function for city builders.
 type City func(*sql.Selector)
-
-// CityNew is the predicate function for citynew builders.
-type CityNew func(*sql.Selector)
 
 // Commission is the predicate function for commission builders.
 type Commission func(*sql.Selector)
@@ -143,6 +155,9 @@ type Maintainer func(*sql.Selector)
 
 // Manager is the predicate function for manager builders.
 type Manager func(*sql.Selector)
+
+// Material is the predicate function for material builders.
+type Material func(*sql.Selector)
 
 // Order is the predicate function for order builders.
 type Order func(*sql.Selector)
@@ -263,3 +278,6 @@ type SubscribeSuspend func(*sql.Selector)
 
 // Version is the predicate function for version builders.
 type Version func(*sql.Selector)
+
+// Warehouse is the predicate function for warehouse builders.
+type Warehouse func(*sql.Selector)

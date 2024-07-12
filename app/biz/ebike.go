@@ -161,6 +161,23 @@ func (b *ebikeBiz) BatchModify(req *definition.EbikeBatchModifyReq) []error {
 		return append(errs, fmt.Errorf("brandID:%d, %s", req.BrandID, "未找到品牌"))
 	}
 
+	err := ent.Database.Stock.Update().
+		Where(
+			stock.SnIn(req.SN...),
+			stock.MaterialEQ(stock.MaterialEbike),
+		).
+		SetName(item.Name).
+		SetBrandID(req.BrandID).Exec(b.ctx)
+	if err != nil {
+		return append(errs, err)
+	}
+
+	// 查询品牌名称
+	item, _ = ent.Database.EbikeBrand.QueryNotDeleted().Where(ebikebrand.ID(req.BrandID)).First(b.ctx)
+	if item == nil {
+		return append(errs, fmt.Errorf("brandID:%d, %s", req.BrandID, "未找到品牌"))
+	}
+
 	// 查询电车id
 	all, _ := ent.Database.Ebike.Query().Where(ebike.SnIn(req.SN...)).All(b.ctx)
 	if len(all) == 0 {
@@ -173,7 +190,7 @@ func (b *ebikeBiz) BatchModify(req *definition.EbikeBatchModifyReq) []error {
 	}
 
 	// 更新库存中的电车型号
-	err := ent.Database.Stock.Update().
+	err = ent.Database.Stock.Update().
 		Where(
 			stock.EbikeIDIn(ids...),
 			stock.MaterialEQ(stock.MaterialEbike),

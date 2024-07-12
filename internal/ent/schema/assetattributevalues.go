@@ -60,6 +60,7 @@ func (AssetAttributeValues) Annotations() []schema.Annotation {
 func (AssetAttributeValues) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("attribute_id").Optional().Comment("属性ID"),
+		field.Uint64("asset_id").Optional().Comment("资产ID"),
 		field.String("value").MaxLen(255).Comment("属性值"),
 	}
 }
@@ -68,14 +69,12 @@ func (AssetAttributeValues) Fields() []ent.Field {
 func (AssetAttributeValues) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("attribute", AssetAttributes.Type).Ref("values").Unique().Field("attribute_id"),
-	}
+		edge.From("asset", Asset.Type).Ref("values").Unique().Field("asset_id")}
 }
 
 func (AssetAttributeValues) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
-		internal.DeleteMixin{},
-		internal.Modifier{},
 	}
 }
 

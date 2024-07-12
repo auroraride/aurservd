@@ -16,12 +16,17 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
+	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/assetattributes"
+	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
+	"github.com/auroraride/aurservd/internal/ent/assethistory"
+	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
-	"github.com/auroraride/aurservd/internal/ent/batterynew"
+	"github.com/auroraride/aurservd/internal/ent/batterymodelnew"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/business"
@@ -29,7 +34,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/citynew"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
@@ -58,6 +62,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
+	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
@@ -98,6 +103,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 	"github.com/auroraride/aurservd/internal/ent/version"
+	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -162,12 +168,17 @@ func checkColumn(table, column string) error {
 			agent.Table:                      agent.ValidColumn,
 			agreement.Table:                  agreement.ValidColumn,
 			allocate.Table:                   allocate.ValidColumn,
+			asset.Table:                      asset.ValidColumn,
+			assetattributevalues.Table:       assetattributevalues.ValidColumn,
+			assetattributes.Table:            assetattributes.ValidColumn,
+			assethistory.Table:               assethistory.ValidColumn,
+			assetscrap.Table:                 assetscrap.ValidColumn,
 			assistance.Table:                 assistance.ValidColumn,
 			attendance.Table:                 attendance.ValidColumn,
 			battery.Table:                    battery.ValidColumn,
 			batteryflow.Table:                batteryflow.ValidColumn,
 			batterymodel.Table:               batterymodel.ValidColumn,
-			batterynew.Table:                 batterynew.ValidColumn,
+			batterymodelnew.Table:            batterymodelnew.ValidColumn,
 			branch.Table:                     branch.ValidColumn,
 			branchcontract.Table:             branchcontract.ValidColumn,
 			business.Table:                   business.ValidColumn,
@@ -175,7 +186,6 @@ func checkColumn(table, column string) error {
 			cabinetec.Table:                  cabinetec.ValidColumn,
 			cabinetfault.Table:               cabinetfault.ValidColumn,
 			city.Table:                       city.ValidColumn,
-			citynew.Table:                    citynew.ValidColumn,
 			commission.Table:                 commission.ValidColumn,
 			contract.Table:                   contract.ValidColumn,
 			contracttemplate.Table:           contracttemplate.ValidColumn,
@@ -204,6 +214,7 @@ func checkColumn(table, column string) error {
 			inventory.Table:                  inventory.ValidColumn,
 			maintainer.Table:                 maintainer.ValidColumn,
 			manager.Table:                    manager.ValidColumn,
+			material.Table:                   material.ValidColumn,
 			order.Table:                      order.ValidColumn,
 			orderrefund.Table:                orderrefund.ValidColumn,
 			person.Table:                     person.ValidColumn,
@@ -244,6 +255,7 @@ func checkColumn(table, column string) error {
 			subscribereminder.Table:          subscribereminder.ValidColumn,
 			subscribesuspend.Table:           subscribesuspend.ValidColumn,
 			version.Table:                    version.ValidColumn,
+			warehouse.Table:                  warehouse.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

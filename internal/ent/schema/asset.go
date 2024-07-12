@@ -59,26 +59,36 @@ func (Asset) Annotations() []schema.Annotation {
 // Fields of the Asset.
 func (Asset) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint8("type").Comment("资产类型 1:电车 2:电池 3:其它"),
+		field.Uint8("type").Comment("资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它"),
 		field.String("name").Comment("资产名称"),
-		field.String("sn").Comment("资产编号"),
-		field.Uint8("status").Comment("资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废"),
+		field.String("sn").Optional().Comment("资产编号"),
+		field.Uint8("status").Default(0).Comment("资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废"),
 		field.Bool("enable").Default(false).Comment("是否启用"),
-		field.Uint8("locations_type").Default(1).Comment("资产位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维"),
-		field.Uint64("locations_id").Comment("资产位置ID"),
-		field.Uint8("scrap_reason_type").Optional().Comment("报废原因 1:丢失 2:损坏 3:其他"),
-		field.Time("scrap_at").Optional().Comment("报废时间"),
-		field.Uint64("scrap_operate_id").Optional().Comment("操作报废人员ID"),
-		field.Uint64("brand_id").Optional().Comment("品牌ID"),
-		field.Uint64("model_id").Optional().Comment("型号ID"),
+		field.Uint8("locations_type").Optional().Comment("资产位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维"),
+		field.Uint64("locations_id").Optional().Comment("资产位置ID"),
 		field.Uint64("rto_rider_id").Optional().Nillable().Comment("以租代购骑手ID，生成后禁止修改"),
 		field.Time("inventory_at").Optional().Comment("盘点时间"),
+		field.String("brand_name").Optional().Comment("品牌名称"),
 	}
 }
 
 // Edges of the Asset.
 func (Asset) Edges() []ent.Edge {
-	return []ent.Edge{}
+	return []ent.Edge{
+		edge.To("values", AssetAttributeValues.Type),
+		// 关联仓库
+		edge.To("warehouse", Warehouse.Type).Unique().Field("locations_id"),
+		// 关联门店
+		edge.To("store", Store.Type).Unique().Field("locations_id"),
+		// 关联电柜
+		edge.To("cabinet", Cabinet.Type).Unique().Field("locations_id"),
+		// 关联站点
+		edge.To("station", EnterpriseStation.Type).Unique().Field("locations_id"),
+		// 关联骑手
+		edge.To("rider", Rider.Type).Unique().Field("locations_id"),
+		// 关联运维
+		edge.To("operator", Maintainer.Type).Unique().Field("locations_id"),
+	}
 }
 
 func (Asset) Mixin() []ent.Mixin {
@@ -86,6 +96,9 @@ func (Asset) Mixin() []ent.Mixin {
 		internal.TimeMixin{},
 		internal.DeleteMixin{},
 		internal.Modifier{},
+		EbikeBrandMixin{Optional: true},
+		BatteryModelMixin{Optional: true},
+		CityMixin{Optional: true},
 	}
 }
 

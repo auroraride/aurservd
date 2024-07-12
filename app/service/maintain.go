@@ -9,10 +9,11 @@ import (
 	"fmt"
 
 	"github.com/auroraride/adapter/maintain"
+	"github.com/labstack/gommon/log"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/setting"
-	"github.com/labstack/gommon/log"
 )
 
 type maintainService struct {

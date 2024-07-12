@@ -139,7 +139,11 @@ func (s *batteryService) Create(req *model.BatteryCreateReq) {
 // BatchCreate 批量创建电池
 // 0-城市:city 1-型号:model 2-编号:sn
 func (s *batteryService) BatchCreate(c echo.Context) []string {
-	rows, sns, failed := s.BaseService.GetXlsxRows(c, 2, 2, 2)
+	rows, sns, failed, err := s.BaseService.GetXlsxRows(c, 2, 2, 2)
+	if err != nil {
+		snag.Panic(err)
+	}
+
 	// 查重
 	items, _ := s.orm.Query().Where(battery.SnIn(sns...)).All(s.ctx)
 	m := make(map[string]bool)

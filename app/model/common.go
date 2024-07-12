@@ -134,3 +134,106 @@ const (
 )
 
 const DefaultMaxDistance = 50000.0
+
+type AssetType uint8
+
+const (
+	AssetTypeEbike            AssetType = iota + 1 // 电车
+	AssetTypeSmartBattery                          // 智能电池
+	AssetTypeNonSmartBattery                       // 非智能电池
+	AssetTypeCabinetAccessory                      // 电柜配件
+	AssetTypeEbikeAccessory                        // 电车配件
+	AssetTypeOtherAccessory                        // 其它配件
+)
+
+func (s AssetType) String() string {
+	switch s {
+	case AssetTypeEbike:
+		return "电车"
+	case AssetTypeSmartBattery:
+		return "智能电池"
+	case AssetTypeNonSmartBattery:
+		return "非智能电池"
+	case AssetTypeCabinetAccessory:
+		return "电柜配件"
+	case AssetTypeEbikeAccessory:
+		return "电车配件"
+	case AssetTypeOtherAccessory:
+		return "其它配件"
+	default:
+		return "未知"
+	}
+}
+
+func (s AssetType) Value() uint8 {
+	return uint8(s)
+}
+
+type AseetLocationsType uint8
+
+const (
+	AseetLocationsTypeWarehouse AseetLocationsType = iota + 1 // 仓库
+	AseetLocationsTypeStore                                   // 门店
+	AseetLocationsTypeCabinet                                 // 电柜
+	AseetLocationsTypeStation                                 // 站点
+	AseetLocationsTypeRider                                   // 骑手
+	AseetLocationsTypeOperation                               // 运维
+)
+
+func (s AseetLocationsType) String() string {
+	switch s {
+	case AseetLocationsTypeWarehouse:
+		return "仓库"
+	case AseetLocationsTypeStore:
+		return "门店"
+	case AseetLocationsTypeCabinet:
+		return "电柜"
+	case AseetLocationsTypeStation:
+		return "站点"
+	case AseetLocationsTypeRider:
+		return "骑手"
+	case AseetLocationsTypeOperation:
+		return "运维"
+	default:
+		return "未知"
+	}
+}
+
+func (s AseetLocationsType) Value() uint8 {
+	return uint8(s)
+}
+
+// AssetStatus 资产状态
+type AssetStatus uint8
+
+const (
+	AssetStatusPending    AssetStatus = iota // 待入库
+	AssetStatusStock                         // 库存中
+	AssetStatusDelivering                    // 配送中
+	AssetStatusUsing                         // 使用中
+	AssetStatusFault                         // 故障
+	AssetStatusScrap                         // 报废
+)
+
+func (s AssetStatus) String() string {
+	switch s {
+	case AssetStatusPending:
+		return "待入库"
+	case AssetStatusStock:
+		return "库存中"
+	case AssetStatusDelivering:
+		return "配送中"
+	case AssetStatusUsing:
+		return "使用中"
+	case AssetStatusFault:
+		return "故障"
+	case AssetStatusScrap:
+		return "报废"
+	default:
+		return "未知"
+	}
+}
+
+func (s AssetStatus) Value() uint8 {
+	return uint8(s)
+}

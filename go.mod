@@ -50,6 +50,7 @@ require (
 	github.com/shopspring/decimal v1.4.0
 	github.com/shurcooL/github_flavored_markdown v0.0.0-20210228213109-c3a9aa474629
 	github.com/silenceper/wechat/v2 v2.1.6
+	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/smartwalle/alipay/v3 v3.2.21
 	github.com/sony/sonyflake v1.2.0
 	github.com/speps/go-hashids/v2 v2.0.1

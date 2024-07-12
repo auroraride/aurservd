@@ -54,6 +54,64 @@ func (a *Allocate) GetID() uint64 {
 	return a.ID
 }
 
+// GetTableName returns table name for Asset.
+func (a *Asset) GetTableName() string {
+	return "asset"
+}
+
+// GetID returns id for Asset.
+func (a *Asset) GetID() uint64 {
+	return a.ID
+}
+
+func (a *Asset) GetName() string {
+	return a.Name
+}
+
+// GetTableName returns table name for AssetAttributeValues.
+func (aav *AssetAttributeValues) GetTableName() string {
+	return "asset_attribute_values"
+}
+
+// GetID returns id for AssetAttributeValues.
+func (aav *AssetAttributeValues) GetID() uint64 {
+	return aav.ID
+}
+
+// GetTableName returns table name for AssetAttributes.
+func (aa *AssetAttributes) GetTableName() string {
+	return "asset_attributes"
+}
+
+// GetID returns id for AssetAttributes.
+func (aa *AssetAttributes) GetID() uint64 {
+	return aa.ID
+}
+
+func (aa *AssetAttributes) GetName() string {
+	return aa.Name
+}
+
+// GetTableName returns table name for AssetHistory.
+func (ah *AssetHistory) GetTableName() string {
+	return "asset_history"
+}
+
+// GetID returns id for AssetHistory.
+func (ah *AssetHistory) GetID() uint64 {
+	return ah.ID
+}
+
+// GetTableName returns table name for AssetScrap.
+func (as *AssetScrap) GetTableName() string {
+	return "asset_scrap"
+}
+
+// GetID returns id for AssetScrap.
+func (as *AssetScrap) GetID() uint64 {
+	return as.ID
+}
+
 // GetTableName returns table name for Assistance.
 func (a *Assistance) GetTableName() string {
 	return "assistance"
@@ -104,14 +162,14 @@ func (bm *BatteryModel) GetID() uint64 {
 	return bm.ID
 }
 
-// GetTableName returns table name for BatteryNew.
-func (bn *BatteryNew) GetTableName() string {
-	return "battery_new"
+// GetTableName returns table name for BatteryModelNew.
+func (bmn *BatteryModelNew) GetTableName() string {
+	return "battery_model_new"
 }
 
-// GetID returns id for BatteryNew.
-func (bn *BatteryNew) GetID() uint64 {
-	return bn.ID
+// GetID returns id for BatteryModelNew.
+func (bmn *BatteryModelNew) GetID() uint64 {
+	return bmn.ID
 }
 
 // GetTableName returns table name for Branch.
@@ -194,20 +252,6 @@ func (c *City) GetID() uint64 {
 
 func (c *City) GetName() string {
 	return c.Name
-}
-
-// GetTableName returns table name for CityNew.
-func (cn *CityNew) GetTableName() string {
-	return "city_new"
-}
-
-// GetID returns id for CityNew.
-func (cn *CityNew) GetID() uint64 {
-	return cn.ID
-}
-
-func (cn *CityNew) GetName() string {
-	return cn.Name
 }
 
 // GetTableName returns table name for Commission.
@@ -547,6 +591,20 @@ func (m *Manager) GetID() uint64 {
 }
 
 func (m *Manager) GetName() string {
+	return m.Name
+}
+
+// GetTableName returns table name for Material.
+func (m *Material) GetTableName() string {
+	return "material"
+}
+
+// GetID returns id for Material.
+func (m *Material) GetID() uint64 {
+	return m.ID
+}
+
+func (m *Material) GetName() string {
 	return m.Name
 }
 
@@ -1012,4 +1070,18 @@ func (v *Version) GetTableName() string {
 // GetID returns id for Version.
 func (v *Version) GetID() uint64 {
 	return v.ID
+}
+
+// GetTableName returns table name for Warehouse.
+func (w *Warehouse) GetTableName() string {
+	return "warehouse"
+}
+
+// GetID returns id for Warehouse.
+func (w *Warehouse) GetID() uint64 {
+	return w.ID
+}
+
+func (w *Warehouse) GetName() string {
+	return w.Name
 }

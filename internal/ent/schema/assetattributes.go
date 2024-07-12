@@ -59,7 +59,9 @@ func (AssetAttributes) Annotations() []schema.Annotation {
 // Fields of the AssetAttributes.
 func (AssetAttributes) Fields() []ent.Field {
 	return []ent.Field{
+		field.Uint8("asset_type").Optional().Comment("资产属性类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它"),
 		field.String("name").Optional().Comment("名称"),
+		field.String("key").Optional().Comment("键"),
 	}
 }
 
@@ -73,8 +75,6 @@ func (AssetAttributes) Edges() []ent.Edge {
 func (AssetAttributes) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
-		internal.DeleteMixin{},
-		internal.Modifier{},
 	}
 }
 
