@@ -104,6 +104,16 @@ func (bm *BatteryModel) GetID() uint64 {
 	return bm.ID
 }
 
+// GetTableName returns table name for BatteryNew.
+func (bn *BatteryNew) GetTableName() string {
+	return "battery_new"
+}
+
+// GetID returns id for BatteryNew.
+func (bn *BatteryNew) GetID() uint64 {
+	return bn.ID
+}
+
 // GetTableName returns table name for Branch.
 func (b *Branch) GetTableName() string {
 	return "branch"
@@ -184,6 +194,20 @@ func (c *City) GetID() uint64 {
 
 func (c *City) GetName() string {
 	return c.Name
+}
+
+// GetTableName returns table name for CityNew.
+func (cn *CityNew) GetTableName() string {
+	return "city_new"
+}
+
+// GetID returns id for CityNew.
+func (cn *CityNew) GetID() uint64 {
+	return cn.ID
+}
+
+func (cn *CityNew) GetName() string {
+	return cn.Name
 }
 
 // GetTableName returns table name for Commission.

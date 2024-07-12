@@ -32,6 +32,8 @@ type Tx struct {
 	BatteryFlow *BatteryFlowClient
 	// BatteryModel is the client for interacting with the BatteryModel builders.
 	BatteryModel *BatteryModelClient
+	// BatteryNew is the client for interacting with the BatteryNew builders.
+	BatteryNew *BatteryNewClient
 	// Branch is the client for interacting with the Branch builders.
 	Branch *BranchClient
 	// BranchContract is the client for interacting with the BranchContract builders.
@@ -46,6 +48,8 @@ type Tx struct {
 	CabinetFault *CabinetFaultClient
 	// City is the client for interacting with the City builders.
 	City *CityClient
+	// CityNew is the client for interacting with the CityNew builders.
+	CityNew *CityNewClient
 	// Commission is the client for interacting with the Commission builders.
 	Commission *CommissionClient
 	// Contract is the client for interacting with the Contract builders.
@@ -322,6 +326,7 @@ func (tx *Tx) init() {
 	tx.Battery = NewBatteryClient(tx.config)
 	tx.BatteryFlow = NewBatteryFlowClient(tx.config)
 	tx.BatteryModel = NewBatteryModelClient(tx.config)
+	tx.BatteryNew = NewBatteryNewClient(tx.config)
 	tx.Branch = NewBranchClient(tx.config)
 	tx.BranchContract = NewBranchContractClient(tx.config)
 	tx.Business = NewBusinessClient(tx.config)
@@ -329,6 +334,7 @@ func (tx *Tx) init() {
 	tx.CabinetEc = NewCabinetEcClient(tx.config)
 	tx.CabinetFault = NewCabinetFaultClient(tx.config)
 	tx.City = NewCityClient(tx.config)
+	tx.CityNew = NewCityNewClient(tx.config)
 	tx.Commission = NewCommissionClient(tx.config)
 	tx.Contract = NewContractClient(tx.config)
 	tx.ContractTemplate = NewContractTemplateClient(tx.config)

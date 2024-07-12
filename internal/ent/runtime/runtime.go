@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
+	"github.com/auroraride/aurservd/internal/ent/batterynew"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/business"
@@ -23,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/citynew"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
@@ -287,6 +289,39 @@ func init() {
 	batterymodelDescCreatedAt := batterymodelFields[1].Descriptor()
 	// batterymodel.DefaultCreatedAt holds the default value on creation for the created_at field.
 	batterymodel.DefaultCreatedAt = batterymodelDescCreatedAt.Default.(func() time.Time)
+	batterynewMixin := schema.BatteryNew{}.Mixin()
+	batterynewMixinHooks2 := batterynewMixin[2].Hooks()
+	batterynew.Hooks[0] = batterynewMixinHooks2[0]
+	batterynewMixinFields0 := batterynewMixin[0].Fields()
+	_ = batterynewMixinFields0
+	batterynewFields := schema.BatteryNew{}.Fields()
+	_ = batterynewFields
+	// batterynewDescCreatedAt is the schema descriptor for created_at field.
+	batterynewDescCreatedAt := batterynewMixinFields0[0].Descriptor()
+	// batterynew.DefaultCreatedAt holds the default value on creation for the created_at field.
+	batterynew.DefaultCreatedAt = batterynewDescCreatedAt.Default.(func() time.Time)
+	// batterynewDescUpdatedAt is the schema descriptor for updated_at field.
+	batterynewDescUpdatedAt := batterynewMixinFields0[1].Descriptor()
+	// batterynew.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	batterynew.DefaultUpdatedAt = batterynewDescUpdatedAt.Default.(func() time.Time)
+	// batterynew.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	batterynew.UpdateDefaultUpdatedAt = batterynewDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// batterynewDescAssetLocationsType is the schema descriptor for asset_locations_type field.
+	batterynewDescAssetLocationsType := batterynewFields[2].Descriptor()
+	// batterynew.DefaultAssetLocationsType holds the default value on creation for the asset_locations_type field.
+	batterynew.DefaultAssetLocationsType = batterynewDescAssetLocationsType.Default.(uint8)
+	// batterynewDescEnable is the schema descriptor for enable field.
+	batterynewDescEnable := batterynewFields[6].Descriptor()
+	// batterynew.DefaultEnable holds the default value on creation for the enable field.
+	batterynew.DefaultEnable = batterynewDescEnable.Default.(bool)
+	// batterynewDescAssetStatus is the schema descriptor for asset_status field.
+	batterynewDescAssetStatus := batterynewFields[8].Descriptor()
+	// batterynew.DefaultAssetStatus holds the default value on creation for the asset_status field.
+	batterynew.DefaultAssetStatus = batterynewDescAssetStatus.Default.(uint8)
+	// batterynewDescStatus is the schema descriptor for status field.
+	batterynewDescStatus := batterynewFields[9].Descriptor()
+	// batterynew.DefaultStatus holds the default value on creation for the status field.
+	batterynew.DefaultStatus = batterynewDescStatus.Default.(uint64)
 	branchMixin := schema.Branch{}.Mixin()
 	branchMixinHooks2 := branchMixin[2].Hooks()
 	branch.Hooks[0] = branchMixinHooks2[0]
@@ -454,6 +489,31 @@ func init() {
 	cityDescCode := cityFields[3].Descriptor()
 	// city.CodeValidator is a validator for the "code" field. It is called by the builders before save.
 	city.CodeValidator = cityDescCode.Validators[0].(func(string) error)
+	citynewMixin := schema.CityNew{}.Mixin()
+	citynewMixinHooks2 := citynewMixin[2].Hooks()
+	citynew.Hooks[0] = citynewMixinHooks2[0]
+	citynewMixinFields0 := citynewMixin[0].Fields()
+	_ = citynewMixinFields0
+	citynewFields := schema.CityNew{}.Fields()
+	_ = citynewFields
+	// citynewDescCreatedAt is the schema descriptor for created_at field.
+	citynewDescCreatedAt := citynewMixinFields0[0].Descriptor()
+	// citynew.DefaultCreatedAt holds the default value on creation for the created_at field.
+	citynew.DefaultCreatedAt = citynewDescCreatedAt.Default.(func() time.Time)
+	// citynewDescUpdatedAt is the schema descriptor for updated_at field.
+	citynewDescUpdatedAt := citynewMixinFields0[1].Descriptor()
+	// citynew.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	citynew.DefaultUpdatedAt = citynewDescUpdatedAt.Default.(func() time.Time)
+	// citynew.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	citynew.UpdateDefaultUpdatedAt = citynewDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// citynewDescName is the schema descriptor for name field.
+	citynewDescName := citynewFields[2].Descriptor()
+	// citynew.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	citynew.NameValidator = citynewDescName.Validators[0].(func(string) error)
+	// citynewDescCode is the schema descriptor for code field.
+	citynewDescCode := citynewFields[3].Descriptor()
+	// citynew.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	citynew.CodeValidator = citynewDescCode.Validators[0].(func(string) error)
 	commissionMixin := schema.Commission{}.Mixin()
 	commissionMixinHooks2 := commissionMixin[2].Hooks()
 	commission.Hooks[0] = commissionMixinHooks2[0]

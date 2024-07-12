@@ -140,5 +140,7 @@ func Run() {
 	loadMaintainerRoutes() // 运维路由
 	loadPromotionRoutes()
 
+	loadAssersRoutes()
+
 	zap.L().Fatal("路由启动失败", zap.Error(e.Start(cfg.Bind)))
 }

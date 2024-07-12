@@ -33,6 +33,9 @@ type BatteryFlow func(*sql.Selector)
 // BatteryModel is the predicate function for batterymodel builders.
 type BatteryModel func(*sql.Selector)
 
+// BatteryNew is the predicate function for batterynew builders.
+type BatteryNew func(*sql.Selector)
+
 // Branch is the predicate function for branch builders.
 type Branch func(*sql.Selector)
 
@@ -53,6 +56,9 @@ type CabinetFault func(*sql.Selector)
 
 // City is the predicate function for city builders.
 type City func(*sql.Selector)
+
+// CityNew is the predicate function for citynew builders.
+type CityNew func(*sql.Selector)
 
 // Commission is the predicate function for commission builders.
 type Commission func(*sql.Selector)

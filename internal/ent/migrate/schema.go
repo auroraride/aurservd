@@ -685,6 +685,64 @@ var (
 			},
 		},
 	}
+	// BatteryNewColumns holds the columns for the "battery_new" table.
+	BatteryNewColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "电池编号"},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "所属团签"},
+		{Name: "asset_locations_type", Type: field.TypeUint8, Comment: "资产位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维", Default: 1},
+		{Name: "asset_locations_id", Type: field.TypeUint64, Comment: "资产位置ID"},
+		{Name: "asset_locations", Type: field.TypeString, Nullable: true, Comment: "资产位置"},
+		{Name: "brand", Type: field.TypeString, Comment: "品牌"},
+		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: false},
+		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
+		{Name: "asset_status", Type: field.TypeUint8, Comment: "资产状态0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废", Default: 1},
+		{Name: "status", Type: field.TypeUint64, Comment: "电池状态 1:正常 2:故障 3:报废", Default: 1},
+		{Name: "scrap_reason_type", Type: field.TypeUint8, Nullable: true, Comment: "报废原因 1:丢失 2:损坏 3:其他"},
+		{Name: "scrap_at", Type: field.TypeTime, Nullable: true, Comment: "报废时间"},
+		{Name: "operate_id", Type: field.TypeUint64, Nullable: true, Comment: "操作报废人员ID"},
+		{Name: "operate_role", Type: field.TypeUint64, Nullable: true, Comment: "操作人员角色"},
+		{Name: "operate_user", Type: field.TypeString, Nullable: true, Comment: "操作人员"},
+		{Name: "warehouse_id", Type: field.TypeUint64, Nullable: true, Comment: "仓库ID"},
+		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
+	}
+	// BatteryNewTable holds the schema information for the "battery_new" table.
+	BatteryNewTable = &schema.Table{
+		Name:       "battery_new",
+		Columns:    BatteryNewColumns,
+		PrimaryKey: []*schema.Column{BatteryNewColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "battery_new_city_city",
+				Columns:    []*schema.Column{BatteryNewColumns[23]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "batterynew_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{BatteryNewColumns[1]},
+			},
+			{
+				Name:    "batterynew_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{BatteryNewColumns[3]},
+			},
+			{
+				Name:    "batterynew_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{BatteryNewColumns[23]},
+			},
+		},
+	}
 	// BranchColumns holds the columns for the "branch" table.
 	BranchColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -1319,6 +1377,50 @@ var (
 				Name:    "city_parent_id",
 				Unique:  false,
 				Columns: []*schema.Column{CityColumns[12]},
+			},
+		},
+	}
+	// CityNewColumns holds the columns for the "city_new" table.
+	CityNewColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "open", Type: field.TypeBool, Nullable: true, Comment: "启用"},
+		{Name: "name", Type: field.TypeString, Size: 100, Comment: "城市"},
+		{Name: "code", Type: field.TypeString, Size: 10, Comment: "城市编号"},
+		{Name: "parent_id", Type: field.TypeUint64, Nullable: true, Comment: "父级"},
+		{Name: "lng", Type: field.TypeFloat64, Nullable: true, Comment: "经度"},
+		{Name: "lat", Type: field.TypeFloat64, Nullable: true, Comment: "纬度"},
+	}
+	// CityNewTable holds the schema information for the "city_new" table.
+	CityNewTable = &schema.Table{
+		Name:       "city_new",
+		Columns:    CityNewColumns,
+		PrimaryKey: []*schema.Column{CityNewColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "citynew_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CityNewColumns[1]},
+			},
+			{
+				Name:    "citynew_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{CityNewColumns[3]},
+			},
+			{
+				Name:    "citynew_open",
+				Unique:  false,
+				Columns: []*schema.Column{CityNewColumns[7]},
+			},
+			{
+				Name:    "citynew_parent_id",
+				Unique:  false,
+				Columns: []*schema.Column{CityNewColumns[10]},
 			},
 		},
 	}
@@ -6266,6 +6368,7 @@ var (
 		BatteryTable,
 		BatteryFlowTable,
 		BatteryModelTable,
+		BatteryNewTable,
 		BranchTable,
 		BranchContractTable,
 		BusinessTable,
@@ -6273,6 +6376,7 @@ var (
 		CabinetEcTable,
 		CabinetFaultTable,
 		CityTable,
+		CityNewTable,
 		CommissionTable,
 		ContractTable,
 		ContractTemplateTable,
@@ -6406,6 +6510,10 @@ func init() {
 	BatteryModelTable.Annotation = &entsql.Annotation{
 		Table: "battery_model",
 	}
+	BatteryNewTable.ForeignKeys[0].RefTable = CityTable
+	BatteryNewTable.Annotation = &entsql.Annotation{
+		Table: "battery_new",
+	}
 	BranchTable.ForeignKeys[0].RefTable = CityTable
 	BranchTable.Annotation = &entsql.Annotation{
 		Table: "branch",
@@ -6450,6 +6558,9 @@ func init() {
 	CityTable.ForeignKeys[0].RefTable = CityTable
 	CityTable.Annotation = &entsql.Annotation{
 		Table: "city",
+	}
+	CityNewTable.Annotation = &entsql.Annotation{
+		Table: "city_new",
 	}
 	CommissionTable.ForeignKeys[0].RefTable = BusinessTable
 	CommissionTable.ForeignKeys[1].RefTable = SubscribeTable
