@@ -288,6 +288,37 @@ func (bmq *BatteryModelQuery) PaginationResult(req model.PaginationReq) model.Pa
 	}
 }
 
+// Pagination returns pagination query builder for BatteryNewQuery.
+func (bnq *BatteryNewQuery) Pagination(req model.PaginationReq) *BatteryNewQuery {
+	bnq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return bnq
+}
+
+// PaginationItems returns pagination query builder for BatteryNewQuery.
+func (bnq *BatteryNewQuery) PaginationItemsX(req model.PaginationReq) any {
+	return bnq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for BatteryNewQuery.
+func (bnq *BatteryNewQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := bnq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for BranchQuery.
 func (bq *BranchQuery) Pagination(req model.PaginationReq) *BranchQuery {
 	bq.Offset(req.GetOffset()).Limit(req.GetLimit())
@@ -488,6 +519,37 @@ func (cq *CityQuery) PaginationItemsX(req model.PaginationReq) any {
 // PaginationResult returns pagination for CityQuery.
 func (cq *CityQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := cq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for CityNewQuery.
+func (cnq *CityNewQuery) Pagination(req model.PaginationReq) *CityNewQuery {
+	cnq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return cnq
+}
+
+// PaginationItems returns pagination query builder for CityNewQuery.
+func (cnq *CityNewQuery) PaginationItemsX(req model.PaginationReq) any {
+	return cnq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for CityNewQuery.
+func (cnq *CityNewQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := cnq.Clone()
 	query.order = nil
 	query.ctx.Limit = nil
 	query.ctx.Offset = nil

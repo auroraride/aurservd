@@ -117,6 +117,18 @@ func (f BatteryModelFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BatteryModelMutation", m)
 }
 
+// The BatteryNewFunc type is an adapter to allow the use of ordinary
+// function as BatteryNew mutator.
+type BatteryNewFunc func(context.Context, *ent.BatteryNewMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BatteryNewFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.BatteryNewMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BatteryNewMutation", m)
+}
+
 // The BranchFunc type is an adapter to allow the use of ordinary
 // function as Branch mutator.
 type BranchFunc func(context.Context, *ent.BranchMutation) (ent.Value, error)
@@ -199,6 +211,18 @@ func (f CityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CityMutation", m)
+}
+
+// The CityNewFunc type is an adapter to allow the use of ordinary
+// function as CityNew mutator.
+type CityNewFunc func(context.Context, *ent.CityNewMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CityNewFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CityNewMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CityNewMutation", m)
 }
 
 // The CommissionFunc type is an adapter to allow the use of ordinary

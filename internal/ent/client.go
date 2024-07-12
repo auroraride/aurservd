@@ -24,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
+	"github.com/auroraride/aurservd/internal/ent/batterynew"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/business"
@@ -31,6 +32,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/citynew"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
@@ -126,6 +128,8 @@ type Client struct {
 	BatteryFlow *BatteryFlowClient
 	// BatteryModel is the client for interacting with the BatteryModel builders.
 	BatteryModel *BatteryModelClient
+	// BatteryNew is the client for interacting with the BatteryNew builders.
+	BatteryNew *BatteryNewClient
 	// Branch is the client for interacting with the Branch builders.
 	Branch *BranchClient
 	// BranchContract is the client for interacting with the BranchContract builders.
@@ -140,6 +144,8 @@ type Client struct {
 	CabinetFault *CabinetFaultClient
 	// City is the client for interacting with the City builders.
 	City *CityClient
+	// CityNew is the client for interacting with the CityNew builders.
+	CityNew *CityNewClient
 	// Commission is the client for interacting with the Commission builders.
 	Commission *CommissionClient
 	// Contract is the client for interacting with the Contract builders.
@@ -296,6 +302,7 @@ func (c *Client) init() {
 	c.Battery = NewBatteryClient(c.config)
 	c.BatteryFlow = NewBatteryFlowClient(c.config)
 	c.BatteryModel = NewBatteryModelClient(c.config)
+	c.BatteryNew = NewBatteryNewClient(c.config)
 	c.Branch = NewBranchClient(c.config)
 	c.BranchContract = NewBranchContractClient(c.config)
 	c.Business = NewBusinessClient(c.config)
@@ -303,6 +310,7 @@ func (c *Client) init() {
 	c.CabinetEc = NewCabinetEcClient(c.config)
 	c.CabinetFault = NewCabinetFaultClient(c.config)
 	c.City = NewCityClient(c.config)
+	c.CityNew = NewCityNewClient(c.config)
 	c.Commission = NewCommissionClient(c.config)
 	c.Contract = NewContractClient(c.config)
 	c.ContractTemplate = NewContractTemplateClient(c.config)
@@ -472,6 +480,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Battery:                    NewBatteryClient(cfg),
 		BatteryFlow:                NewBatteryFlowClient(cfg),
 		BatteryModel:               NewBatteryModelClient(cfg),
+		BatteryNew:                 NewBatteryNewClient(cfg),
 		Branch:                     NewBranchClient(cfg),
 		BranchContract:             NewBranchContractClient(cfg),
 		Business:                   NewBusinessClient(cfg),
@@ -479,6 +488,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		CabinetEc:                  NewCabinetEcClient(cfg),
 		CabinetFault:               NewCabinetFaultClient(cfg),
 		City:                       NewCityClient(cfg),
+		CityNew:                    NewCityNewClient(cfg),
 		Commission:                 NewCommissionClient(cfg),
 		Contract:                   NewContractClient(cfg),
 		ContractTemplate:           NewContractTemplateClient(cfg),
@@ -575,6 +585,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Battery:                    NewBatteryClient(cfg),
 		BatteryFlow:                NewBatteryFlowClient(cfg),
 		BatteryModel:               NewBatteryModelClient(cfg),
+		BatteryNew:                 NewBatteryNewClient(cfg),
 		Branch:                     NewBranchClient(cfg),
 		BranchContract:             NewBranchContractClient(cfg),
 		Business:                   NewBusinessClient(cfg),
@@ -582,6 +593,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		CabinetEc:                  NewCabinetEcClient(cfg),
 		CabinetFault:               NewCabinetFaultClient(cfg),
 		City:                       NewCityClient(cfg),
+		CityNew:                    NewCityNewClient(cfg),
 		Commission:                 NewCommissionClient(cfg),
 		Contract:                   NewContractClient(cfg),
 		ContractTemplate:           NewContractTemplateClient(cfg),
@@ -680,18 +692,18 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Assistance, c.Attendance,
-		c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract,
-		c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City, c.Commission,
-		c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate,
-		c.Ebike, c.EbikeBrand, c.EbikeBrandAttribute, c.Employee, c.Enterprise,
-		c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
-		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
-		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
-		c.Goods, c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Order,
-		c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog,
-		c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
-		c.PromotionCommissionPlan, c.PromotionEarnings, c.PromotionGrowth,
-		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
+		c.Battery, c.BatteryFlow, c.BatteryModel, c.BatteryNew, c.Branch,
+		c.BranchContract, c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City,
+		c.CityNew, c.Commission, c.Contract, c.ContractTemplate, c.Coupon,
+		c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand,
+		c.EbikeBrandAttribute, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
+		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
+		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
+		c.Exchange, c.Export, c.Fault, c.Feedback, c.Goods, c.Instructions,
+		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
+		c.PlanIntroduce, c.PointLog, c.PromotionAchievement, c.PromotionBankCard,
+		c.PromotionCommission, c.PromotionCommissionPlan, c.PromotionEarnings,
+		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
@@ -708,18 +720,18 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Assistance, c.Attendance,
-		c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract,
-		c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City, c.Commission,
-		c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate,
-		c.Ebike, c.EbikeBrand, c.EbikeBrandAttribute, c.Employee, c.Enterprise,
-		c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
-		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
-		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
-		c.Goods, c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Order,
-		c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog,
-		c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
-		c.PromotionCommissionPlan, c.PromotionEarnings, c.PromotionGrowth,
-		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
+		c.Battery, c.BatteryFlow, c.BatteryModel, c.BatteryNew, c.Branch,
+		c.BranchContract, c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City,
+		c.CityNew, c.Commission, c.Contract, c.ContractTemplate, c.Coupon,
+		c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand,
+		c.EbikeBrandAttribute, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
+		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
+		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
+		c.Exchange, c.Export, c.Fault, c.Feedback, c.Goods, c.Instructions,
+		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
+		c.PlanIntroduce, c.PointLog, c.PromotionAchievement, c.PromotionBankCard,
+		c.PromotionCommission, c.PromotionCommissionPlan, c.PromotionEarnings,
+		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
@@ -752,6 +764,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.BatteryFlow.mutate(ctx, m)
 	case *BatteryModelMutation:
 		return c.BatteryModel.mutate(ctx, m)
+	case *BatteryNewMutation:
+		return c.BatteryNew.mutate(ctx, m)
 	case *BranchMutation:
 		return c.Branch.mutate(ctx, m)
 	case *BranchContractMutation:
@@ -766,6 +780,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.CabinetFault.mutate(ctx, m)
 	case *CityMutation:
 		return c.City.mutate(ctx, m)
+	case *CityNewMutation:
+		return c.CityNew.mutate(ctx, m)
 	case *CommissionMutation:
 		return c.Commission.mutate(ctx, m)
 	case *ContractMutation:
@@ -2638,6 +2654,156 @@ func (c *BatteryModelClient) mutate(ctx context.Context, m *BatteryModelMutation
 	}
 }
 
+// BatteryNewClient is a client for the BatteryNew schema.
+type BatteryNewClient struct {
+	config
+}
+
+// NewBatteryNewClient returns a client for the BatteryNew from the given config.
+func NewBatteryNewClient(c config) *BatteryNewClient {
+	return &BatteryNewClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `batterynew.Hooks(f(g(h())))`.
+func (c *BatteryNewClient) Use(hooks ...Hook) {
+	c.hooks.BatteryNew = append(c.hooks.BatteryNew, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `batterynew.Intercept(f(g(h())))`.
+func (c *BatteryNewClient) Intercept(interceptors ...Interceptor) {
+	c.inters.BatteryNew = append(c.inters.BatteryNew, interceptors...)
+}
+
+// Create returns a builder for creating a BatteryNew entity.
+func (c *BatteryNewClient) Create() *BatteryNewCreate {
+	mutation := newBatteryNewMutation(c.config, OpCreate)
+	return &BatteryNewCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of BatteryNew entities.
+func (c *BatteryNewClient) CreateBulk(builders ...*BatteryNewCreate) *BatteryNewCreateBulk {
+	return &BatteryNewCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *BatteryNewClient) MapCreateBulk(slice any, setFunc func(*BatteryNewCreate, int)) *BatteryNewCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &BatteryNewCreateBulk{err: fmt.Errorf("calling to BatteryNewClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*BatteryNewCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &BatteryNewCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for BatteryNew.
+func (c *BatteryNewClient) Update() *BatteryNewUpdate {
+	mutation := newBatteryNewMutation(c.config, OpUpdate)
+	return &BatteryNewUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BatteryNewClient) UpdateOne(bn *BatteryNew) *BatteryNewUpdateOne {
+	mutation := newBatteryNewMutation(c.config, OpUpdateOne, withBatteryNew(bn))
+	return &BatteryNewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BatteryNewClient) UpdateOneID(id uint64) *BatteryNewUpdateOne {
+	mutation := newBatteryNewMutation(c.config, OpUpdateOne, withBatteryNewID(id))
+	return &BatteryNewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for BatteryNew.
+func (c *BatteryNewClient) Delete() *BatteryNewDelete {
+	mutation := newBatteryNewMutation(c.config, OpDelete)
+	return &BatteryNewDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *BatteryNewClient) DeleteOne(bn *BatteryNew) *BatteryNewDeleteOne {
+	return c.DeleteOneID(bn.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *BatteryNewClient) DeleteOneID(id uint64) *BatteryNewDeleteOne {
+	builder := c.Delete().Where(batterynew.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BatteryNewDeleteOne{builder}
+}
+
+// Query returns a query builder for BatteryNew.
+func (c *BatteryNewClient) Query() *BatteryNewQuery {
+	return &BatteryNewQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeBatteryNew},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a BatteryNew entity by its id.
+func (c *BatteryNewClient) Get(ctx context.Context, id uint64) (*BatteryNew, error) {
+	return c.Query().Where(batterynew.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BatteryNewClient) GetX(ctx context.Context, id uint64) *BatteryNew {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCity queries the city edge of a BatteryNew.
+func (c *BatteryNewClient) QueryCity(bn *BatteryNew) *CityQuery {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := bn.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(batterynew.Table, batterynew.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, batterynew.CityTable, batterynew.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(bn.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *BatteryNewClient) Hooks() []Hook {
+	hooks := c.hooks.BatteryNew
+	return append(hooks[:len(hooks):len(hooks)], batterynew.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *BatteryNewClient) Interceptors() []Interceptor {
+	return c.inters.BatteryNew
+}
+
+func (c *BatteryNewClient) mutate(ctx context.Context, m *BatteryNewMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BatteryNewCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BatteryNewUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BatteryNewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BatteryNewDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown BatteryNew mutation op: %q", m.Op())
+	}
+}
+
 // BranchClient is a client for the Branch schema.
 type BranchClient struct {
 	config
@@ -4164,6 +4330,140 @@ func (c *CityClient) mutate(ctx context.Context, m *CityMutation) (Value, error)
 		return (&CityDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown City mutation op: %q", m.Op())
+	}
+}
+
+// CityNewClient is a client for the CityNew schema.
+type CityNewClient struct {
+	config
+}
+
+// NewCityNewClient returns a client for the CityNew from the given config.
+func NewCityNewClient(c config) *CityNewClient {
+	return &CityNewClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `citynew.Hooks(f(g(h())))`.
+func (c *CityNewClient) Use(hooks ...Hook) {
+	c.hooks.CityNew = append(c.hooks.CityNew, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `citynew.Intercept(f(g(h())))`.
+func (c *CityNewClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CityNew = append(c.inters.CityNew, interceptors...)
+}
+
+// Create returns a builder for creating a CityNew entity.
+func (c *CityNewClient) Create() *CityNewCreate {
+	mutation := newCityNewMutation(c.config, OpCreate)
+	return &CityNewCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CityNew entities.
+func (c *CityNewClient) CreateBulk(builders ...*CityNewCreate) *CityNewCreateBulk {
+	return &CityNewCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CityNewClient) MapCreateBulk(slice any, setFunc func(*CityNewCreate, int)) *CityNewCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CityNewCreateBulk{err: fmt.Errorf("calling to CityNewClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CityNewCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CityNewCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CityNew.
+func (c *CityNewClient) Update() *CityNewUpdate {
+	mutation := newCityNewMutation(c.config, OpUpdate)
+	return &CityNewUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CityNewClient) UpdateOne(cn *CityNew) *CityNewUpdateOne {
+	mutation := newCityNewMutation(c.config, OpUpdateOne, withCityNew(cn))
+	return &CityNewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CityNewClient) UpdateOneID(id uint64) *CityNewUpdateOne {
+	mutation := newCityNewMutation(c.config, OpUpdateOne, withCityNewID(id))
+	return &CityNewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CityNew.
+func (c *CityNewClient) Delete() *CityNewDelete {
+	mutation := newCityNewMutation(c.config, OpDelete)
+	return &CityNewDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CityNewClient) DeleteOne(cn *CityNew) *CityNewDeleteOne {
+	return c.DeleteOneID(cn.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CityNewClient) DeleteOneID(id uint64) *CityNewDeleteOne {
+	builder := c.Delete().Where(citynew.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CityNewDeleteOne{builder}
+}
+
+// Query returns a query builder for CityNew.
+func (c *CityNewClient) Query() *CityNewQuery {
+	return &CityNewQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCityNew},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CityNew entity by its id.
+func (c *CityNewClient) Get(ctx context.Context, id uint64) (*CityNew, error) {
+	return c.Query().Where(citynew.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CityNewClient) GetX(ctx context.Context, id uint64) *CityNew {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CityNewClient) Hooks() []Hook {
+	hooks := c.hooks.CityNew
+	return append(hooks[:len(hooks):len(hooks)], citynew.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *CityNewClient) Interceptors() []Interceptor {
+	return c.inters.CityNew
+}
+
+func (c *CityNewClient) mutate(ctx context.Context, m *CityNewMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CityNewCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CityNewUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CityNewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CityNewDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CityNew mutation op: %q", m.Op())
 	}
 }
 
@@ -17269,41 +17569,41 @@ func (c *VersionClient) mutate(ctx context.Context, m *VersionMutation) (Value, 
 type (
 	hooks struct {
 		Activity, Agent, Agreement, Allocate, Assistance, Attendance, Battery,
-		BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
-		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
-		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, EbikeBrandAttribute,
-		Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
-		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
-		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Goods,
-		Instructions, Inventory, Maintainer, Manager, Order, OrderRefund, Person, Plan,
-		PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
-		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
-		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
-		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
-		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
-		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
-		RiderPhoneDevice, Role, Setting, Stock, StockSummary, Store, StoreGoods,
-		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
-		Version []ent.Hook
+		BatteryFlow, BatteryModel, BatteryNew, Branch, BranchContract, Business,
+		Cabinet, CabinetEc, CabinetFault, City, CityNew, Commission, Contract,
+		ContractTemplate, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand,
+		EbikeBrandAttribute, Employee, Enterprise, EnterpriseBatterySwap,
+		EnterpriseBill, EnterpriseContract, EnterprisePrepayment, EnterprisePrice,
+		EnterpriseStatement, EnterpriseStation, Exception, Exchange, Export, Fault,
+		Feedback, Goods, Instructions, Inventory, Maintainer, Manager, Order,
+		OrderRefund, Person, Plan, PlanIntroduce, PointLog, PromotionAchievement,
+		PromotionBankCard, PromotionCommission, PromotionCommissionPlan,
+		PromotionEarnings, PromotionGrowth, PromotionLevel, PromotionLevelTask,
+		PromotionMember, PromotionMemberCommission, PromotionPerson,
+		PromotionPrivilege, PromotionReferrals, PromotionReferralsProgress,
+		PromotionSetting, PromotionWithdrawal, Question, QuestionCategory, Reserve,
+		Rider, RiderFollowUp, RiderPhoneDevice, Role, Setting, Stock, StockSummary,
+		Store, StoreGoods, Subscribe, SubscribeAlter, SubscribePause,
+		SubscribeReminder, SubscribeSuspend, Version []ent.Hook
 	}
 	inters struct {
 		Activity, Agent, Agreement, Allocate, Assistance, Attendance, Battery,
-		BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
-		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
-		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, EbikeBrandAttribute,
-		Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
-		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
-		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Goods,
-		Instructions, Inventory, Maintainer, Manager, Order, OrderRefund, Person, Plan,
-		PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
-		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
-		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
-		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
-		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
-		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
-		RiderPhoneDevice, Role, Setting, Stock, StockSummary, Store, StoreGoods,
-		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
-		Version []ent.Interceptor
+		BatteryFlow, BatteryModel, BatteryNew, Branch, BranchContract, Business,
+		Cabinet, CabinetEc, CabinetFault, City, CityNew, Commission, Contract,
+		ContractTemplate, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand,
+		EbikeBrandAttribute, Employee, Enterprise, EnterpriseBatterySwap,
+		EnterpriseBill, EnterpriseContract, EnterprisePrepayment, EnterprisePrice,
+		EnterpriseStatement, EnterpriseStation, Exception, Exchange, Export, Fault,
+		Feedback, Goods, Instructions, Inventory, Maintainer, Manager, Order,
+		OrderRefund, Person, Plan, PlanIntroduce, PointLog, PromotionAchievement,
+		PromotionBankCard, PromotionCommission, PromotionCommissionPlan,
+		PromotionEarnings, PromotionGrowth, PromotionLevel, PromotionLevelTask,
+		PromotionMember, PromotionMemberCommission, PromotionPerson,
+		PromotionPrivilege, PromotionReferrals, PromotionReferralsProgress,
+		PromotionSetting, PromotionWithdrawal, Question, QuestionCategory, Reserve,
+		Rider, RiderFollowUp, RiderPhoneDevice, Role, Setting, Stock, StockSummary,
+		Store, StoreGoods, Subscribe, SubscribeAlter, SubscribePause,
+		SubscribeReminder, SubscribeSuspend, Version []ent.Interceptor
 	}
 )
 

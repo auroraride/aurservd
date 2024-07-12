@@ -114,6 +114,13 @@ func (c *BatteryModelClient) ModifyOne(old *BatteryModel, data any) *BatteryMode
 	return EntitySetAttributes[BatteryModelUpdateOne, BatteryModel](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for BatteryNew.
+func (c *BatteryNewClient) ModifyOne(old *BatteryNew, data any) *BatteryNewUpdateOne {
+	mutation := newBatteryNewMutation(c.config, OpUpdateOne, withBatteryNew(old))
+	up := &BatteryNewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[BatteryNewUpdateOne, BatteryNew](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Branch.
 func (c *BranchClient) ModifyOne(old *Branch, data any) *BranchUpdateOne {
 	mutation := newBranchMutation(c.config, OpUpdateOne, withBranch(old))
@@ -161,6 +168,13 @@ func (c *CityClient) ModifyOne(old *City, data any) *CityUpdateOne {
 	mutation := newCityMutation(c.config, OpUpdateOne, withCity(old))
 	up := &CityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return EntitySetAttributes[CityUpdateOne, City](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for CityNew.
+func (c *CityNewClient) ModifyOne(old *CityNew, data any) *CityNewUpdateOne {
+	mutation := newCityNewMutation(c.config, OpUpdateOne, withCityNew(old))
+	up := &CityNewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[CityNewUpdateOne, CityNew](up, old, data)
 }
 
 // ModifyOne returns an update with pointer struct builder for Commission.

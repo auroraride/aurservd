@@ -21,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
+	"github.com/auroraride/aurservd/internal/ent/batterynew"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/business"
@@ -28,6 +29,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/citynew"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/contracttemplate"
@@ -165,6 +167,7 @@ func checkColumn(table, column string) error {
 			battery.Table:                    battery.ValidColumn,
 			batteryflow.Table:                batteryflow.ValidColumn,
 			batterymodel.Table:               batterymodel.ValidColumn,
+			batterynew.Table:                 batterynew.ValidColumn,
 			branch.Table:                     branch.ValidColumn,
 			branchcontract.Table:             branchcontract.ValidColumn,
 			business.Table:                   business.ValidColumn,
@@ -172,6 +175,7 @@ func checkColumn(table, column string) error {
 			cabinetec.Table:                  cabinetec.ValidColumn,
 			cabinetfault.Table:               cabinetfault.ValidColumn,
 			city.Table:                       city.ValidColumn,
+			citynew.Table:                    citynew.ValidColumn,
 			commission.Table:                 commission.ValidColumn,
 			contract.Table:                   contract.ValidColumn,
 			contracttemplate.Table:           contracttemplate.ValidColumn,
