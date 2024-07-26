@@ -161,10 +161,21 @@ func (b *ebikeBiz) BatchModify(req *definition.EbikeBatchModifyReq) []error {
 		return append(errs, fmt.Errorf("brandID:%d, %s", req.BrandID, "未找到品牌"))
 	}
 
+	// 查询电车id
+	all, _ := ent.Database.Ebike.Query().Where(ebike.SnIn(req.SN...)).All(b.ctx)
+	if len(all) == 0 {
+		return append(errs, fmt.Errorf("sn:%s, %s", req.SN, "未找到车电"))
+	}
+
+	ids := make([]uint64, 0)
+	for _, v := range all {
+		ids = append(ids, v.ID)
+	}
+
 	// 更新库存中的电车型号
 	err := ent.Database.Stock.Update().
 		Where(
-			stock.SnIn(req.SN...),
+			stock.EbikeIDIn(ids...),
 			stock.MaterialEQ(stock.MaterialEbike),
 		).
 		SetName(item.Name).
