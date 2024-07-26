@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
@@ -153,5 +154,35 @@ func (b *ebikeBiz) BatchModify(req *definition.EbikeBatchModifyReq) []error {
 			errs = append(errs, fmt.Errorf("sn:%s, %s", v, err.Error()))
 		}
 	}
+
+	// 查询品牌名称
+	item, _ := ent.Database.EbikeBrand.QueryNotDeleted().Where(ebikebrand.ID(req.BrandID)).First(b.ctx)
+	if item == nil {
+		return append(errs, fmt.Errorf("brandID:%d, %s", req.BrandID, "未找到品牌"))
+	}
+
+	// 查询电车id
+	all, _ := ent.Database.Ebike.Query().Where(ebike.SnIn(req.SN...)).All(b.ctx)
+	if len(all) == 0 {
+		return append(errs, fmt.Errorf("sn:%s, %s", req.SN, "未找到车电"))
+	}
+
+	ids := make([]uint64, 0)
+	for _, v := range all {
+		ids = append(ids, v.ID)
+	}
+
+	// 更新库存中的电车型号
+	err := ent.Database.Stock.Update().
+		Where(
+			stock.EbikeIDIn(ids...),
+			stock.MaterialEQ(stock.MaterialEbike),
+		).
+		SetName(item.Name).
+		SetBrandID(req.BrandID).Exec(b.ctx)
+	if err != nil {
+		return append(errs, err)
+	}
+
 	return errs
 }
