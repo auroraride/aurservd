@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -35,6 +36,7 @@ type AssetQuery struct {
 	withBrand     *EbikeBrandQuery
 	withModel     *BatteryModelQuery
 	withCity      *CityQuery
+	withMaterial  *MaterialQuery
 	withValues    *AssetAttributeValuesQuery
 	withWarehouse *WarehouseQuery
 	withStore     *StoreQuery
@@ -138,6 +140,28 @@ func (aq *AssetQuery) QueryCity() *CityQuery {
 			sqlgraph.From(asset.Table, asset.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, asset.CityTable, asset.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMaterial chains the current query on the "material" edge.
+func (aq *AssetQuery) QueryMaterial() *MaterialQuery {
+	query := (&MaterialClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(material.Table, material.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, asset.MaterialTable, asset.MaterialColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -494,6 +518,7 @@ func (aq *AssetQuery) Clone() *AssetQuery {
 		withBrand:     aq.withBrand.Clone(),
 		withModel:     aq.withModel.Clone(),
 		withCity:      aq.withCity.Clone(),
+		withMaterial:  aq.withMaterial.Clone(),
 		withValues:    aq.withValues.Clone(),
 		withWarehouse: aq.withWarehouse.Clone(),
 		withStore:     aq.withStore.Clone(),
@@ -537,6 +562,17 @@ func (aq *AssetQuery) WithCity(opts ...func(*CityQuery)) *AssetQuery {
 		opt(query)
 	}
 	aq.withCity = query
+	return aq
+}
+
+// WithMaterial tells the query-builder to eager-load the nodes that are connected to
+// the "material" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithMaterial(opts ...func(*MaterialQuery)) *AssetQuery {
+	query := (&MaterialClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withMaterial = query
 	return aq
 }
 
@@ -695,10 +731,11 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 	var (
 		nodes       = []*Asset{}
 		_spec       = aq.querySpec()
-		loadedTypes = [10]bool{
+		loadedTypes = [11]bool{
 			aq.withBrand != nil,
 			aq.withModel != nil,
 			aq.withCity != nil,
+			aq.withMaterial != nil,
 			aq.withValues != nil,
 			aq.withWarehouse != nil,
 			aq.withStore != nil,
@@ -744,6 +781,12 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 	if query := aq.withCity; query != nil {
 		if err := aq.loadCity(ctx, query, nodes, nil,
 			func(n *Asset, e *City) { n.Edges.City = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withMaterial; query != nil {
+		if err := aq.loadMaterial(ctx, query, nodes, nil,
+			func(n *Asset, e *Material) { n.Edges.Material = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -882,6 +925,38 @@ func (aq *AssetQuery) loadCity(ctx context.Context, query *CityQuery, nodes []*A
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (aq *AssetQuery) loadMaterial(ctx context.Context, query *MaterialQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *Material)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Asset)
+	for i := range nodes {
+		if nodes[i].MaterialID == nil {
+			continue
+		}
+		fk := *nodes[i].MaterialID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(material.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "material_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -1131,6 +1206,9 @@ func (aq *AssetQuery) querySpec() *sqlgraph.QuerySpec {
 		if aq.withCity != nil {
 			_spec.Node.AddColumnOnce(asset.FieldCityID)
 		}
+		if aq.withMaterial != nil {
+			_spec.Node.AddColumnOnce(asset.FieldMaterialID)
+		}
 		if aq.withWarehouse != nil {
 			_spec.Node.AddColumnOnce(asset.FieldLocationsID)
 		}
@@ -1220,6 +1298,7 @@ var (
 	AssetQueryWithBrand     AssetQueryWith = "Brand"
 	AssetQueryWithModel     AssetQueryWith = "Model"
 	AssetQueryWithCity      AssetQueryWith = "City"
+	AssetQueryWithMaterial  AssetQueryWith = "Material"
 	AssetQueryWithValues    AssetQueryWith = "Values"
 	AssetQueryWithWarehouse AssetQueryWith = "Warehouse"
 	AssetQueryWithStore     AssetQueryWith = "Store"
@@ -1238,6 +1317,8 @@ func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
 			aq.WithModel()
 		case AssetQueryWithCity:
 			aq.WithCity()
+		case AssetQueryWithMaterial:
+			aq.WithMaterial()
 		case AssetQueryWithValues:
 			aq.WithValues()
 		case AssetQueryWithWarehouse:

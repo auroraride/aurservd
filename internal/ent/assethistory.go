@@ -42,6 +42,8 @@ type AssetHistory struct {
 	ToLocationType int `json:"to_location_type,omitempty"`
 	// 目标位置ID
 	ToLocationID int `json:"to_location_id,omitempty"`
+	// 变动类型 1:调拨 2:报废 3:入库 4:出库 5:盘点 6:维修 7:维修完成 8:维修取消 9:维修退回 10:维修报废 11:维修报废取消 12:维修报废退回 13:维修报废完成
+	ChangeType uint8 `json:"change_type,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetHistoryQuery when eager-loading is set.
 	Edges        AssetHistoryEdges `json:"edges"`
@@ -75,7 +77,7 @@ func (*AssetHistory) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case assethistory.FieldCreator, assethistory.FieldLastModifier:
 			values[i] = new([]byte)
-		case assethistory.FieldID, assethistory.FieldAssetID, assethistory.FieldFromLocationType, assethistory.FieldFromLocationID, assethistory.FieldToLocationType, assethistory.FieldToLocationID:
+		case assethistory.FieldID, assethistory.FieldAssetID, assethistory.FieldFromLocationType, assethistory.FieldFromLocationID, assethistory.FieldToLocationType, assethistory.FieldToLocationID, assethistory.FieldChangeType:
 			values[i] = new(sql.NullInt64)
 		case assethistory.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -174,6 +176,12 @@ func (ah *AssetHistory) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ah.ToLocationID = int(value.Int64)
 			}
+		case assethistory.FieldChangeType:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field change_type", values[i])
+			} else if value.Valid {
+				ah.ChangeType = uint8(value.Int64)
+			}
 		default:
 			ah.selectValues.Set(columns[i], values[i])
 		}
@@ -251,6 +259,9 @@ func (ah *AssetHistory) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("to_location_id=")
 	builder.WriteString(fmt.Sprintf("%v", ah.ToLocationID))
+	builder.WriteString(", ")
+	builder.WriteString("change_type=")
+	builder.WriteString(fmt.Sprintf("%v", ah.ChangeType))
 	builder.WriteByte(')')
 	return builder.String()
 }

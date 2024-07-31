@@ -33,6 +33,12 @@ type AssetHistory func(*sql.Selector)
 // AssetScrap is the predicate function for assetscrap builders.
 type AssetScrap func(*sql.Selector)
 
+// AssetTransfer is the predicate function for assettransfer builders.
+type AssetTransfer func(*sql.Selector)
+
+// AssetTransferDetails is the predicate function for assettransferdetails builders.
+type AssetTransferDetails func(*sql.Selector)
+
 // Assistance is the predicate function for assistance builders.
 type Assistance func(*sql.Selector)
 

@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -155,6 +156,26 @@ func (au *AssetUpdate) SetNillableCityID(u *uint64) *AssetUpdate {
 // ClearCityID clears the value of the "city_id" field.
 func (au *AssetUpdate) ClearCityID() *AssetUpdate {
 	au.mutation.ClearCityID()
+	return au
+}
+
+// SetMaterialID sets the "material_id" field.
+func (au *AssetUpdate) SetMaterialID(u uint64) *AssetUpdate {
+	au.mutation.SetMaterialID(u)
+	return au
+}
+
+// SetNillableMaterialID sets the "material_id" field if the given value is not nil.
+func (au *AssetUpdate) SetNillableMaterialID(u *uint64) *AssetUpdate {
+	if u != nil {
+		au.SetMaterialID(*u)
+	}
+	return au
+}
+
+// ClearMaterialID clears the value of the "material_id" field.
+func (au *AssetUpdate) ClearMaterialID() *AssetUpdate {
+	au.mutation.ClearMaterialID()
 	return au
 }
 
@@ -377,6 +398,11 @@ func (au *AssetUpdate) SetCity(c *City) *AssetUpdate {
 	return au.SetCityID(c.ID)
 }
 
+// SetMaterial sets the "material" edge to the Material entity.
+func (au *AssetUpdate) SetMaterial(m *Material) *AssetUpdate {
+	return au.SetMaterialID(m.ID)
+}
+
 // AddValueIDs adds the "values" edge to the AssetAttributeValues entity by IDs.
 func (au *AssetUpdate) AddValueIDs(ids ...uint64) *AssetUpdate {
 	au.mutation.AddValueIDs(ids...)
@@ -526,6 +552,12 @@ func (au *AssetUpdate) ClearModel() *AssetUpdate {
 // ClearCity clears the "city" edge to the City entity.
 func (au *AssetUpdate) ClearCity() *AssetUpdate {
 	au.mutation.ClearCity()
+	return au
+}
+
+// ClearMaterial clears the "material" edge to the Material entity.
+func (au *AssetUpdate) ClearMaterial() *AssetUpdate {
+	au.mutation.ClearMaterial()
 	return au
 }
 
@@ -801,6 +833,35 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.MaterialCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   asset.MaterialTable,
+			Columns: []string{asset.MaterialColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(material.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.MaterialIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   asset.MaterialTable,
+			Columns: []string{asset.MaterialColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(material.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1167,6 +1228,26 @@ func (auo *AssetUpdateOne) ClearCityID() *AssetUpdateOne {
 	return auo
 }
 
+// SetMaterialID sets the "material_id" field.
+func (auo *AssetUpdateOne) SetMaterialID(u uint64) *AssetUpdateOne {
+	auo.mutation.SetMaterialID(u)
+	return auo
+}
+
+// SetNillableMaterialID sets the "material_id" field if the given value is not nil.
+func (auo *AssetUpdateOne) SetNillableMaterialID(u *uint64) *AssetUpdateOne {
+	if u != nil {
+		auo.SetMaterialID(*u)
+	}
+	return auo
+}
+
+// ClearMaterialID clears the value of the "material_id" field.
+func (auo *AssetUpdateOne) ClearMaterialID() *AssetUpdateOne {
+	auo.mutation.ClearMaterialID()
+	return auo
+}
+
 // SetType sets the "type" field.
 func (auo *AssetUpdateOne) SetType(u uint8) *AssetUpdateOne {
 	auo.mutation.ResetType()
@@ -1386,6 +1467,11 @@ func (auo *AssetUpdateOne) SetCity(c *City) *AssetUpdateOne {
 	return auo.SetCityID(c.ID)
 }
 
+// SetMaterial sets the "material" edge to the Material entity.
+func (auo *AssetUpdateOne) SetMaterial(m *Material) *AssetUpdateOne {
+	return auo.SetMaterialID(m.ID)
+}
+
 // AddValueIDs adds the "values" edge to the AssetAttributeValues entity by IDs.
 func (auo *AssetUpdateOne) AddValueIDs(ids ...uint64) *AssetUpdateOne {
 	auo.mutation.AddValueIDs(ids...)
@@ -1535,6 +1621,12 @@ func (auo *AssetUpdateOne) ClearModel() *AssetUpdateOne {
 // ClearCity clears the "city" edge to the City entity.
 func (auo *AssetUpdateOne) ClearCity() *AssetUpdateOne {
 	auo.mutation.ClearCity()
+	return auo
+}
+
+// ClearMaterial clears the "material" edge to the Material entity.
+func (auo *AssetUpdateOne) ClearMaterial() *AssetUpdateOne {
+	auo.mutation.ClearMaterial()
 	return auo
 }
 
@@ -1840,6 +1932,35 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.MaterialCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   asset.MaterialTable,
+			Columns: []string{asset.MaterialColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(material.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.MaterialIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   asset.MaterialTable,
+			Columns: []string{asset.MaterialColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(material.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

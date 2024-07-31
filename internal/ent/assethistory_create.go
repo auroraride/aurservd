@@ -112,9 +112,25 @@ func (ahc *AssetHistoryCreate) SetFromLocationType(i int) *AssetHistoryCreate {
 	return ahc
 }
 
+// SetNillableFromLocationType sets the "from_location_type" field if the given value is not nil.
+func (ahc *AssetHistoryCreate) SetNillableFromLocationType(i *int) *AssetHistoryCreate {
+	if i != nil {
+		ahc.SetFromLocationType(*i)
+	}
+	return ahc
+}
+
 // SetFromLocationID sets the "from_location_id" field.
 func (ahc *AssetHistoryCreate) SetFromLocationID(i int) *AssetHistoryCreate {
 	ahc.mutation.SetFromLocationID(i)
+	return ahc
+}
+
+// SetNillableFromLocationID sets the "from_location_id" field if the given value is not nil.
+func (ahc *AssetHistoryCreate) SetNillableFromLocationID(i *int) *AssetHistoryCreate {
+	if i != nil {
+		ahc.SetFromLocationID(*i)
+	}
 	return ahc
 }
 
@@ -124,9 +140,31 @@ func (ahc *AssetHistoryCreate) SetToLocationType(i int) *AssetHistoryCreate {
 	return ahc
 }
 
+// SetNillableToLocationType sets the "to_location_type" field if the given value is not nil.
+func (ahc *AssetHistoryCreate) SetNillableToLocationType(i *int) *AssetHistoryCreate {
+	if i != nil {
+		ahc.SetToLocationType(*i)
+	}
+	return ahc
+}
+
 // SetToLocationID sets the "to_location_id" field.
 func (ahc *AssetHistoryCreate) SetToLocationID(i int) *AssetHistoryCreate {
 	ahc.mutation.SetToLocationID(i)
+	return ahc
+}
+
+// SetNillableToLocationID sets the "to_location_id" field if the given value is not nil.
+func (ahc *AssetHistoryCreate) SetNillableToLocationID(i *int) *AssetHistoryCreate {
+	if i != nil {
+		ahc.SetToLocationID(*i)
+	}
+	return ahc
+}
+
+// SetChangeType sets the "change_type" field.
+func (ahc *AssetHistoryCreate) SetChangeType(u uint8) *AssetHistoryCreate {
+	ahc.mutation.SetChangeType(u)
 	return ahc
 }
 
@@ -197,17 +235,8 @@ func (ahc *AssetHistoryCreate) check() error {
 	if _, ok := ahc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "AssetHistory.updated_at"`)}
 	}
-	if _, ok := ahc.mutation.FromLocationType(); !ok {
-		return &ValidationError{Name: "from_location_type", err: errors.New(`ent: missing required field "AssetHistory.from_location_type"`)}
-	}
-	if _, ok := ahc.mutation.FromLocationID(); !ok {
-		return &ValidationError{Name: "from_location_id", err: errors.New(`ent: missing required field "AssetHistory.from_location_id"`)}
-	}
-	if _, ok := ahc.mutation.ToLocationType(); !ok {
-		return &ValidationError{Name: "to_location_type", err: errors.New(`ent: missing required field "AssetHistory.to_location_type"`)}
-	}
-	if _, ok := ahc.mutation.ToLocationID(); !ok {
-		return &ValidationError{Name: "to_location_id", err: errors.New(`ent: missing required field "AssetHistory.to_location_id"`)}
+	if _, ok := ahc.mutation.ChangeType(); !ok {
+		return &ValidationError{Name: "change_type", err: errors.New(`ent: missing required field "AssetHistory.change_type"`)}
 	}
 	return nil
 }
@@ -275,6 +304,10 @@ func (ahc *AssetHistoryCreate) createSpec() (*AssetHistory, *sqlgraph.CreateSpec
 	if value, ok := ahc.mutation.ToLocationID(); ok {
 		_spec.SetField(assethistory.FieldToLocationID, field.TypeInt, value)
 		_node.ToLocationID = value
+	}
+	if value, ok := ahc.mutation.ChangeType(); ok {
+		_spec.SetField(assethistory.FieldChangeType, field.TypeUint8, value)
+		_node.ChangeType = value
 	}
 	if nodes := ahc.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -447,6 +480,12 @@ func (u *AssetHistoryUpsert) AddFromLocationType(v int) *AssetHistoryUpsert {
 	return u
 }
 
+// ClearFromLocationType clears the value of the "from_location_type" field.
+func (u *AssetHistoryUpsert) ClearFromLocationType() *AssetHistoryUpsert {
+	u.SetNull(assethistory.FieldFromLocationType)
+	return u
+}
+
 // SetFromLocationID sets the "from_location_id" field.
 func (u *AssetHistoryUpsert) SetFromLocationID(v int) *AssetHistoryUpsert {
 	u.Set(assethistory.FieldFromLocationID, v)
@@ -462,6 +501,12 @@ func (u *AssetHistoryUpsert) UpdateFromLocationID() *AssetHistoryUpsert {
 // AddFromLocationID adds v to the "from_location_id" field.
 func (u *AssetHistoryUpsert) AddFromLocationID(v int) *AssetHistoryUpsert {
 	u.Add(assethistory.FieldFromLocationID, v)
+	return u
+}
+
+// ClearFromLocationID clears the value of the "from_location_id" field.
+func (u *AssetHistoryUpsert) ClearFromLocationID() *AssetHistoryUpsert {
+	u.SetNull(assethistory.FieldFromLocationID)
 	return u
 }
 
@@ -483,6 +528,12 @@ func (u *AssetHistoryUpsert) AddToLocationType(v int) *AssetHistoryUpsert {
 	return u
 }
 
+// ClearToLocationType clears the value of the "to_location_type" field.
+func (u *AssetHistoryUpsert) ClearToLocationType() *AssetHistoryUpsert {
+	u.SetNull(assethistory.FieldToLocationType)
+	return u
+}
+
 // SetToLocationID sets the "to_location_id" field.
 func (u *AssetHistoryUpsert) SetToLocationID(v int) *AssetHistoryUpsert {
 	u.Set(assethistory.FieldToLocationID, v)
@@ -498,6 +549,30 @@ func (u *AssetHistoryUpsert) UpdateToLocationID() *AssetHistoryUpsert {
 // AddToLocationID adds v to the "to_location_id" field.
 func (u *AssetHistoryUpsert) AddToLocationID(v int) *AssetHistoryUpsert {
 	u.Add(assethistory.FieldToLocationID, v)
+	return u
+}
+
+// ClearToLocationID clears the value of the "to_location_id" field.
+func (u *AssetHistoryUpsert) ClearToLocationID() *AssetHistoryUpsert {
+	u.SetNull(assethistory.FieldToLocationID)
+	return u
+}
+
+// SetChangeType sets the "change_type" field.
+func (u *AssetHistoryUpsert) SetChangeType(v uint8) *AssetHistoryUpsert {
+	u.Set(assethistory.FieldChangeType, v)
+	return u
+}
+
+// UpdateChangeType sets the "change_type" field to the value that was provided on create.
+func (u *AssetHistoryUpsert) UpdateChangeType() *AssetHistoryUpsert {
+	u.SetExcluded(assethistory.FieldChangeType)
+	return u
+}
+
+// AddChangeType adds v to the "change_type" field.
+func (u *AssetHistoryUpsert) AddChangeType(v uint8) *AssetHistoryUpsert {
+	u.Add(assethistory.FieldChangeType, v)
 	return u
 }
 
@@ -668,6 +743,13 @@ func (u *AssetHistoryUpsertOne) UpdateFromLocationType() *AssetHistoryUpsertOne 
 	})
 }
 
+// ClearFromLocationType clears the value of the "from_location_type" field.
+func (u *AssetHistoryUpsertOne) ClearFromLocationType() *AssetHistoryUpsertOne {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.ClearFromLocationType()
+	})
+}
+
 // SetFromLocationID sets the "from_location_id" field.
 func (u *AssetHistoryUpsertOne) SetFromLocationID(v int) *AssetHistoryUpsertOne {
 	return u.Update(func(s *AssetHistoryUpsert) {
@@ -686,6 +768,13 @@ func (u *AssetHistoryUpsertOne) AddFromLocationID(v int) *AssetHistoryUpsertOne 
 func (u *AssetHistoryUpsertOne) UpdateFromLocationID() *AssetHistoryUpsertOne {
 	return u.Update(func(s *AssetHistoryUpsert) {
 		s.UpdateFromLocationID()
+	})
+}
+
+// ClearFromLocationID clears the value of the "from_location_id" field.
+func (u *AssetHistoryUpsertOne) ClearFromLocationID() *AssetHistoryUpsertOne {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.ClearFromLocationID()
 	})
 }
 
@@ -710,6 +799,13 @@ func (u *AssetHistoryUpsertOne) UpdateToLocationType() *AssetHistoryUpsertOne {
 	})
 }
 
+// ClearToLocationType clears the value of the "to_location_type" field.
+func (u *AssetHistoryUpsertOne) ClearToLocationType() *AssetHistoryUpsertOne {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.ClearToLocationType()
+	})
+}
+
 // SetToLocationID sets the "to_location_id" field.
 func (u *AssetHistoryUpsertOne) SetToLocationID(v int) *AssetHistoryUpsertOne {
 	return u.Update(func(s *AssetHistoryUpsert) {
@@ -728,6 +824,34 @@ func (u *AssetHistoryUpsertOne) AddToLocationID(v int) *AssetHistoryUpsertOne {
 func (u *AssetHistoryUpsertOne) UpdateToLocationID() *AssetHistoryUpsertOne {
 	return u.Update(func(s *AssetHistoryUpsert) {
 		s.UpdateToLocationID()
+	})
+}
+
+// ClearToLocationID clears the value of the "to_location_id" field.
+func (u *AssetHistoryUpsertOne) ClearToLocationID() *AssetHistoryUpsertOne {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.ClearToLocationID()
+	})
+}
+
+// SetChangeType sets the "change_type" field.
+func (u *AssetHistoryUpsertOne) SetChangeType(v uint8) *AssetHistoryUpsertOne {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.SetChangeType(v)
+	})
+}
+
+// AddChangeType adds v to the "change_type" field.
+func (u *AssetHistoryUpsertOne) AddChangeType(v uint8) *AssetHistoryUpsertOne {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.AddChangeType(v)
+	})
+}
+
+// UpdateChangeType sets the "change_type" field to the value that was provided on create.
+func (u *AssetHistoryUpsertOne) UpdateChangeType() *AssetHistoryUpsertOne {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.UpdateChangeType()
 	})
 }
 
@@ -1064,6 +1188,13 @@ func (u *AssetHistoryUpsertBulk) UpdateFromLocationType() *AssetHistoryUpsertBul
 	})
 }
 
+// ClearFromLocationType clears the value of the "from_location_type" field.
+func (u *AssetHistoryUpsertBulk) ClearFromLocationType() *AssetHistoryUpsertBulk {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.ClearFromLocationType()
+	})
+}
+
 // SetFromLocationID sets the "from_location_id" field.
 func (u *AssetHistoryUpsertBulk) SetFromLocationID(v int) *AssetHistoryUpsertBulk {
 	return u.Update(func(s *AssetHistoryUpsert) {
@@ -1082,6 +1213,13 @@ func (u *AssetHistoryUpsertBulk) AddFromLocationID(v int) *AssetHistoryUpsertBul
 func (u *AssetHistoryUpsertBulk) UpdateFromLocationID() *AssetHistoryUpsertBulk {
 	return u.Update(func(s *AssetHistoryUpsert) {
 		s.UpdateFromLocationID()
+	})
+}
+
+// ClearFromLocationID clears the value of the "from_location_id" field.
+func (u *AssetHistoryUpsertBulk) ClearFromLocationID() *AssetHistoryUpsertBulk {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.ClearFromLocationID()
 	})
 }
 
@@ -1106,6 +1244,13 @@ func (u *AssetHistoryUpsertBulk) UpdateToLocationType() *AssetHistoryUpsertBulk 
 	})
 }
 
+// ClearToLocationType clears the value of the "to_location_type" field.
+func (u *AssetHistoryUpsertBulk) ClearToLocationType() *AssetHistoryUpsertBulk {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.ClearToLocationType()
+	})
+}
+
 // SetToLocationID sets the "to_location_id" field.
 func (u *AssetHistoryUpsertBulk) SetToLocationID(v int) *AssetHistoryUpsertBulk {
 	return u.Update(func(s *AssetHistoryUpsert) {
@@ -1124,6 +1269,34 @@ func (u *AssetHistoryUpsertBulk) AddToLocationID(v int) *AssetHistoryUpsertBulk 
 func (u *AssetHistoryUpsertBulk) UpdateToLocationID() *AssetHistoryUpsertBulk {
 	return u.Update(func(s *AssetHistoryUpsert) {
 		s.UpdateToLocationID()
+	})
+}
+
+// ClearToLocationID clears the value of the "to_location_id" field.
+func (u *AssetHistoryUpsertBulk) ClearToLocationID() *AssetHistoryUpsertBulk {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.ClearToLocationID()
+	})
+}
+
+// SetChangeType sets the "change_type" field.
+func (u *AssetHistoryUpsertBulk) SetChangeType(v uint8) *AssetHistoryUpsertBulk {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.SetChangeType(v)
+	})
+}
+
+// AddChangeType adds v to the "change_type" field.
+func (u *AssetHistoryUpsertBulk) AddChangeType(v uint8) *AssetHistoryUpsertBulk {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.AddChangeType(v)
+	})
+}
+
+// UpdateChangeType sets the "change_type" field to the value that was provided on create.
+func (u *AssetHistoryUpsertBulk) UpdateChangeType() *AssetHistoryUpsertBulk {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.UpdateChangeType()
 	})
 }
 

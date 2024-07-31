@@ -33,6 +33,8 @@ const (
 	FieldModelID = "model_id"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
+	// FieldMaterialID holds the string denoting the material_id field in the database.
+	FieldMaterialID = "material_id"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldName holds the string denoting the name field in the database.
@@ -59,6 +61,8 @@ const (
 	EdgeModel = "model"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
+	// EdgeMaterial holds the string denoting the material edge name in mutations.
+	EdgeMaterial = "material"
 	// EdgeValues holds the string denoting the values edge name in mutations.
 	EdgeValues = "values"
 	// EdgeWarehouse holds the string denoting the warehouse edge name in mutations.
@@ -96,6 +100,13 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
+	// MaterialTable is the table that holds the material relation/edge.
+	MaterialTable = "asset"
+	// MaterialInverseTable is the table name for the Material entity.
+	// It exists in this package in order to avoid circular dependency with the "material" package.
+	MaterialInverseTable = "material"
+	// MaterialColumn is the table column denoting the material relation/edge.
+	MaterialColumn = "material_id"
 	// ValuesTable is the table that holds the values relation/edge.
 	ValuesTable = "asset_attribute_values"
 	// ValuesInverseTable is the table name for the AssetAttributeValues entity.
@@ -159,6 +170,7 @@ var Columns = []string{
 	FieldBrandID,
 	FieldModelID,
 	FieldCityID,
+	FieldMaterialID,
 	FieldType,
 	FieldName,
 	FieldSn,
@@ -243,6 +255,11 @@ func ByCityID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCityID, opts...).ToFunc()
 }
 
+// ByMaterialID orders the results by the material_id field.
+func ByMaterialID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMaterialID, opts...).ToFunc()
+}
+
 // ByType orders the results by the type field.
 func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
@@ -311,6 +328,13 @@ func ByModelField(field string, opts ...sql.OrderTermOption) OrderOption {
 func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newCityStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByMaterialField orders the results by material field.
+func ByMaterialField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMaterialStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -388,6 +412,13 @@ func newCityStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CityInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+	)
+}
+func newMaterialStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MaterialInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, MaterialTable, MaterialColumn),
 	)
 }
 func newValuesStep() *sqlgraph.Step {

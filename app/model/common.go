@@ -169,37 +169,37 @@ func (s AssetType) Value() uint8 {
 	return uint8(s)
 }
 
-type AseetLocationsType uint8
+type AssetLocationsType uint8
 
 const (
-	AseetLocationsTypeWarehouse AseetLocationsType = iota + 1 // 仓库
-	AseetLocationsTypeStore                                   // 门店
-	AseetLocationsTypeCabinet                                 // 电柜
-	AseetLocationsTypeStation                                 // 站点
-	AseetLocationsTypeRider                                   // 骑手
-	AseetLocationsTypeOperation                               // 运维
+	AssetLocationsTypeWarehouse AssetLocationsType = iota + 1 // 仓库
+	AssetLocationsTypeStore                                   // 门店
+	AssetLocationsTypeStation                                 // 站点
+	AssetLocationsTypeOperation                               // 运维
+	AssetLocationsTypeCabinet                                 // 电柜
+	AssetLocationsTypeRider                                   // 骑手
 )
 
-func (s AseetLocationsType) String() string {
+func (s AssetLocationsType) String() string {
 	switch s {
-	case AseetLocationsTypeWarehouse:
+	case AssetLocationsTypeWarehouse:
 		return "仓库"
-	case AseetLocationsTypeStore:
+	case AssetLocationsTypeStore:
 		return "门店"
-	case AseetLocationsTypeCabinet:
+	case AssetLocationsTypeCabinet:
 		return "电柜"
-	case AseetLocationsTypeStation:
+	case AssetLocationsTypeStation:
 		return "站点"
-	case AseetLocationsTypeRider:
+	case AssetLocationsTypeRider:
 		return "骑手"
-	case AseetLocationsTypeOperation:
+	case AssetLocationsTypeOperation:
 		return "运维"
 	default:
 		return "未知"
 	}
 }
 
-func (s AseetLocationsType) Value() uint8 {
+func (s AssetLocationsType) Value() uint8 {
 	return uint8(s)
 }
 
@@ -235,5 +235,37 @@ func (s AssetStatus) String() string {
 }
 
 func (s AssetStatus) Value() uint8 {
+	return uint8(s)
+}
+
+// AssetOperateRoleType 操作资产角色类型
+type AssetOperateRoleType uint8
+
+const (
+	AssetOperateRoleAdmin     AssetOperateRoleType = iota + 1 // 资产管理员
+	AssetOperateRoleStore                                     // 门店管理员
+	AssetOperateRoleOperation                                 // 运维管理员
+	AssetOperateRoleAgent                                     // 代理管理员
+	AssetOperateRoleTypeRider                                 // 骑手
+)
+
+func (s AssetOperateRoleType) String() string {
+	switch s {
+	case AssetOperateRoleAdmin:
+		return "管理员"
+	case AssetOperateRoleStore:
+		return "门店管理员"
+	case AssetOperateRoleOperation:
+		return "运维"
+	case AssetOperateRoleAgent:
+		return "代理管理员"
+	case AssetOperateRoleTypeRider:
+		return "骑手"
+	default:
+		return "未知"
+	}
+}
+
+func (s AssetOperateRoleType) Value() uint8 {
 	return uint8(s)
 }

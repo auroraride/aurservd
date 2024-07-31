@@ -21,7 +21,7 @@ var AssetAttributes = new(assetAttributes)
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
 // @Param	query			query		model.AssetAttributesListReq	true	"查询参数"
-// @Success	200				{object}	[]model.AssetAttributesListRes	"请求成功"
+// @Success	200				{object}	model.AssetAttributesListRes	"请求成功"
 func (*assetAttributes) List(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.AssetAttributesListReq](c)
 	return ctx.SendResponse(service.NewAssetAttributes().List(ctx.Request().Context(), req))

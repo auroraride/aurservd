@@ -288,6 +288,68 @@ func (asq *AssetScrapQuery) PaginationResult(req model.PaginationReq) model.Pagi
 	}
 }
 
+// Pagination returns pagination query builder for AssetTransferQuery.
+func (atq *AssetTransferQuery) Pagination(req model.PaginationReq) *AssetTransferQuery {
+	atq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return atq
+}
+
+// PaginationItems returns pagination query builder for AssetTransferQuery.
+func (atq *AssetTransferQuery) PaginationItemsX(req model.PaginationReq) any {
+	return atq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for AssetTransferQuery.
+func (atq *AssetTransferQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := atq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for AssetTransferDetailsQuery.
+func (atdq *AssetTransferDetailsQuery) Pagination(req model.PaginationReq) *AssetTransferDetailsQuery {
+	atdq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return atdq
+}
+
+// PaginationItems returns pagination query builder for AssetTransferDetailsQuery.
+func (atdq *AssetTransferDetailsQuery) PaginationItemsX(req model.PaginationReq) any {
+	return atdq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for AssetTransferDetailsQuery.
+func (atdq *AssetTransferDetailsQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := atdq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for AssistanceQuery.
 func (aq *AssistanceQuery) Pagination(req model.PaginationReq) *AssistanceQuery {
 	aq.Offset(req.GetOffset()).Limit(req.GetLimit())

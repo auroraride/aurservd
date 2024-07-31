@@ -75,6 +75,7 @@ func (Asset) Fields() []ent.Field {
 // Edges of the Asset.
 func (Asset) Edges() []ent.Edge {
 	return []ent.Edge{
+		// 关联资产属性
 		edge.To("values", AssetAttributeValues.Type),
 		// 关联仓库
 		edge.To("warehouse", Warehouse.Type).Unique().Field("locations_id"),
@@ -99,6 +100,7 @@ func (Asset) Mixin() []ent.Mixin {
 		EbikeBrandMixin{Optional: true},
 		BatteryModelMixin{Optional: true},
 		CityMixin{Optional: true},
+		MaterialMixin{Optional: true},
 	}
 }
 

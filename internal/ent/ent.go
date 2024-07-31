@@ -21,6 +21,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/internal/ent/assethistory"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
+	"github.com/auroraride/aurservd/internal/ent/assettransfer"
+	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/battery"
@@ -173,6 +175,8 @@ func checkColumn(table, column string) error {
 			assetattributes.Table:            assetattributes.ValidColumn,
 			assethistory.Table:               assethistory.ValidColumn,
 			assetscrap.Table:                 assetscrap.ValidColumn,
+			assettransfer.Table:              assettransfer.ValidColumn,
+			assettransferdetails.Table:       assettransferdetails.ValidColumn,
 			assistance.Table:                 assistance.ValidColumn,
 			attendance.Table:                 attendance.ValidColumn,
 			battery.Table:                    battery.ValidColumn,

@@ -345,29 +345,6 @@ definitions:
       - lng
       - name
     type: object
-  model.AseetLocationsType:
-    enum:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-    type: integer
-    x-enum-comments:
-      AseetLocationsTypeCabinet: 电柜
-      AseetLocationsTypeOperation: 运维
-      AseetLocationsTypeRider: 骑手
-      AseetLocationsTypeStation: 站点
-      AseetLocationsTypeStore: 门店
-      AseetLocationsTypeWarehouse: 仓库
-    x-enum-varnames:
-      - AseetLocationsTypeWarehouse
-      - AseetLocationsTypeStore
-      - AseetLocationsTypeCabinet
-      - AseetLocationsTypeStation
-      - AseetLocationsTypeRider
-      - AseetLocationsTypeOperation
   model.AssetAttribute:
     properties:
       attributeId:
@@ -452,8 +429,8 @@ definitions:
         type: integer
       locationsType:
         allOf:
-          - $ref: '#/definitions/model.AseetLocationsType'
-        description: 资产位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维
+          - $ref: '#/definitions/model.AssetLocationsType'
+        description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
       name:
         description: 资产名称(AssetType为 4:电柜配件 5:电车配件 6:其它 需要填写)
         type: string
@@ -472,10 +449,10 @@ definitions:
         description: 资产状态
         type: string
       attribute:
-        description: 属性
-        items:
+        additionalProperties:
           $ref: '#/definitions/model.AssetAttribute'
-        type: array
+        description: 属性
+        type: object
       belong:
         description: 归属
         type: string
@@ -501,6 +478,29 @@ definitions:
         description: 编号
         type: string
     type: object
+  model.AssetLocationsType:
+    enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+    type: integer
+    x-enum-comments:
+      AssetLocationsTypeCabinet: 电柜
+      AssetLocationsTypeOperation: 运维
+      AssetLocationsTypeRider: 骑手
+      AssetLocationsTypeStation: 站点
+      AssetLocationsTypeStore: 门店
+      AssetLocationsTypeWarehouse: 仓库
+    x-enum-varnames:
+      - AssetLocationsTypeWarehouse
+      - AssetLocationsTypeStore
+      - AssetLocationsTypeStation
+      - AssetLocationsTypeOperation
+      - AssetLocationsTypeCabinet
+      - AssetLocationsTypeRider
   model.AssetModifyReq:
     properties:
       assetType:
@@ -621,6 +621,27 @@ definitions:
       sn:
         description: 导出编号
         type: string
+    type: object
+  model.Pagination:
+    properties:
+      current:
+        description: 当前页
+        type: integer
+      pages:
+        description: 总页数
+        type: integer
+      total:
+        description: 总条数
+        type: integer
+    type: object
+  model.PaginationRes:
+    properties:
+      items:
+        description: 返回数据
+      pagination:
+        allOf:
+          - $ref: '#/definitions/model.Pagination'
+        description: 分页属性
     type: object
   model.ScrapReasonType:
     enum:
@@ -1150,7 +1171,7 @@ paths:
           in: query
           name: assetKeywork
           type: string
-        - description: 资产位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维
+        - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
           enum:
             - 1
             - 2
@@ -1161,6 +1182,20 @@ paths:
           in: query
           name: assetLocationsType
           type: integer
+          x-enum-comments:
+            AssetLocationsTypeCabinet: 电柜
+            AssetLocationsTypeOperation: 运维
+            AssetLocationsTypeRider: 骑手
+            AssetLocationsTypeStation: 站点
+            AssetLocationsTypeStore: 门店
+            AssetLocationsTypeWarehouse: 仓库
+          x-enum-varnames:
+            - AssetLocationsTypeWarehouse
+            - AssetLocationsTypeStore
+            - AssetLocationsTypeStation
+            - AssetLocationsTypeOperation
+            - AssetLocationsTypeCabinet
+            - AssetLocationsTypeRider
         - description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
           enum:
             - 1
@@ -1235,15 +1270,24 @@ paths:
           in: query
           name: sn
           type: string
+        - description: 站点ID
+          in: query
+          name: stationId
+          type: integer
       produces:
         - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            items:
-              $ref: '#/definitions/model.AssetListRes'
-            type: array
+            allOf:
+              - $ref: '#/definitions/model.PaginationRes'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/model.AssetListRes'
+                    type: array
+                type: object
       summary: 资产列表
       tags:
         - 资产
@@ -1393,9 +1437,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            items:
-              $ref: '#/definitions/model.AssetAttributesListRes'
-            type: array
+            $ref: '#/definitions/model.AssetAttributesListRes'
       summary: 资产属性列表
       tags:
         - 资产
@@ -1441,7 +1483,7 @@ paths:
           in: query
           name: assetKeywork
           type: string
-        - description: 资产位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维
+        - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
           enum:
             - 1
             - 2
@@ -1452,6 +1494,20 @@ paths:
           in: query
           name: assetLocationsType
           type: integer
+          x-enum-comments:
+            AssetLocationsTypeCabinet: 电柜
+            AssetLocationsTypeOperation: 运维
+            AssetLocationsTypeRider: 骑手
+            AssetLocationsTypeStation: 站点
+            AssetLocationsTypeStore: 门店
+            AssetLocationsTypeWarehouse: 仓库
+          x-enum-varnames:
+            - AssetLocationsTypeWarehouse
+            - AssetLocationsTypeStore
+            - AssetLocationsTypeStation
+            - AssetLocationsTypeOperation
+            - AssetLocationsTypeCabinet
+            - AssetLocationsTypeRider
         - description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
           enum:
             - 1
@@ -1526,6 +1582,10 @@ paths:
           in: query
           name: sn
           type: string
+        - description: 站点ID
+          in: query
+          name: stationId
+          type: integer
       produces:
         - application/json
       responses:
@@ -1622,9 +1682,14 @@ paths:
         "200":
           description: 请求成功
           schema:
-            items:
-              $ref: '#/definitions/model.AssetScrapListRes'
-            type: array
+            allOf:
+              - $ref: '#/definitions/model.PaginationRes'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/model.AssetScrapListRes'
+                    type: array
+                type: object
       summary: 资产报废列表
       tags:
         - 资产

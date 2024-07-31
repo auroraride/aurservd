@@ -112,6 +112,26 @@ func (as *AssetScrap) GetID() uint64 {
 	return as.ID
 }
 
+// GetTableName returns table name for AssetTransfer.
+func (at *AssetTransfer) GetTableName() string {
+	return "asset_transfer"
+}
+
+// GetID returns id for AssetTransfer.
+func (at *AssetTransfer) GetID() uint64 {
+	return at.ID
+}
+
+// GetTableName returns table name for AssetTransferDetails.
+func (atd *AssetTransferDetails) GetTableName() string {
+	return "asset_transfer_details"
+}
+
+// GetID returns id for AssetTransferDetails.
+func (atd *AssetTransferDetails) GetID() uint64 {
+	return atd.ID
+}
+
 // GetTableName returns table name for Assistance.
 func (a *Assistance) GetTableName() string {
 	return "assistance"

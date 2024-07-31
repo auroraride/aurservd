@@ -93,25 +93,22 @@ func (s *assetScrapService) ScrapList(ctx context.Context, req *model.AssetScrap
 		operateName := ""
 		if item.ScrapOperateID != nil && item.ScrapOperateRoleType != nil {
 			switch *item.ScrapOperateRoleType {
-			case model.ScrapOperateRoleAdmin.Value():
+			case model.AssetOperateRoleAdmin.Value():
 				if item.Edges.Manager != nil {
 					operateName = "[后台]-" + item.Edges.Manager.Name
 				}
-			case model.ScrapOperateRoleStore.Value():
+			case model.AssetOperateRoleStore.Value():
 				if item.Edges.Employee != nil {
 					operateName = "[门店管理员]-" + item.Edges.Employee.Name
 				}
-			case model.ScrapOperateRoleOperation.Value():
+			case model.AssetOperateRoleOperation.Value():
 				if item.Edges.Maintainer != nil {
 					operateName = "[运维]-" + item.Edges.Maintainer.Name
 				}
-			case model.ScrapOperateRoleAgent.Value():
+			case model.AssetOperateRoleAgent.Value():
 				if item.Edges.Agent != nil {
 					operateName = "[代理管理员]-" + item.Edges.Agent.Name
 				}
-			case model.ScrapOperateRoleMaterial.Value():
-				// todo
-				operateName = "[物资管理员]"
 			default:
 				operateName = "未知"
 			}
@@ -167,8 +164,8 @@ func (s *assetScrapService) Scrap(ctx context.Context, req *model.AssetScrapReq,
 		),
 		// 资产库存位置在骑手或运维不可报废
 		asset.LocationsTypeNotIn(
-			model.AseetLocationsTypeRider.Value(),
-			model.AseetLocationsTypeOperation.Value(),
+			model.AssetLocationsTypeRider.Value(),
+			model.AssetLocationsTypeOperation.Value(),
 		),
 	).First(ctx)
 	if bat == nil {
@@ -193,7 +190,7 @@ func (s *assetScrapService) Scrap(ctx context.Context, req *model.AssetScrapReq,
 		SetLastModifier(modifier).
 		SetScrapAt(time.Now()).
 		SetScrapOperateID(modifier.ID).
-		SetScrapOperateRoleType(model.ScrapOperateRoleAdmin.Value()).
+		SetScrapOperateRoleType(model.AssetOperateRoleAdmin.Value()).
 		SetNillableRemark(req.Remark).
 		SetCreator(modifier).
 		SetLastModifier(modifier).

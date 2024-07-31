@@ -646,7 +646,23 @@ const docTemplate = `{
                             6
                         ],
                         "type": "integer",
-                        "description": "资产位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维",
+                        "x-enum-comments": {
+                            "AssetLocationsTypeCabinet": "电柜",
+                            "AssetLocationsTypeOperation": "运维",
+                            "AssetLocationsTypeRider": "骑手",
+                            "AssetLocationsTypeStation": "站点",
+                            "AssetLocationsTypeStore": "门店",
+                            "AssetLocationsTypeWarehouse": "仓库"
+                        },
+                        "x-enum-varnames": [
+                            "AssetLocationsTypeWarehouse",
+                            "AssetLocationsTypeStore",
+                            "AssetLocationsTypeStation",
+                            "AssetLocationsTypeOperation",
+                            "AssetLocationsTypeCabinet",
+                            "AssetLocationsTypeRider"
+                        ],
+                        "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
                         "name": "assetLocationsType",
                         "in": "query"
                     },
@@ -750,16 +766,34 @@ const docTemplate = `{
                         "description": "编号",
                         "name": "sn",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.AssetListRes"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AssetListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -861,10 +895,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.AssetAttributesListRes"
-                            }
+                            "$ref": "#/definitions/model.AssetAttributesListRes"
                         }
                     }
                 }
@@ -948,7 +979,23 @@ const docTemplate = `{
                             6
                         ],
                         "type": "integer",
-                        "description": "资产位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维",
+                        "x-enum-comments": {
+                            "AssetLocationsTypeCabinet": "电柜",
+                            "AssetLocationsTypeOperation": "运维",
+                            "AssetLocationsTypeRider": "骑手",
+                            "AssetLocationsTypeStation": "站点",
+                            "AssetLocationsTypeStore": "门店",
+                            "AssetLocationsTypeWarehouse": "仓库"
+                        },
+                        "x-enum-varnames": [
+                            "AssetLocationsTypeWarehouse",
+                            "AssetLocationsTypeStore",
+                            "AssetLocationsTypeStation",
+                            "AssetLocationsTypeOperation",
+                            "AssetLocationsTypeCabinet",
+                            "AssetLocationsTypeRider"
+                        ],
+                        "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
                         "name": "assetLocationsType",
                         "in": "query"
                     },
@@ -1051,6 +1098,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "编号",
                         "name": "sn",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
                         "in": "query"
                     }
                 ],
@@ -1183,10 +1236,22 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.AssetScrapListRes"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AssetScrapListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -2272,33 +2337,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AseetLocationsType": {
-            "type": "integer",
-            "enum": [
-                1,
-                2,
-                3,
-                4,
-                5,
-                6
-            ],
-            "x-enum-comments": {
-                "AseetLocationsTypeCabinet": "电柜",
-                "AseetLocationsTypeOperation": "运维",
-                "AseetLocationsTypeRider": "骑手",
-                "AseetLocationsTypeStation": "站点",
-                "AseetLocationsTypeStore": "门店",
-                "AseetLocationsTypeWarehouse": "仓库"
-            },
-            "x-enum-varnames": [
-                "AseetLocationsTypeWarehouse",
-                "AseetLocationsTypeStore",
-                "AseetLocationsTypeCabinet",
-                "AseetLocationsTypeStation",
-                "AseetLocationsTypeRider",
-                "AseetLocationsTypeOperation"
-            ]
-        },
         "model.AssetAttribute": {
             "type": "object",
             "properties": {
@@ -2429,10 +2467,10 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "locationsType": {
-                    "description": "资产位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维",
+                    "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.AseetLocationsType"
+                            "$ref": "#/definitions/model.AssetLocationsType"
                         }
                     ]
                 },
@@ -2459,8 +2497,8 @@ const docTemplate = `{
                 },
                 "attribute": {
                     "description": "属性",
-                    "type": "array",
-                    "items": {
+                    "type": "object",
+                    "additionalProperties": {
                         "$ref": "#/definitions/model.AssetAttribute"
                     }
                 },
@@ -2497,6 +2535,33 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.AssetLocationsType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "x-enum-comments": {
+                "AssetLocationsTypeCabinet": "电柜",
+                "AssetLocationsTypeOperation": "运维",
+                "AssetLocationsTypeRider": "骑手",
+                "AssetLocationsTypeStation": "站点",
+                "AssetLocationsTypeStore": "门店",
+                "AssetLocationsTypeWarehouse": "仓库"
+            },
+            "x-enum-varnames": [
+                "AssetLocationsTypeWarehouse",
+                "AssetLocationsTypeStore",
+                "AssetLocationsTypeStation",
+                "AssetLocationsTypeOperation",
+                "AssetLocationsTypeCabinet",
+                "AssetLocationsTypeRider"
+            ]
         },
         "model.AssetModifyReq": {
             "type": "object",
@@ -2668,6 +2733,39 @@ const docTemplate = `{
                 "sn": {
                     "description": "导出编号",
                     "type": "string"
+                }
+            }
+        },
+        "model.Pagination": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "description": "当前页",
+                    "type": "integer"
+                },
+                "pages": {
+                    "description": "总页数",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "总条数",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.PaginationRes": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "返回数据"
+                },
+                "pagination": {
+                    "description": "分页属性",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Pagination"
+                        }
+                    ]
                 }
             }
         },

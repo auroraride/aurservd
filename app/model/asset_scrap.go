@@ -32,38 +32,6 @@ func (s ScrapReasonType) Value() uint8 {
 	return uint8(s)
 }
 
-// ScrapOperateRoleType 操作资产报废角色类型
-type ScrapOperateRoleType uint8
-
-const (
-	ScrapOperateRoleAdmin     ScrapOperateRoleType = iota + 1 // 管理员
-	ScrapOperateRoleStore                                     // 门店管理员
-	ScrapOperateRoleOperation                                 // 运维
-	ScrapOperateRoleMaterial                                  // 物资管理员
-	ScrapOperateRoleAgent                                     // 代理管理员
-)
-
-func (s ScrapOperateRoleType) String() string {
-	switch s {
-	case ScrapOperateRoleAdmin:
-		return "管理员"
-	case ScrapOperateRoleStore:
-		return "门店管理员"
-	case ScrapOperateRoleOperation:
-		return "运维"
-	case ScrapOperateRoleMaterial:
-		return "物资管理员"
-	case ScrapOperateRoleAgent:
-		return "代理管理员"
-	default:
-		return "未知"
-	}
-}
-
-func (s ScrapOperateRoleType) Value() uint8 {
-	return uint8(s)
-}
-
 // AssetScrapReq 报废资产请求
 type AssetScrapReq struct {
 	AssetType       AssetType       `json:"assetType" validate:"required"`       // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它

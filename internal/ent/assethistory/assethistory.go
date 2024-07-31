@@ -37,6 +37,8 @@ const (
 	FieldToLocationType = "to_location_type"
 	// FieldToLocationID holds the string denoting the to_location_id field in the database.
 	FieldToLocationID = "to_location_id"
+	// FieldChangeType holds the string denoting the change_type field in the database.
+	FieldChangeType = "change_type"
 	// EdgeAsset holds the string denoting the asset edge name in mutations.
 	EdgeAsset = "asset"
 	// Table holds the table name of the assethistory in the database.
@@ -64,6 +66,7 @@ var Columns = []string{
 	FieldFromLocationID,
 	FieldToLocationType,
 	FieldToLocationID,
+	FieldChangeType,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -142,6 +145,11 @@ func ByToLocationType(opts ...sql.OrderTermOption) OrderOption {
 // ByToLocationID orders the results by the to_location_id field.
 func ByToLocationID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldToLocationID, opts...).ToFunc()
+}
+
+// ByChangeType orders the results by the change_type field.
+func ByChangeType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldChangeType, opts...).ToFunc()
 }
 
 // ByAssetField orders the results by asset field.

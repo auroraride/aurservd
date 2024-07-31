@@ -461,6 +461,10 @@ func (s *assetService) Export(ctx context.Context, req *model.AssetListReq, m *m
 	q := s.orm.QueryNotDeleted().WithCabinet().WithCity().WithStation().WithModel().WithOperator().WithValues().WithStore().WithWarehouse().WithBrand().WithValues()
 	s.filter(q, &req.AssetFilter)
 	q.Order(ent.Desc(asset.FieldCreatedAt))
+
+	if req.AssetType == nil {
+		return model.ExportRes{}, errors.New("类型不能为空")
+	}
 	switch *req.AssetType {
 	case model.AssetTypeSmartBattery:
 		s.batteryFilter(q, &req.AssetFilter)
@@ -496,36 +500,36 @@ func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListRe
 				cityName = item.Edges.City.Name
 			}
 			belong = "平台"
-			if item.LocationsType == model.AseetLocationsTypeStation.Value() {
+			if item.LocationsType == model.AssetLocationsTypeStation.Value() {
 				belong = "代理商"
 			}
 			switch item.LocationsType {
-			case model.AseetLocationsTypeWarehouse.Value():
+			case model.AssetLocationsTypeWarehouse.Value():
 				assetLocations = "[仓库]"
 				if item.Edges.Warehouse != nil {
 					assetLocations += item.Edges.Warehouse.Name
 				}
-			case model.AseetLocationsTypeStore.Value():
+			case model.AssetLocationsTypeStore.Value():
 				assetLocations = "[门店]"
 				if item.Edges.Store != nil {
 					assetLocations += item.Edges.Store.Name
 				}
-			case model.AseetLocationsTypeCabinet.Value():
+			case model.AssetLocationsTypeCabinet.Value():
 				assetLocations = "[电柜]"
 				if item.Edges.Cabinet != nil {
 					assetLocations += item.Edges.Cabinet.Name
 				}
-			case model.AseetLocationsTypeStation.Value():
+			case model.AssetLocationsTypeStation.Value():
 				assetLocations = "[站点]"
 				if item.Edges.Station != nil {
 					assetLocations += item.Edges.Station.Name
 				}
-			case model.AseetLocationsTypeRider.Value():
+			case model.AssetLocationsTypeRider.Value():
 				assetLocations = "[骑手]"
 				if item.Edges.Rider != nil {
 					assetLocations += item.Edges.Rider.Name
 				}
-			case model.AseetLocationsTypeOperation.Value():
+			case model.AssetLocationsTypeOperation.Value():
 				assetLocations = "[运维]"
 				if item.Edges.Operator != nil {
 					assetLocations += item.Edges.Operator.Name
@@ -583,36 +587,36 @@ func (s *assetService) exportEbike(ctx context.Context, req *model.AssetListReq,
 		for _, item := range items {
 			var belong, assetLocations string
 			belong = "平台"
-			if item.LocationsType == model.AseetLocationsTypeStation.Value() {
+			if item.LocationsType == model.AssetLocationsTypeStation.Value() {
 				belong = "代理商"
 			}
 			switch item.LocationsType {
-			case model.AseetLocationsTypeWarehouse.Value():
+			case model.AssetLocationsTypeWarehouse.Value():
 				assetLocations = "[仓库]"
 				if item.Edges.Warehouse != nil {
 					assetLocations += item.Edges.Warehouse.Name
 				}
-			case model.AseetLocationsTypeStore.Value():
+			case model.AssetLocationsTypeStore.Value():
 				assetLocations = "[门店]"
 				if item.Edges.Store != nil {
 					assetLocations += item.Edges.Store.Name
 				}
-			case model.AseetLocationsTypeCabinet.Value():
+			case model.AssetLocationsTypeCabinet.Value():
 				assetLocations = "[电柜]"
 				if item.Edges.Cabinet != nil {
 					assetLocations += item.Edges.Cabinet.Name
 				}
-			case model.AseetLocationsTypeStation.Value():
+			case model.AssetLocationsTypeStation.Value():
 				assetLocations = "[站点]"
 				if item.Edges.Station != nil {
 					assetLocations += item.Edges.Station.Name
 				}
-			case model.AseetLocationsTypeRider.Value():
+			case model.AssetLocationsTypeRider.Value():
 				assetLocations = "[骑手]"
 				if item.Edges.Rider != nil {
 					assetLocations += item.Edges.Rider.Name
 				}
-			case model.AseetLocationsTypeOperation.Value():
+			case model.AssetLocationsTypeOperation.Value():
 				assetLocations = "[运维]"
 				if item.Edges.Operator != nil {
 					assetLocations += item.Edges.Operator.Name
@@ -681,36 +685,36 @@ func (s *assetService) List(ctx context.Context, req *model.AssetListReq) *model
 			cityName = item.Edges.City.Name
 		}
 		belong = "平台"
-		if item.LocationsType == model.AseetLocationsTypeStation.Value() {
+		if item.LocationsType == model.AssetLocationsTypeStation.Value() {
 			belong = "代理商"
 		}
 		switch item.LocationsType {
-		case model.AseetLocationsTypeWarehouse.Value():
+		case model.AssetLocationsTypeWarehouse.Value():
 			assetLocations = "[仓库]"
 			if item.Edges.Warehouse != nil {
 				assetLocations += item.Edges.Warehouse.Name
 			}
-		case model.AseetLocationsTypeStore.Value():
+		case model.AssetLocationsTypeStore.Value():
 			assetLocations = "[门店]"
 			if item.Edges.Store != nil {
 				assetLocations += item.Edges.Store.Name
 			}
-		case model.AseetLocationsTypeCabinet.Value():
+		case model.AssetLocationsTypeCabinet.Value():
 			assetLocations = "[电柜]"
 			if item.Edges.Cabinet != nil {
 				assetLocations += item.Edges.Cabinet.Name
 			}
-		case model.AseetLocationsTypeStation.Value():
+		case model.AssetLocationsTypeStation.Value():
 			assetLocations = "[站点]"
 			if item.Edges.Station != nil {
 				assetLocations += item.Edges.Station.Name
 			}
-		case model.AseetLocationsTypeRider.Value():
+		case model.AssetLocationsTypeRider.Value():
 			assetLocations = "[骑手]"
 			if item.Edges.Rider != nil {
 				assetLocations += item.Edges.Rider.Name
 			}
-		case model.AseetLocationsTypeOperation.Value():
+		case model.AssetLocationsTypeOperation.Value():
 			assetLocations = "[运维]"
 			if item.Edges.Operator != nil {
 				assetLocations += item.Edges.Operator.Name
@@ -744,20 +748,22 @@ func (s *assetService) List(ctx context.Context, req *model.AssetListReq) *model
 		}
 
 		attributeValue, _ := item.QueryValues().WithAttribute().All(ctx)
+		assetAttributeMap := make(map[uint64]model.AssetAttribute)
 		for _, v := range attributeValue {
 			var attributeName, attributeKey string
 			if v.Edges.Attribute != nil {
 				attributeName = v.Edges.Attribute.Name
 				attributeKey = v.Edges.Attribute.Key
 			}
-			res.Attribute = append(res.Attribute, model.AssetAttribute{
+			assetAttributeMap[v.AttributeID] = model.AssetAttribute{
 				AttributeID:      v.AttributeID,
 				AttributeValue:   v.Value,
 				AttributeName:    attributeName,
 				AttributeKey:     attributeKey,
 				AttributeValueID: v.ID,
-			})
+			}
 		}
+		res.Attribute = assetAttributeMap
 		return res
 	})
 }
@@ -773,47 +779,47 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 	if req.OwnerType != nil {
 		// 平台
 		if *req.OwnerType == 1 {
-			q.Where(asset.LocationsTypeEQ(model.AseetLocationsTypeWarehouse.Value()))
+			q.Where(asset.LocationsTypeEQ(model.AssetLocationsTypeWarehouse.Value()))
 		}
 		// 代理商
 		if *req.OwnerType == 2 {
-			q.Where(asset.LocationsTypeEQ(model.AseetLocationsTypeStation.Value()))
+			q.Where(asset.LocationsTypeEQ(model.AssetLocationsTypeStation.Value()))
 		}
 	}
 	if req.AssetLocationsType != nil && req.AssetLocationsKeywork != nil {
-		q.Where(asset.LocationsType(*req.AssetLocationsType))
+		q.Where(asset.LocationsType((*req.AssetLocationsType).Value()))
 		switch *req.AssetLocationsType {
-		case model.AseetLocationsTypeWarehouse.Value():
+		case model.AssetLocationsTypeWarehouse:
 			q.Where(
 				asset.HasWarehouseWith(
 					warehouse.NameContains(*req.AssetLocationsKeywork),
 				),
 			)
-		case model.AseetLocationsTypeStore.Value():
+		case model.AssetLocationsTypeStore:
 			q.Where(
 				asset.HasStoreWith(
 					store.NameContains(*req.AssetLocationsKeywork),
 				),
 			)
-		case model.AseetLocationsTypeCabinet.Value():
+		case model.AssetLocationsTypeCabinet:
 			q.Where(
 				asset.HasCabinetWith(
 					cabinet.NameContains(*req.AssetLocationsKeywork),
 				),
 			)
-		case model.AseetLocationsTypeStation.Value():
+		case model.AssetLocationsTypeStation:
 			q.Where(
 				asset.HasStationWith(
 					enterprisestation.NameContains(*req.AssetLocationsKeywork),
 				),
 			)
-		case model.AseetLocationsTypeRider.Value():
+		case model.AssetLocationsTypeRider:
 			q.Where(
 				asset.HasRiderWith(
 					rider.NameContains(*req.AssetLocationsKeywork),
 				),
 			)
-		case model.AseetLocationsTypeOperation.Value():
+		case model.AssetLocationsTypeOperation:
 			q.Where(
 				asset.HasOperatorWith(
 					maintainer.NameContains(*req.AssetLocationsKeywork),

@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
@@ -46,6 +47,8 @@ type Asset struct {
 	ModelID *uint64 `json:"model_id,omitempty"`
 	// 城市ID
 	CityID *uint64 `json:"city_id,omitempty"`
+	// 物资ID
+	MaterialID *uint64 `json:"material_id,omitempty"`
 	// 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
 	Type uint8 `json:"type,omitempty"`
 	// 资产名称
@@ -80,6 +83,8 @@ type AssetEdges struct {
 	Model *BatteryModel `json:"model,omitempty"`
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
+	// Material holds the value of the material edge.
+	Material *Material `json:"material,omitempty"`
 	// Values holds the value of the values edge.
 	Values []*AssetAttributeValues `json:"values,omitempty"`
 	// Warehouse holds the value of the warehouse edge.
@@ -96,7 +101,7 @@ type AssetEdges struct {
 	Operator *Maintainer `json:"operator,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [10]bool
+	loadedTypes [11]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
@@ -132,10 +137,21 @@ func (e AssetEdges) CityOrErr() (*City, error) {
 	return nil, &NotLoadedError{edge: "city"}
 }
 
+// MaterialOrErr returns the Material value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetEdges) MaterialOrErr() (*Material, error) {
+	if e.Material != nil {
+		return e.Material, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: material.Label}
+	}
+	return nil, &NotLoadedError{edge: "material"}
+}
+
 // ValuesOrErr returns the Values value or an error if the edge
 // was not loaded in eager-loading.
 func (e AssetEdges) ValuesOrErr() ([]*AssetAttributeValues, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.Values, nil
 	}
 	return nil, &NotLoadedError{edge: "values"}
@@ -146,7 +162,7 @@ func (e AssetEdges) ValuesOrErr() ([]*AssetAttributeValues, error) {
 func (e AssetEdges) WarehouseOrErr() (*Warehouse, error) {
 	if e.Warehouse != nil {
 		return e.Warehouse, nil
-	} else if e.loadedTypes[4] {
+	} else if e.loadedTypes[5] {
 		return nil, &NotFoundError{label: warehouse.Label}
 	}
 	return nil, &NotLoadedError{edge: "warehouse"}
@@ -157,7 +173,7 @@ func (e AssetEdges) WarehouseOrErr() (*Warehouse, error) {
 func (e AssetEdges) StoreOrErr() (*Store, error) {
 	if e.Store != nil {
 		return e.Store, nil
-	} else if e.loadedTypes[5] {
+	} else if e.loadedTypes[6] {
 		return nil, &NotFoundError{label: store.Label}
 	}
 	return nil, &NotLoadedError{edge: "store"}
@@ -168,7 +184,7 @@ func (e AssetEdges) StoreOrErr() (*Store, error) {
 func (e AssetEdges) CabinetOrErr() (*Cabinet, error) {
 	if e.Cabinet != nil {
 		return e.Cabinet, nil
-	} else if e.loadedTypes[6] {
+	} else if e.loadedTypes[7] {
 		return nil, &NotFoundError{label: cabinet.Label}
 	}
 	return nil, &NotLoadedError{edge: "cabinet"}
@@ -179,7 +195,7 @@ func (e AssetEdges) CabinetOrErr() (*Cabinet, error) {
 func (e AssetEdges) StationOrErr() (*EnterpriseStation, error) {
 	if e.Station != nil {
 		return e.Station, nil
-	} else if e.loadedTypes[7] {
+	} else if e.loadedTypes[8] {
 		return nil, &NotFoundError{label: enterprisestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "station"}
@@ -190,7 +206,7 @@ func (e AssetEdges) StationOrErr() (*EnterpriseStation, error) {
 func (e AssetEdges) RiderOrErr() (*Rider, error) {
 	if e.Rider != nil {
 		return e.Rider, nil
-	} else if e.loadedTypes[8] {
+	} else if e.loadedTypes[9] {
 		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
@@ -201,7 +217,7 @@ func (e AssetEdges) RiderOrErr() (*Rider, error) {
 func (e AssetEdges) OperatorOrErr() (*Maintainer, error) {
 	if e.Operator != nil {
 		return e.Operator, nil
-	} else if e.loadedTypes[9] {
+	} else if e.loadedTypes[10] {
 		return nil, &NotFoundError{label: maintainer.Label}
 	}
 	return nil, &NotLoadedError{edge: "operator"}
@@ -216,7 +232,7 @@ func (*Asset) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case asset.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case asset.FieldID, asset.FieldBrandID, asset.FieldModelID, asset.FieldCityID, asset.FieldType, asset.FieldStatus, asset.FieldLocationsType, asset.FieldLocationsID, asset.FieldRtoRiderID:
+		case asset.FieldID, asset.FieldBrandID, asset.FieldModelID, asset.FieldCityID, asset.FieldMaterialID, asset.FieldType, asset.FieldStatus, asset.FieldLocationsType, asset.FieldLocationsID, asset.FieldRtoRiderID:
 			values[i] = new(sql.NullInt64)
 		case asset.FieldRemark, asset.FieldName, asset.FieldSn, asset.FieldBrandName:
 			values[i] = new(sql.NullString)
@@ -305,6 +321,13 @@ func (a *Asset) assignValues(columns []string, values []any) error {
 				a.CityID = new(uint64)
 				*a.CityID = uint64(value.Int64)
 			}
+		case asset.FieldMaterialID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field material_id", values[i])
+			} else if value.Valid {
+				a.MaterialID = new(uint64)
+				*a.MaterialID = uint64(value.Int64)
+			}
 		case asset.FieldType:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
@@ -392,6 +415,11 @@ func (a *Asset) QueryModel() *BatteryModelQuery {
 // QueryCity queries the "city" edge of the Asset entity.
 func (a *Asset) QueryCity() *CityQuery {
 	return NewAssetClient(a.config).QueryCity(a)
+}
+
+// QueryMaterial queries the "material" edge of the Asset entity.
+func (a *Asset) QueryMaterial() *MaterialQuery {
+	return NewAssetClient(a.config).QueryMaterial(a)
 }
 
 // QueryValues queries the "values" edge of the Asset entity.
@@ -484,6 +512,11 @@ func (a *Asset) String() string {
 	builder.WriteString(", ")
 	if v := a.CityID; v != nil {
 		builder.WriteString("city_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := a.MaterialID; v != nil {
+		builder.WriteString("material_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

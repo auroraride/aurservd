@@ -16,6 +16,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/internal/ent/assethistory"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
+	"github.com/auroraride/aurservd/internal/ent/assettransfer"
+	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/battery"
@@ -292,6 +294,40 @@ func init() {
 	assetscrap.DefaultUpdatedAt = assetscrapDescUpdatedAt.Default.(func() time.Time)
 	// assetscrap.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	assetscrap.UpdateDefaultUpdatedAt = assetscrapDescUpdatedAt.UpdateDefault.(func() time.Time)
+	assettransferMixin := schema.AssetTransfer{}.Mixin()
+	assettransferMixinHooks2 := assettransferMixin[2].Hooks()
+	assettransfer.Hooks[0] = assettransferMixinHooks2[0]
+	assettransferMixinFields0 := assettransferMixin[0].Fields()
+	_ = assettransferMixinFields0
+	assettransferFields := schema.AssetTransfer{}.Fields()
+	_ = assettransferFields
+	// assettransferDescCreatedAt is the schema descriptor for created_at field.
+	assettransferDescCreatedAt := assettransferMixinFields0[0].Descriptor()
+	// assettransfer.DefaultCreatedAt holds the default value on creation for the created_at field.
+	assettransfer.DefaultCreatedAt = assettransferDescCreatedAt.Default.(func() time.Time)
+	// assettransferDescUpdatedAt is the schema descriptor for updated_at field.
+	assettransferDescUpdatedAt := assettransferMixinFields0[1].Descriptor()
+	// assettransfer.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	assettransfer.DefaultUpdatedAt = assettransferDescUpdatedAt.Default.(func() time.Time)
+	// assettransfer.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	assettransfer.UpdateDefaultUpdatedAt = assettransferDescUpdatedAt.UpdateDefault.(func() time.Time)
+	assettransferdetailsMixin := schema.AssetTransferDetails{}.Mixin()
+	assettransferdetailsMixinHooks2 := assettransferdetailsMixin[2].Hooks()
+	assettransferdetails.Hooks[0] = assettransferdetailsMixinHooks2[0]
+	assettransferdetailsMixinFields0 := assettransferdetailsMixin[0].Fields()
+	_ = assettransferdetailsMixinFields0
+	assettransferdetailsFields := schema.AssetTransferDetails{}.Fields()
+	_ = assettransferdetailsFields
+	// assettransferdetailsDescCreatedAt is the schema descriptor for created_at field.
+	assettransferdetailsDescCreatedAt := assettransferdetailsMixinFields0[0].Descriptor()
+	// assettransferdetails.DefaultCreatedAt holds the default value on creation for the created_at field.
+	assettransferdetails.DefaultCreatedAt = assettransferdetailsDescCreatedAt.Default.(func() time.Time)
+	// assettransferdetailsDescUpdatedAt is the schema descriptor for updated_at field.
+	assettransferdetailsDescUpdatedAt := assettransferdetailsMixinFields0[1].Descriptor()
+	// assettransferdetails.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	assettransferdetails.DefaultUpdatedAt = assettransferdetailsDescUpdatedAt.Default.(func() time.Time)
+	// assettransferdetails.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	assettransferdetails.UpdateDefaultUpdatedAt = assettransferdetailsDescUpdatedAt.UpdateDefault.(func() time.Time)
 	assistanceMixin := schema.Assistance{}.Mixin()
 	assistanceMixinHooks2 := assistanceMixin[2].Hooks()
 	assistance.Hooks[0] = assistanceMixinHooks2[0]

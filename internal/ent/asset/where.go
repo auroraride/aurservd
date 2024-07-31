@@ -90,6 +90,11 @@ func CityID(v uint64) predicate.Asset {
 	return predicate.Asset(sql.FieldEQ(FieldCityID, v))
 }
 
+// MaterialID applies equality check predicate on the "material_id" field. It's identical to MaterialIDEQ.
+func MaterialID(v uint64) predicate.Asset {
+	return predicate.Asset(sql.FieldEQ(FieldMaterialID, v))
+}
+
 // Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
 func Type(v uint8) predicate.Asset {
 	return predicate.Asset(sql.FieldEQ(FieldType, v))
@@ -453,6 +458,36 @@ func CityIDIsNil() predicate.Asset {
 // CityIDNotNil applies the NotNil predicate on the "city_id" field.
 func CityIDNotNil() predicate.Asset {
 	return predicate.Asset(sql.FieldNotNull(FieldCityID))
+}
+
+// MaterialIDEQ applies the EQ predicate on the "material_id" field.
+func MaterialIDEQ(v uint64) predicate.Asset {
+	return predicate.Asset(sql.FieldEQ(FieldMaterialID, v))
+}
+
+// MaterialIDNEQ applies the NEQ predicate on the "material_id" field.
+func MaterialIDNEQ(v uint64) predicate.Asset {
+	return predicate.Asset(sql.FieldNEQ(FieldMaterialID, v))
+}
+
+// MaterialIDIn applies the In predicate on the "material_id" field.
+func MaterialIDIn(vs ...uint64) predicate.Asset {
+	return predicate.Asset(sql.FieldIn(FieldMaterialID, vs...))
+}
+
+// MaterialIDNotIn applies the NotIn predicate on the "material_id" field.
+func MaterialIDNotIn(vs ...uint64) predicate.Asset {
+	return predicate.Asset(sql.FieldNotIn(FieldMaterialID, vs...))
+}
+
+// MaterialIDIsNil applies the IsNil predicate on the "material_id" field.
+func MaterialIDIsNil() predicate.Asset {
+	return predicate.Asset(sql.FieldIsNull(FieldMaterialID))
+}
+
+// MaterialIDNotNil applies the NotNil predicate on the "material_id" field.
+func MaterialIDNotNil() predicate.Asset {
+	return predicate.Asset(sql.FieldNotNull(FieldMaterialID))
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
@@ -1001,6 +1036,29 @@ func HasCity() predicate.Asset {
 func HasCityWith(preds ...predicate.City) predicate.Asset {
 	return predicate.Asset(func(s *sql.Selector) {
 		step := newCityStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasMaterial applies the HasEdge predicate on the "material" edge.
+func HasMaterial() predicate.Asset {
+	return predicate.Asset(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, MaterialTable, MaterialColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMaterialWith applies the HasEdge predicate on the "material" edge with a given conditions (other predicates).
+func HasMaterialWith(preds ...predicate.Material) predicate.Asset {
+	return predicate.Asset(func(s *sql.Selector) {
+		step := newMaterialStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

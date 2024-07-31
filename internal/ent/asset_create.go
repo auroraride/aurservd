@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
@@ -139,6 +140,20 @@ func (ac *AssetCreate) SetCityID(u uint64) *AssetCreate {
 func (ac *AssetCreate) SetNillableCityID(u *uint64) *AssetCreate {
 	if u != nil {
 		ac.SetCityID(*u)
+	}
+	return ac
+}
+
+// SetMaterialID sets the "material_id" field.
+func (ac *AssetCreate) SetMaterialID(u uint64) *AssetCreate {
+	ac.mutation.SetMaterialID(u)
+	return ac
+}
+
+// SetNillableMaterialID sets the "material_id" field if the given value is not nil.
+func (ac *AssetCreate) SetNillableMaterialID(u *uint64) *AssetCreate {
+	if u != nil {
+		ac.SetMaterialID(*u)
 	}
 	return ac
 }
@@ -280,6 +295,11 @@ func (ac *AssetCreate) SetModel(b *BatteryModel) *AssetCreate {
 // SetCity sets the "city" edge to the City entity.
 func (ac *AssetCreate) SetCity(c *City) *AssetCreate {
 	return ac.SetCityID(c.ID)
+}
+
+// SetMaterial sets the "material" edge to the Material entity.
+func (ac *AssetCreate) SetMaterial(m *Material) *AssetCreate {
+	return ac.SetMaterialID(m.ID)
 }
 
 // AddValueIDs adds the "values" edge to the AssetAttributeValues entity by IDs.
@@ -631,6 +651,23 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		_node.CityID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := ac.mutation.MaterialIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   asset.MaterialTable,
+			Columns: []string{asset.MaterialColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(material.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.MaterialID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := ac.mutation.ValuesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -918,6 +955,24 @@ func (u *AssetUpsert) UpdateCityID() *AssetUpsert {
 // ClearCityID clears the value of the "city_id" field.
 func (u *AssetUpsert) ClearCityID() *AssetUpsert {
 	u.SetNull(asset.FieldCityID)
+	return u
+}
+
+// SetMaterialID sets the "material_id" field.
+func (u *AssetUpsert) SetMaterialID(v uint64) *AssetUpsert {
+	u.Set(asset.FieldMaterialID, v)
+	return u
+}
+
+// UpdateMaterialID sets the "material_id" field to the value that was provided on create.
+func (u *AssetUpsert) UpdateMaterialID() *AssetUpsert {
+	u.SetExcluded(asset.FieldMaterialID)
+	return u
+}
+
+// ClearMaterialID clears the value of the "material_id" field.
+func (u *AssetUpsert) ClearMaterialID() *AssetUpsert {
+	u.SetNull(asset.FieldMaterialID)
 	return u
 }
 
@@ -1286,6 +1341,27 @@ func (u *AssetUpsertOne) UpdateCityID() *AssetUpsertOne {
 func (u *AssetUpsertOne) ClearCityID() *AssetUpsertOne {
 	return u.Update(func(s *AssetUpsert) {
 		s.ClearCityID()
+	})
+}
+
+// SetMaterialID sets the "material_id" field.
+func (u *AssetUpsertOne) SetMaterialID(v uint64) *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.SetMaterialID(v)
+	})
+}
+
+// UpdateMaterialID sets the "material_id" field to the value that was provided on create.
+func (u *AssetUpsertOne) UpdateMaterialID() *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.UpdateMaterialID()
+	})
+}
+
+// ClearMaterialID clears the value of the "material_id" field.
+func (u *AssetUpsertOne) ClearMaterialID() *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.ClearMaterialID()
 	})
 }
 
@@ -1850,6 +1926,27 @@ func (u *AssetUpsertBulk) UpdateCityID() *AssetUpsertBulk {
 func (u *AssetUpsertBulk) ClearCityID() *AssetUpsertBulk {
 	return u.Update(func(s *AssetUpsert) {
 		s.ClearCityID()
+	})
+}
+
+// SetMaterialID sets the "material_id" field.
+func (u *AssetUpsertBulk) SetMaterialID(v uint64) *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.SetMaterialID(v)
+	})
+}
+
+// UpdateMaterialID sets the "material_id" field to the value that was provided on create.
+func (u *AssetUpsertBulk) UpdateMaterialID() *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.UpdateMaterialID()
+	})
+}
+
+// ClearMaterialID clears the value of the "material_id" field.
+func (u *AssetUpsertBulk) ClearMaterialID() *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.ClearMaterialID()
 	})
 }
 

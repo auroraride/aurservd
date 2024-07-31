@@ -100,6 +100,11 @@ func ToLocationID(v int) predicate.AssetHistory {
 	return predicate.AssetHistory(sql.FieldEQ(FieldToLocationID, v))
 }
 
+// ChangeType applies equality check predicate on the "change_type" field. It's identical to ChangeTypeEQ.
+func ChangeType(v uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldEQ(FieldChangeType, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.AssetHistory {
 	return predicate.AssetHistory(sql.FieldEQ(FieldCreatedAt, v))
@@ -395,6 +400,16 @@ func FromLocationTypeLTE(v int) predicate.AssetHistory {
 	return predicate.AssetHistory(sql.FieldLTE(FieldFromLocationType, v))
 }
 
+// FromLocationTypeIsNil applies the IsNil predicate on the "from_location_type" field.
+func FromLocationTypeIsNil() predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldIsNull(FieldFromLocationType))
+}
+
+// FromLocationTypeNotNil applies the NotNil predicate on the "from_location_type" field.
+func FromLocationTypeNotNil() predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldNotNull(FieldFromLocationType))
+}
+
 // FromLocationIDEQ applies the EQ predicate on the "from_location_id" field.
 func FromLocationIDEQ(v int) predicate.AssetHistory {
 	return predicate.AssetHistory(sql.FieldEQ(FieldFromLocationID, v))
@@ -433,6 +448,16 @@ func FromLocationIDLT(v int) predicate.AssetHistory {
 // FromLocationIDLTE applies the LTE predicate on the "from_location_id" field.
 func FromLocationIDLTE(v int) predicate.AssetHistory {
 	return predicate.AssetHistory(sql.FieldLTE(FieldFromLocationID, v))
+}
+
+// FromLocationIDIsNil applies the IsNil predicate on the "from_location_id" field.
+func FromLocationIDIsNil() predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldIsNull(FieldFromLocationID))
+}
+
+// FromLocationIDNotNil applies the NotNil predicate on the "from_location_id" field.
+func FromLocationIDNotNil() predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldNotNull(FieldFromLocationID))
 }
 
 // ToLocationTypeEQ applies the EQ predicate on the "to_location_type" field.
@@ -475,6 +500,16 @@ func ToLocationTypeLTE(v int) predicate.AssetHistory {
 	return predicate.AssetHistory(sql.FieldLTE(FieldToLocationType, v))
 }
 
+// ToLocationTypeIsNil applies the IsNil predicate on the "to_location_type" field.
+func ToLocationTypeIsNil() predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldIsNull(FieldToLocationType))
+}
+
+// ToLocationTypeNotNil applies the NotNil predicate on the "to_location_type" field.
+func ToLocationTypeNotNil() predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldNotNull(FieldToLocationType))
+}
+
 // ToLocationIDEQ applies the EQ predicate on the "to_location_id" field.
 func ToLocationIDEQ(v int) predicate.AssetHistory {
 	return predicate.AssetHistory(sql.FieldEQ(FieldToLocationID, v))
@@ -513,6 +548,56 @@ func ToLocationIDLT(v int) predicate.AssetHistory {
 // ToLocationIDLTE applies the LTE predicate on the "to_location_id" field.
 func ToLocationIDLTE(v int) predicate.AssetHistory {
 	return predicate.AssetHistory(sql.FieldLTE(FieldToLocationID, v))
+}
+
+// ToLocationIDIsNil applies the IsNil predicate on the "to_location_id" field.
+func ToLocationIDIsNil() predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldIsNull(FieldToLocationID))
+}
+
+// ToLocationIDNotNil applies the NotNil predicate on the "to_location_id" field.
+func ToLocationIDNotNil() predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldNotNull(FieldToLocationID))
+}
+
+// ChangeTypeEQ applies the EQ predicate on the "change_type" field.
+func ChangeTypeEQ(v uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldEQ(FieldChangeType, v))
+}
+
+// ChangeTypeNEQ applies the NEQ predicate on the "change_type" field.
+func ChangeTypeNEQ(v uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldNEQ(FieldChangeType, v))
+}
+
+// ChangeTypeIn applies the In predicate on the "change_type" field.
+func ChangeTypeIn(vs ...uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldIn(FieldChangeType, vs...))
+}
+
+// ChangeTypeNotIn applies the NotIn predicate on the "change_type" field.
+func ChangeTypeNotIn(vs ...uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldNotIn(FieldChangeType, vs...))
+}
+
+// ChangeTypeGT applies the GT predicate on the "change_type" field.
+func ChangeTypeGT(v uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldGT(FieldChangeType, v))
+}
+
+// ChangeTypeGTE applies the GTE predicate on the "change_type" field.
+func ChangeTypeGTE(v uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldGTE(FieldChangeType, v))
+}
+
+// ChangeTypeLT applies the LT predicate on the "change_type" field.
+func ChangeTypeLT(v uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldLT(FieldChangeType, v))
+}
+
+// ChangeTypeLTE applies the LTE predicate on the "change_type" field.
+func ChangeTypeLTE(v uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldLTE(FieldChangeType, v))
 }
 
 // HasAsset applies the HasEdge predicate on the "asset" edge.

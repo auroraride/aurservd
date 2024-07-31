@@ -130,6 +130,12 @@ func (ahu *AssetHistoryUpdate) AddFromLocationType(i int) *AssetHistoryUpdate {
 	return ahu
 }
 
+// ClearFromLocationType clears the value of the "from_location_type" field.
+func (ahu *AssetHistoryUpdate) ClearFromLocationType() *AssetHistoryUpdate {
+	ahu.mutation.ClearFromLocationType()
+	return ahu
+}
+
 // SetFromLocationID sets the "from_location_id" field.
 func (ahu *AssetHistoryUpdate) SetFromLocationID(i int) *AssetHistoryUpdate {
 	ahu.mutation.ResetFromLocationID()
@@ -148,6 +154,12 @@ func (ahu *AssetHistoryUpdate) SetNillableFromLocationID(i *int) *AssetHistoryUp
 // AddFromLocationID adds i to the "from_location_id" field.
 func (ahu *AssetHistoryUpdate) AddFromLocationID(i int) *AssetHistoryUpdate {
 	ahu.mutation.AddFromLocationID(i)
+	return ahu
+}
+
+// ClearFromLocationID clears the value of the "from_location_id" field.
+func (ahu *AssetHistoryUpdate) ClearFromLocationID() *AssetHistoryUpdate {
+	ahu.mutation.ClearFromLocationID()
 	return ahu
 }
 
@@ -172,6 +184,12 @@ func (ahu *AssetHistoryUpdate) AddToLocationType(i int) *AssetHistoryUpdate {
 	return ahu
 }
 
+// ClearToLocationType clears the value of the "to_location_type" field.
+func (ahu *AssetHistoryUpdate) ClearToLocationType() *AssetHistoryUpdate {
+	ahu.mutation.ClearToLocationType()
+	return ahu
+}
+
 // SetToLocationID sets the "to_location_id" field.
 func (ahu *AssetHistoryUpdate) SetToLocationID(i int) *AssetHistoryUpdate {
 	ahu.mutation.ResetToLocationID()
@@ -190,6 +208,33 @@ func (ahu *AssetHistoryUpdate) SetNillableToLocationID(i *int) *AssetHistoryUpda
 // AddToLocationID adds i to the "to_location_id" field.
 func (ahu *AssetHistoryUpdate) AddToLocationID(i int) *AssetHistoryUpdate {
 	ahu.mutation.AddToLocationID(i)
+	return ahu
+}
+
+// ClearToLocationID clears the value of the "to_location_id" field.
+func (ahu *AssetHistoryUpdate) ClearToLocationID() *AssetHistoryUpdate {
+	ahu.mutation.ClearToLocationID()
+	return ahu
+}
+
+// SetChangeType sets the "change_type" field.
+func (ahu *AssetHistoryUpdate) SetChangeType(u uint8) *AssetHistoryUpdate {
+	ahu.mutation.ResetChangeType()
+	ahu.mutation.SetChangeType(u)
+	return ahu
+}
+
+// SetNillableChangeType sets the "change_type" field if the given value is not nil.
+func (ahu *AssetHistoryUpdate) SetNillableChangeType(u *uint8) *AssetHistoryUpdate {
+	if u != nil {
+		ahu.SetChangeType(*u)
+	}
+	return ahu
+}
+
+// AddChangeType adds u to the "change_type" field.
+func (ahu *AssetHistoryUpdate) AddChangeType(u int8) *AssetHistoryUpdate {
+	ahu.mutation.AddChangeType(u)
 	return ahu
 }
 
@@ -296,11 +341,17 @@ func (ahu *AssetHistoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ahu.mutation.AddedFromLocationType(); ok {
 		_spec.AddField(assethistory.FieldFromLocationType, field.TypeInt, value)
 	}
+	if ahu.mutation.FromLocationTypeCleared() {
+		_spec.ClearField(assethistory.FieldFromLocationType, field.TypeInt)
+	}
 	if value, ok := ahu.mutation.FromLocationID(); ok {
 		_spec.SetField(assethistory.FieldFromLocationID, field.TypeInt, value)
 	}
 	if value, ok := ahu.mutation.AddedFromLocationID(); ok {
 		_spec.AddField(assethistory.FieldFromLocationID, field.TypeInt, value)
+	}
+	if ahu.mutation.FromLocationIDCleared() {
+		_spec.ClearField(assethistory.FieldFromLocationID, field.TypeInt)
 	}
 	if value, ok := ahu.mutation.ToLocationType(); ok {
 		_spec.SetField(assethistory.FieldToLocationType, field.TypeInt, value)
@@ -308,11 +359,23 @@ func (ahu *AssetHistoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ahu.mutation.AddedToLocationType(); ok {
 		_spec.AddField(assethistory.FieldToLocationType, field.TypeInt, value)
 	}
+	if ahu.mutation.ToLocationTypeCleared() {
+		_spec.ClearField(assethistory.FieldToLocationType, field.TypeInt)
+	}
 	if value, ok := ahu.mutation.ToLocationID(); ok {
 		_spec.SetField(assethistory.FieldToLocationID, field.TypeInt, value)
 	}
 	if value, ok := ahu.mutation.AddedToLocationID(); ok {
 		_spec.AddField(assethistory.FieldToLocationID, field.TypeInt, value)
+	}
+	if ahu.mutation.ToLocationIDCleared() {
+		_spec.ClearField(assethistory.FieldToLocationID, field.TypeInt)
+	}
+	if value, ok := ahu.mutation.ChangeType(); ok {
+		_spec.SetField(assethistory.FieldChangeType, field.TypeUint8, value)
+	}
+	if value, ok := ahu.mutation.AddedChangeType(); ok {
+		_spec.AddField(assethistory.FieldChangeType, field.TypeUint8, value)
 	}
 	if ahu.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -464,6 +527,12 @@ func (ahuo *AssetHistoryUpdateOne) AddFromLocationType(i int) *AssetHistoryUpdat
 	return ahuo
 }
 
+// ClearFromLocationType clears the value of the "from_location_type" field.
+func (ahuo *AssetHistoryUpdateOne) ClearFromLocationType() *AssetHistoryUpdateOne {
+	ahuo.mutation.ClearFromLocationType()
+	return ahuo
+}
+
 // SetFromLocationID sets the "from_location_id" field.
 func (ahuo *AssetHistoryUpdateOne) SetFromLocationID(i int) *AssetHistoryUpdateOne {
 	ahuo.mutation.ResetFromLocationID()
@@ -482,6 +551,12 @@ func (ahuo *AssetHistoryUpdateOne) SetNillableFromLocationID(i *int) *AssetHisto
 // AddFromLocationID adds i to the "from_location_id" field.
 func (ahuo *AssetHistoryUpdateOne) AddFromLocationID(i int) *AssetHistoryUpdateOne {
 	ahuo.mutation.AddFromLocationID(i)
+	return ahuo
+}
+
+// ClearFromLocationID clears the value of the "from_location_id" field.
+func (ahuo *AssetHistoryUpdateOne) ClearFromLocationID() *AssetHistoryUpdateOne {
+	ahuo.mutation.ClearFromLocationID()
 	return ahuo
 }
 
@@ -506,6 +581,12 @@ func (ahuo *AssetHistoryUpdateOne) AddToLocationType(i int) *AssetHistoryUpdateO
 	return ahuo
 }
 
+// ClearToLocationType clears the value of the "to_location_type" field.
+func (ahuo *AssetHistoryUpdateOne) ClearToLocationType() *AssetHistoryUpdateOne {
+	ahuo.mutation.ClearToLocationType()
+	return ahuo
+}
+
 // SetToLocationID sets the "to_location_id" field.
 func (ahuo *AssetHistoryUpdateOne) SetToLocationID(i int) *AssetHistoryUpdateOne {
 	ahuo.mutation.ResetToLocationID()
@@ -524,6 +605,33 @@ func (ahuo *AssetHistoryUpdateOne) SetNillableToLocationID(i *int) *AssetHistory
 // AddToLocationID adds i to the "to_location_id" field.
 func (ahuo *AssetHistoryUpdateOne) AddToLocationID(i int) *AssetHistoryUpdateOne {
 	ahuo.mutation.AddToLocationID(i)
+	return ahuo
+}
+
+// ClearToLocationID clears the value of the "to_location_id" field.
+func (ahuo *AssetHistoryUpdateOne) ClearToLocationID() *AssetHistoryUpdateOne {
+	ahuo.mutation.ClearToLocationID()
+	return ahuo
+}
+
+// SetChangeType sets the "change_type" field.
+func (ahuo *AssetHistoryUpdateOne) SetChangeType(u uint8) *AssetHistoryUpdateOne {
+	ahuo.mutation.ResetChangeType()
+	ahuo.mutation.SetChangeType(u)
+	return ahuo
+}
+
+// SetNillableChangeType sets the "change_type" field if the given value is not nil.
+func (ahuo *AssetHistoryUpdateOne) SetNillableChangeType(u *uint8) *AssetHistoryUpdateOne {
+	if u != nil {
+		ahuo.SetChangeType(*u)
+	}
+	return ahuo
+}
+
+// AddChangeType adds u to the "change_type" field.
+func (ahuo *AssetHistoryUpdateOne) AddChangeType(u int8) *AssetHistoryUpdateOne {
+	ahuo.mutation.AddChangeType(u)
 	return ahuo
 }
 
@@ -660,11 +768,17 @@ func (ahuo *AssetHistoryUpdateOne) sqlSave(ctx context.Context) (_node *AssetHis
 	if value, ok := ahuo.mutation.AddedFromLocationType(); ok {
 		_spec.AddField(assethistory.FieldFromLocationType, field.TypeInt, value)
 	}
+	if ahuo.mutation.FromLocationTypeCleared() {
+		_spec.ClearField(assethistory.FieldFromLocationType, field.TypeInt)
+	}
 	if value, ok := ahuo.mutation.FromLocationID(); ok {
 		_spec.SetField(assethistory.FieldFromLocationID, field.TypeInt, value)
 	}
 	if value, ok := ahuo.mutation.AddedFromLocationID(); ok {
 		_spec.AddField(assethistory.FieldFromLocationID, field.TypeInt, value)
+	}
+	if ahuo.mutation.FromLocationIDCleared() {
+		_spec.ClearField(assethistory.FieldFromLocationID, field.TypeInt)
 	}
 	if value, ok := ahuo.mutation.ToLocationType(); ok {
 		_spec.SetField(assethistory.FieldToLocationType, field.TypeInt, value)
@@ -672,11 +786,23 @@ func (ahuo *AssetHistoryUpdateOne) sqlSave(ctx context.Context) (_node *AssetHis
 	if value, ok := ahuo.mutation.AddedToLocationType(); ok {
 		_spec.AddField(assethistory.FieldToLocationType, field.TypeInt, value)
 	}
+	if ahuo.mutation.ToLocationTypeCleared() {
+		_spec.ClearField(assethistory.FieldToLocationType, field.TypeInt)
+	}
 	if value, ok := ahuo.mutation.ToLocationID(); ok {
 		_spec.SetField(assethistory.FieldToLocationID, field.TypeInt, value)
 	}
 	if value, ok := ahuo.mutation.AddedToLocationID(); ok {
 		_spec.AddField(assethistory.FieldToLocationID, field.TypeInt, value)
+	}
+	if ahuo.mutation.ToLocationIDCleared() {
+		_spec.ClearField(assethistory.FieldToLocationID, field.TypeInt)
+	}
+	if value, ok := ahuo.mutation.ChangeType(); ok {
+		_spec.SetField(assethistory.FieldChangeType, field.TypeUint8, value)
+	}
+	if value, ok := ahuo.mutation.AddedChangeType(); ok {
+		_spec.AddField(assethistory.FieldChangeType, field.TypeUint8, value)
 	}
 	if ahuo.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -9,7 +9,7 @@ type AssetCreateReq struct {
 	SN            *string                `json:"sn"`                            // 资产编号
 	Name          *string                `json:"name"`                          // 资产名称(AssetType为 4:电柜配件 5:电车配件 6:其它 需要填写)
 	CityID        *uint64                `json:"cityId"`                        // 城市ID(AssetType为 2:智能电池 需要填写)
-	LocationsType *AseetLocationsType    `json:"locationsType"`                 // 资产位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维
+	LocationsType *AssetLocationsType    `json:"locationsType"`                 // 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
 	LocationsID   *uint64                `json:"locationsId"`                   // 资产位置ID
 	Attribute     []AssetAttributeCreate `json:"attributes"`                    // 属性
 	Enable        *bool                  `json:"enable"`                        // 是否启用
@@ -33,7 +33,8 @@ type AssetFilter struct {
 	ModelID               *uint64                `json:"model" query:"model"`                                               // 型号ID
 	CityID                *uint64                `json:"cityId" query:"cityId"`                                             // 城市
 	OwnerType             *uint8                 `json:"ownerType" query:"ownerType" enums:"1,2"`                           // 归属类型   1:平台 2:代理商
-	AssetLocationsType    *uint8                 `json:"assetLocationsType" query:"assetLocationsType" enums:"1,2,3,4,5,6"` // 资产位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维
+	StationID             *uint64                `json:"stationId" query:"stationId"`                                       // 站点ID
+	AssetLocationsType    *AssetLocationsType    `json:"assetLocationsType" query:"assetLocationsType" enums:"1,2,3,4,5,6"` // 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
 	AssetLocationsKeywork *string                `json:"assetKeywork" query:"assetKeywork"`                                 // 资产位置关键词
 	AssetStatus           *uint8                 `json:"assetStatus" query:"assetStatus" enums:"1,2,3,4,5"`                 // 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
 	Enable                *bool                  `json:"enable" query:"enable"`                                             // 是否启用
@@ -51,17 +52,17 @@ type AssetListReq struct {
 
 // AssetListRes 资产列表返回
 type AssetListRes struct {
-	ID             uint64           `json:"id"`                 // 资产ID
-	CityName       string           `json:"cityName,omitempty"` // 城市
-	Belong         string           `json:"belong"`             // 归属
-	AssetLocations string           `json:"assetLocations"`     // 资产位置
-	Brand          string           `json:"brand"`              // 品牌
-	Model          string           `json:"model,omitempty"`    // 资产型号
-	SN             string           `json:"sn"`                 // 编号
-	AssetStatus    string           `json:"assetStatus"`        // 资产状态
-	Enable         bool             `json:"enable"`             // 是否启用
-	Remark         string           `json:"remark"`             // 备注
-	Attribute      []AssetAttribute `json:"attribute"`          // 属性
+	ID             uint64                    `json:"id"`                 // 资产ID
+	CityName       string                    `json:"cityName,omitempty"` // 城市
+	Belong         string                    `json:"belong"`             // 归属
+	AssetLocations string                    `json:"assetLocations"`     // 资产位置
+	Brand          string                    `json:"brand"`              // 品牌
+	Model          string                    `json:"model,omitempty"`    // 资产型号
+	SN             string                    `json:"sn"`                 // 编号
+	AssetStatus    string                    `json:"assetStatus"`        // 资产状态
+	Enable         bool                      `json:"enable"`             // 是否启用
+	Remark         string                    `json:"remark"`             // 备注
+	Attribute      map[uint64]AssetAttribute `json:"attribute"`          // 属性
 }
 
 // AssetFlowDetail 资产流转明细
