@@ -72,7 +72,7 @@ func (Material) Annotations() []schema.Annotation {
 func (Material) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").Comment("物资名称"),
-		field.Uint8("type").Comment("物资类型 1电柜配件 2电车配件 3.其他"),
+		field.Uint8("type").Comment("物资类型 4电柜配件 5电车配件 6其他"),
 		field.String("statement").Optional().Comment("说明"),
 		field.Bool("allot").Comment("是否可调拨"),
 	}

@@ -1,6 +1,6 @@
 // Copyright (C) aurservd. 2024-present.
 //
-// Created at 2024-07-15, by aurb
+// Created at 2024-07-31, by aurb
 
 package biz
 
@@ -8,10 +8,11 @@ import (
 	"context"
 	"errors"
 
+	"github.com/auroraride/aurservd/internal/ent/material"
+
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/material"
 )
 
 type materialBiz struct {
@@ -36,10 +37,8 @@ func NewMaterialWithModifier(m *model.Modifier) *materialBiz {
 	return s
 }
 
-// List 列表
-func (b *materialBiz) List(req *definition.MaterialListReq) (res []*definition.MaterialDetail, err error) {
-	res = make([]*definition.MaterialDetail, 0)
-
+// List 其他物资列表
+func (b *materialBiz) List(req *definition.MaterialListReq) (res *model.PaginationRes, err error) {
 	q := b.orm.QueryNotDeleted()
 
 	if req.Keyword != nil {
@@ -50,47 +49,29 @@ func (b *materialBiz) List(req *definition.MaterialListReq) (res []*definition.M
 		q.Where(material.Type(req.Type.Value()))
 	}
 
-	list, _ := q.All(b.ctx)
-
-	if len(list) == 0 {
-		return res, nil
-	}
-
-	for _, v := range list {
-		res = append(res, b.detail(v))
-	}
+	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Material) (result *definition.MaterialDetail) {
+		return b.otherDetail(item)
+	})
 	return
 }
 
 // detail 详情数据
-func (b *materialBiz) detail(item *ent.Material) (res *definition.MaterialDetail) {
+func (b *materialBiz) otherDetail(item *ent.Material) (res *definition.MaterialDetail) {
 	res = &definition.MaterialDetail{
 		ID:        item.ID,
 		Name:      item.Name,
-		Type:      definition.MaterialType(item.Type),
+		Type:      model.AssetType(item.Type),
 		Statement: item.Statement,
-		Allot:     item.Allot,
 	}
-
 	return
 }
 
-// Detail 详情
-func (b *materialBiz) Detail(id uint64) (*definition.MaterialDetail, error) {
-	g, _ := b.queryById(id)
-	if g == nil {
-		return nil, errors.New("数据不存在")
-	}
-	return b.detail(g), nil
-}
-
-// Create 创建
+// Create 其他物资创建
 func (b *materialBiz) Create(req *definition.MaterialCreateReq) (err error) {
 	_, err = b.orm.Create().
-		SetName(req.Name).
 		SetType(req.Type.Value()).
+		SetName(req.Name).
 		SetStatement(req.Statement).
-		SetAllot(req.Allot).
 		Save(b.ctx)
 	if err != nil {
 		return err
@@ -103,23 +84,19 @@ func (b *materialBiz) queryById(id uint64) (item *ent.Material, err error) {
 	return b.orm.QueryNotDeleted().Where(material.ID(id)).First(b.ctx)
 }
 
-// Modify 编辑
+// Modify 其他物资编辑
 func (b *materialBiz) Modify(req *definition.MaterialModifyReq) (err error) {
 	g, _ := b.queryById(req.ID)
 	if g == nil {
 		return errors.New("数据不存在")
 	}
-
 	_, err = b.orm.UpdateOneID(req.ID).
 		SetName(req.Name).
-		SetType(req.Type.Value()).
 		SetStatement(req.Statement).
-		SetAllot(req.Allot).
 		Save(b.ctx)
 	if err != nil {
 		return err
 	}
-
 	return
 }
 

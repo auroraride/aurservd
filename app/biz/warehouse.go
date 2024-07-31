@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
@@ -40,28 +41,18 @@ func NewWarehouseWithModifier(m *model.Modifier) *warehouseBiz {
 }
 
 // List 仓库列表
-func (b *warehouseBiz) List(req *definition.WareHouseListReq) (res []*definition.WarehouseDetail, err error) {
-	res = make([]*definition.WarehouseDetail, 0)
-
+func (b *warehouseBiz) List(req *definition.WareHouseListReq) (res *model.PaginationRes) {
 	q := b.orm.QueryNotDeleted().WithCity()
 
 	if req.CityID != nil {
 		q.Where(warehouse.CityID(*req.CityID))
 	}
-
 	if req.Keyword != nil {
 		q.Where(warehouse.NameContains(*req.Keyword))
 	}
-
-	list, _ := q.All(b.ctx)
-
-	if len(list) == 0 {
-		return res, nil
-	}
-
-	for _, v := range list {
-		res = append(res, b.detail(v))
-	}
+	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Warehouse) (result *definition.WarehouseDetail) {
+		return b.detail(item)
+	})
 	return
 }
 
@@ -150,4 +141,84 @@ func (b *warehouseBiz) Delete(id uint64) (err error) {
 		return err
 	}
 	return
+}
+
+// Assets 仓库资产列表
+func (b *warehouseBiz) Assets(req *definition.WareHouseAssetListReq) (res *model.PaginationRes) {
+	// 查询分页的仓库数据
+	q := b.orm.QueryNotDeleted().WithCity()
+	if req.Name != nil {
+		q.Where(warehouse.NameContains(*req.Name))
+	}
+	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Warehouse) (result *definition.WareHouseAssetDetail) {
+		result = &definition.WareHouseAssetDetail{
+			ID:             item.ID,
+			Name:           item.Name,
+			Lng:            item.Lng,
+			Lat:            item.Lat,
+			WarehouseAsset: b.assetForWarehouse(req, item.ID),
+		}
+		if item.Edges.City != nil {
+			result.City = model.City{
+				ID:   item.Edges.City.ID,
+				Name: item.Edges.City.Name,
+			}
+		}
+		return result
+	})
+
+	return res
+}
+
+func (b *warehouseBiz) assetForWarehouse(req *definition.WareHouseAssetListReq, wIds uint64) (asset definition.WarehouseAsset) {
+	// 查询仓库所属资产数据
+	q := ent.Database.Asset.QueryNotDeleted().
+		Where(
+			entasset.LocationsType(model.AssetLocationsTypeWarehouse.Value()),
+			entasset.LocationsIDIn(wIds),
+			entasset.Status(model.AssetStatusStock.Value()),
+		)
+	if req.CityID != nil {
+		q.Where(entasset.CityID(*req.CityID))
+	}
+	if req.ModelID != nil {
+		q.Where(
+			entasset.ModelID(*req.ModelID),
+			entasset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value()),
+		)
+	}
+	if req.BrandId != nil {
+		q.Where(
+			entasset.BrandID(*req.BrandId),
+			entasset.Type(model.AssetTypeEbike.Value()),
+		)
+	}
+	if req.OtherName != nil {
+		q.Where(
+			entasset.NameContains(*req.Name),
+			entasset.TypeIn(model.AssetTypeCabinetAccessory.Value(), model.AssetTypeEbikeAccessory.Value(), model.AssetTypeOtherAccessory.Value()),
+		)
+	}
+	list, _ := q.All(b.ctx)
+	// 按照分类进行累计
+	for _, v := range list {
+		switch v.Type {
+		case model.AssetTypeEbike.Value():
+			asset.EbikeTotal = asset.EbikeTotal + 1
+		case model.AssetTypeSmartBattery.Value():
+			asset.SmartBatteryTotal = asset.SmartBatteryTotal + 1
+		case model.AssetTypeNonSmartBattery.Value():
+			asset.NonSmartBatteryTotal = asset.NonSmartBatteryTotal + 1
+		case model.AssetTypeCabinetAccessory.Value():
+			asset.CabinetAccessoryTotal = asset.CabinetAccessoryTotal + 1
+		case model.AssetTypeEbikeAccessory.Value():
+			asset.EbikeAccessoryTotal = asset.EbikeAccessoryTotal + 1
+		case model.AssetTypeOtherAccessory.Value():
+			asset.OtherAssetTotal = asset.OtherAssetTotal + 1
+		}
+	}
+
+	// todo 新调拨记录计算
+
+	return asset
 }

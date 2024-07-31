@@ -19,39 +19,24 @@ var Material = new(material)
 
 // List
 // @ID		MaterialList
-// @Router	/manager/v1/material [GET]
+// @Router	/manager/v2/material [GET]
 // @Summary	列表
-// @Tags	物资 - Material
+// @Tags	其他物资 - Material
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string						true	"管理员校验token"
-// @Param	body			body		definition.MaterialListReq	true	"desc"
-// @Success	200				{object}	[]definition.MaterialDetail	"请求成功"
+// @Param	X-Manager-Token	header		string													true	"管理员校验token"
+// @Param	body			body		definition.MaterialListReq								true	"desc"
+// @Success	200				{object}	model.PaginationRes{items=[]definition.MaterialDetail}	"请求成功"
 func (*material) List(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.MaterialListReq](c)
 	return ctx.SendResponse(biz.NewMaterial().List(req))
 }
 
-// Detail
-// @ID		MaterialDetail
-// @Router	/manager/v1/material/{id} [GET]
-// @Summary	详情
-// @Tags	物资 - Material
-// @Accept	json
-// @Produce	json
-// @Param	X-Manager-Token	header		string						true	"管理员校验token"
-// @Param	id				path		string						true	"仓库ID"
-// @Success	200				{object}	definition.MaterialDetail	"请求成功"
-func (*material) Detail(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-	return ctx.SendResponse(biz.NewMaterial().Detail(req.ID))
-}
-
 // Create
 // @ID		MaterialCreate
-// @Router	/manager/v1/material [POST]
+// @Router	/manager/v2/material [POST]
 // @Summary	创建
-// @Tags	物资 - Material
+// @Tags	其他物资 - Material
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
@@ -66,7 +51,7 @@ func (*material) Create(c echo.Context) (err error) {
 // @ID		MaterialDelete
 // @Router	/manager/v1/material/{id} [DELETE]
 // @Summary	删除
-// @Tags	物资 - Material
+// @Tags	其他物资 - Material
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -81,7 +66,7 @@ func (*material) Delete(c echo.Context) (err error) {
 // @ID		MaterialModify
 // @Router	/manager/v1/material/{id} [PUT]
 // @Summary	修改
-// @Tags	物资 - Material
+// @Tags	其他物资 - Material
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"

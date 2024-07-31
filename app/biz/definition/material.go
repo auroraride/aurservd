@@ -6,41 +6,29 @@ package definition
 
 import "github.com/auroraride/aurservd/app/model"
 
-type MaterialType uint8
-
-const (
-	MaterialTypeBattery MaterialType = iota + 1 // 电池配件物资
-	MaterialTypeEbike                           // 电车配件物资
-	MaterialTypeOther                           // 其他物资
-)
-
-func (t MaterialType) Value() uint8 {
-	return uint8(t)
-}
-
+// MaterialListReq 其他物资列表请求
 type MaterialListReq struct {
-	Keyword *string       `json:"keyword" query:"keyword"` // 关键字
-	Type    *MaterialType `json:"type" query:"type"`       // 物资类型
+	model.PaginationReq
+	Keyword *string          `json:"keyword" query:"keyword"` // 关键字
+	Type    *model.AssetType `json:"type" query:"type"`       // 其他物资类型 4:电柜配件 5:电车配件 6:其它
 }
 
-// MaterialDetail 物资信息
+// MaterialDetail 其他物资详情信息
 type MaterialDetail struct {
-	ID        uint64       `json:"id"`        // ID
-	Name      string       `json:"name"`      // 名称
-	Type      MaterialType `json:"type"`      // 类型
-	Statement string       `json:"statement"` // 说明
-	Allot     bool         `json:"allot"`     // 是否可调拨
+	ID        uint64          `json:"id"`        // ID
+	Name      string          `json:"name"`      // 名称
+	Type      model.AssetType `json:"type"`      // 类型
+	Statement string          `json:"statement"` // 说明
 }
 
-// MaterialCreateReq 创建
+// MaterialCreateReq 其他物资创建
 type MaterialCreateReq struct {
-	Name      string       `json:"name" validate:"required,max=30" trans:"物资名称"`        // 物资名称
-	Type      MaterialType `json:"type" validate:"required" enums:"1,2,3" trans:"物资类型"` // 物资类型
-	Statement string       `json:"statement" validate:"max=50"`                         // 物资说明
-	Allot     bool         `json:"allot"`                                               // 备注
+	Name      string          `json:"name" validate:"required,max=30" trans:"其他物资名称"`
+	Type      model.AssetType `json:"type" validate:"required" enums:"4,5,6" trans:"其他物资类型"`
+	Statement string          `json:"statement" validate:"max=50"` // 物资说明
 }
 
-// MaterialModifyReq 修改
+// MaterialModifyReq 其他物资修改
 type MaterialModifyReq struct {
 	model.IDParamReq
 	MaterialCreateReq

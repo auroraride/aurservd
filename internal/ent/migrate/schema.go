@@ -3818,7 +3818,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
-		{Name: "type", Type: field.TypeUint8, Comment: "物资类型 1电柜配件 2电车配件 3.其他"},
+		{Name: "type", Type: field.TypeUint8, Comment: "物资类型 4电柜配件 5电车配件 6其他"},
 		{Name: "statement", Type: field.TypeString, Nullable: true, Comment: "说明"},
 		{Name: "allot", Type: field.TypeBool, Comment: "是否可调拨"},
 	}

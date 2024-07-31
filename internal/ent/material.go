@@ -33,7 +33,7 @@ type Material struct {
 	Remark string `json:"remark,omitempty"`
 	// 物资名称
 	Name string `json:"name,omitempty"`
-	// 物资类型 1电柜配件 2电车配件 3.其他
+	// 物资类型 4电柜配件 5电车配件 6其他
 	Type uint8 `json:"type,omitempty"`
 	// 说明
 	Statement string `json:"statement,omitempty"`
