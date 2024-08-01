@@ -19,7 +19,7 @@ var Material = new(material)
 
 // List
 // @ID		MaterialList
-// @Router	/manager/v2/material [GET]
+// @Router	/manager/v2/asset/material [GET]
 // @Summary	列表
 // @Tags	其他物资 - Material
 // @Accept	json
@@ -34,7 +34,7 @@ func (*material) List(c echo.Context) (err error) {
 
 // Create
 // @ID		MaterialCreate
-// @Router	/manager/v2/material [POST]
+// @Router	/manager/v2/asset/material [POST]
 // @Summary	创建
 // @Tags	其他物资 - Material
 // @Accept	json
@@ -49,7 +49,7 @@ func (*material) Create(c echo.Context) (err error) {
 
 // Delete
 // @ID		MaterialDelete
-// @Router	/manager/v2/material/{id} [DELETE]
+// @Router	/manager/v2/asset/material/{id} [DELETE]
 // @Summary	删除
 // @Tags	其他物资 - Material
 // @Accept	json
@@ -64,7 +64,7 @@ func (*material) Delete(c echo.Context) (err error) {
 
 // Modify
 // @ID		MaterialModify
-// @Router	/manager/v2/material/{id} [PUT]
+// @Router	/manager/v2/asset/material/{id} [PUT]
 // @Summary	修改
 // @Tags	其他物资 - Material
 // @Accept	json

@@ -195,7 +195,7 @@ func (b *warehouseBiz) assetForWarehouse(req *definition.WareHouseAssetListReq, 
 	}
 	if req.OtherName != nil {
 		q.Where(
-			entasset.NameContains(*req.Name),
+			entasset.NameContains(*req.OtherName),
 			entasset.TypeIn(model.AssetTypeCabinetAccessory.Value(), model.AssetTypeEbikeAccessory.Value(), model.AssetTypeOtherAccessory.Value()),
 		)
 	}

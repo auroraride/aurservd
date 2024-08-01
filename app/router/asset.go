@@ -33,6 +33,23 @@ func loadAssersRoutes() {
 	asset.POST("/export", assetapi.Assets.Export)     // 导出资产
 	asset.GET("/template", assetapi.Assets.Template)  // 导出模版
 
+	// 仓库
+	asset.POST("/warehouse", assetapi.Warehouse.Create)        // 创建仓库
+	asset.GET("/warehouse", assetapi.Warehouse.List)           // 仓库列表
+	asset.GET("/warehouse/:id", assetapi.Warehouse.Detail)     // 仓库详情
+	asset.PUT("/warehouse/:id", assetapi.Warehouse.Modify)     // 更新仓库
+	asset.DELETE("/warehouse/:id", assetapi.Warehouse.Delete)  // 删除仓库
+	asset.GET("/warehouse_assets ", assetapi.Warehouse.Assets) // 仓库物资
+
+	// 门店物资
+	asset.GET("/store_assets", assetapi.Store.StoreAsset) // 门店物资
+
+	// 其他物资
+	asset.POST("/material", assetapi.Material.Create)       // 创建仓库
+	asset.GET("/material", assetapi.Material.List)          // 仓库列表
+	asset.PUT("/material/:id", assetapi.Material.Modify)    // 更新仓库
+	asset.DELETE("/material/:id", assetapi.Material.Delete) // 删除仓库
+
 	// 资产调拨
 	asset.POST("/transfer", assetapi.AssetTransfer.Transfer) // 资产调拨
 

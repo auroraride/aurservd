@@ -19,7 +19,7 @@ var Warehouse = new(warehouse)
 
 // List
 // @ID		WarehouseList
-// @Router	/manager/v2/warehouse [GET]
+// @Router	/manager/v2/asset/warehouse [GET]
 // @Summary	仓库列表
 // @Tags	仓库 - Warehouse
 // @Accept	json
@@ -34,7 +34,7 @@ func (*warehouse) List(c echo.Context) (err error) {
 
 // Detail
 // @ID		WarehouseDetail
-// @Router	/manager/v2/warehouse/{id} [GET]
+// @Router	/manager/v2/asset/warehouse/{id} [GET]
 // @Summary	仓库详情
 // @Tags	仓库 - Warehouse
 // @Accept	json
@@ -49,7 +49,7 @@ func (*warehouse) Detail(c echo.Context) (err error) {
 
 // Create
 // @ID		WarehouseCreate
-// @Router	/manager/v2/warehouse [POST]
+// @Router	/manager/v2/asset/warehouse [POST]
 // @Summary	创建仓库
 // @Tags	仓库 - Warehouse
 // @Accept	json
@@ -64,7 +64,7 @@ func (*warehouse) Create(c echo.Context) (err error) {
 
 // Delete
 // @ID		WarehouseDelete
-// @Router	/manager/v2/warehouse/{id} [DELETE]
+// @Router	/manager/v2/asset/warehouse/{id} [DELETE]
 // @Summary	删除仓库
 // @Tags	仓库 - Warehouse
 // @Accept	json
@@ -79,7 +79,7 @@ func (*warehouse) Delete(c echo.Context) (err error) {
 
 // Modify
 // @ID		WarehouseModify
-// @Router	/manager/v2/warehouse/{id} [PUT]
+// @Router	/manager/v2/asset/warehouse/{id} [PUT]
 // @Summary	修改仓库
 // @Tags	仓库 - Warehouse
 // @Accept	json
@@ -94,7 +94,7 @@ func (*warehouse) Modify(c echo.Context) (err error) {
 
 // Assets
 // @ID		WarehouseAssets
-// @Router	/manager/v2/warehouse/assets [GET]
+// @Router	/manager/v2/asset/warehouse_assets [GET]
 // @Summary	仓库物资
 // @Tags	仓库 - Warehouse
 // @Accept	json
