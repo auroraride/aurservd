@@ -1,4 +1,4 @@
-package mapi
+package assetapi
 
 import (
 	"github.com/labstack/echo/v4"

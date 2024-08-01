@@ -8,6 +8,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
@@ -23,6 +24,11 @@ func NewAssetTransfer() *assetTransferService {
 
 // TransferAsset 调拨
 func (s *assetTransferService) TransferAsset(ctx context.Context, req model.AssetTransferCreateReq, modifier *model.Modifier) (failed []string, err error) {
+	// 调拨限制
+	err = s.transferLimit(ctx, req)
+	if err != nil {
+		return nil, err
+	}
 	// 查询物资是否充足
 	q := ent.Database.Asset.QueryNotDeleted().Where(
 		asset.LocationsType(req.FromLocationType.Value()),
@@ -77,37 +83,6 @@ func (s *assetTransferService) TransferAsset(ctx context.Context, req model.Asse
 	return
 }
 
-// 判定调拨类型 todo 有问题
-// func (s *assetTransferService) transferAssetType(ctx context.Context, req model.AssetTransferCreateReq) (res *model.AssetTransferType, err error) {
-//
-// 	// 初始入库，指平台新增的物资，第一次入库；初始入库，没有调出目标
-// 	var transferType model.AssetTransferType
-// 	if req.FromLocationType == nil && req.ToLocationType == model.AssetLocationsTypeWarehouse {
-// 		transferType = model.AssetTransferTypeInitial
-// 		return &transferType, nil
-// 	}
-//
-// 	// 只有初始入库才有调拨前位置类型为空
-// 	if req.FromLocationType != nil {
-// 		return nil, errors.New("调拨前位置类型不能为空")
-// 	}
-//
-// 	// 门店调拨，指门店间的出入库
-// 	if *req.FromLocationType == model.AssetLocationsTypeStore && req.ToLocationType == model.AssetLocationsTypeStore {
-// 		transferType = model.AssetTransferTypeStore
-// 		return &transferType, nil
-// 	}
-//
-// 	// 平台调拨，指仓库与其他库存点的出入库
-// 	if *req.FromLocationType == model.AssetLocationsTypeWarehouse && req.ToLocationType != model.AssetLocationsTypeWarehouse {
-// 		transferType = model.AssetTransferTypePlatform
-// 		return &transferType, nil
-// 	}
-//
-// 	// 运维领取，指运维从仓库/门店领取物资；运维退还，指运维将物资还回仓库或门店
-// 	return
-// }
-
 // 有资产编号的物资调拨
 func (s *assetTransferService) transferAssetWithSN(ctx context.Context, q *ent.AssetQuery, req model.AssetTransferCreateDetail, modifier *model.Modifier) (assetIDs []uint64, err error) {
 	if req.SN == nil || *req.SN == "" {
@@ -143,4 +118,71 @@ func (s *assetTransferService) transferAssetWithoutSN(ctx context.Context, q *en
 		assetIds = append(assetIds, v.ID)
 	}
 	return assetIds, nil
+}
+
+// 调拨限制
+func (s *assetTransferService) transferLimit(ctx context.Context, req model.AssetTransferCreateReq) (err error) {
+	if req.FromLocationType != nil {
+		// 仓库限制（仓库、门店、站点、运维）
+		if *req.FromLocationType == model.AssetLocationsTypeWarehouse {
+			switch req.ToLocationType {
+			case model.AssetLocationsTypeWarehouse:
+			case model.AssetLocationsTypeStore:
+			case model.AssetLocationsTypeStation:
+			case model.AssetLocationsTypeOperation:
+			default:
+				return errors.New("调拨目标地点不合法")
+			}
+		}
+		// 门店（仓库、门店、运维）
+		if *req.FromLocationType == model.AssetLocationsTypeStore {
+			switch req.ToLocationType {
+			case model.AssetLocationsTypeWarehouse:
+			case model.AssetLocationsTypeStore:
+			case model.AssetLocationsTypeOperation:
+			default:
+				return errors.New("调拨目标地点不合法")
+			}
+		}
+		// 站点（仓库、相同代理商其他站点）
+		if *req.FromLocationType == model.AssetLocationsTypeStation {
+			switch req.ToLocationType {
+			case model.AssetLocationsTypeWarehouse:
+			case model.AssetLocationsTypeStation:
+				item, _ := ent.Database.EnterpriseStation.QueryNotDeleted().WithEnterprise(func(query *ent.EnterpriseQuery) {
+					query.WithStations()
+				}).Where(enterprisestation.ID(req.ToLocationID)).First(ctx)
+				if item == nil {
+					return errors.New("站点不存在")
+				}
+				// 查询出该代理所有站点
+				if item.Edges.Enterprise != nil && item.Edges.Enterprise.Edges.Stations != nil {
+					var in bool
+					for _, v := range item.Edges.Enterprise.Edges.Stations {
+						if v.ID == req.ToLocationID {
+							in = true
+							break
+						}
+					}
+					if !in {
+						return errors.New("站点不存在")
+					}
+				}
+			default:
+				return errors.New("调拨目标地点不合法")
+			}
+		}
+		// 4）运维（仓库、门店、运维）
+		if *req.FromLocationType == model.AssetLocationsTypeOperation {
+			switch req.ToLocationType {
+			case model.AssetLocationsTypeWarehouse:
+			case model.AssetLocationsTypeStore:
+			case model.AssetLocationsTypeOperation:
+			default:
+				return errors.New("调拨目标地点不合法")
+			}
+		}
+	}
+	return nil
+
 }

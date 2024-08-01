@@ -782,8 +782,11 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 			q.Where(asset.LocationsTypeEQ(model.AssetLocationsTypeWarehouse.Value()))
 		}
 		// 代理商
-		if *req.OwnerType == 2 {
-			q.Where(asset.LocationsTypeEQ(model.AssetLocationsTypeStation.Value()))
+		if *req.OwnerType == 2 && req.StationID != nil {
+			q.Where(
+				asset.LocationsTypeEQ(model.AssetLocationsTypeStation.Value()),
+				asset.HasStationWith(enterprisestation.ID(*req.StationID)),
+			)
 		}
 	}
 	if req.AssetLocationsType != nil && req.AssetLocationsKeywork != nil {

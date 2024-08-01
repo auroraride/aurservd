@@ -2,7 +2,7 @@
 //
 // Created at 2024-07-15, by Jorjan
 
-package mapi
+package assetapi
 
 import (
 	"github.com/labstack/echo/v4"
@@ -49,7 +49,7 @@ func (*material) Create(c echo.Context) (err error) {
 
 // Delete
 // @ID		MaterialDelete
-// @Router	/manager/v1/material/{id} [DELETE]
+// @Router	/manager/v2/material/{id} [DELETE]
 // @Summary	删除
 // @Tags	其他物资 - Material
 // @Accept	json
@@ -64,7 +64,7 @@ func (*material) Delete(c echo.Context) (err error) {
 
 // Modify
 // @ID		MaterialModify
-// @Router	/manager/v1/material/{id} [PUT]
+// @Router	/manager/v2/material/{id} [PUT]
 // @Summary	修改
 // @Tags	其他物资 - Material
 // @Accept	json

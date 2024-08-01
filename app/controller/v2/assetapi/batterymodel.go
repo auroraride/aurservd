@@ -2,7 +2,7 @@
 //
 // Created at 2024-07-13, by Jorjan
 
-package mapi
+package assetapi
 
 import (
 	"github.com/labstack/echo/v4"
@@ -19,7 +19,7 @@ var BatteryModel = new(batterymodel)
 
 // List
 // @ID		BatteryModelList
-// @Router	/manager/v1/batterymodel [GET]
+// @Router	/manager/v2/batterymodel [GET]
 // @Summary	列表
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
@@ -34,7 +34,7 @@ func (*batterymodel) List(c echo.Context) (err error) {
 
 // Detail
 // @ID		BatteryModelDetail
-// @Router	/manager/v1/batterymodel/{id} [GET]
+// @Router	/manager/v2/batterymodel/{id} [GET]
 // @Summary	详情
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
@@ -49,7 +49,7 @@ func (*batterymodel) Detail(c echo.Context) (err error) {
 
 // Create
 // @ID		BatteryModelCreate
-// @Router	/manager/v1/batterymodel [POST]
+// @Router	/manager/v2/batterymodel [POST]
 // @Summary	创建
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
@@ -64,7 +64,7 @@ func (*batterymodel) Create(c echo.Context) (err error) {
 
 // Delete
 // @ID		BatteryModelDelete
-// @Router	/manager/v1/batterymodel/{id} [DELETE]
+// @Router	/manager/v2/batterymodel/{id} [DELETE]
 // @Summary	删除
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
@@ -79,7 +79,7 @@ func (*batterymodel) Delete(c echo.Context) (err error) {
 
 // Modify
 // @ID		BatteryModelModify
-// @Router	/manager/v1/batterymodel/{id} [PUT]
+// @Router	/manager/v2/batterymodel/{id} [PUT]
 // @Summary	修改
 // @Tags	电池型号 - BatteryModel
 // @Accept	json

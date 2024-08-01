@@ -2,7 +2,7 @@
 //
 // Created at 2024-07-11, by Jorjan
 
-package mapi
+package assetapi
 
 import (
 	"github.com/labstack/echo/v4"
