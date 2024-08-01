@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
+	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -44,6 +45,7 @@ type AssetQuery struct {
 	withStation   *EnterpriseStationQuery
 	withRider     *RiderQuery
 	withOperator  *MaintainerQuery
+	withScrap     *AssetScrapQuery
 	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -323,6 +325,28 @@ func (aq *AssetQuery) QueryOperator() *MaintainerQuery {
 	return query
 }
 
+// QueryScrap chains the current query on the "scrap" edge.
+func (aq *AssetQuery) QueryScrap() *AssetScrapQuery {
+	query := (&AssetScrapClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(assetscrap.Table, assetscrap.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, asset.ScrapTable, asset.ScrapColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Asset entity from the query.
 // Returns a *NotFoundError when no Asset was found.
 func (aq *AssetQuery) First(ctx context.Context) (*Asset, error) {
@@ -526,6 +550,7 @@ func (aq *AssetQuery) Clone() *AssetQuery {
 		withStation:   aq.withStation.Clone(),
 		withRider:     aq.withRider.Clone(),
 		withOperator:  aq.withOperator.Clone(),
+		withScrap:     aq.withScrap.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -653,6 +678,17 @@ func (aq *AssetQuery) WithOperator(opts ...func(*MaintainerQuery)) *AssetQuery {
 	return aq
 }
 
+// WithScrap tells the query-builder to eager-load the nodes that are connected to
+// the "scrap" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithScrap(opts ...func(*AssetScrapQuery)) *AssetQuery {
+	query := (&AssetScrapClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withScrap = query
+	return aq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -731,7 +767,7 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 	var (
 		nodes       = []*Asset{}
 		_spec       = aq.querySpec()
-		loadedTypes = [11]bool{
+		loadedTypes = [12]bool{
 			aq.withBrand != nil,
 			aq.withModel != nil,
 			aq.withCity != nil,
@@ -743,6 +779,7 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 			aq.withStation != nil,
 			aq.withRider != nil,
 			aq.withOperator != nil,
+			aq.withScrap != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -830,6 +867,13 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 	if query := aq.withOperator; query != nil {
 		if err := aq.loadOperator(ctx, query, nodes, nil,
 			func(n *Asset, e *Maintainer) { n.Edges.Operator = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withScrap; query != nil {
+		if err := aq.loadScrap(ctx, query, nodes,
+			func(n *Asset) { n.Edges.Scrap = []*AssetScrap{} },
+			func(n *Asset, e *AssetScrap) { n.Edges.Scrap = append(n.Edges.Scrap, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1168,6 +1212,36 @@ func (aq *AssetQuery) loadOperator(ctx context.Context, query *MaintainerQuery, 
 	}
 	return nil
 }
+func (aq *AssetQuery) loadScrap(ctx context.Context, query *AssetScrapQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *AssetScrap)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Asset)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(assetscrap.FieldAssetID)
+	}
+	query.Where(predicate.AssetScrap(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(asset.ScrapColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AssetID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (aq *AssetQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
@@ -1306,6 +1380,7 @@ var (
 	AssetQueryWithStation   AssetQueryWith = "Station"
 	AssetQueryWithRider     AssetQueryWith = "Rider"
 	AssetQueryWithOperator  AssetQueryWith = "Operator"
+	AssetQueryWithScrap     AssetQueryWith = "Scrap"
 )
 
 func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
@@ -1333,6 +1408,8 @@ func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
 			aq.WithRider()
 		case AssetQueryWithOperator:
 			aq.WithOperator()
+		case AssetQueryWithScrap:
+			aq.WithScrap()
 		}
 	}
 	return aq

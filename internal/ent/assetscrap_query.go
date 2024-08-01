@@ -26,11 +26,11 @@ type AssetScrapQuery struct {
 	order          []assetscrap.OrderOption
 	inters         []Interceptor
 	predicates     []predicate.AssetScrap
-	withAsset      *AssetQuery
 	withManager    *ManagerQuery
 	withEmployee   *EmployeeQuery
 	withMaintainer *MaintainerQuery
 	withAgent      *AgentQuery
+	withAsset      *AssetQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -66,28 +66,6 @@ func (asq *AssetScrapQuery) Unique(unique bool) *AssetScrapQuery {
 func (asq *AssetScrapQuery) Order(o ...assetscrap.OrderOption) *AssetScrapQuery {
 	asq.order = append(asq.order, o...)
 	return asq
-}
-
-// QueryAsset chains the current query on the "asset" edge.
-func (asq *AssetScrapQuery) QueryAsset() *AssetQuery {
-	query := (&AssetClient{config: asq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := asq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := asq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(assetscrap.Table, assetscrap.FieldID, selector),
-			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assetscrap.AssetTable, assetscrap.AssetColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(asq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // QueryManager chains the current query on the "manager" edge.
@@ -171,6 +149,28 @@ func (asq *AssetScrapQuery) QueryAgent() *AgentQuery {
 			sqlgraph.From(assetscrap.Table, assetscrap.FieldID, selector),
 			sqlgraph.To(agent.Table, agent.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assetscrap.AgentTable, assetscrap.AgentColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(asq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAsset chains the current query on the "asset" edge.
+func (asq *AssetScrapQuery) QueryAsset() *AssetQuery {
+	query := (&AssetClient{config: asq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := asq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := asq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetscrap.Table, assetscrap.FieldID, selector),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, assetscrap.AssetTable, assetscrap.AssetColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(asq.driver.Dialect(), step)
 		return fromU, nil
@@ -370,26 +370,15 @@ func (asq *AssetScrapQuery) Clone() *AssetScrapQuery {
 		order:          append([]assetscrap.OrderOption{}, asq.order...),
 		inters:         append([]Interceptor{}, asq.inters...),
 		predicates:     append([]predicate.AssetScrap{}, asq.predicates...),
-		withAsset:      asq.withAsset.Clone(),
 		withManager:    asq.withManager.Clone(),
 		withEmployee:   asq.withEmployee.Clone(),
 		withMaintainer: asq.withMaintainer.Clone(),
 		withAgent:      asq.withAgent.Clone(),
+		withAsset:      asq.withAsset.Clone(),
 		// clone intermediate query.
 		sql:  asq.sql.Clone(),
 		path: asq.path,
 	}
-}
-
-// WithAsset tells the query-builder to eager-load the nodes that are connected to
-// the "asset" edge. The optional arguments are used to configure the query builder of the edge.
-func (asq *AssetScrapQuery) WithAsset(opts ...func(*AssetQuery)) *AssetScrapQuery {
-	query := (&AssetClient{config: asq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	asq.withAsset = query
-	return asq
 }
 
 // WithManager tells the query-builder to eager-load the nodes that are connected to
@@ -433,6 +422,17 @@ func (asq *AssetScrapQuery) WithAgent(opts ...func(*AgentQuery)) *AssetScrapQuer
 		opt(query)
 	}
 	asq.withAgent = query
+	return asq
+}
+
+// WithAsset tells the query-builder to eager-load the nodes that are connected to
+// the "asset" edge. The optional arguments are used to configure the query builder of the edge.
+func (asq *AssetScrapQuery) WithAsset(opts ...func(*AssetQuery)) *AssetScrapQuery {
+	query := (&AssetClient{config: asq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	asq.withAsset = query
 	return asq
 }
 
@@ -515,11 +515,11 @@ func (asq *AssetScrapQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 		nodes       = []*AssetScrap{}
 		_spec       = asq.querySpec()
 		loadedTypes = [5]bool{
-			asq.withAsset != nil,
 			asq.withManager != nil,
 			asq.withEmployee != nil,
 			asq.withMaintainer != nil,
 			asq.withAgent != nil,
+			asq.withAsset != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -542,12 +542,6 @@ func (asq *AssetScrapQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
-	}
-	if query := asq.withAsset; query != nil {
-		if err := asq.loadAsset(ctx, query, nodes, nil,
-			func(n *AssetScrap, e *Asset) { n.Edges.Asset = e }); err != nil {
-			return nil, err
-		}
 	}
 	if query := asq.withManager; query != nil {
 		if err := asq.loadManager(ctx, query, nodes, nil,
@@ -573,41 +567,15 @@ func (asq *AssetScrapQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 			return nil, err
 		}
 	}
+	if query := asq.withAsset; query != nil {
+		if err := asq.loadAsset(ctx, query, nodes, nil,
+			func(n *AssetScrap, e *Asset) { n.Edges.Asset = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
-func (asq *AssetScrapQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []*AssetScrap, init func(*AssetScrap), assign func(*AssetScrap, *Asset)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*AssetScrap)
-	for i := range nodes {
-		if nodes[i].AssetID == nil {
-			continue
-		}
-		fk := *nodes[i].AssetID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(asset.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "asset_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
 func (asq *AssetScrapQuery) loadManager(ctx context.Context, query *ManagerQuery, nodes []*AssetScrap, init func(*AssetScrap), assign func(*AssetScrap, *Manager)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetScrap)
@@ -736,6 +704,35 @@ func (asq *AssetScrapQuery) loadAgent(ctx context.Context, query *AgentQuery, no
 	}
 	return nil
 }
+func (asq *AssetScrapQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []*AssetScrap, init func(*AssetScrap), assign func(*AssetScrap, *Asset)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetScrap)
+	for i := range nodes {
+		fk := nodes[i].AssetID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(asset.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "asset_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (asq *AssetScrapQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := asq.querySpec()
@@ -765,9 +762,6 @@ func (asq *AssetScrapQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if asq.withAsset != nil {
-			_spec.Node.AddColumnOnce(assetscrap.FieldAssetID)
-		}
 		if asq.withManager != nil {
 			_spec.Node.AddColumnOnce(assetscrap.FieldScrapOperateID)
 		}
@@ -779,6 +773,9 @@ func (asq *AssetScrapQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if asq.withAgent != nil {
 			_spec.Node.AddColumnOnce(assetscrap.FieldScrapOperateID)
+		}
+		if asq.withAsset != nil {
+			_spec.Node.AddColumnOnce(assetscrap.FieldAssetID)
 		}
 	}
 	if ps := asq.predicates; len(ps) > 0 {
@@ -848,18 +845,16 @@ func (asq *AssetScrapQuery) Modify(modifiers ...func(s *sql.Selector)) *AssetScr
 type AssetScrapQueryWith string
 
 var (
-	AssetScrapQueryWithAsset      AssetScrapQueryWith = "Asset"
 	AssetScrapQueryWithManager    AssetScrapQueryWith = "Manager"
 	AssetScrapQueryWithEmployee   AssetScrapQueryWith = "Employee"
 	AssetScrapQueryWithMaintainer AssetScrapQueryWith = "Maintainer"
 	AssetScrapQueryWithAgent      AssetScrapQueryWith = "Agent"
+	AssetScrapQueryWithAsset      AssetScrapQueryWith = "Asset"
 )
 
 func (asq *AssetScrapQuery) With(withEdges ...AssetScrapQueryWith) *AssetScrapQuery {
 	for _, v := range withEdges {
 		switch v {
-		case AssetScrapQueryWithAsset:
-			asq.WithAsset()
 		case AssetScrapQueryWithManager:
 			asq.WithManager()
 		case AssetScrapQueryWithEmployee:
@@ -868,6 +863,8 @@ func (asq *AssetScrapQuery) With(withEdges ...AssetScrapQueryWith) *AssetScrapQu
 			asq.WithMaintainer()
 		case AssetScrapQueryWithAgent:
 			asq.WithAgent()
+		case AssetScrapQueryWithAsset:
+			asq.WithAsset()
 		}
 	}
 	return asq

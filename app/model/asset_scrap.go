@@ -34,10 +34,16 @@ func (s ScrapReasonType) Value() uint8 {
 
 // AssetScrapReq 报废资产请求
 type AssetScrapReq struct {
-	AssetType       AssetType       `json:"assetType" validate:"required"`       // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-	ID              uint64          `json:"id" param:"id" validate:"required"`   // 资产ID
-	ScrapReasonType ScrapReasonType `json:"scrapReasonType" validate:"required"` // 报废原因
-	Remark          *string         `json:"remark"`                              // 备注
+	AssetType       AssetType          `json:"assetType" validate:"required"`            // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+	ScrapReasonType ScrapReasonType    `json:"scrapReasonType" validate:"required"`      // 报废原因
+	Remark          *string            `json:"remark"`                                   // 备注
+	Detail          []AssetScrapDetail `json:"detail" validate:"required,dive,required"` // 报废明细
+}
+
+type AssetScrapDetail struct {
+	AssetID    *uint64 `json:"assetId"`    // 资产ID
+	Num        *uint   `json:"num"`        // 报废数量
+	MaterialID *uint64 `json:"materialId"` // 其它物资分类ID
 }
 
 // AssetScrapListReq 资产报废列表请求
@@ -45,27 +51,33 @@ type AssetScrapListReq struct {
 	PaginationReq
 	ScrapFilter
 }
+
+// ScrapFilter 报废筛选条件
 type ScrapFilter struct {
-	AssetType       *AssetType       `json:"assetType" query:"assetType" enums:"1,2,3,4,5,6"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-	SN              *string          `json:"sn" query:"sn"`                                   // 资产编号
-	ModelID         *uint64          `json:"modelId" query:"modelId"`                         // 资产型号
-	ScrapReasonType *ScrapReasonType `json:"scrapReason" query:"scrapReason" enums:"1,2,3"`   // 报废原因 1:丢失 2:损坏 3:其他
-	OperateName     *string          `json:"operateName" query:"operateName"`                 // 操作人
-	Start           *string          `json:"start" query:"start"`                             // 开始时间
-	End             *string          `json:"end" query:"end"`                                 // 结束时间
+	AssetType       *AssetType             `json:"assetType" query:"assetType" enums:"1,2,3,4,5,6"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+	SN              *string                `json:"sn" query:"sn"`                                   // 资产编号
+	ModelID         *uint64                `json:"modelId" query:"modelId"`                         // 资产型号
+	ScrapReasonType *ScrapReasonType       `json:"scrapReason" query:"scrapReason" enums:"1,2,3"`   // 报废原因 1:丢失 2:损坏 3:其他
+	OperateName     *string                `json:"operateName" query:"operateName"`                 // 操作人
+	Start           *string                `json:"start" query:"start"`                             // 开始时间
+	End             *string                `json:"end" query:"end"`                                 // 结束时间
+	Attribute       []AssetAttributeCreate `json:"attribute"`                                       // 属性查询
+	AssetName       *string                `json:"assetName" query:"assetName"`                     // 资产名称
 }
 
-// AssetScrapListRes 电池报废列表返回
+// AssetScrapListRes 资产报废列表返回
 type AssetScrapListRes struct {
-	ID          uint64 `json:"id"`              // 资产ID
-	SN          string `json:"sn"`              // 资产编号
-	Model       string `json:"model,omitempty"` // 资产型号
-	ScrapReason string `json:"scrapReason"`     // 报废原因
-	Brand       string `json:"brand"`           // 资产品牌
-	OperateName string `json:"operateName"`     // 操作人
-	Remark      string `json:"remark"`          // 备注
-	ScrapAt     string `json:"scrapAt"`         // 报废时间
-	CreatedAt   string `json:"createdAt"`       // 创建时间
+	ID          uint64                    `json:"id"`              // 资产ID
+	SN          string                    `json:"sn"`              // 资产编号
+	Model       string                    `json:"model,omitempty"` // 资产型号
+	ScrapReason string                    `json:"scrapReason"`     // 报废原因
+	Brand       string                    `json:"brand"`           // 资产品牌
+	OperateName string                    `json:"operateName"`     // 操作人
+	Remark      string                    `json:"remark"`          // 备注
+	ScrapAt     string                    `json:"scrapAt"`         // 报废时间
+	CreatedAt   string                    `json:"createdAt"`       // 创建时间
+	InTimeAt    string                    `json:"inTimeAt"`        // 入库时间
+	Attribute   map[uint64]AssetAttribute `json:"attribute"`       // 属性
 }
 
 // AssetScrapBatchRestoreReq 批量恢复资产请求

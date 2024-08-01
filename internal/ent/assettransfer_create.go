@@ -286,6 +286,20 @@ func (atc *AssetTransferCreate) SetNillableTransferType(u *uint8) *AssetTransfer
 	return atc
 }
 
+// SetReason sets the "reason" field.
+func (atc *AssetTransferCreate) SetReason(s string) *AssetTransferCreate {
+	atc.mutation.SetReason(s)
+	return atc
+}
+
+// SetNillableReason sets the "reason" field if the given value is not nil.
+func (atc *AssetTransferCreate) SetNillableReason(s *string) *AssetTransferCreate {
+	if s != nil {
+		atc.SetReason(*s)
+	}
+	return atc
+}
+
 // AddDetailIDs adds the "details" edge to the AssetTransferDetails entity by IDs.
 func (atc *AssetTransferCreate) AddDetailIDs(ids ...uint64) *AssetTransferCreate {
 	atc.mutation.AddDetailIDs(ids...)
@@ -479,6 +493,10 @@ func (atc *AssetTransferCreate) createSpec() (*AssetTransfer, *sqlgraph.CreateSp
 	if value, ok := atc.mutation.TransferType(); ok {
 		_spec.SetField(assettransfer.FieldTransferType, field.TypeUint8, value)
 		_node.TransferType = value
+	}
+	if value, ok := atc.mutation.Reason(); ok {
+		_spec.SetField(assettransfer.FieldReason, field.TypeString, value)
+		_node.Reason = value
 	}
 	if nodes := atc.mutation.DetailsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -941,6 +959,24 @@ func (u *AssetTransferUpsert) AddTransferType(v uint8) *AssetTransferUpsert {
 // ClearTransferType clears the value of the "transfer_type" field.
 func (u *AssetTransferUpsert) ClearTransferType() *AssetTransferUpsert {
 	u.SetNull(assettransfer.FieldTransferType)
+	return u
+}
+
+// SetReason sets the "reason" field.
+func (u *AssetTransferUpsert) SetReason(v string) *AssetTransferUpsert {
+	u.Set(assettransfer.FieldReason, v)
+	return u
+}
+
+// UpdateReason sets the "reason" field to the value that was provided on create.
+func (u *AssetTransferUpsert) UpdateReason() *AssetTransferUpsert {
+	u.SetExcluded(assettransfer.FieldReason)
+	return u
+}
+
+// ClearReason clears the value of the "reason" field.
+func (u *AssetTransferUpsert) ClearReason() *AssetTransferUpsert {
+	u.SetNull(assettransfer.FieldReason)
 	return u
 }
 
@@ -1451,6 +1487,27 @@ func (u *AssetTransferUpsertOne) UpdateTransferType() *AssetTransferUpsertOne {
 func (u *AssetTransferUpsertOne) ClearTransferType() *AssetTransferUpsertOne {
 	return u.Update(func(s *AssetTransferUpsert) {
 		s.ClearTransferType()
+	})
+}
+
+// SetReason sets the "reason" field.
+func (u *AssetTransferUpsertOne) SetReason(v string) *AssetTransferUpsertOne {
+	return u.Update(func(s *AssetTransferUpsert) {
+		s.SetReason(v)
+	})
+}
+
+// UpdateReason sets the "reason" field to the value that was provided on create.
+func (u *AssetTransferUpsertOne) UpdateReason() *AssetTransferUpsertOne {
+	return u.Update(func(s *AssetTransferUpsert) {
+		s.UpdateReason()
+	})
+}
+
+// ClearReason clears the value of the "reason" field.
+func (u *AssetTransferUpsertOne) ClearReason() *AssetTransferUpsertOne {
+	return u.Update(func(s *AssetTransferUpsert) {
+		s.ClearReason()
 	})
 }
 
@@ -2127,6 +2184,27 @@ func (u *AssetTransferUpsertBulk) UpdateTransferType() *AssetTransferUpsertBulk 
 func (u *AssetTransferUpsertBulk) ClearTransferType() *AssetTransferUpsertBulk {
 	return u.Update(func(s *AssetTransferUpsert) {
 		s.ClearTransferType()
+	})
+}
+
+// SetReason sets the "reason" field.
+func (u *AssetTransferUpsertBulk) SetReason(v string) *AssetTransferUpsertBulk {
+	return u.Update(func(s *AssetTransferUpsert) {
+		s.SetReason(v)
+	})
+}
+
+// UpdateReason sets the "reason" field to the value that was provided on create.
+func (u *AssetTransferUpsertBulk) UpdateReason() *AssetTransferUpsertBulk {
+	return u.Update(func(s *AssetTransferUpsert) {
+		s.UpdateReason()
+	})
+}
+
+// ClearReason clears the value of the "reason" field.
+func (u *AssetTransferUpsertBulk) ClearReason() *AssetTransferUpsertBulk {
+	return u.Update(func(s *AssetTransferUpsert) {
+		s.ClearReason()
 	})
 }
 

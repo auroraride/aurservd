@@ -461,6 +461,26 @@ func (atu *AssetTransferUpdate) ClearTransferType() *AssetTransferUpdate {
 	return atu
 }
 
+// SetReason sets the "reason" field.
+func (atu *AssetTransferUpdate) SetReason(s string) *AssetTransferUpdate {
+	atu.mutation.SetReason(s)
+	return atu
+}
+
+// SetNillableReason sets the "reason" field if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableReason(s *string) *AssetTransferUpdate {
+	if s != nil {
+		atu.SetReason(*s)
+	}
+	return atu
+}
+
+// ClearReason clears the value of the "reason" field.
+func (atu *AssetTransferUpdate) ClearReason() *AssetTransferUpdate {
+	atu.mutation.ClearReason()
+	return atu
+}
+
 // AddDetailIDs adds the "details" edge to the AssetTransferDetails entity by IDs.
 func (atu *AssetTransferUpdate) AddDetailIDs(ids ...uint64) *AssetTransferUpdate {
 	atu.mutation.AddDetailIDs(ids...)
@@ -702,6 +722,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if atu.mutation.TransferTypeCleared() {
 		_spec.ClearField(assettransfer.FieldTransferType, field.TypeUint8)
+	}
+	if value, ok := atu.mutation.Reason(); ok {
+		_spec.SetField(assettransfer.FieldReason, field.TypeString, value)
+	}
+	if atu.mutation.ReasonCleared() {
+		_spec.ClearField(assettransfer.FieldReason, field.TypeString)
 	}
 	if atu.mutation.DetailsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1200,6 +1226,26 @@ func (atuo *AssetTransferUpdateOne) ClearTransferType() *AssetTransferUpdateOne 
 	return atuo
 }
 
+// SetReason sets the "reason" field.
+func (atuo *AssetTransferUpdateOne) SetReason(s string) *AssetTransferUpdateOne {
+	atuo.mutation.SetReason(s)
+	return atuo
+}
+
+// SetNillableReason sets the "reason" field if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableReason(s *string) *AssetTransferUpdateOne {
+	if s != nil {
+		atuo.SetReason(*s)
+	}
+	return atuo
+}
+
+// ClearReason clears the value of the "reason" field.
+func (atuo *AssetTransferUpdateOne) ClearReason() *AssetTransferUpdateOne {
+	atuo.mutation.ClearReason()
+	return atuo
+}
+
 // AddDetailIDs adds the "details" edge to the AssetTransferDetails entity by IDs.
 func (atuo *AssetTransferUpdateOne) AddDetailIDs(ids ...uint64) *AssetTransferUpdateOne {
 	atuo.mutation.AddDetailIDs(ids...)
@@ -1471,6 +1517,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 	}
 	if atuo.mutation.TransferTypeCleared() {
 		_spec.ClearField(assettransfer.FieldTransferType, field.TypeUint8)
+	}
+	if value, ok := atuo.mutation.Reason(); ok {
+		_spec.SetField(assettransfer.FieldReason, field.TypeString, value)
+	}
+	if atuo.mutation.ReasonCleared() {
+		_spec.ClearField(assettransfer.FieldReason, field.TypeString)
 	}
 	if atuo.mutation.DetailsCleared() {
 		edge := &sqlgraph.EdgeSpec{

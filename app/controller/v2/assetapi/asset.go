@@ -108,8 +108,9 @@ func (*assets) BatchCreate(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	query	query		model.AssetExportTemplateReq	true	"查询参数"
-// @Success	200		{object}	model.ExportRes					"成功"
+// @Param	X-Manager-Token	header		string							true	"管理员校验token"
+// @Param	query			query		model.AssetExportTemplateReq	true	"查询参数"
+// @Success	200				{object}	model.ExportRes					"成功"
 func (*assets) Template(c echo.Context) (err error) {
 	ctx, req := app.ContextBinding[model.AssetExportTemplateReq](c)
 	paht, name, err := service.NewAsset().DownloadTemplate(ctx.Request().Context(), req.AssetType)
@@ -121,13 +122,13 @@ func (*assets) Template(c echo.Context) (err error) {
 
 // Export
 // @ID		AssetExport
-// @Router	/manager/v2/asset/export [GET]
+// @Router	/manager/v2/asset/export [POST]
 // @Summary	导出资产
 // @Tags	资产
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string				true	"管理员校验token"
-// @Param	query			query		model.AssetListReq	true	"查询参数"
+// @Param	body			body		model.AssetListReq	true	"查询参数"
 // @Success	200				{object}	model.ExportRes		"成功"
 func (*assets) Export(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.AssetListReq](c)

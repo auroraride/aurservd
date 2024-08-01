@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
+	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -532,6 +533,21 @@ func (au *AssetUpdate) SetOperator(m *Maintainer) *AssetUpdate {
 	return au.SetOperatorID(m.ID)
 }
 
+// AddScrapIDs adds the "scrap" edge to the AssetScrap entity by IDs.
+func (au *AssetUpdate) AddScrapIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.AddScrapIDs(ids...)
+	return au
+}
+
+// AddScrap adds the "scrap" edges to the AssetScrap entity.
+func (au *AssetUpdate) AddScrap(a ...*AssetScrap) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.AddScrapIDs(ids...)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (au *AssetUpdate) Mutation() *AssetMutation {
 	return au.mutation
@@ -616,6 +632,27 @@ func (au *AssetUpdate) ClearRider() *AssetUpdate {
 func (au *AssetUpdate) ClearOperator() *AssetUpdate {
 	au.mutation.ClearOperator()
 	return au
+}
+
+// ClearScrap clears all "scrap" edges to the AssetScrap entity.
+func (au *AssetUpdate) ClearScrap() *AssetUpdate {
+	au.mutation.ClearScrap()
+	return au
+}
+
+// RemoveScrapIDs removes the "scrap" edge to AssetScrap entities by IDs.
+func (au *AssetUpdate) RemoveScrapIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.RemoveScrapIDs(ids...)
+	return au
+}
+
+// RemoveScrap removes "scrap" edges to AssetScrap entities.
+func (au *AssetUpdate) RemoveScrap(a ...*AssetScrap) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.RemoveScrapIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1081,6 +1118,51 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.ScrapCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.ScrapTable,
+			Columns: []string{asset.ScrapColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetscrap.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedScrapIDs(); len(nodes) > 0 && !au.mutation.ScrapCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.ScrapTable,
+			Columns: []string{asset.ScrapColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetscrap.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.ScrapIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.ScrapTable,
+			Columns: []string{asset.ScrapColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetscrap.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1601,6 +1683,21 @@ func (auo *AssetUpdateOne) SetOperator(m *Maintainer) *AssetUpdateOne {
 	return auo.SetOperatorID(m.ID)
 }
 
+// AddScrapIDs adds the "scrap" edge to the AssetScrap entity by IDs.
+func (auo *AssetUpdateOne) AddScrapIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.AddScrapIDs(ids...)
+	return auo
+}
+
+// AddScrap adds the "scrap" edges to the AssetScrap entity.
+func (auo *AssetUpdateOne) AddScrap(a ...*AssetScrap) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.AddScrapIDs(ids...)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (auo *AssetUpdateOne) Mutation() *AssetMutation {
 	return auo.mutation
@@ -1685,6 +1782,27 @@ func (auo *AssetUpdateOne) ClearRider() *AssetUpdateOne {
 func (auo *AssetUpdateOne) ClearOperator() *AssetUpdateOne {
 	auo.mutation.ClearOperator()
 	return auo
+}
+
+// ClearScrap clears all "scrap" edges to the AssetScrap entity.
+func (auo *AssetUpdateOne) ClearScrap() *AssetUpdateOne {
+	auo.mutation.ClearScrap()
+	return auo
+}
+
+// RemoveScrapIDs removes the "scrap" edge to AssetScrap entities by IDs.
+func (auo *AssetUpdateOne) RemoveScrapIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.RemoveScrapIDs(ids...)
+	return auo
+}
+
+// RemoveScrap removes "scrap" edges to AssetScrap entities.
+func (auo *AssetUpdateOne) RemoveScrap(a ...*AssetScrap) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.RemoveScrapIDs(ids...)
 }
 
 // Where appends a list predicates to the AssetUpdate builder.
@@ -2180,6 +2298,51 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.ScrapCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.ScrapTable,
+			Columns: []string{asset.ScrapColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetscrap.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedScrapIDs(); len(nodes) > 0 && !auo.mutation.ScrapCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.ScrapTable,
+			Columns: []string{asset.ScrapColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetscrap.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.ScrapIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.ScrapTable,
+			Columns: []string{asset.ScrapColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetscrap.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

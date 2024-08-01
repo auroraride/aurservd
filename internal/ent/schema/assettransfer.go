@@ -74,6 +74,7 @@ func (AssetTransfer) Fields() []ent.Field {
 		field.Time("out_time_at").Optional().Comment("出库时间"),
 		field.Time("in_time_at").Optional().Comment("入库时间"),
 		field.Uint8("transfer_type").Optional().Comment("调拨类型 1:初始入库 2:平台调拨 3:门店调拨 4:代理调拨 5:运维调拨 6:系统业务自动调拨"),
+		field.String("reason").Optional().Comment("调拨事由"),
 	}
 }
 

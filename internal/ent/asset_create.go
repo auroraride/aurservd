@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
+	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -431,6 +432,21 @@ func (ac *AssetCreate) SetOperator(m *Maintainer) *AssetCreate {
 	return ac.SetOperatorID(m.ID)
 }
 
+// AddScrapIDs adds the "scrap" edge to the AssetScrap entity by IDs.
+func (ac *AssetCreate) AddScrapIDs(ids ...uint64) *AssetCreate {
+	ac.mutation.AddScrapIDs(ids...)
+	return ac
+}
+
+// AddScrap adds the "scrap" edges to the AssetScrap entity.
+func (ac *AssetCreate) AddScrap(a ...*AssetScrap) *AssetCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ac.AddScrapIDs(ids...)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (ac *AssetCreate) Mutation() *AssetMutation {
 	return ac.mutation
@@ -784,6 +800,22 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.LocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.ScrapIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.ScrapTable,
+			Columns: []string{asset.ScrapColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetscrap.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

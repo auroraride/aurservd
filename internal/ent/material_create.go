@@ -117,12 +117,6 @@ func (mc *MaterialCreate) SetNillableStatement(s *string) *MaterialCreate {
 	return mc
 }
 
-// SetAllot sets the "allot" field.
-func (mc *MaterialCreate) SetAllot(b bool) *MaterialCreate {
-	mc.mutation.SetAllot(b)
-	return mc
-}
-
 // Mutation returns the MaterialMutation object of the builder.
 func (mc *MaterialCreate) Mutation() *MaterialMutation {
 	return mc.mutation
@@ -191,9 +185,6 @@ func (mc *MaterialCreate) check() error {
 	if _, ok := mc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Material.type"`)}
 	}
-	if _, ok := mc.mutation.Allot(); !ok {
-		return &ValidationError{Name: "allot", err: errors.New(`ent: missing required field "Material.allot"`)}
-	}
 	return nil
 }
 
@@ -256,10 +247,6 @@ func (mc *MaterialCreate) createSpec() (*Material, *sqlgraph.CreateSpec) {
 	if value, ok := mc.mutation.Statement(); ok {
 		_spec.SetField(material.FieldStatement, field.TypeString, value)
 		_node.Statement = value
-	}
-	if value, ok := mc.mutation.Allot(); ok {
-		_spec.SetField(material.FieldAllot, field.TypeBool, value)
-		_node.Allot = value
 	}
 	return _node, _spec
 }
@@ -424,18 +411,6 @@ func (u *MaterialUpsert) UpdateStatement() *MaterialUpsert {
 // ClearStatement clears the value of the "statement" field.
 func (u *MaterialUpsert) ClearStatement() *MaterialUpsert {
 	u.SetNull(material.FieldStatement)
-	return u
-}
-
-// SetAllot sets the "allot" field.
-func (u *MaterialUpsert) SetAllot(v bool) *MaterialUpsert {
-	u.Set(material.FieldAllot, v)
-	return u
-}
-
-// UpdateAllot sets the "allot" field to the value that was provided on create.
-func (u *MaterialUpsert) UpdateAllot() *MaterialUpsert {
-	u.SetExcluded(material.FieldAllot)
 	return u
 }
 
@@ -617,20 +592,6 @@ func (u *MaterialUpsertOne) UpdateStatement() *MaterialUpsertOne {
 func (u *MaterialUpsertOne) ClearStatement() *MaterialUpsertOne {
 	return u.Update(func(s *MaterialUpsert) {
 		s.ClearStatement()
-	})
-}
-
-// SetAllot sets the "allot" field.
-func (u *MaterialUpsertOne) SetAllot(v bool) *MaterialUpsertOne {
-	return u.Update(func(s *MaterialUpsert) {
-		s.SetAllot(v)
-	})
-}
-
-// UpdateAllot sets the "allot" field to the value that was provided on create.
-func (u *MaterialUpsertOne) UpdateAllot() *MaterialUpsertOne {
-	return u.Update(func(s *MaterialUpsert) {
-		s.UpdateAllot()
 	})
 }
 
@@ -978,20 +939,6 @@ func (u *MaterialUpsertBulk) UpdateStatement() *MaterialUpsertBulk {
 func (u *MaterialUpsertBulk) ClearStatement() *MaterialUpsertBulk {
 	return u.Update(func(s *MaterialUpsert) {
 		s.ClearStatement()
-	})
-}
-
-// SetAllot sets the "allot" field.
-func (u *MaterialUpsertBulk) SetAllot(v bool) *MaterialUpsertBulk {
-	return u.Update(func(s *MaterialUpsert) {
-		s.SetAllot(v)
-	})
-}
-
-// UpdateAllot sets the "allot" field to the value that was provided on create.
-func (u *MaterialUpsertBulk) UpdateAllot() *MaterialUpsertBulk {
-	return u.Update(func(s *MaterialUpsert) {
-		s.UpdateAllot()
 	})
 }
 

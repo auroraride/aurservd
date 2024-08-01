@@ -57,6 +57,8 @@ const (
 	FieldInTimeAt = "in_time_at"
 	// FieldTransferType holds the string denoting the transfer_type field in the database.
 	FieldTransferType = "transfer_type"
+	// FieldReason holds the string denoting the reason field in the database.
+	FieldReason = "reason"
 	// EdgeDetails holds the string denoting the details edge name in mutations.
 	EdgeDetails = "details"
 	// Table holds the table name of the assettransfer in the database.
@@ -94,6 +96,7 @@ var Columns = []string{
 	FieldOutTimeAt,
 	FieldInTimeAt,
 	FieldTransferType,
+	FieldReason,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -222,6 +225,11 @@ func ByInTimeAt(opts ...sql.OrderTermOption) OrderOption {
 // ByTransferType orders the results by the transfer_type field.
 func ByTransferType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTransferType, opts...).ToFunc()
+}
+
+// ByReason orders the results by the reason field.
+func ByReason(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldReason, opts...).ToFunc()
 }
 
 // ByDetailsCount orders the results by details count.

@@ -63,6 +63,8 @@ func (AssetScrap) Fields() []ent.Field {
 		field.Time("scrap_at").Optional().Comment("报废时间"),
 		field.Uint64("scrap_operate_id").Optional().Nillable().Comment("操作报废人员ID"),
 		field.Uint8("scrap_operate_role_type").Optional().Nillable().Comment("报废人员角色类型 1:后台管理员 2:门店管理员 3:运维 4:物资管理员 5:代理管理员"),
+		field.String("scrap_batch").Optional().Comment("报废批次"),
+		field.Uint64("asset_id").Comment("资产ID"),
 	}
 }
 
@@ -75,10 +77,10 @@ func (AssetScrap) Edges() []ent.Edge {
 		edge.To("employee", Employee.Type).Unique().Field("scrap_operate_id"),
 		// 关联运维
 		edge.To("maintainer", Maintainer.Type).Unique().Field("scrap_operate_id"),
-		// todo 关联物资管理员
-		// edge.To("maintainer", Maintainer.Type).Unique().Field("scrap_operate_id"),
 		// 关联代理管理员
 		edge.To("agent", Agent.Type).Unique().Field("scrap_operate_id"),
+
+		edge.From("asset", Asset.Type).Ref("scrap").Unique().Field("asset_id").Required(),
 	}
 }
 
@@ -86,7 +88,6 @@ func (AssetScrap) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
 		internal.Modifier{},
-		AssetMixin{Optional: true},
 	}
 }
 

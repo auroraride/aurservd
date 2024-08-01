@@ -9,9 +9,9 @@ type AssetAttributesCreateReq struct {
 
 // AssetAttributesListRes 属性列表返回
 type AssetAttributesListRes struct {
-	AssetType     AssetType      `json:"assetType"`     // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-	AssetTypeName string         `json:"assetTypeName"` // 资产类型名称
-	Attribute     AssetAttribute `json:"attributes"`    // 属性
+	AttributeID   uint64 `json:"attributeId"`             // 属性ID
+	AttributeName string `json:"attributeName,omitempty"` // 属性名称
+	AttributeKey  string `json:"attributeKey,omitempty"`  // 属性键
 }
 
 // AssetAttributesListReq 资产属性列表请求

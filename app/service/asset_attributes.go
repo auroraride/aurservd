@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/assetattributes"
@@ -31,6 +33,7 @@ func (s *assetAttributesService) Initialize() {
 				SetAssetType(v.AssetType.Value()).
 				SetKey(vl.AttributeKey).
 				Exec(context.Background()); err != nil {
+				zap.L().Error("初始化资产属性失败", zap.Error(err))
 				continue
 			}
 		}
@@ -44,7 +47,7 @@ func (s *assetAttributesService) Create(ctx context.Context, req *model.AssetAtt
 		if attr != nil {
 			err = ent.Database.AssetAttributeValues.Create().SetValue(v.AttributeValue).SetAttributeID(attr.ID).Exec(ctx)
 			if err != nil {
-				continue
+				return err
 			}
 		}
 	}
@@ -52,21 +55,14 @@ func (s *assetAttributesService) Create(ctx context.Context, req *model.AssetAtt
 }
 
 // List 资产属性列表
-func (s *assetAttributesService) List(ctx context.Context, req *model.AssetAttributesListReq) (res []*model.AssetAttributesListRes, err error) {
-	attrs, err := s.orm.Query().Where(assetattributes.AssetType(req.AssetType.Value())).All(ctx)
-	if err != nil {
-		return nil, err
-	}
+func (s *assetAttributesService) List(ctx context.Context, req *model.AssetAttributesListReq) (res []*model.AssetAttributesListRes) {
+	attrs, _ := s.orm.Query().Where(assetattributes.AssetType(req.AssetType.Value())).All(ctx)
 	for _, v := range attrs {
 		res = append(res, &model.AssetAttributesListRes{
-			AssetType:     model.AssetType(v.AssetType),
-			AssetTypeName: model.AssetType(v.AssetType).String(),
-			Attribute: model.AssetAttribute{
-				AttributeID:   v.ID,
-				AttributeName: v.Name,
-				AttributeKey:  v.Key,
-			},
+			AttributeID:   v.ID,
+			AttributeName: v.Name,
+			AttributeKey:  v.Key,
 		})
 	}
-	return res, nil
+	return res
 }

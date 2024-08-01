@@ -141,7 +141,9 @@ func (s *assetService) getAssetName(assetType model.AssetType) string {
 	case model.AssetTypeNonSmartBattery:
 		name = "非智能电池"
 	case model.AssetTypeCabinetAccessory:
-
+		name = "电柜配件"
+	case model.AssetTypeOtherAccessory:
+		name = "其它配件"
 	default:
 		name = "未知"
 	}
@@ -774,7 +776,7 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 		q.Where(asset.Sn(*req.SN))
 	}
 	if req.AssetType != nil {
-		q.Where(asset.Type((*req.AssetType).Value()))
+		q.Where(asset.Type(req.AssetType.Value()))
 	}
 	if req.OwnerType != nil {
 		// 平台
@@ -790,7 +792,7 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 		}
 	}
 	if req.AssetLocationsType != nil && req.AssetLocationsKeywork != nil {
-		q.Where(asset.LocationsType((*req.AssetLocationsType).Value()))
+		q.Where(asset.LocationsType(req.AssetLocationsType.Value()))
 		switch *req.AssetLocationsType {
 		case model.AssetLocationsTypeWarehouse:
 			q.Where(

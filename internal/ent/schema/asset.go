@@ -89,6 +89,8 @@ func (Asset) Edges() []ent.Edge {
 		edge.To("rider", Rider.Type).Unique().Field("locations_id"),
 		// 关联运维
 		edge.To("operator", Maintainer.Type).Unique().Field("locations_id"),
+
+		edge.To("scrap", AssetScrap.Type),
 	}
 }
 

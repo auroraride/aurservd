@@ -89,11 +89,6 @@ func Statement(v string) predicate.Material {
 	return predicate.Material(sql.FieldEQ(FieldStatement, v))
 }
 
-// Allot applies equality check predicate on the "allot" field. It's identical to AllotEQ.
-func Allot(v bool) predicate.Material {
-	return predicate.Material(sql.FieldEQ(FieldAllot, v))
-}
-
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Material {
 	return predicate.Material(sql.FieldEQ(FieldCreatedAt, v))
@@ -497,16 +492,6 @@ func StatementEqualFold(v string) predicate.Material {
 // StatementContainsFold applies the ContainsFold predicate on the "statement" field.
 func StatementContainsFold(v string) predicate.Material {
 	return predicate.Material(sql.FieldContainsFold(FieldStatement, v))
-}
-
-// AllotEQ applies the EQ predicate on the "allot" field.
-func AllotEQ(v bool) predicate.Material {
-	return predicate.Material(sql.FieldEQ(FieldAllot, v))
-}
-
-// AllotNEQ applies the NEQ predicate on the "allot" field.
-func AllotNEQ(v bool) predicate.Material {
-	return predicate.Material(sql.FieldNEQ(FieldAllot, v))
 }
 
 // And groups predicates with the AND operator between them.

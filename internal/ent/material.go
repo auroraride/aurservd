@@ -36,9 +36,7 @@ type Material struct {
 	// 物资类型 4电柜配件 5电车配件 6其他
 	Type uint8 `json:"type,omitempty"`
 	// 说明
-	Statement string `json:"statement,omitempty"`
-	// 是否可调拨
-	Allot        bool `json:"allot,omitempty"`
+	Statement    string `json:"statement,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -49,8 +47,6 @@ func (*Material) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case material.FieldCreator, material.FieldLastModifier:
 			values[i] = new([]byte)
-		case material.FieldAllot:
-			values[i] = new(sql.NullBool)
 		case material.FieldID, material.FieldType:
 			values[i] = new(sql.NullInt64)
 		case material.FieldRemark, material.FieldName, material.FieldStatement:
@@ -137,12 +133,6 @@ func (m *Material) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				m.Statement = value.String
 			}
-		case material.FieldAllot:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field allot", values[i])
-			} else if value.Valid {
-				m.Allot = value.Bool
-			}
 		default:
 			m.selectValues.Set(columns[i], values[i])
 		}
@@ -207,9 +197,6 @@ func (m *Material) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("statement=")
 	builder.WriteString(m.Statement)
-	builder.WriteString(", ")
-	builder.WriteString("allot=")
-	builder.WriteString(fmt.Sprintf("%v", m.Allot))
 	builder.WriteByte(')')
 	return builder.String()
 }

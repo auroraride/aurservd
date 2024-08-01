@@ -63,18 +63,19 @@ func (s AssetTransferType) Value() uint8 {
 
 // AssetTransferCreateReq 资产调拨请求
 type AssetTransferCreateReq struct {
-	FromLocationType *AssetLocationsType         `json:"from_location_type" `                       // 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维
-	FromLocationID   *uint64                     `json:"from_location_id" validate:"required"`      // 调拨前位置ID
-	ToLocationType   AssetLocationsType          `json:"to_location_type" validate:"required"`      // 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维
-	ToLocationID     uint64                      `json:"to_location_id" validate:"required"`        // 调拨后位置ID
+	FromLocationType *AssetLocationsType         `json:"fromLocationType"`                          // 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 (初始调拨此字段不填写)
+	FromLocationID   *uint64                     `json:"fromLocationID"`                            // 调拨前位置ID (初始调拨此字段不填写)
+	ToLocationType   AssetLocationsType          `json:"toLocationType" validate:"required"`        // 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维
+	ToLocationID     uint64                      `json:"toLocationID" validate:"required"`          // 调拨后位置ID
 	Details          []AssetTransferCreateDetail `json:"details" validate:"required,dive,required"` // 资产调拨详情
+	Reason           string                      `json:"reason" validate:"required"`                // 调拨事由
 }
 
 // AssetTransferCreateDetail 资产调拨详情
 type AssetTransferCreateDetail struct {
-	AssetType  AssetType `json:"asset_type" validate:"required"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-	SN         *string   `json:"sn"`                             // 资产编号
-	Name       *string   `json:"name"`                           // 资产名称
-	Num        *uint     `json:"num"`                            // 调拨数量
-	MaterialID *uint64   `json:"materialId"`                     // 其它物资分类ID
+	AssetType  AssetType `json:"assetType" validate:"required"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+	SN         *string   `json:"sn"`                            // 资产编号
+	Name       *string   `json:"name"`                          // 资产名称
+	Num        *uint     `json:"num"`                           // 调拨数量
+	MaterialID *uint64   `json:"materialId"`                    // 其它物资分类ID
 }

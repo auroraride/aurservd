@@ -9,6 +9,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
@@ -22,38 +23,30 @@ func NewAssetTransfer() *assetTransferService {
 	}
 }
 
-// TransferAsset 调拨
-func (s *assetTransferService) TransferAsset(ctx context.Context, req model.AssetTransferCreateReq, modifier *model.Modifier) (failed []string, err error) {
+// Transfer 调拨
+func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (failed []string, err error) {
 	// 调拨限制
 	err = s.transferLimit(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	// 查询物资是否充足
-	q := ent.Database.Asset.QueryNotDeleted().Where(
-		asset.LocationsType(req.FromLocationType.Value()),
-		asset.StatusIn(model.AssetStatusStock.Value(), model.AssetStatusFault.Value()),
-	)
+
 	var assetIDs []uint64
-	for _, v := range req.Details {
-		var iDs []uint64
-		switch v.AssetType {
-		case model.AssetTypeEbike, model.AssetTypeSmartBattery:
-			iDs, err = s.transferAssetWithSN(ctx, q, v, modifier)
-			if err != nil {
-				failed = append(failed, err.Error())
-				continue
-			}
-		case model.AssetTypeCabinetAccessory, model.AssetTypeOtherAccessory, model.AssetTypeNonSmartBattery:
-			iDs, err = s.transferAssetWithoutSN(ctx, q, v, modifier)
-			if err != nil {
-				failed = append(failed, err.Error())
-				continue
-			}
-		default:
+	// 已经入库资产调拨
+	if req.FromLocationType != nil {
+		assetIDs, failed, err = s.stockTransfer(ctx, req, modifier)
+		if err != nil || len(failed) > 0 {
+			return failed, err
 		}
-		assetIDs = append(assetIDs, iDs...)
 	}
+	// 初始调拨
+	if req.FromLocationType == nil {
+		assetIDs, failed, err = s.initialTransfer(ctx, req, modifier)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	bulk := make([]*ent.AssetTransferDetailsCreate, 0, len(assetIDs))
 	for _, id := range assetIDs {
 		bulk = append(bulk, ent.Database.AssetTransferDetails.Create().SetAssetID(id).SetCreator(modifier).SetLastModifier(modifier))
@@ -62,7 +55,11 @@ func (s *assetTransferService) TransferAsset(ctx context.Context, req model.Asse
 	if len(details) == 0 {
 		return failed, errors.New("调拨失败")
 	}
-	locationType := (*req.FromLocationType).Value()
+
+	var locationType uint8
+	if req.FromLocationType != nil {
+		locationType = req.FromLocationType.Value()
+	}
 
 	// 创建调拨记录
 	err = s.orm.Create().
@@ -78,6 +75,7 @@ func (s *assetTransferService) TransferAsset(ctx context.Context, req model.Asse
 		SetInTimeAt(time.Now()).
 		SetInUserID(modifier.ID).
 		SetInRoleType(model.AssetOperateRoleAdmin.Value()).
+		SetReason(req.Reason).
 		AddDetails(details...).
 		Exec(ctx)
 	return
@@ -93,9 +91,7 @@ func (s *assetTransferService) transferAssetWithSN(ctx context.Context, q *ent.A
 	if item == nil {
 		return nil, errors.New("物资不存在")
 	}
-
 	assetIDs = append(assetIDs, item.ID)
-
 	return
 }
 
@@ -106,6 +102,11 @@ func (s *assetTransferService) transferAssetWithoutSN(ctx context.Context, q *en
 	}
 	if req.MaterialID == nil || *req.MaterialID == 0 {
 		return nil, errors.New("其它物资分类ID不能为空")
+	}
+	// 判定其它物资类型是否存在
+	item, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(*req.MaterialID), material.Type(req.AssetType.Value())).First(ctx)
+	if item == nil {
+		return nil, errors.New("其它物资分类不存在")
 	}
 	// 查询其它物资是否充足
 	all, _ := q.Where(asset.MaterialID(*req.MaterialID)).Limit(int(*req.Num)).All(ctx)
@@ -121,7 +122,7 @@ func (s *assetTransferService) transferAssetWithoutSN(ctx context.Context, q *en
 }
 
 // 调拨限制
-func (s *assetTransferService) transferLimit(ctx context.Context, req model.AssetTransferCreateReq) (err error) {
+func (s *assetTransferService) transferLimit(ctx context.Context, req *model.AssetTransferCreateReq) (err error) {
 	if req.FromLocationType != nil {
 		// 仓库限制（仓库、门店、站点、运维）
 		if *req.FromLocationType == model.AssetLocationsTypeWarehouse {
@@ -183,6 +184,98 @@ func (s *assetTransferService) transferLimit(ctx context.Context, req model.Asse
 			}
 		}
 	}
+	if req.FromLocationType == nil {
+		// 初始调拨只能调仓库
+		if req.ToLocationType != model.AssetLocationsTypeWarehouse {
+			return errors.New("调拨目标地点不合法")
+		}
+	}
 	return nil
 
+}
+
+// 已入库调拨
+func (s *assetTransferService) stockTransfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (assetIDs []uint64, failed []string, err error) {
+	// 查询物资是否充足
+	q := ent.Database.Asset.QueryNotDeleted().Where(
+		asset.LocationsType((*req.FromLocationType).Value()),
+		asset.StatusIn(model.AssetStatusStock.Value(), model.AssetStatusFault.Value()),
+	)
+
+	for _, v := range req.Details {
+		var iDs []uint64
+		switch v.AssetType {
+		case model.AssetTypeEbike, model.AssetTypeSmartBattery:
+			iDs, err = s.transferAssetWithSN(ctx, q, v, modifier)
+			if err != nil {
+				failed = append(failed, err.Error())
+				continue
+			}
+		case model.AssetTypeNonSmartBattery, model.AssetTypeCabinetAccessory, model.AssetTypeEbikeAccessory, model.AssetTypeOtherAccessory:
+			iDs, err = s.transferAssetWithoutSN(ctx, q, v, modifier)
+			if err != nil {
+				failed = append(failed, err.Error())
+				continue
+			}
+		default:
+		}
+		assetIDs = append(assetIDs, iDs...)
+	}
+	return assetIDs, nil, nil
+}
+
+// 初始调拨
+func (s *assetTransferService) initialTransfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (assetIDs []uint64, failed []string, err error) {
+	// 创建物资
+	for _, v := range req.Details {
+		var iDs []uint64
+		switch v.AssetType {
+		case model.AssetTypeNonSmartBattery, model.AssetTypeCabinetAccessory, model.AssetTypeEbikeAccessory, model.AssetTypeOtherAccessory:
+			iDs, err = s.initialTransferWithoutSN(ctx, v, req.ToLocationID, modifier)
+			if err != nil {
+				failed = append(failed, err.Error())
+				continue
+			}
+		default:
+		}
+		assetIDs = append(assetIDs, iDs...)
+	}
+	return assetIDs, nil, nil
+}
+
+// initialTransferWithoutSN 无编号资产初始化调拨
+func (s *assetTransferService) initialTransferWithoutSN(ctx context.Context, req model.AssetTransferCreateDetail, toLocationID uint64, modifier *model.Modifier) (assetIDs []uint64, err error) {
+	if req.Num == nil || *req.Num == 0 {
+		return nil, errors.New("调拨数量不能为空")
+	}
+	if req.MaterialID == nil || *req.MaterialID == 0 {
+		return nil, errors.New("其它物资分类ID不能为空")
+	}
+	// 判定其它物资类型是否存在
+	item, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(*req.MaterialID), material.Type(req.AssetType.Value())).First(ctx)
+	if item == nil {
+		return nil, errors.New("其它物资分类不存在")
+	}
+	// 创建物资
+	bulk := make([]*ent.AssetCreate, 0, int(*req.Num))
+	for i := 0; i < int(*req.Num); i++ {
+		bulk = append(bulk, ent.Database.Asset.Create().
+			SetType(req.AssetType.Value()).
+			SetMaterialID(*req.MaterialID).
+			SetStatus(model.AssetStatusStock.Value()).
+			SetEnable(true).
+			SetCreator(modifier).
+			SetLastModifier(modifier).
+			SetLocationsType(model.AssetLocationsTypeWarehouse.Value()).
+			SetLocationsID(toLocationID).
+			SetName(item.Name))
+	}
+	assets, _ := ent.Database.Asset.CreateBulk(bulk...).Save(ctx)
+	if len(assets) == 0 {
+		return nil, errors.New("创建资产失败")
+	}
+	for _, v := range assets {
+		assetIDs = append(assetIDs, v.ID)
+	}
+	return assetIDs, nil
 }

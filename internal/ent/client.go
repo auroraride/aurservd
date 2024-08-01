@@ -2020,6 +2020,22 @@ func (c *AssetClient) QueryOperator(a *Asset) *MaintainerQuery {
 	return query
 }
 
+// QueryScrap queries the scrap edge of a Asset.
+func (c *AssetClient) QueryScrap(a *Asset) *AssetScrapQuery {
+	query := (&AssetScrapClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, id),
+			sqlgraph.To(assetscrap.Table, assetscrap.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, asset.ScrapTable, asset.ScrapColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *AssetClient) Hooks() []Hook {
 	hooks := c.hooks.Asset
@@ -2618,22 +2634,6 @@ func (c *AssetScrapClient) GetX(ctx context.Context, id uint64) *AssetScrap {
 	return obj
 }
 
-// QueryAsset queries the asset edge of a AssetScrap.
-func (c *AssetScrapClient) QueryAsset(as *AssetScrap) *AssetQuery {
-	query := (&AssetClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := as.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(assetscrap.Table, assetscrap.FieldID, id),
-			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assetscrap.AssetTable, assetscrap.AssetColumn),
-		)
-		fromV = sqlgraph.Neighbors(as.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryManager queries the manager edge of a AssetScrap.
 func (c *AssetScrapClient) QueryManager(as *AssetScrap) *ManagerQuery {
 	query := (&ManagerClient{config: c.config}).Query()
@@ -2691,6 +2691,22 @@ func (c *AssetScrapClient) QueryAgent(as *AssetScrap) *AgentQuery {
 			sqlgraph.From(assetscrap.Table, assetscrap.FieldID, id),
 			sqlgraph.To(agent.Table, agent.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assetscrap.AgentTable, assetscrap.AgentColumn),
+		)
+		fromV = sqlgraph.Neighbors(as.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAsset queries the asset edge of a AssetScrap.
+func (c *AssetScrapClient) QueryAsset(as *AssetScrap) *AssetQuery {
+	query := (&AssetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := as.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetscrap.Table, assetscrap.FieldID, id),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, assetscrap.AssetTable, assetscrap.AssetColumn),
 		)
 		fromV = sqlgraph.Neighbors(as.driver.Dialect(), step)
 		return fromV, nil

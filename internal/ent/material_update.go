@@ -143,20 +143,6 @@ func (mu *MaterialUpdate) ClearStatement() *MaterialUpdate {
 	return mu
 }
 
-// SetAllot sets the "allot" field.
-func (mu *MaterialUpdate) SetAllot(b bool) *MaterialUpdate {
-	mu.mutation.SetAllot(b)
-	return mu
-}
-
-// SetNillableAllot sets the "allot" field if the given value is not nil.
-func (mu *MaterialUpdate) SetNillableAllot(b *bool) *MaterialUpdate {
-	if b != nil {
-		mu.SetAllot(*b)
-	}
-	return mu
-}
-
 // Mutation returns the MaterialMutation object of the builder.
 func (mu *MaterialUpdate) Mutation() *MaterialMutation {
 	return mu.mutation
@@ -257,9 +243,6 @@ func (mu *MaterialUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if mu.mutation.StatementCleared() {
 		_spec.ClearField(material.FieldStatement, field.TypeString)
-	}
-	if value, ok := mu.mutation.Allot(); ok {
-		_spec.SetField(material.FieldAllot, field.TypeBool, value)
 	}
 	_spec.AddModifiers(mu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
@@ -396,20 +379,6 @@ func (muo *MaterialUpdateOne) ClearStatement() *MaterialUpdateOne {
 	return muo
 }
 
-// SetAllot sets the "allot" field.
-func (muo *MaterialUpdateOne) SetAllot(b bool) *MaterialUpdateOne {
-	muo.mutation.SetAllot(b)
-	return muo
-}
-
-// SetNillableAllot sets the "allot" field if the given value is not nil.
-func (muo *MaterialUpdateOne) SetNillableAllot(b *bool) *MaterialUpdateOne {
-	if b != nil {
-		muo.SetAllot(*b)
-	}
-	return muo
-}
-
 // Mutation returns the MaterialMutation object of the builder.
 func (muo *MaterialUpdateOne) Mutation() *MaterialMutation {
 	return muo.mutation
@@ -540,9 +509,6 @@ func (muo *MaterialUpdateOne) sqlSave(ctx context.Context) (_node *Material, err
 	}
 	if muo.mutation.StatementCleared() {
 		_spec.ClearField(material.FieldStatement, field.TypeString)
-	}
-	if value, ok := muo.mutation.Allot(); ok {
-		_spec.SetField(material.FieldAllot, field.TypeBool, value)
 	}
 	_spec.AddModifiers(muo.modifiers...)
 	_node = &Material{config: muo.config}

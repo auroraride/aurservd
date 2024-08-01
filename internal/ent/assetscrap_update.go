@@ -73,26 +73,6 @@ func (asu *AssetScrapUpdate) ClearRemark() *AssetScrapUpdate {
 	return asu
 }
 
-// SetAssetID sets the "asset_id" field.
-func (asu *AssetScrapUpdate) SetAssetID(u uint64) *AssetScrapUpdate {
-	asu.mutation.SetAssetID(u)
-	return asu
-}
-
-// SetNillableAssetID sets the "asset_id" field if the given value is not nil.
-func (asu *AssetScrapUpdate) SetNillableAssetID(u *uint64) *AssetScrapUpdate {
-	if u != nil {
-		asu.SetAssetID(*u)
-	}
-	return asu
-}
-
-// ClearAssetID clears the value of the "asset_id" field.
-func (asu *AssetScrapUpdate) ClearAssetID() *AssetScrapUpdate {
-	asu.mutation.ClearAssetID()
-	return asu
-}
-
 // SetScrapReasonType sets the "scrap_reason_type" field.
 func (asu *AssetScrapUpdate) SetScrapReasonType(u uint8) *AssetScrapUpdate {
 	asu.mutation.ResetScrapReasonType()
@@ -187,9 +167,38 @@ func (asu *AssetScrapUpdate) ClearScrapOperateRoleType() *AssetScrapUpdate {
 	return asu
 }
 
-// SetAsset sets the "asset" edge to the Asset entity.
-func (asu *AssetScrapUpdate) SetAsset(a *Asset) *AssetScrapUpdate {
-	return asu.SetAssetID(a.ID)
+// SetScrapBatch sets the "scrap_batch" field.
+func (asu *AssetScrapUpdate) SetScrapBatch(s string) *AssetScrapUpdate {
+	asu.mutation.SetScrapBatch(s)
+	return asu
+}
+
+// SetNillableScrapBatch sets the "scrap_batch" field if the given value is not nil.
+func (asu *AssetScrapUpdate) SetNillableScrapBatch(s *string) *AssetScrapUpdate {
+	if s != nil {
+		asu.SetScrapBatch(*s)
+	}
+	return asu
+}
+
+// ClearScrapBatch clears the value of the "scrap_batch" field.
+func (asu *AssetScrapUpdate) ClearScrapBatch() *AssetScrapUpdate {
+	asu.mutation.ClearScrapBatch()
+	return asu
+}
+
+// SetAssetID sets the "asset_id" field.
+func (asu *AssetScrapUpdate) SetAssetID(u uint64) *AssetScrapUpdate {
+	asu.mutation.SetAssetID(u)
+	return asu
+}
+
+// SetNillableAssetID sets the "asset_id" field if the given value is not nil.
+func (asu *AssetScrapUpdate) SetNillableAssetID(u *uint64) *AssetScrapUpdate {
+	if u != nil {
+		asu.SetAssetID(*u)
+	}
+	return asu
 }
 
 // SetManagerID sets the "manager" edge to the Manager entity by ID.
@@ -268,15 +277,14 @@ func (asu *AssetScrapUpdate) SetAgent(a *Agent) *AssetScrapUpdate {
 	return asu.SetAgentID(a.ID)
 }
 
+// SetAsset sets the "asset" edge to the Asset entity.
+func (asu *AssetScrapUpdate) SetAsset(a *Asset) *AssetScrapUpdate {
+	return asu.SetAssetID(a.ID)
+}
+
 // Mutation returns the AssetScrapMutation object of the builder.
 func (asu *AssetScrapUpdate) Mutation() *AssetScrapMutation {
 	return asu.mutation
-}
-
-// ClearAsset clears the "asset" edge to the Asset entity.
-func (asu *AssetScrapUpdate) ClearAsset() *AssetScrapUpdate {
-	asu.mutation.ClearAsset()
-	return asu
 }
 
 // ClearManager clears the "manager" edge to the Manager entity.
@@ -300,6 +308,12 @@ func (asu *AssetScrapUpdate) ClearMaintainer() *AssetScrapUpdate {
 // ClearAgent clears the "agent" edge to the Agent entity.
 func (asu *AssetScrapUpdate) ClearAgent() *AssetScrapUpdate {
 	asu.mutation.ClearAgent()
+	return asu
+}
+
+// ClearAsset clears the "asset" edge to the Asset entity.
+func (asu *AssetScrapUpdate) ClearAsset() *AssetScrapUpdate {
+	asu.mutation.ClearAsset()
 	return asu
 }
 
@@ -345,6 +359,14 @@ func (asu *AssetScrapUpdate) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (asu *AssetScrapUpdate) check() error {
+	if _, ok := asu.mutation.AssetID(); asu.mutation.AssetCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "AssetScrap.asset"`)
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (asu *AssetScrapUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AssetScrapUpdate {
 	asu.modifiers = append(asu.modifiers, modifiers...)
@@ -352,6 +374,9 @@ func (asu *AssetScrapUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *As
 }
 
 func (asu *AssetScrapUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := asu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(assetscrap.Table, assetscrap.Columns, sqlgraph.NewFieldSpec(assetscrap.FieldID, field.TypeUint64))
 	if ps := asu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -402,34 +427,11 @@ func (asu *AssetScrapUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if asu.mutation.ScrapOperateRoleTypeCleared() {
 		_spec.ClearField(assetscrap.FieldScrapOperateRoleType, field.TypeUint8)
 	}
-	if asu.mutation.AssetCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assetscrap.AssetTable,
-			Columns: []string{assetscrap.AssetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	if value, ok := asu.mutation.ScrapBatch(); ok {
+		_spec.SetField(assetscrap.FieldScrapBatch, field.TypeString, value)
 	}
-	if nodes := asu.mutation.AssetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assetscrap.AssetTable,
-			Columns: []string{assetscrap.AssetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	if asu.mutation.ScrapBatchCleared() {
+		_spec.ClearField(assetscrap.FieldScrapBatch, field.TypeString)
 	}
 	if asu.mutation.ManagerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -547,6 +549,35 @@ func (asu *AssetScrapUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if asu.mutation.AssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   assetscrap.AssetTable,
+			Columns: []string{assetscrap.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := asu.mutation.AssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   assetscrap.AssetTable,
+			Columns: []string{assetscrap.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(asu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, asu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -604,26 +635,6 @@ func (asuo *AssetScrapUpdateOne) SetNillableRemark(s *string) *AssetScrapUpdateO
 // ClearRemark clears the value of the "remark" field.
 func (asuo *AssetScrapUpdateOne) ClearRemark() *AssetScrapUpdateOne {
 	asuo.mutation.ClearRemark()
-	return asuo
-}
-
-// SetAssetID sets the "asset_id" field.
-func (asuo *AssetScrapUpdateOne) SetAssetID(u uint64) *AssetScrapUpdateOne {
-	asuo.mutation.SetAssetID(u)
-	return asuo
-}
-
-// SetNillableAssetID sets the "asset_id" field if the given value is not nil.
-func (asuo *AssetScrapUpdateOne) SetNillableAssetID(u *uint64) *AssetScrapUpdateOne {
-	if u != nil {
-		asuo.SetAssetID(*u)
-	}
-	return asuo
-}
-
-// ClearAssetID clears the value of the "asset_id" field.
-func (asuo *AssetScrapUpdateOne) ClearAssetID() *AssetScrapUpdateOne {
-	asuo.mutation.ClearAssetID()
 	return asuo
 }
 
@@ -721,9 +732,38 @@ func (asuo *AssetScrapUpdateOne) ClearScrapOperateRoleType() *AssetScrapUpdateOn
 	return asuo
 }
 
-// SetAsset sets the "asset" edge to the Asset entity.
-func (asuo *AssetScrapUpdateOne) SetAsset(a *Asset) *AssetScrapUpdateOne {
-	return asuo.SetAssetID(a.ID)
+// SetScrapBatch sets the "scrap_batch" field.
+func (asuo *AssetScrapUpdateOne) SetScrapBatch(s string) *AssetScrapUpdateOne {
+	asuo.mutation.SetScrapBatch(s)
+	return asuo
+}
+
+// SetNillableScrapBatch sets the "scrap_batch" field if the given value is not nil.
+func (asuo *AssetScrapUpdateOne) SetNillableScrapBatch(s *string) *AssetScrapUpdateOne {
+	if s != nil {
+		asuo.SetScrapBatch(*s)
+	}
+	return asuo
+}
+
+// ClearScrapBatch clears the value of the "scrap_batch" field.
+func (asuo *AssetScrapUpdateOne) ClearScrapBatch() *AssetScrapUpdateOne {
+	asuo.mutation.ClearScrapBatch()
+	return asuo
+}
+
+// SetAssetID sets the "asset_id" field.
+func (asuo *AssetScrapUpdateOne) SetAssetID(u uint64) *AssetScrapUpdateOne {
+	asuo.mutation.SetAssetID(u)
+	return asuo
+}
+
+// SetNillableAssetID sets the "asset_id" field if the given value is not nil.
+func (asuo *AssetScrapUpdateOne) SetNillableAssetID(u *uint64) *AssetScrapUpdateOne {
+	if u != nil {
+		asuo.SetAssetID(*u)
+	}
+	return asuo
 }
 
 // SetManagerID sets the "manager" edge to the Manager entity by ID.
@@ -802,15 +842,14 @@ func (asuo *AssetScrapUpdateOne) SetAgent(a *Agent) *AssetScrapUpdateOne {
 	return asuo.SetAgentID(a.ID)
 }
 
+// SetAsset sets the "asset" edge to the Asset entity.
+func (asuo *AssetScrapUpdateOne) SetAsset(a *Asset) *AssetScrapUpdateOne {
+	return asuo.SetAssetID(a.ID)
+}
+
 // Mutation returns the AssetScrapMutation object of the builder.
 func (asuo *AssetScrapUpdateOne) Mutation() *AssetScrapMutation {
 	return asuo.mutation
-}
-
-// ClearAsset clears the "asset" edge to the Asset entity.
-func (asuo *AssetScrapUpdateOne) ClearAsset() *AssetScrapUpdateOne {
-	asuo.mutation.ClearAsset()
-	return asuo
 }
 
 // ClearManager clears the "manager" edge to the Manager entity.
@@ -834,6 +873,12 @@ func (asuo *AssetScrapUpdateOne) ClearMaintainer() *AssetScrapUpdateOne {
 // ClearAgent clears the "agent" edge to the Agent entity.
 func (asuo *AssetScrapUpdateOne) ClearAgent() *AssetScrapUpdateOne {
 	asuo.mutation.ClearAgent()
+	return asuo
+}
+
+// ClearAsset clears the "asset" edge to the Asset entity.
+func (asuo *AssetScrapUpdateOne) ClearAsset() *AssetScrapUpdateOne {
+	asuo.mutation.ClearAsset()
 	return asuo
 }
 
@@ -892,6 +937,14 @@ func (asuo *AssetScrapUpdateOne) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (asuo *AssetScrapUpdateOne) check() error {
+	if _, ok := asuo.mutation.AssetID(); asuo.mutation.AssetCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "AssetScrap.asset"`)
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (asuo *AssetScrapUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AssetScrapUpdateOne {
 	asuo.modifiers = append(asuo.modifiers, modifiers...)
@@ -899,6 +952,9 @@ func (asuo *AssetScrapUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder))
 }
 
 func (asuo *AssetScrapUpdateOne) sqlSave(ctx context.Context) (_node *AssetScrap, err error) {
+	if err := asuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(assetscrap.Table, assetscrap.Columns, sqlgraph.NewFieldSpec(assetscrap.FieldID, field.TypeUint64))
 	id, ok := asuo.mutation.ID()
 	if !ok {
@@ -966,34 +1022,11 @@ func (asuo *AssetScrapUpdateOne) sqlSave(ctx context.Context) (_node *AssetScrap
 	if asuo.mutation.ScrapOperateRoleTypeCleared() {
 		_spec.ClearField(assetscrap.FieldScrapOperateRoleType, field.TypeUint8)
 	}
-	if asuo.mutation.AssetCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assetscrap.AssetTable,
-			Columns: []string{assetscrap.AssetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	if value, ok := asuo.mutation.ScrapBatch(); ok {
+		_spec.SetField(assetscrap.FieldScrapBatch, field.TypeString, value)
 	}
-	if nodes := asuo.mutation.AssetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assetscrap.AssetTable,
-			Columns: []string{assetscrap.AssetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	if asuo.mutation.ScrapBatchCleared() {
+		_spec.ClearField(assetscrap.FieldScrapBatch, field.TypeString)
 	}
 	if asuo.mutation.ManagerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1104,6 +1137,35 @@ func (asuo *AssetScrapUpdateOne) sqlSave(ctx context.Context) (_node *AssetScrap
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if asuo.mutation.AssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   assetscrap.AssetTable,
+			Columns: []string{assetscrap.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := asuo.mutation.AssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   assetscrap.AssetTable,
+			Columns: []string{assetscrap.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

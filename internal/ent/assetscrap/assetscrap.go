@@ -25,8 +25,6 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
-	// FieldAssetID holds the string denoting the asset_id field in the database.
-	FieldAssetID = "asset_id"
 	// FieldScrapReasonType holds the string denoting the scrap_reason_type field in the database.
 	FieldScrapReasonType = "scrap_reason_type"
 	// FieldScrapAt holds the string denoting the scrap_at field in the database.
@@ -35,8 +33,10 @@ const (
 	FieldScrapOperateID = "scrap_operate_id"
 	// FieldScrapOperateRoleType holds the string denoting the scrap_operate_role_type field in the database.
 	FieldScrapOperateRoleType = "scrap_operate_role_type"
-	// EdgeAsset holds the string denoting the asset edge name in mutations.
-	EdgeAsset = "asset"
+	// FieldScrapBatch holds the string denoting the scrap_batch field in the database.
+	FieldScrapBatch = "scrap_batch"
+	// FieldAssetID holds the string denoting the asset_id field in the database.
+	FieldAssetID = "asset_id"
 	// EdgeManager holds the string denoting the manager edge name in mutations.
 	EdgeManager = "manager"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -45,15 +45,10 @@ const (
 	EdgeMaintainer = "maintainer"
 	// EdgeAgent holds the string denoting the agent edge name in mutations.
 	EdgeAgent = "agent"
+	// EdgeAsset holds the string denoting the asset edge name in mutations.
+	EdgeAsset = "asset"
 	// Table holds the table name of the assetscrap in the database.
 	Table = "asset_scrap"
-	// AssetTable is the table that holds the asset relation/edge.
-	AssetTable = "asset_scrap"
-	// AssetInverseTable is the table name for the Asset entity.
-	// It exists in this package in order to avoid circular dependency with the "asset" package.
-	AssetInverseTable = "asset"
-	// AssetColumn is the table column denoting the asset relation/edge.
-	AssetColumn = "asset_id"
 	// ManagerTable is the table that holds the manager relation/edge.
 	ManagerTable = "asset_scrap"
 	// ManagerInverseTable is the table name for the Manager entity.
@@ -82,6 +77,13 @@ const (
 	AgentInverseTable = "agent"
 	// AgentColumn is the table column denoting the agent relation/edge.
 	AgentColumn = "scrap_operate_id"
+	// AssetTable is the table that holds the asset relation/edge.
+	AssetTable = "asset_scrap"
+	// AssetInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	AssetInverseTable = "asset"
+	// AssetColumn is the table column denoting the asset relation/edge.
+	AssetColumn = "asset_id"
 )
 
 // Columns holds all SQL columns for assetscrap fields.
@@ -92,11 +94,12 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
-	FieldAssetID,
 	FieldScrapReasonType,
 	FieldScrapAt,
 	FieldScrapOperateID,
 	FieldScrapOperateRoleType,
+	FieldScrapBatch,
+	FieldAssetID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -147,11 +150,6 @@ func ByRemark(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRemark, opts...).ToFunc()
 }
 
-// ByAssetID orders the results by the asset_id field.
-func ByAssetID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldAssetID, opts...).ToFunc()
-}
-
 // ByScrapReasonType orders the results by the scrap_reason_type field.
 func ByScrapReasonType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldScrapReasonType, opts...).ToFunc()
@@ -172,11 +170,14 @@ func ByScrapOperateRoleType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldScrapOperateRoleType, opts...).ToFunc()
 }
 
-// ByAssetField orders the results by asset field.
-func ByAssetField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newAssetStep(), sql.OrderByField(field, opts...))
-	}
+// ByScrapBatch orders the results by the scrap_batch field.
+func ByScrapBatch(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldScrapBatch, opts...).ToFunc()
+}
+
+// ByAssetID orders the results by the asset_id field.
+func ByAssetID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAssetID, opts...).ToFunc()
 }
 
 // ByManagerField orders the results by manager field.
@@ -206,12 +207,12 @@ func ByAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newAgentStep(), sql.OrderByField(field, opts...))
 	}
 }
-func newAssetStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(AssetInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, AssetTable, AssetColumn),
-	)
+
+// ByAssetField orders the results by asset field.
+func ByAssetField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAssetStep(), sql.OrderByField(field, opts...))
+	}
 }
 func newManagerStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
@@ -239,5 +240,12 @@ func newAgentStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AgentInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
+	)
+}
+func newAssetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AssetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, AssetTable, AssetColumn),
 	)
 }

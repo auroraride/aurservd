@@ -518,7 +518,8 @@ var (
 		{Name: "scrap_reason_type", Type: field.TypeUint8, Nullable: true, Comment: "报废原因 1:丢失 2:损坏 3:其他"},
 		{Name: "scrap_at", Type: field.TypeTime, Nullable: true, Comment: "报废时间"},
 		{Name: "scrap_operate_role_type", Type: field.TypeUint8, Nullable: true, Comment: "报废人员角色类型 1:后台管理员 2:门店管理员 3:运维 4:物资管理员 5:代理管理员"},
-		{Name: "asset_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "scrap_batch", Type: field.TypeString, Nullable: true, Comment: "报废批次"},
+		{Name: "asset_id", Type: field.TypeUint64, Comment: "资产ID"},
 		{Name: "scrap_operate_id", Type: field.TypeUint64, Nullable: true, Comment: "操作报废人员ID"},
 	}
 	// AssetScrapTable holds the schema information for the "asset_scrap" table.
@@ -528,32 +529,32 @@ var (
 		PrimaryKey: []*schema.Column{AssetScrapColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "asset_scrap_asset_asset",
-				Columns:    []*schema.Column{AssetScrapColumns[9]},
+				Symbol:     "asset_scrap_asset_scrap",
+				Columns:    []*schema.Column{AssetScrapColumns[10]},
 				RefColumns: []*schema.Column{AssetColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "asset_scrap_manager_manager",
-				Columns:    []*schema.Column{AssetScrapColumns[10]},
+				Columns:    []*schema.Column{AssetScrapColumns[11]},
 				RefColumns: []*schema.Column{ManagerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_scrap_employee_employee",
-				Columns:    []*schema.Column{AssetScrapColumns[10]},
+				Columns:    []*schema.Column{AssetScrapColumns[11]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_scrap_maintainer_maintainer",
-				Columns:    []*schema.Column{AssetScrapColumns[10]},
+				Columns:    []*schema.Column{AssetScrapColumns[11]},
 				RefColumns: []*schema.Column{MaintainerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_scrap_agent_agent",
-				Columns:    []*schema.Column{AssetScrapColumns[10]},
+				Columns:    []*schema.Column{AssetScrapColumns[11]},
 				RefColumns: []*schema.Column{AgentColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -563,11 +564,6 @@ var (
 				Name:    "assetscrap_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{AssetScrapColumns[1]},
-			},
-			{
-				Name:    "assetscrap_asset_id",
-				Unique:  false,
-				Columns: []*schema.Column{AssetScrapColumns[9]},
 			},
 		},
 	}
@@ -595,6 +591,7 @@ var (
 		{Name: "out_time_at", Type: field.TypeTime, Nullable: true, Comment: "出库时间"},
 		{Name: "in_time_at", Type: field.TypeTime, Nullable: true, Comment: "入库时间"},
 		{Name: "transfer_type", Type: field.TypeUint8, Nullable: true, Comment: "调拨类型 1:初始入库 2:平台调拨 3:门店调拨 4:代理调拨 5:运维调拨 6:系统业务自动调拨"},
+		{Name: "reason", Type: field.TypeString, Nullable: true, Comment: "调拨事由"},
 	}
 	// AssetTransferTable holds the schema information for the "asset_transfer" table.
 	AssetTransferTable = &schema.Table{
@@ -3820,7 +3817,6 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
 		{Name: "type", Type: field.TypeUint8, Comment: "物资类型 4电柜配件 5电车配件 6其他"},
 		{Name: "statement", Type: field.TypeString, Nullable: true, Comment: "说明"},
-		{Name: "allot", Type: field.TypeBool, Comment: "是否可调拨"},
 	}
 	// MaterialTable holds the schema information for the "material" table.
 	MaterialTable = &schema.Table{

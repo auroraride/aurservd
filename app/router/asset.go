@@ -10,8 +10,6 @@ func loadAssersRoutes() {
 
 	asset := g.Group("/asset")
 
-	asset.GET("/template", assetapi.Assets.Template) // 导出模版
-
 	asset.Use(middleware.ManagerMiddleware())
 
 	// 基础档案
@@ -28,10 +26,12 @@ func loadAssersRoutes() {
 	asset.POST("/scrap", assetapi.AssetScrap.Scrap)                           // 报废资产
 	asset.POST("/scrap/batch/restore", assetapi.AssetScrap.ScrapBatchRestore) // 批量还原报废
 	asset.GET("/scrap", assetapi.AssetScrap.ScrapList)                        // 报废列表
+	asset.GET("/scrap/other", assetapi.AssetScrap.ScrapListOther)             // 其它资产报废列表
 	asset.GET("/scrap/reason", assetapi.AssetScrap.ScrapReasonSelect)         // 报废理由列表
 	// 导入导出
 	asset.POST("/batch", assetapi.Assets.BatchCreate) // 导入资产
 	asset.POST("/export", assetapi.Assets.Export)     // 导出资产
+	asset.GET("/template", assetapi.Assets.Template)  // 导出模版
 
 	// 资产调拨
 	asset.POST("/transfer", assetapi.AssetTransfer.Transfer) // 资产调拨

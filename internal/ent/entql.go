@@ -324,11 +324,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assetscrap.FieldCreator:              {Type: field.TypeJSON, Column: assetscrap.FieldCreator},
 			assetscrap.FieldLastModifier:         {Type: field.TypeJSON, Column: assetscrap.FieldLastModifier},
 			assetscrap.FieldRemark:               {Type: field.TypeString, Column: assetscrap.FieldRemark},
-			assetscrap.FieldAssetID:              {Type: field.TypeUint64, Column: assetscrap.FieldAssetID},
 			assetscrap.FieldScrapReasonType:      {Type: field.TypeUint8, Column: assetscrap.FieldScrapReasonType},
 			assetscrap.FieldScrapAt:              {Type: field.TypeTime, Column: assetscrap.FieldScrapAt},
 			assetscrap.FieldScrapOperateID:       {Type: field.TypeUint64, Column: assetscrap.FieldScrapOperateID},
 			assetscrap.FieldScrapOperateRoleType: {Type: field.TypeUint8, Column: assetscrap.FieldScrapOperateRoleType},
+			assetscrap.FieldScrapBatch:           {Type: field.TypeString, Column: assetscrap.FieldScrapBatch},
+			assetscrap.FieldAssetID:              {Type: field.TypeUint64, Column: assetscrap.FieldAssetID},
 		},
 	}
 	graph.Nodes[9] = &sqlgraph.Node{
@@ -363,6 +364,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assettransfer.FieldOutTimeAt:        {Type: field.TypeTime, Column: assettransfer.FieldOutTimeAt},
 			assettransfer.FieldInTimeAt:         {Type: field.TypeTime, Column: assettransfer.FieldInTimeAt},
 			assettransfer.FieldTransferType:     {Type: field.TypeUint8, Column: assettransfer.FieldTransferType},
+			assettransfer.FieldReason:           {Type: field.TypeString, Column: assettransfer.FieldReason},
 		},
 	}
 	graph.Nodes[10] = &sqlgraph.Node{
@@ -1535,7 +1537,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			material.FieldName:         {Type: field.TypeString, Column: material.FieldName},
 			material.FieldType:         {Type: field.TypeUint8, Column: material.FieldType},
 			material.FieldStatement:    {Type: field.TypeString, Column: material.FieldStatement},
-			material.FieldAllot:        {Type: field.TypeBool, Column: material.FieldAllot},
 		},
 	}
 	graph.Nodes[53] = &sqlgraph.Node{
@@ -2928,6 +2929,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Maintainer",
 	)
 	graph.MustAddE(
+		"scrap",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.ScrapTable,
+			Columns: []string{asset.ScrapColumn},
+			Bidi:    false,
+		},
+		"Asset",
+		"AssetScrap",
+	)
+	graph.MustAddE(
 		"attribute",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -2973,18 +2986,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"AssetHistory",
-		"Asset",
-	)
-	graph.MustAddE(
-		"asset",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assetscrap.AssetTable,
-			Columns: []string{assetscrap.AssetColumn},
-			Bidi:    false,
-		},
-		"AssetScrap",
 		"Asset",
 	)
 	graph.MustAddE(
@@ -3034,6 +3035,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"AssetScrap",
 		"Agent",
+	)
+	graph.MustAddE(
+		"asset",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   assetscrap.AssetTable,
+			Columns: []string{assetscrap.AssetColumn},
+			Bidi:    false,
+		},
+		"AssetScrap",
+		"Asset",
 	)
 	graph.MustAddE(
 		"details",
@@ -7682,6 +7695,20 @@ func (f *AssetFilter) WhereHasOperatorWith(preds ...predicate.Maintainer) {
 	})))
 }
 
+// WhereHasScrap applies a predicate to check if query has an edge scrap.
+func (f *AssetFilter) WhereHasScrap() {
+	f.Where(entql.HasEdge("scrap"))
+}
+
+// WhereHasScrapWith applies a predicate to check if query has an edge scrap with a given conditions (other predicates).
+func (f *AssetFilter) WhereHasScrapWith(preds ...predicate.AssetScrap) {
+	f.Where(entql.HasEdgeWith("scrap", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (aavq *AssetAttributeValuesQuery) addPredicate(pred func(s *sql.Selector)) {
 	aavq.predicates = append(aavq.predicates, pred)
@@ -8033,11 +8060,6 @@ func (f *AssetScrapFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(assetscrap.FieldRemark))
 }
 
-// WhereAssetID applies the entql uint64 predicate on the asset_id field.
-func (f *AssetScrapFilter) WhereAssetID(p entql.Uint64P) {
-	f.Where(p.Field(assetscrap.FieldAssetID))
-}
-
 // WhereScrapReasonType applies the entql uint8 predicate on the scrap_reason_type field.
 func (f *AssetScrapFilter) WhereScrapReasonType(p entql.Uint8P) {
 	f.Where(p.Field(assetscrap.FieldScrapReasonType))
@@ -8058,18 +8080,14 @@ func (f *AssetScrapFilter) WhereScrapOperateRoleType(p entql.Uint8P) {
 	f.Where(p.Field(assetscrap.FieldScrapOperateRoleType))
 }
 
-// WhereHasAsset applies a predicate to check if query has an edge asset.
-func (f *AssetScrapFilter) WhereHasAsset() {
-	f.Where(entql.HasEdge("asset"))
+// WhereScrapBatch applies the entql string predicate on the scrap_batch field.
+func (f *AssetScrapFilter) WhereScrapBatch(p entql.StringP) {
+	f.Where(p.Field(assetscrap.FieldScrapBatch))
 }
 
-// WhereHasAssetWith applies a predicate to check if query has an edge asset with a given conditions (other predicates).
-func (f *AssetScrapFilter) WhereHasAssetWith(preds ...predicate.Asset) {
-	f.Where(entql.HasEdgeWith("asset", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
+// WhereAssetID applies the entql uint64 predicate on the asset_id field.
+func (f *AssetScrapFilter) WhereAssetID(p entql.Uint64P) {
+	f.Where(p.Field(assetscrap.FieldAssetID))
 }
 
 // WhereHasManager applies a predicate to check if query has an edge manager.
@@ -8122,6 +8140,20 @@ func (f *AssetScrapFilter) WhereHasAgent() {
 // WhereHasAgentWith applies a predicate to check if query has an edge agent with a given conditions (other predicates).
 func (f *AssetScrapFilter) WhereHasAgentWith(preds ...predicate.Agent) {
 	f.Where(entql.HasEdgeWith("agent", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAsset applies a predicate to check if query has an edge asset.
+func (f *AssetScrapFilter) WhereHasAsset() {
+	f.Where(entql.HasEdge("asset"))
+}
+
+// WhereHasAssetWith applies a predicate to check if query has an edge asset with a given conditions (other predicates).
+func (f *AssetScrapFilter) WhereHasAssetWith(preds ...predicate.Asset) {
+	f.Where(entql.HasEdgeWith("asset", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -8271,6 +8303,11 @@ func (f *AssetTransferFilter) WhereInTimeAt(p entql.TimeP) {
 // WhereTransferType applies the entql uint8 predicate on the transfer_type field.
 func (f *AssetTransferFilter) WhereTransferType(p entql.Uint8P) {
 	f.Where(p.Field(assettransfer.FieldTransferType))
+}
+
+// WhereReason applies the entql string predicate on the reason field.
+func (f *AssetTransferFilter) WhereReason(p entql.StringP) {
+	f.Where(p.Field(assettransfer.FieldReason))
 }
 
 // WhereHasDetails applies a predicate to check if query has an edge details.
@@ -15338,11 +15375,6 @@ func (f *MaterialFilter) WhereType(p entql.Uint8P) {
 // WhereStatement applies the entql string predicate on the statement field.
 func (f *MaterialFilter) WhereStatement(p entql.StringP) {
 	f.Where(p.Field(material.FieldStatement))
-}
-
-// WhereAllot applies the entql bool predicate on the allot field.
-func (f *MaterialFilter) WhereAllot(p entql.BoolP) {
-	f.Where(p.Field(material.FieldAllot))
 }
 
 // addPredicate implements the predicateAdder interface.

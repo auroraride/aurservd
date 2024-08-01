@@ -42,6 +42,21 @@ func (*assetScrap) ScrapList(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewAssetScrap().ScrapList(ctx.Request().Context(), req))
 }
 
+// ScrapListOther
+// @ID		AssetScrapListOther
+// @Router	/manager/v2/asset/scrap/other [GET]
+// @Summary	其它资产报废列表
+// @Tags	资产
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string													true	"管理员校验token"
+// @Param	query			query		model.AssetScrapListReq									true	"查询参数"
+// @Success	200				{object}	model.PaginationRes{items=[]model.AssetScrapListRes}	"请求成功"
+func (*assetScrap) ScrapListOther(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.AssetScrapListReq](c)
+	return ctx.SendResponse(service.NewAssetScrap().ScrapListOther(ctx.Request().Context(), req))
+}
+
 // ScrapBatchRestore
 // @ID		AssetScrapBatchRestore
 // @Router	/manager/v2/asset/scrap/batch/restore [POST]

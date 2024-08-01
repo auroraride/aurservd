@@ -1228,6 +1228,29 @@ func HasOperatorWith(preds ...predicate.Maintainer) predicate.Asset {
 	})
 }
 
+// HasScrap applies the HasEdge predicate on the "scrap" edge.
+func HasScrap() predicate.Asset {
+	return predicate.Asset(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ScrapTable, ScrapColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasScrapWith applies the HasEdge predicate on the "scrap" edge with a given conditions (other predicates).
+func HasScrapWith(preds ...predicate.AssetScrap) predicate.Asset {
+	return predicate.Asset(func(s *sql.Selector) {
+		step := newScrapStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Asset) predicate.Asset {
 	return predicate.Asset(sql.AndPredicates(predicates...))

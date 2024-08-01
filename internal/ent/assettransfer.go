@@ -61,6 +61,8 @@ type AssetTransfer struct {
 	InTimeAt time.Time `json:"in_time_at,omitempty"`
 	// 调拨类型 1:初始入库 2:平台调拨 3:门店调拨 4:代理调拨 5:运维调拨 6:系统业务自动调拨
 	TransferType uint8 `json:"transfer_type,omitempty"`
+	// 调拨事由
+	Reason string `json:"reason,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetTransferQuery when eager-loading is set.
 	Edges        AssetTransferEdges `json:"edges"`
@@ -94,7 +96,7 @@ func (*AssetTransfer) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case assettransfer.FieldID, assettransfer.FieldStatus, assettransfer.FieldFromLocationType, assettransfer.FieldFromLocationID, assettransfer.FieldToLocationType, assettransfer.FieldToLocationID, assettransfer.FieldOutNum, assettransfer.FieldInNum, assettransfer.FieldOutUserID, assettransfer.FieldOutRoleType, assettransfer.FieldInUserID, assettransfer.FieldInRoleType, assettransfer.FieldTransferType:
 			values[i] = new(sql.NullInt64)
-		case assettransfer.FieldRemark, assettransfer.FieldSn:
+		case assettransfer.FieldRemark, assettransfer.FieldSn, assettransfer.FieldReason:
 			values[i] = new(sql.NullString)
 		case assettransfer.FieldCreatedAt, assettransfer.FieldUpdatedAt, assettransfer.FieldDeletedAt, assettransfer.FieldOutTimeAt, assettransfer.FieldInTimeAt:
 			values[i] = new(sql.NullTime)
@@ -250,6 +252,12 @@ func (at *AssetTransfer) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				at.TransferType = uint8(value.Int64)
 			}
+		case assettransfer.FieldReason:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field reason", values[i])
+			} else if value.Valid {
+				at.Reason = value.String
+			}
 		default:
 			at.selectValues.Set(columns[i], values[i])
 		}
@@ -355,6 +363,9 @@ func (at *AssetTransfer) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("transfer_type=")
 	builder.WriteString(fmt.Sprintf("%v", at.TransferType))
+	builder.WriteString(", ")
+	builder.WriteString("reason=")
+	builder.WriteString(at.Reason)
 	builder.WriteByte(')')
 	return builder.String()
 }

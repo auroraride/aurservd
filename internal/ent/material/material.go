@@ -32,8 +32,6 @@ const (
 	FieldType = "type"
 	// FieldStatement holds the string denoting the statement field in the database.
 	FieldStatement = "statement"
-	// FieldAllot holds the string denoting the allot field in the database.
-	FieldAllot = "allot"
 	// Table holds the table name of the material in the database.
 	Table = "material"
 )
@@ -50,7 +48,6 @@ var Columns = []string{
 	FieldName,
 	FieldType,
 	FieldStatement,
-	FieldAllot,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -119,9 +116,4 @@ func ByType(opts ...sql.OrderTermOption) OrderOption {
 // ByStatement orders the results by the statement field.
 func ByStatement(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatement, opts...).ToFunc()
-}
-
-// ByAllot orders the results by the allot field.
-func ByAllot(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldAllot, opts...).ToFunc()
 }
