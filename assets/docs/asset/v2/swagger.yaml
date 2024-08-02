@@ -153,6 +153,83 @@ definitions:
       - name
       - type
     type: object
+  definition.StoreAsset:
+    properties:
+      cabinetAccessories:
+        description: 电柜配件物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      cabinetAccessoryTotal:
+        description: 电柜配件总数
+        type: integer
+      ebikeAccessories:
+        description: 电车配件物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      ebikeAccessoryTotal:
+        description: 电车配件总数
+        type: integer
+      ebikeTotal:
+        description: 电车总数
+        type: integer
+      ebikes:
+        description: 电车物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      nonSmartBatteries:
+        description: 非智能电池物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      nonSmartBatteryTotal:
+        description: 非智能电池总数
+        type: integer
+      otherAssetTotal:
+        description: 其他物资总数
+        type: integer
+      otherAssets:
+        description: 其他物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      smartBatteries:
+        description: 智能电池物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      smartBatteryTotal:
+        description: 智能电池总数
+        type: integer
+    type: object
+  definition.StoreAssetDetail:
+    properties:
+      city:
+        allOf:
+          - $ref: '#/definitions/model.City'
+        description: 城市
+      groupName:
+        description: 门店集合名称
+        type: string
+      id:
+        description: 门店ID
+        type: integer
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      name:
+        description: 门店名称
+        type: string
+      warehouseAsset:
+        allOf:
+          - $ref: '#/definitions/definition.StoreAsset'
+        description: 门店资产
+    type: object
   definition.WareHouseAssetDetail:
     properties:
       city:
@@ -620,6 +697,18 @@ definitions:
     required:
       - ids
     type: object
+  model.AssetScrapDetail:
+    properties:
+      assetId:
+        description: 资产ID
+        type: integer
+      materialId:
+        description: 其它物资分类ID
+        type: integer
+      num:
+        description: 报废数量
+        type: integer
+    type: object
   model.AssetScrapListRes:
     properties:
       attribute:
@@ -660,21 +749,15 @@ definitions:
     type: object
   model.AssetScrapReq:
     properties:
-      assetId:
-        description: 当资产ID
-        items:
-          type: integer
-        type: array
       assetType:
         allOf:
           - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-      materialId:
-        description: 其它物资分类ID
-        type: integer
-      num:
-        description: 报废数量
-        type: integer
+      detail:
+        description: 报废明细
+        items:
+          $ref: '#/definitions/model.AssetScrapDetail'
+        type: array
       remark:
         description: 备注
         type: string
@@ -684,6 +767,7 @@ definitions:
         description: 报废原因
     required:
       - assetType
+      - detail
       - scrapReasonType
     type: object
   model.AssetTransferCreateDetail:
@@ -1270,6 +1354,118 @@ paths:
       summary: 导出资产
       tags:
         - 资产
+  /manager/v2/asset/material:
+    get:
+      consumes:
+        - application/json
+      operationId: MaterialList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: desc
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.MaterialListReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+              - $ref: '#/definitions/model.PaginationRes'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/definition.MaterialDetail'
+                    type: array
+                type: object
+      summary: 列表
+      tags:
+        - 其他物资 - Material
+    post:
+      consumes:
+        - application/json
+      operationId: MaterialCreate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: desc
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.MaterialCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建
+      tags:
+        - 其他物资 - Material
+  /manager/v2/asset/material/{id}:
+    delete:
+      consumes:
+        - application/json
+      operationId: MaterialDelete
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 仓库ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 删除
+      tags:
+        - 其他物资 - Material
+    put:
+      consumes:
+        - application/json
+      operationId: MaterialModify
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.MaterialModifyReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改
+      tags:
+        - 其他物资 - Material
   /manager/v2/asset/scrap:
     get:
       consumes:
@@ -1424,6 +1620,107 @@ paths:
       summary: 资产报废还原
       tags:
         - 资产
+  /manager/v2/asset/scrap/other:
+    get:
+      consumes:
+        - application/json
+      operationId: AssetScrapListOther
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 资产名称
+          in: query
+          name: assetName
+          type: string
+        - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+          in: query
+          name: assetType
+          type: integer
+          x-enum-comments:
+            AssetTypeCabinetAccessory: 电柜配件
+            AssetTypeEbike: 电车
+            AssetTypeEbikeAccessory: 电车配件
+            AssetTypeNonSmartBattery: 非智能电池
+            AssetTypeOtherAccessory: 其它配件
+            AssetTypeSmartBattery: 智能电池
+          x-enum-varnames:
+            - AssetTypeEbike
+            - AssetTypeSmartBattery
+            - AssetTypeNonSmartBattery
+            - AssetTypeCabinetAccessory
+            - AssetTypeEbikeAccessory
+            - AssetTypeOtherAccessory
+        - description: 当前页, 从1开始, 默认1
+          in: query
+          name: current
+          type: integer
+        - description: 结束时间
+          in: query
+          name: end
+          type: string
+        - description: 资产型号
+          in: query
+          name: modelId
+          type: integer
+        - description: 操作人
+          in: query
+          name: operateName
+          type: string
+        - description: 每页数据, 默认20
+          in: query
+          name: pageSize
+          type: integer
+        - description: 报废原因 1:丢失 2:损坏 3:其他
+          enum:
+            - 1
+            - 2
+            - 3
+          in: query
+          name: scrapReason
+          type: integer
+          x-enum-comments:
+            ScrapReasonDamage: 损坏
+            ScrapReasonLost: 丢失
+            ScrapReasonOther: 其他
+          x-enum-varnames:
+            - ScrapReasonLost
+            - ScrapReasonDamage
+            - ScrapReasonOther
+        - description: 资产编号
+          in: query
+          name: sn
+          type: string
+        - description: 开始时间
+          in: query
+          name: start
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+              - $ref: '#/definitions/model.PaginationRes'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/model.AssetScrapListRes'
+                    type: array
+                type: object
+      summary: 其它资产报废列表
+      tags:
+        - 资产
   /manager/v2/asset/scrap/reason:
     get:
       consumes:
@@ -1447,6 +1744,74 @@ paths:
       summary: 报废理由Select
       tags:
         - 资产
+  /manager/v2/asset/store_assets:
+    get:
+      consumes:
+        - application/json
+      operationId: StoreAsset
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 电车型号ID
+          in: query
+          name: brandId
+          type: integer
+        - description: 城市ID
+          in: query
+          name: cityId
+          type: integer
+        - description: 当前页, 从1开始, 默认1
+          in: query
+          name: current
+          type: integer
+        - description: 结束时间
+          in: query
+          name: end
+          type: string
+        - description: 门店集合ID
+          in: query
+          name: groupId
+          type: integer
+        - description: 电池型号ID
+          in: query
+          name: modelID
+          type: integer
+        - description: 其他物资名称
+          in: query
+          name: otherName
+          type: string
+        - description: 每页数据, 默认20
+          in: query
+          name: pageSize
+          type: integer
+        - description: 开始时间
+          in: query
+          name: start
+          type: string
+        - description: 门店ID
+          in: query
+          name: storeId
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+              - $ref: '#/definitions/model.PaginationRes'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/definition.StoreAssetDetail'
+                    type: array
+                type: object
+      summary: 门店物资
+      tags:
+        - 门店 - Store
   /manager/v2/asset/template:
     get:
       consumes:
@@ -1521,6 +1886,177 @@ paths:
       summary: 资产调拨
       tags:
         - 资产
+  /manager/v2/asset/warehouse:
+    get:
+      consumes:
+        - application/json
+      operationId: WarehouseList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: desc
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.WareHouseListReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+              - $ref: '#/definitions/model.PaginationRes'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/definition.WarehouseDetail'
+                    type: array
+                type: object
+      summary: 仓库列表
+      tags:
+        - 仓库 - Warehouse
+    post:
+      consumes:
+        - application/json
+      operationId: WarehouseCreate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: desc
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.WarehouseCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建仓库
+      tags:
+        - 仓库 - Warehouse
+  /manager/v2/asset/warehouse/{id}:
+    delete:
+      consumes:
+        - application/json
+      operationId: WarehouseDelete
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 仓库ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 删除仓库
+      tags:
+        - 仓库 - Warehouse
+    get:
+      consumes:
+        - application/json
+      operationId: WarehouseDetail
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 仓库ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.WarehouseDetail'
+      summary: 仓库详情
+      tags:
+        - 仓库 - Warehouse
+    put:
+      consumes:
+        - application/json
+      operationId: WarehouseModify
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.WarehouseModifyReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改仓库
+      tags:
+        - 仓库 - Warehouse
+  /manager/v2/asset/warehouse_assets:
+    get:
+      consumes:
+        - application/json
+      operationId: WarehouseAssets
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: desc
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.WareHouseAssetListReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+              - $ref: '#/definitions/model.PaginationRes'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/definition.WareHouseAssetDetail'
+                    type: array
+                type: object
+      summary: 仓库物资
+      tags:
+        - 仓库 - Warehouse
   /manager/v2/batterymodel:
     get:
       consumes:
@@ -1653,287 +2189,4 @@ paths:
       summary: 修改
       tags:
         - 电池型号 - BatteryModel
-  /manager/v2/material:
-    get:
-      consumes:
-        - application/json
-      operationId: MaterialList
-      parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.MaterialListReq'
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
-                  items:
-                    items:
-                      $ref: '#/definitions/definition.MaterialDetail'
-                    type: array
-                type: object
-      summary: 列表
-      tags:
-        - 其他物资 - Material
-    post:
-      consumes:
-        - application/json
-      operationId: MaterialCreate
-      parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.MaterialCreateReq'
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 创建
-      tags:
-        - 其他物资 - Material
-  /manager/v2/material/{id}:
-    delete:
-      consumes:
-        - application/json
-      operationId: MaterialDelete
-      parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 仓库ID
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 删除
-      tags:
-        - 其他物资 - Material
-    put:
-      consumes:
-        - application/json
-      operationId: MaterialModify
-      parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.MaterialModifyReq'
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 修改
-      tags:
-        - 其他物资 - Material
-  /manager/v2/warehouse:
-    get:
-      consumes:
-        - application/json
-      operationId: WarehouseList
-      parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.WareHouseListReq'
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
-                  items:
-                    items:
-                      $ref: '#/definitions/definition.WarehouseDetail'
-                    type: array
-                type: object
-      summary: 仓库列表
-      tags:
-        - 仓库 - Warehouse
-    post:
-      consumes:
-        - application/json
-      operationId: WarehouseCreate
-      parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.WarehouseCreateReq'
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 创建仓库
-      tags:
-        - 仓库 - Warehouse
-  /manager/v2/warehouse/{id}:
-    delete:
-      consumes:
-        - application/json
-      operationId: WarehouseDelete
-      parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 仓库ID
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 删除仓库
-      tags:
-        - 仓库 - Warehouse
-    get:
-      consumes:
-        - application/json
-      operationId: WarehouseDetail
-      parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 仓库ID
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/definition.WarehouseDetail'
-      summary: 仓库详情
-      tags:
-        - 仓库 - Warehouse
-    put:
-      consumes:
-        - application/json
-      operationId: WarehouseModify
-      parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.WarehouseModifyReq'
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 修改仓库
-      tags:
-        - 仓库 - Warehouse
-  /manager/v2/warehouse/assets:
-    get:
-      consumes:
-        - application/json
-      operationId: WarehouseAssets
-      parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.WareHouseAssetListReq'
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
-                  items:
-                    items:
-                      $ref: '#/definitions/definition.WareHouseAssetDetail'
-                    type: array
-                type: object
-      summary: 仓库物资
-      tags:
-        - 仓库 - Warehouse
 swagger: "2.0"

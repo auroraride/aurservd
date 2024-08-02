@@ -9,7 +9,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/material"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
@@ -32,19 +34,33 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 	}
 
 	var assetIDs []uint64
+	// 创建调拨记录
+	q := s.orm.Create()
 	// 已经入库资产调拨
-	if req.FromLocationType != nil {
+	if req.FromLocationType != nil && req.FromLocationID != nil {
 		assetIDs, failed, err = s.stockTransfer(ctx, req, modifier)
 		if err != nil || len(failed) > 0 {
 			return failed, err
 		}
+		q.SetFromLocationType(req.FromLocationType.Value()).
+			SetFromLocationID(*req.FromLocationID).
+			SetStatus(model.AssetTransferStatusDelivering.Value()).
+			SetOutTimeAt(time.Now()).
+			SetOutUserID(modifier.ID).
+			SetOutRoleType(model.AssetOperateRoleAdmin.Value()).
+			SetOutNum(uint(len(assetIDs)))
 	}
 	// 初始调拨
 	if req.FromLocationType == nil {
 		assetIDs, failed, err = s.initialTransfer(ctx, req, modifier)
-		if err != nil {
-			return nil, err
+		if err != nil || len(failed) > 0 {
+			return failed, err
 		}
+		q.SetInNum(uint(len(assetIDs))).
+			SetInTimeAt(time.Now()).
+			SetStatus(model.AssetTransferStatusStock.Value()).
+			SetInUserID(modifier.ID).
+			SetInRoleType(model.AssetOperateRoleAdmin.Value())
 	}
 
 	bulk := make([]*ent.AssetTransferDetailsCreate, 0, len(assetIDs))
@@ -53,31 +69,20 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 	}
 	details, _ := ent.Database.AssetTransferDetails.CreateBulk(bulk...).Save(ctx)
 	if len(details) == 0 {
-		return failed, errors.New("调拨失败")
+		return nil, errors.New("调拨失败")
 	}
 
-	var locationType uint8
-	if req.FromLocationType != nil {
-		locationType = req.FromLocationType.Value()
-	}
-
-	// 创建调拨记录
-	err = s.orm.Create().
-		SetNillableFromLocationType(&locationType).
-		SetNillableFromLocationID(req.FromLocationID).
-		SetToLocationType(req.ToLocationType.Value()).
+	err = q.SetToLocationType(req.ToLocationType.Value()).
 		SetToLocationID(req.ToLocationID).
-		SetStatus(model.AssetTransferStatusDelivering.Value()).
 		SetSn(tools.NewUnique().NewSN28()).
 		SetCreator(modifier).
 		SetLastModifier(modifier).
-		SetInNum(uint(len(assetIDs))).
-		SetInTimeAt(time.Now()).
-		SetInUserID(modifier.ID).
-		SetInRoleType(model.AssetOperateRoleAdmin.Value()).
 		SetReason(req.Reason).
 		AddDetails(details...).
 		Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
 	return
 }
 
@@ -101,18 +106,18 @@ func (s *assetTransferService) transferAssetWithoutSN(ctx context.Context, q *en
 		return nil, errors.New("调拨数量不能为空")
 	}
 	if req.MaterialID == nil || *req.MaterialID == 0 {
-		return nil, errors.New("其它物资分类ID不能为空")
+		return nil, errors.New(req.AssetType.String() + "分类ID不能为空")
 	}
 	// 判定其它物资类型是否存在
 	item, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(*req.MaterialID), material.Type(req.AssetType.Value())).First(ctx)
 	if item == nil {
-		return nil, errors.New("其它物资分类不存在")
+		return nil, errors.New(req.AssetType.String() + "分类不存在")
 	}
 	// 查询其它物资是否充足
 	all, _ := q.Where(asset.MaterialID(*req.MaterialID)).Limit(int(*req.Num)).All(ctx)
 	// 查询出的物资数量小于调拨数量 则调拨失败
 	if len(all) < int(*req.Num) {
-		return nil, errors.New("其它物资不足")
+		return nil, errors.New(req.AssetType.String() + "物资不足")
 	}
 	assetIds = make([]uint64, 0, len(all))
 	for _, v := range all {
@@ -124,13 +129,39 @@ func (s *assetTransferService) transferAssetWithoutSN(ctx context.Context, q *en
 // 调拨限制
 func (s *assetTransferService) transferLimit(ctx context.Context, req *model.AssetTransferCreateReq) (err error) {
 	if req.FromLocationType != nil {
+		if req.FromLocationID == nil || *req.FromLocationID == 0 {
+			return errors.New("开始位置ID不能为空")
+		}
+		if req.ToLocationID == 0 {
+			return errors.New("目标位置ID不能为空")
+		}
 		// 仓库限制（仓库、门店、站点、运维）
 		if *req.FromLocationType == model.AssetLocationsTypeWarehouse {
 			switch req.ToLocationType {
 			case model.AssetLocationsTypeWarehouse:
+				// 仓库调拨仓库限制 不能调拨到相同仓库
+				if *req.FromLocationID == req.ToLocationID {
+					return errors.New("无法调拨到相同仓库")
+				}
+				// 判定目标仓库是否存在
+				if b, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(req.ToLocationID)).Exist(ctx); !b {
+					return errors.New("仓库不存在")
+				}
 			case model.AssetLocationsTypeStore:
+				// 判定目标门店是否存在
+				if b, _ := ent.Database.Store.QueryNotDeleted().Where(store.ID(req.ToLocationID)).Exist(ctx); !b {
+					return errors.New("门店不存在")
+				}
 			case model.AssetLocationsTypeStation:
+				// 判定目标站点是否存在
+				if b, _ := ent.Database.EnterpriseStation.QueryNotDeleted().Where(enterprisestation.ID(req.ToLocationID)).Exist(ctx); !b {
+					return errors.New("站点不存在")
+				}
 			case model.AssetLocationsTypeOperation:
+				// 判定目标运维是否存在
+				if b, _ := ent.Database.Maintainer.Query().Where(maintainer.ID(req.ToLocationID)).Exist(ctx); !b {
+					return errors.New("运维不存在")
+				}
 			default:
 				return errors.New("调拨目标地点不合法")
 			}
@@ -139,8 +170,24 @@ func (s *assetTransferService) transferLimit(ctx context.Context, req *model.Ass
 		if *req.FromLocationType == model.AssetLocationsTypeStore {
 			switch req.ToLocationType {
 			case model.AssetLocationsTypeWarehouse:
+				// 判定目标仓库是否存在
+				if b, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(req.ToLocationID)).Exist(ctx); !b {
+					return errors.New("仓库不存在")
+				}
 			case model.AssetLocationsTypeStore:
+				// 门店调拨门店限制 不能调拨到相同门店
+				if *req.FromLocationID == req.ToLocationID {
+					return errors.New("无法调拨到相同门店")
+				}
+				// 判定目标门店是否存在
+				if b, _ := ent.Database.Store.QueryNotDeleted().Where(store.ID(req.ToLocationID)).Exist(ctx); !b {
+					return errors.New("门店不存在")
+				}
 			case model.AssetLocationsTypeOperation:
+				// 判定目标运维是否存在
+				if b, _ := ent.Database.Maintainer.Query().Where(maintainer.ID(req.ToLocationID)).Exist(ctx); !b {
+					return errors.New("运维不存在")
+				}
 			default:
 				return errors.New("调拨目标地点不合法")
 			}
@@ -149,7 +196,15 @@ func (s *assetTransferService) transferLimit(ctx context.Context, req *model.Ass
 		if *req.FromLocationType == model.AssetLocationsTypeStation {
 			switch req.ToLocationType {
 			case model.AssetLocationsTypeWarehouse:
+				// 判定目标仓库是否存在
+				if b, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(req.ToLocationID)).Exist(ctx); !b {
+					return errors.New("仓库不存在")
+				}
 			case model.AssetLocationsTypeStation:
+				//  站点调拨站点限制 不能调拨到相同站点
+				if *req.FromLocationID == req.ToLocationID {
+					return errors.New("无法调拨到相同站点")
+				}
 				item, _ := ent.Database.EnterpriseStation.QueryNotDeleted().WithEnterprise(func(query *ent.EnterpriseQuery) {
 					query.WithStations()
 				}).Where(enterprisestation.ID(req.ToLocationID)).First(ctx)
@@ -166,7 +221,7 @@ func (s *assetTransferService) transferLimit(ctx context.Context, req *model.Ass
 						}
 					}
 					if !in {
-						return errors.New("站点不存在")
+						return errors.New("只能调拨到相同代理商的站点")
 					}
 				}
 			default:
@@ -177,8 +232,24 @@ func (s *assetTransferService) transferLimit(ctx context.Context, req *model.Ass
 		if *req.FromLocationType == model.AssetLocationsTypeOperation {
 			switch req.ToLocationType {
 			case model.AssetLocationsTypeWarehouse:
+				// 判定目标仓库是否存在
+				if b, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(req.ToLocationID)).Exist(ctx); !b {
+					return errors.New("仓库不存在")
+				}
 			case model.AssetLocationsTypeStore:
+				// 判定目标门店是否存在
+				if b, _ := ent.Database.Store.QueryNotDeleted().Where(store.ID(req.ToLocationID)).Exist(ctx); !b {
+					return errors.New("门店不存在")
+				}
 			case model.AssetLocationsTypeOperation:
+				// 运维调拨运维限制 不能调拨到相同运维
+				if *req.FromLocationID == req.ToLocationID {
+					return errors.New("无法调拨到相同运维")
+				}
+				// 判定目标运维是否存在
+				if b, _ := ent.Database.Maintainer.Query().Where(maintainer.ID(req.ToLocationID)).Exist(ctx); !b {
+					return errors.New("运维不存在")
+				}
 			default:
 				return errors.New("调拨目标地点不合法")
 			}
@@ -189,9 +260,15 @@ func (s *assetTransferService) transferLimit(ctx context.Context, req *model.Ass
 		if req.ToLocationType != model.AssetLocationsTypeWarehouse {
 			return errors.New("调拨目标地点不合法")
 		}
+		if req.ToLocationID == 0 {
+			return errors.New("目标位置ID不能为空")
+		}
+		// 判定目标仓库是否存在
+		if b, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(req.ToLocationID)).Exist(ctx); !b {
+			return errors.New("仓库不存在")
+		}
 	}
 	return nil
-
 }
 
 // 已入库调拨
@@ -237,10 +314,11 @@ func (s *assetTransferService) initialTransfer(ctx context.Context, req *model.A
 				continue
 			}
 		default:
+			failed = append(failed, v.AssetType.String()+"物资类型不合法,已跳过")
 		}
 		assetIDs = append(assetIDs, iDs...)
 	}
-	return assetIDs, nil, nil
+	return assetIDs, failed, nil
 }
 
 // initialTransferWithoutSN 无编号资产初始化调拨
@@ -249,12 +327,12 @@ func (s *assetTransferService) initialTransferWithoutSN(ctx context.Context, req
 		return nil, errors.New("调拨数量不能为空")
 	}
 	if req.MaterialID == nil || *req.MaterialID == 0 {
-		return nil, errors.New("其它物资分类ID不能为空")
+		return nil, errors.New(req.AssetType.String() + "分类ID不能为空")
 	}
 	// 判定其它物资类型是否存在
 	item, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(*req.MaterialID), material.Type(req.AssetType.Value())).First(ctx)
 	if item == nil {
-		return nil, errors.New("其它物资分类不存在")
+		return nil, errors.New(req.AssetType.String() + "分类不存在")
 	}
 	// 创建物资
 	bulk := make([]*ent.AssetCreate, 0, int(*req.Num))
