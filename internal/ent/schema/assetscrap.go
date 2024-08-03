@@ -59,12 +59,12 @@ func (AssetScrap) Annotations() []schema.Annotation {
 // Fields of the AssetScrap.
 func (AssetScrap) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint8("scrap_reason_type").Optional().Comment("报废原因 1:丢失 2:损坏 3:其他"),
+		field.Uint8("reason_type").Optional().Comment("报废原因 1:丢失 2:损坏 3:其他"),
 		field.Time("scrap_at").Optional().Comment("报废时间"),
-		field.Uint64("scrap_operate_id").Optional().Nillable().Comment("操作报废人员ID"),
-		field.Uint8("scrap_operate_role_type").Optional().Nillable().Comment("报废人员角色类型 1:后台管理员 2:门店管理员 3:运维 4:物资管理员 5:代理管理员"),
-		field.String("scrap_batch").Optional().Comment("报废批次"),
-		field.Uint64("asset_id").Comment("资产ID"),
+		field.Uint64("operate_id").Optional().Nillable().Comment("操作报废人员ID"),
+		field.Uint8("operate_role_type").Optional().Nillable().Comment("报废人员角色类型 1:后台管理员 2:门店管理员 3:运维 4:物资管理员 5:代理管理员"),
+		field.String("sn").Optional().Comment("报废编号"),
+		field.Uint("num").Optional().Comment("报废数量"),
 	}
 }
 
@@ -72,15 +72,15 @@ func (AssetScrap) Fields() []ent.Field {
 func (AssetScrap) Edges() []ent.Edge {
 	return []ent.Edge{
 		// 关联后台管理员
-		edge.To("manager", Manager.Type).Unique().Field("scrap_operate_id"),
+		edge.To("manager", Manager.Type).Unique().Field("operate_id"),
 		// 关联门店管理员
-		edge.To("employee", Employee.Type).Unique().Field("scrap_operate_id"),
+		edge.To("employee", Employee.Type).Unique().Field("operate_id"),
 		// 关联运维
-		edge.To("maintainer", Maintainer.Type).Unique().Field("scrap_operate_id"),
+		edge.To("maintainer", Maintainer.Type).Unique().Field("operate_id"),
 		// 关联代理管理员
-		edge.To("agent", Agent.Type).Unique().Field("scrap_operate_id"),
-
-		edge.From("asset", Asset.Type).Ref("scrap").Unique().Field("asset_id").Required(),
+		edge.To("agent", Agent.Type).Unique().Field("operate_id"),
+		// 报废资产明细
+		edge.To("scrap_details", AssetScrapDetails.Type),
 	}
 }
 

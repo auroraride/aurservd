@@ -77,8 +77,8 @@ const (
 	EdgeRider = "rider"
 	// EdgeOperator holds the string denoting the operator edge name in mutations.
 	EdgeOperator = "operator"
-	// EdgeScrap holds the string denoting the scrap edge name in mutations.
-	EdgeScrap = "scrap"
+	// EdgeScrapDetails holds the string denoting the scrap_details edge name in mutations.
+	EdgeScrapDetails = "scrap_details"
 	// Table holds the table name of the asset in the database.
 	Table = "asset"
 	// BrandTable is the table that holds the brand relation/edge.
@@ -158,13 +158,13 @@ const (
 	OperatorInverseTable = "maintainer"
 	// OperatorColumn is the table column denoting the operator relation/edge.
 	OperatorColumn = "locations_id"
-	// ScrapTable is the table that holds the scrap relation/edge.
-	ScrapTable = "asset_scrap"
-	// ScrapInverseTable is the table name for the AssetScrap entity.
-	// It exists in this package in order to avoid circular dependency with the "assetscrap" package.
-	ScrapInverseTable = "asset_scrap"
-	// ScrapColumn is the table column denoting the scrap relation/edge.
-	ScrapColumn = "asset_id"
+	// ScrapDetailsTable is the table that holds the scrap_details relation/edge.
+	ScrapDetailsTable = "asset_scrap_details"
+	// ScrapDetailsInverseTable is the table name for the AssetScrapDetails entity.
+	// It exists in this package in order to avoid circular dependency with the "assetscrapdetails" package.
+	ScrapDetailsInverseTable = "asset_scrap_details"
+	// ScrapDetailsColumn is the table column denoting the scrap_details relation/edge.
+	ScrapDetailsColumn = "asset_id"
 )
 
 // Columns holds all SQL columns for asset fields.
@@ -403,17 +403,17 @@ func ByOperatorField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByScrapCount orders the results by scrap count.
-func ByScrapCount(opts ...sql.OrderTermOption) OrderOption {
+// ByScrapDetailsCount orders the results by scrap_details count.
+func ByScrapDetailsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newScrapStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newScrapDetailsStep(), opts...)
 	}
 }
 
-// ByScrap orders the results by scrap terms.
-func ByScrap(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByScrapDetails orders the results by scrap_details terms.
+func ByScrapDetails(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newScrapStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newScrapDetailsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newBrandStep() *sqlgraph.Step {
@@ -493,10 +493,10 @@ func newOperatorStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, OperatorTable, OperatorColumn),
 	)
 }
-func newScrapStep() *sqlgraph.Step {
+func newScrapDetailsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ScrapInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ScrapTable, ScrapColumn),
+		sqlgraph.To(ScrapDetailsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ScrapDetailsTable, ScrapDetailsColumn),
 	)
 }

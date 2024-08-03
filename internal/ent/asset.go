@@ -99,8 +99,8 @@ type AssetEdges struct {
 	Rider *Rider `json:"rider,omitempty"`
 	// Operator holds the value of the operator edge.
 	Operator *Maintainer `json:"operator,omitempty"`
-	// Scrap holds the value of the scrap edge.
-	Scrap []*AssetScrap `json:"scrap,omitempty"`
+	// ScrapDetails holds the value of the scrap_details edge.
+	ScrapDetails []*AssetScrapDetails `json:"scrap_details,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [12]bool
@@ -225,13 +225,13 @@ func (e AssetEdges) OperatorOrErr() (*Maintainer, error) {
 	return nil, &NotLoadedError{edge: "operator"}
 }
 
-// ScrapOrErr returns the Scrap value or an error if the edge
+// ScrapDetailsOrErr returns the ScrapDetails value or an error if the edge
 // was not loaded in eager-loading.
-func (e AssetEdges) ScrapOrErr() ([]*AssetScrap, error) {
+func (e AssetEdges) ScrapDetailsOrErr() ([]*AssetScrapDetails, error) {
 	if e.loadedTypes[11] {
-		return e.Scrap, nil
+		return e.ScrapDetails, nil
 	}
-	return nil, &NotLoadedError{edge: "scrap"}
+	return nil, &NotLoadedError{edge: "scrap_details"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -468,9 +468,9 @@ func (a *Asset) QueryOperator() *MaintainerQuery {
 	return NewAssetClient(a.config).QueryOperator(a)
 }
 
-// QueryScrap queries the "scrap" edge of the Asset entity.
-func (a *Asset) QueryScrap() *AssetScrapQuery {
-	return NewAssetClient(a.config).QueryScrap(a)
+// QueryScrapDetails queries the "scrap_details" edge of the Asset entity.
+func (a *Asset) QueryScrapDetails() *AssetScrapDetailsQuery {
+	return NewAssetClient(a.config).QueryScrapDetails(a)
 }
 
 // Update returns a builder for updating this Asset.

@@ -13,8 +13,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
-	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
+	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -82,16 +82,16 @@ func (asc *AssetScrapCreate) SetNillableRemark(s *string) *AssetScrapCreate {
 	return asc
 }
 
-// SetScrapReasonType sets the "scrap_reason_type" field.
-func (asc *AssetScrapCreate) SetScrapReasonType(u uint8) *AssetScrapCreate {
-	asc.mutation.SetScrapReasonType(u)
+// SetReasonType sets the "reason_type" field.
+func (asc *AssetScrapCreate) SetReasonType(u uint8) *AssetScrapCreate {
+	asc.mutation.SetReasonType(u)
 	return asc
 }
 
-// SetNillableScrapReasonType sets the "scrap_reason_type" field if the given value is not nil.
-func (asc *AssetScrapCreate) SetNillableScrapReasonType(u *uint8) *AssetScrapCreate {
+// SetNillableReasonType sets the "reason_type" field if the given value is not nil.
+func (asc *AssetScrapCreate) SetNillableReasonType(u *uint8) *AssetScrapCreate {
 	if u != nil {
-		asc.SetScrapReasonType(*u)
+		asc.SetReasonType(*u)
 	}
 	return asc
 }
@@ -110,51 +110,59 @@ func (asc *AssetScrapCreate) SetNillableScrapAt(t *time.Time) *AssetScrapCreate 
 	return asc
 }
 
-// SetScrapOperateID sets the "scrap_operate_id" field.
-func (asc *AssetScrapCreate) SetScrapOperateID(u uint64) *AssetScrapCreate {
-	asc.mutation.SetScrapOperateID(u)
+// SetOperateID sets the "operate_id" field.
+func (asc *AssetScrapCreate) SetOperateID(u uint64) *AssetScrapCreate {
+	asc.mutation.SetOperateID(u)
 	return asc
 }
 
-// SetNillableScrapOperateID sets the "scrap_operate_id" field if the given value is not nil.
-func (asc *AssetScrapCreate) SetNillableScrapOperateID(u *uint64) *AssetScrapCreate {
+// SetNillableOperateID sets the "operate_id" field if the given value is not nil.
+func (asc *AssetScrapCreate) SetNillableOperateID(u *uint64) *AssetScrapCreate {
 	if u != nil {
-		asc.SetScrapOperateID(*u)
+		asc.SetOperateID(*u)
 	}
 	return asc
 }
 
-// SetScrapOperateRoleType sets the "scrap_operate_role_type" field.
-func (asc *AssetScrapCreate) SetScrapOperateRoleType(u uint8) *AssetScrapCreate {
-	asc.mutation.SetScrapOperateRoleType(u)
+// SetOperateRoleType sets the "operate_role_type" field.
+func (asc *AssetScrapCreate) SetOperateRoleType(u uint8) *AssetScrapCreate {
+	asc.mutation.SetOperateRoleType(u)
 	return asc
 }
 
-// SetNillableScrapOperateRoleType sets the "scrap_operate_role_type" field if the given value is not nil.
-func (asc *AssetScrapCreate) SetNillableScrapOperateRoleType(u *uint8) *AssetScrapCreate {
+// SetNillableOperateRoleType sets the "operate_role_type" field if the given value is not nil.
+func (asc *AssetScrapCreate) SetNillableOperateRoleType(u *uint8) *AssetScrapCreate {
 	if u != nil {
-		asc.SetScrapOperateRoleType(*u)
+		asc.SetOperateRoleType(*u)
 	}
 	return asc
 }
 
-// SetScrapBatch sets the "scrap_batch" field.
-func (asc *AssetScrapCreate) SetScrapBatch(s string) *AssetScrapCreate {
-	asc.mutation.SetScrapBatch(s)
+// SetSn sets the "sn" field.
+func (asc *AssetScrapCreate) SetSn(s string) *AssetScrapCreate {
+	asc.mutation.SetSn(s)
 	return asc
 }
 
-// SetNillableScrapBatch sets the "scrap_batch" field if the given value is not nil.
-func (asc *AssetScrapCreate) SetNillableScrapBatch(s *string) *AssetScrapCreate {
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (asc *AssetScrapCreate) SetNillableSn(s *string) *AssetScrapCreate {
 	if s != nil {
-		asc.SetScrapBatch(*s)
+		asc.SetSn(*s)
 	}
 	return asc
 }
 
-// SetAssetID sets the "asset_id" field.
-func (asc *AssetScrapCreate) SetAssetID(u uint64) *AssetScrapCreate {
-	asc.mutation.SetAssetID(u)
+// SetNum sets the "num" field.
+func (asc *AssetScrapCreate) SetNum(u uint) *AssetScrapCreate {
+	asc.mutation.SetNum(u)
+	return asc
+}
+
+// SetNillableNum sets the "num" field if the given value is not nil.
+func (asc *AssetScrapCreate) SetNillableNum(u *uint) *AssetScrapCreate {
+	if u != nil {
+		asc.SetNum(*u)
+	}
 	return asc
 }
 
@@ -234,9 +242,19 @@ func (asc *AssetScrapCreate) SetAgent(a *Agent) *AssetScrapCreate {
 	return asc.SetAgentID(a.ID)
 }
 
-// SetAsset sets the "asset" edge to the Asset entity.
-func (asc *AssetScrapCreate) SetAsset(a *Asset) *AssetScrapCreate {
-	return asc.SetAssetID(a.ID)
+// AddScrapDetailIDs adds the "scrap_details" edge to the AssetScrapDetails entity by IDs.
+func (asc *AssetScrapCreate) AddScrapDetailIDs(ids ...uint64) *AssetScrapCreate {
+	asc.mutation.AddScrapDetailIDs(ids...)
+	return asc
+}
+
+// AddScrapDetails adds the "scrap_details" edges to the AssetScrapDetails entity.
+func (asc *AssetScrapCreate) AddScrapDetails(a ...*AssetScrapDetails) *AssetScrapCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return asc.AddScrapDetailIDs(ids...)
 }
 
 // Mutation returns the AssetScrapMutation object of the builder.
@@ -301,12 +319,6 @@ func (asc *AssetScrapCreate) check() error {
 	if _, ok := asc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "AssetScrap.updated_at"`)}
 	}
-	if _, ok := asc.mutation.AssetID(); !ok {
-		return &ValidationError{Name: "asset_id", err: errors.New(`ent: missing required field "AssetScrap.asset_id"`)}
-	}
-	if _, ok := asc.mutation.AssetID(); !ok {
-		return &ValidationError{Name: "asset", err: errors.New(`ent: missing required edge "AssetScrap.asset"`)}
-	}
 	return nil
 }
 
@@ -354,21 +366,25 @@ func (asc *AssetScrapCreate) createSpec() (*AssetScrap, *sqlgraph.CreateSpec) {
 		_spec.SetField(assetscrap.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
-	if value, ok := asc.mutation.ScrapReasonType(); ok {
-		_spec.SetField(assetscrap.FieldScrapReasonType, field.TypeUint8, value)
-		_node.ScrapReasonType = value
+	if value, ok := asc.mutation.ReasonType(); ok {
+		_spec.SetField(assetscrap.FieldReasonType, field.TypeUint8, value)
+		_node.ReasonType = value
 	}
 	if value, ok := asc.mutation.ScrapAt(); ok {
 		_spec.SetField(assetscrap.FieldScrapAt, field.TypeTime, value)
 		_node.ScrapAt = value
 	}
-	if value, ok := asc.mutation.ScrapOperateRoleType(); ok {
-		_spec.SetField(assetscrap.FieldScrapOperateRoleType, field.TypeUint8, value)
-		_node.ScrapOperateRoleType = &value
+	if value, ok := asc.mutation.OperateRoleType(); ok {
+		_spec.SetField(assetscrap.FieldOperateRoleType, field.TypeUint8, value)
+		_node.OperateRoleType = &value
 	}
-	if value, ok := asc.mutation.ScrapBatch(); ok {
-		_spec.SetField(assetscrap.FieldScrapBatch, field.TypeString, value)
-		_node.ScrapBatch = value
+	if value, ok := asc.mutation.Sn(); ok {
+		_spec.SetField(assetscrap.FieldSn, field.TypeString, value)
+		_node.Sn = value
+	}
+	if value, ok := asc.mutation.Num(); ok {
+		_spec.SetField(assetscrap.FieldNum, field.TypeUint, value)
+		_node.Num = value
 	}
 	if nodes := asc.mutation.ManagerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -384,7 +400,7 @@ func (asc *AssetScrapCreate) createSpec() (*AssetScrap, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ScrapOperateID = &nodes[0]
+		_node.OperateID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := asc.mutation.EmployeeIDs(); len(nodes) > 0 {
@@ -401,7 +417,7 @@ func (asc *AssetScrapCreate) createSpec() (*AssetScrap, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ScrapOperateID = &nodes[0]
+		_node.OperateID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := asc.mutation.MaintainerIDs(); len(nodes) > 0 {
@@ -418,7 +434,7 @@ func (asc *AssetScrapCreate) createSpec() (*AssetScrap, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ScrapOperateID = &nodes[0]
+		_node.OperateID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := asc.mutation.AgentIDs(); len(nodes) > 0 {
@@ -435,24 +451,23 @@ func (asc *AssetScrapCreate) createSpec() (*AssetScrap, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ScrapOperateID = &nodes[0]
+		_node.OperateID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := asc.mutation.AssetIDs(); len(nodes) > 0 {
+	if nodes := asc.mutation.ScrapDetailsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   assetscrap.AssetTable,
-			Columns: []string{assetscrap.AssetColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   assetscrap.ScrapDetailsTable,
+			Columns: []string{assetscrap.ScrapDetailsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(assetscrapdetails.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.AssetID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -555,27 +570,27 @@ func (u *AssetScrapUpsert) ClearRemark() *AssetScrapUpsert {
 	return u
 }
 
-// SetScrapReasonType sets the "scrap_reason_type" field.
-func (u *AssetScrapUpsert) SetScrapReasonType(v uint8) *AssetScrapUpsert {
-	u.Set(assetscrap.FieldScrapReasonType, v)
+// SetReasonType sets the "reason_type" field.
+func (u *AssetScrapUpsert) SetReasonType(v uint8) *AssetScrapUpsert {
+	u.Set(assetscrap.FieldReasonType, v)
 	return u
 }
 
-// UpdateScrapReasonType sets the "scrap_reason_type" field to the value that was provided on create.
-func (u *AssetScrapUpsert) UpdateScrapReasonType() *AssetScrapUpsert {
-	u.SetExcluded(assetscrap.FieldScrapReasonType)
+// UpdateReasonType sets the "reason_type" field to the value that was provided on create.
+func (u *AssetScrapUpsert) UpdateReasonType() *AssetScrapUpsert {
+	u.SetExcluded(assetscrap.FieldReasonType)
 	return u
 }
 
-// AddScrapReasonType adds v to the "scrap_reason_type" field.
-func (u *AssetScrapUpsert) AddScrapReasonType(v uint8) *AssetScrapUpsert {
-	u.Add(assetscrap.FieldScrapReasonType, v)
+// AddReasonType adds v to the "reason_type" field.
+func (u *AssetScrapUpsert) AddReasonType(v uint8) *AssetScrapUpsert {
+	u.Add(assetscrap.FieldReasonType, v)
 	return u
 }
 
-// ClearScrapReasonType clears the value of the "scrap_reason_type" field.
-func (u *AssetScrapUpsert) ClearScrapReasonType() *AssetScrapUpsert {
-	u.SetNull(assetscrap.FieldScrapReasonType)
+// ClearReasonType clears the value of the "reason_type" field.
+func (u *AssetScrapUpsert) ClearReasonType() *AssetScrapUpsert {
+	u.SetNull(assetscrap.FieldReasonType)
 	return u
 }
 
@@ -597,75 +612,87 @@ func (u *AssetScrapUpsert) ClearScrapAt() *AssetScrapUpsert {
 	return u
 }
 
-// SetScrapOperateID sets the "scrap_operate_id" field.
-func (u *AssetScrapUpsert) SetScrapOperateID(v uint64) *AssetScrapUpsert {
-	u.Set(assetscrap.FieldScrapOperateID, v)
+// SetOperateID sets the "operate_id" field.
+func (u *AssetScrapUpsert) SetOperateID(v uint64) *AssetScrapUpsert {
+	u.Set(assetscrap.FieldOperateID, v)
 	return u
 }
 
-// UpdateScrapOperateID sets the "scrap_operate_id" field to the value that was provided on create.
-func (u *AssetScrapUpsert) UpdateScrapOperateID() *AssetScrapUpsert {
-	u.SetExcluded(assetscrap.FieldScrapOperateID)
+// UpdateOperateID sets the "operate_id" field to the value that was provided on create.
+func (u *AssetScrapUpsert) UpdateOperateID() *AssetScrapUpsert {
+	u.SetExcluded(assetscrap.FieldOperateID)
 	return u
 }
 
-// ClearScrapOperateID clears the value of the "scrap_operate_id" field.
-func (u *AssetScrapUpsert) ClearScrapOperateID() *AssetScrapUpsert {
-	u.SetNull(assetscrap.FieldScrapOperateID)
+// ClearOperateID clears the value of the "operate_id" field.
+func (u *AssetScrapUpsert) ClearOperateID() *AssetScrapUpsert {
+	u.SetNull(assetscrap.FieldOperateID)
 	return u
 }
 
-// SetScrapOperateRoleType sets the "scrap_operate_role_type" field.
-func (u *AssetScrapUpsert) SetScrapOperateRoleType(v uint8) *AssetScrapUpsert {
-	u.Set(assetscrap.FieldScrapOperateRoleType, v)
+// SetOperateRoleType sets the "operate_role_type" field.
+func (u *AssetScrapUpsert) SetOperateRoleType(v uint8) *AssetScrapUpsert {
+	u.Set(assetscrap.FieldOperateRoleType, v)
 	return u
 }
 
-// UpdateScrapOperateRoleType sets the "scrap_operate_role_type" field to the value that was provided on create.
-func (u *AssetScrapUpsert) UpdateScrapOperateRoleType() *AssetScrapUpsert {
-	u.SetExcluded(assetscrap.FieldScrapOperateRoleType)
+// UpdateOperateRoleType sets the "operate_role_type" field to the value that was provided on create.
+func (u *AssetScrapUpsert) UpdateOperateRoleType() *AssetScrapUpsert {
+	u.SetExcluded(assetscrap.FieldOperateRoleType)
 	return u
 }
 
-// AddScrapOperateRoleType adds v to the "scrap_operate_role_type" field.
-func (u *AssetScrapUpsert) AddScrapOperateRoleType(v uint8) *AssetScrapUpsert {
-	u.Add(assetscrap.FieldScrapOperateRoleType, v)
+// AddOperateRoleType adds v to the "operate_role_type" field.
+func (u *AssetScrapUpsert) AddOperateRoleType(v uint8) *AssetScrapUpsert {
+	u.Add(assetscrap.FieldOperateRoleType, v)
 	return u
 }
 
-// ClearScrapOperateRoleType clears the value of the "scrap_operate_role_type" field.
-func (u *AssetScrapUpsert) ClearScrapOperateRoleType() *AssetScrapUpsert {
-	u.SetNull(assetscrap.FieldScrapOperateRoleType)
+// ClearOperateRoleType clears the value of the "operate_role_type" field.
+func (u *AssetScrapUpsert) ClearOperateRoleType() *AssetScrapUpsert {
+	u.SetNull(assetscrap.FieldOperateRoleType)
 	return u
 }
 
-// SetScrapBatch sets the "scrap_batch" field.
-func (u *AssetScrapUpsert) SetScrapBatch(v string) *AssetScrapUpsert {
-	u.Set(assetscrap.FieldScrapBatch, v)
+// SetSn sets the "sn" field.
+func (u *AssetScrapUpsert) SetSn(v string) *AssetScrapUpsert {
+	u.Set(assetscrap.FieldSn, v)
 	return u
 }
 
-// UpdateScrapBatch sets the "scrap_batch" field to the value that was provided on create.
-func (u *AssetScrapUpsert) UpdateScrapBatch() *AssetScrapUpsert {
-	u.SetExcluded(assetscrap.FieldScrapBatch)
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetScrapUpsert) UpdateSn() *AssetScrapUpsert {
+	u.SetExcluded(assetscrap.FieldSn)
 	return u
 }
 
-// ClearScrapBatch clears the value of the "scrap_batch" field.
-func (u *AssetScrapUpsert) ClearScrapBatch() *AssetScrapUpsert {
-	u.SetNull(assetscrap.FieldScrapBatch)
+// ClearSn clears the value of the "sn" field.
+func (u *AssetScrapUpsert) ClearSn() *AssetScrapUpsert {
+	u.SetNull(assetscrap.FieldSn)
 	return u
 }
 
-// SetAssetID sets the "asset_id" field.
-func (u *AssetScrapUpsert) SetAssetID(v uint64) *AssetScrapUpsert {
-	u.Set(assetscrap.FieldAssetID, v)
+// SetNum sets the "num" field.
+func (u *AssetScrapUpsert) SetNum(v uint) *AssetScrapUpsert {
+	u.Set(assetscrap.FieldNum, v)
 	return u
 }
 
-// UpdateAssetID sets the "asset_id" field to the value that was provided on create.
-func (u *AssetScrapUpsert) UpdateAssetID() *AssetScrapUpsert {
-	u.SetExcluded(assetscrap.FieldAssetID)
+// UpdateNum sets the "num" field to the value that was provided on create.
+func (u *AssetScrapUpsert) UpdateNum() *AssetScrapUpsert {
+	u.SetExcluded(assetscrap.FieldNum)
+	return u
+}
+
+// AddNum adds v to the "num" field.
+func (u *AssetScrapUpsert) AddNum(v uint) *AssetScrapUpsert {
+	u.Add(assetscrap.FieldNum, v)
+	return u
+}
+
+// ClearNum clears the value of the "num" field.
+func (u *AssetScrapUpsert) ClearNum() *AssetScrapUpsert {
+	u.SetNull(assetscrap.FieldNum)
 	return u
 }
 
@@ -773,31 +800,31 @@ func (u *AssetScrapUpsertOne) ClearRemark() *AssetScrapUpsertOne {
 	})
 }
 
-// SetScrapReasonType sets the "scrap_reason_type" field.
-func (u *AssetScrapUpsertOne) SetScrapReasonType(v uint8) *AssetScrapUpsertOne {
+// SetReasonType sets the "reason_type" field.
+func (u *AssetScrapUpsertOne) SetReasonType(v uint8) *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.SetScrapReasonType(v)
+		s.SetReasonType(v)
 	})
 }
 
-// AddScrapReasonType adds v to the "scrap_reason_type" field.
-func (u *AssetScrapUpsertOne) AddScrapReasonType(v uint8) *AssetScrapUpsertOne {
+// AddReasonType adds v to the "reason_type" field.
+func (u *AssetScrapUpsertOne) AddReasonType(v uint8) *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.AddScrapReasonType(v)
+		s.AddReasonType(v)
 	})
 }
 
-// UpdateScrapReasonType sets the "scrap_reason_type" field to the value that was provided on create.
-func (u *AssetScrapUpsertOne) UpdateScrapReasonType() *AssetScrapUpsertOne {
+// UpdateReasonType sets the "reason_type" field to the value that was provided on create.
+func (u *AssetScrapUpsertOne) UpdateReasonType() *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.UpdateScrapReasonType()
+		s.UpdateReasonType()
 	})
 }
 
-// ClearScrapReasonType clears the value of the "scrap_reason_type" field.
-func (u *AssetScrapUpsertOne) ClearScrapReasonType() *AssetScrapUpsertOne {
+// ClearReasonType clears the value of the "reason_type" field.
+func (u *AssetScrapUpsertOne) ClearReasonType() *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.ClearScrapReasonType()
+		s.ClearReasonType()
 	})
 }
 
@@ -822,87 +849,101 @@ func (u *AssetScrapUpsertOne) ClearScrapAt() *AssetScrapUpsertOne {
 	})
 }
 
-// SetScrapOperateID sets the "scrap_operate_id" field.
-func (u *AssetScrapUpsertOne) SetScrapOperateID(v uint64) *AssetScrapUpsertOne {
+// SetOperateID sets the "operate_id" field.
+func (u *AssetScrapUpsertOne) SetOperateID(v uint64) *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.SetScrapOperateID(v)
+		s.SetOperateID(v)
 	})
 }
 
-// UpdateScrapOperateID sets the "scrap_operate_id" field to the value that was provided on create.
-func (u *AssetScrapUpsertOne) UpdateScrapOperateID() *AssetScrapUpsertOne {
+// UpdateOperateID sets the "operate_id" field to the value that was provided on create.
+func (u *AssetScrapUpsertOne) UpdateOperateID() *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.UpdateScrapOperateID()
+		s.UpdateOperateID()
 	})
 }
 
-// ClearScrapOperateID clears the value of the "scrap_operate_id" field.
-func (u *AssetScrapUpsertOne) ClearScrapOperateID() *AssetScrapUpsertOne {
+// ClearOperateID clears the value of the "operate_id" field.
+func (u *AssetScrapUpsertOne) ClearOperateID() *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.ClearScrapOperateID()
+		s.ClearOperateID()
 	})
 }
 
-// SetScrapOperateRoleType sets the "scrap_operate_role_type" field.
-func (u *AssetScrapUpsertOne) SetScrapOperateRoleType(v uint8) *AssetScrapUpsertOne {
+// SetOperateRoleType sets the "operate_role_type" field.
+func (u *AssetScrapUpsertOne) SetOperateRoleType(v uint8) *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.SetScrapOperateRoleType(v)
+		s.SetOperateRoleType(v)
 	})
 }
 
-// AddScrapOperateRoleType adds v to the "scrap_operate_role_type" field.
-func (u *AssetScrapUpsertOne) AddScrapOperateRoleType(v uint8) *AssetScrapUpsertOne {
+// AddOperateRoleType adds v to the "operate_role_type" field.
+func (u *AssetScrapUpsertOne) AddOperateRoleType(v uint8) *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.AddScrapOperateRoleType(v)
+		s.AddOperateRoleType(v)
 	})
 }
 
-// UpdateScrapOperateRoleType sets the "scrap_operate_role_type" field to the value that was provided on create.
-func (u *AssetScrapUpsertOne) UpdateScrapOperateRoleType() *AssetScrapUpsertOne {
+// UpdateOperateRoleType sets the "operate_role_type" field to the value that was provided on create.
+func (u *AssetScrapUpsertOne) UpdateOperateRoleType() *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.UpdateScrapOperateRoleType()
+		s.UpdateOperateRoleType()
 	})
 }
 
-// ClearScrapOperateRoleType clears the value of the "scrap_operate_role_type" field.
-func (u *AssetScrapUpsertOne) ClearScrapOperateRoleType() *AssetScrapUpsertOne {
+// ClearOperateRoleType clears the value of the "operate_role_type" field.
+func (u *AssetScrapUpsertOne) ClearOperateRoleType() *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.ClearScrapOperateRoleType()
+		s.ClearOperateRoleType()
 	})
 }
 
-// SetScrapBatch sets the "scrap_batch" field.
-func (u *AssetScrapUpsertOne) SetScrapBatch(v string) *AssetScrapUpsertOne {
+// SetSn sets the "sn" field.
+func (u *AssetScrapUpsertOne) SetSn(v string) *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.SetScrapBatch(v)
+		s.SetSn(v)
 	})
 }
 
-// UpdateScrapBatch sets the "scrap_batch" field to the value that was provided on create.
-func (u *AssetScrapUpsertOne) UpdateScrapBatch() *AssetScrapUpsertOne {
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetScrapUpsertOne) UpdateSn() *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.UpdateScrapBatch()
+		s.UpdateSn()
 	})
 }
 
-// ClearScrapBatch clears the value of the "scrap_batch" field.
-func (u *AssetScrapUpsertOne) ClearScrapBatch() *AssetScrapUpsertOne {
+// ClearSn clears the value of the "sn" field.
+func (u *AssetScrapUpsertOne) ClearSn() *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.ClearScrapBatch()
+		s.ClearSn()
 	})
 }
 
-// SetAssetID sets the "asset_id" field.
-func (u *AssetScrapUpsertOne) SetAssetID(v uint64) *AssetScrapUpsertOne {
+// SetNum sets the "num" field.
+func (u *AssetScrapUpsertOne) SetNum(v uint) *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.SetAssetID(v)
+		s.SetNum(v)
 	})
 }
 
-// UpdateAssetID sets the "asset_id" field to the value that was provided on create.
-func (u *AssetScrapUpsertOne) UpdateAssetID() *AssetScrapUpsertOne {
+// AddNum adds v to the "num" field.
+func (u *AssetScrapUpsertOne) AddNum(v uint) *AssetScrapUpsertOne {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.UpdateAssetID()
+		s.AddNum(v)
+	})
+}
+
+// UpdateNum sets the "num" field to the value that was provided on create.
+func (u *AssetScrapUpsertOne) UpdateNum() *AssetScrapUpsertOne {
+	return u.Update(func(s *AssetScrapUpsert) {
+		s.UpdateNum()
+	})
+}
+
+// ClearNum clears the value of the "num" field.
+func (u *AssetScrapUpsertOne) ClearNum() *AssetScrapUpsertOne {
+	return u.Update(func(s *AssetScrapUpsert) {
+		s.ClearNum()
 	})
 }
 
@@ -1176,31 +1217,31 @@ func (u *AssetScrapUpsertBulk) ClearRemark() *AssetScrapUpsertBulk {
 	})
 }
 
-// SetScrapReasonType sets the "scrap_reason_type" field.
-func (u *AssetScrapUpsertBulk) SetScrapReasonType(v uint8) *AssetScrapUpsertBulk {
+// SetReasonType sets the "reason_type" field.
+func (u *AssetScrapUpsertBulk) SetReasonType(v uint8) *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.SetScrapReasonType(v)
+		s.SetReasonType(v)
 	})
 }
 
-// AddScrapReasonType adds v to the "scrap_reason_type" field.
-func (u *AssetScrapUpsertBulk) AddScrapReasonType(v uint8) *AssetScrapUpsertBulk {
+// AddReasonType adds v to the "reason_type" field.
+func (u *AssetScrapUpsertBulk) AddReasonType(v uint8) *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.AddScrapReasonType(v)
+		s.AddReasonType(v)
 	})
 }
 
-// UpdateScrapReasonType sets the "scrap_reason_type" field to the value that was provided on create.
-func (u *AssetScrapUpsertBulk) UpdateScrapReasonType() *AssetScrapUpsertBulk {
+// UpdateReasonType sets the "reason_type" field to the value that was provided on create.
+func (u *AssetScrapUpsertBulk) UpdateReasonType() *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.UpdateScrapReasonType()
+		s.UpdateReasonType()
 	})
 }
 
-// ClearScrapReasonType clears the value of the "scrap_reason_type" field.
-func (u *AssetScrapUpsertBulk) ClearScrapReasonType() *AssetScrapUpsertBulk {
+// ClearReasonType clears the value of the "reason_type" field.
+func (u *AssetScrapUpsertBulk) ClearReasonType() *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.ClearScrapReasonType()
+		s.ClearReasonType()
 	})
 }
 
@@ -1225,87 +1266,101 @@ func (u *AssetScrapUpsertBulk) ClearScrapAt() *AssetScrapUpsertBulk {
 	})
 }
 
-// SetScrapOperateID sets the "scrap_operate_id" field.
-func (u *AssetScrapUpsertBulk) SetScrapOperateID(v uint64) *AssetScrapUpsertBulk {
+// SetOperateID sets the "operate_id" field.
+func (u *AssetScrapUpsertBulk) SetOperateID(v uint64) *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.SetScrapOperateID(v)
+		s.SetOperateID(v)
 	})
 }
 
-// UpdateScrapOperateID sets the "scrap_operate_id" field to the value that was provided on create.
-func (u *AssetScrapUpsertBulk) UpdateScrapOperateID() *AssetScrapUpsertBulk {
+// UpdateOperateID sets the "operate_id" field to the value that was provided on create.
+func (u *AssetScrapUpsertBulk) UpdateOperateID() *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.UpdateScrapOperateID()
+		s.UpdateOperateID()
 	})
 }
 
-// ClearScrapOperateID clears the value of the "scrap_operate_id" field.
-func (u *AssetScrapUpsertBulk) ClearScrapOperateID() *AssetScrapUpsertBulk {
+// ClearOperateID clears the value of the "operate_id" field.
+func (u *AssetScrapUpsertBulk) ClearOperateID() *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.ClearScrapOperateID()
+		s.ClearOperateID()
 	})
 }
 
-// SetScrapOperateRoleType sets the "scrap_operate_role_type" field.
-func (u *AssetScrapUpsertBulk) SetScrapOperateRoleType(v uint8) *AssetScrapUpsertBulk {
+// SetOperateRoleType sets the "operate_role_type" field.
+func (u *AssetScrapUpsertBulk) SetOperateRoleType(v uint8) *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.SetScrapOperateRoleType(v)
+		s.SetOperateRoleType(v)
 	})
 }
 
-// AddScrapOperateRoleType adds v to the "scrap_operate_role_type" field.
-func (u *AssetScrapUpsertBulk) AddScrapOperateRoleType(v uint8) *AssetScrapUpsertBulk {
+// AddOperateRoleType adds v to the "operate_role_type" field.
+func (u *AssetScrapUpsertBulk) AddOperateRoleType(v uint8) *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.AddScrapOperateRoleType(v)
+		s.AddOperateRoleType(v)
 	})
 }
 
-// UpdateScrapOperateRoleType sets the "scrap_operate_role_type" field to the value that was provided on create.
-func (u *AssetScrapUpsertBulk) UpdateScrapOperateRoleType() *AssetScrapUpsertBulk {
+// UpdateOperateRoleType sets the "operate_role_type" field to the value that was provided on create.
+func (u *AssetScrapUpsertBulk) UpdateOperateRoleType() *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.UpdateScrapOperateRoleType()
+		s.UpdateOperateRoleType()
 	})
 }
 
-// ClearScrapOperateRoleType clears the value of the "scrap_operate_role_type" field.
-func (u *AssetScrapUpsertBulk) ClearScrapOperateRoleType() *AssetScrapUpsertBulk {
+// ClearOperateRoleType clears the value of the "operate_role_type" field.
+func (u *AssetScrapUpsertBulk) ClearOperateRoleType() *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.ClearScrapOperateRoleType()
+		s.ClearOperateRoleType()
 	})
 }
 
-// SetScrapBatch sets the "scrap_batch" field.
-func (u *AssetScrapUpsertBulk) SetScrapBatch(v string) *AssetScrapUpsertBulk {
+// SetSn sets the "sn" field.
+func (u *AssetScrapUpsertBulk) SetSn(v string) *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.SetScrapBatch(v)
+		s.SetSn(v)
 	})
 }
 
-// UpdateScrapBatch sets the "scrap_batch" field to the value that was provided on create.
-func (u *AssetScrapUpsertBulk) UpdateScrapBatch() *AssetScrapUpsertBulk {
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetScrapUpsertBulk) UpdateSn() *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.UpdateScrapBatch()
+		s.UpdateSn()
 	})
 }
 
-// ClearScrapBatch clears the value of the "scrap_batch" field.
-func (u *AssetScrapUpsertBulk) ClearScrapBatch() *AssetScrapUpsertBulk {
+// ClearSn clears the value of the "sn" field.
+func (u *AssetScrapUpsertBulk) ClearSn() *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.ClearScrapBatch()
+		s.ClearSn()
 	})
 }
 
-// SetAssetID sets the "asset_id" field.
-func (u *AssetScrapUpsertBulk) SetAssetID(v uint64) *AssetScrapUpsertBulk {
+// SetNum sets the "num" field.
+func (u *AssetScrapUpsertBulk) SetNum(v uint) *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.SetAssetID(v)
+		s.SetNum(v)
 	})
 }
 
-// UpdateAssetID sets the "asset_id" field to the value that was provided on create.
-func (u *AssetScrapUpsertBulk) UpdateAssetID() *AssetScrapUpsertBulk {
+// AddNum adds v to the "num" field.
+func (u *AssetScrapUpsertBulk) AddNum(v uint) *AssetScrapUpsertBulk {
 	return u.Update(func(s *AssetScrapUpsert) {
-		s.UpdateAssetID()
+		s.AddNum(v)
+	})
+}
+
+// UpdateNum sets the "num" field to the value that was provided on create.
+func (u *AssetScrapUpsertBulk) UpdateNum() *AssetScrapUpsertBulk {
+	return u.Update(func(s *AssetScrapUpsert) {
+		s.UpdateNum()
+	})
+}
+
+// ClearNum clears the value of the "num" field.
+func (u *AssetScrapUpsertBulk) ClearNum() *AssetScrapUpsertBulk {
+	return u.Update(func(s *AssetScrapUpsert) {
+		s.ClearNum()
 	})
 }
 

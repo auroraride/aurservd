@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
-	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
@@ -35,17 +34,17 @@ type AssetScrap struct {
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
 	// 报废原因 1:丢失 2:损坏 3:其他
-	ScrapReasonType uint8 `json:"scrap_reason_type,omitempty"`
+	ReasonType uint8 `json:"reason_type,omitempty"`
 	// 报废时间
 	ScrapAt time.Time `json:"scrap_at,omitempty"`
 	// 操作报废人员ID
-	ScrapOperateID *uint64 `json:"scrap_operate_id,omitempty"`
+	OperateID *uint64 `json:"operate_id,omitempty"`
 	// 报废人员角色类型 1:后台管理员 2:门店管理员 3:运维 4:物资管理员 5:代理管理员
-	ScrapOperateRoleType *uint8 `json:"scrap_operate_role_type,omitempty"`
-	// 报废批次
-	ScrapBatch string `json:"scrap_batch,omitempty"`
-	// 资产ID
-	AssetID uint64 `json:"asset_id,omitempty"`
+	OperateRoleType *uint8 `json:"operate_role_type,omitempty"`
+	// 报废编号
+	Sn string `json:"sn,omitempty"`
+	// 报废数量
+	Num uint `json:"num,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetScrapQuery when eager-loading is set.
 	Edges        AssetScrapEdges `json:"edges"`
@@ -62,8 +61,8 @@ type AssetScrapEdges struct {
 	Maintainer *Maintainer `json:"maintainer,omitempty"`
 	// Agent holds the value of the agent edge.
 	Agent *Agent `json:"agent,omitempty"`
-	// Asset holds the value of the asset edge.
-	Asset *Asset `json:"asset,omitempty"`
+	// ScrapDetails holds the value of the scrap_details edge.
+	ScrapDetails []*AssetScrapDetails `json:"scrap_details,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [5]bool
@@ -113,15 +112,13 @@ func (e AssetScrapEdges) AgentOrErr() (*Agent, error) {
 	return nil, &NotLoadedError{edge: "agent"}
 }
 
-// AssetOrErr returns the Asset value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e AssetScrapEdges) AssetOrErr() (*Asset, error) {
-	if e.Asset != nil {
-		return e.Asset, nil
-	} else if e.loadedTypes[4] {
-		return nil, &NotFoundError{label: asset.Label}
+// ScrapDetailsOrErr returns the ScrapDetails value or an error if the edge
+// was not loaded in eager-loading.
+func (e AssetScrapEdges) ScrapDetailsOrErr() ([]*AssetScrapDetails, error) {
+	if e.loadedTypes[4] {
+		return e.ScrapDetails, nil
 	}
-	return nil, &NotLoadedError{edge: "asset"}
+	return nil, &NotLoadedError{edge: "scrap_details"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -131,9 +128,9 @@ func (*AssetScrap) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case assetscrap.FieldCreator, assetscrap.FieldLastModifier:
 			values[i] = new([]byte)
-		case assetscrap.FieldID, assetscrap.FieldScrapReasonType, assetscrap.FieldScrapOperateID, assetscrap.FieldScrapOperateRoleType, assetscrap.FieldAssetID:
+		case assetscrap.FieldID, assetscrap.FieldReasonType, assetscrap.FieldOperateID, assetscrap.FieldOperateRoleType, assetscrap.FieldNum:
 			values[i] = new(sql.NullInt64)
-		case assetscrap.FieldRemark, assetscrap.FieldScrapBatch:
+		case assetscrap.FieldRemark, assetscrap.FieldSn:
 			values[i] = new(sql.NullString)
 		case assetscrap.FieldCreatedAt, assetscrap.FieldUpdatedAt, assetscrap.FieldScrapAt:
 			values[i] = new(sql.NullTime)
@@ -192,11 +189,11 @@ func (as *AssetScrap) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				as.Remark = value.String
 			}
-		case assetscrap.FieldScrapReasonType:
+		case assetscrap.FieldReasonType:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field scrap_reason_type", values[i])
+				return fmt.Errorf("unexpected type %T for field reason_type", values[i])
 			} else if value.Valid {
-				as.ScrapReasonType = uint8(value.Int64)
+				as.ReasonType = uint8(value.Int64)
 			}
 		case assetscrap.FieldScrapAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -204,31 +201,31 @@ func (as *AssetScrap) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				as.ScrapAt = value.Time
 			}
-		case assetscrap.FieldScrapOperateID:
+		case assetscrap.FieldOperateID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field scrap_operate_id", values[i])
+				return fmt.Errorf("unexpected type %T for field operate_id", values[i])
 			} else if value.Valid {
-				as.ScrapOperateID = new(uint64)
-				*as.ScrapOperateID = uint64(value.Int64)
+				as.OperateID = new(uint64)
+				*as.OperateID = uint64(value.Int64)
 			}
-		case assetscrap.FieldScrapOperateRoleType:
+		case assetscrap.FieldOperateRoleType:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field scrap_operate_role_type", values[i])
+				return fmt.Errorf("unexpected type %T for field operate_role_type", values[i])
 			} else if value.Valid {
-				as.ScrapOperateRoleType = new(uint8)
-				*as.ScrapOperateRoleType = uint8(value.Int64)
+				as.OperateRoleType = new(uint8)
+				*as.OperateRoleType = uint8(value.Int64)
 			}
-		case assetscrap.FieldScrapBatch:
+		case assetscrap.FieldSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field scrap_batch", values[i])
+				return fmt.Errorf("unexpected type %T for field sn", values[i])
 			} else if value.Valid {
-				as.ScrapBatch = value.String
+				as.Sn = value.String
 			}
-		case assetscrap.FieldAssetID:
+		case assetscrap.FieldNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field asset_id", values[i])
+				return fmt.Errorf("unexpected type %T for field num", values[i])
 			} else if value.Valid {
-				as.AssetID = uint64(value.Int64)
+				as.Num = uint(value.Int64)
 			}
 		default:
 			as.selectValues.Set(columns[i], values[i])
@@ -263,9 +260,9 @@ func (as *AssetScrap) QueryAgent() *AgentQuery {
 	return NewAssetScrapClient(as.config).QueryAgent(as)
 }
 
-// QueryAsset queries the "asset" edge of the AssetScrap entity.
-func (as *AssetScrap) QueryAsset() *AssetQuery {
-	return NewAssetScrapClient(as.config).QueryAsset(as)
+// QueryScrapDetails queries the "scrap_details" edge of the AssetScrap entity.
+func (as *AssetScrap) QueryScrapDetails() *AssetScrapDetailsQuery {
+	return NewAssetScrapClient(as.config).QueryScrapDetails(as)
 }
 
 // Update returns a builder for updating this AssetScrap.
@@ -306,27 +303,27 @@ func (as *AssetScrap) String() string {
 	builder.WriteString("remark=")
 	builder.WriteString(as.Remark)
 	builder.WriteString(", ")
-	builder.WriteString("scrap_reason_type=")
-	builder.WriteString(fmt.Sprintf("%v", as.ScrapReasonType))
+	builder.WriteString("reason_type=")
+	builder.WriteString(fmt.Sprintf("%v", as.ReasonType))
 	builder.WriteString(", ")
 	builder.WriteString("scrap_at=")
 	builder.WriteString(as.ScrapAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := as.ScrapOperateID; v != nil {
-		builder.WriteString("scrap_operate_id=")
+	if v := as.OperateID; v != nil {
+		builder.WriteString("operate_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := as.ScrapOperateRoleType; v != nil {
-		builder.WriteString("scrap_operate_role_type=")
+	if v := as.OperateRoleType; v != nil {
+		builder.WriteString("operate_role_type=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("scrap_batch=")
-	builder.WriteString(as.ScrapBatch)
+	builder.WriteString("sn=")
+	builder.WriteString(as.Sn)
 	builder.WriteString(", ")
-	builder.WriteString("asset_id=")
-	builder.WriteString(fmt.Sprintf("%v", as.AssetID))
+	builder.WriteString("num=")
+	builder.WriteString(fmt.Sprintf("%v", as.Num))
 	builder.WriteByte(')')
 	return builder.String()
 }

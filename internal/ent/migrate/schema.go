@@ -515,12 +515,12 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
-		{Name: "scrap_reason_type", Type: field.TypeUint8, Nullable: true, Comment: "报废原因 1:丢失 2:损坏 3:其他"},
+		{Name: "reason_type", Type: field.TypeUint8, Nullable: true, Comment: "报废原因 1:丢失 2:损坏 3:其他"},
 		{Name: "scrap_at", Type: field.TypeTime, Nullable: true, Comment: "报废时间"},
-		{Name: "scrap_operate_role_type", Type: field.TypeUint8, Nullable: true, Comment: "报废人员角色类型 1:后台管理员 2:门店管理员 3:运维 4:物资管理员 5:代理管理员"},
-		{Name: "scrap_batch", Type: field.TypeString, Nullable: true, Comment: "报废批次"},
-		{Name: "asset_id", Type: field.TypeUint64, Comment: "资产ID"},
-		{Name: "scrap_operate_id", Type: field.TypeUint64, Nullable: true, Comment: "操作报废人员ID"},
+		{Name: "operate_role_type", Type: field.TypeUint8, Nullable: true, Comment: "报废人员角色类型 1:后台管理员 2:门店管理员 3:运维 4:物资管理员 5:代理管理员"},
+		{Name: "sn", Type: field.TypeString, Nullable: true, Comment: "报废编号"},
+		{Name: "num", Type: field.TypeUint, Nullable: true, Comment: "报废数量"},
+		{Name: "operate_id", Type: field.TypeUint64, Nullable: true, Comment: "操作报废人员ID"},
 	}
 	// AssetScrapTable holds the schema information for the "asset_scrap" table.
 	AssetScrapTable = &schema.Table{
@@ -528,12 +528,6 @@ var (
 		Columns:    AssetScrapColumns,
 		PrimaryKey: []*schema.Column{AssetScrapColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "asset_scrap_asset_scrap",
-				Columns:    []*schema.Column{AssetScrapColumns[10]},
-				RefColumns: []*schema.Column{AssetColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
 			{
 				Symbol:     "asset_scrap_manager_manager",
 				Columns:    []*schema.Column{AssetScrapColumns[11]},
@@ -564,6 +558,53 @@ var (
 				Name:    "assetscrap_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{AssetScrapColumns[1]},
+			},
+		},
+	}
+	// AssetScrapDetailsColumns holds the columns for the "asset_scrap_details" table.
+	AssetScrapDetailsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "asset_id", Type: field.TypeUint64, Comment: "资产ID"},
+		{Name: "scrap_id", Type: field.TypeUint64, Nullable: true, Comment: "报废ID"},
+		{Name: "material_id", Type: field.TypeUint64, Nullable: true, Comment: "物资ID"},
+	}
+	// AssetScrapDetailsTable holds the schema information for the "asset_scrap_details" table.
+	AssetScrapDetailsTable = &schema.Table{
+		Name:       "asset_scrap_details",
+		Columns:    AssetScrapDetailsColumns,
+		PrimaryKey: []*schema.Column{AssetScrapDetailsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "asset_scrap_details_asset_scrap_details",
+				Columns:    []*schema.Column{AssetScrapDetailsColumns[3]},
+				RefColumns: []*schema.Column{AssetColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "asset_scrap_details_asset_scrap_scrap_details",
+				Columns:    []*schema.Column{AssetScrapDetailsColumns[4]},
+				RefColumns: []*schema.Column{AssetScrapColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_scrap_details_material_material",
+				Columns:    []*schema.Column{AssetScrapDetailsColumns[5]},
+				RefColumns: []*schema.Column{MaterialColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "assetscrapdetails_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AssetScrapDetailsColumns[1]},
+			},
+			{
+				Name:    "assetscrapdetails_material_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetScrapDetailsColumns[5]},
 			},
 		},
 	}
@@ -6780,6 +6821,7 @@ var (
 		AssetAttributesTable,
 		AssetHistoryTable,
 		AssetScrapTable,
+		AssetScrapDetailsTable,
 		AssetTransferTable,
 		AssetTransferDetailsTable,
 		AssistanceTable,
@@ -6922,13 +6964,18 @@ func init() {
 	AssetHistoryTable.Annotation = &entsql.Annotation{
 		Table: "asset_history",
 	}
-	AssetScrapTable.ForeignKeys[0].RefTable = AssetTable
-	AssetScrapTable.ForeignKeys[1].RefTable = ManagerTable
-	AssetScrapTable.ForeignKeys[2].RefTable = EmployeeTable
-	AssetScrapTable.ForeignKeys[3].RefTable = MaintainerTable
-	AssetScrapTable.ForeignKeys[4].RefTable = AgentTable
+	AssetScrapTable.ForeignKeys[0].RefTable = ManagerTable
+	AssetScrapTable.ForeignKeys[1].RefTable = EmployeeTable
+	AssetScrapTable.ForeignKeys[2].RefTable = MaintainerTable
+	AssetScrapTable.ForeignKeys[3].RefTable = AgentTable
 	AssetScrapTable.Annotation = &entsql.Annotation{
 		Table: "asset_scrap",
+	}
+	AssetScrapDetailsTable.ForeignKeys[0].RefTable = AssetTable
+	AssetScrapDetailsTable.ForeignKeys[1].RefTable = AssetScrapTable
+	AssetScrapDetailsTable.ForeignKeys[2].RefTable = MaterialTable
+	AssetScrapDetailsTable.Annotation = &entsql.Annotation{
+		Table: "asset_scrap_details",
 	}
 	AssetTransferTable.Annotation = &entsql.Annotation{
 		Table: "asset_transfer",

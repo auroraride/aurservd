@@ -18,6 +18,7 @@ func loadAssersRoutes() {
 	asset.GET("/:id", assetapi.Assets.Detail)    // 资产详情
 	asset.PUT("/:id", assetapi.Assets.Update)    // 更新资产
 	asset.DELETE("/:id", assetapi.Assets.Delete) // 删除资产
+	asset.GET("/count", assetapi.Assets.Count)   // 资产数量
 
 	// 资产属性
 	asset.GET("/attributes", assetapi.AssetAttributes.List) // 资产属性列表
@@ -26,7 +27,6 @@ func loadAssersRoutes() {
 	asset.POST("/scrap", assetapi.AssetScrap.Scrap)                           // 报废资产
 	asset.POST("/scrap/batch/restore", assetapi.AssetScrap.ScrapBatchRestore) // 批量还原报废
 	asset.GET("/scrap", assetapi.AssetScrap.ScrapList)                        // 报废列表
-	asset.GET("/scrap/other", assetapi.AssetScrap.ScrapListOther)             // 其它资产报废列表
 	asset.GET("/scrap/reason", assetapi.AssetScrap.ScrapReasonSelect)         // 报废理由列表
 	// 导入导出
 	asset.POST("/batch", assetapi.Assets.BatchCreate) // 导入资产

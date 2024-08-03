@@ -70,9 +70,9 @@ func Remark(v string) predicate.AssetScrap {
 	return predicate.AssetScrap(sql.FieldEQ(FieldRemark, v))
 }
 
-// ScrapReasonType applies equality check predicate on the "scrap_reason_type" field. It's identical to ScrapReasonTypeEQ.
-func ScrapReasonType(v uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldEQ(FieldScrapReasonType, v))
+// ReasonType applies equality check predicate on the "reason_type" field. It's identical to ReasonTypeEQ.
+func ReasonType(v uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldEQ(FieldReasonType, v))
 }
 
 // ScrapAt applies equality check predicate on the "scrap_at" field. It's identical to ScrapAtEQ.
@@ -80,24 +80,24 @@ func ScrapAt(v time.Time) predicate.AssetScrap {
 	return predicate.AssetScrap(sql.FieldEQ(FieldScrapAt, v))
 }
 
-// ScrapOperateID applies equality check predicate on the "scrap_operate_id" field. It's identical to ScrapOperateIDEQ.
-func ScrapOperateID(v uint64) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldEQ(FieldScrapOperateID, v))
+// OperateID applies equality check predicate on the "operate_id" field. It's identical to OperateIDEQ.
+func OperateID(v uint64) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldEQ(FieldOperateID, v))
 }
 
-// ScrapOperateRoleType applies equality check predicate on the "scrap_operate_role_type" field. It's identical to ScrapOperateRoleTypeEQ.
-func ScrapOperateRoleType(v uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldEQ(FieldScrapOperateRoleType, v))
+// OperateRoleType applies equality check predicate on the "operate_role_type" field. It's identical to OperateRoleTypeEQ.
+func OperateRoleType(v uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldEQ(FieldOperateRoleType, v))
 }
 
-// ScrapBatch applies equality check predicate on the "scrap_batch" field. It's identical to ScrapBatchEQ.
-func ScrapBatch(v string) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldEQ(FieldScrapBatch, v))
+// Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
+func Sn(v string) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldEQ(FieldSn, v))
 }
 
-// AssetID applies equality check predicate on the "asset_id" field. It's identical to AssetIDEQ.
-func AssetID(v uint64) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldEQ(FieldAssetID, v))
+// Num applies equality check predicate on the "num" field. It's identical to NumEQ.
+func Num(v uint) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldEQ(FieldNum, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -275,54 +275,54 @@ func RemarkContainsFold(v string) predicate.AssetScrap {
 	return predicate.AssetScrap(sql.FieldContainsFold(FieldRemark, v))
 }
 
-// ScrapReasonTypeEQ applies the EQ predicate on the "scrap_reason_type" field.
-func ScrapReasonTypeEQ(v uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldEQ(FieldScrapReasonType, v))
+// ReasonTypeEQ applies the EQ predicate on the "reason_type" field.
+func ReasonTypeEQ(v uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldEQ(FieldReasonType, v))
 }
 
-// ScrapReasonTypeNEQ applies the NEQ predicate on the "scrap_reason_type" field.
-func ScrapReasonTypeNEQ(v uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldNEQ(FieldScrapReasonType, v))
+// ReasonTypeNEQ applies the NEQ predicate on the "reason_type" field.
+func ReasonTypeNEQ(v uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNEQ(FieldReasonType, v))
 }
 
-// ScrapReasonTypeIn applies the In predicate on the "scrap_reason_type" field.
-func ScrapReasonTypeIn(vs ...uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldIn(FieldScrapReasonType, vs...))
+// ReasonTypeIn applies the In predicate on the "reason_type" field.
+func ReasonTypeIn(vs ...uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldIn(FieldReasonType, vs...))
 }
 
-// ScrapReasonTypeNotIn applies the NotIn predicate on the "scrap_reason_type" field.
-func ScrapReasonTypeNotIn(vs ...uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldNotIn(FieldScrapReasonType, vs...))
+// ReasonTypeNotIn applies the NotIn predicate on the "reason_type" field.
+func ReasonTypeNotIn(vs ...uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNotIn(FieldReasonType, vs...))
 }
 
-// ScrapReasonTypeGT applies the GT predicate on the "scrap_reason_type" field.
-func ScrapReasonTypeGT(v uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldGT(FieldScrapReasonType, v))
+// ReasonTypeGT applies the GT predicate on the "reason_type" field.
+func ReasonTypeGT(v uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldGT(FieldReasonType, v))
 }
 
-// ScrapReasonTypeGTE applies the GTE predicate on the "scrap_reason_type" field.
-func ScrapReasonTypeGTE(v uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldGTE(FieldScrapReasonType, v))
+// ReasonTypeGTE applies the GTE predicate on the "reason_type" field.
+func ReasonTypeGTE(v uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldGTE(FieldReasonType, v))
 }
 
-// ScrapReasonTypeLT applies the LT predicate on the "scrap_reason_type" field.
-func ScrapReasonTypeLT(v uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldLT(FieldScrapReasonType, v))
+// ReasonTypeLT applies the LT predicate on the "reason_type" field.
+func ReasonTypeLT(v uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldLT(FieldReasonType, v))
 }
 
-// ScrapReasonTypeLTE applies the LTE predicate on the "scrap_reason_type" field.
-func ScrapReasonTypeLTE(v uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldLTE(FieldScrapReasonType, v))
+// ReasonTypeLTE applies the LTE predicate on the "reason_type" field.
+func ReasonTypeLTE(v uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldLTE(FieldReasonType, v))
 }
 
-// ScrapReasonTypeIsNil applies the IsNil predicate on the "scrap_reason_type" field.
-func ScrapReasonTypeIsNil() predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldIsNull(FieldScrapReasonType))
+// ReasonTypeIsNil applies the IsNil predicate on the "reason_type" field.
+func ReasonTypeIsNil() predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldIsNull(FieldReasonType))
 }
 
-// ScrapReasonTypeNotNil applies the NotNil predicate on the "scrap_reason_type" field.
-func ScrapReasonTypeNotNil() predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldNotNull(FieldScrapReasonType))
+// ReasonTypeNotNil applies the NotNil predicate on the "reason_type" field.
+func ReasonTypeNotNil() predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNotNull(FieldReasonType))
 }
 
 // ScrapAtEQ applies the EQ predicate on the "scrap_at" field.
@@ -375,179 +375,209 @@ func ScrapAtNotNil() predicate.AssetScrap {
 	return predicate.AssetScrap(sql.FieldNotNull(FieldScrapAt))
 }
 
-// ScrapOperateIDEQ applies the EQ predicate on the "scrap_operate_id" field.
-func ScrapOperateIDEQ(v uint64) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldEQ(FieldScrapOperateID, v))
+// OperateIDEQ applies the EQ predicate on the "operate_id" field.
+func OperateIDEQ(v uint64) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldEQ(FieldOperateID, v))
 }
 
-// ScrapOperateIDNEQ applies the NEQ predicate on the "scrap_operate_id" field.
-func ScrapOperateIDNEQ(v uint64) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldNEQ(FieldScrapOperateID, v))
+// OperateIDNEQ applies the NEQ predicate on the "operate_id" field.
+func OperateIDNEQ(v uint64) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNEQ(FieldOperateID, v))
 }
 
-// ScrapOperateIDIn applies the In predicate on the "scrap_operate_id" field.
-func ScrapOperateIDIn(vs ...uint64) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldIn(FieldScrapOperateID, vs...))
+// OperateIDIn applies the In predicate on the "operate_id" field.
+func OperateIDIn(vs ...uint64) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldIn(FieldOperateID, vs...))
 }
 
-// ScrapOperateIDNotIn applies the NotIn predicate on the "scrap_operate_id" field.
-func ScrapOperateIDNotIn(vs ...uint64) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldNotIn(FieldScrapOperateID, vs...))
+// OperateIDNotIn applies the NotIn predicate on the "operate_id" field.
+func OperateIDNotIn(vs ...uint64) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNotIn(FieldOperateID, vs...))
 }
 
-// ScrapOperateIDIsNil applies the IsNil predicate on the "scrap_operate_id" field.
-func ScrapOperateIDIsNil() predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldIsNull(FieldScrapOperateID))
+// OperateIDIsNil applies the IsNil predicate on the "operate_id" field.
+func OperateIDIsNil() predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldIsNull(FieldOperateID))
 }
 
-// ScrapOperateIDNotNil applies the NotNil predicate on the "scrap_operate_id" field.
-func ScrapOperateIDNotNil() predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldNotNull(FieldScrapOperateID))
+// OperateIDNotNil applies the NotNil predicate on the "operate_id" field.
+func OperateIDNotNil() predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNotNull(FieldOperateID))
 }
 
-// ScrapOperateRoleTypeEQ applies the EQ predicate on the "scrap_operate_role_type" field.
-func ScrapOperateRoleTypeEQ(v uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldEQ(FieldScrapOperateRoleType, v))
+// OperateRoleTypeEQ applies the EQ predicate on the "operate_role_type" field.
+func OperateRoleTypeEQ(v uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldEQ(FieldOperateRoleType, v))
 }
 
-// ScrapOperateRoleTypeNEQ applies the NEQ predicate on the "scrap_operate_role_type" field.
-func ScrapOperateRoleTypeNEQ(v uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldNEQ(FieldScrapOperateRoleType, v))
+// OperateRoleTypeNEQ applies the NEQ predicate on the "operate_role_type" field.
+func OperateRoleTypeNEQ(v uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNEQ(FieldOperateRoleType, v))
 }
 
-// ScrapOperateRoleTypeIn applies the In predicate on the "scrap_operate_role_type" field.
-func ScrapOperateRoleTypeIn(vs ...uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldIn(FieldScrapOperateRoleType, vs...))
+// OperateRoleTypeIn applies the In predicate on the "operate_role_type" field.
+func OperateRoleTypeIn(vs ...uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldIn(FieldOperateRoleType, vs...))
 }
 
-// ScrapOperateRoleTypeNotIn applies the NotIn predicate on the "scrap_operate_role_type" field.
-func ScrapOperateRoleTypeNotIn(vs ...uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldNotIn(FieldScrapOperateRoleType, vs...))
+// OperateRoleTypeNotIn applies the NotIn predicate on the "operate_role_type" field.
+func OperateRoleTypeNotIn(vs ...uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNotIn(FieldOperateRoleType, vs...))
 }
 
-// ScrapOperateRoleTypeGT applies the GT predicate on the "scrap_operate_role_type" field.
-func ScrapOperateRoleTypeGT(v uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldGT(FieldScrapOperateRoleType, v))
+// OperateRoleTypeGT applies the GT predicate on the "operate_role_type" field.
+func OperateRoleTypeGT(v uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldGT(FieldOperateRoleType, v))
 }
 
-// ScrapOperateRoleTypeGTE applies the GTE predicate on the "scrap_operate_role_type" field.
-func ScrapOperateRoleTypeGTE(v uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldGTE(FieldScrapOperateRoleType, v))
+// OperateRoleTypeGTE applies the GTE predicate on the "operate_role_type" field.
+func OperateRoleTypeGTE(v uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldGTE(FieldOperateRoleType, v))
 }
 
-// ScrapOperateRoleTypeLT applies the LT predicate on the "scrap_operate_role_type" field.
-func ScrapOperateRoleTypeLT(v uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldLT(FieldScrapOperateRoleType, v))
+// OperateRoleTypeLT applies the LT predicate on the "operate_role_type" field.
+func OperateRoleTypeLT(v uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldLT(FieldOperateRoleType, v))
 }
 
-// ScrapOperateRoleTypeLTE applies the LTE predicate on the "scrap_operate_role_type" field.
-func ScrapOperateRoleTypeLTE(v uint8) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldLTE(FieldScrapOperateRoleType, v))
+// OperateRoleTypeLTE applies the LTE predicate on the "operate_role_type" field.
+func OperateRoleTypeLTE(v uint8) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldLTE(FieldOperateRoleType, v))
 }
 
-// ScrapOperateRoleTypeIsNil applies the IsNil predicate on the "scrap_operate_role_type" field.
-func ScrapOperateRoleTypeIsNil() predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldIsNull(FieldScrapOperateRoleType))
+// OperateRoleTypeIsNil applies the IsNil predicate on the "operate_role_type" field.
+func OperateRoleTypeIsNil() predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldIsNull(FieldOperateRoleType))
 }
 
-// ScrapOperateRoleTypeNotNil applies the NotNil predicate on the "scrap_operate_role_type" field.
-func ScrapOperateRoleTypeNotNil() predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldNotNull(FieldScrapOperateRoleType))
+// OperateRoleTypeNotNil applies the NotNil predicate on the "operate_role_type" field.
+func OperateRoleTypeNotNil() predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNotNull(FieldOperateRoleType))
 }
 
-// ScrapBatchEQ applies the EQ predicate on the "scrap_batch" field.
-func ScrapBatchEQ(v string) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldEQ(FieldScrapBatch, v))
+// SnEQ applies the EQ predicate on the "sn" field.
+func SnEQ(v string) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldEQ(FieldSn, v))
 }
 
-// ScrapBatchNEQ applies the NEQ predicate on the "scrap_batch" field.
-func ScrapBatchNEQ(v string) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldNEQ(FieldScrapBatch, v))
+// SnNEQ applies the NEQ predicate on the "sn" field.
+func SnNEQ(v string) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNEQ(FieldSn, v))
 }
 
-// ScrapBatchIn applies the In predicate on the "scrap_batch" field.
-func ScrapBatchIn(vs ...string) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldIn(FieldScrapBatch, vs...))
+// SnIn applies the In predicate on the "sn" field.
+func SnIn(vs ...string) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldIn(FieldSn, vs...))
 }
 
-// ScrapBatchNotIn applies the NotIn predicate on the "scrap_batch" field.
-func ScrapBatchNotIn(vs ...string) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldNotIn(FieldScrapBatch, vs...))
+// SnNotIn applies the NotIn predicate on the "sn" field.
+func SnNotIn(vs ...string) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNotIn(FieldSn, vs...))
 }
 
-// ScrapBatchGT applies the GT predicate on the "scrap_batch" field.
-func ScrapBatchGT(v string) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldGT(FieldScrapBatch, v))
+// SnGT applies the GT predicate on the "sn" field.
+func SnGT(v string) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldGT(FieldSn, v))
 }
 
-// ScrapBatchGTE applies the GTE predicate on the "scrap_batch" field.
-func ScrapBatchGTE(v string) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldGTE(FieldScrapBatch, v))
+// SnGTE applies the GTE predicate on the "sn" field.
+func SnGTE(v string) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldGTE(FieldSn, v))
 }
 
-// ScrapBatchLT applies the LT predicate on the "scrap_batch" field.
-func ScrapBatchLT(v string) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldLT(FieldScrapBatch, v))
+// SnLT applies the LT predicate on the "sn" field.
+func SnLT(v string) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldLT(FieldSn, v))
 }
 
-// ScrapBatchLTE applies the LTE predicate on the "scrap_batch" field.
-func ScrapBatchLTE(v string) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldLTE(FieldScrapBatch, v))
+// SnLTE applies the LTE predicate on the "sn" field.
+func SnLTE(v string) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldLTE(FieldSn, v))
 }
 
-// ScrapBatchContains applies the Contains predicate on the "scrap_batch" field.
-func ScrapBatchContains(v string) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldContains(FieldScrapBatch, v))
+// SnContains applies the Contains predicate on the "sn" field.
+func SnContains(v string) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldContains(FieldSn, v))
 }
 
-// ScrapBatchHasPrefix applies the HasPrefix predicate on the "scrap_batch" field.
-func ScrapBatchHasPrefix(v string) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldHasPrefix(FieldScrapBatch, v))
+// SnHasPrefix applies the HasPrefix predicate on the "sn" field.
+func SnHasPrefix(v string) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldHasPrefix(FieldSn, v))
 }
 
-// ScrapBatchHasSuffix applies the HasSuffix predicate on the "scrap_batch" field.
-func ScrapBatchHasSuffix(v string) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldHasSuffix(FieldScrapBatch, v))
+// SnHasSuffix applies the HasSuffix predicate on the "sn" field.
+func SnHasSuffix(v string) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldHasSuffix(FieldSn, v))
 }
 
-// ScrapBatchIsNil applies the IsNil predicate on the "scrap_batch" field.
-func ScrapBatchIsNil() predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldIsNull(FieldScrapBatch))
+// SnIsNil applies the IsNil predicate on the "sn" field.
+func SnIsNil() predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldIsNull(FieldSn))
 }
 
-// ScrapBatchNotNil applies the NotNil predicate on the "scrap_batch" field.
-func ScrapBatchNotNil() predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldNotNull(FieldScrapBatch))
+// SnNotNil applies the NotNil predicate on the "sn" field.
+func SnNotNil() predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNotNull(FieldSn))
 }
 
-// ScrapBatchEqualFold applies the EqualFold predicate on the "scrap_batch" field.
-func ScrapBatchEqualFold(v string) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldEqualFold(FieldScrapBatch, v))
+// SnEqualFold applies the EqualFold predicate on the "sn" field.
+func SnEqualFold(v string) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldEqualFold(FieldSn, v))
 }
 
-// ScrapBatchContainsFold applies the ContainsFold predicate on the "scrap_batch" field.
-func ScrapBatchContainsFold(v string) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldContainsFold(FieldScrapBatch, v))
+// SnContainsFold applies the ContainsFold predicate on the "sn" field.
+func SnContainsFold(v string) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldContainsFold(FieldSn, v))
 }
 
-// AssetIDEQ applies the EQ predicate on the "asset_id" field.
-func AssetIDEQ(v uint64) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldEQ(FieldAssetID, v))
+// NumEQ applies the EQ predicate on the "num" field.
+func NumEQ(v uint) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldEQ(FieldNum, v))
 }
 
-// AssetIDNEQ applies the NEQ predicate on the "asset_id" field.
-func AssetIDNEQ(v uint64) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldNEQ(FieldAssetID, v))
+// NumNEQ applies the NEQ predicate on the "num" field.
+func NumNEQ(v uint) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNEQ(FieldNum, v))
 }
 
-// AssetIDIn applies the In predicate on the "asset_id" field.
-func AssetIDIn(vs ...uint64) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldIn(FieldAssetID, vs...))
+// NumIn applies the In predicate on the "num" field.
+func NumIn(vs ...uint) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldIn(FieldNum, vs...))
 }
 
-// AssetIDNotIn applies the NotIn predicate on the "asset_id" field.
-func AssetIDNotIn(vs ...uint64) predicate.AssetScrap {
-	return predicate.AssetScrap(sql.FieldNotIn(FieldAssetID, vs...))
+// NumNotIn applies the NotIn predicate on the "num" field.
+func NumNotIn(vs ...uint) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNotIn(FieldNum, vs...))
+}
+
+// NumGT applies the GT predicate on the "num" field.
+func NumGT(v uint) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldGT(FieldNum, v))
+}
+
+// NumGTE applies the GTE predicate on the "num" field.
+func NumGTE(v uint) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldGTE(FieldNum, v))
+}
+
+// NumLT applies the LT predicate on the "num" field.
+func NumLT(v uint) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldLT(FieldNum, v))
+}
+
+// NumLTE applies the LTE predicate on the "num" field.
+func NumLTE(v uint) predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldLTE(FieldNum, v))
+}
+
+// NumIsNil applies the IsNil predicate on the "num" field.
+func NumIsNil() predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldIsNull(FieldNum))
+}
+
+// NumNotNil applies the NotNil predicate on the "num" field.
+func NumNotNil() predicate.AssetScrap {
+	return predicate.AssetScrap(sql.FieldNotNull(FieldNum))
 }
 
 // HasManager applies the HasEdge predicate on the "manager" edge.
@@ -642,21 +672,21 @@ func HasAgentWith(preds ...predicate.Agent) predicate.AssetScrap {
 	})
 }
 
-// HasAsset applies the HasEdge predicate on the "asset" edge.
-func HasAsset() predicate.AssetScrap {
+// HasScrapDetails applies the HasEdge predicate on the "scrap_details" edge.
+func HasScrapDetails() predicate.AssetScrap {
 	return predicate.AssetScrap(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, AssetTable, AssetColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, ScrapDetailsTable, ScrapDetailsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasAssetWith applies the HasEdge predicate on the "asset" edge with a given conditions (other predicates).
-func HasAssetWith(preds ...predicate.Asset) predicate.AssetScrap {
+// HasScrapDetailsWith applies the HasEdge predicate on the "scrap_details" edge with a given conditions (other predicates).
+func HasScrapDetailsWith(preds ...predicate.AssetScrapDetails) predicate.AssetScrap {
 	return predicate.AssetScrap(func(s *sql.Selector) {
-		step := newAssetStep()
+		step := newScrapDetailsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

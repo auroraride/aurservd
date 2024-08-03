@@ -134,3 +134,18 @@ func (*assets) Export(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.AssetListReq](c)
 	return ctx.SendResponse(service.NewAsset().Export(ctx.Request().Context(), req, ctx.Modifier))
 }
+
+// Count
+// @ID		AssetCount
+// @Router	/manager/v2/asset/count [GET]
+// @Summary	资产统计
+// @Tags	资产
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	query			query		model.AssetFilter			true	"查询参数"
+// @Success	200				int	        int	"请求成功"
+func (*assets) Count(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.AssetFilter](c)
+	return ctx.SendResponse(service.NewAsset().Count(ctx.Request().Context(), req))
+}

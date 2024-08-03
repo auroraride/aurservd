@@ -12,6 +12,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/warehouse"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
@@ -60,7 +61,8 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 			SetInTimeAt(time.Now()).
 			SetStatus(model.AssetTransferStatusStock.Value()).
 			SetInUserID(modifier.ID).
-			SetInRoleType(model.AssetOperateRoleAdmin.Value())
+			SetInRoleType(model.AssetOperateRoleAdmin.Value()).
+			SetRemark("初始化调拨")
 	}
 
 	bulk := make([]*ent.AssetTransferDetailsCreate, 0, len(assetIDs))
@@ -126,67 +128,50 @@ func (s *assetTransferService) transferAssetWithoutSN(ctx context.Context, q *en
 	return assetIds, nil
 }
 
+// 检查目标位置是否存在的函数
+func (s *assetTransferService) checkTargetLocationExists(ctx context.Context, locationType model.AssetLocationsType, locationID uint64) error {
+	var exists bool
+	switch locationType {
+	case model.AssetLocationsTypeWarehouse:
+		exists, _ = ent.Database.Warehouse.QueryNotDeleted().Where(warehouse.ID(locationID)).Exist(ctx)
+	case model.AssetLocationsTypeStore:
+		exists, _ = ent.Database.Store.QueryNotDeleted().Where(store.ID(locationID)).Exist(ctx)
+	case model.AssetLocationsTypeStation:
+		exists, _ = ent.Database.EnterpriseStation.QueryNotDeleted().Where(enterprisestation.ID(locationID)).Exist(ctx)
+	case model.AssetLocationsTypeOperation:
+		exists, _ = ent.Database.Maintainer.Query().Where(maintainer.ID(locationID)).Exist(ctx)
+	default:
+		return errors.New("调拨目标地点不存在")
+	}
+	if !exists {
+		return errors.New("调拨目标不存在")
+	}
+	return nil
+}
+
 // 调拨限制
 func (s *assetTransferService) transferLimit(ctx context.Context, req *model.AssetTransferCreateReq) (err error) {
 	if req.FromLocationType != nil {
-		if req.FromLocationID == nil || *req.FromLocationID == 0 {
-			return errors.New("开始位置ID不能为空")
-		}
-		if req.ToLocationID == 0 {
-			return errors.New("目标位置ID不能为空")
+		if *req.FromLocationID == req.ToLocationID {
+			return errors.New("无法调拨到相同位置")
 		}
 		// 仓库限制（仓库、门店、站点、运维）
 		if *req.FromLocationType == model.AssetLocationsTypeWarehouse {
 			switch req.ToLocationType {
-			case model.AssetLocationsTypeWarehouse:
-				// 仓库调拨仓库限制 不能调拨到相同仓库
-				if *req.FromLocationID == req.ToLocationID {
-					return errors.New("无法调拨到相同仓库")
-				}
-				// 判定目标仓库是否存在
-				if b, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(req.ToLocationID)).Exist(ctx); !b {
-					return errors.New("仓库不存在")
-				}
-			case model.AssetLocationsTypeStore:
-				// 判定目标门店是否存在
-				if b, _ := ent.Database.Store.QueryNotDeleted().Where(store.ID(req.ToLocationID)).Exist(ctx); !b {
-					return errors.New("门店不存在")
-				}
-			case model.AssetLocationsTypeStation:
-				// 判定目标站点是否存在
-				if b, _ := ent.Database.EnterpriseStation.QueryNotDeleted().Where(enterprisestation.ID(req.ToLocationID)).Exist(ctx); !b {
-					return errors.New("站点不存在")
-				}
-			case model.AssetLocationsTypeOperation:
-				// 判定目标运维是否存在
-				if b, _ := ent.Database.Maintainer.Query().Where(maintainer.ID(req.ToLocationID)).Exist(ctx); !b {
-					return errors.New("运维不存在")
+			case model.AssetLocationsTypeWarehouse, model.AssetLocationsTypeStore, model.AssetLocationsTypeStation, model.AssetLocationsTypeOperation:
+				if err = s.checkTargetLocationExists(ctx, req.ToLocationType, req.ToLocationID); err != nil {
+					return err
 				}
 			default:
 				return errors.New("调拨目标地点不合法")
 			}
 		}
-		// 门店（仓库、门店、运维）
-		if *req.FromLocationType == model.AssetLocationsTypeStore {
+		// 门店（仓库、门店、运维） 运维（仓库、门店、运维）
+		if *req.FromLocationType == model.AssetLocationsTypeStore || *req.FromLocationType == model.AssetLocationsTypeOperation {
 			switch req.ToLocationType {
-			case model.AssetLocationsTypeWarehouse:
-				// 判定目标仓库是否存在
-				if b, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(req.ToLocationID)).Exist(ctx); !b {
-					return errors.New("仓库不存在")
-				}
-			case model.AssetLocationsTypeStore:
-				// 门店调拨门店限制 不能调拨到相同门店
-				if *req.FromLocationID == req.ToLocationID {
-					return errors.New("无法调拨到相同门店")
-				}
-				// 判定目标门店是否存在
-				if b, _ := ent.Database.Store.QueryNotDeleted().Where(store.ID(req.ToLocationID)).Exist(ctx); !b {
-					return errors.New("门店不存在")
-				}
-			case model.AssetLocationsTypeOperation:
-				// 判定目标运维是否存在
-				if b, _ := ent.Database.Maintainer.Query().Where(maintainer.ID(req.ToLocationID)).Exist(ctx); !b {
-					return errors.New("运维不存在")
+			case model.AssetLocationsTypeWarehouse, model.AssetLocationsTypeStore, model.AssetLocationsTypeOperation:
+				if err = s.checkTargetLocationExists(ctx, req.ToLocationType, req.ToLocationID); err != nil {
+					return err
 				}
 			default:
 				return errors.New("调拨目标地点不合法")
@@ -196,15 +181,10 @@ func (s *assetTransferService) transferLimit(ctx context.Context, req *model.Ass
 		if *req.FromLocationType == model.AssetLocationsTypeStation {
 			switch req.ToLocationType {
 			case model.AssetLocationsTypeWarehouse:
-				// 判定目标仓库是否存在
-				if b, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(req.ToLocationID)).Exist(ctx); !b {
-					return errors.New("仓库不存在")
+				if err = s.checkTargetLocationExists(ctx, req.ToLocationType, req.ToLocationID); err != nil {
+					return err
 				}
 			case model.AssetLocationsTypeStation:
-				//  站点调拨站点限制 不能调拨到相同站点
-				if *req.FromLocationID == req.ToLocationID {
-					return errors.New("无法调拨到相同站点")
-				}
 				item, _ := ent.Database.EnterpriseStation.QueryNotDeleted().WithEnterprise(func(query *ent.EnterpriseQuery) {
 					query.WithStations()
 				}).Where(enterprisestation.ID(req.ToLocationID)).First(ctx)
@@ -228,44 +208,14 @@ func (s *assetTransferService) transferLimit(ctx context.Context, req *model.Ass
 				return errors.New("调拨目标地点不合法")
 			}
 		}
-		// 4）运维（仓库、门店、运维）
-		if *req.FromLocationType == model.AssetLocationsTypeOperation {
-			switch req.ToLocationType {
-			case model.AssetLocationsTypeWarehouse:
-				// 判定目标仓库是否存在
-				if b, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(req.ToLocationID)).Exist(ctx); !b {
-					return errors.New("仓库不存在")
-				}
-			case model.AssetLocationsTypeStore:
-				// 判定目标门店是否存在
-				if b, _ := ent.Database.Store.QueryNotDeleted().Where(store.ID(req.ToLocationID)).Exist(ctx); !b {
-					return errors.New("门店不存在")
-				}
-			case model.AssetLocationsTypeOperation:
-				// 运维调拨运维限制 不能调拨到相同运维
-				if *req.FromLocationID == req.ToLocationID {
-					return errors.New("无法调拨到相同运维")
-				}
-				// 判定目标运维是否存在
-				if b, _ := ent.Database.Maintainer.Query().Where(maintainer.ID(req.ToLocationID)).Exist(ctx); !b {
-					return errors.New("运维不存在")
-				}
-			default:
-				return errors.New("调拨目标地点不合法")
-			}
-		}
 	}
 	if req.FromLocationType == nil {
 		// 初始调拨只能调仓库
 		if req.ToLocationType != model.AssetLocationsTypeWarehouse {
-			return errors.New("调拨目标地点不合法")
+			return errors.New("调拨目标地点不存在")
 		}
-		if req.ToLocationID == 0 {
-			return errors.New("目标位置ID不能为空")
-		}
-		// 判定目标仓库是否存在
-		if b, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(req.ToLocationID)).Exist(ctx); !b {
-			return errors.New("仓库不存在")
+		if err = s.checkTargetLocationExists(ctx, req.ToLocationType, req.ToLocationID); err != nil {
+			return err
 		}
 	}
 	return nil

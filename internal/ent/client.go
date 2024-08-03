@@ -24,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/internal/ent/assethistory"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
+	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
@@ -136,6 +137,8 @@ type Client struct {
 	AssetHistory *AssetHistoryClient
 	// AssetScrap is the client for interacting with the AssetScrap builders.
 	AssetScrap *AssetScrapClient
+	// AssetScrapDetails is the client for interacting with the AssetScrapDetails builders.
+	AssetScrapDetails *AssetScrapDetailsClient
 	// AssetTransfer is the client for interacting with the AssetTransfer builders.
 	AssetTransfer *AssetTransferClient
 	// AssetTransferDetails is the client for interacting with the AssetTransferDetails builders.
@@ -326,6 +329,7 @@ func (c *Client) init() {
 	c.AssetAttributes = NewAssetAttributesClient(c.config)
 	c.AssetHistory = NewAssetHistoryClient(c.config)
 	c.AssetScrap = NewAssetScrapClient(c.config)
+	c.AssetScrapDetails = NewAssetScrapDetailsClient(c.config)
 	c.AssetTransfer = NewAssetTransferClient(c.config)
 	c.AssetTransferDetails = NewAssetTransferDetailsClient(c.config)
 	c.Assistance = NewAssistanceClient(c.config)
@@ -512,6 +516,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AssetAttributes:            NewAssetAttributesClient(cfg),
 		AssetHistory:               NewAssetHistoryClient(cfg),
 		AssetScrap:                 NewAssetScrapClient(cfg),
+		AssetScrapDetails:          NewAssetScrapDetailsClient(cfg),
 		AssetTransfer:              NewAssetTransferClient(cfg),
 		AssetTransferDetails:       NewAssetTransferDetailsClient(cfg),
 		Assistance:                 NewAssistanceClient(cfg),
@@ -625,6 +630,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AssetAttributes:            NewAssetAttributesClient(cfg),
 		AssetHistory:               NewAssetHistoryClient(cfg),
 		AssetScrap:                 NewAssetScrapClient(cfg),
+		AssetScrapDetails:          NewAssetScrapDetailsClient(cfg),
 		AssetTransfer:              NewAssetTransferClient(cfg),
 		AssetTransferDetails:       NewAssetTransferDetailsClient(cfg),
 		Assistance:                 NewAssistanceClient(cfg),
@@ -740,12 +746,12 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Asset, c.AssetAttributeValues,
-		c.AssetAttributes, c.AssetHistory, c.AssetScrap, c.AssetTransfer,
-		c.AssetTransferDetails, c.Assistance, c.Attendance, c.Battery, c.BatteryFlow,
-		c.BatteryModel, c.BatteryModelNew, c.Branch, c.BranchContract, c.Business,
-		c.Cabinet, c.CabinetEc, c.CabinetFault, c.City, c.Commission, c.Contract,
-		c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate, c.Ebike,
-		c.EbikeBrand, c.EbikeBrandAttribute, c.Employee, c.Enterprise,
+		c.AssetAttributes, c.AssetHistory, c.AssetScrap, c.AssetScrapDetails,
+		c.AssetTransfer, c.AssetTransferDetails, c.Assistance, c.Attendance, c.Battery,
+		c.BatteryFlow, c.BatteryModel, c.BatteryModelNew, c.Branch, c.BranchContract,
+		c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City, c.Commission,
+		c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate,
+		c.Ebike, c.EbikeBrand, c.EbikeBrandAttribute, c.Employee, c.Enterprise,
 		c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
 		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
 		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
@@ -771,12 +777,12 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Asset, c.AssetAttributeValues,
-		c.AssetAttributes, c.AssetHistory, c.AssetScrap, c.AssetTransfer,
-		c.AssetTransferDetails, c.Assistance, c.Attendance, c.Battery, c.BatteryFlow,
-		c.BatteryModel, c.BatteryModelNew, c.Branch, c.BranchContract, c.Business,
-		c.Cabinet, c.CabinetEc, c.CabinetFault, c.City, c.Commission, c.Contract,
-		c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate, c.Ebike,
-		c.EbikeBrand, c.EbikeBrandAttribute, c.Employee, c.Enterprise,
+		c.AssetAttributes, c.AssetHistory, c.AssetScrap, c.AssetScrapDetails,
+		c.AssetTransfer, c.AssetTransferDetails, c.Assistance, c.Attendance, c.Battery,
+		c.BatteryFlow, c.BatteryModel, c.BatteryModelNew, c.Branch, c.BranchContract,
+		c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City, c.Commission,
+		c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate,
+		c.Ebike, c.EbikeBrand, c.EbikeBrandAttribute, c.Employee, c.Enterprise,
 		c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
 		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
 		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
@@ -818,6 +824,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AssetHistory.mutate(ctx, m)
 	case *AssetScrapMutation:
 		return c.AssetScrap.mutate(ctx, m)
+	case *AssetScrapDetailsMutation:
+		return c.AssetScrapDetails.mutate(ctx, m)
 	case *AssetTransferMutation:
 		return c.AssetTransfer.mutate(ctx, m)
 	case *AssetTransferDetailsMutation:
@@ -2020,15 +2028,15 @@ func (c *AssetClient) QueryOperator(a *Asset) *MaintainerQuery {
 	return query
 }
 
-// QueryScrap queries the scrap edge of a Asset.
-func (c *AssetClient) QueryScrap(a *Asset) *AssetScrapQuery {
-	query := (&AssetScrapClient{config: c.config}).Query()
+// QueryScrapDetails queries the scrap_details edge of a Asset.
+func (c *AssetClient) QueryScrapDetails(a *Asset) *AssetScrapDetailsQuery {
+	query := (&AssetScrapDetailsClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(asset.Table, asset.FieldID, id),
-			sqlgraph.To(assetscrap.Table, assetscrap.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, asset.ScrapTable, asset.ScrapColumn),
+			sqlgraph.To(assetscrapdetails.Table, assetscrapdetails.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, asset.ScrapDetailsTable, asset.ScrapDetailsColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -2698,15 +2706,15 @@ func (c *AssetScrapClient) QueryAgent(as *AssetScrap) *AgentQuery {
 	return query
 }
 
-// QueryAsset queries the asset edge of a AssetScrap.
-func (c *AssetScrapClient) QueryAsset(as *AssetScrap) *AssetQuery {
-	query := (&AssetClient{config: c.config}).Query()
+// QueryScrapDetails queries the scrap_details edge of a AssetScrap.
+func (c *AssetScrapClient) QueryScrapDetails(as *AssetScrap) *AssetScrapDetailsQuery {
+	query := (&AssetScrapDetailsClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := as.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetscrap.Table, assetscrap.FieldID, id),
-			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, assetscrap.AssetTable, assetscrap.AssetColumn),
+			sqlgraph.To(assetscrapdetails.Table, assetscrapdetails.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, assetscrap.ScrapDetailsTable, assetscrap.ScrapDetailsColumn),
 		)
 		fromV = sqlgraph.Neighbors(as.driver.Dialect(), step)
 		return fromV, nil
@@ -2737,6 +2745,187 @@ func (c *AssetScrapClient) mutate(ctx context.Context, m *AssetScrapMutation) (V
 		return (&AssetScrapDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown AssetScrap mutation op: %q", m.Op())
+	}
+}
+
+// AssetScrapDetailsClient is a client for the AssetScrapDetails schema.
+type AssetScrapDetailsClient struct {
+	config
+}
+
+// NewAssetScrapDetailsClient returns a client for the AssetScrapDetails from the given config.
+func NewAssetScrapDetailsClient(c config) *AssetScrapDetailsClient {
+	return &AssetScrapDetailsClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `assetscrapdetails.Hooks(f(g(h())))`.
+func (c *AssetScrapDetailsClient) Use(hooks ...Hook) {
+	c.hooks.AssetScrapDetails = append(c.hooks.AssetScrapDetails, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `assetscrapdetails.Intercept(f(g(h())))`.
+func (c *AssetScrapDetailsClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AssetScrapDetails = append(c.inters.AssetScrapDetails, interceptors...)
+}
+
+// Create returns a builder for creating a AssetScrapDetails entity.
+func (c *AssetScrapDetailsClient) Create() *AssetScrapDetailsCreate {
+	mutation := newAssetScrapDetailsMutation(c.config, OpCreate)
+	return &AssetScrapDetailsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AssetScrapDetails entities.
+func (c *AssetScrapDetailsClient) CreateBulk(builders ...*AssetScrapDetailsCreate) *AssetScrapDetailsCreateBulk {
+	return &AssetScrapDetailsCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AssetScrapDetailsClient) MapCreateBulk(slice any, setFunc func(*AssetScrapDetailsCreate, int)) *AssetScrapDetailsCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AssetScrapDetailsCreateBulk{err: fmt.Errorf("calling to AssetScrapDetailsClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AssetScrapDetailsCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AssetScrapDetailsCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AssetScrapDetails.
+func (c *AssetScrapDetailsClient) Update() *AssetScrapDetailsUpdate {
+	mutation := newAssetScrapDetailsMutation(c.config, OpUpdate)
+	return &AssetScrapDetailsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AssetScrapDetailsClient) UpdateOne(asd *AssetScrapDetails) *AssetScrapDetailsUpdateOne {
+	mutation := newAssetScrapDetailsMutation(c.config, OpUpdateOne, withAssetScrapDetails(asd))
+	return &AssetScrapDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AssetScrapDetailsClient) UpdateOneID(id uint64) *AssetScrapDetailsUpdateOne {
+	mutation := newAssetScrapDetailsMutation(c.config, OpUpdateOne, withAssetScrapDetailsID(id))
+	return &AssetScrapDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AssetScrapDetails.
+func (c *AssetScrapDetailsClient) Delete() *AssetScrapDetailsDelete {
+	mutation := newAssetScrapDetailsMutation(c.config, OpDelete)
+	return &AssetScrapDetailsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AssetScrapDetailsClient) DeleteOne(asd *AssetScrapDetails) *AssetScrapDetailsDeleteOne {
+	return c.DeleteOneID(asd.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AssetScrapDetailsClient) DeleteOneID(id uint64) *AssetScrapDetailsDeleteOne {
+	builder := c.Delete().Where(assetscrapdetails.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AssetScrapDetailsDeleteOne{builder}
+}
+
+// Query returns a query builder for AssetScrapDetails.
+func (c *AssetScrapDetailsClient) Query() *AssetScrapDetailsQuery {
+	return &AssetScrapDetailsQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAssetScrapDetails},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AssetScrapDetails entity by its id.
+func (c *AssetScrapDetailsClient) Get(ctx context.Context, id uint64) (*AssetScrapDetails, error) {
+	return c.Query().Where(assetscrapdetails.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AssetScrapDetailsClient) GetX(ctx context.Context, id uint64) *AssetScrapDetails {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryMaterial queries the material edge of a AssetScrapDetails.
+func (c *AssetScrapDetailsClient) QueryMaterial(asd *AssetScrapDetails) *MaterialQuery {
+	query := (&MaterialClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := asd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetscrapdetails.Table, assetscrapdetails.FieldID, id),
+			sqlgraph.To(material.Table, material.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetscrapdetails.MaterialTable, assetscrapdetails.MaterialColumn),
+		)
+		fromV = sqlgraph.Neighbors(asd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAsset queries the asset edge of a AssetScrapDetails.
+func (c *AssetScrapDetailsClient) QueryAsset(asd *AssetScrapDetails) *AssetQuery {
+	query := (&AssetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := asd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetscrapdetails.Table, assetscrapdetails.FieldID, id),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, assetscrapdetails.AssetTable, assetscrapdetails.AssetColumn),
+		)
+		fromV = sqlgraph.Neighbors(asd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryScrap queries the scrap edge of a AssetScrapDetails.
+func (c *AssetScrapDetailsClient) QueryScrap(asd *AssetScrapDetails) *AssetScrapQuery {
+	query := (&AssetScrapClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := asd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetscrapdetails.Table, assetscrapdetails.FieldID, id),
+			sqlgraph.To(assetscrap.Table, assetscrap.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, assetscrapdetails.ScrapTable, assetscrapdetails.ScrapColumn),
+		)
+		fromV = sqlgraph.Neighbors(asd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AssetScrapDetailsClient) Hooks() []Hook {
+	return c.hooks.AssetScrapDetails
+}
+
+// Interceptors returns the client interceptors.
+func (c *AssetScrapDetailsClient) Interceptors() []Interceptor {
+	return c.inters.AssetScrapDetails
+}
+
+func (c *AssetScrapDetailsClient) mutate(ctx context.Context, m *AssetScrapDetailsMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AssetScrapDetailsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AssetScrapDetailsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AssetScrapDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AssetScrapDetailsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AssetScrapDetails mutation op: %q", m.Op())
 	}
 }
 
@@ -19093,45 +19282,45 @@ func (c *WarehouseClient) mutate(ctx context.Context, m *WarehouseMutation) (Val
 type (
 	hooks struct {
 		Activity, Agent, Agreement, Allocate, Asset, AssetAttributeValues,
-		AssetAttributes, AssetHistory, AssetScrap, AssetTransfer, AssetTransferDetails,
-		Assistance, Attendance, Battery, BatteryFlow, BatteryModel, BatteryModelNew,
-		Branch, BranchContract, Business, Cabinet, CabinetEc, CabinetFault, City,
-		Commission, Contract, ContractTemplate, Coupon, CouponAssembly, CouponTemplate,
-		Ebike, EbikeBrand, EbikeBrandAttribute, Employee, Enterprise,
-		EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
-		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
-		Exception, Exchange, Export, Fault, Feedback, Goods, Instructions, Inventory,
-		Maintainer, Manager, Material, Order, OrderRefund, Person, Plan, PlanIntroduce,
-		PointLog, PromotionAchievement, PromotionBankCard, PromotionCommission,
-		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
-		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
-		PromotionPerson, PromotionPrivilege, PromotionReferrals,
-		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
-		QuestionCategory, Reserve, Rider, RiderFollowUp, RiderPhoneDevice, Role,
-		Setting, Stock, StockSummary, Store, StoreGoods, Subscribe, SubscribeAlter,
-		SubscribePause, SubscribeReminder, SubscribeSuspend, Version,
-		Warehouse []ent.Hook
+		AssetAttributes, AssetHistory, AssetScrap, AssetScrapDetails, AssetTransfer,
+		AssetTransferDetails, Assistance, Attendance, Battery, BatteryFlow,
+		BatteryModel, BatteryModelNew, Branch, BranchContract, Business, Cabinet,
+		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
+		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, EbikeBrandAttribute,
+		Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
+		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
+		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Goods,
+		Instructions, Inventory, Maintainer, Manager, Material, Order, OrderRefund,
+		Person, Plan, PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
+		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
+		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
+		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
+		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
+		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
+		RiderPhoneDevice, Role, Setting, Stock, StockSummary, Store, StoreGoods,
+		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		Version, Warehouse []ent.Hook
 	}
 	inters struct {
 		Activity, Agent, Agreement, Allocate, Asset, AssetAttributeValues,
-		AssetAttributes, AssetHistory, AssetScrap, AssetTransfer, AssetTransferDetails,
-		Assistance, Attendance, Battery, BatteryFlow, BatteryModel, BatteryModelNew,
-		Branch, BranchContract, Business, Cabinet, CabinetEc, CabinetFault, City,
-		Commission, Contract, ContractTemplate, Coupon, CouponAssembly, CouponTemplate,
-		Ebike, EbikeBrand, EbikeBrandAttribute, Employee, Enterprise,
-		EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
-		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
-		Exception, Exchange, Export, Fault, Feedback, Goods, Instructions, Inventory,
-		Maintainer, Manager, Material, Order, OrderRefund, Person, Plan, PlanIntroduce,
-		PointLog, PromotionAchievement, PromotionBankCard, PromotionCommission,
-		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
-		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
-		PromotionPerson, PromotionPrivilege, PromotionReferrals,
-		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
-		QuestionCategory, Reserve, Rider, RiderFollowUp, RiderPhoneDevice, Role,
-		Setting, Stock, StockSummary, Store, StoreGoods, Subscribe, SubscribeAlter,
-		SubscribePause, SubscribeReminder, SubscribeSuspend, Version,
-		Warehouse []ent.Interceptor
+		AssetAttributes, AssetHistory, AssetScrap, AssetScrapDetails, AssetTransfer,
+		AssetTransferDetails, Assistance, Attendance, Battery, BatteryFlow,
+		BatteryModel, BatteryModelNew, Branch, BranchContract, Business, Cabinet,
+		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
+		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, EbikeBrandAttribute,
+		Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
+		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
+		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Goods,
+		Instructions, Inventory, Maintainer, Manager, Material, Order, OrderRefund,
+		Person, Plan, PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
+		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
+		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
+		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
+		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
+		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
+		RiderPhoneDevice, Role, Setting, Stock, StockSummary, Store, StoreGoods,
+		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		Version, Warehouse []ent.Interceptor
 	}
 )
 

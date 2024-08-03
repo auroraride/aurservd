@@ -14,7 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
-	"github.com/auroraride/aurservd/internal/ent/assetscrap"
+	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -432,19 +432,19 @@ func (ac *AssetCreate) SetOperator(m *Maintainer) *AssetCreate {
 	return ac.SetOperatorID(m.ID)
 }
 
-// AddScrapIDs adds the "scrap" edge to the AssetScrap entity by IDs.
-func (ac *AssetCreate) AddScrapIDs(ids ...uint64) *AssetCreate {
-	ac.mutation.AddScrapIDs(ids...)
+// AddScrapDetailIDs adds the "scrap_details" edge to the AssetScrapDetails entity by IDs.
+func (ac *AssetCreate) AddScrapDetailIDs(ids ...uint64) *AssetCreate {
+	ac.mutation.AddScrapDetailIDs(ids...)
 	return ac
 }
 
-// AddScrap adds the "scrap" edges to the AssetScrap entity.
-func (ac *AssetCreate) AddScrap(a ...*AssetScrap) *AssetCreate {
+// AddScrapDetails adds the "scrap_details" edges to the AssetScrapDetails entity.
+func (ac *AssetCreate) AddScrapDetails(a ...*AssetScrapDetails) *AssetCreate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return ac.AddScrapIDs(ids...)
+	return ac.AddScrapDetailIDs(ids...)
 }
 
 // Mutation returns the AssetMutation object of the builder.
@@ -802,15 +802,15 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		_node.LocationsID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.ScrapIDs(); len(nodes) > 0 {
+	if nodes := ac.mutation.ScrapDetailsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.ScrapTable,
-			Columns: []string{asset.ScrapColumn},
+			Table:   asset.ScrapDetailsTable,
+			Columns: []string{asset.ScrapDetailsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(assetscrap.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(assetscrapdetails.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

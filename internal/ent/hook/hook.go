@@ -117,6 +117,18 @@ func (f AssetScrapFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AssetScrapMutation", m)
 }
 
+// The AssetScrapDetailsFunc type is an adapter to allow the use of ordinary
+// function as AssetScrapDetails mutator.
+type AssetScrapDetailsFunc func(context.Context, *ent.AssetScrapDetailsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AssetScrapDetailsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AssetScrapDetailsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AssetScrapDetailsMutation", m)
+}
+
 // The AssetTransferFunc type is an adapter to allow the use of ordinary
 // function as AssetTransfer mutator.
 type AssetTransferFunc func(context.Context, *ent.AssetTransferMutation) (ent.Value, error)

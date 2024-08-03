@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -11,8 +12,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/agent"
-	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
+	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -22,16 +23,16 @@ import (
 // AssetScrapQuery is the builder for querying AssetScrap entities.
 type AssetScrapQuery struct {
 	config
-	ctx            *QueryContext
-	order          []assetscrap.OrderOption
-	inters         []Interceptor
-	predicates     []predicate.AssetScrap
-	withManager    *ManagerQuery
-	withEmployee   *EmployeeQuery
-	withMaintainer *MaintainerQuery
-	withAgent      *AgentQuery
-	withAsset      *AssetQuery
-	modifiers      []func(*sql.Selector)
+	ctx              *QueryContext
+	order            []assetscrap.OrderOption
+	inters           []Interceptor
+	predicates       []predicate.AssetScrap
+	withManager      *ManagerQuery
+	withEmployee     *EmployeeQuery
+	withMaintainer   *MaintainerQuery
+	withAgent        *AgentQuery
+	withScrapDetails *AssetScrapDetailsQuery
+	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -156,9 +157,9 @@ func (asq *AssetScrapQuery) QueryAgent() *AgentQuery {
 	return query
 }
 
-// QueryAsset chains the current query on the "asset" edge.
-func (asq *AssetScrapQuery) QueryAsset() *AssetQuery {
-	query := (&AssetClient{config: asq.config}).Query()
+// QueryScrapDetails chains the current query on the "scrap_details" edge.
+func (asq *AssetScrapQuery) QueryScrapDetails() *AssetScrapDetailsQuery {
+	query := (&AssetScrapDetailsClient{config: asq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := asq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -169,8 +170,8 @@ func (asq *AssetScrapQuery) QueryAsset() *AssetQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetscrap.Table, assetscrap.FieldID, selector),
-			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, assetscrap.AssetTable, assetscrap.AssetColumn),
+			sqlgraph.To(assetscrapdetails.Table, assetscrapdetails.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, assetscrap.ScrapDetailsTable, assetscrap.ScrapDetailsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(asq.driver.Dialect(), step)
 		return fromU, nil
@@ -365,16 +366,16 @@ func (asq *AssetScrapQuery) Clone() *AssetScrapQuery {
 		return nil
 	}
 	return &AssetScrapQuery{
-		config:         asq.config,
-		ctx:            asq.ctx.Clone(),
-		order:          append([]assetscrap.OrderOption{}, asq.order...),
-		inters:         append([]Interceptor{}, asq.inters...),
-		predicates:     append([]predicate.AssetScrap{}, asq.predicates...),
-		withManager:    asq.withManager.Clone(),
-		withEmployee:   asq.withEmployee.Clone(),
-		withMaintainer: asq.withMaintainer.Clone(),
-		withAgent:      asq.withAgent.Clone(),
-		withAsset:      asq.withAsset.Clone(),
+		config:           asq.config,
+		ctx:              asq.ctx.Clone(),
+		order:            append([]assetscrap.OrderOption{}, asq.order...),
+		inters:           append([]Interceptor{}, asq.inters...),
+		predicates:       append([]predicate.AssetScrap{}, asq.predicates...),
+		withManager:      asq.withManager.Clone(),
+		withEmployee:     asq.withEmployee.Clone(),
+		withMaintainer:   asq.withMaintainer.Clone(),
+		withAgent:        asq.withAgent.Clone(),
+		withScrapDetails: asq.withScrapDetails.Clone(),
 		// clone intermediate query.
 		sql:  asq.sql.Clone(),
 		path: asq.path,
@@ -425,14 +426,14 @@ func (asq *AssetScrapQuery) WithAgent(opts ...func(*AgentQuery)) *AssetScrapQuer
 	return asq
 }
 
-// WithAsset tells the query-builder to eager-load the nodes that are connected to
-// the "asset" edge. The optional arguments are used to configure the query builder of the edge.
-func (asq *AssetScrapQuery) WithAsset(opts ...func(*AssetQuery)) *AssetScrapQuery {
-	query := (&AssetClient{config: asq.config}).Query()
+// WithScrapDetails tells the query-builder to eager-load the nodes that are connected to
+// the "scrap_details" edge. The optional arguments are used to configure the query builder of the edge.
+func (asq *AssetScrapQuery) WithScrapDetails(opts ...func(*AssetScrapDetailsQuery)) *AssetScrapQuery {
+	query := (&AssetScrapDetailsClient{config: asq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	asq.withAsset = query
+	asq.withScrapDetails = query
 	return asq
 }
 
@@ -519,7 +520,7 @@ func (asq *AssetScrapQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 			asq.withEmployee != nil,
 			asq.withMaintainer != nil,
 			asq.withAgent != nil,
-			asq.withAsset != nil,
+			asq.withScrapDetails != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -567,9 +568,10 @@ func (asq *AssetScrapQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 			return nil, err
 		}
 	}
-	if query := asq.withAsset; query != nil {
-		if err := asq.loadAsset(ctx, query, nodes, nil,
-			func(n *AssetScrap, e *Asset) { n.Edges.Asset = e }); err != nil {
+	if query := asq.withScrapDetails; query != nil {
+		if err := asq.loadScrapDetails(ctx, query, nodes,
+			func(n *AssetScrap) { n.Edges.ScrapDetails = []*AssetScrapDetails{} },
+			func(n *AssetScrap, e *AssetScrapDetails) { n.Edges.ScrapDetails = append(n.Edges.ScrapDetails, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -580,10 +582,10 @@ func (asq *AssetScrapQuery) loadManager(ctx context.Context, query *ManagerQuery
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetScrap)
 	for i := range nodes {
-		if nodes[i].ScrapOperateID == nil {
+		if nodes[i].OperateID == nil {
 			continue
 		}
-		fk := *nodes[i].ScrapOperateID
+		fk := *nodes[i].OperateID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -600,7 +602,7 @@ func (asq *AssetScrapQuery) loadManager(ctx context.Context, query *ManagerQuery
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "scrap_operate_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "operate_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -612,10 +614,10 @@ func (asq *AssetScrapQuery) loadEmployee(ctx context.Context, query *EmployeeQue
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetScrap)
 	for i := range nodes {
-		if nodes[i].ScrapOperateID == nil {
+		if nodes[i].OperateID == nil {
 			continue
 		}
-		fk := *nodes[i].ScrapOperateID
+		fk := *nodes[i].OperateID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -632,7 +634,7 @@ func (asq *AssetScrapQuery) loadEmployee(ctx context.Context, query *EmployeeQue
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "scrap_operate_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "operate_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -644,10 +646,10 @@ func (asq *AssetScrapQuery) loadMaintainer(ctx context.Context, query *Maintaine
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetScrap)
 	for i := range nodes {
-		if nodes[i].ScrapOperateID == nil {
+		if nodes[i].OperateID == nil {
 			continue
 		}
-		fk := *nodes[i].ScrapOperateID
+		fk := *nodes[i].OperateID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -664,7 +666,7 @@ func (asq *AssetScrapQuery) loadMaintainer(ctx context.Context, query *Maintaine
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "scrap_operate_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "operate_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -676,10 +678,10 @@ func (asq *AssetScrapQuery) loadAgent(ctx context.Context, query *AgentQuery, no
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetScrap)
 	for i := range nodes {
-		if nodes[i].ScrapOperateID == nil {
+		if nodes[i].OperateID == nil {
 			continue
 		}
-		fk := *nodes[i].ScrapOperateID
+		fk := *nodes[i].OperateID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -696,7 +698,7 @@ func (asq *AssetScrapQuery) loadAgent(ctx context.Context, query *AgentQuery, no
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "scrap_operate_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "operate_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -704,32 +706,33 @@ func (asq *AssetScrapQuery) loadAgent(ctx context.Context, query *AgentQuery, no
 	}
 	return nil
 }
-func (asq *AssetScrapQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []*AssetScrap, init func(*AssetScrap), assign func(*AssetScrap, *Asset)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*AssetScrap)
+func (asq *AssetScrapQuery) loadScrapDetails(ctx context.Context, query *AssetScrapDetailsQuery, nodes []*AssetScrap, init func(*AssetScrap), assign func(*AssetScrap, *AssetScrapDetails)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*AssetScrap)
 	for i := range nodes {
-		fk := nodes[i].AssetID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
 		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
-	if len(ids) == 0 {
-		return nil
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(assetscrapdetails.FieldScrapID)
 	}
-	query.Where(asset.IDIn(ids...))
+	query.Where(predicate.AssetScrapDetails(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(assetscrap.ScrapDetailsColumn), fks...))
+	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
+		fk := n.ScrapID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "asset_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "scrap_id" returned %v for node %v`, fk, n.ID)
 		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
+		assign(node, n)
 	}
 	return nil
 }
@@ -763,19 +766,16 @@ func (asq *AssetScrapQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 		if asq.withManager != nil {
-			_spec.Node.AddColumnOnce(assetscrap.FieldScrapOperateID)
+			_spec.Node.AddColumnOnce(assetscrap.FieldOperateID)
 		}
 		if asq.withEmployee != nil {
-			_spec.Node.AddColumnOnce(assetscrap.FieldScrapOperateID)
+			_spec.Node.AddColumnOnce(assetscrap.FieldOperateID)
 		}
 		if asq.withMaintainer != nil {
-			_spec.Node.AddColumnOnce(assetscrap.FieldScrapOperateID)
+			_spec.Node.AddColumnOnce(assetscrap.FieldOperateID)
 		}
 		if asq.withAgent != nil {
-			_spec.Node.AddColumnOnce(assetscrap.FieldScrapOperateID)
-		}
-		if asq.withAsset != nil {
-			_spec.Node.AddColumnOnce(assetscrap.FieldAssetID)
+			_spec.Node.AddColumnOnce(assetscrap.FieldOperateID)
 		}
 	}
 	if ps := asq.predicates; len(ps) > 0 {
@@ -845,11 +845,11 @@ func (asq *AssetScrapQuery) Modify(modifiers ...func(s *sql.Selector)) *AssetScr
 type AssetScrapQueryWith string
 
 var (
-	AssetScrapQueryWithManager    AssetScrapQueryWith = "Manager"
-	AssetScrapQueryWithEmployee   AssetScrapQueryWith = "Employee"
-	AssetScrapQueryWithMaintainer AssetScrapQueryWith = "Maintainer"
-	AssetScrapQueryWithAgent      AssetScrapQueryWith = "Agent"
-	AssetScrapQueryWithAsset      AssetScrapQueryWith = "Asset"
+	AssetScrapQueryWithManager      AssetScrapQueryWith = "Manager"
+	AssetScrapQueryWithEmployee     AssetScrapQueryWith = "Employee"
+	AssetScrapQueryWithMaintainer   AssetScrapQueryWith = "Maintainer"
+	AssetScrapQueryWithAgent        AssetScrapQueryWith = "Agent"
+	AssetScrapQueryWithScrapDetails AssetScrapQueryWith = "ScrapDetails"
 )
 
 func (asq *AssetScrapQuery) With(withEdges ...AssetScrapQueryWith) *AssetScrapQuery {
@@ -863,8 +863,8 @@ func (asq *AssetScrapQuery) With(withEdges ...AssetScrapQueryWith) *AssetScrapQu
 			asq.WithMaintainer()
 		case AssetScrapQueryWithAgent:
 			asq.WithAgent()
-		case AssetScrapQueryWithAsset:
-			asq.WithAsset()
+		case AssetScrapQueryWithScrapDetails:
+			asq.WithScrapDetails()
 		}
 	}
 	return asq

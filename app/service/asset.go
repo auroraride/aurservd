@@ -878,3 +878,11 @@ func (s *assetService) ebikeFilter(q *ent.AssetQuery, req *model.AssetFilter) *e
 func (s *assetService) FlowDetail(ctx context.Context, id uint64) []*model.AssetFlowDetail {
 	return nil
 }
+
+// Count 查询有效的资产数量
+func (s *assetService) Count(ctx context.Context, req *model.AssetFilter) *model.AssetNumRes {
+	q := s.orm.QueryNotDeleted().Where(asset.StatusNEQ(model.AssetStatusScrap.Value()))
+	s.filter(q, req)
+	count, _ := q.Count(ctx)
+	return &model.AssetNumRes{Num: count}
+}

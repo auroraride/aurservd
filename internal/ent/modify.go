@@ -114,6 +114,13 @@ func (c *AssetScrapClient) ModifyOne(old *AssetScrap, data any) *AssetScrapUpdat
 	return EntitySetAttributes[AssetScrapUpdateOne, AssetScrap](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for AssetScrapDetails.
+func (c *AssetScrapDetailsClient) ModifyOne(old *AssetScrapDetails, data any) *AssetScrapDetailsUpdateOne {
+	mutation := newAssetScrapDetailsMutation(c.config, OpUpdateOne, withAssetScrapDetails(old))
+	up := &AssetScrapDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetScrapDetailsUpdateOne, AssetScrapDetails](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for AssetTransfer.
 func (c *AssetTransferClient) ModifyOne(old *AssetTransfer, data any) *AssetTransferUpdateOne {
 	mutation := newAssetTransferMutation(c.config, OpUpdateOne, withAssetTransfer(old))

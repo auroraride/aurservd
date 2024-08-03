@@ -41,7 +41,7 @@ type AssetFilter struct {
 	AssetType             *AssetType             `json:"assetType" query:"assetType" enums:"1,2,3,4,5,6"`                   // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
 	BrandID               *uint64                `json:"brandId" query:"brandId"`                                           // 电车品牌ID
 	Rto                   *bool                  `json:"rto" query:"rto"`                                                   // 电车是否赠送
-	Attribute             []AssetAttributeCreate `json:"attribute"`                                                         // 属性查询
+	Attribute             []AssetAttributeCreate `json:"attribute" query:"attribute"`                                       // 属性查询
 }
 
 // AssetListReq 资产列表请求
@@ -83,4 +83,9 @@ type AssetBatchCreateReq struct {
 // AssetExportTemplateReq 导出模版请求
 type AssetExportTemplateReq struct {
 	AssetType AssetType `json:"assetType" validate:"required" query:"assetType"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+}
+
+// AssetNumRes 资产有效数量返回
+type AssetNumRes struct {
+	Num int `json:"num"` // 有效数量
 }

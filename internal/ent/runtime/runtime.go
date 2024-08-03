@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/internal/ent/assethistory"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
+	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
@@ -294,6 +295,21 @@ func init() {
 	assetscrap.DefaultUpdatedAt = assetscrapDescUpdatedAt.Default.(func() time.Time)
 	// assetscrap.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	assetscrap.UpdateDefaultUpdatedAt = assetscrapDescUpdatedAt.UpdateDefault.(func() time.Time)
+	assetscrapdetailsMixin := schema.AssetScrapDetails{}.Mixin()
+	assetscrapdetailsMixinFields0 := assetscrapdetailsMixin[0].Fields()
+	_ = assetscrapdetailsMixinFields0
+	assetscrapdetailsFields := schema.AssetScrapDetails{}.Fields()
+	_ = assetscrapdetailsFields
+	// assetscrapdetailsDescCreatedAt is the schema descriptor for created_at field.
+	assetscrapdetailsDescCreatedAt := assetscrapdetailsMixinFields0[0].Descriptor()
+	// assetscrapdetails.DefaultCreatedAt holds the default value on creation for the created_at field.
+	assetscrapdetails.DefaultCreatedAt = assetscrapdetailsDescCreatedAt.Default.(func() time.Time)
+	// assetscrapdetailsDescUpdatedAt is the schema descriptor for updated_at field.
+	assetscrapdetailsDescUpdatedAt := assetscrapdetailsMixinFields0[1].Descriptor()
+	// assetscrapdetails.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	assetscrapdetails.DefaultUpdatedAt = assetscrapdetailsDescUpdatedAt.Default.(func() time.Time)
+	// assetscrapdetails.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	assetscrapdetails.UpdateDefaultUpdatedAt = assetscrapdetailsDescUpdatedAt.UpdateDefault.(func() time.Time)
 	assettransferMixin := schema.AssetTransfer{}.Mixin()
 	assettransferMixinHooks2 := assettransferMixin[2].Hooks()
 	assettransfer.Hooks[0] = assettransferMixinHooks2[0]

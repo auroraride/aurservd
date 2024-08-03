@@ -13,8 +13,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
-	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
+	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -73,30 +73,30 @@ func (asu *AssetScrapUpdate) ClearRemark() *AssetScrapUpdate {
 	return asu
 }
 
-// SetScrapReasonType sets the "scrap_reason_type" field.
-func (asu *AssetScrapUpdate) SetScrapReasonType(u uint8) *AssetScrapUpdate {
-	asu.mutation.ResetScrapReasonType()
-	asu.mutation.SetScrapReasonType(u)
+// SetReasonType sets the "reason_type" field.
+func (asu *AssetScrapUpdate) SetReasonType(u uint8) *AssetScrapUpdate {
+	asu.mutation.ResetReasonType()
+	asu.mutation.SetReasonType(u)
 	return asu
 }
 
-// SetNillableScrapReasonType sets the "scrap_reason_type" field if the given value is not nil.
-func (asu *AssetScrapUpdate) SetNillableScrapReasonType(u *uint8) *AssetScrapUpdate {
+// SetNillableReasonType sets the "reason_type" field if the given value is not nil.
+func (asu *AssetScrapUpdate) SetNillableReasonType(u *uint8) *AssetScrapUpdate {
 	if u != nil {
-		asu.SetScrapReasonType(*u)
+		asu.SetReasonType(*u)
 	}
 	return asu
 }
 
-// AddScrapReasonType adds u to the "scrap_reason_type" field.
-func (asu *AssetScrapUpdate) AddScrapReasonType(u int8) *AssetScrapUpdate {
-	asu.mutation.AddScrapReasonType(u)
+// AddReasonType adds u to the "reason_type" field.
+func (asu *AssetScrapUpdate) AddReasonType(u int8) *AssetScrapUpdate {
+	asu.mutation.AddReasonType(u)
 	return asu
 }
 
-// ClearScrapReasonType clears the value of the "scrap_reason_type" field.
-func (asu *AssetScrapUpdate) ClearScrapReasonType() *AssetScrapUpdate {
-	asu.mutation.ClearScrapReasonType()
+// ClearReasonType clears the value of the "reason_type" field.
+func (asu *AssetScrapUpdate) ClearReasonType() *AssetScrapUpdate {
+	asu.mutation.ClearReasonType()
 	return asu
 }
 
@@ -120,84 +120,97 @@ func (asu *AssetScrapUpdate) ClearScrapAt() *AssetScrapUpdate {
 	return asu
 }
 
-// SetScrapOperateID sets the "scrap_operate_id" field.
-func (asu *AssetScrapUpdate) SetScrapOperateID(u uint64) *AssetScrapUpdate {
-	asu.mutation.SetScrapOperateID(u)
+// SetOperateID sets the "operate_id" field.
+func (asu *AssetScrapUpdate) SetOperateID(u uint64) *AssetScrapUpdate {
+	asu.mutation.SetOperateID(u)
 	return asu
 }
 
-// SetNillableScrapOperateID sets the "scrap_operate_id" field if the given value is not nil.
-func (asu *AssetScrapUpdate) SetNillableScrapOperateID(u *uint64) *AssetScrapUpdate {
+// SetNillableOperateID sets the "operate_id" field if the given value is not nil.
+func (asu *AssetScrapUpdate) SetNillableOperateID(u *uint64) *AssetScrapUpdate {
 	if u != nil {
-		asu.SetScrapOperateID(*u)
+		asu.SetOperateID(*u)
 	}
 	return asu
 }
 
-// ClearScrapOperateID clears the value of the "scrap_operate_id" field.
-func (asu *AssetScrapUpdate) ClearScrapOperateID() *AssetScrapUpdate {
-	asu.mutation.ClearScrapOperateID()
+// ClearOperateID clears the value of the "operate_id" field.
+func (asu *AssetScrapUpdate) ClearOperateID() *AssetScrapUpdate {
+	asu.mutation.ClearOperateID()
 	return asu
 }
 
-// SetScrapOperateRoleType sets the "scrap_operate_role_type" field.
-func (asu *AssetScrapUpdate) SetScrapOperateRoleType(u uint8) *AssetScrapUpdate {
-	asu.mutation.ResetScrapOperateRoleType()
-	asu.mutation.SetScrapOperateRoleType(u)
+// SetOperateRoleType sets the "operate_role_type" field.
+func (asu *AssetScrapUpdate) SetOperateRoleType(u uint8) *AssetScrapUpdate {
+	asu.mutation.ResetOperateRoleType()
+	asu.mutation.SetOperateRoleType(u)
 	return asu
 }
 
-// SetNillableScrapOperateRoleType sets the "scrap_operate_role_type" field if the given value is not nil.
-func (asu *AssetScrapUpdate) SetNillableScrapOperateRoleType(u *uint8) *AssetScrapUpdate {
+// SetNillableOperateRoleType sets the "operate_role_type" field if the given value is not nil.
+func (asu *AssetScrapUpdate) SetNillableOperateRoleType(u *uint8) *AssetScrapUpdate {
 	if u != nil {
-		asu.SetScrapOperateRoleType(*u)
+		asu.SetOperateRoleType(*u)
 	}
 	return asu
 }
 
-// AddScrapOperateRoleType adds u to the "scrap_operate_role_type" field.
-func (asu *AssetScrapUpdate) AddScrapOperateRoleType(u int8) *AssetScrapUpdate {
-	asu.mutation.AddScrapOperateRoleType(u)
+// AddOperateRoleType adds u to the "operate_role_type" field.
+func (asu *AssetScrapUpdate) AddOperateRoleType(u int8) *AssetScrapUpdate {
+	asu.mutation.AddOperateRoleType(u)
 	return asu
 }
 
-// ClearScrapOperateRoleType clears the value of the "scrap_operate_role_type" field.
-func (asu *AssetScrapUpdate) ClearScrapOperateRoleType() *AssetScrapUpdate {
-	asu.mutation.ClearScrapOperateRoleType()
+// ClearOperateRoleType clears the value of the "operate_role_type" field.
+func (asu *AssetScrapUpdate) ClearOperateRoleType() *AssetScrapUpdate {
+	asu.mutation.ClearOperateRoleType()
 	return asu
 }
 
-// SetScrapBatch sets the "scrap_batch" field.
-func (asu *AssetScrapUpdate) SetScrapBatch(s string) *AssetScrapUpdate {
-	asu.mutation.SetScrapBatch(s)
+// SetSn sets the "sn" field.
+func (asu *AssetScrapUpdate) SetSn(s string) *AssetScrapUpdate {
+	asu.mutation.SetSn(s)
 	return asu
 }
 
-// SetNillableScrapBatch sets the "scrap_batch" field if the given value is not nil.
-func (asu *AssetScrapUpdate) SetNillableScrapBatch(s *string) *AssetScrapUpdate {
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (asu *AssetScrapUpdate) SetNillableSn(s *string) *AssetScrapUpdate {
 	if s != nil {
-		asu.SetScrapBatch(*s)
+		asu.SetSn(*s)
 	}
 	return asu
 }
 
-// ClearScrapBatch clears the value of the "scrap_batch" field.
-func (asu *AssetScrapUpdate) ClearScrapBatch() *AssetScrapUpdate {
-	asu.mutation.ClearScrapBatch()
+// ClearSn clears the value of the "sn" field.
+func (asu *AssetScrapUpdate) ClearSn() *AssetScrapUpdate {
+	asu.mutation.ClearSn()
 	return asu
 }
 
-// SetAssetID sets the "asset_id" field.
-func (asu *AssetScrapUpdate) SetAssetID(u uint64) *AssetScrapUpdate {
-	asu.mutation.SetAssetID(u)
+// SetNum sets the "num" field.
+func (asu *AssetScrapUpdate) SetNum(u uint) *AssetScrapUpdate {
+	asu.mutation.ResetNum()
+	asu.mutation.SetNum(u)
 	return asu
 }
 
-// SetNillableAssetID sets the "asset_id" field if the given value is not nil.
-func (asu *AssetScrapUpdate) SetNillableAssetID(u *uint64) *AssetScrapUpdate {
+// SetNillableNum sets the "num" field if the given value is not nil.
+func (asu *AssetScrapUpdate) SetNillableNum(u *uint) *AssetScrapUpdate {
 	if u != nil {
-		asu.SetAssetID(*u)
+		asu.SetNum(*u)
 	}
+	return asu
+}
+
+// AddNum adds u to the "num" field.
+func (asu *AssetScrapUpdate) AddNum(u int) *AssetScrapUpdate {
+	asu.mutation.AddNum(u)
+	return asu
+}
+
+// ClearNum clears the value of the "num" field.
+func (asu *AssetScrapUpdate) ClearNum() *AssetScrapUpdate {
+	asu.mutation.ClearNum()
 	return asu
 }
 
@@ -277,9 +290,19 @@ func (asu *AssetScrapUpdate) SetAgent(a *Agent) *AssetScrapUpdate {
 	return asu.SetAgentID(a.ID)
 }
 
-// SetAsset sets the "asset" edge to the Asset entity.
-func (asu *AssetScrapUpdate) SetAsset(a *Asset) *AssetScrapUpdate {
-	return asu.SetAssetID(a.ID)
+// AddScrapDetailIDs adds the "scrap_details" edge to the AssetScrapDetails entity by IDs.
+func (asu *AssetScrapUpdate) AddScrapDetailIDs(ids ...uint64) *AssetScrapUpdate {
+	asu.mutation.AddScrapDetailIDs(ids...)
+	return asu
+}
+
+// AddScrapDetails adds the "scrap_details" edges to the AssetScrapDetails entity.
+func (asu *AssetScrapUpdate) AddScrapDetails(a ...*AssetScrapDetails) *AssetScrapUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return asu.AddScrapDetailIDs(ids...)
 }
 
 // Mutation returns the AssetScrapMutation object of the builder.
@@ -311,10 +334,25 @@ func (asu *AssetScrapUpdate) ClearAgent() *AssetScrapUpdate {
 	return asu
 }
 
-// ClearAsset clears the "asset" edge to the Asset entity.
-func (asu *AssetScrapUpdate) ClearAsset() *AssetScrapUpdate {
-	asu.mutation.ClearAsset()
+// ClearScrapDetails clears all "scrap_details" edges to the AssetScrapDetails entity.
+func (asu *AssetScrapUpdate) ClearScrapDetails() *AssetScrapUpdate {
+	asu.mutation.ClearScrapDetails()
 	return asu
+}
+
+// RemoveScrapDetailIDs removes the "scrap_details" edge to AssetScrapDetails entities by IDs.
+func (asu *AssetScrapUpdate) RemoveScrapDetailIDs(ids ...uint64) *AssetScrapUpdate {
+	asu.mutation.RemoveScrapDetailIDs(ids...)
+	return asu
+}
+
+// RemoveScrapDetails removes "scrap_details" edges to AssetScrapDetails entities.
+func (asu *AssetScrapUpdate) RemoveScrapDetails(a ...*AssetScrapDetails) *AssetScrapUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return asu.RemoveScrapDetailIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -359,14 +397,6 @@ func (asu *AssetScrapUpdate) defaults() error {
 	return nil
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (asu *AssetScrapUpdate) check() error {
-	if _, ok := asu.mutation.AssetID(); asu.mutation.AssetCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "AssetScrap.asset"`)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (asu *AssetScrapUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AssetScrapUpdate {
 	asu.modifiers = append(asu.modifiers, modifiers...)
@@ -374,9 +404,6 @@ func (asu *AssetScrapUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *As
 }
 
 func (asu *AssetScrapUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := asu.check(); err != nil {
-		return n, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(assetscrap.Table, assetscrap.Columns, sqlgraph.NewFieldSpec(assetscrap.FieldID, field.TypeUint64))
 	if ps := asu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -403,14 +430,14 @@ func (asu *AssetScrapUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if asu.mutation.RemarkCleared() {
 		_spec.ClearField(assetscrap.FieldRemark, field.TypeString)
 	}
-	if value, ok := asu.mutation.ScrapReasonType(); ok {
-		_spec.SetField(assetscrap.FieldScrapReasonType, field.TypeUint8, value)
+	if value, ok := asu.mutation.ReasonType(); ok {
+		_spec.SetField(assetscrap.FieldReasonType, field.TypeUint8, value)
 	}
-	if value, ok := asu.mutation.AddedScrapReasonType(); ok {
-		_spec.AddField(assetscrap.FieldScrapReasonType, field.TypeUint8, value)
+	if value, ok := asu.mutation.AddedReasonType(); ok {
+		_spec.AddField(assetscrap.FieldReasonType, field.TypeUint8, value)
 	}
-	if asu.mutation.ScrapReasonTypeCleared() {
-		_spec.ClearField(assetscrap.FieldScrapReasonType, field.TypeUint8)
+	if asu.mutation.ReasonTypeCleared() {
+		_spec.ClearField(assetscrap.FieldReasonType, field.TypeUint8)
 	}
 	if value, ok := asu.mutation.ScrapAt(); ok {
 		_spec.SetField(assetscrap.FieldScrapAt, field.TypeTime, value)
@@ -418,20 +445,29 @@ func (asu *AssetScrapUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if asu.mutation.ScrapAtCleared() {
 		_spec.ClearField(assetscrap.FieldScrapAt, field.TypeTime)
 	}
-	if value, ok := asu.mutation.ScrapOperateRoleType(); ok {
-		_spec.SetField(assetscrap.FieldScrapOperateRoleType, field.TypeUint8, value)
+	if value, ok := asu.mutation.OperateRoleType(); ok {
+		_spec.SetField(assetscrap.FieldOperateRoleType, field.TypeUint8, value)
 	}
-	if value, ok := asu.mutation.AddedScrapOperateRoleType(); ok {
-		_spec.AddField(assetscrap.FieldScrapOperateRoleType, field.TypeUint8, value)
+	if value, ok := asu.mutation.AddedOperateRoleType(); ok {
+		_spec.AddField(assetscrap.FieldOperateRoleType, field.TypeUint8, value)
 	}
-	if asu.mutation.ScrapOperateRoleTypeCleared() {
-		_spec.ClearField(assetscrap.FieldScrapOperateRoleType, field.TypeUint8)
+	if asu.mutation.OperateRoleTypeCleared() {
+		_spec.ClearField(assetscrap.FieldOperateRoleType, field.TypeUint8)
 	}
-	if value, ok := asu.mutation.ScrapBatch(); ok {
-		_spec.SetField(assetscrap.FieldScrapBatch, field.TypeString, value)
+	if value, ok := asu.mutation.Sn(); ok {
+		_spec.SetField(assetscrap.FieldSn, field.TypeString, value)
 	}
-	if asu.mutation.ScrapBatchCleared() {
-		_spec.ClearField(assetscrap.FieldScrapBatch, field.TypeString)
+	if asu.mutation.SnCleared() {
+		_spec.ClearField(assetscrap.FieldSn, field.TypeString)
+	}
+	if value, ok := asu.mutation.Num(); ok {
+		_spec.SetField(assetscrap.FieldNum, field.TypeUint, value)
+	}
+	if value, ok := asu.mutation.AddedNum(); ok {
+		_spec.AddField(assetscrap.FieldNum, field.TypeUint, value)
+	}
+	if asu.mutation.NumCleared() {
+		_spec.ClearField(assetscrap.FieldNum, field.TypeUint)
 	}
 	if asu.mutation.ManagerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -549,28 +585,44 @@ func (asu *AssetScrapUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if asu.mutation.AssetCleared() {
+	if asu.mutation.ScrapDetailsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   assetscrap.AssetTable,
-			Columns: []string{assetscrap.AssetColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   assetscrap.ScrapDetailsTable,
+			Columns: []string{assetscrap.ScrapDetailsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(assetscrapdetails.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := asu.mutation.AssetIDs(); len(nodes) > 0 {
+	if nodes := asu.mutation.RemovedScrapDetailsIDs(); len(nodes) > 0 && !asu.mutation.ScrapDetailsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   assetscrap.AssetTable,
-			Columns: []string{assetscrap.AssetColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   assetscrap.ScrapDetailsTable,
+			Columns: []string{assetscrap.ScrapDetailsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(assetscrapdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := asu.mutation.ScrapDetailsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   assetscrap.ScrapDetailsTable,
+			Columns: []string{assetscrap.ScrapDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetscrapdetails.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -638,30 +690,30 @@ func (asuo *AssetScrapUpdateOne) ClearRemark() *AssetScrapUpdateOne {
 	return asuo
 }
 
-// SetScrapReasonType sets the "scrap_reason_type" field.
-func (asuo *AssetScrapUpdateOne) SetScrapReasonType(u uint8) *AssetScrapUpdateOne {
-	asuo.mutation.ResetScrapReasonType()
-	asuo.mutation.SetScrapReasonType(u)
+// SetReasonType sets the "reason_type" field.
+func (asuo *AssetScrapUpdateOne) SetReasonType(u uint8) *AssetScrapUpdateOne {
+	asuo.mutation.ResetReasonType()
+	asuo.mutation.SetReasonType(u)
 	return asuo
 }
 
-// SetNillableScrapReasonType sets the "scrap_reason_type" field if the given value is not nil.
-func (asuo *AssetScrapUpdateOne) SetNillableScrapReasonType(u *uint8) *AssetScrapUpdateOne {
+// SetNillableReasonType sets the "reason_type" field if the given value is not nil.
+func (asuo *AssetScrapUpdateOne) SetNillableReasonType(u *uint8) *AssetScrapUpdateOne {
 	if u != nil {
-		asuo.SetScrapReasonType(*u)
+		asuo.SetReasonType(*u)
 	}
 	return asuo
 }
 
-// AddScrapReasonType adds u to the "scrap_reason_type" field.
-func (asuo *AssetScrapUpdateOne) AddScrapReasonType(u int8) *AssetScrapUpdateOne {
-	asuo.mutation.AddScrapReasonType(u)
+// AddReasonType adds u to the "reason_type" field.
+func (asuo *AssetScrapUpdateOne) AddReasonType(u int8) *AssetScrapUpdateOne {
+	asuo.mutation.AddReasonType(u)
 	return asuo
 }
 
-// ClearScrapReasonType clears the value of the "scrap_reason_type" field.
-func (asuo *AssetScrapUpdateOne) ClearScrapReasonType() *AssetScrapUpdateOne {
-	asuo.mutation.ClearScrapReasonType()
+// ClearReasonType clears the value of the "reason_type" field.
+func (asuo *AssetScrapUpdateOne) ClearReasonType() *AssetScrapUpdateOne {
+	asuo.mutation.ClearReasonType()
 	return asuo
 }
 
@@ -685,84 +737,97 @@ func (asuo *AssetScrapUpdateOne) ClearScrapAt() *AssetScrapUpdateOne {
 	return asuo
 }
 
-// SetScrapOperateID sets the "scrap_operate_id" field.
-func (asuo *AssetScrapUpdateOne) SetScrapOperateID(u uint64) *AssetScrapUpdateOne {
-	asuo.mutation.SetScrapOperateID(u)
+// SetOperateID sets the "operate_id" field.
+func (asuo *AssetScrapUpdateOne) SetOperateID(u uint64) *AssetScrapUpdateOne {
+	asuo.mutation.SetOperateID(u)
 	return asuo
 }
 
-// SetNillableScrapOperateID sets the "scrap_operate_id" field if the given value is not nil.
-func (asuo *AssetScrapUpdateOne) SetNillableScrapOperateID(u *uint64) *AssetScrapUpdateOne {
+// SetNillableOperateID sets the "operate_id" field if the given value is not nil.
+func (asuo *AssetScrapUpdateOne) SetNillableOperateID(u *uint64) *AssetScrapUpdateOne {
 	if u != nil {
-		asuo.SetScrapOperateID(*u)
+		asuo.SetOperateID(*u)
 	}
 	return asuo
 }
 
-// ClearScrapOperateID clears the value of the "scrap_operate_id" field.
-func (asuo *AssetScrapUpdateOne) ClearScrapOperateID() *AssetScrapUpdateOne {
-	asuo.mutation.ClearScrapOperateID()
+// ClearOperateID clears the value of the "operate_id" field.
+func (asuo *AssetScrapUpdateOne) ClearOperateID() *AssetScrapUpdateOne {
+	asuo.mutation.ClearOperateID()
 	return asuo
 }
 
-// SetScrapOperateRoleType sets the "scrap_operate_role_type" field.
-func (asuo *AssetScrapUpdateOne) SetScrapOperateRoleType(u uint8) *AssetScrapUpdateOne {
-	asuo.mutation.ResetScrapOperateRoleType()
-	asuo.mutation.SetScrapOperateRoleType(u)
+// SetOperateRoleType sets the "operate_role_type" field.
+func (asuo *AssetScrapUpdateOne) SetOperateRoleType(u uint8) *AssetScrapUpdateOne {
+	asuo.mutation.ResetOperateRoleType()
+	asuo.mutation.SetOperateRoleType(u)
 	return asuo
 }
 
-// SetNillableScrapOperateRoleType sets the "scrap_operate_role_type" field if the given value is not nil.
-func (asuo *AssetScrapUpdateOne) SetNillableScrapOperateRoleType(u *uint8) *AssetScrapUpdateOne {
+// SetNillableOperateRoleType sets the "operate_role_type" field if the given value is not nil.
+func (asuo *AssetScrapUpdateOne) SetNillableOperateRoleType(u *uint8) *AssetScrapUpdateOne {
 	if u != nil {
-		asuo.SetScrapOperateRoleType(*u)
+		asuo.SetOperateRoleType(*u)
 	}
 	return asuo
 }
 
-// AddScrapOperateRoleType adds u to the "scrap_operate_role_type" field.
-func (asuo *AssetScrapUpdateOne) AddScrapOperateRoleType(u int8) *AssetScrapUpdateOne {
-	asuo.mutation.AddScrapOperateRoleType(u)
+// AddOperateRoleType adds u to the "operate_role_type" field.
+func (asuo *AssetScrapUpdateOne) AddOperateRoleType(u int8) *AssetScrapUpdateOne {
+	asuo.mutation.AddOperateRoleType(u)
 	return asuo
 }
 
-// ClearScrapOperateRoleType clears the value of the "scrap_operate_role_type" field.
-func (asuo *AssetScrapUpdateOne) ClearScrapOperateRoleType() *AssetScrapUpdateOne {
-	asuo.mutation.ClearScrapOperateRoleType()
+// ClearOperateRoleType clears the value of the "operate_role_type" field.
+func (asuo *AssetScrapUpdateOne) ClearOperateRoleType() *AssetScrapUpdateOne {
+	asuo.mutation.ClearOperateRoleType()
 	return asuo
 }
 
-// SetScrapBatch sets the "scrap_batch" field.
-func (asuo *AssetScrapUpdateOne) SetScrapBatch(s string) *AssetScrapUpdateOne {
-	asuo.mutation.SetScrapBatch(s)
+// SetSn sets the "sn" field.
+func (asuo *AssetScrapUpdateOne) SetSn(s string) *AssetScrapUpdateOne {
+	asuo.mutation.SetSn(s)
 	return asuo
 }
 
-// SetNillableScrapBatch sets the "scrap_batch" field if the given value is not nil.
-func (asuo *AssetScrapUpdateOne) SetNillableScrapBatch(s *string) *AssetScrapUpdateOne {
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (asuo *AssetScrapUpdateOne) SetNillableSn(s *string) *AssetScrapUpdateOne {
 	if s != nil {
-		asuo.SetScrapBatch(*s)
+		asuo.SetSn(*s)
 	}
 	return asuo
 }
 
-// ClearScrapBatch clears the value of the "scrap_batch" field.
-func (asuo *AssetScrapUpdateOne) ClearScrapBatch() *AssetScrapUpdateOne {
-	asuo.mutation.ClearScrapBatch()
+// ClearSn clears the value of the "sn" field.
+func (asuo *AssetScrapUpdateOne) ClearSn() *AssetScrapUpdateOne {
+	asuo.mutation.ClearSn()
 	return asuo
 }
 
-// SetAssetID sets the "asset_id" field.
-func (asuo *AssetScrapUpdateOne) SetAssetID(u uint64) *AssetScrapUpdateOne {
-	asuo.mutation.SetAssetID(u)
+// SetNum sets the "num" field.
+func (asuo *AssetScrapUpdateOne) SetNum(u uint) *AssetScrapUpdateOne {
+	asuo.mutation.ResetNum()
+	asuo.mutation.SetNum(u)
 	return asuo
 }
 
-// SetNillableAssetID sets the "asset_id" field if the given value is not nil.
-func (asuo *AssetScrapUpdateOne) SetNillableAssetID(u *uint64) *AssetScrapUpdateOne {
+// SetNillableNum sets the "num" field if the given value is not nil.
+func (asuo *AssetScrapUpdateOne) SetNillableNum(u *uint) *AssetScrapUpdateOne {
 	if u != nil {
-		asuo.SetAssetID(*u)
+		asuo.SetNum(*u)
 	}
+	return asuo
+}
+
+// AddNum adds u to the "num" field.
+func (asuo *AssetScrapUpdateOne) AddNum(u int) *AssetScrapUpdateOne {
+	asuo.mutation.AddNum(u)
+	return asuo
+}
+
+// ClearNum clears the value of the "num" field.
+func (asuo *AssetScrapUpdateOne) ClearNum() *AssetScrapUpdateOne {
+	asuo.mutation.ClearNum()
 	return asuo
 }
 
@@ -842,9 +907,19 @@ func (asuo *AssetScrapUpdateOne) SetAgent(a *Agent) *AssetScrapUpdateOne {
 	return asuo.SetAgentID(a.ID)
 }
 
-// SetAsset sets the "asset" edge to the Asset entity.
-func (asuo *AssetScrapUpdateOne) SetAsset(a *Asset) *AssetScrapUpdateOne {
-	return asuo.SetAssetID(a.ID)
+// AddScrapDetailIDs adds the "scrap_details" edge to the AssetScrapDetails entity by IDs.
+func (asuo *AssetScrapUpdateOne) AddScrapDetailIDs(ids ...uint64) *AssetScrapUpdateOne {
+	asuo.mutation.AddScrapDetailIDs(ids...)
+	return asuo
+}
+
+// AddScrapDetails adds the "scrap_details" edges to the AssetScrapDetails entity.
+func (asuo *AssetScrapUpdateOne) AddScrapDetails(a ...*AssetScrapDetails) *AssetScrapUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return asuo.AddScrapDetailIDs(ids...)
 }
 
 // Mutation returns the AssetScrapMutation object of the builder.
@@ -876,10 +951,25 @@ func (asuo *AssetScrapUpdateOne) ClearAgent() *AssetScrapUpdateOne {
 	return asuo
 }
 
-// ClearAsset clears the "asset" edge to the Asset entity.
-func (asuo *AssetScrapUpdateOne) ClearAsset() *AssetScrapUpdateOne {
-	asuo.mutation.ClearAsset()
+// ClearScrapDetails clears all "scrap_details" edges to the AssetScrapDetails entity.
+func (asuo *AssetScrapUpdateOne) ClearScrapDetails() *AssetScrapUpdateOne {
+	asuo.mutation.ClearScrapDetails()
 	return asuo
+}
+
+// RemoveScrapDetailIDs removes the "scrap_details" edge to AssetScrapDetails entities by IDs.
+func (asuo *AssetScrapUpdateOne) RemoveScrapDetailIDs(ids ...uint64) *AssetScrapUpdateOne {
+	asuo.mutation.RemoveScrapDetailIDs(ids...)
+	return asuo
+}
+
+// RemoveScrapDetails removes "scrap_details" edges to AssetScrapDetails entities.
+func (asuo *AssetScrapUpdateOne) RemoveScrapDetails(a ...*AssetScrapDetails) *AssetScrapUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return asuo.RemoveScrapDetailIDs(ids...)
 }
 
 // Where appends a list predicates to the AssetScrapUpdate builder.
@@ -937,14 +1027,6 @@ func (asuo *AssetScrapUpdateOne) defaults() error {
 	return nil
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (asuo *AssetScrapUpdateOne) check() error {
-	if _, ok := asuo.mutation.AssetID(); asuo.mutation.AssetCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "AssetScrap.asset"`)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (asuo *AssetScrapUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AssetScrapUpdateOne {
 	asuo.modifiers = append(asuo.modifiers, modifiers...)
@@ -952,9 +1034,6 @@ func (asuo *AssetScrapUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder))
 }
 
 func (asuo *AssetScrapUpdateOne) sqlSave(ctx context.Context) (_node *AssetScrap, err error) {
-	if err := asuo.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(assetscrap.Table, assetscrap.Columns, sqlgraph.NewFieldSpec(assetscrap.FieldID, field.TypeUint64))
 	id, ok := asuo.mutation.ID()
 	if !ok {
@@ -998,14 +1077,14 @@ func (asuo *AssetScrapUpdateOne) sqlSave(ctx context.Context) (_node *AssetScrap
 	if asuo.mutation.RemarkCleared() {
 		_spec.ClearField(assetscrap.FieldRemark, field.TypeString)
 	}
-	if value, ok := asuo.mutation.ScrapReasonType(); ok {
-		_spec.SetField(assetscrap.FieldScrapReasonType, field.TypeUint8, value)
+	if value, ok := asuo.mutation.ReasonType(); ok {
+		_spec.SetField(assetscrap.FieldReasonType, field.TypeUint8, value)
 	}
-	if value, ok := asuo.mutation.AddedScrapReasonType(); ok {
-		_spec.AddField(assetscrap.FieldScrapReasonType, field.TypeUint8, value)
+	if value, ok := asuo.mutation.AddedReasonType(); ok {
+		_spec.AddField(assetscrap.FieldReasonType, field.TypeUint8, value)
 	}
-	if asuo.mutation.ScrapReasonTypeCleared() {
-		_spec.ClearField(assetscrap.FieldScrapReasonType, field.TypeUint8)
+	if asuo.mutation.ReasonTypeCleared() {
+		_spec.ClearField(assetscrap.FieldReasonType, field.TypeUint8)
 	}
 	if value, ok := asuo.mutation.ScrapAt(); ok {
 		_spec.SetField(assetscrap.FieldScrapAt, field.TypeTime, value)
@@ -1013,20 +1092,29 @@ func (asuo *AssetScrapUpdateOne) sqlSave(ctx context.Context) (_node *AssetScrap
 	if asuo.mutation.ScrapAtCleared() {
 		_spec.ClearField(assetscrap.FieldScrapAt, field.TypeTime)
 	}
-	if value, ok := asuo.mutation.ScrapOperateRoleType(); ok {
-		_spec.SetField(assetscrap.FieldScrapOperateRoleType, field.TypeUint8, value)
+	if value, ok := asuo.mutation.OperateRoleType(); ok {
+		_spec.SetField(assetscrap.FieldOperateRoleType, field.TypeUint8, value)
 	}
-	if value, ok := asuo.mutation.AddedScrapOperateRoleType(); ok {
-		_spec.AddField(assetscrap.FieldScrapOperateRoleType, field.TypeUint8, value)
+	if value, ok := asuo.mutation.AddedOperateRoleType(); ok {
+		_spec.AddField(assetscrap.FieldOperateRoleType, field.TypeUint8, value)
 	}
-	if asuo.mutation.ScrapOperateRoleTypeCleared() {
-		_spec.ClearField(assetscrap.FieldScrapOperateRoleType, field.TypeUint8)
+	if asuo.mutation.OperateRoleTypeCleared() {
+		_spec.ClearField(assetscrap.FieldOperateRoleType, field.TypeUint8)
 	}
-	if value, ok := asuo.mutation.ScrapBatch(); ok {
-		_spec.SetField(assetscrap.FieldScrapBatch, field.TypeString, value)
+	if value, ok := asuo.mutation.Sn(); ok {
+		_spec.SetField(assetscrap.FieldSn, field.TypeString, value)
 	}
-	if asuo.mutation.ScrapBatchCleared() {
-		_spec.ClearField(assetscrap.FieldScrapBatch, field.TypeString)
+	if asuo.mutation.SnCleared() {
+		_spec.ClearField(assetscrap.FieldSn, field.TypeString)
+	}
+	if value, ok := asuo.mutation.Num(); ok {
+		_spec.SetField(assetscrap.FieldNum, field.TypeUint, value)
+	}
+	if value, ok := asuo.mutation.AddedNum(); ok {
+		_spec.AddField(assetscrap.FieldNum, field.TypeUint, value)
+	}
+	if asuo.mutation.NumCleared() {
+		_spec.ClearField(assetscrap.FieldNum, field.TypeUint)
 	}
 	if asuo.mutation.ManagerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1144,28 +1232,44 @@ func (asuo *AssetScrapUpdateOne) sqlSave(ctx context.Context) (_node *AssetScrap
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if asuo.mutation.AssetCleared() {
+	if asuo.mutation.ScrapDetailsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   assetscrap.AssetTable,
-			Columns: []string{assetscrap.AssetColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   assetscrap.ScrapDetailsTable,
+			Columns: []string{assetscrap.ScrapDetailsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(assetscrapdetails.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := asuo.mutation.AssetIDs(); len(nodes) > 0 {
+	if nodes := asuo.mutation.RemovedScrapDetailsIDs(); len(nodes) > 0 && !asuo.mutation.ScrapDetailsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   assetscrap.AssetTable,
-			Columns: []string{assetscrap.AssetColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   assetscrap.ScrapDetailsTable,
+			Columns: []string{assetscrap.ScrapDetailsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(assetscrapdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := asuo.mutation.ScrapDetailsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   assetscrap.ScrapDetailsTable,
+			Columns: []string{assetscrap.ScrapDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetscrapdetails.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
