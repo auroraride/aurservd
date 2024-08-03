@@ -702,15 +702,30 @@ definitions:
       assetId:
         description: 资产ID
         type: integer
+      assetType:
+        allOf:
+          - $ref: '#/definitions/model.AssetType'
+        description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
       materialId:
         description: 其它物资分类ID
         type: integer
       num:
         description: 报废数量
         type: integer
+      warehouseId:
+        description: 仓库ID
+        type: integer
+    required:
+      - assetType
     type: object
-  model.AssetScrapListRes:
+  model.AssetScrapDetailRes:
     properties:
+      assetID:
+        description: 资产ID
+        type: integer
+      assetType:
+        description: 资产类型
+        type: string
       attribute:
         additionalProperties:
           $ref: '#/definitions/model.AssetAttribute'
@@ -719,18 +734,29 @@ definitions:
       brand:
         description: 资产品牌
         type: string
-      createdAt:
-        description: 创建时间
-        type: string
-      id:
-        description: 资产ID
-        type: integer
       inTimeAt:
         description: 入库时间
         type: string
       model:
         description: 资产型号
         type: string
+      name:
+        description: 资产名称
+        type: string
+      sn:
+        description: 资产编号
+        type: string
+    type: object
+  model.AssetScrapListRes:
+    properties:
+      detail:
+        description: 报废明细
+        items:
+          $ref: '#/definitions/model.AssetScrapDetailRes'
+        type: array
+      id:
+        description: 报废ID
+        type: integer
       operateName:
         description: 操作人
         type: string
@@ -743,16 +769,9 @@ definitions:
       scrapReason:
         description: 报废原因
         type: string
-      sn:
-        description: 资产编号
-        type: string
     type: object
   model.AssetScrapReq:
     properties:
-      assetType:
-        allOf:
-          - $ref: '#/definitions/model.AssetType'
-        description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
       detail:
         description: 报废明细
         items:
@@ -766,7 +785,6 @@ definitions:
           - $ref: '#/definitions/model.ScrapReasonType'
         description: 报废原因
     required:
-      - assetType
       - detail
       - scrapReasonType
     type: object
@@ -1327,6 +1345,126 @@ paths:
       summary: 批量创建资产
       tags:
         - 资产
+  /manager/v2/asset/count:
+    get:
+      consumes:
+        - application/json
+      operationId: AssetCount
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 资产位置关键词
+          in: query
+          name: assetKeywork
+          type: string
+        - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+          in: query
+          name: assetLocationsType
+          type: integer
+          x-enum-comments:
+            AssetLocationsTypeCabinet: 电柜
+            AssetLocationsTypeOperation: 运维
+            AssetLocationsTypeRider: 骑手
+            AssetLocationsTypeStation: 站点
+            AssetLocationsTypeStore: 门店
+            AssetLocationsTypeWarehouse: 仓库
+          x-enum-varnames:
+            - AssetLocationsTypeWarehouse
+            - AssetLocationsTypeStore
+            - AssetLocationsTypeStation
+            - AssetLocationsTypeOperation
+            - AssetLocationsTypeCabinet
+            - AssetLocationsTypeRider
+        - description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+          in: query
+          name: assetStatus
+          type: integer
+        - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+          in: query
+          name: assetType
+          type: integer
+          x-enum-comments:
+            AssetTypeCabinetAccessory: 电柜配件
+            AssetTypeEbike: 电车
+            AssetTypeEbikeAccessory: 电车配件
+            AssetTypeNonSmartBattery: 非智能电池
+            AssetTypeOtherAccessory: 其它配件
+            AssetTypeSmartBattery: 智能电池
+          x-enum-varnames:
+            - AssetTypeEbike
+            - AssetTypeSmartBattery
+            - AssetTypeNonSmartBattery
+            - AssetTypeCabinetAccessory
+            - AssetTypeEbikeAccessory
+            - AssetTypeOtherAccessory
+        - description: 电车品牌ID
+          in: query
+          name: brandId
+          type: integer
+        - description: 城市
+          in: query
+          name: cityId
+          type: integer
+        - description: 是否启用
+          in: query
+          name: enable
+          type: boolean
+        - description: 型号ID
+          in: query
+          name: model
+          type: integer
+        - description: 归属类型   1:平台 2:代理商
+          enum:
+            - 1
+            - 2
+          in: query
+          name: ownerType
+          type: integer
+        - description: 电车是否赠送
+          in: query
+          name: rto
+          type: boolean
+        - description: 编号
+          in: query
+          name: sn
+          type: string
+        - description: 站点ID
+          in: query
+          name: stationId
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: int
+      summary: 资产统计
+      tags:
+        - 资产
   /manager/v2/asset/export:
     post:
       consumes:
@@ -1618,107 +1756,6 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: 资产报废还原
-      tags:
-        - 资产
-  /manager/v2/asset/scrap/other:
-    get:
-      consumes:
-        - application/json
-      operationId: AssetScrapListOther
-      parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 资产名称
-          in: query
-          name: assetName
-          type: string
-        - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          in: query
-          name: assetType
-          type: integer
-          x-enum-comments:
-            AssetTypeCabinetAccessory: 电柜配件
-            AssetTypeEbike: 电车
-            AssetTypeEbikeAccessory: 电车配件
-            AssetTypeNonSmartBattery: 非智能电池
-            AssetTypeOtherAccessory: 其它配件
-            AssetTypeSmartBattery: 智能电池
-          x-enum-varnames:
-            - AssetTypeEbike
-            - AssetTypeSmartBattery
-            - AssetTypeNonSmartBattery
-            - AssetTypeCabinetAccessory
-            - AssetTypeEbikeAccessory
-            - AssetTypeOtherAccessory
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 结束时间
-          in: query
-          name: end
-          type: string
-        - description: 资产型号
-          in: query
-          name: modelId
-          type: integer
-        - description: 操作人
-          in: query
-          name: operateName
-          type: string
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
-        - description: 报废原因 1:丢失 2:损坏 3:其他
-          enum:
-            - 1
-            - 2
-            - 3
-          in: query
-          name: scrapReason
-          type: integer
-          x-enum-comments:
-            ScrapReasonDamage: 损坏
-            ScrapReasonLost: 丢失
-            ScrapReasonOther: 其他
-          x-enum-varnames:
-            - ScrapReasonLost
-            - ScrapReasonDamage
-            - ScrapReasonOther
-        - description: 资产编号
-          in: query
-          name: sn
-          type: string
-        - description: 开始时间
-          in: query
-          name: start
-          type: string
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
-                  items:
-                    items:
-                      $ref: '#/definitions/model.AssetScrapListRes'
-                    type: array
-                type: object
-      summary: 其它资产报废列表
       tags:
         - 资产
   /manager/v2/asset/scrap/reason:

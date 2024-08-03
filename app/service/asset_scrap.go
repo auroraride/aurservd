@@ -45,6 +45,38 @@ func (s *assetScrapService) ScrapList(ctx context.Context, req *model.AssetScrap
 	s.filter(ctx, q, req)
 	q.Order(ent.Desc(assetscrap.FieldCreatedAt))
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetScrap) (res *model.AssetScrapListRes) {
+		operateName := ""
+		if item.OperateID != nil && item.OperateRoleType != nil {
+			switch *item.OperateRoleType {
+			case model.AssetOperateRoleAdmin.Value():
+				if item.Edges.Manager != nil {
+					operateName = "[后台]-" + item.Edges.Manager.Name
+				}
+			case model.AssetOperateRoleStore.Value():
+				if item.Edges.Employee != nil {
+					operateName = "[门店管理员]-" + item.Edges.Employee.Name
+				}
+			case model.AssetOperateRoleOperation.Value():
+				if item.Edges.Maintainer != nil {
+					operateName = "[运维]-" + item.Edges.Maintainer.Name
+				}
+			case model.AssetOperateRoleAgent.Value():
+				if item.Edges.Agent != nil {
+					operateName = "[代理管理员]-" + item.Edges.Agent.Name
+				}
+			default:
+				operateName = "未知"
+			}
+		}
+		res = &model.AssetScrapListRes{
+			ID:          item.ID,
+			ScrapReason: model.ScrapReasonType(item.ReasonType).String(),
+			OperateName: operateName,
+			Remark:      item.Remark,
+			ScrapAt:     item.ScrapAt.Format(carbon.DateTimeLayout),
+		}
+
+		res.AssetScrapDetail = make([]model.AssetScrapDetailRes, 0)
 		for _, v := range item.Edges.ScrapDetails {
 			if v.Edges.Asset != nil {
 				attributeValue, _ := v.Edges.Asset.QueryValues().WithAttribute().All(ctx)
@@ -86,10 +118,12 @@ func (s *assetScrapService) ScrapList(ctx context.Context, req *model.AssetScrap
 
 				// 物资名称
 				var name string
-				if v.Edges.Asset.Type == model.AssetTypeNonSmartBattery.Value() || v.Edges.Asset.Type == model.AssetTypeSmartBattery.Value() {
+				if v.Edges.Asset.Type == model.AssetTypeEbike.Value() || v.Edges.Asset.Type == model.AssetTypeSmartBattery.Value() {
 					name = v.Edges.Asset.Name
 				} else {
-					name = v.Edges.Asset.Edges.Material.Name
+					if v.Edges.Asset.Edges.Material != nil {
+						name = v.Edges.Asset.Edges.Material.Name
+					}
 				}
 
 				res.AssetScrapDetail = append(res.AssetScrapDetail, model.AssetScrapDetailRes{
@@ -105,36 +139,6 @@ func (s *assetScrapService) ScrapList(ctx context.Context, req *model.AssetScrap
 			}
 		}
 
-		operateName := ""
-		if item.OperateID != nil && item.OperateRoleType != nil {
-			switch *item.OperateRoleType {
-			case model.AssetOperateRoleAdmin.Value():
-				if item.Edges.Manager != nil {
-					operateName = "[后台]-" + item.Edges.Manager.Name
-				}
-			case model.AssetOperateRoleStore.Value():
-				if item.Edges.Employee != nil {
-					operateName = "[门店管理员]-" + item.Edges.Employee.Name
-				}
-			case model.AssetOperateRoleOperation.Value():
-				if item.Edges.Maintainer != nil {
-					operateName = "[运维]-" + item.Edges.Maintainer.Name
-				}
-			case model.AssetOperateRoleAgent.Value():
-				if item.Edges.Agent != nil {
-					operateName = "[代理管理员]-" + item.Edges.Agent.Name
-				}
-			default:
-				operateName = "未知"
-			}
-		}
-		res = &model.AssetScrapListRes{
-			ID:          item.ID,
-			ScrapReason: model.ScrapReasonType(item.ReasonType).String(),
-			OperateName: operateName,
-			Remark:      item.Remark,
-			ScrapAt:     item.ScrapAt.Format(carbon.DateTimeLayout),
-		}
 		return res
 	})
 }
@@ -207,7 +211,9 @@ func (s *assetScrapService) ScrapBatchRestore(ctx context.Context, req *model.As
 	items, _ := ent.Database.AssetScrap.Query().Where(assetscrap.IDIn(req.IDs...)).WithScrapDetails(func(query *ent.AssetScrapDetailsQuery) {
 		query.WithAsset()
 	}).All(ctx)
-
+	if len(items) == 0 {
+		return []string{"报废记录不存在"}
+	}
 	for _, item := range items {
 		for _, v := range item.Edges.ScrapDetails {
 			if v.Edges.Asset == nil {
@@ -243,32 +249,17 @@ func (s *assetScrapService) ScrapBatchRestore(ctx context.Context, req *model.As
 
 // Scrap 报废资产
 func (s *assetScrapService) Scrap(ctx context.Context, req *model.AssetScrapReq, modifier *model.Modifier) error {
-	q := ent.Database.Asset.QueryNotDeleted().Where(
-		// 资产状态在库存或故障可报废
-		asset.StatusIn(
-			model.AssetStatusStock.Value(),
-			model.AssetStatusFault.Value(),
-		),
-		// 资产库存位置在骑手或运维不可报废
-		asset.LocationsTypeNotIn(
-			model.AssetLocationsTypeRider.Value(),
-			model.AssetLocationsTypeOperation.Value(),
-		),
-	)
 	var ids []uint64
 	for _, v := range req.Detail {
 		switch v.AssetType {
 		case model.AssetTypeEbike, model.AssetTypeSmartBattery:
-			assetId, err := s.transferAssetWithSN(ctx, q, &v)
+			assetId, err := s.transferAssetWithSN(ctx, &v)
 			if err != nil {
 				return err
 			}
 			ids = append(ids, assetId...)
 		case model.AssetTypeOtherAccessory, model.AssetTypeCabinetAccessory, model.AssetTypeNonSmartBattery, model.AssetTypeEbikeAccessory:
-			if req.WarehouseID != nil {
-				q.Where(asset.HasWarehouseWith(warehouse.ID(*req.WarehouseID)))
-			}
-			assetId, err := s.transferAssetWithoutSN(ctx, q, &v)
+			assetId, err := s.transferAssetWithoutSN(ctx, &v)
 			if err != nil {
 				return err
 			}
@@ -320,21 +311,33 @@ func (s *assetScrapService) Scrap(ctx context.Context, req *model.AssetScrapReq,
 }
 
 // 有编号资产报废
-func (s *assetScrapService) transferAssetWithSN(ctx context.Context, q *ent.AssetQuery, req *model.AssetScrapDetail) ([]uint64, error) {
+func (s *assetScrapService) transferAssetWithSN(ctx context.Context, req *model.AssetScrapDetail) ([]uint64, error) {
 	ids := make([]uint64, 0)
 	if req.AssetID == nil {
 		return nil, fmt.Errorf("资产ID不能为空")
 	}
+	q := ent.Database.Asset.QueryNotDeleted().Where(
+		// 资产状态在库存或故障可报废
+		asset.StatusIn(
+			model.AssetStatusStock.Value(),
+			model.AssetStatusFault.Value(),
+		),
+		// 资产库存位置在骑手或运维不可报废
+		asset.LocationsTypeNotIn(
+			model.AssetLocationsTypeRider.Value(),
+			model.AssetLocationsTypeOperation.Value(),
+		),
+	)
 	bat, _ := q.Where(asset.Type(req.AssetType.Value()), asset.ID(*req.AssetID)).First(ctx)
 	if bat == nil {
-		return nil, fmt.Errorf("资产不存在或状态不正确")
+		return nil, fmt.Errorf("资产" + strconv.FormatUint(*req.AssetID, 10) + "不存在或状态不正确")
 	}
 	ids = append(ids, bat.ID)
 	return ids, nil
 }
 
 // 无编号资产报废
-func (s *assetScrapService) transferAssetWithoutSN(ctx context.Context, q *ent.AssetQuery, req *model.AssetScrapDetail) ([]uint64, error) {
+func (s *assetScrapService) transferAssetWithoutSN(ctx context.Context, req *model.AssetScrapDetail) ([]uint64, error) {
 	ids := make([]uint64, 0)
 	if req.MaterialID == nil {
 		return nil, fmt.Errorf("物资分类ID不能为空")
@@ -342,9 +345,25 @@ func (s *assetScrapService) transferAssetWithoutSN(ctx context.Context, q *ent.A
 	if req.Num == nil || *req.Num == 0 {
 		return nil, fmt.Errorf("报废数量不能为空")
 	}
+	if req.WarehouseID == nil {
+		return nil, fmt.Errorf("仓库ID不能为空")
+	}
+	q := ent.Database.Asset.QueryNotDeleted().Where(
+		// 资产状态在库存或故障可报废
+		asset.StatusIn(
+			model.AssetStatusStock.Value(),
+			model.AssetStatusFault.Value(),
+		),
+		// 资产库存位置在骑手或运维不可报废
+		asset.LocationsTypeNotIn(
+			model.AssetLocationsTypeRider.Value(),
+			model.AssetLocationsTypeOperation.Value(),
+		),
+		asset.HasWarehouseWith(warehouse.ID(*req.WarehouseID)),
+	)
 	all, _ := q.Where(asset.Type(req.AssetType.Value()), asset.MaterialID(*req.MaterialID)).Limit(int(*req.Num)).Order(ent.Asc(asset.FieldCreatedAt)).All(ctx)
 	if len(all) < int(*req.Num) {
-		return nil, fmt.Errorf("物资数量不足")
+		return nil, fmt.Errorf(strconv.FormatUint(*req.MaterialID, 10) + "物资数量不足")
 	}
 	for _, vl := range all {
 		ids = append(ids, vl.ID)

@@ -37,14 +37,14 @@ type AssetScrapReq struct {
 	ScrapReasonType ScrapReasonType    `json:"scrapReasonType" validate:"required"`      // 报废原因
 	Remark          *string            `json:"remark"`                                   // 备注
 	Detail          []AssetScrapDetail `json:"detail" validate:"required,dive,required"` // 报废明细
-	WarehouseID     *uint64            `json:"warehouseId" `                             // 仓库ID
 }
 
 type AssetScrapDetail struct {
-	AssetType  AssetType `json:"assetType" validate:"required"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-	AssetID    *uint64   `json:"assetId"`                       // 资产ID
-	Num        *uint     `json:"num"`                           // 报废数量
-	MaterialID *uint64   `json:"materialId"`                    // 其它物资分类ID
+	AssetType   AssetType `json:"assetType" validate:"required"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+	AssetID     *uint64   `json:"assetId"`                       // 资产ID
+	Num         *uint     `json:"num"`                           // 报废数量
+	MaterialID  *uint64   `json:"materialId"`                    // 其它物资分类ID
+	WarehouseID *uint64   `json:"warehouseId"`                   // 仓库ID
 }
 
 // AssetScrapListReq 资产报废列表请求

@@ -348,6 +348,169 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/count": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资产"
+                ],
+                "summary": "资产统计",
+                "operationId": "AssetCount",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "资产位置关键词",
+                        "name": "assetKeywork",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetLocationsTypeCabinet": "电柜",
+                            "AssetLocationsTypeOperation": "运维",
+                            "AssetLocationsTypeRider": "骑手",
+                            "AssetLocationsTypeStation": "站点",
+                            "AssetLocationsTypeStore": "门店",
+                            "AssetLocationsTypeWarehouse": "仓库"
+                        },
+                        "x-enum-varnames": [
+                            "AssetLocationsTypeWarehouse",
+                            "AssetLocationsTypeStore",
+                            "AssetLocationsTypeStation",
+                            "AssetLocationsTypeOperation",
+                            "AssetLocationsTypeCabinet",
+                            "AssetLocationsTypeRider"
+                        ],
+                        "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                        "name": "assetLocationsType",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5
+                        ],
+                        "type": "integer",
+                        "description": "资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障",
+                        "name": "assetStatus",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetTypeCabinetAccessory": "电柜配件",
+                            "AssetTypeEbike": "电车",
+                            "AssetTypeEbikeAccessory": "电车配件",
+                            "AssetTypeNonSmartBattery": "非智能电池",
+                            "AssetTypeOtherAccessory": "其它配件",
+                            "AssetTypeSmartBattery": "智能电池"
+                        },
+                        "x-enum-varnames": [
+                            "AssetTypeEbike",
+                            "AssetTypeSmartBattery",
+                            "AssetTypeNonSmartBattery",
+                            "AssetTypeCabinetAccessory",
+                            "AssetTypeEbikeAccessory",
+                            "AssetTypeOtherAccessory"
+                        ],
+                        "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                        "name": "assetType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电车品牌ID",
+                        "name": "brandId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否启用",
+                        "name": "enable",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "型号ID",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "归属类型   1:平台 2:代理商",
+                        "name": "ownerType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "电车是否赠送",
+                        "name": "rto",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "编号",
+                        "name": "sn",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "int"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/export": {
             "post": {
                 "consumes": [
@@ -783,152 +946,6 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v2/asset/scrap/other": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产"
-                ],
-                "summary": "其它资产报废列表",
-                "operationId": "AssetScrapListOther",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "资产名称",
-                        "name": "assetName",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2,
-                            3,
-                            4,
-                            5,
-                            6
-                        ],
-                        "type": "integer",
-                        "x-enum-comments": {
-                            "AssetTypeCabinetAccessory": "电柜配件",
-                            "AssetTypeEbike": "电车",
-                            "AssetTypeEbikeAccessory": "电车配件",
-                            "AssetTypeNonSmartBattery": "非智能电池",
-                            "AssetTypeOtherAccessory": "其它配件",
-                            "AssetTypeSmartBattery": "智能电池"
-                        },
-                        "x-enum-varnames": [
-                            "AssetTypeEbike",
-                            "AssetTypeSmartBattery",
-                            "AssetTypeNonSmartBattery",
-                            "AssetTypeCabinetAccessory",
-                            "AssetTypeEbikeAccessory",
-                            "AssetTypeOtherAccessory"
-                        ],
-                        "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
-                        "name": "assetType",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "当前页, 从1开始, 默认1",
-                        "name": "current",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "结束时间",
-                        "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "资产型号",
-                        "name": "modelId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "操作人",
-                        "name": "operateName",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数据, 默认20",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2,
-                            3
-                        ],
-                        "type": "integer",
-                        "x-enum-comments": {
-                            "ScrapReasonDamage": "损坏",
-                            "ScrapReasonLost": "丢失",
-                            "ScrapReasonOther": "其他"
-                        },
-                        "x-enum-varnames": [
-                            "ScrapReasonLost",
-                            "ScrapReasonDamage",
-                            "ScrapReasonOther"
-                        ],
-                        "description": "报废原因 1:丢失 2:损坏 3:其他",
-                        "name": "scrapReason",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "资产编号",
-                        "name": "sn",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "开始时间",
-                        "name": "start",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/model.PaginationRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.AssetScrapListRes"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
                         }
                     }
                 }
@@ -2764,10 +2781,21 @@ const docTemplate = `{
         },
         "model.AssetScrapDetail": {
             "type": "object",
+            "required": [
+                "assetType"
+            ],
             "properties": {
                 "assetId": {
                     "description": "资产ID",
                     "type": "integer"
+                },
+                "assetType": {
+                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
                 },
                 "materialId": {
                     "description": "其它物资分类ID",
@@ -2776,12 +2804,24 @@ const docTemplate = `{
                 "num": {
                     "description": "报废数量",
                     "type": "integer"
+                },
+                "warehouseId": {
+                    "description": "仓库ID",
+                    "type": "integer"
                 }
             }
         },
-        "model.AssetScrapListRes": {
+        "model.AssetScrapDetailRes": {
             "type": "object",
             "properties": {
+                "assetID": {
+                    "description": "资产ID",
+                    "type": "integer"
+                },
+                "assetType": {
+                    "description": "资产类型",
+                    "type": "string"
+                },
                 "attribute": {
                     "description": "属性",
                     "type": "object",
@@ -2793,14 +2833,6 @@ const docTemplate = `{
                     "description": "资产品牌",
                     "type": "string"
                 },
-                "createdAt": {
-                    "description": "创建时间",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "资产ID",
-                    "type": "integer"
-                },
                 "inTimeAt": {
                     "description": "入库时间",
                     "type": "string"
@@ -2808,6 +2840,30 @@ const docTemplate = `{
                 "model": {
                     "description": "资产型号",
                     "type": "string"
+                },
+                "name": {
+                    "description": "资产名称",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "资产编号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetScrapListRes": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "description": "报废明细",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetScrapDetailRes"
+                    }
+                },
+                "id": {
+                    "description": "报废ID",
+                    "type": "integer"
                 },
                 "operateName": {
                     "description": "操作人",
@@ -2824,29 +2880,16 @@ const docTemplate = `{
                 "scrapReason": {
                     "description": "报废原因",
                     "type": "string"
-                },
-                "sn": {
-                    "description": "资产编号",
-                    "type": "string"
                 }
             }
         },
         "model.AssetScrapReq": {
             "type": "object",
             "required": [
-                "assetType",
                 "detail",
                 "scrapReasonType"
             ],
             "properties": {
-                "assetType": {
-                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.AssetType"
-                        }
-                    ]
-                },
                 "detail": {
                     "description": "报废明细",
                     "type": "array",

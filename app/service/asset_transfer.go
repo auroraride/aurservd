@@ -39,9 +39,9 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 	q := s.orm.Create()
 	// 已经入库资产调拨
 	if req.FromLocationType != nil && req.FromLocationID != nil {
-		assetIDs, failed, err = s.stockTransfer(ctx, req, modifier)
-		if err != nil || len(failed) > 0 {
-			return failed, err
+		assetIDs, failed = s.stockTransfer(ctx, req, modifier)
+		if len(failed) > 0 {
+			return failed, nil
 		}
 		q.SetFromLocationType(req.FromLocationType.Value()).
 			SetFromLocationID(*req.FromLocationID).
@@ -53,9 +53,9 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 	}
 	// 初始调拨
 	if req.FromLocationType == nil {
-		assetIDs, failed, err = s.initialTransfer(ctx, req, modifier)
-		if err != nil || len(failed) > 0 {
-			return failed, err
+		assetIDs, failed = s.initialTransfer(ctx, req, modifier)
+		if len(failed) > 0 {
+			return failed, nil
 		}
 		q.SetInNum(uint(len(assetIDs))).
 			SetInTimeAt(time.Now()).
@@ -222,13 +222,14 @@ func (s *assetTransferService) transferLimit(ctx context.Context, req *model.Ass
 }
 
 // 已入库调拨
-func (s *assetTransferService) stockTransfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (assetIDs []uint64, failed []string, err error) {
+func (s *assetTransferService) stockTransfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (assetIDs []uint64, failed []string) {
 	// 查询物资是否充足
 	q := ent.Database.Asset.QueryNotDeleted().Where(
 		asset.LocationsType((*req.FromLocationType).Value()),
 		asset.StatusIn(model.AssetStatusStock.Value(), model.AssetStatusFault.Value()),
 	)
 
+	var err error
 	for _, v := range req.Details {
 		var iDs []uint64
 		switch v.AssetType {
@@ -248,11 +249,12 @@ func (s *assetTransferService) stockTransfer(ctx context.Context, req *model.Ass
 		}
 		assetIDs = append(assetIDs, iDs...)
 	}
-	return assetIDs, nil, nil
+	return assetIDs, failed
 }
 
 // 初始调拨
-func (s *assetTransferService) initialTransfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (assetIDs []uint64, failed []string, err error) {
+func (s *assetTransferService) initialTransfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (assetIDs []uint64, failed []string) {
+	var err error
 	// 创建物资
 	for _, v := range req.Details {
 		var iDs []uint64
@@ -268,7 +270,7 @@ func (s *assetTransferService) initialTransfer(ctx context.Context, req *model.A
 		}
 		assetIDs = append(assetIDs, iDs...)
 	}
-	return assetIDs, failed, nil
+	return assetIDs, failed
 }
 
 // initialTransferWithoutSN 无编号资产初始化调拨
