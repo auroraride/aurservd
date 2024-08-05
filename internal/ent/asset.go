@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -101,9 +102,11 @@ type AssetEdges struct {
 	Operator *Maintainer `json:"operator,omitempty"`
 	// ScrapDetails holds the value of the scrap_details edge.
 	ScrapDetails []*AssetScrapDetails `json:"scrap_details,omitempty"`
+	// TransferDetails holds the value of the transfer_details edge.
+	TransferDetails *AssetTransferDetails `json:"transfer_details,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [12]bool
+	loadedTypes [13]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
@@ -232,6 +235,17 @@ func (e AssetEdges) ScrapDetailsOrErr() ([]*AssetScrapDetails, error) {
 		return e.ScrapDetails, nil
 	}
 	return nil, &NotLoadedError{edge: "scrap_details"}
+}
+
+// TransferDetailsOrErr returns the TransferDetails value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetEdges) TransferDetailsOrErr() (*AssetTransferDetails, error) {
+	if e.TransferDetails != nil {
+		return e.TransferDetails, nil
+	} else if e.loadedTypes[12] {
+		return nil, &NotFoundError{label: assettransferdetails.Label}
+	}
+	return nil, &NotLoadedError{edge: "transfer_details"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -471,6 +485,11 @@ func (a *Asset) QueryOperator() *MaintainerQuery {
 // QueryScrapDetails queries the "scrap_details" edge of the Asset entity.
 func (a *Asset) QueryScrapDetails() *AssetScrapDetailsQuery {
 	return NewAssetClient(a.config).QueryScrapDetails(a)
+}
+
+// QueryTransferDetails queries the "transfer_details" edge of the Asset entity.
+func (a *Asset) QueryTransferDetails() *AssetTransferDetailsQuery {
+	return NewAssetClient(a.config).QueryTransferDetails(a)
 }
 
 // Update returns a builder for updating this Asset.

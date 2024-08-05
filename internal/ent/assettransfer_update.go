@@ -327,53 +327,6 @@ func (atu *AssetTransferUpdate) ClearOutOperateType() *AssetTransferUpdate {
 	return atu
 }
 
-// SetInOperateID sets the "in_operate_id" field.
-func (atu *AssetTransferUpdate) SetInOperateID(u uint64) *AssetTransferUpdate {
-	atu.mutation.SetInOperateID(u)
-	return atu
-}
-
-// SetNillableInOperateID sets the "in_operate_id" field if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableInOperateID(u *uint64) *AssetTransferUpdate {
-	if u != nil {
-		atu.SetInOperateID(*u)
-	}
-	return atu
-}
-
-// ClearInOperateID clears the value of the "in_operate_id" field.
-func (atu *AssetTransferUpdate) ClearInOperateID() *AssetTransferUpdate {
-	atu.mutation.ClearInOperateID()
-	return atu
-}
-
-// SetInOperateType sets the "in_operate_type" field.
-func (atu *AssetTransferUpdate) SetInOperateType(u uint8) *AssetTransferUpdate {
-	atu.mutation.ResetInOperateType()
-	atu.mutation.SetInOperateType(u)
-	return atu
-}
-
-// SetNillableInOperateType sets the "in_operate_type" field if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableInOperateType(u *uint8) *AssetTransferUpdate {
-	if u != nil {
-		atu.SetInOperateType(*u)
-	}
-	return atu
-}
-
-// AddInOperateType adds u to the "in_operate_type" field.
-func (atu *AssetTransferUpdate) AddInOperateType(u int8) *AssetTransferUpdate {
-	atu.mutation.AddInOperateType(u)
-	return atu
-}
-
-// ClearInOperateType clears the value of the "in_operate_type" field.
-func (atu *AssetTransferUpdate) ClearInOperateType() *AssetTransferUpdate {
-	atu.mutation.ClearInOperateType()
-	return atu
-}
-
 // SetOutTimeAt sets the "out_time_at" field.
 func (atu *AssetTransferUpdate) SetOutTimeAt(t time.Time) *AssetTransferUpdate {
 	atu.mutation.SetOutTimeAt(t)
@@ -391,26 +344,6 @@ func (atu *AssetTransferUpdate) SetNillableOutTimeAt(t *time.Time) *AssetTransfe
 // ClearOutTimeAt clears the value of the "out_time_at" field.
 func (atu *AssetTransferUpdate) ClearOutTimeAt() *AssetTransferUpdate {
 	atu.mutation.ClearOutTimeAt()
-	return atu
-}
-
-// SetInTimeAt sets the "in_time_at" field.
-func (atu *AssetTransferUpdate) SetInTimeAt(t time.Time) *AssetTransferUpdate {
-	atu.mutation.SetInTimeAt(t)
-	return atu
-}
-
-// SetNillableInTimeAt sets the "in_time_at" field if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableInTimeAt(t *time.Time) *AssetTransferUpdate {
-	if t != nil {
-		atu.SetInTimeAt(*t)
-	}
-	return atu
-}
-
-// ClearInTimeAt clears the value of the "in_time_at" field.
-func (atu *AssetTransferUpdate) ClearInTimeAt() *AssetTransferUpdate {
-	atu.mutation.ClearInTimeAt()
 	return atu
 }
 
@@ -434,247 +367,274 @@ func (atu *AssetTransferUpdate) ClearReason() *AssetTransferUpdate {
 	return atu
 }
 
-// AddDetailIDs adds the "details" edge to the AssetTransferDetails entity by IDs.
-func (atu *AssetTransferUpdate) AddDetailIDs(ids ...uint64) *AssetTransferUpdate {
-	atu.mutation.AddDetailIDs(ids...)
+// SetType sets the "type" field.
+func (atu *AssetTransferUpdate) SetType(u uint8) *AssetTransferUpdate {
+	atu.mutation.ResetType()
+	atu.mutation.SetType(u)
 	return atu
 }
 
-// AddDetails adds the "details" edges to the AssetTransferDetails entity.
-func (atu *AssetTransferUpdate) AddDetails(a ...*AssetTransferDetails) *AssetTransferUpdate {
+// SetNillableType sets the "type" field if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableType(u *uint8) *AssetTransferUpdate {
+	if u != nil {
+		atu.SetType(*u)
+	}
+	return atu
+}
+
+// AddType adds u to the "type" field.
+func (atu *AssetTransferUpdate) AddType(u int8) *AssetTransferUpdate {
+	atu.mutation.AddType(u)
+	return atu
+}
+
+// ClearType clears the value of the "type" field.
+func (atu *AssetTransferUpdate) ClearType() *AssetTransferUpdate {
+	atu.mutation.ClearType()
+	return atu
+}
+
+// AddTransferDetailIDs adds the "transfer_details" edge to the AssetTransferDetails entity by IDs.
+func (atu *AssetTransferUpdate) AddTransferDetailIDs(ids ...uint64) *AssetTransferUpdate {
+	atu.mutation.AddTransferDetailIDs(ids...)
+	return atu
+}
+
+// AddTransferDetails adds the "transfer_details" edges to the AssetTransferDetails entity.
+func (atu *AssetTransferUpdate) AddTransferDetails(a ...*AssetTransferDetails) *AssetTransferUpdate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return atu.AddDetailIDs(ids...)
+	return atu.AddTransferDetailIDs(ids...)
 }
 
-// SetLocationStoreID sets the "location_store" edge to the Store entity by ID.
-func (atu *AssetTransferUpdate) SetLocationStoreID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetLocationStoreID(id)
+// SetFromLocationStoreID sets the "from_location_store" edge to the Store entity by ID.
+func (atu *AssetTransferUpdate) SetFromLocationStoreID(id uint64) *AssetTransferUpdate {
+	atu.mutation.SetFromLocationStoreID(id)
 	return atu
 }
 
-// SetNillableLocationStoreID sets the "location_store" edge to the Store entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableLocationStoreID(id *uint64) *AssetTransferUpdate {
+// SetNillableFromLocationStoreID sets the "from_location_store" edge to the Store entity by ID if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableFromLocationStoreID(id *uint64) *AssetTransferUpdate {
 	if id != nil {
-		atu = atu.SetLocationStoreID(*id)
+		atu = atu.SetFromLocationStoreID(*id)
 	}
 	return atu
 }
 
-// SetLocationStore sets the "location_store" edge to the Store entity.
-func (atu *AssetTransferUpdate) SetLocationStore(s *Store) *AssetTransferUpdate {
-	return atu.SetLocationStoreID(s.ID)
+// SetFromLocationStore sets the "from_location_store" edge to the Store entity.
+func (atu *AssetTransferUpdate) SetFromLocationStore(s *Store) *AssetTransferUpdate {
+	return atu.SetFromLocationStoreID(s.ID)
 }
 
-// SetLocationCabinetID sets the "location_cabinet" edge to the Cabinet entity by ID.
-func (atu *AssetTransferUpdate) SetLocationCabinetID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetLocationCabinetID(id)
+// SetFromLocationCabinetID sets the "from_location_cabinet" edge to the Cabinet entity by ID.
+func (atu *AssetTransferUpdate) SetFromLocationCabinetID(id uint64) *AssetTransferUpdate {
+	atu.mutation.SetFromLocationCabinetID(id)
 	return atu
 }
 
-// SetNillableLocationCabinetID sets the "location_cabinet" edge to the Cabinet entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableLocationCabinetID(id *uint64) *AssetTransferUpdate {
+// SetNillableFromLocationCabinetID sets the "from_location_cabinet" edge to the Cabinet entity by ID if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableFromLocationCabinetID(id *uint64) *AssetTransferUpdate {
 	if id != nil {
-		atu = atu.SetLocationCabinetID(*id)
+		atu = atu.SetFromLocationCabinetID(*id)
 	}
 	return atu
 }
 
-// SetLocationCabinet sets the "location_cabinet" edge to the Cabinet entity.
-func (atu *AssetTransferUpdate) SetLocationCabinet(c *Cabinet) *AssetTransferUpdate {
-	return atu.SetLocationCabinetID(c.ID)
+// SetFromLocationCabinet sets the "from_location_cabinet" edge to the Cabinet entity.
+func (atu *AssetTransferUpdate) SetFromLocationCabinet(c *Cabinet) *AssetTransferUpdate {
+	return atu.SetFromLocationCabinetID(c.ID)
 }
 
-// SetLocationStationID sets the "location_station" edge to the EnterpriseStation entity by ID.
-func (atu *AssetTransferUpdate) SetLocationStationID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetLocationStationID(id)
+// SetFromLocationStationID sets the "from_location_station" edge to the EnterpriseStation entity by ID.
+func (atu *AssetTransferUpdate) SetFromLocationStationID(id uint64) *AssetTransferUpdate {
+	atu.mutation.SetFromLocationStationID(id)
 	return atu
 }
 
-// SetNillableLocationStationID sets the "location_station" edge to the EnterpriseStation entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableLocationStationID(id *uint64) *AssetTransferUpdate {
+// SetNillableFromLocationStationID sets the "from_location_station" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableFromLocationStationID(id *uint64) *AssetTransferUpdate {
 	if id != nil {
-		atu = atu.SetLocationStationID(*id)
+		atu = atu.SetFromLocationStationID(*id)
 	}
 	return atu
 }
 
-// SetLocationStation sets the "location_station" edge to the EnterpriseStation entity.
-func (atu *AssetTransferUpdate) SetLocationStation(e *EnterpriseStation) *AssetTransferUpdate {
-	return atu.SetLocationStationID(e.ID)
+// SetFromLocationStation sets the "from_location_station" edge to the EnterpriseStation entity.
+func (atu *AssetTransferUpdate) SetFromLocationStation(e *EnterpriseStation) *AssetTransferUpdate {
+	return atu.SetFromLocationStationID(e.ID)
 }
 
-// SetLocationRiderID sets the "location_rider" edge to the Rider entity by ID.
-func (atu *AssetTransferUpdate) SetLocationRiderID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetLocationRiderID(id)
+// SetFromLocationRiderID sets the "from_location_rider" edge to the Rider entity by ID.
+func (atu *AssetTransferUpdate) SetFromLocationRiderID(id uint64) *AssetTransferUpdate {
+	atu.mutation.SetFromLocationRiderID(id)
 	return atu
 }
 
-// SetNillableLocationRiderID sets the "location_rider" edge to the Rider entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableLocationRiderID(id *uint64) *AssetTransferUpdate {
+// SetNillableFromLocationRiderID sets the "from_location_rider" edge to the Rider entity by ID if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableFromLocationRiderID(id *uint64) *AssetTransferUpdate {
 	if id != nil {
-		atu = atu.SetLocationRiderID(*id)
+		atu = atu.SetFromLocationRiderID(*id)
 	}
 	return atu
 }
 
-// SetLocationRider sets the "location_rider" edge to the Rider entity.
-func (atu *AssetTransferUpdate) SetLocationRider(r *Rider) *AssetTransferUpdate {
-	return atu.SetLocationRiderID(r.ID)
+// SetFromLocationRider sets the "from_location_rider" edge to the Rider entity.
+func (atu *AssetTransferUpdate) SetFromLocationRider(r *Rider) *AssetTransferUpdate {
+	return atu.SetFromLocationRiderID(r.ID)
 }
 
-// SetLocationOperatorID sets the "location_operator" edge to the Maintainer entity by ID.
-func (atu *AssetTransferUpdate) SetLocationOperatorID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetLocationOperatorID(id)
+// SetFromLocationOperatorID sets the "from_location_operator" edge to the Maintainer entity by ID.
+func (atu *AssetTransferUpdate) SetFromLocationOperatorID(id uint64) *AssetTransferUpdate {
+	atu.mutation.SetFromLocationOperatorID(id)
 	return atu
 }
 
-// SetNillableLocationOperatorID sets the "location_operator" edge to the Maintainer entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableLocationOperatorID(id *uint64) *AssetTransferUpdate {
+// SetNillableFromLocationOperatorID sets the "from_location_operator" edge to the Maintainer entity by ID if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableFromLocationOperatorID(id *uint64) *AssetTransferUpdate {
 	if id != nil {
-		atu = atu.SetLocationOperatorID(*id)
+		atu = atu.SetFromLocationOperatorID(*id)
 	}
 	return atu
 }
 
-// SetLocationOperator sets the "location_operator" edge to the Maintainer entity.
-func (atu *AssetTransferUpdate) SetLocationOperator(m *Maintainer) *AssetTransferUpdate {
-	return atu.SetLocationOperatorID(m.ID)
+// SetFromLocationOperator sets the "from_location_operator" edge to the Maintainer entity.
+func (atu *AssetTransferUpdate) SetFromLocationOperator(m *Maintainer) *AssetTransferUpdate {
+	return atu.SetFromLocationOperatorID(m.ID)
 }
 
-// SetLocationWarehouseID sets the "location_warehouse" edge to the Warehouse entity by ID.
-func (atu *AssetTransferUpdate) SetLocationWarehouseID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetLocationWarehouseID(id)
+// SetFromLocationWarehouseID sets the "from_location_warehouse" edge to the Warehouse entity by ID.
+func (atu *AssetTransferUpdate) SetFromLocationWarehouseID(id uint64) *AssetTransferUpdate {
+	atu.mutation.SetFromLocationWarehouseID(id)
 	return atu
 }
 
-// SetNillableLocationWarehouseID sets the "location_warehouse" edge to the Warehouse entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableLocationWarehouseID(id *uint64) *AssetTransferUpdate {
+// SetNillableFromLocationWarehouseID sets the "from_location_warehouse" edge to the Warehouse entity by ID if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableFromLocationWarehouseID(id *uint64) *AssetTransferUpdate {
 	if id != nil {
-		atu = atu.SetLocationWarehouseID(*id)
+		atu = atu.SetFromLocationWarehouseID(*id)
 	}
 	return atu
 }
 
-// SetLocationWarehouse sets the "location_warehouse" edge to the Warehouse entity.
-func (atu *AssetTransferUpdate) SetLocationWarehouse(w *Warehouse) *AssetTransferUpdate {
-	return atu.SetLocationWarehouseID(w.ID)
+// SetFromLocationWarehouse sets the "from_location_warehouse" edge to the Warehouse entity.
+func (atu *AssetTransferUpdate) SetFromLocationWarehouse(w *Warehouse) *AssetTransferUpdate {
+	return atu.SetFromLocationWarehouseID(w.ID)
 }
 
-// SetToStoreID sets the "to_store" edge to the Store entity by ID.
-func (atu *AssetTransferUpdate) SetToStoreID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetToStoreID(id)
+// SetToLocationStoreID sets the "to_location_store" edge to the Store entity by ID.
+func (atu *AssetTransferUpdate) SetToLocationStoreID(id uint64) *AssetTransferUpdate {
+	atu.mutation.SetToLocationStoreID(id)
 	return atu
 }
 
-// SetNillableToStoreID sets the "to_store" edge to the Store entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableToStoreID(id *uint64) *AssetTransferUpdate {
+// SetNillableToLocationStoreID sets the "to_location_store" edge to the Store entity by ID if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableToLocationStoreID(id *uint64) *AssetTransferUpdate {
 	if id != nil {
-		atu = atu.SetToStoreID(*id)
+		atu = atu.SetToLocationStoreID(*id)
 	}
 	return atu
 }
 
-// SetToStore sets the "to_store" edge to the Store entity.
-func (atu *AssetTransferUpdate) SetToStore(s *Store) *AssetTransferUpdate {
-	return atu.SetToStoreID(s.ID)
+// SetToLocationStore sets the "to_location_store" edge to the Store entity.
+func (atu *AssetTransferUpdate) SetToLocationStore(s *Store) *AssetTransferUpdate {
+	return atu.SetToLocationStoreID(s.ID)
 }
 
-// SetToCabinetID sets the "to_cabinet" edge to the Cabinet entity by ID.
-func (atu *AssetTransferUpdate) SetToCabinetID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetToCabinetID(id)
+// SetToLocationCabinetID sets the "to_location_cabinet" edge to the Cabinet entity by ID.
+func (atu *AssetTransferUpdate) SetToLocationCabinetID(id uint64) *AssetTransferUpdate {
+	atu.mutation.SetToLocationCabinetID(id)
 	return atu
 }
 
-// SetNillableToCabinetID sets the "to_cabinet" edge to the Cabinet entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableToCabinetID(id *uint64) *AssetTransferUpdate {
+// SetNillableToLocationCabinetID sets the "to_location_cabinet" edge to the Cabinet entity by ID if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableToLocationCabinetID(id *uint64) *AssetTransferUpdate {
 	if id != nil {
-		atu = atu.SetToCabinetID(*id)
+		atu = atu.SetToLocationCabinetID(*id)
 	}
 	return atu
 }
 
-// SetToCabinet sets the "to_cabinet" edge to the Cabinet entity.
-func (atu *AssetTransferUpdate) SetToCabinet(c *Cabinet) *AssetTransferUpdate {
-	return atu.SetToCabinetID(c.ID)
+// SetToLocationCabinet sets the "to_location_cabinet" edge to the Cabinet entity.
+func (atu *AssetTransferUpdate) SetToLocationCabinet(c *Cabinet) *AssetTransferUpdate {
+	return atu.SetToLocationCabinetID(c.ID)
 }
 
-// SetToStationID sets the "to_station" edge to the EnterpriseStation entity by ID.
-func (atu *AssetTransferUpdate) SetToStationID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetToStationID(id)
+// SetToLocationStationID sets the "to_location_station" edge to the EnterpriseStation entity by ID.
+func (atu *AssetTransferUpdate) SetToLocationStationID(id uint64) *AssetTransferUpdate {
+	atu.mutation.SetToLocationStationID(id)
 	return atu
 }
 
-// SetNillableToStationID sets the "to_station" edge to the EnterpriseStation entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableToStationID(id *uint64) *AssetTransferUpdate {
+// SetNillableToLocationStationID sets the "to_location_station" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableToLocationStationID(id *uint64) *AssetTransferUpdate {
 	if id != nil {
-		atu = atu.SetToStationID(*id)
+		atu = atu.SetToLocationStationID(*id)
 	}
 	return atu
 }
 
-// SetToStation sets the "to_station" edge to the EnterpriseStation entity.
-func (atu *AssetTransferUpdate) SetToStation(e *EnterpriseStation) *AssetTransferUpdate {
-	return atu.SetToStationID(e.ID)
+// SetToLocationStation sets the "to_location_station" edge to the EnterpriseStation entity.
+func (atu *AssetTransferUpdate) SetToLocationStation(e *EnterpriseStation) *AssetTransferUpdate {
+	return atu.SetToLocationStationID(e.ID)
 }
 
-// SetToRiderID sets the "to_rider" edge to the Rider entity by ID.
-func (atu *AssetTransferUpdate) SetToRiderID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetToRiderID(id)
+// SetToLocationRiderID sets the "to_location_rider" edge to the Rider entity by ID.
+func (atu *AssetTransferUpdate) SetToLocationRiderID(id uint64) *AssetTransferUpdate {
+	atu.mutation.SetToLocationRiderID(id)
 	return atu
 }
 
-// SetNillableToRiderID sets the "to_rider" edge to the Rider entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableToRiderID(id *uint64) *AssetTransferUpdate {
+// SetNillableToLocationRiderID sets the "to_location_rider" edge to the Rider entity by ID if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableToLocationRiderID(id *uint64) *AssetTransferUpdate {
 	if id != nil {
-		atu = atu.SetToRiderID(*id)
+		atu = atu.SetToLocationRiderID(*id)
 	}
 	return atu
 }
 
-// SetToRider sets the "to_rider" edge to the Rider entity.
-func (atu *AssetTransferUpdate) SetToRider(r *Rider) *AssetTransferUpdate {
-	return atu.SetToRiderID(r.ID)
+// SetToLocationRider sets the "to_location_rider" edge to the Rider entity.
+func (atu *AssetTransferUpdate) SetToLocationRider(r *Rider) *AssetTransferUpdate {
+	return atu.SetToLocationRiderID(r.ID)
 }
 
-// SetToOperatorID sets the "to_operator" edge to the Maintainer entity by ID.
-func (atu *AssetTransferUpdate) SetToOperatorID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetToOperatorID(id)
+// SetToLocationOperatorID sets the "to_location_operator" edge to the Maintainer entity by ID.
+func (atu *AssetTransferUpdate) SetToLocationOperatorID(id uint64) *AssetTransferUpdate {
+	atu.mutation.SetToLocationOperatorID(id)
 	return atu
 }
 
-// SetNillableToOperatorID sets the "to_operator" edge to the Maintainer entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableToOperatorID(id *uint64) *AssetTransferUpdate {
+// SetNillableToLocationOperatorID sets the "to_location_operator" edge to the Maintainer entity by ID if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableToLocationOperatorID(id *uint64) *AssetTransferUpdate {
 	if id != nil {
-		atu = atu.SetToOperatorID(*id)
+		atu = atu.SetToLocationOperatorID(*id)
 	}
 	return atu
 }
 
-// SetToOperator sets the "to_operator" edge to the Maintainer entity.
-func (atu *AssetTransferUpdate) SetToOperator(m *Maintainer) *AssetTransferUpdate {
-	return atu.SetToOperatorID(m.ID)
+// SetToLocationOperator sets the "to_location_operator" edge to the Maintainer entity.
+func (atu *AssetTransferUpdate) SetToLocationOperator(m *Maintainer) *AssetTransferUpdate {
+	return atu.SetToLocationOperatorID(m.ID)
 }
 
-// SetToWarehouseID sets the "to_warehouse" edge to the Warehouse entity by ID.
-func (atu *AssetTransferUpdate) SetToWarehouseID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetToWarehouseID(id)
+// SetToLocationWarehouseID sets the "to_location_warehouse" edge to the Warehouse entity by ID.
+func (atu *AssetTransferUpdate) SetToLocationWarehouseID(id uint64) *AssetTransferUpdate {
+	atu.mutation.SetToLocationWarehouseID(id)
 	return atu
 }
 
-// SetNillableToWarehouseID sets the "to_warehouse" edge to the Warehouse entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableToWarehouseID(id *uint64) *AssetTransferUpdate {
+// SetNillableToLocationWarehouseID sets the "to_location_warehouse" edge to the Warehouse entity by ID if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableToLocationWarehouseID(id *uint64) *AssetTransferUpdate {
 	if id != nil {
-		atu = atu.SetToWarehouseID(*id)
+		atu = atu.SetToLocationWarehouseID(*id)
 	}
 	return atu
 }
 
-// SetToWarehouse sets the "to_warehouse" edge to the Warehouse entity.
-func (atu *AssetTransferUpdate) SetToWarehouse(w *Warehouse) *AssetTransferUpdate {
-	return atu.SetToWarehouseID(w.ID)
+// SetToLocationWarehouse sets the "to_location_warehouse" edge to the Warehouse entity.
+func (atu *AssetTransferUpdate) SetToLocationWarehouse(w *Warehouse) *AssetTransferUpdate {
+	return atu.SetToLocationWarehouseID(w.ID)
 }
 
 // SetOutOperateManagerID sets the "out_operate_manager" edge to the Manager entity by ID.
@@ -791,215 +751,101 @@ func (atu *AssetTransferUpdate) SetOutOperateRider(r *Rider) *AssetTransferUpdat
 	return atu.SetOutOperateRiderID(r.ID)
 }
 
-// SetInOperateManagerID sets the "in_operate_manager" edge to the Manager entity by ID.
-func (atu *AssetTransferUpdate) SetInOperateManagerID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetInOperateManagerID(id)
-	return atu
-}
-
-// SetNillableInOperateManagerID sets the "in_operate_manager" edge to the Manager entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableInOperateManagerID(id *uint64) *AssetTransferUpdate {
-	if id != nil {
-		atu = atu.SetInOperateManagerID(*id)
-	}
-	return atu
-}
-
-// SetInOperateManager sets the "in_operate_manager" edge to the Manager entity.
-func (atu *AssetTransferUpdate) SetInOperateManager(m *Manager) *AssetTransferUpdate {
-	return atu.SetInOperateManagerID(m.ID)
-}
-
-// SetInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID.
-func (atu *AssetTransferUpdate) SetInOperateStoreID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetInOperateStoreID(id)
-	return atu
-}
-
-// SetNillableInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableInOperateStoreID(id *uint64) *AssetTransferUpdate {
-	if id != nil {
-		atu = atu.SetInOperateStoreID(*id)
-	}
-	return atu
-}
-
-// SetInOperateStore sets the "in_operate_store" edge to the Store entity.
-func (atu *AssetTransferUpdate) SetInOperateStore(s *Store) *AssetTransferUpdate {
-	return atu.SetInOperateStoreID(s.ID)
-}
-
-// SetInOperateAgentID sets the "in_operate_agent" edge to the Agent entity by ID.
-func (atu *AssetTransferUpdate) SetInOperateAgentID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetInOperateAgentID(id)
-	return atu
-}
-
-// SetNillableInOperateAgentID sets the "in_operate_agent" edge to the Agent entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableInOperateAgentID(id *uint64) *AssetTransferUpdate {
-	if id != nil {
-		atu = atu.SetInOperateAgentID(*id)
-	}
-	return atu
-}
-
-// SetInOperateAgent sets the "in_operate_agent" edge to the Agent entity.
-func (atu *AssetTransferUpdate) SetInOperateAgent(a *Agent) *AssetTransferUpdate {
-	return atu.SetInOperateAgentID(a.ID)
-}
-
-// SetInOperateMaintainerID sets the "in_operate_maintainer" edge to the Maintainer entity by ID.
-func (atu *AssetTransferUpdate) SetInOperateMaintainerID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetInOperateMaintainerID(id)
-	return atu
-}
-
-// SetNillableInOperateMaintainerID sets the "in_operate_maintainer" edge to the Maintainer entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableInOperateMaintainerID(id *uint64) *AssetTransferUpdate {
-	if id != nil {
-		atu = atu.SetInOperateMaintainerID(*id)
-	}
-	return atu
-}
-
-// SetInOperateMaintainer sets the "in_operate_maintainer" edge to the Maintainer entity.
-func (atu *AssetTransferUpdate) SetInOperateMaintainer(m *Maintainer) *AssetTransferUpdate {
-	return atu.SetInOperateMaintainerID(m.ID)
-}
-
-// SetInOperateCabinetID sets the "in_operate_cabinet" edge to the Cabinet entity by ID.
-func (atu *AssetTransferUpdate) SetInOperateCabinetID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetInOperateCabinetID(id)
-	return atu
-}
-
-// SetNillableInOperateCabinetID sets the "in_operate_cabinet" edge to the Cabinet entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableInOperateCabinetID(id *uint64) *AssetTransferUpdate {
-	if id != nil {
-		atu = atu.SetInOperateCabinetID(*id)
-	}
-	return atu
-}
-
-// SetInOperateCabinet sets the "in_operate_cabinet" edge to the Cabinet entity.
-func (atu *AssetTransferUpdate) SetInOperateCabinet(c *Cabinet) *AssetTransferUpdate {
-	return atu.SetInOperateCabinetID(c.ID)
-}
-
-// SetInOperateRiderID sets the "in_operate_rider" edge to the Rider entity by ID.
-func (atu *AssetTransferUpdate) SetInOperateRiderID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetInOperateRiderID(id)
-	return atu
-}
-
-// SetNillableInOperateRiderID sets the "in_operate_rider" edge to the Rider entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableInOperateRiderID(id *uint64) *AssetTransferUpdate {
-	if id != nil {
-		atu = atu.SetInOperateRiderID(*id)
-	}
-	return atu
-}
-
-// SetInOperateRider sets the "in_operate_rider" edge to the Rider entity.
-func (atu *AssetTransferUpdate) SetInOperateRider(r *Rider) *AssetTransferUpdate {
-	return atu.SetInOperateRiderID(r.ID)
-}
-
 // Mutation returns the AssetTransferMutation object of the builder.
 func (atu *AssetTransferUpdate) Mutation() *AssetTransferMutation {
 	return atu.mutation
 }
 
-// ClearDetails clears all "details" edges to the AssetTransferDetails entity.
-func (atu *AssetTransferUpdate) ClearDetails() *AssetTransferUpdate {
-	atu.mutation.ClearDetails()
+// ClearTransferDetails clears all "transfer_details" edges to the AssetTransferDetails entity.
+func (atu *AssetTransferUpdate) ClearTransferDetails() *AssetTransferUpdate {
+	atu.mutation.ClearTransferDetails()
 	return atu
 }
 
-// RemoveDetailIDs removes the "details" edge to AssetTransferDetails entities by IDs.
-func (atu *AssetTransferUpdate) RemoveDetailIDs(ids ...uint64) *AssetTransferUpdate {
-	atu.mutation.RemoveDetailIDs(ids...)
+// RemoveTransferDetailIDs removes the "transfer_details" edge to AssetTransferDetails entities by IDs.
+func (atu *AssetTransferUpdate) RemoveTransferDetailIDs(ids ...uint64) *AssetTransferUpdate {
+	atu.mutation.RemoveTransferDetailIDs(ids...)
 	return atu
 }
 
-// RemoveDetails removes "details" edges to AssetTransferDetails entities.
-func (atu *AssetTransferUpdate) RemoveDetails(a ...*AssetTransferDetails) *AssetTransferUpdate {
+// RemoveTransferDetails removes "transfer_details" edges to AssetTransferDetails entities.
+func (atu *AssetTransferUpdate) RemoveTransferDetails(a ...*AssetTransferDetails) *AssetTransferUpdate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return atu.RemoveDetailIDs(ids...)
+	return atu.RemoveTransferDetailIDs(ids...)
 }
 
-// ClearLocationStore clears the "location_store" edge to the Store entity.
-func (atu *AssetTransferUpdate) ClearLocationStore() *AssetTransferUpdate {
-	atu.mutation.ClearLocationStore()
+// ClearFromLocationStore clears the "from_location_store" edge to the Store entity.
+func (atu *AssetTransferUpdate) ClearFromLocationStore() *AssetTransferUpdate {
+	atu.mutation.ClearFromLocationStore()
 	return atu
 }
 
-// ClearLocationCabinet clears the "location_cabinet" edge to the Cabinet entity.
-func (atu *AssetTransferUpdate) ClearLocationCabinet() *AssetTransferUpdate {
-	atu.mutation.ClearLocationCabinet()
+// ClearFromLocationCabinet clears the "from_location_cabinet" edge to the Cabinet entity.
+func (atu *AssetTransferUpdate) ClearFromLocationCabinet() *AssetTransferUpdate {
+	atu.mutation.ClearFromLocationCabinet()
 	return atu
 }
 
-// ClearLocationStation clears the "location_station" edge to the EnterpriseStation entity.
-func (atu *AssetTransferUpdate) ClearLocationStation() *AssetTransferUpdate {
-	atu.mutation.ClearLocationStation()
+// ClearFromLocationStation clears the "from_location_station" edge to the EnterpriseStation entity.
+func (atu *AssetTransferUpdate) ClearFromLocationStation() *AssetTransferUpdate {
+	atu.mutation.ClearFromLocationStation()
 	return atu
 }
 
-// ClearLocationRider clears the "location_rider" edge to the Rider entity.
-func (atu *AssetTransferUpdate) ClearLocationRider() *AssetTransferUpdate {
-	atu.mutation.ClearLocationRider()
+// ClearFromLocationRider clears the "from_location_rider" edge to the Rider entity.
+func (atu *AssetTransferUpdate) ClearFromLocationRider() *AssetTransferUpdate {
+	atu.mutation.ClearFromLocationRider()
 	return atu
 }
 
-// ClearLocationOperator clears the "location_operator" edge to the Maintainer entity.
-func (atu *AssetTransferUpdate) ClearLocationOperator() *AssetTransferUpdate {
-	atu.mutation.ClearLocationOperator()
+// ClearFromLocationOperator clears the "from_location_operator" edge to the Maintainer entity.
+func (atu *AssetTransferUpdate) ClearFromLocationOperator() *AssetTransferUpdate {
+	atu.mutation.ClearFromLocationOperator()
 	return atu
 }
 
-// ClearLocationWarehouse clears the "location_warehouse" edge to the Warehouse entity.
-func (atu *AssetTransferUpdate) ClearLocationWarehouse() *AssetTransferUpdate {
-	atu.mutation.ClearLocationWarehouse()
+// ClearFromLocationWarehouse clears the "from_location_warehouse" edge to the Warehouse entity.
+func (atu *AssetTransferUpdate) ClearFromLocationWarehouse() *AssetTransferUpdate {
+	atu.mutation.ClearFromLocationWarehouse()
 	return atu
 }
 
-// ClearToStore clears the "to_store" edge to the Store entity.
-func (atu *AssetTransferUpdate) ClearToStore() *AssetTransferUpdate {
-	atu.mutation.ClearToStore()
+// ClearToLocationStore clears the "to_location_store" edge to the Store entity.
+func (atu *AssetTransferUpdate) ClearToLocationStore() *AssetTransferUpdate {
+	atu.mutation.ClearToLocationStore()
 	return atu
 }
 
-// ClearToCabinet clears the "to_cabinet" edge to the Cabinet entity.
-func (atu *AssetTransferUpdate) ClearToCabinet() *AssetTransferUpdate {
-	atu.mutation.ClearToCabinet()
+// ClearToLocationCabinet clears the "to_location_cabinet" edge to the Cabinet entity.
+func (atu *AssetTransferUpdate) ClearToLocationCabinet() *AssetTransferUpdate {
+	atu.mutation.ClearToLocationCabinet()
 	return atu
 }
 
-// ClearToStation clears the "to_station" edge to the EnterpriseStation entity.
-func (atu *AssetTransferUpdate) ClearToStation() *AssetTransferUpdate {
-	atu.mutation.ClearToStation()
+// ClearToLocationStation clears the "to_location_station" edge to the EnterpriseStation entity.
+func (atu *AssetTransferUpdate) ClearToLocationStation() *AssetTransferUpdate {
+	atu.mutation.ClearToLocationStation()
 	return atu
 }
 
-// ClearToRider clears the "to_rider" edge to the Rider entity.
-func (atu *AssetTransferUpdate) ClearToRider() *AssetTransferUpdate {
-	atu.mutation.ClearToRider()
+// ClearToLocationRider clears the "to_location_rider" edge to the Rider entity.
+func (atu *AssetTransferUpdate) ClearToLocationRider() *AssetTransferUpdate {
+	atu.mutation.ClearToLocationRider()
 	return atu
 }
 
-// ClearToOperator clears the "to_operator" edge to the Maintainer entity.
-func (atu *AssetTransferUpdate) ClearToOperator() *AssetTransferUpdate {
-	atu.mutation.ClearToOperator()
+// ClearToLocationOperator clears the "to_location_operator" edge to the Maintainer entity.
+func (atu *AssetTransferUpdate) ClearToLocationOperator() *AssetTransferUpdate {
+	atu.mutation.ClearToLocationOperator()
 	return atu
 }
 
-// ClearToWarehouse clears the "to_warehouse" edge to the Warehouse entity.
-func (atu *AssetTransferUpdate) ClearToWarehouse() *AssetTransferUpdate {
-	atu.mutation.ClearToWarehouse()
+// ClearToLocationWarehouse clears the "to_location_warehouse" edge to the Warehouse entity.
+func (atu *AssetTransferUpdate) ClearToLocationWarehouse() *AssetTransferUpdate {
+	atu.mutation.ClearToLocationWarehouse()
 	return atu
 }
 
@@ -1036,42 +882,6 @@ func (atu *AssetTransferUpdate) ClearOutOperateCabinet() *AssetTransferUpdate {
 // ClearOutOperateRider clears the "out_operate_rider" edge to the Rider entity.
 func (atu *AssetTransferUpdate) ClearOutOperateRider() *AssetTransferUpdate {
 	atu.mutation.ClearOutOperateRider()
-	return atu
-}
-
-// ClearInOperateManager clears the "in_operate_manager" edge to the Manager entity.
-func (atu *AssetTransferUpdate) ClearInOperateManager() *AssetTransferUpdate {
-	atu.mutation.ClearInOperateManager()
-	return atu
-}
-
-// ClearInOperateStore clears the "in_operate_store" edge to the Store entity.
-func (atu *AssetTransferUpdate) ClearInOperateStore() *AssetTransferUpdate {
-	atu.mutation.ClearInOperateStore()
-	return atu
-}
-
-// ClearInOperateAgent clears the "in_operate_agent" edge to the Agent entity.
-func (atu *AssetTransferUpdate) ClearInOperateAgent() *AssetTransferUpdate {
-	atu.mutation.ClearInOperateAgent()
-	return atu
-}
-
-// ClearInOperateMaintainer clears the "in_operate_maintainer" edge to the Maintainer entity.
-func (atu *AssetTransferUpdate) ClearInOperateMaintainer() *AssetTransferUpdate {
-	atu.mutation.ClearInOperateMaintainer()
-	return atu
-}
-
-// ClearInOperateCabinet clears the "in_operate_cabinet" edge to the Cabinet entity.
-func (atu *AssetTransferUpdate) ClearInOperateCabinet() *AssetTransferUpdate {
-	atu.mutation.ClearInOperateCabinet()
-	return atu
-}
-
-// ClearInOperateRider clears the "in_operate_rider" edge to the Rider entity.
-func (atu *AssetTransferUpdate) ClearInOperateRider() *AssetTransferUpdate {
-	atu.mutation.ClearInOperateRider()
 	return atu
 }
 
@@ -1210,26 +1020,11 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	if atu.mutation.OutOperateTypeCleared() {
 		_spec.ClearField(assettransfer.FieldOutOperateType, field.TypeUint8)
 	}
-	if value, ok := atu.mutation.InOperateType(); ok {
-		_spec.SetField(assettransfer.FieldInOperateType, field.TypeUint8, value)
-	}
-	if value, ok := atu.mutation.AddedInOperateType(); ok {
-		_spec.AddField(assettransfer.FieldInOperateType, field.TypeUint8, value)
-	}
-	if atu.mutation.InOperateTypeCleared() {
-		_spec.ClearField(assettransfer.FieldInOperateType, field.TypeUint8)
-	}
 	if value, ok := atu.mutation.OutTimeAt(); ok {
 		_spec.SetField(assettransfer.FieldOutTimeAt, field.TypeTime, value)
 	}
 	if atu.mutation.OutTimeAtCleared() {
 		_spec.ClearField(assettransfer.FieldOutTimeAt, field.TypeTime)
-	}
-	if value, ok := atu.mutation.InTimeAt(); ok {
-		_spec.SetField(assettransfer.FieldInTimeAt, field.TypeTime, value)
-	}
-	if atu.mutation.InTimeAtCleared() {
-		_spec.ClearField(assettransfer.FieldInTimeAt, field.TypeTime)
 	}
 	if value, ok := atu.mutation.Reason(); ok {
 		_spec.SetField(assettransfer.FieldReason, field.TypeString, value)
@@ -1237,12 +1032,21 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	if atu.mutation.ReasonCleared() {
 		_spec.ClearField(assettransfer.FieldReason, field.TypeString)
 	}
-	if atu.mutation.DetailsCleared() {
+	if value, ok := atu.mutation.GetType(); ok {
+		_spec.SetField(assettransfer.FieldType, field.TypeUint8, value)
+	}
+	if value, ok := atu.mutation.AddedType(); ok {
+		_spec.AddField(assettransfer.FieldType, field.TypeUint8, value)
+	}
+	if atu.mutation.TypeCleared() {
+		_spec.ClearField(assettransfer.FieldType, field.TypeUint8)
+	}
+	if atu.mutation.TransferDetailsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   assettransfer.DetailsTable,
-			Columns: []string{assettransfer.DetailsColumn},
+			Table:   assettransfer.TransferDetailsTable,
+			Columns: []string{assettransfer.TransferDetailsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64),
@@ -1250,28 +1054,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.RemovedDetailsIDs(); len(nodes) > 0 && !atu.mutation.DetailsCleared() {
+	if nodes := atu.mutation.RemovedTransferDetailsIDs(); len(nodes) > 0 && !atu.mutation.TransferDetailsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   assettransfer.DetailsTable,
-			Columns: []string{assettransfer.DetailsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := atu.mutation.DetailsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   assettransfer.DetailsTable,
-			Columns: []string{assettransfer.DetailsColumn},
+			Table:   assettransfer.TransferDetailsTable,
+			Columns: []string{assettransfer.TransferDetailsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64),
@@ -1280,14 +1068,30 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atu.mutation.TransferDetailsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   assettransfer.TransferDetailsTable,
+			Columns: []string{assettransfer.TransferDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atu.mutation.LocationStoreCleared() {
+	if atu.mutation.FromLocationStoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationStoreTable,
-			Columns: []string{assettransfer.LocationStoreColumn},
+			Table:   assettransfer.FromLocationStoreTable,
+			Columns: []string{assettransfer.FromLocationStoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
@@ -1295,12 +1099,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.LocationStoreIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.FromLocationStoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationStoreTable,
-			Columns: []string{assettransfer.LocationStoreColumn},
+			Table:   assettransfer.FromLocationStoreTable,
+			Columns: []string{assettransfer.FromLocationStoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
@@ -1311,12 +1115,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atu.mutation.LocationCabinetCleared() {
+	if atu.mutation.FromLocationCabinetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationCabinetTable,
-			Columns: []string{assettransfer.LocationCabinetColumn},
+			Table:   assettransfer.FromLocationCabinetTable,
+			Columns: []string{assettransfer.FromLocationCabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
@@ -1324,12 +1128,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.LocationCabinetIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.FromLocationCabinetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationCabinetTable,
-			Columns: []string{assettransfer.LocationCabinetColumn},
+			Table:   assettransfer.FromLocationCabinetTable,
+			Columns: []string{assettransfer.FromLocationCabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
@@ -1340,12 +1144,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atu.mutation.LocationStationCleared() {
+	if atu.mutation.FromLocationStationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationStationTable,
-			Columns: []string{assettransfer.LocationStationColumn},
+			Table:   assettransfer.FromLocationStationTable,
+			Columns: []string{assettransfer.FromLocationStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
@@ -1353,12 +1157,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.LocationStationIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.FromLocationStationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationStationTable,
-			Columns: []string{assettransfer.LocationStationColumn},
+			Table:   assettransfer.FromLocationStationTable,
+			Columns: []string{assettransfer.FromLocationStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
@@ -1369,12 +1173,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atu.mutation.LocationRiderCleared() {
+	if atu.mutation.FromLocationRiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationRiderTable,
-			Columns: []string{assettransfer.LocationRiderColumn},
+			Table:   assettransfer.FromLocationRiderTable,
+			Columns: []string{assettransfer.FromLocationRiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -1382,12 +1186,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.LocationRiderIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.FromLocationRiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationRiderTable,
-			Columns: []string{assettransfer.LocationRiderColumn},
+			Table:   assettransfer.FromLocationRiderTable,
+			Columns: []string{assettransfer.FromLocationRiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -1398,12 +1202,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atu.mutation.LocationOperatorCleared() {
+	if atu.mutation.FromLocationOperatorCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationOperatorTable,
-			Columns: []string{assettransfer.LocationOperatorColumn},
+			Table:   assettransfer.FromLocationOperatorTable,
+			Columns: []string{assettransfer.FromLocationOperatorColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
@@ -1411,12 +1215,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.LocationOperatorIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.FromLocationOperatorIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationOperatorTable,
-			Columns: []string{assettransfer.LocationOperatorColumn},
+			Table:   assettransfer.FromLocationOperatorTable,
+			Columns: []string{assettransfer.FromLocationOperatorColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
@@ -1427,12 +1231,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atu.mutation.LocationWarehouseCleared() {
+	if atu.mutation.FromLocationWarehouseCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationWarehouseTable,
-			Columns: []string{assettransfer.LocationWarehouseColumn},
+			Table:   assettransfer.FromLocationWarehouseTable,
+			Columns: []string{assettransfer.FromLocationWarehouseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -1440,12 +1244,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.LocationWarehouseIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.FromLocationWarehouseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationWarehouseTable,
-			Columns: []string{assettransfer.LocationWarehouseColumn},
+			Table:   assettransfer.FromLocationWarehouseTable,
+			Columns: []string{assettransfer.FromLocationWarehouseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -1456,12 +1260,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atu.mutation.ToStoreCleared() {
+	if atu.mutation.ToLocationStoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToStoreTable,
-			Columns: []string{assettransfer.ToStoreColumn},
+			Table:   assettransfer.ToLocationStoreTable,
+			Columns: []string{assettransfer.ToLocationStoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
@@ -1469,12 +1273,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.ToStoreIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.ToLocationStoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToStoreTable,
-			Columns: []string{assettransfer.ToStoreColumn},
+			Table:   assettransfer.ToLocationStoreTable,
+			Columns: []string{assettransfer.ToLocationStoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
@@ -1485,12 +1289,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atu.mutation.ToCabinetCleared() {
+	if atu.mutation.ToLocationCabinetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToCabinetTable,
-			Columns: []string{assettransfer.ToCabinetColumn},
+			Table:   assettransfer.ToLocationCabinetTable,
+			Columns: []string{assettransfer.ToLocationCabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
@@ -1498,12 +1302,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.ToCabinetIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.ToLocationCabinetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToCabinetTable,
-			Columns: []string{assettransfer.ToCabinetColumn},
+			Table:   assettransfer.ToLocationCabinetTable,
+			Columns: []string{assettransfer.ToLocationCabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
@@ -1514,12 +1318,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atu.mutation.ToStationCleared() {
+	if atu.mutation.ToLocationStationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToStationTable,
-			Columns: []string{assettransfer.ToStationColumn},
+			Table:   assettransfer.ToLocationStationTable,
+			Columns: []string{assettransfer.ToLocationStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
@@ -1527,12 +1331,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.ToStationIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.ToLocationStationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToStationTable,
-			Columns: []string{assettransfer.ToStationColumn},
+			Table:   assettransfer.ToLocationStationTable,
+			Columns: []string{assettransfer.ToLocationStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
@@ -1543,12 +1347,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atu.mutation.ToRiderCleared() {
+	if atu.mutation.ToLocationRiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToRiderTable,
-			Columns: []string{assettransfer.ToRiderColumn},
+			Table:   assettransfer.ToLocationRiderTable,
+			Columns: []string{assettransfer.ToLocationRiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -1556,12 +1360,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.ToRiderIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.ToLocationRiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToRiderTable,
-			Columns: []string{assettransfer.ToRiderColumn},
+			Table:   assettransfer.ToLocationRiderTable,
+			Columns: []string{assettransfer.ToLocationRiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -1572,12 +1376,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atu.mutation.ToOperatorCleared() {
+	if atu.mutation.ToLocationOperatorCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToOperatorTable,
-			Columns: []string{assettransfer.ToOperatorColumn},
+			Table:   assettransfer.ToLocationOperatorTable,
+			Columns: []string{assettransfer.ToLocationOperatorColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
@@ -1585,12 +1389,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.ToOperatorIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.ToLocationOperatorIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToOperatorTable,
-			Columns: []string{assettransfer.ToOperatorColumn},
+			Table:   assettransfer.ToLocationOperatorTable,
+			Columns: []string{assettransfer.ToLocationOperatorColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
@@ -1601,12 +1405,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atu.mutation.ToWarehouseCleared() {
+	if atu.mutation.ToLocationWarehouseCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToWarehouseTable,
-			Columns: []string{assettransfer.ToWarehouseColumn},
+			Table:   assettransfer.ToLocationWarehouseTable,
+			Columns: []string{assettransfer.ToLocationWarehouseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -1614,12 +1418,12 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.ToWarehouseIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.ToLocationWarehouseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToWarehouseTable,
-			Columns: []string{assettransfer.ToWarehouseColumn},
+			Table:   assettransfer.ToLocationWarehouseTable,
+			Columns: []string{assettransfer.ToLocationWarehouseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -1794,180 +1598,6 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Inverse: false,
 			Table:   assettransfer.OutOperateRiderTable,
 			Columns: []string{assettransfer.OutOperateRiderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if atu.mutation.InOperateManagerCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateManagerTable,
-			Columns: []string{assettransfer.InOperateManagerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := atu.mutation.InOperateManagerIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateManagerTable,
-			Columns: []string{assettransfer.InOperateManagerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if atu.mutation.InOperateStoreCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateStoreTable,
-			Columns: []string{assettransfer.InOperateStoreColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := atu.mutation.InOperateStoreIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateStoreTable,
-			Columns: []string{assettransfer.InOperateStoreColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if atu.mutation.InOperateAgentCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateAgentTable,
-			Columns: []string{assettransfer.InOperateAgentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := atu.mutation.InOperateAgentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateAgentTable,
-			Columns: []string{assettransfer.InOperateAgentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if atu.mutation.InOperateMaintainerCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateMaintainerTable,
-			Columns: []string{assettransfer.InOperateMaintainerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := atu.mutation.InOperateMaintainerIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateMaintainerTable,
-			Columns: []string{assettransfer.InOperateMaintainerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if atu.mutation.InOperateCabinetCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateCabinetTable,
-			Columns: []string{assettransfer.InOperateCabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := atu.mutation.InOperateCabinetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateCabinetTable,
-			Columns: []string{assettransfer.InOperateCabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if atu.mutation.InOperateRiderCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateRiderTable,
-			Columns: []string{assettransfer.InOperateRiderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := atu.mutation.InOperateRiderIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateRiderTable,
-			Columns: []string{assettransfer.InOperateRiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -2288,53 +1918,6 @@ func (atuo *AssetTransferUpdateOne) ClearOutOperateType() *AssetTransferUpdateOn
 	return atuo
 }
 
-// SetInOperateID sets the "in_operate_id" field.
-func (atuo *AssetTransferUpdateOne) SetInOperateID(u uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetInOperateID(u)
-	return atuo
-}
-
-// SetNillableInOperateID sets the "in_operate_id" field if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableInOperateID(u *uint64) *AssetTransferUpdateOne {
-	if u != nil {
-		atuo.SetInOperateID(*u)
-	}
-	return atuo
-}
-
-// ClearInOperateID clears the value of the "in_operate_id" field.
-func (atuo *AssetTransferUpdateOne) ClearInOperateID() *AssetTransferUpdateOne {
-	atuo.mutation.ClearInOperateID()
-	return atuo
-}
-
-// SetInOperateType sets the "in_operate_type" field.
-func (atuo *AssetTransferUpdateOne) SetInOperateType(u uint8) *AssetTransferUpdateOne {
-	atuo.mutation.ResetInOperateType()
-	atuo.mutation.SetInOperateType(u)
-	return atuo
-}
-
-// SetNillableInOperateType sets the "in_operate_type" field if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableInOperateType(u *uint8) *AssetTransferUpdateOne {
-	if u != nil {
-		atuo.SetInOperateType(*u)
-	}
-	return atuo
-}
-
-// AddInOperateType adds u to the "in_operate_type" field.
-func (atuo *AssetTransferUpdateOne) AddInOperateType(u int8) *AssetTransferUpdateOne {
-	atuo.mutation.AddInOperateType(u)
-	return atuo
-}
-
-// ClearInOperateType clears the value of the "in_operate_type" field.
-func (atuo *AssetTransferUpdateOne) ClearInOperateType() *AssetTransferUpdateOne {
-	atuo.mutation.ClearInOperateType()
-	return atuo
-}
-
 // SetOutTimeAt sets the "out_time_at" field.
 func (atuo *AssetTransferUpdateOne) SetOutTimeAt(t time.Time) *AssetTransferUpdateOne {
 	atuo.mutation.SetOutTimeAt(t)
@@ -2352,26 +1935,6 @@ func (atuo *AssetTransferUpdateOne) SetNillableOutTimeAt(t *time.Time) *AssetTra
 // ClearOutTimeAt clears the value of the "out_time_at" field.
 func (atuo *AssetTransferUpdateOne) ClearOutTimeAt() *AssetTransferUpdateOne {
 	atuo.mutation.ClearOutTimeAt()
-	return atuo
-}
-
-// SetInTimeAt sets the "in_time_at" field.
-func (atuo *AssetTransferUpdateOne) SetInTimeAt(t time.Time) *AssetTransferUpdateOne {
-	atuo.mutation.SetInTimeAt(t)
-	return atuo
-}
-
-// SetNillableInTimeAt sets the "in_time_at" field if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableInTimeAt(t *time.Time) *AssetTransferUpdateOne {
-	if t != nil {
-		atuo.SetInTimeAt(*t)
-	}
-	return atuo
-}
-
-// ClearInTimeAt clears the value of the "in_time_at" field.
-func (atuo *AssetTransferUpdateOne) ClearInTimeAt() *AssetTransferUpdateOne {
-	atuo.mutation.ClearInTimeAt()
 	return atuo
 }
 
@@ -2395,247 +1958,274 @@ func (atuo *AssetTransferUpdateOne) ClearReason() *AssetTransferUpdateOne {
 	return atuo
 }
 
-// AddDetailIDs adds the "details" edge to the AssetTransferDetails entity by IDs.
-func (atuo *AssetTransferUpdateOne) AddDetailIDs(ids ...uint64) *AssetTransferUpdateOne {
-	atuo.mutation.AddDetailIDs(ids...)
+// SetType sets the "type" field.
+func (atuo *AssetTransferUpdateOne) SetType(u uint8) *AssetTransferUpdateOne {
+	atuo.mutation.ResetType()
+	atuo.mutation.SetType(u)
 	return atuo
 }
 
-// AddDetails adds the "details" edges to the AssetTransferDetails entity.
-func (atuo *AssetTransferUpdateOne) AddDetails(a ...*AssetTransferDetails) *AssetTransferUpdateOne {
+// SetNillableType sets the "type" field if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableType(u *uint8) *AssetTransferUpdateOne {
+	if u != nil {
+		atuo.SetType(*u)
+	}
+	return atuo
+}
+
+// AddType adds u to the "type" field.
+func (atuo *AssetTransferUpdateOne) AddType(u int8) *AssetTransferUpdateOne {
+	atuo.mutation.AddType(u)
+	return atuo
+}
+
+// ClearType clears the value of the "type" field.
+func (atuo *AssetTransferUpdateOne) ClearType() *AssetTransferUpdateOne {
+	atuo.mutation.ClearType()
+	return atuo
+}
+
+// AddTransferDetailIDs adds the "transfer_details" edge to the AssetTransferDetails entity by IDs.
+func (atuo *AssetTransferUpdateOne) AddTransferDetailIDs(ids ...uint64) *AssetTransferUpdateOne {
+	atuo.mutation.AddTransferDetailIDs(ids...)
+	return atuo
+}
+
+// AddTransferDetails adds the "transfer_details" edges to the AssetTransferDetails entity.
+func (atuo *AssetTransferUpdateOne) AddTransferDetails(a ...*AssetTransferDetails) *AssetTransferUpdateOne {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return atuo.AddDetailIDs(ids...)
+	return atuo.AddTransferDetailIDs(ids...)
 }
 
-// SetLocationStoreID sets the "location_store" edge to the Store entity by ID.
-func (atuo *AssetTransferUpdateOne) SetLocationStoreID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetLocationStoreID(id)
+// SetFromLocationStoreID sets the "from_location_store" edge to the Store entity by ID.
+func (atuo *AssetTransferUpdateOne) SetFromLocationStoreID(id uint64) *AssetTransferUpdateOne {
+	atuo.mutation.SetFromLocationStoreID(id)
 	return atuo
 }
 
-// SetNillableLocationStoreID sets the "location_store" edge to the Store entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableLocationStoreID(id *uint64) *AssetTransferUpdateOne {
+// SetNillableFromLocationStoreID sets the "from_location_store" edge to the Store entity by ID if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableFromLocationStoreID(id *uint64) *AssetTransferUpdateOne {
 	if id != nil {
-		atuo = atuo.SetLocationStoreID(*id)
+		atuo = atuo.SetFromLocationStoreID(*id)
 	}
 	return atuo
 }
 
-// SetLocationStore sets the "location_store" edge to the Store entity.
-func (atuo *AssetTransferUpdateOne) SetLocationStore(s *Store) *AssetTransferUpdateOne {
-	return atuo.SetLocationStoreID(s.ID)
+// SetFromLocationStore sets the "from_location_store" edge to the Store entity.
+func (atuo *AssetTransferUpdateOne) SetFromLocationStore(s *Store) *AssetTransferUpdateOne {
+	return atuo.SetFromLocationStoreID(s.ID)
 }
 
-// SetLocationCabinetID sets the "location_cabinet" edge to the Cabinet entity by ID.
-func (atuo *AssetTransferUpdateOne) SetLocationCabinetID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetLocationCabinetID(id)
+// SetFromLocationCabinetID sets the "from_location_cabinet" edge to the Cabinet entity by ID.
+func (atuo *AssetTransferUpdateOne) SetFromLocationCabinetID(id uint64) *AssetTransferUpdateOne {
+	atuo.mutation.SetFromLocationCabinetID(id)
 	return atuo
 }
 
-// SetNillableLocationCabinetID sets the "location_cabinet" edge to the Cabinet entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableLocationCabinetID(id *uint64) *AssetTransferUpdateOne {
+// SetNillableFromLocationCabinetID sets the "from_location_cabinet" edge to the Cabinet entity by ID if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableFromLocationCabinetID(id *uint64) *AssetTransferUpdateOne {
 	if id != nil {
-		atuo = atuo.SetLocationCabinetID(*id)
+		atuo = atuo.SetFromLocationCabinetID(*id)
 	}
 	return atuo
 }
 
-// SetLocationCabinet sets the "location_cabinet" edge to the Cabinet entity.
-func (atuo *AssetTransferUpdateOne) SetLocationCabinet(c *Cabinet) *AssetTransferUpdateOne {
-	return atuo.SetLocationCabinetID(c.ID)
+// SetFromLocationCabinet sets the "from_location_cabinet" edge to the Cabinet entity.
+func (atuo *AssetTransferUpdateOne) SetFromLocationCabinet(c *Cabinet) *AssetTransferUpdateOne {
+	return atuo.SetFromLocationCabinetID(c.ID)
 }
 
-// SetLocationStationID sets the "location_station" edge to the EnterpriseStation entity by ID.
-func (atuo *AssetTransferUpdateOne) SetLocationStationID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetLocationStationID(id)
+// SetFromLocationStationID sets the "from_location_station" edge to the EnterpriseStation entity by ID.
+func (atuo *AssetTransferUpdateOne) SetFromLocationStationID(id uint64) *AssetTransferUpdateOne {
+	atuo.mutation.SetFromLocationStationID(id)
 	return atuo
 }
 
-// SetNillableLocationStationID sets the "location_station" edge to the EnterpriseStation entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableLocationStationID(id *uint64) *AssetTransferUpdateOne {
+// SetNillableFromLocationStationID sets the "from_location_station" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableFromLocationStationID(id *uint64) *AssetTransferUpdateOne {
 	if id != nil {
-		atuo = atuo.SetLocationStationID(*id)
+		atuo = atuo.SetFromLocationStationID(*id)
 	}
 	return atuo
 }
 
-// SetLocationStation sets the "location_station" edge to the EnterpriseStation entity.
-func (atuo *AssetTransferUpdateOne) SetLocationStation(e *EnterpriseStation) *AssetTransferUpdateOne {
-	return atuo.SetLocationStationID(e.ID)
+// SetFromLocationStation sets the "from_location_station" edge to the EnterpriseStation entity.
+func (atuo *AssetTransferUpdateOne) SetFromLocationStation(e *EnterpriseStation) *AssetTransferUpdateOne {
+	return atuo.SetFromLocationStationID(e.ID)
 }
 
-// SetLocationRiderID sets the "location_rider" edge to the Rider entity by ID.
-func (atuo *AssetTransferUpdateOne) SetLocationRiderID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetLocationRiderID(id)
+// SetFromLocationRiderID sets the "from_location_rider" edge to the Rider entity by ID.
+func (atuo *AssetTransferUpdateOne) SetFromLocationRiderID(id uint64) *AssetTransferUpdateOne {
+	atuo.mutation.SetFromLocationRiderID(id)
 	return atuo
 }
 
-// SetNillableLocationRiderID sets the "location_rider" edge to the Rider entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableLocationRiderID(id *uint64) *AssetTransferUpdateOne {
+// SetNillableFromLocationRiderID sets the "from_location_rider" edge to the Rider entity by ID if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableFromLocationRiderID(id *uint64) *AssetTransferUpdateOne {
 	if id != nil {
-		atuo = atuo.SetLocationRiderID(*id)
+		atuo = atuo.SetFromLocationRiderID(*id)
 	}
 	return atuo
 }
 
-// SetLocationRider sets the "location_rider" edge to the Rider entity.
-func (atuo *AssetTransferUpdateOne) SetLocationRider(r *Rider) *AssetTransferUpdateOne {
-	return atuo.SetLocationRiderID(r.ID)
+// SetFromLocationRider sets the "from_location_rider" edge to the Rider entity.
+func (atuo *AssetTransferUpdateOne) SetFromLocationRider(r *Rider) *AssetTransferUpdateOne {
+	return atuo.SetFromLocationRiderID(r.ID)
 }
 
-// SetLocationOperatorID sets the "location_operator" edge to the Maintainer entity by ID.
-func (atuo *AssetTransferUpdateOne) SetLocationOperatorID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetLocationOperatorID(id)
+// SetFromLocationOperatorID sets the "from_location_operator" edge to the Maintainer entity by ID.
+func (atuo *AssetTransferUpdateOne) SetFromLocationOperatorID(id uint64) *AssetTransferUpdateOne {
+	atuo.mutation.SetFromLocationOperatorID(id)
 	return atuo
 }
 
-// SetNillableLocationOperatorID sets the "location_operator" edge to the Maintainer entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableLocationOperatorID(id *uint64) *AssetTransferUpdateOne {
+// SetNillableFromLocationOperatorID sets the "from_location_operator" edge to the Maintainer entity by ID if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableFromLocationOperatorID(id *uint64) *AssetTransferUpdateOne {
 	if id != nil {
-		atuo = atuo.SetLocationOperatorID(*id)
+		atuo = atuo.SetFromLocationOperatorID(*id)
 	}
 	return atuo
 }
 
-// SetLocationOperator sets the "location_operator" edge to the Maintainer entity.
-func (atuo *AssetTransferUpdateOne) SetLocationOperator(m *Maintainer) *AssetTransferUpdateOne {
-	return atuo.SetLocationOperatorID(m.ID)
+// SetFromLocationOperator sets the "from_location_operator" edge to the Maintainer entity.
+func (atuo *AssetTransferUpdateOne) SetFromLocationOperator(m *Maintainer) *AssetTransferUpdateOne {
+	return atuo.SetFromLocationOperatorID(m.ID)
 }
 
-// SetLocationWarehouseID sets the "location_warehouse" edge to the Warehouse entity by ID.
-func (atuo *AssetTransferUpdateOne) SetLocationWarehouseID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetLocationWarehouseID(id)
+// SetFromLocationWarehouseID sets the "from_location_warehouse" edge to the Warehouse entity by ID.
+func (atuo *AssetTransferUpdateOne) SetFromLocationWarehouseID(id uint64) *AssetTransferUpdateOne {
+	atuo.mutation.SetFromLocationWarehouseID(id)
 	return atuo
 }
 
-// SetNillableLocationWarehouseID sets the "location_warehouse" edge to the Warehouse entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableLocationWarehouseID(id *uint64) *AssetTransferUpdateOne {
+// SetNillableFromLocationWarehouseID sets the "from_location_warehouse" edge to the Warehouse entity by ID if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableFromLocationWarehouseID(id *uint64) *AssetTransferUpdateOne {
 	if id != nil {
-		atuo = atuo.SetLocationWarehouseID(*id)
+		atuo = atuo.SetFromLocationWarehouseID(*id)
 	}
 	return atuo
 }
 
-// SetLocationWarehouse sets the "location_warehouse" edge to the Warehouse entity.
-func (atuo *AssetTransferUpdateOne) SetLocationWarehouse(w *Warehouse) *AssetTransferUpdateOne {
-	return atuo.SetLocationWarehouseID(w.ID)
+// SetFromLocationWarehouse sets the "from_location_warehouse" edge to the Warehouse entity.
+func (atuo *AssetTransferUpdateOne) SetFromLocationWarehouse(w *Warehouse) *AssetTransferUpdateOne {
+	return atuo.SetFromLocationWarehouseID(w.ID)
 }
 
-// SetToStoreID sets the "to_store" edge to the Store entity by ID.
-func (atuo *AssetTransferUpdateOne) SetToStoreID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetToStoreID(id)
+// SetToLocationStoreID sets the "to_location_store" edge to the Store entity by ID.
+func (atuo *AssetTransferUpdateOne) SetToLocationStoreID(id uint64) *AssetTransferUpdateOne {
+	atuo.mutation.SetToLocationStoreID(id)
 	return atuo
 }
 
-// SetNillableToStoreID sets the "to_store" edge to the Store entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableToStoreID(id *uint64) *AssetTransferUpdateOne {
+// SetNillableToLocationStoreID sets the "to_location_store" edge to the Store entity by ID if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableToLocationStoreID(id *uint64) *AssetTransferUpdateOne {
 	if id != nil {
-		atuo = atuo.SetToStoreID(*id)
+		atuo = atuo.SetToLocationStoreID(*id)
 	}
 	return atuo
 }
 
-// SetToStore sets the "to_store" edge to the Store entity.
-func (atuo *AssetTransferUpdateOne) SetToStore(s *Store) *AssetTransferUpdateOne {
-	return atuo.SetToStoreID(s.ID)
+// SetToLocationStore sets the "to_location_store" edge to the Store entity.
+func (atuo *AssetTransferUpdateOne) SetToLocationStore(s *Store) *AssetTransferUpdateOne {
+	return atuo.SetToLocationStoreID(s.ID)
 }
 
-// SetToCabinetID sets the "to_cabinet" edge to the Cabinet entity by ID.
-func (atuo *AssetTransferUpdateOne) SetToCabinetID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetToCabinetID(id)
+// SetToLocationCabinetID sets the "to_location_cabinet" edge to the Cabinet entity by ID.
+func (atuo *AssetTransferUpdateOne) SetToLocationCabinetID(id uint64) *AssetTransferUpdateOne {
+	atuo.mutation.SetToLocationCabinetID(id)
 	return atuo
 }
 
-// SetNillableToCabinetID sets the "to_cabinet" edge to the Cabinet entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableToCabinetID(id *uint64) *AssetTransferUpdateOne {
+// SetNillableToLocationCabinetID sets the "to_location_cabinet" edge to the Cabinet entity by ID if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableToLocationCabinetID(id *uint64) *AssetTransferUpdateOne {
 	if id != nil {
-		atuo = atuo.SetToCabinetID(*id)
+		atuo = atuo.SetToLocationCabinetID(*id)
 	}
 	return atuo
 }
 
-// SetToCabinet sets the "to_cabinet" edge to the Cabinet entity.
-func (atuo *AssetTransferUpdateOne) SetToCabinet(c *Cabinet) *AssetTransferUpdateOne {
-	return atuo.SetToCabinetID(c.ID)
+// SetToLocationCabinet sets the "to_location_cabinet" edge to the Cabinet entity.
+func (atuo *AssetTransferUpdateOne) SetToLocationCabinet(c *Cabinet) *AssetTransferUpdateOne {
+	return atuo.SetToLocationCabinetID(c.ID)
 }
 
-// SetToStationID sets the "to_station" edge to the EnterpriseStation entity by ID.
-func (atuo *AssetTransferUpdateOne) SetToStationID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetToStationID(id)
+// SetToLocationStationID sets the "to_location_station" edge to the EnterpriseStation entity by ID.
+func (atuo *AssetTransferUpdateOne) SetToLocationStationID(id uint64) *AssetTransferUpdateOne {
+	atuo.mutation.SetToLocationStationID(id)
 	return atuo
 }
 
-// SetNillableToStationID sets the "to_station" edge to the EnterpriseStation entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableToStationID(id *uint64) *AssetTransferUpdateOne {
+// SetNillableToLocationStationID sets the "to_location_station" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableToLocationStationID(id *uint64) *AssetTransferUpdateOne {
 	if id != nil {
-		atuo = atuo.SetToStationID(*id)
+		atuo = atuo.SetToLocationStationID(*id)
 	}
 	return atuo
 }
 
-// SetToStation sets the "to_station" edge to the EnterpriseStation entity.
-func (atuo *AssetTransferUpdateOne) SetToStation(e *EnterpriseStation) *AssetTransferUpdateOne {
-	return atuo.SetToStationID(e.ID)
+// SetToLocationStation sets the "to_location_station" edge to the EnterpriseStation entity.
+func (atuo *AssetTransferUpdateOne) SetToLocationStation(e *EnterpriseStation) *AssetTransferUpdateOne {
+	return atuo.SetToLocationStationID(e.ID)
 }
 
-// SetToRiderID sets the "to_rider" edge to the Rider entity by ID.
-func (atuo *AssetTransferUpdateOne) SetToRiderID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetToRiderID(id)
+// SetToLocationRiderID sets the "to_location_rider" edge to the Rider entity by ID.
+func (atuo *AssetTransferUpdateOne) SetToLocationRiderID(id uint64) *AssetTransferUpdateOne {
+	atuo.mutation.SetToLocationRiderID(id)
 	return atuo
 }
 
-// SetNillableToRiderID sets the "to_rider" edge to the Rider entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableToRiderID(id *uint64) *AssetTransferUpdateOne {
+// SetNillableToLocationRiderID sets the "to_location_rider" edge to the Rider entity by ID if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableToLocationRiderID(id *uint64) *AssetTransferUpdateOne {
 	if id != nil {
-		atuo = atuo.SetToRiderID(*id)
+		atuo = atuo.SetToLocationRiderID(*id)
 	}
 	return atuo
 }
 
-// SetToRider sets the "to_rider" edge to the Rider entity.
-func (atuo *AssetTransferUpdateOne) SetToRider(r *Rider) *AssetTransferUpdateOne {
-	return atuo.SetToRiderID(r.ID)
+// SetToLocationRider sets the "to_location_rider" edge to the Rider entity.
+func (atuo *AssetTransferUpdateOne) SetToLocationRider(r *Rider) *AssetTransferUpdateOne {
+	return atuo.SetToLocationRiderID(r.ID)
 }
 
-// SetToOperatorID sets the "to_operator" edge to the Maintainer entity by ID.
-func (atuo *AssetTransferUpdateOne) SetToOperatorID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetToOperatorID(id)
+// SetToLocationOperatorID sets the "to_location_operator" edge to the Maintainer entity by ID.
+func (atuo *AssetTransferUpdateOne) SetToLocationOperatorID(id uint64) *AssetTransferUpdateOne {
+	atuo.mutation.SetToLocationOperatorID(id)
 	return atuo
 }
 
-// SetNillableToOperatorID sets the "to_operator" edge to the Maintainer entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableToOperatorID(id *uint64) *AssetTransferUpdateOne {
+// SetNillableToLocationOperatorID sets the "to_location_operator" edge to the Maintainer entity by ID if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableToLocationOperatorID(id *uint64) *AssetTransferUpdateOne {
 	if id != nil {
-		atuo = atuo.SetToOperatorID(*id)
+		atuo = atuo.SetToLocationOperatorID(*id)
 	}
 	return atuo
 }
 
-// SetToOperator sets the "to_operator" edge to the Maintainer entity.
-func (atuo *AssetTransferUpdateOne) SetToOperator(m *Maintainer) *AssetTransferUpdateOne {
-	return atuo.SetToOperatorID(m.ID)
+// SetToLocationOperator sets the "to_location_operator" edge to the Maintainer entity.
+func (atuo *AssetTransferUpdateOne) SetToLocationOperator(m *Maintainer) *AssetTransferUpdateOne {
+	return atuo.SetToLocationOperatorID(m.ID)
 }
 
-// SetToWarehouseID sets the "to_warehouse" edge to the Warehouse entity by ID.
-func (atuo *AssetTransferUpdateOne) SetToWarehouseID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetToWarehouseID(id)
+// SetToLocationWarehouseID sets the "to_location_warehouse" edge to the Warehouse entity by ID.
+func (atuo *AssetTransferUpdateOne) SetToLocationWarehouseID(id uint64) *AssetTransferUpdateOne {
+	atuo.mutation.SetToLocationWarehouseID(id)
 	return atuo
 }
 
-// SetNillableToWarehouseID sets the "to_warehouse" edge to the Warehouse entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableToWarehouseID(id *uint64) *AssetTransferUpdateOne {
+// SetNillableToLocationWarehouseID sets the "to_location_warehouse" edge to the Warehouse entity by ID if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableToLocationWarehouseID(id *uint64) *AssetTransferUpdateOne {
 	if id != nil {
-		atuo = atuo.SetToWarehouseID(*id)
+		atuo = atuo.SetToLocationWarehouseID(*id)
 	}
 	return atuo
 }
 
-// SetToWarehouse sets the "to_warehouse" edge to the Warehouse entity.
-func (atuo *AssetTransferUpdateOne) SetToWarehouse(w *Warehouse) *AssetTransferUpdateOne {
-	return atuo.SetToWarehouseID(w.ID)
+// SetToLocationWarehouse sets the "to_location_warehouse" edge to the Warehouse entity.
+func (atuo *AssetTransferUpdateOne) SetToLocationWarehouse(w *Warehouse) *AssetTransferUpdateOne {
+	return atuo.SetToLocationWarehouseID(w.ID)
 }
 
 // SetOutOperateManagerID sets the "out_operate_manager" edge to the Manager entity by ID.
@@ -2752,215 +2342,101 @@ func (atuo *AssetTransferUpdateOne) SetOutOperateRider(r *Rider) *AssetTransferU
 	return atuo.SetOutOperateRiderID(r.ID)
 }
 
-// SetInOperateManagerID sets the "in_operate_manager" edge to the Manager entity by ID.
-func (atuo *AssetTransferUpdateOne) SetInOperateManagerID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetInOperateManagerID(id)
-	return atuo
-}
-
-// SetNillableInOperateManagerID sets the "in_operate_manager" edge to the Manager entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableInOperateManagerID(id *uint64) *AssetTransferUpdateOne {
-	if id != nil {
-		atuo = atuo.SetInOperateManagerID(*id)
-	}
-	return atuo
-}
-
-// SetInOperateManager sets the "in_operate_manager" edge to the Manager entity.
-func (atuo *AssetTransferUpdateOne) SetInOperateManager(m *Manager) *AssetTransferUpdateOne {
-	return atuo.SetInOperateManagerID(m.ID)
-}
-
-// SetInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID.
-func (atuo *AssetTransferUpdateOne) SetInOperateStoreID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetInOperateStoreID(id)
-	return atuo
-}
-
-// SetNillableInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableInOperateStoreID(id *uint64) *AssetTransferUpdateOne {
-	if id != nil {
-		atuo = atuo.SetInOperateStoreID(*id)
-	}
-	return atuo
-}
-
-// SetInOperateStore sets the "in_operate_store" edge to the Store entity.
-func (atuo *AssetTransferUpdateOne) SetInOperateStore(s *Store) *AssetTransferUpdateOne {
-	return atuo.SetInOperateStoreID(s.ID)
-}
-
-// SetInOperateAgentID sets the "in_operate_agent" edge to the Agent entity by ID.
-func (atuo *AssetTransferUpdateOne) SetInOperateAgentID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetInOperateAgentID(id)
-	return atuo
-}
-
-// SetNillableInOperateAgentID sets the "in_operate_agent" edge to the Agent entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableInOperateAgentID(id *uint64) *AssetTransferUpdateOne {
-	if id != nil {
-		atuo = atuo.SetInOperateAgentID(*id)
-	}
-	return atuo
-}
-
-// SetInOperateAgent sets the "in_operate_agent" edge to the Agent entity.
-func (atuo *AssetTransferUpdateOne) SetInOperateAgent(a *Agent) *AssetTransferUpdateOne {
-	return atuo.SetInOperateAgentID(a.ID)
-}
-
-// SetInOperateMaintainerID sets the "in_operate_maintainer" edge to the Maintainer entity by ID.
-func (atuo *AssetTransferUpdateOne) SetInOperateMaintainerID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetInOperateMaintainerID(id)
-	return atuo
-}
-
-// SetNillableInOperateMaintainerID sets the "in_operate_maintainer" edge to the Maintainer entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableInOperateMaintainerID(id *uint64) *AssetTransferUpdateOne {
-	if id != nil {
-		atuo = atuo.SetInOperateMaintainerID(*id)
-	}
-	return atuo
-}
-
-// SetInOperateMaintainer sets the "in_operate_maintainer" edge to the Maintainer entity.
-func (atuo *AssetTransferUpdateOne) SetInOperateMaintainer(m *Maintainer) *AssetTransferUpdateOne {
-	return atuo.SetInOperateMaintainerID(m.ID)
-}
-
-// SetInOperateCabinetID sets the "in_operate_cabinet" edge to the Cabinet entity by ID.
-func (atuo *AssetTransferUpdateOne) SetInOperateCabinetID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetInOperateCabinetID(id)
-	return atuo
-}
-
-// SetNillableInOperateCabinetID sets the "in_operate_cabinet" edge to the Cabinet entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableInOperateCabinetID(id *uint64) *AssetTransferUpdateOne {
-	if id != nil {
-		atuo = atuo.SetInOperateCabinetID(*id)
-	}
-	return atuo
-}
-
-// SetInOperateCabinet sets the "in_operate_cabinet" edge to the Cabinet entity.
-func (atuo *AssetTransferUpdateOne) SetInOperateCabinet(c *Cabinet) *AssetTransferUpdateOne {
-	return atuo.SetInOperateCabinetID(c.ID)
-}
-
-// SetInOperateRiderID sets the "in_operate_rider" edge to the Rider entity by ID.
-func (atuo *AssetTransferUpdateOne) SetInOperateRiderID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetInOperateRiderID(id)
-	return atuo
-}
-
-// SetNillableInOperateRiderID sets the "in_operate_rider" edge to the Rider entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableInOperateRiderID(id *uint64) *AssetTransferUpdateOne {
-	if id != nil {
-		atuo = atuo.SetInOperateRiderID(*id)
-	}
-	return atuo
-}
-
-// SetInOperateRider sets the "in_operate_rider" edge to the Rider entity.
-func (atuo *AssetTransferUpdateOne) SetInOperateRider(r *Rider) *AssetTransferUpdateOne {
-	return atuo.SetInOperateRiderID(r.ID)
-}
-
 // Mutation returns the AssetTransferMutation object of the builder.
 func (atuo *AssetTransferUpdateOne) Mutation() *AssetTransferMutation {
 	return atuo.mutation
 }
 
-// ClearDetails clears all "details" edges to the AssetTransferDetails entity.
-func (atuo *AssetTransferUpdateOne) ClearDetails() *AssetTransferUpdateOne {
-	atuo.mutation.ClearDetails()
+// ClearTransferDetails clears all "transfer_details" edges to the AssetTransferDetails entity.
+func (atuo *AssetTransferUpdateOne) ClearTransferDetails() *AssetTransferUpdateOne {
+	atuo.mutation.ClearTransferDetails()
 	return atuo
 }
 
-// RemoveDetailIDs removes the "details" edge to AssetTransferDetails entities by IDs.
-func (atuo *AssetTransferUpdateOne) RemoveDetailIDs(ids ...uint64) *AssetTransferUpdateOne {
-	atuo.mutation.RemoveDetailIDs(ids...)
+// RemoveTransferDetailIDs removes the "transfer_details" edge to AssetTransferDetails entities by IDs.
+func (atuo *AssetTransferUpdateOne) RemoveTransferDetailIDs(ids ...uint64) *AssetTransferUpdateOne {
+	atuo.mutation.RemoveTransferDetailIDs(ids...)
 	return atuo
 }
 
-// RemoveDetails removes "details" edges to AssetTransferDetails entities.
-func (atuo *AssetTransferUpdateOne) RemoveDetails(a ...*AssetTransferDetails) *AssetTransferUpdateOne {
+// RemoveTransferDetails removes "transfer_details" edges to AssetTransferDetails entities.
+func (atuo *AssetTransferUpdateOne) RemoveTransferDetails(a ...*AssetTransferDetails) *AssetTransferUpdateOne {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return atuo.RemoveDetailIDs(ids...)
+	return atuo.RemoveTransferDetailIDs(ids...)
 }
 
-// ClearLocationStore clears the "location_store" edge to the Store entity.
-func (atuo *AssetTransferUpdateOne) ClearLocationStore() *AssetTransferUpdateOne {
-	atuo.mutation.ClearLocationStore()
+// ClearFromLocationStore clears the "from_location_store" edge to the Store entity.
+func (atuo *AssetTransferUpdateOne) ClearFromLocationStore() *AssetTransferUpdateOne {
+	atuo.mutation.ClearFromLocationStore()
 	return atuo
 }
 
-// ClearLocationCabinet clears the "location_cabinet" edge to the Cabinet entity.
-func (atuo *AssetTransferUpdateOne) ClearLocationCabinet() *AssetTransferUpdateOne {
-	atuo.mutation.ClearLocationCabinet()
+// ClearFromLocationCabinet clears the "from_location_cabinet" edge to the Cabinet entity.
+func (atuo *AssetTransferUpdateOne) ClearFromLocationCabinet() *AssetTransferUpdateOne {
+	atuo.mutation.ClearFromLocationCabinet()
 	return atuo
 }
 
-// ClearLocationStation clears the "location_station" edge to the EnterpriseStation entity.
-func (atuo *AssetTransferUpdateOne) ClearLocationStation() *AssetTransferUpdateOne {
-	atuo.mutation.ClearLocationStation()
+// ClearFromLocationStation clears the "from_location_station" edge to the EnterpriseStation entity.
+func (atuo *AssetTransferUpdateOne) ClearFromLocationStation() *AssetTransferUpdateOne {
+	atuo.mutation.ClearFromLocationStation()
 	return atuo
 }
 
-// ClearLocationRider clears the "location_rider" edge to the Rider entity.
-func (atuo *AssetTransferUpdateOne) ClearLocationRider() *AssetTransferUpdateOne {
-	atuo.mutation.ClearLocationRider()
+// ClearFromLocationRider clears the "from_location_rider" edge to the Rider entity.
+func (atuo *AssetTransferUpdateOne) ClearFromLocationRider() *AssetTransferUpdateOne {
+	atuo.mutation.ClearFromLocationRider()
 	return atuo
 }
 
-// ClearLocationOperator clears the "location_operator" edge to the Maintainer entity.
-func (atuo *AssetTransferUpdateOne) ClearLocationOperator() *AssetTransferUpdateOne {
-	atuo.mutation.ClearLocationOperator()
+// ClearFromLocationOperator clears the "from_location_operator" edge to the Maintainer entity.
+func (atuo *AssetTransferUpdateOne) ClearFromLocationOperator() *AssetTransferUpdateOne {
+	atuo.mutation.ClearFromLocationOperator()
 	return atuo
 }
 
-// ClearLocationWarehouse clears the "location_warehouse" edge to the Warehouse entity.
-func (atuo *AssetTransferUpdateOne) ClearLocationWarehouse() *AssetTransferUpdateOne {
-	atuo.mutation.ClearLocationWarehouse()
+// ClearFromLocationWarehouse clears the "from_location_warehouse" edge to the Warehouse entity.
+func (atuo *AssetTransferUpdateOne) ClearFromLocationWarehouse() *AssetTransferUpdateOne {
+	atuo.mutation.ClearFromLocationWarehouse()
 	return atuo
 }
 
-// ClearToStore clears the "to_store" edge to the Store entity.
-func (atuo *AssetTransferUpdateOne) ClearToStore() *AssetTransferUpdateOne {
-	atuo.mutation.ClearToStore()
+// ClearToLocationStore clears the "to_location_store" edge to the Store entity.
+func (atuo *AssetTransferUpdateOne) ClearToLocationStore() *AssetTransferUpdateOne {
+	atuo.mutation.ClearToLocationStore()
 	return atuo
 }
 
-// ClearToCabinet clears the "to_cabinet" edge to the Cabinet entity.
-func (atuo *AssetTransferUpdateOne) ClearToCabinet() *AssetTransferUpdateOne {
-	atuo.mutation.ClearToCabinet()
+// ClearToLocationCabinet clears the "to_location_cabinet" edge to the Cabinet entity.
+func (atuo *AssetTransferUpdateOne) ClearToLocationCabinet() *AssetTransferUpdateOne {
+	atuo.mutation.ClearToLocationCabinet()
 	return atuo
 }
 
-// ClearToStation clears the "to_station" edge to the EnterpriseStation entity.
-func (atuo *AssetTransferUpdateOne) ClearToStation() *AssetTransferUpdateOne {
-	atuo.mutation.ClearToStation()
+// ClearToLocationStation clears the "to_location_station" edge to the EnterpriseStation entity.
+func (atuo *AssetTransferUpdateOne) ClearToLocationStation() *AssetTransferUpdateOne {
+	atuo.mutation.ClearToLocationStation()
 	return atuo
 }
 
-// ClearToRider clears the "to_rider" edge to the Rider entity.
-func (atuo *AssetTransferUpdateOne) ClearToRider() *AssetTransferUpdateOne {
-	atuo.mutation.ClearToRider()
+// ClearToLocationRider clears the "to_location_rider" edge to the Rider entity.
+func (atuo *AssetTransferUpdateOne) ClearToLocationRider() *AssetTransferUpdateOne {
+	atuo.mutation.ClearToLocationRider()
 	return atuo
 }
 
-// ClearToOperator clears the "to_operator" edge to the Maintainer entity.
-func (atuo *AssetTransferUpdateOne) ClearToOperator() *AssetTransferUpdateOne {
-	atuo.mutation.ClearToOperator()
+// ClearToLocationOperator clears the "to_location_operator" edge to the Maintainer entity.
+func (atuo *AssetTransferUpdateOne) ClearToLocationOperator() *AssetTransferUpdateOne {
+	atuo.mutation.ClearToLocationOperator()
 	return atuo
 }
 
-// ClearToWarehouse clears the "to_warehouse" edge to the Warehouse entity.
-func (atuo *AssetTransferUpdateOne) ClearToWarehouse() *AssetTransferUpdateOne {
-	atuo.mutation.ClearToWarehouse()
+// ClearToLocationWarehouse clears the "to_location_warehouse" edge to the Warehouse entity.
+func (atuo *AssetTransferUpdateOne) ClearToLocationWarehouse() *AssetTransferUpdateOne {
+	atuo.mutation.ClearToLocationWarehouse()
 	return atuo
 }
 
@@ -2997,42 +2473,6 @@ func (atuo *AssetTransferUpdateOne) ClearOutOperateCabinet() *AssetTransferUpdat
 // ClearOutOperateRider clears the "out_operate_rider" edge to the Rider entity.
 func (atuo *AssetTransferUpdateOne) ClearOutOperateRider() *AssetTransferUpdateOne {
 	atuo.mutation.ClearOutOperateRider()
-	return atuo
-}
-
-// ClearInOperateManager clears the "in_operate_manager" edge to the Manager entity.
-func (atuo *AssetTransferUpdateOne) ClearInOperateManager() *AssetTransferUpdateOne {
-	atuo.mutation.ClearInOperateManager()
-	return atuo
-}
-
-// ClearInOperateStore clears the "in_operate_store" edge to the Store entity.
-func (atuo *AssetTransferUpdateOne) ClearInOperateStore() *AssetTransferUpdateOne {
-	atuo.mutation.ClearInOperateStore()
-	return atuo
-}
-
-// ClearInOperateAgent clears the "in_operate_agent" edge to the Agent entity.
-func (atuo *AssetTransferUpdateOne) ClearInOperateAgent() *AssetTransferUpdateOne {
-	atuo.mutation.ClearInOperateAgent()
-	return atuo
-}
-
-// ClearInOperateMaintainer clears the "in_operate_maintainer" edge to the Maintainer entity.
-func (atuo *AssetTransferUpdateOne) ClearInOperateMaintainer() *AssetTransferUpdateOne {
-	atuo.mutation.ClearInOperateMaintainer()
-	return atuo
-}
-
-// ClearInOperateCabinet clears the "in_operate_cabinet" edge to the Cabinet entity.
-func (atuo *AssetTransferUpdateOne) ClearInOperateCabinet() *AssetTransferUpdateOne {
-	atuo.mutation.ClearInOperateCabinet()
-	return atuo
-}
-
-// ClearInOperateRider clears the "in_operate_rider" edge to the Rider entity.
-func (atuo *AssetTransferUpdateOne) ClearInOperateRider() *AssetTransferUpdateOne {
-	atuo.mutation.ClearInOperateRider()
 	return atuo
 }
 
@@ -3201,26 +2641,11 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 	if atuo.mutation.OutOperateTypeCleared() {
 		_spec.ClearField(assettransfer.FieldOutOperateType, field.TypeUint8)
 	}
-	if value, ok := atuo.mutation.InOperateType(); ok {
-		_spec.SetField(assettransfer.FieldInOperateType, field.TypeUint8, value)
-	}
-	if value, ok := atuo.mutation.AddedInOperateType(); ok {
-		_spec.AddField(assettransfer.FieldInOperateType, field.TypeUint8, value)
-	}
-	if atuo.mutation.InOperateTypeCleared() {
-		_spec.ClearField(assettransfer.FieldInOperateType, field.TypeUint8)
-	}
 	if value, ok := atuo.mutation.OutTimeAt(); ok {
 		_spec.SetField(assettransfer.FieldOutTimeAt, field.TypeTime, value)
 	}
 	if atuo.mutation.OutTimeAtCleared() {
 		_spec.ClearField(assettransfer.FieldOutTimeAt, field.TypeTime)
-	}
-	if value, ok := atuo.mutation.InTimeAt(); ok {
-		_spec.SetField(assettransfer.FieldInTimeAt, field.TypeTime, value)
-	}
-	if atuo.mutation.InTimeAtCleared() {
-		_spec.ClearField(assettransfer.FieldInTimeAt, field.TypeTime)
 	}
 	if value, ok := atuo.mutation.Reason(); ok {
 		_spec.SetField(assettransfer.FieldReason, field.TypeString, value)
@@ -3228,12 +2653,21 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 	if atuo.mutation.ReasonCleared() {
 		_spec.ClearField(assettransfer.FieldReason, field.TypeString)
 	}
-	if atuo.mutation.DetailsCleared() {
+	if value, ok := atuo.mutation.GetType(); ok {
+		_spec.SetField(assettransfer.FieldType, field.TypeUint8, value)
+	}
+	if value, ok := atuo.mutation.AddedType(); ok {
+		_spec.AddField(assettransfer.FieldType, field.TypeUint8, value)
+	}
+	if atuo.mutation.TypeCleared() {
+		_spec.ClearField(assettransfer.FieldType, field.TypeUint8)
+	}
+	if atuo.mutation.TransferDetailsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   assettransfer.DetailsTable,
-			Columns: []string{assettransfer.DetailsColumn},
+			Table:   assettransfer.TransferDetailsTable,
+			Columns: []string{assettransfer.TransferDetailsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64),
@@ -3241,28 +2675,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.RemovedDetailsIDs(); len(nodes) > 0 && !atuo.mutation.DetailsCleared() {
+	if nodes := atuo.mutation.RemovedTransferDetailsIDs(); len(nodes) > 0 && !atuo.mutation.TransferDetailsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   assettransfer.DetailsTable,
-			Columns: []string{assettransfer.DetailsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := atuo.mutation.DetailsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   assettransfer.DetailsTable,
-			Columns: []string{assettransfer.DetailsColumn},
+			Table:   assettransfer.TransferDetailsTable,
+			Columns: []string{assettransfer.TransferDetailsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64),
@@ -3271,14 +2689,30 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atuo.mutation.TransferDetailsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   assettransfer.TransferDetailsTable,
+			Columns: []string{assettransfer.TransferDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atuo.mutation.LocationStoreCleared() {
+	if atuo.mutation.FromLocationStoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationStoreTable,
-			Columns: []string{assettransfer.LocationStoreColumn},
+			Table:   assettransfer.FromLocationStoreTable,
+			Columns: []string{assettransfer.FromLocationStoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
@@ -3286,12 +2720,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.LocationStoreIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.FromLocationStoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationStoreTable,
-			Columns: []string{assettransfer.LocationStoreColumn},
+			Table:   assettransfer.FromLocationStoreTable,
+			Columns: []string{assettransfer.FromLocationStoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
@@ -3302,12 +2736,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atuo.mutation.LocationCabinetCleared() {
+	if atuo.mutation.FromLocationCabinetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationCabinetTable,
-			Columns: []string{assettransfer.LocationCabinetColumn},
+			Table:   assettransfer.FromLocationCabinetTable,
+			Columns: []string{assettransfer.FromLocationCabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
@@ -3315,12 +2749,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.LocationCabinetIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.FromLocationCabinetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationCabinetTable,
-			Columns: []string{assettransfer.LocationCabinetColumn},
+			Table:   assettransfer.FromLocationCabinetTable,
+			Columns: []string{assettransfer.FromLocationCabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
@@ -3331,12 +2765,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atuo.mutation.LocationStationCleared() {
+	if atuo.mutation.FromLocationStationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationStationTable,
-			Columns: []string{assettransfer.LocationStationColumn},
+			Table:   assettransfer.FromLocationStationTable,
+			Columns: []string{assettransfer.FromLocationStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
@@ -3344,12 +2778,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.LocationStationIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.FromLocationStationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationStationTable,
-			Columns: []string{assettransfer.LocationStationColumn},
+			Table:   assettransfer.FromLocationStationTable,
+			Columns: []string{assettransfer.FromLocationStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
@@ -3360,12 +2794,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atuo.mutation.LocationRiderCleared() {
+	if atuo.mutation.FromLocationRiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationRiderTable,
-			Columns: []string{assettransfer.LocationRiderColumn},
+			Table:   assettransfer.FromLocationRiderTable,
+			Columns: []string{assettransfer.FromLocationRiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -3373,12 +2807,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.LocationRiderIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.FromLocationRiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationRiderTable,
-			Columns: []string{assettransfer.LocationRiderColumn},
+			Table:   assettransfer.FromLocationRiderTable,
+			Columns: []string{assettransfer.FromLocationRiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -3389,12 +2823,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atuo.mutation.LocationOperatorCleared() {
+	if atuo.mutation.FromLocationOperatorCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationOperatorTable,
-			Columns: []string{assettransfer.LocationOperatorColumn},
+			Table:   assettransfer.FromLocationOperatorTable,
+			Columns: []string{assettransfer.FromLocationOperatorColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
@@ -3402,12 +2836,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.LocationOperatorIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.FromLocationOperatorIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationOperatorTable,
-			Columns: []string{assettransfer.LocationOperatorColumn},
+			Table:   assettransfer.FromLocationOperatorTable,
+			Columns: []string{assettransfer.FromLocationOperatorColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
@@ -3418,12 +2852,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atuo.mutation.LocationWarehouseCleared() {
+	if atuo.mutation.FromLocationWarehouseCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationWarehouseTable,
-			Columns: []string{assettransfer.LocationWarehouseColumn},
+			Table:   assettransfer.FromLocationWarehouseTable,
+			Columns: []string{assettransfer.FromLocationWarehouseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -3431,12 +2865,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.LocationWarehouseIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.FromLocationWarehouseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationWarehouseTable,
-			Columns: []string{assettransfer.LocationWarehouseColumn},
+			Table:   assettransfer.FromLocationWarehouseTable,
+			Columns: []string{assettransfer.FromLocationWarehouseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -3447,12 +2881,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atuo.mutation.ToStoreCleared() {
+	if atuo.mutation.ToLocationStoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToStoreTable,
-			Columns: []string{assettransfer.ToStoreColumn},
+			Table:   assettransfer.ToLocationStoreTable,
+			Columns: []string{assettransfer.ToLocationStoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
@@ -3460,12 +2894,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.ToStoreIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.ToLocationStoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToStoreTable,
-			Columns: []string{assettransfer.ToStoreColumn},
+			Table:   assettransfer.ToLocationStoreTable,
+			Columns: []string{assettransfer.ToLocationStoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
@@ -3476,12 +2910,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atuo.mutation.ToCabinetCleared() {
+	if atuo.mutation.ToLocationCabinetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToCabinetTable,
-			Columns: []string{assettransfer.ToCabinetColumn},
+			Table:   assettransfer.ToLocationCabinetTable,
+			Columns: []string{assettransfer.ToLocationCabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
@@ -3489,12 +2923,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.ToCabinetIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.ToLocationCabinetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToCabinetTable,
-			Columns: []string{assettransfer.ToCabinetColumn},
+			Table:   assettransfer.ToLocationCabinetTable,
+			Columns: []string{assettransfer.ToLocationCabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
@@ -3505,12 +2939,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atuo.mutation.ToStationCleared() {
+	if atuo.mutation.ToLocationStationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToStationTable,
-			Columns: []string{assettransfer.ToStationColumn},
+			Table:   assettransfer.ToLocationStationTable,
+			Columns: []string{assettransfer.ToLocationStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
@@ -3518,12 +2952,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.ToStationIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.ToLocationStationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToStationTable,
-			Columns: []string{assettransfer.ToStationColumn},
+			Table:   assettransfer.ToLocationStationTable,
+			Columns: []string{assettransfer.ToLocationStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
@@ -3534,12 +2968,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atuo.mutation.ToRiderCleared() {
+	if atuo.mutation.ToLocationRiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToRiderTable,
-			Columns: []string{assettransfer.ToRiderColumn},
+			Table:   assettransfer.ToLocationRiderTable,
+			Columns: []string{assettransfer.ToLocationRiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -3547,12 +2981,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.ToRiderIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.ToLocationRiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToRiderTable,
-			Columns: []string{assettransfer.ToRiderColumn},
+			Table:   assettransfer.ToLocationRiderTable,
+			Columns: []string{assettransfer.ToLocationRiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -3563,12 +2997,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atuo.mutation.ToOperatorCleared() {
+	if atuo.mutation.ToLocationOperatorCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToOperatorTable,
-			Columns: []string{assettransfer.ToOperatorColumn},
+			Table:   assettransfer.ToLocationOperatorTable,
+			Columns: []string{assettransfer.ToLocationOperatorColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
@@ -3576,12 +3010,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.ToOperatorIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.ToLocationOperatorIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToOperatorTable,
-			Columns: []string{assettransfer.ToOperatorColumn},
+			Table:   assettransfer.ToLocationOperatorTable,
+			Columns: []string{assettransfer.ToLocationOperatorColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
@@ -3592,12 +3026,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atuo.mutation.ToWarehouseCleared() {
+	if atuo.mutation.ToLocationWarehouseCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToWarehouseTable,
-			Columns: []string{assettransfer.ToWarehouseColumn},
+			Table:   assettransfer.ToLocationWarehouseTable,
+			Columns: []string{assettransfer.ToLocationWarehouseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -3605,12 +3039,12 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.ToWarehouseIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.ToLocationWarehouseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToWarehouseTable,
-			Columns: []string{assettransfer.ToWarehouseColumn},
+			Table:   assettransfer.ToLocationWarehouseTable,
+			Columns: []string{assettransfer.ToLocationWarehouseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -3785,180 +3219,6 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 			Inverse: false,
 			Table:   assettransfer.OutOperateRiderTable,
 			Columns: []string{assettransfer.OutOperateRiderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if atuo.mutation.InOperateManagerCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateManagerTable,
-			Columns: []string{assettransfer.InOperateManagerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := atuo.mutation.InOperateManagerIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateManagerTable,
-			Columns: []string{assettransfer.InOperateManagerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if atuo.mutation.InOperateStoreCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateStoreTable,
-			Columns: []string{assettransfer.InOperateStoreColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := atuo.mutation.InOperateStoreIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateStoreTable,
-			Columns: []string{assettransfer.InOperateStoreColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if atuo.mutation.InOperateAgentCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateAgentTable,
-			Columns: []string{assettransfer.InOperateAgentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := atuo.mutation.InOperateAgentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateAgentTable,
-			Columns: []string{assettransfer.InOperateAgentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if atuo.mutation.InOperateMaintainerCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateMaintainerTable,
-			Columns: []string{assettransfer.InOperateMaintainerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := atuo.mutation.InOperateMaintainerIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateMaintainerTable,
-			Columns: []string{assettransfer.InOperateMaintainerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if atuo.mutation.InOperateCabinetCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateCabinetTable,
-			Columns: []string{assettransfer.InOperateCabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := atuo.mutation.InOperateCabinetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateCabinetTable,
-			Columns: []string{assettransfer.InOperateCabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if atuo.mutation.InOperateRiderCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateRiderTable,
-			Columns: []string{assettransfer.InOperateRiderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := atuo.mutation.InOperateRiderIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateRiderTable,
-			Columns: []string{assettransfer.InOperateRiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),

@@ -11,9 +11,15 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/manager"
+	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // AssetTransferDetails is the model entity for the AssetTransferDetails schema.
@@ -33,12 +39,18 @@ type AssetTransferDetails struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
-	// AssetID holds the value of the "asset_id" field.
-	AssetID *uint64 `json:"asset_id,omitempty"`
 	// 调拨ID
 	TransferID uint64 `json:"transfer_id,omitempty"`
 	// 是否入库
 	IsIn bool `json:"is_in,omitempty"`
+	// 入库人id
+	InOperateID uint64 `json:"in_operate_id,omitempty"`
+	// 入库角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手
+	InOperateType uint8 `json:"in_operate_type,omitempty"`
+	// 入库时间
+	InTimeAt *time.Time `json:"in_time_at,omitempty"`
+	// 资产ID
+	AssetID uint64 `json:"asset_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetTransferDetailsQuery when eager-loading is set.
 	Edges        AssetTransferDetailsEdges `json:"edges"`
@@ -47,24 +59,25 @@ type AssetTransferDetails struct {
 
 // AssetTransferDetailsEdges holds the relations/edges for other nodes in the graph.
 type AssetTransferDetailsEdges struct {
-	// Asset holds the value of the asset edge.
-	Asset *Asset `json:"asset,omitempty"`
 	// Transfer holds the value of the transfer edge.
 	Transfer *AssetTransfer `json:"transfer,omitempty"`
+	// InOperateManager holds the value of the in_operate_manager edge.
+	InOperateManager *Manager `json:"in_operate_manager,omitempty"`
+	// InOperateStore holds the value of the in_operate_store edge.
+	InOperateStore *Store `json:"in_operate_store,omitempty"`
+	// InOperateAgent holds the value of the in_operate_agent edge.
+	InOperateAgent *Agent `json:"in_operate_agent,omitempty"`
+	// InOperateMaintainer holds the value of the in_operate_maintainer edge.
+	InOperateMaintainer *Maintainer `json:"in_operate_maintainer,omitempty"`
+	// InOperateCabinet holds the value of the in_operate_cabinet edge.
+	InOperateCabinet *Cabinet `json:"in_operate_cabinet,omitempty"`
+	// InOperateRider holds the value of the in_operate_rider edge.
+	InOperateRider *Rider `json:"in_operate_rider,omitempty"`
+	// Asset holds the value of the asset edge.
+	Asset *Asset `json:"asset,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
-}
-
-// AssetOrErr returns the Asset value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e AssetTransferDetailsEdges) AssetOrErr() (*Asset, error) {
-	if e.Asset != nil {
-		return e.Asset, nil
-	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: asset.Label}
-	}
-	return nil, &NotLoadedError{edge: "asset"}
+	loadedTypes [8]bool
 }
 
 // TransferOrErr returns the Transfer value or an error if the edge
@@ -72,10 +85,87 @@ func (e AssetTransferDetailsEdges) AssetOrErr() (*Asset, error) {
 func (e AssetTransferDetailsEdges) TransferOrErr() (*AssetTransfer, error) {
 	if e.Transfer != nil {
 		return e.Transfer, nil
-	} else if e.loadedTypes[1] {
+	} else if e.loadedTypes[0] {
 		return nil, &NotFoundError{label: assettransfer.Label}
 	}
 	return nil, &NotLoadedError{edge: "transfer"}
+}
+
+// InOperateManagerOrErr returns the InOperateManager value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferDetailsEdges) InOperateManagerOrErr() (*Manager, error) {
+	if e.InOperateManager != nil {
+		return e.InOperateManager, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: manager.Label}
+	}
+	return nil, &NotLoadedError{edge: "in_operate_manager"}
+}
+
+// InOperateStoreOrErr returns the InOperateStore value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferDetailsEdges) InOperateStoreOrErr() (*Store, error) {
+	if e.InOperateStore != nil {
+		return e.InOperateStore, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: store.Label}
+	}
+	return nil, &NotLoadedError{edge: "in_operate_store"}
+}
+
+// InOperateAgentOrErr returns the InOperateAgent value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferDetailsEdges) InOperateAgentOrErr() (*Agent, error) {
+	if e.InOperateAgent != nil {
+		return e.InOperateAgent, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: agent.Label}
+	}
+	return nil, &NotLoadedError{edge: "in_operate_agent"}
+}
+
+// InOperateMaintainerOrErr returns the InOperateMaintainer value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferDetailsEdges) InOperateMaintainerOrErr() (*Maintainer, error) {
+	if e.InOperateMaintainer != nil {
+		return e.InOperateMaintainer, nil
+	} else if e.loadedTypes[4] {
+		return nil, &NotFoundError{label: maintainer.Label}
+	}
+	return nil, &NotLoadedError{edge: "in_operate_maintainer"}
+}
+
+// InOperateCabinetOrErr returns the InOperateCabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferDetailsEdges) InOperateCabinetOrErr() (*Cabinet, error) {
+	if e.InOperateCabinet != nil {
+		return e.InOperateCabinet, nil
+	} else if e.loadedTypes[5] {
+		return nil, &NotFoundError{label: cabinet.Label}
+	}
+	return nil, &NotLoadedError{edge: "in_operate_cabinet"}
+}
+
+// InOperateRiderOrErr returns the InOperateRider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferDetailsEdges) InOperateRiderOrErr() (*Rider, error) {
+	if e.InOperateRider != nil {
+		return e.InOperateRider, nil
+	} else if e.loadedTypes[6] {
+		return nil, &NotFoundError{label: rider.Label}
+	}
+	return nil, &NotLoadedError{edge: "in_operate_rider"}
+}
+
+// AssetOrErr returns the Asset value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferDetailsEdges) AssetOrErr() (*Asset, error) {
+	if e.Asset != nil {
+		return e.Asset, nil
+	} else if e.loadedTypes[7] {
+		return nil, &NotFoundError{label: asset.Label}
+	}
+	return nil, &NotLoadedError{edge: "asset"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -87,11 +177,11 @@ func (*AssetTransferDetails) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case assettransferdetails.FieldIsIn:
 			values[i] = new(sql.NullBool)
-		case assettransferdetails.FieldID, assettransferdetails.FieldAssetID, assettransferdetails.FieldTransferID:
+		case assettransferdetails.FieldID, assettransferdetails.FieldTransferID, assettransferdetails.FieldInOperateID, assettransferdetails.FieldInOperateType, assettransferdetails.FieldAssetID:
 			values[i] = new(sql.NullInt64)
 		case assettransferdetails.FieldRemark:
 			values[i] = new(sql.NullString)
-		case assettransferdetails.FieldCreatedAt, assettransferdetails.FieldUpdatedAt, assettransferdetails.FieldDeletedAt:
+		case assettransferdetails.FieldCreatedAt, assettransferdetails.FieldUpdatedAt, assettransferdetails.FieldDeletedAt, assettransferdetails.FieldInTimeAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -155,13 +245,6 @@ func (atd *AssetTransferDetails) assignValues(columns []string, values []any) er
 			} else if value.Valid {
 				atd.Remark = value.String
 			}
-		case assettransferdetails.FieldAssetID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field asset_id", values[i])
-			} else if value.Valid {
-				atd.AssetID = new(uint64)
-				*atd.AssetID = uint64(value.Int64)
-			}
 		case assettransferdetails.FieldTransferID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field transfer_id", values[i])
@@ -173,6 +256,31 @@ func (atd *AssetTransferDetails) assignValues(columns []string, values []any) er
 				return fmt.Errorf("unexpected type %T for field is_in", values[i])
 			} else if value.Valid {
 				atd.IsIn = value.Bool
+			}
+		case assettransferdetails.FieldInOperateID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field in_operate_id", values[i])
+			} else if value.Valid {
+				atd.InOperateID = uint64(value.Int64)
+			}
+		case assettransferdetails.FieldInOperateType:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field in_operate_type", values[i])
+			} else if value.Valid {
+				atd.InOperateType = uint8(value.Int64)
+			}
+		case assettransferdetails.FieldInTimeAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field in_time_at", values[i])
+			} else if value.Valid {
+				atd.InTimeAt = new(time.Time)
+				*atd.InTimeAt = value.Time
+			}
+		case assettransferdetails.FieldAssetID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field asset_id", values[i])
+			} else if value.Valid {
+				atd.AssetID = uint64(value.Int64)
 			}
 		default:
 			atd.selectValues.Set(columns[i], values[i])
@@ -187,14 +295,44 @@ func (atd *AssetTransferDetails) Value(name string) (ent.Value, error) {
 	return atd.selectValues.Get(name)
 }
 
-// QueryAsset queries the "asset" edge of the AssetTransferDetails entity.
-func (atd *AssetTransferDetails) QueryAsset() *AssetQuery {
-	return NewAssetTransferDetailsClient(atd.config).QueryAsset(atd)
-}
-
 // QueryTransfer queries the "transfer" edge of the AssetTransferDetails entity.
 func (atd *AssetTransferDetails) QueryTransfer() *AssetTransferQuery {
 	return NewAssetTransferDetailsClient(atd.config).QueryTransfer(atd)
+}
+
+// QueryInOperateManager queries the "in_operate_manager" edge of the AssetTransferDetails entity.
+func (atd *AssetTransferDetails) QueryInOperateManager() *ManagerQuery {
+	return NewAssetTransferDetailsClient(atd.config).QueryInOperateManager(atd)
+}
+
+// QueryInOperateStore queries the "in_operate_store" edge of the AssetTransferDetails entity.
+func (atd *AssetTransferDetails) QueryInOperateStore() *StoreQuery {
+	return NewAssetTransferDetailsClient(atd.config).QueryInOperateStore(atd)
+}
+
+// QueryInOperateAgent queries the "in_operate_agent" edge of the AssetTransferDetails entity.
+func (atd *AssetTransferDetails) QueryInOperateAgent() *AgentQuery {
+	return NewAssetTransferDetailsClient(atd.config).QueryInOperateAgent(atd)
+}
+
+// QueryInOperateMaintainer queries the "in_operate_maintainer" edge of the AssetTransferDetails entity.
+func (atd *AssetTransferDetails) QueryInOperateMaintainer() *MaintainerQuery {
+	return NewAssetTransferDetailsClient(atd.config).QueryInOperateMaintainer(atd)
+}
+
+// QueryInOperateCabinet queries the "in_operate_cabinet" edge of the AssetTransferDetails entity.
+func (atd *AssetTransferDetails) QueryInOperateCabinet() *CabinetQuery {
+	return NewAssetTransferDetailsClient(atd.config).QueryInOperateCabinet(atd)
+}
+
+// QueryInOperateRider queries the "in_operate_rider" edge of the AssetTransferDetails entity.
+func (atd *AssetTransferDetails) QueryInOperateRider() *RiderQuery {
+	return NewAssetTransferDetailsClient(atd.config).QueryInOperateRider(atd)
+}
+
+// QueryAsset queries the "asset" edge of the AssetTransferDetails entity.
+func (atd *AssetTransferDetails) QueryAsset() *AssetQuery {
+	return NewAssetTransferDetailsClient(atd.config).QueryAsset(atd)
 }
 
 // Update returns a builder for updating this AssetTransferDetails.
@@ -240,16 +378,25 @@ func (atd *AssetTransferDetails) String() string {
 	builder.WriteString("remark=")
 	builder.WriteString(atd.Remark)
 	builder.WriteString(", ")
-	if v := atd.AssetID; v != nil {
-		builder.WriteString("asset_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
 	builder.WriteString("transfer_id=")
 	builder.WriteString(fmt.Sprintf("%v", atd.TransferID))
 	builder.WriteString(", ")
 	builder.WriteString("is_in=")
 	builder.WriteString(fmt.Sprintf("%v", atd.IsIn))
+	builder.WriteString(", ")
+	builder.WriteString("in_operate_id=")
+	builder.WriteString(fmt.Sprintf("%v", atd.InOperateID))
+	builder.WriteString(", ")
+	builder.WriteString("in_operate_type=")
+	builder.WriteString(fmt.Sprintf("%v", atd.InOperateType))
+	builder.WriteString(", ")
+	if v := atd.InTimeAt; v != nil {
+		builder.WriteString("in_time_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	builder.WriteString("asset_id=")
+	builder.WriteString(fmt.Sprintf("%v", atd.AssetID))
 	builder.WriteByte(')')
 	return builder.String()
 }

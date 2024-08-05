@@ -327,6 +327,10 @@ func init() {
 	assettransfer.DefaultUpdatedAt = assettransferDescUpdatedAt.Default.(func() time.Time)
 	// assettransfer.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	assettransfer.UpdateDefaultUpdatedAt = assettransferDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// assettransferDescStatus is the schema descriptor for status field.
+	assettransferDescStatus := assettransferFields[0].Descriptor()
+	// assettransfer.DefaultStatus holds the default value on creation for the status field.
+	assettransfer.DefaultStatus = assettransferDescStatus.Default.(uint8)
 	assettransferdetailsMixin := schema.AssetTransferDetails{}.Mixin()
 	assettransferdetailsMixinHooks2 := assettransferdetailsMixin[2].Hooks()
 	assettransferdetails.Hooks[0] = assettransferdetailsMixinHooks2[0]

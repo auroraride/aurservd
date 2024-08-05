@@ -27,25 +27,36 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
-	// FieldAssetID holds the string denoting the asset_id field in the database.
-	FieldAssetID = "asset_id"
 	// FieldTransferID holds the string denoting the transfer_id field in the database.
 	FieldTransferID = "transfer_id"
 	// FieldIsIn holds the string denoting the is_in field in the database.
 	FieldIsIn = "is_in"
-	// EdgeAsset holds the string denoting the asset edge name in mutations.
-	EdgeAsset = "asset"
+	// FieldInOperateID holds the string denoting the in_operate_id field in the database.
+	FieldInOperateID = "in_operate_id"
+	// FieldInOperateType holds the string denoting the in_operate_type field in the database.
+	FieldInOperateType = "in_operate_type"
+	// FieldInTimeAt holds the string denoting the in_time_at field in the database.
+	FieldInTimeAt = "in_time_at"
+	// FieldAssetID holds the string denoting the asset_id field in the database.
+	FieldAssetID = "asset_id"
 	// EdgeTransfer holds the string denoting the transfer edge name in mutations.
 	EdgeTransfer = "transfer"
+	// EdgeInOperateManager holds the string denoting the in_operate_manager edge name in mutations.
+	EdgeInOperateManager = "in_operate_manager"
+	// EdgeInOperateStore holds the string denoting the in_operate_store edge name in mutations.
+	EdgeInOperateStore = "in_operate_store"
+	// EdgeInOperateAgent holds the string denoting the in_operate_agent edge name in mutations.
+	EdgeInOperateAgent = "in_operate_agent"
+	// EdgeInOperateMaintainer holds the string denoting the in_operate_maintainer edge name in mutations.
+	EdgeInOperateMaintainer = "in_operate_maintainer"
+	// EdgeInOperateCabinet holds the string denoting the in_operate_cabinet edge name in mutations.
+	EdgeInOperateCabinet = "in_operate_cabinet"
+	// EdgeInOperateRider holds the string denoting the in_operate_rider edge name in mutations.
+	EdgeInOperateRider = "in_operate_rider"
+	// EdgeAsset holds the string denoting the asset edge name in mutations.
+	EdgeAsset = "asset"
 	// Table holds the table name of the assettransferdetails in the database.
 	Table = "asset_transfer_details"
-	// AssetTable is the table that holds the asset relation/edge.
-	AssetTable = "asset_transfer_details"
-	// AssetInverseTable is the table name for the Asset entity.
-	// It exists in this package in order to avoid circular dependency with the "asset" package.
-	AssetInverseTable = "asset"
-	// AssetColumn is the table column denoting the asset relation/edge.
-	AssetColumn = "asset_id"
 	// TransferTable is the table that holds the transfer relation/edge.
 	TransferTable = "asset_transfer_details"
 	// TransferInverseTable is the table name for the AssetTransfer entity.
@@ -53,6 +64,55 @@ const (
 	TransferInverseTable = "asset_transfer"
 	// TransferColumn is the table column denoting the transfer relation/edge.
 	TransferColumn = "transfer_id"
+	// InOperateManagerTable is the table that holds the in_operate_manager relation/edge.
+	InOperateManagerTable = "asset_transfer_details"
+	// InOperateManagerInverseTable is the table name for the Manager entity.
+	// It exists in this package in order to avoid circular dependency with the "manager" package.
+	InOperateManagerInverseTable = "manager"
+	// InOperateManagerColumn is the table column denoting the in_operate_manager relation/edge.
+	InOperateManagerColumn = "in_operate_id"
+	// InOperateStoreTable is the table that holds the in_operate_store relation/edge.
+	InOperateStoreTable = "asset_transfer_details"
+	// InOperateStoreInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	InOperateStoreInverseTable = "store"
+	// InOperateStoreColumn is the table column denoting the in_operate_store relation/edge.
+	InOperateStoreColumn = "in_operate_id"
+	// InOperateAgentTable is the table that holds the in_operate_agent relation/edge.
+	InOperateAgentTable = "asset_transfer_details"
+	// InOperateAgentInverseTable is the table name for the Agent entity.
+	// It exists in this package in order to avoid circular dependency with the "agent" package.
+	InOperateAgentInverseTable = "agent"
+	// InOperateAgentColumn is the table column denoting the in_operate_agent relation/edge.
+	InOperateAgentColumn = "in_operate_id"
+	// InOperateMaintainerTable is the table that holds the in_operate_maintainer relation/edge.
+	InOperateMaintainerTable = "asset_transfer_details"
+	// InOperateMaintainerInverseTable is the table name for the Maintainer entity.
+	// It exists in this package in order to avoid circular dependency with the "maintainer" package.
+	InOperateMaintainerInverseTable = "maintainer"
+	// InOperateMaintainerColumn is the table column denoting the in_operate_maintainer relation/edge.
+	InOperateMaintainerColumn = "in_operate_id"
+	// InOperateCabinetTable is the table that holds the in_operate_cabinet relation/edge.
+	InOperateCabinetTable = "asset_transfer_details"
+	// InOperateCabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	InOperateCabinetInverseTable = "cabinet"
+	// InOperateCabinetColumn is the table column denoting the in_operate_cabinet relation/edge.
+	InOperateCabinetColumn = "in_operate_id"
+	// InOperateRiderTable is the table that holds the in_operate_rider relation/edge.
+	InOperateRiderTable = "asset_transfer_details"
+	// InOperateRiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	InOperateRiderInverseTable = "rider"
+	// InOperateRiderColumn is the table column denoting the in_operate_rider relation/edge.
+	InOperateRiderColumn = "in_operate_id"
+	// AssetTable is the table that holds the asset relation/edge.
+	AssetTable = "asset_transfer_details"
+	// AssetInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	AssetInverseTable = "asset"
+	// AssetColumn is the table column denoting the asset relation/edge.
+	AssetColumn = "asset_id"
 )
 
 // Columns holds all SQL columns for assettransferdetails fields.
@@ -64,9 +124,12 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
-	FieldAssetID,
 	FieldTransferID,
 	FieldIsIn,
+	FieldInOperateID,
+	FieldInOperateType,
+	FieldInTimeAt,
+	FieldAssetID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -124,11 +187,6 @@ func ByRemark(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRemark, opts...).ToFunc()
 }
 
-// ByAssetID orders the results by the asset_id field.
-func ByAssetID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldAssetID, opts...).ToFunc()
-}
-
 // ByTransferID orders the results by the transfer_id field.
 func ByTransferID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTransferID, opts...).ToFunc()
@@ -139,11 +197,24 @@ func ByIsIn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsIn, opts...).ToFunc()
 }
 
-// ByAssetField orders the results by asset field.
-func ByAssetField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newAssetStep(), sql.OrderByField(field, opts...))
-	}
+// ByInOperateID orders the results by the in_operate_id field.
+func ByInOperateID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInOperateID, opts...).ToFunc()
+}
+
+// ByInOperateType orders the results by the in_operate_type field.
+func ByInOperateType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInOperateType, opts...).ToFunc()
+}
+
+// ByInTimeAt orders the results by the in_time_at field.
+func ByInTimeAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInTimeAt, opts...).ToFunc()
+}
+
+// ByAssetID orders the results by the asset_id field.
+func ByAssetID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAssetID, opts...).ToFunc()
 }
 
 // ByTransferField orders the results by transfer field.
@@ -152,17 +223,108 @@ func ByTransferField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newTransferStep(), sql.OrderByField(field, opts...))
 	}
 }
-func newAssetStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(AssetInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, AssetTable, AssetColumn),
-	)
+
+// ByInOperateManagerField orders the results by in_operate_manager field.
+func ByInOperateManagerField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInOperateManagerStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByInOperateStoreField orders the results by in_operate_store field.
+func ByInOperateStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInOperateStoreStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByInOperateAgentField orders the results by in_operate_agent field.
+func ByInOperateAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInOperateAgentStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByInOperateMaintainerField orders the results by in_operate_maintainer field.
+func ByInOperateMaintainerField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInOperateMaintainerStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByInOperateCabinetField orders the results by in_operate_cabinet field.
+func ByInOperateCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInOperateCabinetStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByInOperateRiderField orders the results by in_operate_rider field.
+func ByInOperateRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInOperateRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByAssetField orders the results by asset field.
+func ByAssetField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAssetStep(), sql.OrderByField(field, opts...))
+	}
 }
 func newTransferStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TransferInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, TransferTable, TransferColumn),
+	)
+}
+func newInOperateManagerStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InOperateManagerInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, InOperateManagerTable, InOperateManagerColumn),
+	)
+}
+func newInOperateStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InOperateStoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, InOperateStoreTable, InOperateStoreColumn),
+	)
+}
+func newInOperateAgentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InOperateAgentInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, InOperateAgentTable, InOperateAgentColumn),
+	)
+}
+func newInOperateMaintainerStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InOperateMaintainerInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, InOperateMaintainerTable, InOperateMaintainerColumn),
+	)
+}
+func newInOperateCabinetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InOperateCabinetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, InOperateCabinetTable, InOperateCabinetColumn),
+	)
+}
+func newInOperateRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InOperateRiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, InOperateRiderTable, InOperateRiderColumn),
+	)
+}
+func newAssetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AssetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, true, AssetTable, AssetColumn),
 	)
 }

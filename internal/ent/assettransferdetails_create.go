@@ -12,9 +12,15 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/manager"
+	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // AssetTransferDetailsCreate is the builder for creating a AssetTransferDetails entity.
@@ -93,20 +99,6 @@ func (atdc *AssetTransferDetailsCreate) SetNillableRemark(s *string) *AssetTrans
 	return atdc
 }
 
-// SetAssetID sets the "asset_id" field.
-func (atdc *AssetTransferDetailsCreate) SetAssetID(u uint64) *AssetTransferDetailsCreate {
-	atdc.mutation.SetAssetID(u)
-	return atdc
-}
-
-// SetNillableAssetID sets the "asset_id" field if the given value is not nil.
-func (atdc *AssetTransferDetailsCreate) SetNillableAssetID(u *uint64) *AssetTransferDetailsCreate {
-	if u != nil {
-		atdc.SetAssetID(*u)
-	}
-	return atdc
-}
-
 // SetTransferID sets the "transfer_id" field.
 func (atdc *AssetTransferDetailsCreate) SetTransferID(u uint64) *AssetTransferDetailsCreate {
 	atdc.mutation.SetTransferID(u)
@@ -135,14 +127,176 @@ func (atdc *AssetTransferDetailsCreate) SetNillableIsIn(b *bool) *AssetTransferD
 	return atdc
 }
 
-// SetAsset sets the "asset" edge to the Asset entity.
-func (atdc *AssetTransferDetailsCreate) SetAsset(a *Asset) *AssetTransferDetailsCreate {
-	return atdc.SetAssetID(a.ID)
+// SetInOperateID sets the "in_operate_id" field.
+func (atdc *AssetTransferDetailsCreate) SetInOperateID(u uint64) *AssetTransferDetailsCreate {
+	atdc.mutation.SetInOperateID(u)
+	return atdc
+}
+
+// SetNillableInOperateID sets the "in_operate_id" field if the given value is not nil.
+func (atdc *AssetTransferDetailsCreate) SetNillableInOperateID(u *uint64) *AssetTransferDetailsCreate {
+	if u != nil {
+		atdc.SetInOperateID(*u)
+	}
+	return atdc
+}
+
+// SetInOperateType sets the "in_operate_type" field.
+func (atdc *AssetTransferDetailsCreate) SetInOperateType(u uint8) *AssetTransferDetailsCreate {
+	atdc.mutation.SetInOperateType(u)
+	return atdc
+}
+
+// SetNillableInOperateType sets the "in_operate_type" field if the given value is not nil.
+func (atdc *AssetTransferDetailsCreate) SetNillableInOperateType(u *uint8) *AssetTransferDetailsCreate {
+	if u != nil {
+		atdc.SetInOperateType(*u)
+	}
+	return atdc
+}
+
+// SetInTimeAt sets the "in_time_at" field.
+func (atdc *AssetTransferDetailsCreate) SetInTimeAt(t time.Time) *AssetTransferDetailsCreate {
+	atdc.mutation.SetInTimeAt(t)
+	return atdc
+}
+
+// SetNillableInTimeAt sets the "in_time_at" field if the given value is not nil.
+func (atdc *AssetTransferDetailsCreate) SetNillableInTimeAt(t *time.Time) *AssetTransferDetailsCreate {
+	if t != nil {
+		atdc.SetInTimeAt(*t)
+	}
+	return atdc
+}
+
+// SetAssetID sets the "asset_id" field.
+func (atdc *AssetTransferDetailsCreate) SetAssetID(u uint64) *AssetTransferDetailsCreate {
+	atdc.mutation.SetAssetID(u)
+	return atdc
 }
 
 // SetTransfer sets the "transfer" edge to the AssetTransfer entity.
 func (atdc *AssetTransferDetailsCreate) SetTransfer(a *AssetTransfer) *AssetTransferDetailsCreate {
 	return atdc.SetTransferID(a.ID)
+}
+
+// SetInOperateManagerID sets the "in_operate_manager" edge to the Manager entity by ID.
+func (atdc *AssetTransferDetailsCreate) SetInOperateManagerID(id uint64) *AssetTransferDetailsCreate {
+	atdc.mutation.SetInOperateManagerID(id)
+	return atdc
+}
+
+// SetNillableInOperateManagerID sets the "in_operate_manager" edge to the Manager entity by ID if the given value is not nil.
+func (atdc *AssetTransferDetailsCreate) SetNillableInOperateManagerID(id *uint64) *AssetTransferDetailsCreate {
+	if id != nil {
+		atdc = atdc.SetInOperateManagerID(*id)
+	}
+	return atdc
+}
+
+// SetInOperateManager sets the "in_operate_manager" edge to the Manager entity.
+func (atdc *AssetTransferDetailsCreate) SetInOperateManager(m *Manager) *AssetTransferDetailsCreate {
+	return atdc.SetInOperateManagerID(m.ID)
+}
+
+// SetInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID.
+func (atdc *AssetTransferDetailsCreate) SetInOperateStoreID(id uint64) *AssetTransferDetailsCreate {
+	atdc.mutation.SetInOperateStoreID(id)
+	return atdc
+}
+
+// SetNillableInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID if the given value is not nil.
+func (atdc *AssetTransferDetailsCreate) SetNillableInOperateStoreID(id *uint64) *AssetTransferDetailsCreate {
+	if id != nil {
+		atdc = atdc.SetInOperateStoreID(*id)
+	}
+	return atdc
+}
+
+// SetInOperateStore sets the "in_operate_store" edge to the Store entity.
+func (atdc *AssetTransferDetailsCreate) SetInOperateStore(s *Store) *AssetTransferDetailsCreate {
+	return atdc.SetInOperateStoreID(s.ID)
+}
+
+// SetInOperateAgentID sets the "in_operate_agent" edge to the Agent entity by ID.
+func (atdc *AssetTransferDetailsCreate) SetInOperateAgentID(id uint64) *AssetTransferDetailsCreate {
+	atdc.mutation.SetInOperateAgentID(id)
+	return atdc
+}
+
+// SetNillableInOperateAgentID sets the "in_operate_agent" edge to the Agent entity by ID if the given value is not nil.
+func (atdc *AssetTransferDetailsCreate) SetNillableInOperateAgentID(id *uint64) *AssetTransferDetailsCreate {
+	if id != nil {
+		atdc = atdc.SetInOperateAgentID(*id)
+	}
+	return atdc
+}
+
+// SetInOperateAgent sets the "in_operate_agent" edge to the Agent entity.
+func (atdc *AssetTransferDetailsCreate) SetInOperateAgent(a *Agent) *AssetTransferDetailsCreate {
+	return atdc.SetInOperateAgentID(a.ID)
+}
+
+// SetInOperateMaintainerID sets the "in_operate_maintainer" edge to the Maintainer entity by ID.
+func (atdc *AssetTransferDetailsCreate) SetInOperateMaintainerID(id uint64) *AssetTransferDetailsCreate {
+	atdc.mutation.SetInOperateMaintainerID(id)
+	return atdc
+}
+
+// SetNillableInOperateMaintainerID sets the "in_operate_maintainer" edge to the Maintainer entity by ID if the given value is not nil.
+func (atdc *AssetTransferDetailsCreate) SetNillableInOperateMaintainerID(id *uint64) *AssetTransferDetailsCreate {
+	if id != nil {
+		atdc = atdc.SetInOperateMaintainerID(*id)
+	}
+	return atdc
+}
+
+// SetInOperateMaintainer sets the "in_operate_maintainer" edge to the Maintainer entity.
+func (atdc *AssetTransferDetailsCreate) SetInOperateMaintainer(m *Maintainer) *AssetTransferDetailsCreate {
+	return atdc.SetInOperateMaintainerID(m.ID)
+}
+
+// SetInOperateCabinetID sets the "in_operate_cabinet" edge to the Cabinet entity by ID.
+func (atdc *AssetTransferDetailsCreate) SetInOperateCabinetID(id uint64) *AssetTransferDetailsCreate {
+	atdc.mutation.SetInOperateCabinetID(id)
+	return atdc
+}
+
+// SetNillableInOperateCabinetID sets the "in_operate_cabinet" edge to the Cabinet entity by ID if the given value is not nil.
+func (atdc *AssetTransferDetailsCreate) SetNillableInOperateCabinetID(id *uint64) *AssetTransferDetailsCreate {
+	if id != nil {
+		atdc = atdc.SetInOperateCabinetID(*id)
+	}
+	return atdc
+}
+
+// SetInOperateCabinet sets the "in_operate_cabinet" edge to the Cabinet entity.
+func (atdc *AssetTransferDetailsCreate) SetInOperateCabinet(c *Cabinet) *AssetTransferDetailsCreate {
+	return atdc.SetInOperateCabinetID(c.ID)
+}
+
+// SetInOperateRiderID sets the "in_operate_rider" edge to the Rider entity by ID.
+func (atdc *AssetTransferDetailsCreate) SetInOperateRiderID(id uint64) *AssetTransferDetailsCreate {
+	atdc.mutation.SetInOperateRiderID(id)
+	return atdc
+}
+
+// SetNillableInOperateRiderID sets the "in_operate_rider" edge to the Rider entity by ID if the given value is not nil.
+func (atdc *AssetTransferDetailsCreate) SetNillableInOperateRiderID(id *uint64) *AssetTransferDetailsCreate {
+	if id != nil {
+		atdc = atdc.SetInOperateRiderID(*id)
+	}
+	return atdc
+}
+
+// SetInOperateRider sets the "in_operate_rider" edge to the Rider entity.
+func (atdc *AssetTransferDetailsCreate) SetInOperateRider(r *Rider) *AssetTransferDetailsCreate {
+	return atdc.SetInOperateRiderID(r.ID)
+}
+
+// SetAsset sets the "asset" edge to the Asset entity.
+func (atdc *AssetTransferDetailsCreate) SetAsset(a *Asset) *AssetTransferDetailsCreate {
+	return atdc.SetAssetID(a.ID)
 }
 
 // Mutation returns the AssetTransferDetailsMutation object of the builder.
@@ -214,6 +368,12 @@ func (atdc *AssetTransferDetailsCreate) check() error {
 	if _, ok := atdc.mutation.IsIn(); !ok {
 		return &ValidationError{Name: "is_in", err: errors.New(`ent: missing required field "AssetTransferDetails.is_in"`)}
 	}
+	if _, ok := atdc.mutation.AssetID(); !ok {
+		return &ValidationError{Name: "asset_id", err: errors.New(`ent: missing required field "AssetTransferDetails.asset_id"`)}
+	}
+	if _, ok := atdc.mutation.AssetID(); !ok {
+		return &ValidationError{Name: "asset", err: errors.New(`ent: missing required edge "AssetTransferDetails.asset"`)}
+	}
 	return nil
 }
 
@@ -269,22 +429,13 @@ func (atdc *AssetTransferDetailsCreate) createSpec() (*AssetTransferDetails, *sq
 		_spec.SetField(assettransferdetails.FieldIsIn, field.TypeBool, value)
 		_node.IsIn = value
 	}
-	if nodes := atdc.mutation.AssetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransferdetails.AssetTable,
-			Columns: []string{assettransferdetails.AssetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.AssetID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
+	if value, ok := atdc.mutation.InOperateType(); ok {
+		_spec.SetField(assettransferdetails.FieldInOperateType, field.TypeUint8, value)
+		_node.InOperateType = value
+	}
+	if value, ok := atdc.mutation.InTimeAt(); ok {
+		_spec.SetField(assettransferdetails.FieldInTimeAt, field.TypeTime, value)
+		_node.InTimeAt = &value
 	}
 	if nodes := atdc.mutation.TransferIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -301,6 +452,125 @@ func (atdc *AssetTransferDetailsCreate) createSpec() (*AssetTransferDetails, *sq
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.TransferID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := atdc.mutation.InOperateManagerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateManagerTable,
+			Columns: []string{assettransferdetails.InOperateManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.InOperateID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := atdc.mutation.InOperateStoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateStoreTable,
+			Columns: []string{assettransferdetails.InOperateStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.InOperateID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := atdc.mutation.InOperateAgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateAgentTable,
+			Columns: []string{assettransferdetails.InOperateAgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.InOperateID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := atdc.mutation.InOperateMaintainerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateMaintainerTable,
+			Columns: []string{assettransferdetails.InOperateMaintainerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.InOperateID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := atdc.mutation.InOperateCabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateCabinetTable,
+			Columns: []string{assettransferdetails.InOperateCabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.InOperateID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := atdc.mutation.InOperateRiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateRiderTable,
+			Columns: []string{assettransferdetails.InOperateRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.InOperateID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := atdc.mutation.AssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   assettransferdetails.AssetTable,
+			Columns: []string{assettransferdetails.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AssetID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -421,24 +691,6 @@ func (u *AssetTransferDetailsUpsert) ClearRemark() *AssetTransferDetailsUpsert {
 	return u
 }
 
-// SetAssetID sets the "asset_id" field.
-func (u *AssetTransferDetailsUpsert) SetAssetID(v uint64) *AssetTransferDetailsUpsert {
-	u.Set(assettransferdetails.FieldAssetID, v)
-	return u
-}
-
-// UpdateAssetID sets the "asset_id" field to the value that was provided on create.
-func (u *AssetTransferDetailsUpsert) UpdateAssetID() *AssetTransferDetailsUpsert {
-	u.SetExcluded(assettransferdetails.FieldAssetID)
-	return u
-}
-
-// ClearAssetID clears the value of the "asset_id" field.
-func (u *AssetTransferDetailsUpsert) ClearAssetID() *AssetTransferDetailsUpsert {
-	u.SetNull(assettransferdetails.FieldAssetID)
-	return u
-}
-
 // SetTransferID sets the "transfer_id" field.
 func (u *AssetTransferDetailsUpsert) SetTransferID(v uint64) *AssetTransferDetailsUpsert {
 	u.Set(assettransferdetails.FieldTransferID, v)
@@ -466,6 +718,78 @@ func (u *AssetTransferDetailsUpsert) SetIsIn(v bool) *AssetTransferDetailsUpsert
 // UpdateIsIn sets the "is_in" field to the value that was provided on create.
 func (u *AssetTransferDetailsUpsert) UpdateIsIn() *AssetTransferDetailsUpsert {
 	u.SetExcluded(assettransferdetails.FieldIsIn)
+	return u
+}
+
+// SetInOperateID sets the "in_operate_id" field.
+func (u *AssetTransferDetailsUpsert) SetInOperateID(v uint64) *AssetTransferDetailsUpsert {
+	u.Set(assettransferdetails.FieldInOperateID, v)
+	return u
+}
+
+// UpdateInOperateID sets the "in_operate_id" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsert) UpdateInOperateID() *AssetTransferDetailsUpsert {
+	u.SetExcluded(assettransferdetails.FieldInOperateID)
+	return u
+}
+
+// ClearInOperateID clears the value of the "in_operate_id" field.
+func (u *AssetTransferDetailsUpsert) ClearInOperateID() *AssetTransferDetailsUpsert {
+	u.SetNull(assettransferdetails.FieldInOperateID)
+	return u
+}
+
+// SetInOperateType sets the "in_operate_type" field.
+func (u *AssetTransferDetailsUpsert) SetInOperateType(v uint8) *AssetTransferDetailsUpsert {
+	u.Set(assettransferdetails.FieldInOperateType, v)
+	return u
+}
+
+// UpdateInOperateType sets the "in_operate_type" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsert) UpdateInOperateType() *AssetTransferDetailsUpsert {
+	u.SetExcluded(assettransferdetails.FieldInOperateType)
+	return u
+}
+
+// AddInOperateType adds v to the "in_operate_type" field.
+func (u *AssetTransferDetailsUpsert) AddInOperateType(v uint8) *AssetTransferDetailsUpsert {
+	u.Add(assettransferdetails.FieldInOperateType, v)
+	return u
+}
+
+// ClearInOperateType clears the value of the "in_operate_type" field.
+func (u *AssetTransferDetailsUpsert) ClearInOperateType() *AssetTransferDetailsUpsert {
+	u.SetNull(assettransferdetails.FieldInOperateType)
+	return u
+}
+
+// SetInTimeAt sets the "in_time_at" field.
+func (u *AssetTransferDetailsUpsert) SetInTimeAt(v time.Time) *AssetTransferDetailsUpsert {
+	u.Set(assettransferdetails.FieldInTimeAt, v)
+	return u
+}
+
+// UpdateInTimeAt sets the "in_time_at" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsert) UpdateInTimeAt() *AssetTransferDetailsUpsert {
+	u.SetExcluded(assettransferdetails.FieldInTimeAt)
+	return u
+}
+
+// ClearInTimeAt clears the value of the "in_time_at" field.
+func (u *AssetTransferDetailsUpsert) ClearInTimeAt() *AssetTransferDetailsUpsert {
+	u.SetNull(assettransferdetails.FieldInTimeAt)
+	return u
+}
+
+// SetAssetID sets the "asset_id" field.
+func (u *AssetTransferDetailsUpsert) SetAssetID(v uint64) *AssetTransferDetailsUpsert {
+	u.Set(assettransferdetails.FieldAssetID, v)
+	return u
+}
+
+// UpdateAssetID sets the "asset_id" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsert) UpdateAssetID() *AssetTransferDetailsUpsert {
+	u.SetExcluded(assettransferdetails.FieldAssetID)
 	return u
 }
 
@@ -594,27 +918,6 @@ func (u *AssetTransferDetailsUpsertOne) ClearRemark() *AssetTransferDetailsUpser
 	})
 }
 
-// SetAssetID sets the "asset_id" field.
-func (u *AssetTransferDetailsUpsertOne) SetAssetID(v uint64) *AssetTransferDetailsUpsertOne {
-	return u.Update(func(s *AssetTransferDetailsUpsert) {
-		s.SetAssetID(v)
-	})
-}
-
-// UpdateAssetID sets the "asset_id" field to the value that was provided on create.
-func (u *AssetTransferDetailsUpsertOne) UpdateAssetID() *AssetTransferDetailsUpsertOne {
-	return u.Update(func(s *AssetTransferDetailsUpsert) {
-		s.UpdateAssetID()
-	})
-}
-
-// ClearAssetID clears the value of the "asset_id" field.
-func (u *AssetTransferDetailsUpsertOne) ClearAssetID() *AssetTransferDetailsUpsertOne {
-	return u.Update(func(s *AssetTransferDetailsUpsert) {
-		s.ClearAssetID()
-	})
-}
-
 // SetTransferID sets the "transfer_id" field.
 func (u *AssetTransferDetailsUpsertOne) SetTransferID(v uint64) *AssetTransferDetailsUpsertOne {
 	return u.Update(func(s *AssetTransferDetailsUpsert) {
@@ -647,6 +950,90 @@ func (u *AssetTransferDetailsUpsertOne) SetIsIn(v bool) *AssetTransferDetailsUps
 func (u *AssetTransferDetailsUpsertOne) UpdateIsIn() *AssetTransferDetailsUpsertOne {
 	return u.Update(func(s *AssetTransferDetailsUpsert) {
 		s.UpdateIsIn()
+	})
+}
+
+// SetInOperateID sets the "in_operate_id" field.
+func (u *AssetTransferDetailsUpsertOne) SetInOperateID(v uint64) *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.SetInOperateID(v)
+	})
+}
+
+// UpdateInOperateID sets the "in_operate_id" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsertOne) UpdateInOperateID() *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.UpdateInOperateID()
+	})
+}
+
+// ClearInOperateID clears the value of the "in_operate_id" field.
+func (u *AssetTransferDetailsUpsertOne) ClearInOperateID() *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.ClearInOperateID()
+	})
+}
+
+// SetInOperateType sets the "in_operate_type" field.
+func (u *AssetTransferDetailsUpsertOne) SetInOperateType(v uint8) *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.SetInOperateType(v)
+	})
+}
+
+// AddInOperateType adds v to the "in_operate_type" field.
+func (u *AssetTransferDetailsUpsertOne) AddInOperateType(v uint8) *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.AddInOperateType(v)
+	})
+}
+
+// UpdateInOperateType sets the "in_operate_type" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsertOne) UpdateInOperateType() *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.UpdateInOperateType()
+	})
+}
+
+// ClearInOperateType clears the value of the "in_operate_type" field.
+func (u *AssetTransferDetailsUpsertOne) ClearInOperateType() *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.ClearInOperateType()
+	})
+}
+
+// SetInTimeAt sets the "in_time_at" field.
+func (u *AssetTransferDetailsUpsertOne) SetInTimeAt(v time.Time) *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.SetInTimeAt(v)
+	})
+}
+
+// UpdateInTimeAt sets the "in_time_at" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsertOne) UpdateInTimeAt() *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.UpdateInTimeAt()
+	})
+}
+
+// ClearInTimeAt clears the value of the "in_time_at" field.
+func (u *AssetTransferDetailsUpsertOne) ClearInTimeAt() *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.ClearInTimeAt()
+	})
+}
+
+// SetAssetID sets the "asset_id" field.
+func (u *AssetTransferDetailsUpsertOne) SetAssetID(v uint64) *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.SetAssetID(v)
+	})
+}
+
+// UpdateAssetID sets the "asset_id" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsertOne) UpdateAssetID() *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.UpdateAssetID()
 	})
 }
 
@@ -941,27 +1328,6 @@ func (u *AssetTransferDetailsUpsertBulk) ClearRemark() *AssetTransferDetailsUpse
 	})
 }
 
-// SetAssetID sets the "asset_id" field.
-func (u *AssetTransferDetailsUpsertBulk) SetAssetID(v uint64) *AssetTransferDetailsUpsertBulk {
-	return u.Update(func(s *AssetTransferDetailsUpsert) {
-		s.SetAssetID(v)
-	})
-}
-
-// UpdateAssetID sets the "asset_id" field to the value that was provided on create.
-func (u *AssetTransferDetailsUpsertBulk) UpdateAssetID() *AssetTransferDetailsUpsertBulk {
-	return u.Update(func(s *AssetTransferDetailsUpsert) {
-		s.UpdateAssetID()
-	})
-}
-
-// ClearAssetID clears the value of the "asset_id" field.
-func (u *AssetTransferDetailsUpsertBulk) ClearAssetID() *AssetTransferDetailsUpsertBulk {
-	return u.Update(func(s *AssetTransferDetailsUpsert) {
-		s.ClearAssetID()
-	})
-}
-
 // SetTransferID sets the "transfer_id" field.
 func (u *AssetTransferDetailsUpsertBulk) SetTransferID(v uint64) *AssetTransferDetailsUpsertBulk {
 	return u.Update(func(s *AssetTransferDetailsUpsert) {
@@ -994,6 +1360,90 @@ func (u *AssetTransferDetailsUpsertBulk) SetIsIn(v bool) *AssetTransferDetailsUp
 func (u *AssetTransferDetailsUpsertBulk) UpdateIsIn() *AssetTransferDetailsUpsertBulk {
 	return u.Update(func(s *AssetTransferDetailsUpsert) {
 		s.UpdateIsIn()
+	})
+}
+
+// SetInOperateID sets the "in_operate_id" field.
+func (u *AssetTransferDetailsUpsertBulk) SetInOperateID(v uint64) *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.SetInOperateID(v)
+	})
+}
+
+// UpdateInOperateID sets the "in_operate_id" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsertBulk) UpdateInOperateID() *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.UpdateInOperateID()
+	})
+}
+
+// ClearInOperateID clears the value of the "in_operate_id" field.
+func (u *AssetTransferDetailsUpsertBulk) ClearInOperateID() *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.ClearInOperateID()
+	})
+}
+
+// SetInOperateType sets the "in_operate_type" field.
+func (u *AssetTransferDetailsUpsertBulk) SetInOperateType(v uint8) *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.SetInOperateType(v)
+	})
+}
+
+// AddInOperateType adds v to the "in_operate_type" field.
+func (u *AssetTransferDetailsUpsertBulk) AddInOperateType(v uint8) *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.AddInOperateType(v)
+	})
+}
+
+// UpdateInOperateType sets the "in_operate_type" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsertBulk) UpdateInOperateType() *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.UpdateInOperateType()
+	})
+}
+
+// ClearInOperateType clears the value of the "in_operate_type" field.
+func (u *AssetTransferDetailsUpsertBulk) ClearInOperateType() *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.ClearInOperateType()
+	})
+}
+
+// SetInTimeAt sets the "in_time_at" field.
+func (u *AssetTransferDetailsUpsertBulk) SetInTimeAt(v time.Time) *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.SetInTimeAt(v)
+	})
+}
+
+// UpdateInTimeAt sets the "in_time_at" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsertBulk) UpdateInTimeAt() *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.UpdateInTimeAt()
+	})
+}
+
+// ClearInTimeAt clears the value of the "in_time_at" field.
+func (u *AssetTransferDetailsUpsertBulk) ClearInTimeAt() *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.ClearInTimeAt()
+	})
+}
+
+// SetAssetID sets the "asset_id" field.
+func (u *AssetTransferDetailsUpsertBulk) SetAssetID(v uint64) *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.SetAssetID(v)
+	})
+}
+
+// UpdateAssetID sets the "asset_id" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsertBulk) UpdateAssetID() *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.UpdateAssetID()
 	})
 }
 

@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
+	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -447,6 +448,25 @@ func (ac *AssetCreate) AddScrapDetails(a ...*AssetScrapDetails) *AssetCreate {
 	return ac.AddScrapDetailIDs(ids...)
 }
 
+// SetTransferDetailsID sets the "transfer_details" edge to the AssetTransferDetails entity by ID.
+func (ac *AssetCreate) SetTransferDetailsID(id uint64) *AssetCreate {
+	ac.mutation.SetTransferDetailsID(id)
+	return ac
+}
+
+// SetNillableTransferDetailsID sets the "transfer_details" edge to the AssetTransferDetails entity by ID if the given value is not nil.
+func (ac *AssetCreate) SetNillableTransferDetailsID(id *uint64) *AssetCreate {
+	if id != nil {
+		ac = ac.SetTransferDetailsID(*id)
+	}
+	return ac
+}
+
+// SetTransferDetails sets the "transfer_details" edge to the AssetTransferDetails entity.
+func (ac *AssetCreate) SetTransferDetails(a *AssetTransferDetails) *AssetCreate {
+	return ac.SetTransferDetailsID(a.ID)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (ac *AssetCreate) Mutation() *AssetMutation {
 	return ac.mutation
@@ -811,6 +831,22 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetscrapdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.TransferDetailsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   asset.TransferDetailsTable,
+			Columns: []string{asset.TransferDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

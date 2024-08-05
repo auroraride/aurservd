@@ -7,12 +7,11 @@ import (
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
+	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
@@ -38,6 +37,7 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 	}
 
 	var assetIDs []uint64
+	var newTime = time.Now()
 	// 创建调拨记录
 	q := s.orm.Create()
 	// 已经入库资产调拨
@@ -49,9 +49,10 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 		q.SetFromLocationType(req.FromLocationType.Value()).
 			SetFromLocationID(*req.FromLocationID).
 			SetStatus(model.AssetTransferStatusDelivering.Value()).
-			SetOutTimeAt(time.Now()).
+			SetOutTimeAt(newTime).
 			SetOutOperateID(modifier.ID).
 			SetOutOperateType(model.AssetOperateRoleManager.Value()).
+			SetType(req.Type.Value()).
 			SetOutNum(uint(len(assetIDs)))
 	}
 	// 初始调拨
@@ -61,16 +62,20 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 			return failed, nil
 		}
 		q.SetInNum(uint(len(assetIDs))).
-			SetInTimeAt(time.Now()).
 			SetStatus(model.AssetTransferStatusStock.Value()).
-			SetInOperateID(modifier.ID).
-			SetInOperateType(model.AssetOperateRoleManager.Value()).
+			SetType(model.AssetTransferTypeInitial.Value()).
 			SetRemark("初始化调拨")
 	}
 
 	bulk := make([]*ent.AssetTransferDetailsCreate, 0, len(assetIDs))
 	for _, id := range assetIDs {
-		bulk = append(bulk, ent.Database.AssetTransferDetails.Create().SetAssetID(id).SetCreator(modifier).SetLastModifier(modifier))
+		bulk = append(bulk, ent.Database.AssetTransferDetails.Create().
+			SetAssetID(id).
+			SetCreator(modifier).
+			SetLastModifier(modifier).
+			SetInTimeAt(newTime).
+			SetInOperateID(modifier.ID).
+			SetInOperateType(model.AssetOperateRoleManager.Value()))
 	}
 	details, _ := ent.Database.AssetTransferDetails.CreateBulk(bulk...).Save(ctx)
 	if len(details) == 0 {
@@ -83,8 +88,13 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 		SetCreator(modifier).
 		SetLastModifier(modifier).
 		SetReason(req.Reason).
-		AddDetails(details...).
+		AddTransferDetails(details...).
 		Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+	// 修改资产状态
+	_, err = ent.Database.Asset.Update().Where(asset.IDIn(assetIDs...)).SetStatus(model.AssetStatusDelivering.Value()).SetLastModifier(modifier).Save(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -92,21 +102,25 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 }
 
 // 有资产编号的物资调拨
-func (s *assetTransferService) transferAssetWithSN(ctx context.Context, q *ent.AssetQuery, req model.AssetTransferCreateDetail, modifier *model.Modifier) (assetIDs []uint64, err error) {
+func (s *assetTransferService) transferAssetWithSN(ctx context.Context, assetLocationsType *model.AssetLocationsType, req model.AssetTransferCreateDetail, modifier *model.Modifier) (assetIDs []uint64, err error) {
+	q := ent.Database.Asset.QueryNotDeleted().Where(
+		asset.LocationsType((assetLocationsType).Value()),
+		asset.StatusIn(model.AssetStatusStock.Value(), model.AssetStatusFault.Value()),
+	)
 	if req.SN == nil || *req.SN == "" {
 		return nil, errors.New("资产编号不能为空")
 	}
 	// 查询物资是否存在
 	item, _ := q.Where(asset.Sn(*req.SN)).First(ctx)
 	if item == nil {
-		return nil, errors.New("物资不存在")
+		return nil, errors.New(*req.SN + "物资不存在")
 	}
 	assetIDs = append(assetIDs, item.ID)
 	return
 }
 
 // 无资产编号的物资调拨
-func (s *assetTransferService) transferAssetWithoutSN(ctx context.Context, q *ent.AssetQuery, req model.AssetTransferCreateDetail, modifier *model.Modifier) (assetIds []uint64, err error) {
+func (s *assetTransferService) transferAssetWithoutSN(ctx context.Context, assetLocationsType *model.AssetLocationsType, req model.AssetTransferCreateDetail, modifier *model.Modifier) (assetIds []uint64, err error) {
 	if req.Num == nil || *req.Num == 0 {
 		return nil, errors.New("调拨数量不能为空")
 	}
@@ -118,6 +132,10 @@ func (s *assetTransferService) transferAssetWithoutSN(ctx context.Context, q *en
 	if item == nil {
 		return nil, errors.New(req.AssetType.String() + "分类不存在")
 	}
+	q := ent.Database.Asset.QueryNotDeleted().Where(
+		asset.LocationsType((assetLocationsType).Value()),
+		asset.StatusIn(model.AssetStatusStock.Value(), model.AssetStatusFault.Value()),
+	)
 	// 查询其它物资是否充足
 	all, _ := q.Where(asset.MaterialID(*req.MaterialID)).Limit(int(*req.Num)).All(ctx)
 	// 查询出的物资数量小于调拨数量 则调拨失败
@@ -226,24 +244,18 @@ func (s *assetTransferService) transferLimit(ctx context.Context, req *model.Ass
 
 // 已入库调拨
 func (s *assetTransferService) stockTransfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (assetIDs []uint64, failed []string) {
-	// 查询物资是否充足
-	q := ent.Database.Asset.QueryNotDeleted().Where(
-		asset.LocationsType((*req.FromLocationType).Value()),
-		asset.StatusIn(model.AssetStatusStock.Value(), model.AssetStatusFault.Value()),
-	)
-
 	var err error
 	for _, v := range req.Details {
 		var iDs []uint64
 		switch v.AssetType {
 		case model.AssetTypeEbike, model.AssetTypeSmartBattery:
-			iDs, err = s.transferAssetWithSN(ctx, q, v, modifier)
+			iDs, err = s.transferAssetWithSN(ctx, req.FromLocationType, v, modifier)
 			if err != nil {
 				failed = append(failed, err.Error())
 				continue
 			}
 		case model.AssetTypeNonSmartBattery, model.AssetTypeCabinetAccessory, model.AssetTypeEbikeAccessory, model.AssetTypeOtherAccessory:
-			iDs, err = s.transferAssetWithoutSN(ctx, q, v, modifier)
+			iDs, err = s.transferAssetWithoutSN(ctx, req.FromLocationType, v, modifier)
 			if err != nil {
 				failed = append(failed, err.Error())
 				continue
@@ -315,39 +327,45 @@ func (s *assetTransferService) initialTransferWithoutSN(ctx context.Context, req
 
 // TransferList 调拨列表
 func (s *assetTransferService) TransferList(ctx context.Context, req *model.AssetTransferListReq) (res *model.PaginationRes, err error) {
-	q := ent.Database.AssetTransfer.QueryNotDeleted().WithDetails()
+	q := ent.Database.AssetTransfer.QueryNotDeleted().WithTransferDetails().
+		WithOutOperateAgent().WithOutOperateManager().WithOutOperateStore().WithOutOperateMaintainer().
+		WithFromLocationWarehouse().WithFromLocationStore().WithFromLocationStation().WithFromLocationOperator().
+		WithToLocationWarehouse().WithToLocationStore().WithToLocationStation().WithToLocationOperator()
 	s.filter(ctx, q, &req.AssetTransferFilter)
 
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetTransfer) (res *model.AssetTransferListRes) {
 		res = &model.AssetTransferListRes{
-			ID:        item.ID,
-			SN:        item.Sn,
-			Reason:    item.Reason,
-			Remark:    item.Remark,
-			Status:    model.AssetTransferStatus(item.Status).String(),
-			OutNum:    item.OutNum,
-			InNum:     item.InNum,
-			OutTimeAt: item.OutTimeAt.Format("2006-01-02 15:04:05"),
-			InTimeAt:  item.InTimeAt.Format("2006-01-02 15:04:05"),
+			ID:     item.ID,
+			SN:     item.Sn,
+			Reason: item.Reason,
+			Remark: item.Remark,
+			Status: model.AssetTransferStatus(item.Status).String(),
+			OutNum: item.OutNum,
+			InNum:  item.InNum,
 		}
 
+		if item.OutTimeAt != nil {
+			res.OutTimeAt = item.OutTimeAt.Format("2006-01-02 15:04:05")
+		}
 		if item.FromLocationType != nil && item.FromLocationID != nil {
+			res.FromLocationType = *item.FromLocationType
+			res.FromLocationID = *item.FromLocationID
 			switch model.AssetLocationsType(*item.FromLocationType) {
 			case model.AssetLocationsTypeWarehouse:
-				if item.Edges.LocationWarehouse != nil {
-					res.FromLocationName = "[仓库]" + item.Edges.LocationWarehouse.Name
+				if item.Edges.FromLocationWarehouse != nil {
+					res.FromLocationName = "[仓库]" + item.Edges.FromLocationWarehouse.Name
 				}
 			case model.AssetLocationsTypeStore:
-				if item.Edges.LocationStore != nil {
-					res.FromLocationName = "[门店]" + item.Edges.LocationStore.Name
+				if item.Edges.FromLocationStore != nil {
+					res.FromLocationName = "[门店]" + item.Edges.FromLocationStore.Name
 				}
 			case model.AssetLocationsTypeStation:
-				if item.Edges.LocationStation != nil {
-					res.FromLocationName = "[站点]" + item.Edges.LocationStation.Name
+				if item.Edges.FromLocationStation != nil {
+					res.FromLocationName = "[站点]" + item.Edges.FromLocationStation.Name
 				}
 			case model.AssetLocationsTypeOperation:
-				if item.Edges.LocationOperator != nil {
-					res.FromLocationName = "[运维]" + item.Edges.LocationOperator.Name
+				if item.Edges.FromLocationOperator != nil {
+					res.FromLocationName = "[运维]" + item.Edges.FromLocationOperator.Name
 				}
 			default:
 			}
@@ -356,20 +374,20 @@ func (s *assetTransferService) TransferList(ctx context.Context, req *model.Asse
 		if item.ToLocationType != 0 && item.ToLocationID != 0 {
 			switch model.AssetLocationsType(item.ToLocationType) {
 			case model.AssetLocationsTypeWarehouse:
-				if item.Edges.LocationWarehouse != nil {
-					res.ToLocationName = "[仓库]" + item.Edges.LocationWarehouse.Name
+				if item.Edges.ToLocationWarehouse != nil {
+					res.ToLocationName = "[仓库]" + item.Edges.ToLocationWarehouse.Name
 				}
 			case model.AssetLocationsTypeStore:
-				if item.Edges.LocationStore != nil {
-					res.ToLocationName = "[门店]" + item.Edges.LocationStore.Name
+				if item.Edges.ToLocationStore != nil {
+					res.ToLocationName = "[门店]" + item.Edges.ToLocationStore.Name
 				}
 			case model.AssetLocationsTypeStation:
-				if item.Edges.LocationStation != nil {
-					res.ToLocationName = "[站点]" + item.Edges.LocationStation.Name
+				if item.Edges.ToLocationStation != nil {
+					res.ToLocationName = "[站点]" + item.Edges.ToLocationStation.Name
 				}
 			case model.AssetLocationsTypeOperation:
-				if item.Edges.LocationOperator != nil {
-					res.ToLocationName = "[运维]" + item.Edges.LocationOperator.Name
+				if item.Edges.ToLocationOperator != nil {
+					res.ToLocationName = "[运维]" + item.Edges.ToLocationOperator.Name
 				}
 			default:
 			}
@@ -403,28 +421,6 @@ func (s *assetTransferService) TransferList(ctx context.Context, req *model.Asse
 			}
 		}
 
-		// 入库操作人
-		if item.InOperateType != 0 && item.InOperateID != 0 {
-			switch model.AssetOperateRoleType(item.InOperateType) {
-			case model.AssetOperateRoleManager:
-				if item.Edges.InOperateManager != nil {
-					res.InOperateName = item.Edges.InOperateManager.Name
-				}
-			case model.AssetOperateRoleStore:
-				if item.Edges.InOperateStore != nil {
-					res.InOperateName = item.Edges.InOperateStore.Name
-				}
-			case model.AssetOperateRoleAgent:
-				if item.Edges.InOperateAgent != nil {
-					res.InOperateName = item.Edges.InOperateAgent.Name
-				}
-			case model.AssetOperateRoleOperation:
-				if item.Edges.InOperateMaintainer != nil {
-					res.InOperateName = item.Edges.InOperateMaintainer.Name
-				}
-			default:
-			}
-		}
 		return res
 	}), nil
 
@@ -452,28 +448,11 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 		end := tools.NewTime().ParseNextDateStringX(*req.OutEnd)
 		q.Where(assettransfer.OutTimeAtGTE(start), assettransfer.OutTimeAtLTE(end))
 	}
-	if req.InStart != nil && req.InEnd != nil {
-		start := tools.NewTime().ParseDateStringX(*req.InStart)
-		end := tools.NewTime().ParseNextDateStringX(*req.InEnd)
-		q.Where(assettransfer.InTimeAtGTE(start), assettransfer.InTimeAtLTE(end))
-	}
 	if req.Keyword != nil {
 		q.Where(
 			assettransfer.Or(
 				assettransfer.SnContains(*req.Keyword),
 				assettransfer.ReasonContains(*req.Keyword),
-				// 资产后台
-				assettransfer.HasInOperateManagerWith(manager.NameContains(*req.Keyword)),
-				assettransfer.HasOutOperateManagerWith(manager.NameContains(*req.Keyword)),
-				// 门店
-				assettransfer.HasInOperateStoreWith(store.NameContains(*req.Keyword)),
-				assettransfer.HasOutOperateStoreWith(store.NameContains(*req.Keyword)),
-				// 代理
-				assettransfer.HasInOperateAgentWith(agent.NameContains(*req.Keyword)),
-				assettransfer.HasOutOperateAgentWith(agent.NameContains(*req.Keyword)),
-				// 运维
-				assettransfer.HasInOperateMaintainerWith(maintainer.NameContains(*req.Keyword)),
-				assettransfer.HasOutOperateMaintainerWith(maintainer.NameContains(*req.Keyword)),
 			),
 		)
 	}
@@ -503,5 +482,195 @@ func (s *assetTransferService) TransferDetail(ctx context.Context, req *model.As
 	//
 	// q.Aggregate(ent.Sum(stock.FieldNum)).
 	// 	Scan(ctx, &result)
+	return res, nil
+}
+
+// TransferCancel 取消调拨
+func (s *assetTransferService) TransferCancel(ctx context.Context, req *model.AssetTransferDetailReq, modifier *model.Modifier) (err error) {
+	item, err := ent.Database.AssetTransfer.QueryNotDeleted().Where(assettransfer.ID(req.ID)).First(ctx)
+	if err != nil {
+		return err
+	}
+	if item == nil {
+		return errors.New("调拨单不存在")
+	}
+	if item.Status == model.AssetTransferStatusStock.Value() {
+		return errors.New("已入库的调拨单不能取消")
+	}
+	if item.Status == model.AssetTransferStatusCancel.Value() {
+		return errors.New("调拨单已取消")
+	}
+	// 修改调拨单状态
+	_, err = item.Update().
+		SetStatus(model.AssetTransferStatusCancel.Value()).
+		SetLastModifier(modifier).
+		Save(ctx)
+	if err != nil {
+		return err
+	}
+	// 修改资产状态
+	ids := make([]uint64, 0, len(item.Edges.TransferDetails))
+	for _, v := range item.Edges.TransferDetails {
+		ids = append(ids, v.AssetID)
+	}
+	_, err = ent.Database.Asset.Update().Where(asset.IDIn(ids...)).SetStatus(model.AssetStatusStock.Value()).SetLastModifier(modifier).Save(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// TransferReceive 接收资产调拨 todo 没写完
+func (s *assetTransferService) TransferReceive(ctx context.Context, req *model.AssetTransferReceiveBatchReq, modifier *model.Modifier) (err error) {
+
+	timeNow := time.Now()
+
+	for _, v := range req.AssetTransferReceive {
+		// 查询调拨单
+		item, _ := ent.Database.AssetTransfer.QueryNotDeleted().Where(assettransfer.ID(v.ID)).First(ctx)
+		if item == nil {
+			return errors.New("调拨单不存在")
+		}
+
+		q := ent.Database.AssetTransferDetails.Update()
+		// t:=ent.Database.AssetTransfer.Update().Where(assettransfer.ID(v.ID))
+		iDs := make([]uint64, 0)
+		for _, vl := range v.Detail {
+			switch vl.AssetType {
+			case model.AssetTypeSmartBattery, model.AssetTypeEbike:
+				// 此类资产可以分批次接收
+				iDs, err = s.receiveAssetWithSN(ctx, vl, v.ID)
+				if err != nil {
+					return err
+				}
+			case model.AssetTypeCabinetAccessory, model.AssetTypeEbikeAccessory, model.AssetTypeNonSmartBattery, model.AssetTypeOtherAccessory:
+				// 此类资产只能一次性接收
+				iDs, err = s.receiveAssetWithoutSN(ctx, vl, v.ID)
+				if err != nil {
+					return err
+				}
+			}
+		}
+		_, err = q.Where(assettransferdetails.IDIn(iDs...)).
+			SetIsIn(true).
+			SetInTimeAt(timeNow).
+			SetInOperateID(modifier.ID).
+			SetInOperateType(req.OperateType).
+			SetLastModifier(modifier).
+			Save(ctx)
+		if err != nil {
+			return err
+		}
+
+	}
+
+	return nil
+}
+
+// 有编号资产接收
+func (s *assetTransferService) receiveAssetWithSN(ctx context.Context, req model.AssetTransferReceiveDetail, assetTransferID uint64) (iDs []uint64, err error) {
+	q := ent.Database.AssetTransferDetails.QueryNotDeleted().Where(assettransferdetails.TransferID(assetTransferID)).WithAsset(func(query *ent.AssetQuery) {
+		query.Where(asset.StatusIn(model.AssetStatusDelivering.Value()), asset.Sn(*req.SN))
+	})
+	if req.SN == nil || *req.SN == "" {
+		return nil, errors.New("资产编号不能为空")
+	}
+	// 查询物资是否存在
+	item, _ := q.First(ctx)
+	if item.Edges.Asset == nil {
+		return nil, errors.New(*req.SN + "物资不存在")
+	}
+	iDs = append(iDs, item.ID)
+	return
+}
+
+// receiveAssetWithoutSN 无编号资产接收
+func (s *assetTransferService) receiveAssetWithoutSN(ctx context.Context, req model.AssetTransferReceiveDetail, assetTransferID uint64) (assetIDs []uint64, err error) {
+	return nil, err
+}
+
+// GetTransferBySN 根据sn查询未入库的调拨单
+func (s *assetTransferService) GetTransferBySN(ctx context.Context, req *model.GetTransferBySNReq) (res *model.AssetTransferListRes, err error) {
+	q := ent.Database.Asset.QueryNotDeleted().WithTransferDetails(func(query *ent.AssetTransferDetailsQuery) {
+		query.Where(assettransferdetails.IsIn(false)).WithTransfer(func(query *ent.AssetTransferQuery) {
+			query.WithFromLocationOperator().WithFromLocationStation().WithFromLocationStore().WithFromLocationWarehouse().
+				WithToLocationOperator().WithToLocationStation().WithToLocationStore().WithToLocationWarehouse()
+		})
+	}).Where(asset.Sn(req.SN), asset.StatusIn(model.AssetStatusDelivering.Value()))
+	item, _ := q.First(ctx)
+	if item == nil {
+		return nil, errors.New("物资不存在或未调拨")
+	}
+	if item.Edges.TransferDetails == nil || item.Edges.TransferDetails.Edges.Transfer == nil {
+		return nil, errors.New("物资未调拨")
+	}
+	if item.Edges.TransferDetails.IsIn {
+		return nil, errors.New("物资已入库")
+	}
+	if item.Edges.TransferDetails.Edges.Transfer.Status == model.AssetTransferStatusCancel.Value() {
+		return nil, errors.New("调拨单已取消")
+	}
+
+	res = &model.AssetTransferListRes{
+		ID:     item.Edges.TransferDetails.Edges.Transfer.ID,
+		SN:     item.Edges.TransferDetails.Edges.Transfer.Sn,
+		Reason: item.Edges.TransferDetails.Edges.Transfer.Reason,
+		Status: model.AssetTransferStatus(item.Edges.TransferDetails.Edges.Transfer.Status).String(),
+		OutNum: item.Edges.TransferDetails.Edges.Transfer.OutNum,
+		InNum:  item.Edges.TransferDetails.Edges.Transfer.InNum,
+	}
+
+	var fromLocationName, toLocationName string
+	if item.Edges.TransferDetails.Edges.Transfer.FromLocationType != nil && item.Edges.TransferDetails.Edges.Transfer.FromLocationID != nil {
+		res.FromLocationType = *item.Edges.TransferDetails.Edges.Transfer.FromLocationType
+		res.FromLocationID = *item.Edges.TransferDetails.Edges.Transfer.FromLocationID
+		switch model.AssetLocationsType(*item.Edges.TransferDetails.Edges.Transfer.FromLocationType) {
+		case model.AssetLocationsTypeWarehouse:
+			if item.Edges.TransferDetails.Edges.Transfer.Edges.FromLocationWarehouse != nil {
+				fromLocationName = "[仓库]" + item.Edges.TransferDetails.Edges.Transfer.Edges.FromLocationWarehouse.Name
+			}
+		case model.AssetLocationsTypeStore:
+			if item.Edges.TransferDetails.Edges.Transfer.Edges.FromLocationStore != nil {
+				fromLocationName = "[门店]" + item.Edges.TransferDetails.Edges.Transfer.Edges.FromLocationStore.Name
+			}
+		case model.AssetLocationsTypeStation:
+			if item.Edges.TransferDetails.Edges.Transfer.Edges.FromLocationStation != nil {
+				fromLocationName = "[站点]" + item.Edges.TransferDetails.Edges.Transfer.Edges.FromLocationStation.Name
+			}
+		case model.AssetLocationsTypeOperation:
+			if item.Edges.TransferDetails.Edges.Transfer.Edges.FromLocationOperator != nil {
+				fromLocationName = "[运维]" + item.Edges.TransferDetails.Edges.Transfer.Edges.FromLocationOperator.Name
+			}
+		default:
+		}
+	}
+	if item.Edges.TransferDetails.Edges.Transfer.ToLocationType != 0 && item.Edges.TransferDetails.Edges.Transfer.ToLocationID != 0 {
+		res.ToLocationID = item.Edges.TransferDetails.Edges.Transfer.ToLocationID
+		res.ToLocationType = item.Edges.TransferDetails.Edges.Transfer.ToLocationType
+		switch model.AssetLocationsType(item.Edges.TransferDetails.Edges.Transfer.ToLocationType) {
+		case model.AssetLocationsTypeWarehouse:
+			if item.Edges.TransferDetails.Edges.Transfer.Edges.ToLocationWarehouse != nil {
+				toLocationName = "[仓库]" + item.Edges.TransferDetails.Edges.Transfer.Edges.ToLocationWarehouse.Name
+			}
+		case model.AssetLocationsTypeStore:
+			if item.Edges.TransferDetails.Edges.Transfer.Edges.ToLocationStore != nil {
+				toLocationName = "[门店]" + item.Edges.TransferDetails.Edges.Transfer.Edges.ToLocationStore.Name
+			}
+		case model.AssetLocationsTypeStation:
+			if item.Edges.TransferDetails.Edges.Transfer.Edges.ToLocationStation != nil {
+				toLocationName = "[站点]" + item.Edges.TransferDetails.Edges.Transfer.Edges.ToLocationStation.Name
+			}
+		case model.AssetLocationsTypeOperation:
+			if item.Edges.TransferDetails.Edges.Transfer.Edges.ToLocationOperator != nil {
+				toLocationName = "[运维]" + item.Edges.TransferDetails.Edges.Transfer.Edges.ToLocationOperator.Name
+			}
+		default:
+		}
+	}
+	if item.Edges.TransferDetails.Edges.Transfer.OutTimeAt != nil {
+		res.OutTimeAt = item.Edges.TransferDetails.Edges.Transfer.OutTimeAt.Format("2006-01-02 15:04:05")
+	}
+	res.ToLocationName = toLocationName
+	res.FromLocationName = fromLocationName
 	return res, nil
 }

@@ -378,11 +378,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assettransfer.FieldInNum:            {Type: field.TypeUint, Column: assettransfer.FieldInNum},
 			assettransfer.FieldOutOperateID:     {Type: field.TypeUint64, Column: assettransfer.FieldOutOperateID},
 			assettransfer.FieldOutOperateType:   {Type: field.TypeUint8, Column: assettransfer.FieldOutOperateType},
-			assettransfer.FieldInOperateID:      {Type: field.TypeUint64, Column: assettransfer.FieldInOperateID},
-			assettransfer.FieldInOperateType:    {Type: field.TypeUint8, Column: assettransfer.FieldInOperateType},
 			assettransfer.FieldOutTimeAt:        {Type: field.TypeTime, Column: assettransfer.FieldOutTimeAt},
-			assettransfer.FieldInTimeAt:         {Type: field.TypeTime, Column: assettransfer.FieldInTimeAt},
 			assettransfer.FieldReason:           {Type: field.TypeString, Column: assettransfer.FieldReason},
+			assettransfer.FieldType:             {Type: field.TypeUint8, Column: assettransfer.FieldType},
 		},
 	}
 	graph.Nodes[11] = &sqlgraph.Node{
@@ -396,15 +394,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "AssetTransferDetails",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			assettransferdetails.FieldCreatedAt:    {Type: field.TypeTime, Column: assettransferdetails.FieldCreatedAt},
-			assettransferdetails.FieldUpdatedAt:    {Type: field.TypeTime, Column: assettransferdetails.FieldUpdatedAt},
-			assettransferdetails.FieldDeletedAt:    {Type: field.TypeTime, Column: assettransferdetails.FieldDeletedAt},
-			assettransferdetails.FieldCreator:      {Type: field.TypeJSON, Column: assettransferdetails.FieldCreator},
-			assettransferdetails.FieldLastModifier: {Type: field.TypeJSON, Column: assettransferdetails.FieldLastModifier},
-			assettransferdetails.FieldRemark:       {Type: field.TypeString, Column: assettransferdetails.FieldRemark},
-			assettransferdetails.FieldAssetID:      {Type: field.TypeUint64, Column: assettransferdetails.FieldAssetID},
-			assettransferdetails.FieldTransferID:   {Type: field.TypeUint64, Column: assettransferdetails.FieldTransferID},
-			assettransferdetails.FieldIsIn:         {Type: field.TypeBool, Column: assettransferdetails.FieldIsIn},
+			assettransferdetails.FieldCreatedAt:     {Type: field.TypeTime, Column: assettransferdetails.FieldCreatedAt},
+			assettransferdetails.FieldUpdatedAt:     {Type: field.TypeTime, Column: assettransferdetails.FieldUpdatedAt},
+			assettransferdetails.FieldDeletedAt:     {Type: field.TypeTime, Column: assettransferdetails.FieldDeletedAt},
+			assettransferdetails.FieldCreator:       {Type: field.TypeJSON, Column: assettransferdetails.FieldCreator},
+			assettransferdetails.FieldLastModifier:  {Type: field.TypeJSON, Column: assettransferdetails.FieldLastModifier},
+			assettransferdetails.FieldRemark:        {Type: field.TypeString, Column: assettransferdetails.FieldRemark},
+			assettransferdetails.FieldTransferID:    {Type: field.TypeUint64, Column: assettransferdetails.FieldTransferID},
+			assettransferdetails.FieldIsIn:          {Type: field.TypeBool, Column: assettransferdetails.FieldIsIn},
+			assettransferdetails.FieldInOperateID:   {Type: field.TypeUint64, Column: assettransferdetails.FieldInOperateID},
+			assettransferdetails.FieldInOperateType: {Type: field.TypeUint8, Column: assettransferdetails.FieldInOperateType},
+			assettransferdetails.FieldInTimeAt:      {Type: field.TypeTime, Column: assettransferdetails.FieldInTimeAt},
+			assettransferdetails.FieldAssetID:       {Type: field.TypeUint64, Column: assettransferdetails.FieldAssetID},
 		},
 	}
 	graph.Nodes[12] = &sqlgraph.Node{
@@ -2960,6 +2961,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"AssetScrapDetails",
 	)
 	graph.MustAddE(
+		"transfer_details",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   asset.TransferDetailsTable,
+			Columns: []string{asset.TransferDetailsColumn},
+			Bidi:    false,
+		},
+		"Asset",
+		"AssetTransferDetails",
+	)
+	graph.MustAddE(
 		"attribute",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -3104,156 +3117,156 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"AssetScrap",
 	)
 	graph.MustAddE(
-		"details",
+		"transfer_details",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   assettransfer.DetailsTable,
-			Columns: []string{assettransfer.DetailsColumn},
+			Table:   assettransfer.TransferDetailsTable,
+			Columns: []string{assettransfer.TransferDetailsColumn},
 			Bidi:    false,
 		},
 		"AssetTransfer",
 		"AssetTransferDetails",
 	)
 	graph.MustAddE(
-		"location_store",
+		"from_location_store",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationStoreTable,
-			Columns: []string{assettransfer.LocationStoreColumn},
+			Table:   assettransfer.FromLocationStoreTable,
+			Columns: []string{assettransfer.FromLocationStoreColumn},
 			Bidi:    false,
 		},
 		"AssetTransfer",
 		"Store",
 	)
 	graph.MustAddE(
-		"location_cabinet",
+		"from_location_cabinet",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationCabinetTable,
-			Columns: []string{assettransfer.LocationCabinetColumn},
+			Table:   assettransfer.FromLocationCabinetTable,
+			Columns: []string{assettransfer.FromLocationCabinetColumn},
 			Bidi:    false,
 		},
 		"AssetTransfer",
 		"Cabinet",
 	)
 	graph.MustAddE(
-		"location_station",
+		"from_location_station",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationStationTable,
-			Columns: []string{assettransfer.LocationStationColumn},
+			Table:   assettransfer.FromLocationStationTable,
+			Columns: []string{assettransfer.FromLocationStationColumn},
 			Bidi:    false,
 		},
 		"AssetTransfer",
 		"EnterpriseStation",
 	)
 	graph.MustAddE(
-		"location_rider",
+		"from_location_rider",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationRiderTable,
-			Columns: []string{assettransfer.LocationRiderColumn},
+			Table:   assettransfer.FromLocationRiderTable,
+			Columns: []string{assettransfer.FromLocationRiderColumn},
 			Bidi:    false,
 		},
 		"AssetTransfer",
 		"Rider",
 	)
 	graph.MustAddE(
-		"location_operator",
+		"from_location_operator",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationOperatorTable,
-			Columns: []string{assettransfer.LocationOperatorColumn},
+			Table:   assettransfer.FromLocationOperatorTable,
+			Columns: []string{assettransfer.FromLocationOperatorColumn},
 			Bidi:    false,
 		},
 		"AssetTransfer",
 		"Maintainer",
 	)
 	graph.MustAddE(
-		"location_warehouse",
+		"from_location_warehouse",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.LocationWarehouseTable,
-			Columns: []string{assettransfer.LocationWarehouseColumn},
+			Table:   assettransfer.FromLocationWarehouseTable,
+			Columns: []string{assettransfer.FromLocationWarehouseColumn},
 			Bidi:    false,
 		},
 		"AssetTransfer",
 		"Warehouse",
 	)
 	graph.MustAddE(
-		"to_store",
+		"to_location_store",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToStoreTable,
-			Columns: []string{assettransfer.ToStoreColumn},
+			Table:   assettransfer.ToLocationStoreTable,
+			Columns: []string{assettransfer.ToLocationStoreColumn},
 			Bidi:    false,
 		},
 		"AssetTransfer",
 		"Store",
 	)
 	graph.MustAddE(
-		"to_cabinet",
+		"to_location_cabinet",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToCabinetTable,
-			Columns: []string{assettransfer.ToCabinetColumn},
+			Table:   assettransfer.ToLocationCabinetTable,
+			Columns: []string{assettransfer.ToLocationCabinetColumn},
 			Bidi:    false,
 		},
 		"AssetTransfer",
 		"Cabinet",
 	)
 	graph.MustAddE(
-		"to_station",
+		"to_location_station",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToStationTable,
-			Columns: []string{assettransfer.ToStationColumn},
+			Table:   assettransfer.ToLocationStationTable,
+			Columns: []string{assettransfer.ToLocationStationColumn},
 			Bidi:    false,
 		},
 		"AssetTransfer",
 		"EnterpriseStation",
 	)
 	graph.MustAddE(
-		"to_rider",
+		"to_location_rider",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToRiderTable,
-			Columns: []string{assettransfer.ToRiderColumn},
+			Table:   assettransfer.ToLocationRiderTable,
+			Columns: []string{assettransfer.ToLocationRiderColumn},
 			Bidi:    false,
 		},
 		"AssetTransfer",
 		"Rider",
 	)
 	graph.MustAddE(
-		"to_operator",
+		"to_location_operator",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToOperatorTable,
-			Columns: []string{assettransfer.ToOperatorColumn},
+			Table:   assettransfer.ToLocationOperatorTable,
+			Columns: []string{assettransfer.ToLocationOperatorColumn},
 			Bidi:    false,
 		},
 		"AssetTransfer",
 		"Maintainer",
 	)
 	graph.MustAddE(
-		"to_warehouse",
+		"to_location_warehouse",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.ToWarehouseTable,
-			Columns: []string{assettransfer.ToWarehouseColumn},
+			Table:   assettransfer.ToLocationWarehouseTable,
+			Columns: []string{assettransfer.ToLocationWarehouseColumn},
 			Bidi:    false,
 		},
 		"AssetTransfer",
@@ -3332,90 +3345,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Rider",
 	)
 	graph.MustAddE(
-		"in_operate_manager",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateManagerTable,
-			Columns: []string{assettransfer.InOperateManagerColumn},
-			Bidi:    false,
-		},
-		"AssetTransfer",
-		"Manager",
-	)
-	graph.MustAddE(
-		"in_operate_store",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateStoreTable,
-			Columns: []string{assettransfer.InOperateStoreColumn},
-			Bidi:    false,
-		},
-		"AssetTransfer",
-		"Store",
-	)
-	graph.MustAddE(
-		"in_operate_agent",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateAgentTable,
-			Columns: []string{assettransfer.InOperateAgentColumn},
-			Bidi:    false,
-		},
-		"AssetTransfer",
-		"Agent",
-	)
-	graph.MustAddE(
-		"in_operate_maintainer",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateMaintainerTable,
-			Columns: []string{assettransfer.InOperateMaintainerColumn},
-			Bidi:    false,
-		},
-		"AssetTransfer",
-		"Maintainer",
-	)
-	graph.MustAddE(
-		"in_operate_cabinet",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateCabinetTable,
-			Columns: []string{assettransfer.InOperateCabinetColumn},
-			Bidi:    false,
-		},
-		"AssetTransfer",
-		"Cabinet",
-	)
-	graph.MustAddE(
-		"in_operate_rider",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransfer.InOperateRiderTable,
-			Columns: []string{assettransfer.InOperateRiderColumn},
-			Bidi:    false,
-		},
-		"AssetTransfer",
-		"Rider",
-	)
-	graph.MustAddE(
-		"asset",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assettransferdetails.AssetTable,
-			Columns: []string{assettransferdetails.AssetColumn},
-			Bidi:    false,
-		},
-		"AssetTransferDetails",
-		"Asset",
-	)
-	graph.MustAddE(
 		"transfer",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -3426,6 +3355,90 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"AssetTransferDetails",
 		"AssetTransfer",
+	)
+	graph.MustAddE(
+		"in_operate_manager",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateManagerTable,
+			Columns: []string{assettransferdetails.InOperateManagerColumn},
+			Bidi:    false,
+		},
+		"AssetTransferDetails",
+		"Manager",
+	)
+	graph.MustAddE(
+		"in_operate_store",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateStoreTable,
+			Columns: []string{assettransferdetails.InOperateStoreColumn},
+			Bidi:    false,
+		},
+		"AssetTransferDetails",
+		"Store",
+	)
+	graph.MustAddE(
+		"in_operate_agent",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateAgentTable,
+			Columns: []string{assettransferdetails.InOperateAgentColumn},
+			Bidi:    false,
+		},
+		"AssetTransferDetails",
+		"Agent",
+	)
+	graph.MustAddE(
+		"in_operate_maintainer",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateMaintainerTable,
+			Columns: []string{assettransferdetails.InOperateMaintainerColumn},
+			Bidi:    false,
+		},
+		"AssetTransferDetails",
+		"Maintainer",
+	)
+	graph.MustAddE(
+		"in_operate_cabinet",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateCabinetTable,
+			Columns: []string{assettransferdetails.InOperateCabinetColumn},
+			Bidi:    false,
+		},
+		"AssetTransferDetails",
+		"Cabinet",
+	)
+	graph.MustAddE(
+		"in_operate_rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateRiderTable,
+			Columns: []string{assettransferdetails.InOperateRiderColumn},
+			Bidi:    false,
+		},
+		"AssetTransferDetails",
+		"Rider",
+	)
+	graph.MustAddE(
+		"asset",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   assettransferdetails.AssetTable,
+			Columns: []string{assettransferdetails.AssetColumn},
+			Bidi:    false,
+		},
+		"AssetTransferDetails",
+		"Asset",
 	)
 	graph.MustAddE(
 		"store",
@@ -8052,6 +8065,20 @@ func (f *AssetFilter) WhereHasScrapDetailsWith(preds ...predicate.AssetScrapDeta
 	})))
 }
 
+// WhereHasTransferDetails applies a predicate to check if query has an edge transfer_details.
+func (f *AssetFilter) WhereHasTransferDetails() {
+	f.Where(entql.HasEdge("transfer_details"))
+}
+
+// WhereHasTransferDetailsWith applies a predicate to check if query has an edge transfer_details with a given conditions (other predicates).
+func (f *AssetFilter) WhereHasTransferDetailsWith(preds ...predicate.AssetTransferDetails) {
+	f.Where(entql.HasEdgeWith("transfer_details", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (aavq *AssetAttributeValuesQuery) addPredicate(pred func(s *sql.Selector)) {
 	aavq.predicates = append(aavq.predicates, pred)
@@ -8730,24 +8757,9 @@ func (f *AssetTransferFilter) WhereOutOperateType(p entql.Uint8P) {
 	f.Where(p.Field(assettransfer.FieldOutOperateType))
 }
 
-// WhereInOperateID applies the entql uint64 predicate on the in_operate_id field.
-func (f *AssetTransferFilter) WhereInOperateID(p entql.Uint64P) {
-	f.Where(p.Field(assettransfer.FieldInOperateID))
-}
-
-// WhereInOperateType applies the entql uint8 predicate on the in_operate_type field.
-func (f *AssetTransferFilter) WhereInOperateType(p entql.Uint8P) {
-	f.Where(p.Field(assettransfer.FieldInOperateType))
-}
-
 // WhereOutTimeAt applies the entql time.Time predicate on the out_time_at field.
 func (f *AssetTransferFilter) WhereOutTimeAt(p entql.TimeP) {
 	f.Where(p.Field(assettransfer.FieldOutTimeAt))
-}
-
-// WhereInTimeAt applies the entql time.Time predicate on the in_time_at field.
-func (f *AssetTransferFilter) WhereInTimeAt(p entql.TimeP) {
-	f.Where(p.Field(assettransfer.FieldInTimeAt))
 }
 
 // WhereReason applies the entql string predicate on the reason field.
@@ -8755,182 +8767,187 @@ func (f *AssetTransferFilter) WhereReason(p entql.StringP) {
 	f.Where(p.Field(assettransfer.FieldReason))
 }
 
-// WhereHasDetails applies a predicate to check if query has an edge details.
-func (f *AssetTransferFilter) WhereHasDetails() {
-	f.Where(entql.HasEdge("details"))
+// WhereType applies the entql uint8 predicate on the type field.
+func (f *AssetTransferFilter) WhereType(p entql.Uint8P) {
+	f.Where(p.Field(assettransfer.FieldType))
 }
 
-// WhereHasDetailsWith applies a predicate to check if query has an edge details with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasDetailsWith(preds ...predicate.AssetTransferDetails) {
-	f.Where(entql.HasEdgeWith("details", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasTransferDetails applies a predicate to check if query has an edge transfer_details.
+func (f *AssetTransferFilter) WhereHasTransferDetails() {
+	f.Where(entql.HasEdge("transfer_details"))
+}
+
+// WhereHasTransferDetailsWith applies a predicate to check if query has an edge transfer_details with a given conditions (other predicates).
+func (f *AssetTransferFilter) WhereHasTransferDetailsWith(preds ...predicate.AssetTransferDetails) {
+	f.Where(entql.HasEdgeWith("transfer_details", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasLocationStore applies a predicate to check if query has an edge location_store.
-func (f *AssetTransferFilter) WhereHasLocationStore() {
-	f.Where(entql.HasEdge("location_store"))
+// WhereHasFromLocationStore applies a predicate to check if query has an edge from_location_store.
+func (f *AssetTransferFilter) WhereHasFromLocationStore() {
+	f.Where(entql.HasEdge("from_location_store"))
 }
 
-// WhereHasLocationStoreWith applies a predicate to check if query has an edge location_store with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasLocationStoreWith(preds ...predicate.Store) {
-	f.Where(entql.HasEdgeWith("location_store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasFromLocationStoreWith applies a predicate to check if query has an edge from_location_store with a given conditions (other predicates).
+func (f *AssetTransferFilter) WhereHasFromLocationStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("from_location_store", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasLocationCabinet applies a predicate to check if query has an edge location_cabinet.
-func (f *AssetTransferFilter) WhereHasLocationCabinet() {
-	f.Where(entql.HasEdge("location_cabinet"))
+// WhereHasFromLocationCabinet applies a predicate to check if query has an edge from_location_cabinet.
+func (f *AssetTransferFilter) WhereHasFromLocationCabinet() {
+	f.Where(entql.HasEdge("from_location_cabinet"))
 }
 
-// WhereHasLocationCabinetWith applies a predicate to check if query has an edge location_cabinet with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasLocationCabinetWith(preds ...predicate.Cabinet) {
-	f.Where(entql.HasEdgeWith("location_cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasFromLocationCabinetWith applies a predicate to check if query has an edge from_location_cabinet with a given conditions (other predicates).
+func (f *AssetTransferFilter) WhereHasFromLocationCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("from_location_cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasLocationStation applies a predicate to check if query has an edge location_station.
-func (f *AssetTransferFilter) WhereHasLocationStation() {
-	f.Where(entql.HasEdge("location_station"))
+// WhereHasFromLocationStation applies a predicate to check if query has an edge from_location_station.
+func (f *AssetTransferFilter) WhereHasFromLocationStation() {
+	f.Where(entql.HasEdge("from_location_station"))
 }
 
-// WhereHasLocationStationWith applies a predicate to check if query has an edge location_station with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasLocationStationWith(preds ...predicate.EnterpriseStation) {
-	f.Where(entql.HasEdgeWith("location_station", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasFromLocationStationWith applies a predicate to check if query has an edge from_location_station with a given conditions (other predicates).
+func (f *AssetTransferFilter) WhereHasFromLocationStationWith(preds ...predicate.EnterpriseStation) {
+	f.Where(entql.HasEdgeWith("from_location_station", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasLocationRider applies a predicate to check if query has an edge location_rider.
-func (f *AssetTransferFilter) WhereHasLocationRider() {
-	f.Where(entql.HasEdge("location_rider"))
+// WhereHasFromLocationRider applies a predicate to check if query has an edge from_location_rider.
+func (f *AssetTransferFilter) WhereHasFromLocationRider() {
+	f.Where(entql.HasEdge("from_location_rider"))
 }
 
-// WhereHasLocationRiderWith applies a predicate to check if query has an edge location_rider with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasLocationRiderWith(preds ...predicate.Rider) {
-	f.Where(entql.HasEdgeWith("location_rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasFromLocationRiderWith applies a predicate to check if query has an edge from_location_rider with a given conditions (other predicates).
+func (f *AssetTransferFilter) WhereHasFromLocationRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("from_location_rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasLocationOperator applies a predicate to check if query has an edge location_operator.
-func (f *AssetTransferFilter) WhereHasLocationOperator() {
-	f.Where(entql.HasEdge("location_operator"))
+// WhereHasFromLocationOperator applies a predicate to check if query has an edge from_location_operator.
+func (f *AssetTransferFilter) WhereHasFromLocationOperator() {
+	f.Where(entql.HasEdge("from_location_operator"))
 }
 
-// WhereHasLocationOperatorWith applies a predicate to check if query has an edge location_operator with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasLocationOperatorWith(preds ...predicate.Maintainer) {
-	f.Where(entql.HasEdgeWith("location_operator", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasFromLocationOperatorWith applies a predicate to check if query has an edge from_location_operator with a given conditions (other predicates).
+func (f *AssetTransferFilter) WhereHasFromLocationOperatorWith(preds ...predicate.Maintainer) {
+	f.Where(entql.HasEdgeWith("from_location_operator", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasLocationWarehouse applies a predicate to check if query has an edge location_warehouse.
-func (f *AssetTransferFilter) WhereHasLocationWarehouse() {
-	f.Where(entql.HasEdge("location_warehouse"))
+// WhereHasFromLocationWarehouse applies a predicate to check if query has an edge from_location_warehouse.
+func (f *AssetTransferFilter) WhereHasFromLocationWarehouse() {
+	f.Where(entql.HasEdge("from_location_warehouse"))
 }
 
-// WhereHasLocationWarehouseWith applies a predicate to check if query has an edge location_warehouse with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasLocationWarehouseWith(preds ...predicate.Warehouse) {
-	f.Where(entql.HasEdgeWith("location_warehouse", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasFromLocationWarehouseWith applies a predicate to check if query has an edge from_location_warehouse with a given conditions (other predicates).
+func (f *AssetTransferFilter) WhereHasFromLocationWarehouseWith(preds ...predicate.Warehouse) {
+	f.Where(entql.HasEdgeWith("from_location_warehouse", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasToStore applies a predicate to check if query has an edge to_store.
-func (f *AssetTransferFilter) WhereHasToStore() {
-	f.Where(entql.HasEdge("to_store"))
+// WhereHasToLocationStore applies a predicate to check if query has an edge to_location_store.
+func (f *AssetTransferFilter) WhereHasToLocationStore() {
+	f.Where(entql.HasEdge("to_location_store"))
 }
 
-// WhereHasToStoreWith applies a predicate to check if query has an edge to_store with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasToStoreWith(preds ...predicate.Store) {
-	f.Where(entql.HasEdgeWith("to_store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasToLocationStoreWith applies a predicate to check if query has an edge to_location_store with a given conditions (other predicates).
+func (f *AssetTransferFilter) WhereHasToLocationStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("to_location_store", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasToCabinet applies a predicate to check if query has an edge to_cabinet.
-func (f *AssetTransferFilter) WhereHasToCabinet() {
-	f.Where(entql.HasEdge("to_cabinet"))
+// WhereHasToLocationCabinet applies a predicate to check if query has an edge to_location_cabinet.
+func (f *AssetTransferFilter) WhereHasToLocationCabinet() {
+	f.Where(entql.HasEdge("to_location_cabinet"))
 }
 
-// WhereHasToCabinetWith applies a predicate to check if query has an edge to_cabinet with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasToCabinetWith(preds ...predicate.Cabinet) {
-	f.Where(entql.HasEdgeWith("to_cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasToLocationCabinetWith applies a predicate to check if query has an edge to_location_cabinet with a given conditions (other predicates).
+func (f *AssetTransferFilter) WhereHasToLocationCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("to_location_cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasToStation applies a predicate to check if query has an edge to_station.
-func (f *AssetTransferFilter) WhereHasToStation() {
-	f.Where(entql.HasEdge("to_station"))
+// WhereHasToLocationStation applies a predicate to check if query has an edge to_location_station.
+func (f *AssetTransferFilter) WhereHasToLocationStation() {
+	f.Where(entql.HasEdge("to_location_station"))
 }
 
-// WhereHasToStationWith applies a predicate to check if query has an edge to_station with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasToStationWith(preds ...predicate.EnterpriseStation) {
-	f.Where(entql.HasEdgeWith("to_station", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasToLocationStationWith applies a predicate to check if query has an edge to_location_station with a given conditions (other predicates).
+func (f *AssetTransferFilter) WhereHasToLocationStationWith(preds ...predicate.EnterpriseStation) {
+	f.Where(entql.HasEdgeWith("to_location_station", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasToRider applies a predicate to check if query has an edge to_rider.
-func (f *AssetTransferFilter) WhereHasToRider() {
-	f.Where(entql.HasEdge("to_rider"))
+// WhereHasToLocationRider applies a predicate to check if query has an edge to_location_rider.
+func (f *AssetTransferFilter) WhereHasToLocationRider() {
+	f.Where(entql.HasEdge("to_location_rider"))
 }
 
-// WhereHasToRiderWith applies a predicate to check if query has an edge to_rider with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasToRiderWith(preds ...predicate.Rider) {
-	f.Where(entql.HasEdgeWith("to_rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasToLocationRiderWith applies a predicate to check if query has an edge to_location_rider with a given conditions (other predicates).
+func (f *AssetTransferFilter) WhereHasToLocationRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("to_location_rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasToOperator applies a predicate to check if query has an edge to_operator.
-func (f *AssetTransferFilter) WhereHasToOperator() {
-	f.Where(entql.HasEdge("to_operator"))
+// WhereHasToLocationOperator applies a predicate to check if query has an edge to_location_operator.
+func (f *AssetTransferFilter) WhereHasToLocationOperator() {
+	f.Where(entql.HasEdge("to_location_operator"))
 }
 
-// WhereHasToOperatorWith applies a predicate to check if query has an edge to_operator with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasToOperatorWith(preds ...predicate.Maintainer) {
-	f.Where(entql.HasEdgeWith("to_operator", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasToLocationOperatorWith applies a predicate to check if query has an edge to_location_operator with a given conditions (other predicates).
+func (f *AssetTransferFilter) WhereHasToLocationOperatorWith(preds ...predicate.Maintainer) {
+	f.Where(entql.HasEdgeWith("to_location_operator", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasToWarehouse applies a predicate to check if query has an edge to_warehouse.
-func (f *AssetTransferFilter) WhereHasToWarehouse() {
-	f.Where(entql.HasEdge("to_warehouse"))
+// WhereHasToLocationWarehouse applies a predicate to check if query has an edge to_location_warehouse.
+func (f *AssetTransferFilter) WhereHasToLocationWarehouse() {
+	f.Where(entql.HasEdge("to_location_warehouse"))
 }
 
-// WhereHasToWarehouseWith applies a predicate to check if query has an edge to_warehouse with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasToWarehouseWith(preds ...predicate.Warehouse) {
-	f.Where(entql.HasEdgeWith("to_warehouse", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasToLocationWarehouseWith applies a predicate to check if query has an edge to_location_warehouse with a given conditions (other predicates).
+func (f *AssetTransferFilter) WhereHasToLocationWarehouseWith(preds ...predicate.Warehouse) {
+	f.Where(entql.HasEdgeWith("to_location_warehouse", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -9021,90 +9038,6 @@ func (f *AssetTransferFilter) WhereHasOutOperateRiderWith(preds ...predicate.Rid
 	})))
 }
 
-// WhereHasInOperateManager applies a predicate to check if query has an edge in_operate_manager.
-func (f *AssetTransferFilter) WhereHasInOperateManager() {
-	f.Where(entql.HasEdge("in_operate_manager"))
-}
-
-// WhereHasInOperateManagerWith applies a predicate to check if query has an edge in_operate_manager with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasInOperateManagerWith(preds ...predicate.Manager) {
-	f.Where(entql.HasEdgeWith("in_operate_manager", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasInOperateStore applies a predicate to check if query has an edge in_operate_store.
-func (f *AssetTransferFilter) WhereHasInOperateStore() {
-	f.Where(entql.HasEdge("in_operate_store"))
-}
-
-// WhereHasInOperateStoreWith applies a predicate to check if query has an edge in_operate_store with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasInOperateStoreWith(preds ...predicate.Store) {
-	f.Where(entql.HasEdgeWith("in_operate_store", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasInOperateAgent applies a predicate to check if query has an edge in_operate_agent.
-func (f *AssetTransferFilter) WhereHasInOperateAgent() {
-	f.Where(entql.HasEdge("in_operate_agent"))
-}
-
-// WhereHasInOperateAgentWith applies a predicate to check if query has an edge in_operate_agent with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasInOperateAgentWith(preds ...predicate.Agent) {
-	f.Where(entql.HasEdgeWith("in_operate_agent", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasInOperateMaintainer applies a predicate to check if query has an edge in_operate_maintainer.
-func (f *AssetTransferFilter) WhereHasInOperateMaintainer() {
-	f.Where(entql.HasEdge("in_operate_maintainer"))
-}
-
-// WhereHasInOperateMaintainerWith applies a predicate to check if query has an edge in_operate_maintainer with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasInOperateMaintainerWith(preds ...predicate.Maintainer) {
-	f.Where(entql.HasEdgeWith("in_operate_maintainer", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasInOperateCabinet applies a predicate to check if query has an edge in_operate_cabinet.
-func (f *AssetTransferFilter) WhereHasInOperateCabinet() {
-	f.Where(entql.HasEdge("in_operate_cabinet"))
-}
-
-// WhereHasInOperateCabinetWith applies a predicate to check if query has an edge in_operate_cabinet with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasInOperateCabinetWith(preds ...predicate.Cabinet) {
-	f.Where(entql.HasEdgeWith("in_operate_cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasInOperateRider applies a predicate to check if query has an edge in_operate_rider.
-func (f *AssetTransferFilter) WhereHasInOperateRider() {
-	f.Where(entql.HasEdge("in_operate_rider"))
-}
-
-// WhereHasInOperateRiderWith applies a predicate to check if query has an edge in_operate_rider with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasInOperateRiderWith(preds ...predicate.Rider) {
-	f.Where(entql.HasEdgeWith("in_operate_rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
 // addPredicate implements the predicateAdder interface.
 func (atdq *AssetTransferDetailsQuery) addPredicate(pred func(s *sql.Selector)) {
 	atdq.predicates = append(atdq.predicates, pred)
@@ -9175,11 +9108,6 @@ func (f *AssetTransferDetailsFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(assettransferdetails.FieldRemark))
 }
 
-// WhereAssetID applies the entql uint64 predicate on the asset_id field.
-func (f *AssetTransferDetailsFilter) WhereAssetID(p entql.Uint64P) {
-	f.Where(p.Field(assettransferdetails.FieldAssetID))
-}
-
 // WhereTransferID applies the entql uint64 predicate on the transfer_id field.
 func (f *AssetTransferDetailsFilter) WhereTransferID(p entql.Uint64P) {
 	f.Where(p.Field(assettransferdetails.FieldTransferID))
@@ -9190,18 +9118,24 @@ func (f *AssetTransferDetailsFilter) WhereIsIn(p entql.BoolP) {
 	f.Where(p.Field(assettransferdetails.FieldIsIn))
 }
 
-// WhereHasAsset applies a predicate to check if query has an edge asset.
-func (f *AssetTransferDetailsFilter) WhereHasAsset() {
-	f.Where(entql.HasEdge("asset"))
+// WhereInOperateID applies the entql uint64 predicate on the in_operate_id field.
+func (f *AssetTransferDetailsFilter) WhereInOperateID(p entql.Uint64P) {
+	f.Where(p.Field(assettransferdetails.FieldInOperateID))
 }
 
-// WhereHasAssetWith applies a predicate to check if query has an edge asset with a given conditions (other predicates).
-func (f *AssetTransferDetailsFilter) WhereHasAssetWith(preds ...predicate.Asset) {
-	f.Where(entql.HasEdgeWith("asset", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
+// WhereInOperateType applies the entql uint8 predicate on the in_operate_type field.
+func (f *AssetTransferDetailsFilter) WhereInOperateType(p entql.Uint8P) {
+	f.Where(p.Field(assettransferdetails.FieldInOperateType))
+}
+
+// WhereInTimeAt applies the entql time.Time predicate on the in_time_at field.
+func (f *AssetTransferDetailsFilter) WhereInTimeAt(p entql.TimeP) {
+	f.Where(p.Field(assettransferdetails.FieldInTimeAt))
+}
+
+// WhereAssetID applies the entql uint64 predicate on the asset_id field.
+func (f *AssetTransferDetailsFilter) WhereAssetID(p entql.Uint64P) {
+	f.Where(p.Field(assettransferdetails.FieldAssetID))
 }
 
 // WhereHasTransfer applies a predicate to check if query has an edge transfer.
@@ -9212,6 +9146,104 @@ func (f *AssetTransferDetailsFilter) WhereHasTransfer() {
 // WhereHasTransferWith applies a predicate to check if query has an edge transfer with a given conditions (other predicates).
 func (f *AssetTransferDetailsFilter) WhereHasTransferWith(preds ...predicate.AssetTransfer) {
 	f.Where(entql.HasEdgeWith("transfer", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasInOperateManager applies a predicate to check if query has an edge in_operate_manager.
+func (f *AssetTransferDetailsFilter) WhereHasInOperateManager() {
+	f.Where(entql.HasEdge("in_operate_manager"))
+}
+
+// WhereHasInOperateManagerWith applies a predicate to check if query has an edge in_operate_manager with a given conditions (other predicates).
+func (f *AssetTransferDetailsFilter) WhereHasInOperateManagerWith(preds ...predicate.Manager) {
+	f.Where(entql.HasEdgeWith("in_operate_manager", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasInOperateStore applies a predicate to check if query has an edge in_operate_store.
+func (f *AssetTransferDetailsFilter) WhereHasInOperateStore() {
+	f.Where(entql.HasEdge("in_operate_store"))
+}
+
+// WhereHasInOperateStoreWith applies a predicate to check if query has an edge in_operate_store with a given conditions (other predicates).
+func (f *AssetTransferDetailsFilter) WhereHasInOperateStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("in_operate_store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasInOperateAgent applies a predicate to check if query has an edge in_operate_agent.
+func (f *AssetTransferDetailsFilter) WhereHasInOperateAgent() {
+	f.Where(entql.HasEdge("in_operate_agent"))
+}
+
+// WhereHasInOperateAgentWith applies a predicate to check if query has an edge in_operate_agent with a given conditions (other predicates).
+func (f *AssetTransferDetailsFilter) WhereHasInOperateAgentWith(preds ...predicate.Agent) {
+	f.Where(entql.HasEdgeWith("in_operate_agent", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasInOperateMaintainer applies a predicate to check if query has an edge in_operate_maintainer.
+func (f *AssetTransferDetailsFilter) WhereHasInOperateMaintainer() {
+	f.Where(entql.HasEdge("in_operate_maintainer"))
+}
+
+// WhereHasInOperateMaintainerWith applies a predicate to check if query has an edge in_operate_maintainer with a given conditions (other predicates).
+func (f *AssetTransferDetailsFilter) WhereHasInOperateMaintainerWith(preds ...predicate.Maintainer) {
+	f.Where(entql.HasEdgeWith("in_operate_maintainer", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasInOperateCabinet applies a predicate to check if query has an edge in_operate_cabinet.
+func (f *AssetTransferDetailsFilter) WhereHasInOperateCabinet() {
+	f.Where(entql.HasEdge("in_operate_cabinet"))
+}
+
+// WhereHasInOperateCabinetWith applies a predicate to check if query has an edge in_operate_cabinet with a given conditions (other predicates).
+func (f *AssetTransferDetailsFilter) WhereHasInOperateCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("in_operate_cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasInOperateRider applies a predicate to check if query has an edge in_operate_rider.
+func (f *AssetTransferDetailsFilter) WhereHasInOperateRider() {
+	f.Where(entql.HasEdge("in_operate_rider"))
+}
+
+// WhereHasInOperateRiderWith applies a predicate to check if query has an edge in_operate_rider with a given conditions (other predicates).
+func (f *AssetTransferDetailsFilter) WhereHasInOperateRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("in_operate_rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAsset applies a predicate to check if query has an edge asset.
+func (f *AssetTransferDetailsFilter) WhereHasAsset() {
+	f.Where(entql.HasEdge("asset"))
+}
+
+// WhereHasAssetWith applies a predicate to check if query has an edge asset with a given conditions (other predicates).
+func (f *AssetTransferDetailsFilter) WhereHasAssetWith(preds ...predicate.Asset) {
+	f.Where(entql.HasEdgeWith("asset", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

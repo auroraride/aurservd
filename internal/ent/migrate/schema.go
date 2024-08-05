@@ -617,21 +617,19 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
-		{Name: "status", Type: field.TypeUint8, Comment: "调拨状态 1:配送中 2:已入库 3:已取消"},
+		{Name: "status", Type: field.TypeUint8, Comment: "调拨状态 1:配送中 2:待入库 3:已入库 4:已取消", Default: 0},
 		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "调拨单号"},
 		{Name: "from_location_type", Type: field.TypeUint8, Nullable: true, Comment: "开始位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"},
 		{Name: "to_location_type", Type: field.TypeUint8, Nullable: true, Comment: "目标位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"},
 		{Name: "out_num", Type: field.TypeUint, Nullable: true, Comment: "调出数量"},
 		{Name: "in_num", Type: field.TypeUint, Nullable: true, Comment: "调入数量"},
 		{Name: "out_operate_type", Type: field.TypeUint8, Nullable: true, Comment: "出库角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手"},
-		{Name: "in_operate_type", Type: field.TypeUint8, Nullable: true, Comment: "入库角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手"},
 		{Name: "out_time_at", Type: field.TypeTime, Nullable: true, Comment: "出库时间"},
-		{Name: "in_time_at", Type: field.TypeTime, Nullable: true, Comment: "入库时间"},
 		{Name: "reason", Type: field.TypeString, Nullable: true, Comment: "调拨事由"},
+		{Name: "type", Type: field.TypeUint8, Nullable: true, Comment: "调拨类型 1:初始入库 2:平台调拨 3:门店调拨 4:代理调拨 5:运维调拨 6:系统业务自动调拨"},
 		{Name: "from_location_id", Type: field.TypeUint64, Nullable: true, Comment: "开始位置ID"},
 		{Name: "to_location_id", Type: field.TypeUint64, Nullable: true, Comment: "目标位置ID"},
 		{Name: "out_operate_id", Type: field.TypeUint64, Nullable: true, Comment: "出库人id"},
-		{Name: "in_operate_id", Type: field.TypeUint64, Nullable: true, Comment: "入库人id"},
 	}
 	// AssetTransferTable holds the schema information for the "asset_transfer" table.
 	AssetTransferTable = &schema.Table{
@@ -640,146 +638,110 @@ var (
 		PrimaryKey: []*schema.Column{AssetTransferColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "asset_transfer_store_location_store",
-				Columns:    []*schema.Column{AssetTransferColumns[18]},
+				Symbol:     "asset_transfer_store_from_location_store",
+				Columns:    []*schema.Column{AssetTransferColumns[17]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_cabinet_location_cabinet",
-				Columns:    []*schema.Column{AssetTransferColumns[18]},
+				Symbol:     "asset_transfer_cabinet_from_location_cabinet",
+				Columns:    []*schema.Column{AssetTransferColumns[17]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_enterprise_station_location_station",
-				Columns:    []*schema.Column{AssetTransferColumns[18]},
+				Symbol:     "asset_transfer_enterprise_station_from_location_station",
+				Columns:    []*schema.Column{AssetTransferColumns[17]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_rider_location_rider",
-				Columns:    []*schema.Column{AssetTransferColumns[18]},
+				Symbol:     "asset_transfer_rider_from_location_rider",
+				Columns:    []*schema.Column{AssetTransferColumns[17]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_maintainer_location_operator",
-				Columns:    []*schema.Column{AssetTransferColumns[18]},
+				Symbol:     "asset_transfer_maintainer_from_location_operator",
+				Columns:    []*schema.Column{AssetTransferColumns[17]},
 				RefColumns: []*schema.Column{MaintainerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_warehouse_location_warehouse",
-				Columns:    []*schema.Column{AssetTransferColumns[18]},
+				Symbol:     "asset_transfer_warehouse_from_location_warehouse",
+				Columns:    []*schema.Column{AssetTransferColumns[17]},
 				RefColumns: []*schema.Column{WarehouseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_store_to_store",
-				Columns:    []*schema.Column{AssetTransferColumns[19]},
+				Symbol:     "asset_transfer_store_to_location_store",
+				Columns:    []*schema.Column{AssetTransferColumns[18]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_cabinet_to_cabinet",
-				Columns:    []*schema.Column{AssetTransferColumns[19]},
+				Symbol:     "asset_transfer_cabinet_to_location_cabinet",
+				Columns:    []*schema.Column{AssetTransferColumns[18]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_enterprise_station_to_station",
-				Columns:    []*schema.Column{AssetTransferColumns[19]},
+				Symbol:     "asset_transfer_enterprise_station_to_location_station",
+				Columns:    []*schema.Column{AssetTransferColumns[18]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_rider_to_rider",
-				Columns:    []*schema.Column{AssetTransferColumns[19]},
+				Symbol:     "asset_transfer_rider_to_location_rider",
+				Columns:    []*schema.Column{AssetTransferColumns[18]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_maintainer_to_operator",
-				Columns:    []*schema.Column{AssetTransferColumns[19]},
+				Symbol:     "asset_transfer_maintainer_to_location_operator",
+				Columns:    []*schema.Column{AssetTransferColumns[18]},
 				RefColumns: []*schema.Column{MaintainerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_warehouse_to_warehouse",
-				Columns:    []*schema.Column{AssetTransferColumns[19]},
+				Symbol:     "asset_transfer_warehouse_to_location_warehouse",
+				Columns:    []*schema.Column{AssetTransferColumns[18]},
 				RefColumns: []*schema.Column{WarehouseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_transfer_manager_out_operate_manager",
-				Columns:    []*schema.Column{AssetTransferColumns[20]},
+				Columns:    []*schema.Column{AssetTransferColumns[19]},
 				RefColumns: []*schema.Column{ManagerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_transfer_store_out_operate_store",
-				Columns:    []*schema.Column{AssetTransferColumns[20]},
+				Columns:    []*schema.Column{AssetTransferColumns[19]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_transfer_agent_out_operate_agent",
-				Columns:    []*schema.Column{AssetTransferColumns[20]},
+				Columns:    []*schema.Column{AssetTransferColumns[19]},
 				RefColumns: []*schema.Column{AgentColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_transfer_maintainer_out_operate_maintainer",
-				Columns:    []*schema.Column{AssetTransferColumns[20]},
+				Columns:    []*schema.Column{AssetTransferColumns[19]},
 				RefColumns: []*schema.Column{MaintainerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_transfer_cabinet_out_operate_cabinet",
-				Columns:    []*schema.Column{AssetTransferColumns[20]},
+				Columns:    []*schema.Column{AssetTransferColumns[19]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_transfer_rider_out_operate_rider",
-				Columns:    []*schema.Column{AssetTransferColumns[20]},
-				RefColumns: []*schema.Column{RiderColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "asset_transfer_manager_in_operate_manager",
-				Columns:    []*schema.Column{AssetTransferColumns[21]},
-				RefColumns: []*schema.Column{ManagerColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "asset_transfer_store_in_operate_store",
-				Columns:    []*schema.Column{AssetTransferColumns[21]},
-				RefColumns: []*schema.Column{StoreColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "asset_transfer_agent_in_operate_agent",
-				Columns:    []*schema.Column{AssetTransferColumns[21]},
-				RefColumns: []*schema.Column{AgentColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "asset_transfer_maintainer_in_operate_maintainer",
-				Columns:    []*schema.Column{AssetTransferColumns[21]},
-				RefColumns: []*schema.Column{MaintainerColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "asset_transfer_cabinet_in_operate_cabinet",
-				Columns:    []*schema.Column{AssetTransferColumns[21]},
-				RefColumns: []*schema.Column{CabinetColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "asset_transfer_rider_in_operate_rider",
-				Columns:    []*schema.Column{AssetTransferColumns[21]},
+				Columns:    []*schema.Column{AssetTransferColumns[19]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -807,8 +769,11 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "is_in", Type: field.TypeBool, Comment: "是否入库", Default: false},
+		{Name: "in_operate_type", Type: field.TypeUint8, Nullable: true, Comment: "入库角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手"},
+		{Name: "in_time_at", Type: field.TypeTime, Nullable: true, Comment: "入库时间"},
+		{Name: "asset_id", Type: field.TypeUint64, Unique: true, Comment: "资产ID"},
 		{Name: "transfer_id", Type: field.TypeUint64, Nullable: true, Comment: "调拨ID"},
-		{Name: "asset_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "in_operate_id", Type: field.TypeUint64, Nullable: true, Comment: "入库人id"},
 	}
 	// AssetTransferDetailsTable holds the schema information for the "asset_transfer_details" table.
 	AssetTransferDetailsTable = &schema.Table{
@@ -818,14 +783,50 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "asset_transfer_details_asset_transfer_details",
-				Columns:    []*schema.Column{AssetTransferDetailsColumns[8]},
+				Columns:    []*schema.Column{AssetTransferDetailsColumns[10]},
+				RefColumns: []*schema.Column{AssetColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "asset_transfer_details_asset_transfer_transfer_details",
+				Columns:    []*schema.Column{AssetTransferDetailsColumns[11]},
 				RefColumns: []*schema.Column{AssetTransferColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_details_asset_asset",
-				Columns:    []*schema.Column{AssetTransferDetailsColumns[9]},
-				RefColumns: []*schema.Column{AssetColumns[0]},
+				Symbol:     "asset_transfer_details_manager_in_operate_manager",
+				Columns:    []*schema.Column{AssetTransferDetailsColumns[12]},
+				RefColumns: []*schema.Column{ManagerColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_transfer_details_store_in_operate_store",
+				Columns:    []*schema.Column{AssetTransferDetailsColumns[12]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_transfer_details_agent_in_operate_agent",
+				Columns:    []*schema.Column{AssetTransferDetailsColumns[12]},
+				RefColumns: []*schema.Column{AgentColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_transfer_details_maintainer_in_operate_maintainer",
+				Columns:    []*schema.Column{AssetTransferDetailsColumns[12]},
+				RefColumns: []*schema.Column{MaintainerColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_transfer_details_cabinet_in_operate_cabinet",
+				Columns:    []*schema.Column{AssetTransferDetailsColumns[12]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_transfer_details_rider_in_operate_rider",
+				Columns:    []*schema.Column{AssetTransferDetailsColumns[12]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -839,11 +840,6 @@ var (
 				Name:    "assettransferdetails_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{AssetTransferDetailsColumns[3]},
-			},
-			{
-				Name:    "assettransferdetails_asset_id",
-				Unique:  false,
-				Columns: []*schema.Column{AssetTransferDetailsColumns[9]},
 			},
 		},
 	}
@@ -7141,17 +7137,17 @@ func init() {
 	AssetTransferTable.ForeignKeys[15].RefTable = MaintainerTable
 	AssetTransferTable.ForeignKeys[16].RefTable = CabinetTable
 	AssetTransferTable.ForeignKeys[17].RefTable = RiderTable
-	AssetTransferTable.ForeignKeys[18].RefTable = ManagerTable
-	AssetTransferTable.ForeignKeys[19].RefTable = StoreTable
-	AssetTransferTable.ForeignKeys[20].RefTable = AgentTable
-	AssetTransferTable.ForeignKeys[21].RefTable = MaintainerTable
-	AssetTransferTable.ForeignKeys[22].RefTable = CabinetTable
-	AssetTransferTable.ForeignKeys[23].RefTable = RiderTable
 	AssetTransferTable.Annotation = &entsql.Annotation{
 		Table: "asset_transfer",
 	}
-	AssetTransferDetailsTable.ForeignKeys[0].RefTable = AssetTransferTable
-	AssetTransferDetailsTable.ForeignKeys[1].RefTable = AssetTable
+	AssetTransferDetailsTable.ForeignKeys[0].RefTable = AssetTable
+	AssetTransferDetailsTable.ForeignKeys[1].RefTable = AssetTransferTable
+	AssetTransferDetailsTable.ForeignKeys[2].RefTable = ManagerTable
+	AssetTransferDetailsTable.ForeignKeys[3].RefTable = StoreTable
+	AssetTransferDetailsTable.ForeignKeys[4].RefTable = AgentTable
+	AssetTransferDetailsTable.ForeignKeys[5].RefTable = MaintainerTable
+	AssetTransferDetailsTable.ForeignKeys[6].RefTable = CabinetTable
+	AssetTransferDetailsTable.ForeignKeys[7].RefTable = RiderTable
 	AssetTransferDetailsTable.Annotation = &entsql.Annotation{
 		Table: "asset_transfer_details",
 	}

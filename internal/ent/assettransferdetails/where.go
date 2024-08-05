@@ -75,11 +75,6 @@ func Remark(v string) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(sql.FieldEQ(FieldRemark, v))
 }
 
-// AssetID applies equality check predicate on the "asset_id" field. It's identical to AssetIDEQ.
-func AssetID(v uint64) predicate.AssetTransferDetails {
-	return predicate.AssetTransferDetails(sql.FieldEQ(FieldAssetID, v))
-}
-
 // TransferID applies equality check predicate on the "transfer_id" field. It's identical to TransferIDEQ.
 func TransferID(v uint64) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(sql.FieldEQ(FieldTransferID, v))
@@ -88,6 +83,26 @@ func TransferID(v uint64) predicate.AssetTransferDetails {
 // IsIn applies equality check predicate on the "is_in" field. It's identical to IsInEQ.
 func IsIn(v bool) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(sql.FieldEQ(FieldIsIn, v))
+}
+
+// InOperateID applies equality check predicate on the "in_operate_id" field. It's identical to InOperateIDEQ.
+func InOperateID(v uint64) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldEQ(FieldInOperateID, v))
+}
+
+// InOperateType applies equality check predicate on the "in_operate_type" field. It's identical to InOperateTypeEQ.
+func InOperateType(v uint8) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldEQ(FieldInOperateType, v))
+}
+
+// InTimeAt applies equality check predicate on the "in_time_at" field. It's identical to InTimeAtEQ.
+func InTimeAt(v time.Time) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldEQ(FieldInTimeAt, v))
+}
+
+// AssetID applies equality check predicate on the "asset_id" field. It's identical to AssetIDEQ.
+func AssetID(v uint64) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldEQ(FieldAssetID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -315,36 +330,6 @@ func RemarkContainsFold(v string) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(sql.FieldContainsFold(FieldRemark, v))
 }
 
-// AssetIDEQ applies the EQ predicate on the "asset_id" field.
-func AssetIDEQ(v uint64) predicate.AssetTransferDetails {
-	return predicate.AssetTransferDetails(sql.FieldEQ(FieldAssetID, v))
-}
-
-// AssetIDNEQ applies the NEQ predicate on the "asset_id" field.
-func AssetIDNEQ(v uint64) predicate.AssetTransferDetails {
-	return predicate.AssetTransferDetails(sql.FieldNEQ(FieldAssetID, v))
-}
-
-// AssetIDIn applies the In predicate on the "asset_id" field.
-func AssetIDIn(vs ...uint64) predicate.AssetTransferDetails {
-	return predicate.AssetTransferDetails(sql.FieldIn(FieldAssetID, vs...))
-}
-
-// AssetIDNotIn applies the NotIn predicate on the "asset_id" field.
-func AssetIDNotIn(vs ...uint64) predicate.AssetTransferDetails {
-	return predicate.AssetTransferDetails(sql.FieldNotIn(FieldAssetID, vs...))
-}
-
-// AssetIDIsNil applies the IsNil predicate on the "asset_id" field.
-func AssetIDIsNil() predicate.AssetTransferDetails {
-	return predicate.AssetTransferDetails(sql.FieldIsNull(FieldAssetID))
-}
-
-// AssetIDNotNil applies the NotNil predicate on the "asset_id" field.
-func AssetIDNotNil() predicate.AssetTransferDetails {
-	return predicate.AssetTransferDetails(sql.FieldNotNull(FieldAssetID))
-}
-
 // TransferIDEQ applies the EQ predicate on the "transfer_id" field.
 func TransferIDEQ(v uint64) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(sql.FieldEQ(FieldTransferID, v))
@@ -385,27 +370,154 @@ func IsInNEQ(v bool) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(sql.FieldNEQ(FieldIsIn, v))
 }
 
-// HasAsset applies the HasEdge predicate on the "asset" edge.
-func HasAsset() predicate.AssetTransferDetails {
-	return predicate.AssetTransferDetails(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, AssetTable, AssetColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
+// InOperateIDEQ applies the EQ predicate on the "in_operate_id" field.
+func InOperateIDEQ(v uint64) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldEQ(FieldInOperateID, v))
 }
 
-// HasAssetWith applies the HasEdge predicate on the "asset" edge with a given conditions (other predicates).
-func HasAssetWith(preds ...predicate.Asset) predicate.AssetTransferDetails {
-	return predicate.AssetTransferDetails(func(s *sql.Selector) {
-		step := newAssetStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
+// InOperateIDNEQ applies the NEQ predicate on the "in_operate_id" field.
+func InOperateIDNEQ(v uint64) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNEQ(FieldInOperateID, v))
+}
+
+// InOperateIDIn applies the In predicate on the "in_operate_id" field.
+func InOperateIDIn(vs ...uint64) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldIn(FieldInOperateID, vs...))
+}
+
+// InOperateIDNotIn applies the NotIn predicate on the "in_operate_id" field.
+func InOperateIDNotIn(vs ...uint64) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNotIn(FieldInOperateID, vs...))
+}
+
+// InOperateIDIsNil applies the IsNil predicate on the "in_operate_id" field.
+func InOperateIDIsNil() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldIsNull(FieldInOperateID))
+}
+
+// InOperateIDNotNil applies the NotNil predicate on the "in_operate_id" field.
+func InOperateIDNotNil() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNotNull(FieldInOperateID))
+}
+
+// InOperateTypeEQ applies the EQ predicate on the "in_operate_type" field.
+func InOperateTypeEQ(v uint8) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldEQ(FieldInOperateType, v))
+}
+
+// InOperateTypeNEQ applies the NEQ predicate on the "in_operate_type" field.
+func InOperateTypeNEQ(v uint8) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNEQ(FieldInOperateType, v))
+}
+
+// InOperateTypeIn applies the In predicate on the "in_operate_type" field.
+func InOperateTypeIn(vs ...uint8) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldIn(FieldInOperateType, vs...))
+}
+
+// InOperateTypeNotIn applies the NotIn predicate on the "in_operate_type" field.
+func InOperateTypeNotIn(vs ...uint8) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNotIn(FieldInOperateType, vs...))
+}
+
+// InOperateTypeGT applies the GT predicate on the "in_operate_type" field.
+func InOperateTypeGT(v uint8) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldGT(FieldInOperateType, v))
+}
+
+// InOperateTypeGTE applies the GTE predicate on the "in_operate_type" field.
+func InOperateTypeGTE(v uint8) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldGTE(FieldInOperateType, v))
+}
+
+// InOperateTypeLT applies the LT predicate on the "in_operate_type" field.
+func InOperateTypeLT(v uint8) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldLT(FieldInOperateType, v))
+}
+
+// InOperateTypeLTE applies the LTE predicate on the "in_operate_type" field.
+func InOperateTypeLTE(v uint8) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldLTE(FieldInOperateType, v))
+}
+
+// InOperateTypeIsNil applies the IsNil predicate on the "in_operate_type" field.
+func InOperateTypeIsNil() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldIsNull(FieldInOperateType))
+}
+
+// InOperateTypeNotNil applies the NotNil predicate on the "in_operate_type" field.
+func InOperateTypeNotNil() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNotNull(FieldInOperateType))
+}
+
+// InTimeAtEQ applies the EQ predicate on the "in_time_at" field.
+func InTimeAtEQ(v time.Time) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldEQ(FieldInTimeAt, v))
+}
+
+// InTimeAtNEQ applies the NEQ predicate on the "in_time_at" field.
+func InTimeAtNEQ(v time.Time) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNEQ(FieldInTimeAt, v))
+}
+
+// InTimeAtIn applies the In predicate on the "in_time_at" field.
+func InTimeAtIn(vs ...time.Time) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldIn(FieldInTimeAt, vs...))
+}
+
+// InTimeAtNotIn applies the NotIn predicate on the "in_time_at" field.
+func InTimeAtNotIn(vs ...time.Time) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNotIn(FieldInTimeAt, vs...))
+}
+
+// InTimeAtGT applies the GT predicate on the "in_time_at" field.
+func InTimeAtGT(v time.Time) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldGT(FieldInTimeAt, v))
+}
+
+// InTimeAtGTE applies the GTE predicate on the "in_time_at" field.
+func InTimeAtGTE(v time.Time) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldGTE(FieldInTimeAt, v))
+}
+
+// InTimeAtLT applies the LT predicate on the "in_time_at" field.
+func InTimeAtLT(v time.Time) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldLT(FieldInTimeAt, v))
+}
+
+// InTimeAtLTE applies the LTE predicate on the "in_time_at" field.
+func InTimeAtLTE(v time.Time) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldLTE(FieldInTimeAt, v))
+}
+
+// InTimeAtIsNil applies the IsNil predicate on the "in_time_at" field.
+func InTimeAtIsNil() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldIsNull(FieldInTimeAt))
+}
+
+// InTimeAtNotNil applies the NotNil predicate on the "in_time_at" field.
+func InTimeAtNotNil() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNotNull(FieldInTimeAt))
+}
+
+// AssetIDEQ applies the EQ predicate on the "asset_id" field.
+func AssetIDEQ(v uint64) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldEQ(FieldAssetID, v))
+}
+
+// AssetIDNEQ applies the NEQ predicate on the "asset_id" field.
+func AssetIDNEQ(v uint64) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNEQ(FieldAssetID, v))
+}
+
+// AssetIDIn applies the In predicate on the "asset_id" field.
+func AssetIDIn(vs ...uint64) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldIn(FieldAssetID, vs...))
+}
+
+// AssetIDNotIn applies the NotIn predicate on the "asset_id" field.
+func AssetIDNotIn(vs ...uint64) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNotIn(FieldAssetID, vs...))
 }
 
 // HasTransfer applies the HasEdge predicate on the "transfer" edge.
@@ -423,6 +535,167 @@ func HasTransfer() predicate.AssetTransferDetails {
 func HasTransferWith(preds ...predicate.AssetTransfer) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(func(s *sql.Selector) {
 		step := newTransferStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasInOperateManager applies the HasEdge predicate on the "in_operate_manager" edge.
+func HasInOperateManager() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, InOperateManagerTable, InOperateManagerColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasInOperateManagerWith applies the HasEdge predicate on the "in_operate_manager" edge with a given conditions (other predicates).
+func HasInOperateManagerWith(preds ...predicate.Manager) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(func(s *sql.Selector) {
+		step := newInOperateManagerStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasInOperateStore applies the HasEdge predicate on the "in_operate_store" edge.
+func HasInOperateStore() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, InOperateStoreTable, InOperateStoreColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasInOperateStoreWith applies the HasEdge predicate on the "in_operate_store" edge with a given conditions (other predicates).
+func HasInOperateStoreWith(preds ...predicate.Store) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(func(s *sql.Selector) {
+		step := newInOperateStoreStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasInOperateAgent applies the HasEdge predicate on the "in_operate_agent" edge.
+func HasInOperateAgent() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, InOperateAgentTable, InOperateAgentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasInOperateAgentWith applies the HasEdge predicate on the "in_operate_agent" edge with a given conditions (other predicates).
+func HasInOperateAgentWith(preds ...predicate.Agent) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(func(s *sql.Selector) {
+		step := newInOperateAgentStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasInOperateMaintainer applies the HasEdge predicate on the "in_operate_maintainer" edge.
+func HasInOperateMaintainer() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, InOperateMaintainerTable, InOperateMaintainerColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasInOperateMaintainerWith applies the HasEdge predicate on the "in_operate_maintainer" edge with a given conditions (other predicates).
+func HasInOperateMaintainerWith(preds ...predicate.Maintainer) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(func(s *sql.Selector) {
+		step := newInOperateMaintainerStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasInOperateCabinet applies the HasEdge predicate on the "in_operate_cabinet" edge.
+func HasInOperateCabinet() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, InOperateCabinetTable, InOperateCabinetColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasInOperateCabinetWith applies the HasEdge predicate on the "in_operate_cabinet" edge with a given conditions (other predicates).
+func HasInOperateCabinetWith(preds ...predicate.Cabinet) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(func(s *sql.Selector) {
+		step := newInOperateCabinetStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasInOperateRider applies the HasEdge predicate on the "in_operate_rider" edge.
+func HasInOperateRider() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, InOperateRiderTable, InOperateRiderColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasInOperateRiderWith applies the HasEdge predicate on the "in_operate_rider" edge with a given conditions (other predicates).
+func HasInOperateRiderWith(preds ...predicate.Rider) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(func(s *sql.Selector) {
+		step := newInOperateRiderStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAsset applies the HasEdge predicate on the "asset" edge.
+func HasAsset() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, AssetTable, AssetColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAssetWith applies the HasEdge predicate on the "asset" edge with a given conditions (other predicates).
+func HasAssetWith(preds ...predicate.Asset) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(func(s *sql.Selector) {
+		step := newAssetStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

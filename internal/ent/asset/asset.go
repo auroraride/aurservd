@@ -79,6 +79,8 @@ const (
 	EdgeOperator = "operator"
 	// EdgeScrapDetails holds the string denoting the scrap_details edge name in mutations.
 	EdgeScrapDetails = "scrap_details"
+	// EdgeTransferDetails holds the string denoting the transfer_details edge name in mutations.
+	EdgeTransferDetails = "transfer_details"
 	// Table holds the table name of the asset in the database.
 	Table = "asset"
 	// BrandTable is the table that holds the brand relation/edge.
@@ -165,6 +167,13 @@ const (
 	ScrapDetailsInverseTable = "asset_scrap_details"
 	// ScrapDetailsColumn is the table column denoting the scrap_details relation/edge.
 	ScrapDetailsColumn = "asset_id"
+	// TransferDetailsTable is the table that holds the transfer_details relation/edge.
+	TransferDetailsTable = "asset_transfer_details"
+	// TransferDetailsInverseTable is the table name for the AssetTransferDetails entity.
+	// It exists in this package in order to avoid circular dependency with the "assettransferdetails" package.
+	TransferDetailsInverseTable = "asset_transfer_details"
+	// TransferDetailsColumn is the table column denoting the transfer_details relation/edge.
+	TransferDetailsColumn = "asset_id"
 )
 
 // Columns holds all SQL columns for asset fields.
@@ -416,6 +425,13 @@ func ByScrapDetails(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newScrapDetailsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByTransferDetailsField orders the results by transfer_details field.
+func ByTransferDetailsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTransferDetailsStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newBrandStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -498,5 +514,12 @@ func newScrapDetailsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ScrapDetailsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ScrapDetailsTable, ScrapDetailsColumn),
+	)
+}
+func newTransferDetailsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TransferDetailsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, false, TransferDetailsTable, TransferDetailsColumn),
 	)
 }
