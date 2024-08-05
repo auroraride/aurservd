@@ -1,6 +1,6 @@
 // Copyright (C) aurservd. 2024-present.
 //
-// Created at 2024-08-01, by aurb
+// Created at 2024-08-02, by aurb
 
 package biz
 
@@ -11,24 +11,24 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
-	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
 )
 
-type storeAssetBiz struct {
-	orm      *ent.StoreClient
+type maintainerAssetBiz struct {
+	orm      *ent.MaintainerClient
 	ctx      context.Context
 	modifier *model.Modifier
 }
 
-func NewStoreAsset() *storeAssetBiz {
-	return &storeAssetBiz{
-		orm: ent.Database.Store,
+func NewMaintainerAsset() *maintainerAssetBiz {
+	return &maintainerAssetBiz{
+		orm: ent.Database.Maintainer,
 		ctx: context.Background(),
 	}
 }
 
-func NewStoreAssetWithModifier(m *model.Modifier) *storeAssetBiz {
-	s := NewStoreAsset()
+func NewMaintainerAssetWithModifier(m *model.Modifier) *maintainerAssetBiz {
+	s := NewMaintainerAsset()
 	if m != nil {
 		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 		s.modifier = m
@@ -37,28 +37,18 @@ func NewStoreAssetWithModifier(m *model.Modifier) *storeAssetBiz {
 }
 
 // Assets 资产列表
-func (b *storeAssetBiz) Assets(req *definition.StoreAssetListReq) (res *model.PaginationRes) {
-	// 查询分页的门店数据
-	q := b.orm.QueryNotDeleted().WithCity()
-	// if req.GroupID != nil {
-	// 	// q.Where(store.GroupID(*req.GroupID))
-	// }
-	if req.StoreID != nil {
-		q.Where(store.ID(*req.StoreID))
+func (b *maintainerAssetBiz) Assets(req *definition.MaintainerAssetListReq) (res *model.PaginationRes) {
+	// 查询分页数据
+	q := b.orm.Query().Where(maintainer.Enable(true))
+	if req.Keyword != nil {
+		q.Where(maintainer.Or(maintainer.NameContainsFold(*req.Keyword), maintainer.PhoneContainsFold(*req.Keyword)))
 	}
-	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Store) (result *definition.StoreAssetDetail) {
-		result = &definition.StoreAssetDetail{
-			ID:         item.ID,
-			Name:       item.Name,
-			Lng:        item.Lng,
-			Lat:        item.Lat,
-			StoreAsset: b.assetForStore(req, item.ID),
-		}
-		if item.Edges.City != nil {
-			result.City = model.City{
-				ID:   item.Edges.City.ID,
-				Name: item.Edges.City.Name,
-			}
+
+	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Maintainer) (result *definition.MaintainerAssetDetail) {
+		result = &definition.MaintainerAssetDetail{
+			ID:              item.ID,
+			Name:            item.Name,
+			MaintainerAsset: b.assetForMaintainer(req, item.ID),
 		}
 		return result
 	})
@@ -66,18 +56,14 @@ func (b *storeAssetBiz) Assets(req *definition.StoreAssetListReq) (res *model.Pa
 	return res
 }
 
-func (b *storeAssetBiz) assetForStore(req *definition.StoreAssetListReq, id uint64) (asset definition.StoreAsset) {
+func (b *maintainerAssetBiz) assetForMaintainer(req *definition.MaintainerAssetListReq, id uint64) (asset definition.MaintainerAsset) {
 	// 查询所属资产数据
 	q := ent.Database.Asset.QueryNotDeleted().
 		Where(
-			entasset.LocationsType(model.AssetLocationsTypeStore.Value()),
+			entasset.LocationsType(model.AssetLocationsTypeOperation.Value()),
 			entasset.LocationsIDIn(id),
 			entasset.Status(model.AssetStatusStock.Value()),
 		)
-	if req.CityID != nil {
-		q.Where(entasset.CityID(*req.CityID))
-	}
-
 	if req.ModelID != nil {
 		q.Where(
 			entasset.ModelID(*req.ModelID),

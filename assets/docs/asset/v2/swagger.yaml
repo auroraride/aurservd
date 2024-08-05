@@ -7,18 +7,18 @@ definitions:
         type: integer
       type:
         allOf:
-          - $ref: '#/definitions/definition.BatteryModelType'
+        - $ref: '#/definitions/definition.BatteryModelType'
         description: 电池类型, 电池类型
         enum:
-          - 1
-          - 2
+        - 1
+        - 2
       voltage:
         description: 电池电压, 电池电压
         type: integer
     required:
-      - capacity
-      - type
-      - voltage
+    - capacity
+    - type
+    - voltage
     type: object
   definition.BatteryModelDetail:
     properties:
@@ -33,7 +33,7 @@ definitions:
         type: string
       type:
         allOf:
-          - $ref: '#/definitions/definition.BatteryModelType'
+        - $ref: '#/definitions/definition.BatteryModelType'
         description: 电池类型
       voltage:
         description: 电压
@@ -43,7 +43,7 @@ definitions:
     properties:
       type:
         allOf:
-          - $ref: '#/definitions/definition.BatteryModelType'
+        - $ref: '#/definitions/definition.BatteryModelType'
         description: 电池类型
     type: object
   definition.BatteryModelModifyReq:
@@ -53,30 +53,215 @@ definitions:
         type: integer
       type:
         allOf:
-          - $ref: '#/definitions/definition.BatteryModelType'
+        - $ref: '#/definitions/definition.BatteryModelType'
         description: 电池类型, 电池类型
         enum:
-          - 1
-          - 2
+        - 1
+        - 2
       voltage:
         description: 电池电压, 电池电压
         type: integer
     required:
-      - capacity
-      - type
-      - voltage
+    - capacity
+    - type
+    - voltage
     type: object
   definition.BatteryModelType:
     enum:
-      - 1
-      - 2
+    - 1
+    - 2
     type: integer
     x-enum-comments:
       BatteryModelTypeIntelligent: 智能电池
       BatteryModelTypeNonIntelligent: 非智能电池
     x-enum-varnames:
-      - BatteryModelTypeIntelligent
-      - BatteryModelTypeNonIntelligent
+    - BatteryModelTypeIntelligent
+    - BatteryModelTypeNonIntelligent
+  definition.CabinetAsset:
+    properties:
+      nonSmartBatteries:
+        description: 非智能电池物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      nonSmartBatteryTotal:
+        description: 非智能电池总数
+        type: integer
+      smartBatteries:
+        description: 智能电池物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      smartBatteryTotal:
+        description: 智能电池总数
+        type: integer
+    type: object
+  definition.CabinetAssetDetail:
+    properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      id:
+        description: 电柜ID
+        type: integer
+      name:
+        description: 电柜名称
+        type: string
+      sn:
+        description: 电柜编号
+        type: string
+      warehouseAsset:
+        allOf:
+        - $ref: '#/definitions/definition.CabinetAsset'
+        description: 电柜资产
+    type: object
+  definition.EnterpriseAsset:
+    properties:
+      cabinetAccessories:
+        description: 电柜配件物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      cabinetAccessoryTotal:
+        description: 电柜配件总数
+        type: integer
+      ebikeAccessories:
+        description: 电车配件物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      ebikeAccessoryTotal:
+        description: 电车配件总数
+        type: integer
+      ebikeTotal:
+        description: 电车总数
+        type: integer
+      ebikes:
+        description: 电车物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      nonSmartBatteries:
+        description: 非智能电池物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      nonSmartBatteryTotal:
+        description: 非智能电池总数
+        type: integer
+      otherAssetTotal:
+        description: 其他物资总数
+        type: integer
+      otherAssets:
+        description: 其他物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      smartBatteries:
+        description: 智能电池物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      smartBatteryTotal:
+        description: 智能电池总数
+        type: integer
+    type: object
+  definition.EnterpriseAssetDetail:
+    properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      id:
+        description: 团签ID
+        type: integer
+      name:
+        description: 团签名称
+        type: string
+      stations:
+        description: 团签站点
+        items:
+          $ref: '#/definitions/definition.EnterpriseStation'
+        type: array
+      warehouseAsset:
+        allOf:
+        - $ref: '#/definitions/definition.EnterpriseAsset'
+        description: 团签资产
+    type: object
+  definition.EnterpriseStation:
+    properties:
+      id:
+        description: 站点ID
+        type: integer
+      name:
+        description: 站点名称
+        type: string
+    type: object
+  definition.MaintainerAsset:
+    properties:
+      cabinetAccessories:
+        description: 电柜配件物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      cabinetAccessoryTotal:
+        description: 电柜配件总数
+        type: integer
+      ebikeAccessories:
+        description: 电车配件物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      ebikeAccessoryTotal:
+        description: 电车配件总数
+        type: integer
+      ebikeTotal:
+        description: 电车总数
+        type: integer
+      ebikes:
+        description: 电车物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      nonSmartBatteries:
+        description: 非智能电池物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      nonSmartBatteryTotal:
+        description: 非智能电池总数
+        type: integer
+      otherAssetTotal:
+        description: 其他物资总数
+        type: integer
+      otherAssets:
+        description: 其他物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      smartBatteries:
+        description: 智能电池物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      smartBatteryTotal:
+        description: 智能电池总数
+        type: integer
+    type: object
+  definition.MaintainerAssetDetail:
+    properties:
+      id:
+        description: 运维ID
+        type: integer
+      name:
+        description: 运维名称
+        type: string
+      warehouseAsset:
+        allOf:
+        - $ref: '#/definitions/definition.MaintainerAsset'
+        description: 运维资产
+    type: object
   definition.MaterialCreateReq:
     properties:
       name:
@@ -89,15 +274,15 @@ definitions:
         type: string
       type:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 其他物资类型
         enum:
-          - 4
-          - 5
-          - 6
+        - 4
+        - 5
+        - 6
     required:
-      - name
-      - type
+    - name
+    - type
     type: object
   definition.MaterialDetail:
     properties:
@@ -112,7 +297,7 @@ definitions:
         type: string
       type:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 类型
     type: object
   definition.MaterialListReq:
@@ -128,7 +313,7 @@ definitions:
         type: integer
       type:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 其他物资类型 4:电柜配件 5:电车配件 6:其它
     type: object
   definition.MaterialModifyReq:
@@ -143,15 +328,15 @@ definitions:
         type: string
       type:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 其他物资类型
         enum:
-          - 4
-          - 5
-          - 6
+        - 4
+        - 5
+        - 6
     required:
-      - name
-      - type
+    - name
+    - type
     type: object
   definition.StoreAsset:
     properties:
@@ -208,7 +393,7 @@ definitions:
     properties:
       city:
         allOf:
-          - $ref: '#/definitions/model.City'
+        - $ref: '#/definitions/model.City'
         description: 城市
       groupName:
         description: 门店集合名称
@@ -227,14 +412,14 @@ definitions:
         type: string
       warehouseAsset:
         allOf:
-          - $ref: '#/definitions/definition.StoreAsset'
+        - $ref: '#/definitions/definition.StoreAsset'
         description: 门店资产
     type: object
   definition.WareHouseAssetDetail:
     properties:
       city:
         allOf:
-          - $ref: '#/definitions/model.City'
+        - $ref: '#/definitions/model.City'
         description: 城市
       id:
         description: 仓库ID
@@ -250,7 +435,7 @@ definitions:
         type: string
       warehouseAsset:
         allOf:
-          - $ref: '#/definitions/definition.WarehouseAsset'
+        - $ref: '#/definitions/definition.WarehouseAsset'
         description: 仓库资产
     type: object
   definition.WareHouseAssetListReq:
@@ -373,10 +558,10 @@ definitions:
         maxLength: 50
         type: string
     required:
-      - cityId
-      - lat
-      - lng
-      - name
+    - cityId
+    - lat
+    - lng
+    - name
     type: object
   definition.WarehouseDetail:
     properties:
@@ -385,7 +570,7 @@ definitions:
         type: string
       city:
         allOf:
-          - $ref: '#/definitions/model.City'
+        - $ref: '#/definitions/model.City'
         description: 城市
       id:
         description: 门店ID
@@ -427,10 +612,10 @@ definitions:
         maxLength: 50
         type: string
     required:
-      - cityId
-      - lat
-      - lng
-      - name
+    - cityId
+    - lat
+    - lng
+    - name
     type: object
   model.AssetAttribute:
     properties:
@@ -484,16 +669,16 @@ definitions:
     properties:
       assetType:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
     required:
-      - assetType
+    - assetType
     type: object
   model.AssetCreateReq:
     properties:
       assetType:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
       attributes:
         description: 属性
@@ -514,7 +699,7 @@ definitions:
         type: integer
       locationsType:
         allOf:
-          - $ref: '#/definitions/model.AssetLocationsType'
+        - $ref: '#/definitions/model.AssetLocationsType'
         description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
       name:
         description: 资产名称(AssetType为 4:电柜配件 5:电车配件 6:其它 需要填写)
@@ -523,7 +708,7 @@ definitions:
         description: 资产编号
         type: string
     required:
-      - assetType
+    - assetType
     type: object
   model.AssetListReq:
     properties:
@@ -532,35 +717,35 @@ definitions:
         type: string
       assetLocationsType:
         allOf:
-          - $ref: '#/definitions/model.AssetLocationsType'
+        - $ref: '#/definitions/model.AssetLocationsType'
         description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
         enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
       assetStatus:
         description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
         enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
         type: integer
       assetType:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
         enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
       attribute:
         description: 属性查询
         items:
@@ -584,8 +769,8 @@ definitions:
       ownerType:
         description: 归属类型   1:平台 2:代理商
         enum:
-          - 1
-          - 2
+        - 1
+        - 2
         type: integer
       pageSize:
         description: 每页数据, 默认20
@@ -640,12 +825,12 @@ definitions:
     type: object
   model.AssetLocationsType:
     enum:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
     type: integer
     x-enum-comments:
       AssetLocationsTypeCabinet: 电柜
@@ -655,17 +840,17 @@ definitions:
       AssetLocationsTypeStore: 门店
       AssetLocationsTypeWarehouse: 仓库
     x-enum-varnames:
-      - AssetLocationsTypeWarehouse
-      - AssetLocationsTypeStore
-      - AssetLocationsTypeStation
-      - AssetLocationsTypeOperation
-      - AssetLocationsTypeCabinet
-      - AssetLocationsTypeRider
+    - AssetLocationsTypeWarehouse
+    - AssetLocationsTypeStore
+    - AssetLocationsTypeStation
+    - AssetLocationsTypeOperation
+    - AssetLocationsTypeCabinet
+    - AssetLocationsTypeRider
   model.AssetModifyReq:
     properties:
       assetType:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
       attribute:
         description: 属性
@@ -685,7 +870,7 @@ definitions:
         description: 备注
         type: string
     required:
-      - assetType
+    - assetType
     type: object
   model.AssetScrapBatchRestoreReq:
     properties:
@@ -695,7 +880,7 @@ definitions:
           type: integer
         type: array
     required:
-      - ids
+    - ids
     type: object
   model.AssetScrapDetail:
     properties:
@@ -704,7 +889,7 @@ definitions:
         type: integer
       assetType:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
       materialId:
         description: 其它物资分类ID
@@ -716,7 +901,7 @@ definitions:
         description: 仓库ID
         type: integer
     required:
-      - assetType
+    - assetType
     type: object
   model.AssetScrapDetailRes:
     properties:
@@ -782,17 +967,17 @@ definitions:
         type: string
       scrapReasonType:
         allOf:
-          - $ref: '#/definitions/model.ScrapReasonType'
+        - $ref: '#/definitions/model.ScrapReasonType'
         description: 报废原因
     required:
-      - detail
-      - scrapReasonType
+    - detail
+    - scrapReasonType
     type: object
   model.AssetTransferCreateDetail:
     properties:
       assetType:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
       materialId:
         description: 其它物资分类ID
@@ -807,7 +992,7 @@ definitions:
         description: 资产编号
         type: string
     required:
-      - assetType
+    - assetType
     type: object
   model.AssetTransferCreateReq:
     properties:
@@ -821,7 +1006,7 @@ definitions:
         type: integer
       fromLocationType:
         allOf:
-          - $ref: '#/definitions/model.AssetLocationsType'
+        - $ref: '#/definitions/model.AssetLocationsType'
         description: 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 (初始调拨此字段不填写)
       reason:
         description: 调拨事由
@@ -831,22 +1016,22 @@ definitions:
         type: integer
       toLocationType:
         allOf:
-          - $ref: '#/definitions/model.AssetLocationsType'
+        - $ref: '#/definitions/model.AssetLocationsType'
         description: 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维
     required:
-      - details
-      - reason
-      - toLocationID
-      - toLocationType
+    - details
+    - reason
+    - toLocationID
+    - toLocationType
     type: object
   model.AssetType:
     enum:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
     type: integer
     x-enum-comments:
       AssetTypeCabinetAccessory: 电柜配件
@@ -856,12 +1041,12 @@ definitions:
       AssetTypeOtherAccessory: 其它配件
       AssetTypeSmartBattery: 智能电池
     x-enum-varnames:
-      - AssetTypeEbike
-      - AssetTypeSmartBattery
-      - AssetTypeNonSmartBattery
-      - AssetTypeCabinetAccessory
-      - AssetTypeEbikeAccessory
-      - AssetTypeOtherAccessory
+    - AssetTypeEbike
+    - AssetTypeSmartBattery
+    - AssetTypeNonSmartBattery
+    - AssetTypeCabinetAccessory
+    - AssetTypeEbikeAccessory
+    - AssetTypeOtherAccessory
   model.City:
     properties:
       id:
@@ -895,23 +1080,23 @@ definitions:
         description: 返回数据
       pagination:
         allOf:
-          - $ref: '#/definitions/model.Pagination'
+        - $ref: '#/definitions/model.Pagination'
         description: 分页属性
     type: object
   model.ScrapReasonType:
     enum:
-      - 1
-      - 2
-      - 3
+    - 1
+    - 2
+    - 3
     type: integer
     x-enum-comments:
       ScrapReasonDamage: 损坏
       ScrapReasonLost: 丢失
       ScrapReasonOther: 其他
     x-enum-varnames:
-      - ScrapReasonLost
-      - ScrapReasonDamage
-      - ScrapReasonOther
+    - ScrapReasonLost
+    - ScrapReasonDamage
+    - ScrapReasonOther
   model.SelectOption:
     properties:
       desc:
@@ -948,7 +1133,7 @@ definitions:
         type: integer
     type: object
 info:
-  contact: { }
+  contact: {}
   description: |
     ### 说明
     接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。
@@ -1036,156 +1221,156 @@ paths:
   /manager/v2/asset:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 资产位置关键词
-          in: query
-          name: assetKeywork
-          type: string
-        - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          in: query
-          name: assetLocationsType
-          type: integer
-          x-enum-comments:
-            AssetLocationsTypeCabinet: 电柜
-            AssetLocationsTypeOperation: 运维
-            AssetLocationsTypeRider: 骑手
-            AssetLocationsTypeStation: 站点
-            AssetLocationsTypeStore: 门店
-            AssetLocationsTypeWarehouse: 仓库
-          x-enum-varnames:
-            - AssetLocationsTypeWarehouse
-            - AssetLocationsTypeStore
-            - AssetLocationsTypeStation
-            - AssetLocationsTypeOperation
-            - AssetLocationsTypeCabinet
-            - AssetLocationsTypeRider
-        - description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-          in: query
-          name: assetStatus
-          type: integer
-        - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          in: query
-          name: assetType
-          type: integer
-          x-enum-comments:
-            AssetTypeCabinetAccessory: 电柜配件
-            AssetTypeEbike: 电车
-            AssetTypeEbikeAccessory: 电车配件
-            AssetTypeNonSmartBattery: 非智能电池
-            AssetTypeOtherAccessory: 其它配件
-            AssetTypeSmartBattery: 智能电池
-          x-enum-varnames:
-            - AssetTypeEbike
-            - AssetTypeSmartBattery
-            - AssetTypeNonSmartBattery
-            - AssetTypeCabinetAccessory
-            - AssetTypeEbikeAccessory
-            - AssetTypeOtherAccessory
-        - description: 电车品牌ID
-          in: query
-          name: brandId
-          type: integer
-        - description: 城市
-          in: query
-          name: cityId
-          type: integer
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 是否启用
-          in: query
-          name: enable
-          type: boolean
-        - description: 型号ID
-          in: query
-          name: model
-          type: integer
-        - description: 归属类型   1:平台 2:代理商
-          enum:
-            - 1
-            - 2
-          in: query
-          name: ownerType
-          type: integer
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
-        - description: 电车是否赠送
-          in: query
-          name: rto
-          type: boolean
-        - description: 编号
-          in: query
-          name: sn
-          type: string
-        - description: 站点ID
-          in: query
-          name: stationId
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 资产位置关键词
+        in: query
+        name: assetKeywork
+        type: string
+      - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: assetLocationsType
+        type: integer
+        x-enum-comments:
+          AssetLocationsTypeCabinet: 电柜
+          AssetLocationsTypeOperation: 运维
+          AssetLocationsTypeRider: 骑手
+          AssetLocationsTypeStation: 站点
+          AssetLocationsTypeStore: 门店
+          AssetLocationsTypeWarehouse: 仓库
+        x-enum-varnames:
+        - AssetLocationsTypeWarehouse
+        - AssetLocationsTypeStore
+        - AssetLocationsTypeStation
+        - AssetLocationsTypeOperation
+        - AssetLocationsTypeCabinet
+        - AssetLocationsTypeRider
+      - description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        in: query
+        name: assetStatus
+        type: integer
+      - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: assetType
+        type: integer
+        x-enum-comments:
+          AssetTypeCabinetAccessory: 电柜配件
+          AssetTypeEbike: 电车
+          AssetTypeEbikeAccessory: 电车配件
+          AssetTypeNonSmartBattery: 非智能电池
+          AssetTypeOtherAccessory: 其它配件
+          AssetTypeSmartBattery: 智能电池
+        x-enum-varnames:
+        - AssetTypeEbike
+        - AssetTypeSmartBattery
+        - AssetTypeNonSmartBattery
+        - AssetTypeCabinetAccessory
+        - AssetTypeEbikeAccessory
+        - AssetTypeOtherAccessory
+      - description: 电车品牌ID
+        in: query
+        name: brandId
+        type: integer
+      - description: 城市
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 是否启用
+        in: query
+        name: enable
+        type: boolean
+      - description: 型号ID
+        in: query
+        name: model
+        type: integer
+      - description: 归属类型   1:平台 2:代理商
+        enum:
+        - 1
+        - 2
+        in: query
+        name: ownerType
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 电车是否赠送
+        in: query
+        name: rto
+        type: boolean
+      - description: 编号
+        in: query
+        name: sn
+        type: string
+      - description: 站点ID
+        in: query
+        name: stationId
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/model.AssetListRes'
-                    type: array
-                type: object
+                    $ref: '#/definitions/model.AssetListRes'
+                  type: array
+              type: object
       summary: 资产列表
       tags:
-        - 资产
+      - 资产
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetCreate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 创建参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.AssetCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 创建参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1193,25 +1378,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建资产
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/{id}:
     delete:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetDelete
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 资产ID
-          in: path
-          name: id
-          required: true
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 资产ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1219,24 +1404,24 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除资产
       tags:
-        - 资产
+      - 资产
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetDetail
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 资产ID
-          in: path
-          name: id
-          required: true
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 资产ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1244,25 +1429,25 @@ paths:
             $ref: '#/definitions/model.AssetListRes'
       summary: 资产详情
       tags:
-        - 资产
+      - 资产
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetUpdate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 修改参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.AssetModifyReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 修改参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetModifyReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1270,46 +1455,46 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改资产
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/attributes:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetAttributesList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          in: query
-          name: assetType
-          required: true
-          type: integer
-          x-enum-comments:
-            AssetTypeCabinetAccessory: 电柜配件
-            AssetTypeEbike: 电车
-            AssetTypeEbikeAccessory: 电车配件
-            AssetTypeNonSmartBattery: 非智能电池
-            AssetTypeOtherAccessory: 其它配件
-            AssetTypeSmartBattery: 智能电池
-          x-enum-varnames:
-            - AssetTypeEbike
-            - AssetTypeSmartBattery
-            - AssetTypeNonSmartBattery
-            - AssetTypeCabinetAccessory
-            - AssetTypeEbikeAccessory
-            - AssetTypeOtherAccessory
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: assetType
+        required: true
+        type: integer
+        x-enum-comments:
+          AssetTypeCabinetAccessory: 电柜配件
+          AssetTypeEbike: 电车
+          AssetTypeEbikeAccessory: 电车配件
+          AssetTypeNonSmartBattery: 非智能电池
+          AssetTypeOtherAccessory: 其它配件
+          AssetTypeSmartBattery: 智能电池
+        x-enum-varnames:
+        - AssetTypeEbike
+        - AssetTypeSmartBattery
+        - AssetTypeNonSmartBattery
+        - AssetTypeCabinetAccessory
+        - AssetTypeEbikeAccessory
+        - AssetTypeOtherAccessory
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1317,26 +1502,26 @@ paths:
             $ref: '#/definitions/model.AssetAttributesListRes'
       summary: 资产属性列表
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/batch:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetBatchCreate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 创建参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.AssetBatchCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 创建参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetBatchCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1344,119 +1529,179 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 批量创建资产
       tags:
-        - 资产
+      - 资产
+  /manager/v2/asset/cabinet_assets:
+    get:
+      consumes:
+      - application/json
+      operationId: CabinetAsset
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 电池型号ID
+        in: query
+        name: modelID
+        type: integer
+      - description: 电柜名称
+        in: query
+        name: name
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 电柜编号
+        in: query
+        name: sn
+        type: string
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/definition.CabinetAssetDetail'
+                  type: array
+              type: object
+      summary: 电柜物资
+      tags:
+      - 电柜 - Cabinet
   /manager/v2/asset/count:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetCount
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 资产位置关键词
-          in: query
-          name: assetKeywork
-          type: string
-        - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          in: query
-          name: assetLocationsType
-          type: integer
-          x-enum-comments:
-            AssetLocationsTypeCabinet: 电柜
-            AssetLocationsTypeOperation: 运维
-            AssetLocationsTypeRider: 骑手
-            AssetLocationsTypeStation: 站点
-            AssetLocationsTypeStore: 门店
-            AssetLocationsTypeWarehouse: 仓库
-          x-enum-varnames:
-            - AssetLocationsTypeWarehouse
-            - AssetLocationsTypeStore
-            - AssetLocationsTypeStation
-            - AssetLocationsTypeOperation
-            - AssetLocationsTypeCabinet
-            - AssetLocationsTypeRider
-        - description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-          in: query
-          name: assetStatus
-          type: integer
-        - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          in: query
-          name: assetType
-          type: integer
-          x-enum-comments:
-            AssetTypeCabinetAccessory: 电柜配件
-            AssetTypeEbike: 电车
-            AssetTypeEbikeAccessory: 电车配件
-            AssetTypeNonSmartBattery: 非智能电池
-            AssetTypeOtherAccessory: 其它配件
-            AssetTypeSmartBattery: 智能电池
-          x-enum-varnames:
-            - AssetTypeEbike
-            - AssetTypeSmartBattery
-            - AssetTypeNonSmartBattery
-            - AssetTypeCabinetAccessory
-            - AssetTypeEbikeAccessory
-            - AssetTypeOtherAccessory
-        - description: 电车品牌ID
-          in: query
-          name: brandId
-          type: integer
-        - description: 城市
-          in: query
-          name: cityId
-          type: integer
-        - description: 是否启用
-          in: query
-          name: enable
-          type: boolean
-        - description: 型号ID
-          in: query
-          name: model
-          type: integer
-        - description: 归属类型   1:平台 2:代理商
-          enum:
-            - 1
-            - 2
-          in: query
-          name: ownerType
-          type: integer
-        - description: 电车是否赠送
-          in: query
-          name: rto
-          type: boolean
-        - description: 编号
-          in: query
-          name: sn
-          type: string
-        - description: 站点ID
-          in: query
-          name: stationId
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 资产位置关键词
+        in: query
+        name: assetKeywork
+        type: string
+      - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: assetLocationsType
+        type: integer
+        x-enum-comments:
+          AssetLocationsTypeCabinet: 电柜
+          AssetLocationsTypeOperation: 运维
+          AssetLocationsTypeRider: 骑手
+          AssetLocationsTypeStation: 站点
+          AssetLocationsTypeStore: 门店
+          AssetLocationsTypeWarehouse: 仓库
+        x-enum-varnames:
+        - AssetLocationsTypeWarehouse
+        - AssetLocationsTypeStore
+        - AssetLocationsTypeStation
+        - AssetLocationsTypeOperation
+        - AssetLocationsTypeCabinet
+        - AssetLocationsTypeRider
+      - description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        in: query
+        name: assetStatus
+        type: integer
+      - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: assetType
+        type: integer
+        x-enum-comments:
+          AssetTypeCabinetAccessory: 电柜配件
+          AssetTypeEbike: 电车
+          AssetTypeEbikeAccessory: 电车配件
+          AssetTypeNonSmartBattery: 非智能电池
+          AssetTypeOtherAccessory: 其它配件
+          AssetTypeSmartBattery: 智能电池
+        x-enum-varnames:
+        - AssetTypeEbike
+        - AssetTypeSmartBattery
+        - AssetTypeNonSmartBattery
+        - AssetTypeCabinetAccessory
+        - AssetTypeEbikeAccessory
+        - AssetTypeOtherAccessory
+      - description: 电车品牌ID
+        in: query
+        name: brandId
+        type: integer
+      - description: 城市
+        in: query
+        name: cityId
+        type: integer
+      - description: 是否启用
+        in: query
+        name: enable
+        type: boolean
+      - description: 型号ID
+        in: query
+        name: model
+        type: integer
+      - description: 归属类型   1:平台 2:代理商
+        enum:
+        - 1
+        - 2
+        in: query
+        name: ownerType
+        type: integer
+      - description: 电车是否赠送
+        in: query
+        name: rto
+        type: boolean
+      - description: 编号
+        in: query
+        name: sn
+        type: string
+      - description: 站点ID
+        in: query
+        name: stationId
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1464,26 +1709,90 @@ paths:
             type: int
       summary: 资产统计
       tags:
-        - 资产
+      - 资产
+  /manager/v2/asset/enterprise_assets:
+    get:
+      consumes:
+      - application/json
+      operationId: EnterpriseAsset
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电车型号ID
+        in: query
+        name: brandId
+        type: integer
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 电池型号ID
+        in: query
+        name: modelID
+        type: integer
+      - description: 其他物资名称
+        in: query
+        name: otherName
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 站点ID
+        in: query
+        name: stationId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/definition.EnterpriseAssetDetail'
+                  type: array
+              type: object
+      summary: 团签物资
+      tags:
+      - 团签 - Enterprise
   /manager/v2/asset/export:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetExport
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 查询参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.AssetListReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetListReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 成功
@@ -1491,59 +1800,111 @@ paths:
             $ref: '#/definitions/model.ExportRes'
       summary: 导出资产
       tags:
-        - 资产
-  /manager/v2/asset/material:
+      - 资产
+  /manager/v2/asset/maintainer_assets:
     get:
       consumes:
-        - application/json
-      operationId: MaterialList
+      - application/json
+      operationId: MaintainerAsset
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.MaterialListReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电车型号ID
+        in: query
+        name: brandId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 关键字 姓名，手机号
+        in: query
+        name: keyword
+        type: string
+      - description: 电池型号ID
+        in: query
+        name: modelID
+        type: integer
+      - description: 其他物资名称
+        in: query
+        name: otherName
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/definition.MaterialDetail'
-                    type: array
-                type: object
+                    $ref: '#/definitions/definition.MaintainerAssetDetail'
+                  type: array
+              type: object
+      summary: 运维物资
+      tags:
+      - 运维 - Maintainer
+  /manager/v2/asset/material:
+    get:
+      consumes:
+      - application/json
+      operationId: MaterialList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.MaterialListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/definition.MaterialDetail'
+                  type: array
+              type: object
       summary: 列表
       tags:
-        - 其他物资 - Material
+      - 其他物资 - Material
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: MaterialCreate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.MaterialCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.MaterialCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1551,25 +1912,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建
       tags:
-        - 其他物资 - Material
+      - 其他物资 - Material
   /manager/v2/asset/material/{id}:
     delete:
       consumes:
-        - application/json
+      - application/json
       operationId: MaterialDelete
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 仓库ID
-          in: path
-          name: id
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 仓库ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1577,25 +1938,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除
       tags:
-        - 其他物资 - Material
+      - 其他物资 - Material
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: MaterialModify
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.MaterialModifyReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.MaterialModifyReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1603,126 +1964,126 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改
       tags:
-        - 其他物资 - Material
+      - 其他物资 - Material
   /manager/v2/asset/scrap:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetScrapList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 资产名称
-          in: query
-          name: assetName
-          type: string
-        - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          in: query
-          name: assetType
-          type: integer
-          x-enum-comments:
-            AssetTypeCabinetAccessory: 电柜配件
-            AssetTypeEbike: 电车
-            AssetTypeEbikeAccessory: 电车配件
-            AssetTypeNonSmartBattery: 非智能电池
-            AssetTypeOtherAccessory: 其它配件
-            AssetTypeSmartBattery: 智能电池
-          x-enum-varnames:
-            - AssetTypeEbike
-            - AssetTypeSmartBattery
-            - AssetTypeNonSmartBattery
-            - AssetTypeCabinetAccessory
-            - AssetTypeEbikeAccessory
-            - AssetTypeOtherAccessory
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 结束时间
-          in: query
-          name: end
-          type: string
-        - description: 资产型号
-          in: query
-          name: modelId
-          type: integer
-        - description: 操作人
-          in: query
-          name: operateName
-          type: string
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
-        - description: 报废原因 1:丢失 2:损坏 3:其他
-          enum:
-            - 1
-            - 2
-            - 3
-          in: query
-          name: scrapReason
-          type: integer
-          x-enum-comments:
-            ScrapReasonDamage: 损坏
-            ScrapReasonLost: 丢失
-            ScrapReasonOther: 其他
-          x-enum-varnames:
-            - ScrapReasonLost
-            - ScrapReasonDamage
-            - ScrapReasonOther
-        - description: 资产编号
-          in: query
-          name: sn
-          type: string
-        - description: 开始时间
-          in: query
-          name: start
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 资产名称
+        in: query
+        name: assetName
+        type: string
+      - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: assetType
+        type: integer
+        x-enum-comments:
+          AssetTypeCabinetAccessory: 电柜配件
+          AssetTypeEbike: 电车
+          AssetTypeEbikeAccessory: 电车配件
+          AssetTypeNonSmartBattery: 非智能电池
+          AssetTypeOtherAccessory: 其它配件
+          AssetTypeSmartBattery: 智能电池
+        x-enum-varnames:
+        - AssetTypeEbike
+        - AssetTypeSmartBattery
+        - AssetTypeNonSmartBattery
+        - AssetTypeCabinetAccessory
+        - AssetTypeEbikeAccessory
+        - AssetTypeOtherAccessory
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 资产型号
+        in: query
+        name: modelId
+        type: integer
+      - description: 操作人
+        in: query
+        name: operateName
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 报废原因 1:丢失 2:损坏 3:其他
+        enum:
+        - 1
+        - 2
+        - 3
+        in: query
+        name: scrapReason
+        type: integer
+        x-enum-comments:
+          ScrapReasonDamage: 损坏
+          ScrapReasonLost: 丢失
+          ScrapReasonOther: 其他
+        x-enum-varnames:
+        - ScrapReasonLost
+        - ScrapReasonDamage
+        - ScrapReasonOther
+      - description: 资产编号
+        in: query
+        name: sn
+        type: string
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/model.AssetScrapListRes'
-                    type: array
-                type: object
+                    $ref: '#/definitions/model.AssetScrapListRes'
+                  type: array
+              type: object
       summary: 资产报废列表
       tags:
-        - 资产
+      - 资产
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetScrap
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 报废参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.AssetScrapReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 报废参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetScrapReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1730,26 +2091,26 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 报废资产
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/scrap/batch/restore:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetScrapBatchRestore
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 还原参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.AssetScrapBatchRestoreReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 还原参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetScrapBatchRestoreReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1757,20 +2118,20 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 资产报废还原
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/scrap/reason:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetScrapReasonSelect
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1780,114 +2141,114 @@ paths:
             type: array
       summary: 报废理由Select
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/store_assets:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: StoreAsset
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 电车型号ID
-          in: query
-          name: brandId
-          type: integer
-        - description: 城市ID
-          in: query
-          name: cityId
-          type: integer
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 结束时间
-          in: query
-          name: end
-          type: string
-        - description: 门店集合ID
-          in: query
-          name: groupId
-          type: integer
-        - description: 电池型号ID
-          in: query
-          name: modelID
-          type: integer
-        - description: 其他物资名称
-          in: query
-          name: otherName
-          type: string
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
-        - description: 开始时间
-          in: query
-          name: start
-          type: string
-        - description: 门店ID
-          in: query
-          name: storeId
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电车型号ID
+        in: query
+        name: brandId
+        type: integer
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 门店集合ID
+        in: query
+        name: groupId
+        type: integer
+      - description: 电池型号ID
+        in: query
+        name: modelID
+        type: integer
+      - description: 其他物资名称
+        in: query
+        name: otherName
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 门店ID
+        in: query
+        name: storeId
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/definition.StoreAssetDetail'
-                    type: array
-                type: object
+                    $ref: '#/definitions/definition.StoreAssetDetail'
+                  type: array
+              type: object
       summary: 门店物资
       tags:
-        - 门店 - Store
+      - 门店 - Store
   /manager/v2/asset/template:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetTemplate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          in: query
-          name: assetType
-          required: true
-          type: integer
-          x-enum-comments:
-            AssetTypeCabinetAccessory: 电柜配件
-            AssetTypeEbike: 电车
-            AssetTypeEbikeAccessory: 电车配件
-            AssetTypeNonSmartBattery: 非智能电池
-            AssetTypeOtherAccessory: 其它配件
-            AssetTypeSmartBattery: 智能电池
-          x-enum-varnames:
-            - AssetTypeEbike
-            - AssetTypeSmartBattery
-            - AssetTypeNonSmartBattery
-            - AssetTypeCabinetAccessory
-            - AssetTypeEbikeAccessory
-            - AssetTypeOtherAccessory
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: assetType
+        required: true
+        type: integer
+        x-enum-comments:
+          AssetTypeCabinetAccessory: 电柜配件
+          AssetTypeEbike: 电车
+          AssetTypeEbikeAccessory: 电车配件
+          AssetTypeNonSmartBattery: 非智能电池
+          AssetTypeOtherAccessory: 其它配件
+          AssetTypeSmartBattery: 智能电池
+        x-enum-varnames:
+        - AssetTypeEbike
+        - AssetTypeSmartBattery
+        - AssetTypeNonSmartBattery
+        - AssetTypeCabinetAccessory
+        - AssetTypeEbikeAccessory
+        - AssetTypeOtherAccessory
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 成功
@@ -1895,26 +2256,26 @@ paths:
             $ref: '#/definitions/model.ExportRes'
       summary: 导出资产模板
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/transfer:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetTransfer
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 调拨参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.AssetTransferCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 调拨参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetTransferCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1922,59 +2283,59 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 资产调拨
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/warehouse:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: WarehouseList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.WareHouseListReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.WareHouseListReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/definition.WarehouseDetail'
-                    type: array
-                type: object
+                    $ref: '#/definitions/definition.WarehouseDetail'
+                  type: array
+              type: object
       summary: 仓库列表
       tags:
-        - 仓库 - Warehouse
+      - 仓库 - Warehouse
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: WarehouseCreate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.WarehouseCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.WarehouseCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -1982,25 +2343,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建仓库
       tags:
-        - 仓库 - Warehouse
+      - 仓库 - Warehouse
   /manager/v2/asset/warehouse/{id}:
     delete:
       consumes:
-        - application/json
+      - application/json
       operationId: WarehouseDelete
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 仓库ID
-          in: path
-          name: id
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 仓库ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2008,24 +2369,24 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除仓库
       tags:
-        - 仓库 - Warehouse
+      - 仓库 - Warehouse
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: WarehouseDetail
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 仓库ID
-          in: path
-          name: id
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 仓库ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2033,25 +2394,25 @@ paths:
             $ref: '#/definitions/definition.WarehouseDetail'
       summary: 仓库详情
       tags:
-        - 仓库 - Warehouse
+      - 仓库 - Warehouse
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: WarehouseModify
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.WarehouseModifyReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.WarehouseModifyReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2059,60 +2420,60 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改仓库
       tags:
-        - 仓库 - Warehouse
+      - 仓库 - Warehouse
   /manager/v2/asset/warehouse_assets:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: WarehouseAssets
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.WareHouseAssetListReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.WareHouseAssetListReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/definition.WareHouseAssetDetail'
-                    type: array
-                type: object
+                    $ref: '#/definitions/definition.WareHouseAssetDetail'
+                  type: array
+              type: object
       summary: 仓库物资
       tags:
-        - 仓库 - Warehouse
+      - 仓库 - Warehouse
   /manager/v2/batterymodel:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: BatteryModelList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.BatteryModelListReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.BatteryModelListReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2122,25 +2483,25 @@ paths:
             type: array
       summary: 列表
       tags:
-        - 电池型号 - BatteryModel
+      - 电池型号 - BatteryModel
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: BatteryModelCreate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.BatteryModelCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.BatteryModelCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2148,25 +2509,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建
       tags:
-        - 电池型号 - BatteryModel
+      - 电池型号 - BatteryModel
   /manager/v2/batterymodel/{id}:
     delete:
       consumes:
-        - application/json
+      - application/json
       operationId: BatteryModelDelete
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 仓库ID
-          in: path
-          name: id
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 仓库ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2174,24 +2535,24 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除
       tags:
-        - 电池型号 - BatteryModel
+      - 电池型号 - BatteryModel
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: BatteryModelDetail
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 仓库ID
-          in: path
-          name: id
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 仓库ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2199,25 +2560,25 @@ paths:
             $ref: '#/definitions/definition.BatteryModelDetail'
       summary: 详情
       tags:
-        - 电池型号 - BatteryModel
+      - 电池型号 - BatteryModel
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: BatteryModelModify
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.BatteryModelModifyReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.BatteryModelModifyReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2225,5 +2586,5 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改
       tags:
-        - 电池型号 - BatteryModel
+      - 电池型号 - BatteryModel
 swagger: "2.0"

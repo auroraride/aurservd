@@ -42,7 +42,16 @@ func loadAssersRoutes() {
 	asset.GET("/warehouse_assets ", assetapi.Warehouse.Assets) // 仓库物资
 
 	// 门店物资
-	asset.GET("/store_assets", assetapi.Store.StoreAsset) // 门店物资
+	asset.GET("/store_assets", assetapi.Store.StoreAsset) // 门店物资列表
+
+	// 运维物资
+	asset.GET("/maintainer_assets", assetapi.Maintainer.MaintainerAsset) // 运维物资列表
+
+	// 电柜物资
+	asset.GET("/cabinet_assets", assetapi.Cabinet.CabinetAsset) // 电柜物资列表
+
+	// 团签物资
+	asset.GET("/cabinet_assets", assetapi.Cabinet.CabinetAsset) // 团签物资列表
 
 	// 其他物资
 	asset.POST("/material", assetapi.Material.Create)       // 创建仓库

@@ -4826,22 +4826,22 @@ paths:
   /rider/v2/phone/device:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: ReportPhoneDevice
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.RiderPhoneDeviceReq'
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.RiderPhoneDeviceReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4849,7 +4849,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 上报手机设备信息
       tags:
-        - Rider - 骑手
+      - Rider - 骑手
   /rider/v2/plan:
     get:
       consumes:

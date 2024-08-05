@@ -1,6 +1,6 @@
 // Copyright (C) aurservd. 2024-present.
 //
-// Created at 2024-08-01, by aurb
+// Created at 2024-08-02, by aurb
 
 package biz
 
@@ -11,24 +11,25 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
-	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 )
 
-type storeAssetBiz struct {
-	orm      *ent.StoreClient
+type enterpriseAssetBiz struct {
+	orm      *ent.EnterpriseClient
 	ctx      context.Context
 	modifier *model.Modifier
 }
 
-func NewStoreAsset() *storeAssetBiz {
-	return &storeAssetBiz{
-		orm: ent.Database.Store,
+func NewEnterpriseAsset() *enterpriseAssetBiz {
+	return &enterpriseAssetBiz{
+		orm: ent.Database.Enterprise,
 		ctx: context.Background(),
 	}
 }
 
-func NewStoreAssetWithModifier(m *model.Modifier) *storeAssetBiz {
-	s := NewStoreAsset()
+func NewEnterpriseAssetWithModifier(m *model.Modifier) *enterpriseAssetBiz {
+	s := NewEnterpriseAsset()
 	if m != nil {
 		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 		s.modifier = m
@@ -37,22 +38,21 @@ func NewStoreAssetWithModifier(m *model.Modifier) *storeAssetBiz {
 }
 
 // Assets 资产列表
-func (b *storeAssetBiz) Assets(req *definition.StoreAssetListReq) (res *model.PaginationRes) {
+func (b *enterpriseAssetBiz) Assets(req *definition.EnterpriseAssetListReq) (res *model.PaginationRes) {
 	// 查询分页的门店数据
-	q := b.orm.QueryNotDeleted().WithCity()
-	// if req.GroupID != nil {
-	// 	// q.Where(store.GroupID(*req.GroupID))
-	// }
-	if req.StoreID != nil {
-		q.Where(store.ID(*req.StoreID))
+	q := b.orm.QueryNotDeleted().WithCity().WithStations()
+	if req.CityID != nil {
+		q.Where(enterprise.CityID(*req.CityID))
 	}
-	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Store) (result *definition.StoreAssetDetail) {
-		result = &definition.StoreAssetDetail{
-			ID:         item.ID,
-			Name:       item.Name,
-			Lng:        item.Lng,
-			Lat:        item.Lat,
-			StoreAsset: b.assetForStore(req, item.ID),
+	if req.StationID != nil {
+		q.Where(enterprise.HasStationsWith(enterprisestation.ID(*req.StationID)))
+	}
+	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Enterprise) (result *definition.EnterpriseAssetDetail) {
+		result = &definition.EnterpriseAssetDetail{
+			ID:              item.ID,
+			Name:            item.Name,
+			City:            model.City{},
+			EnterpriseAsset: b.assetForEnterprise(req, item.ID),
 		}
 		if item.Edges.City != nil {
 			result.City = model.City{
@@ -60,17 +60,26 @@ func (b *storeAssetBiz) Assets(req *definition.StoreAssetListReq) (res *model.Pa
 				Name: item.Edges.City.Name,
 			}
 		}
+		stations := make([]*definition.EnterpriseStation, 0)
+		for _, s := range item.Edges.Stations {
+			stations = append(stations, &definition.EnterpriseStation{
+				ID:   s.ID,
+				Name: s.Name,
+			})
+		}
+
+		result.Stations = stations
 		return result
 	})
 
 	return res
 }
 
-func (b *storeAssetBiz) assetForStore(req *definition.StoreAssetListReq, id uint64) (asset definition.StoreAsset) {
+func (b *enterpriseAssetBiz) assetForEnterprise(req *definition.EnterpriseAssetListReq, id uint64) (asset definition.EnterpriseAsset) {
 	// 查询所属资产数据
 	q := ent.Database.Asset.QueryNotDeleted().
 		Where(
-			entasset.LocationsType(model.AssetLocationsTypeStore.Value()),
+			entasset.LocationsType(model.AssetLocationsTypeStation.Value()),
 			entasset.LocationsIDIn(id),
 			entasset.Status(model.AssetStatusStock.Value()),
 		)
