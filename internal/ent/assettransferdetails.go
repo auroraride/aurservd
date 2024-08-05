@@ -37,6 +37,8 @@ type AssetTransferDetails struct {
 	AssetID *uint64 `json:"asset_id,omitempty"`
 	// 调拨ID
 	TransferID uint64 `json:"transfer_id,omitempty"`
+	// 是否入库
+	IsIn bool `json:"is_in,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetTransferDetailsQuery when eager-loading is set.
 	Edges        AssetTransferDetailsEdges `json:"edges"`
@@ -83,6 +85,8 @@ func (*AssetTransferDetails) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case assettransferdetails.FieldCreator, assettransferdetails.FieldLastModifier:
 			values[i] = new([]byte)
+		case assettransferdetails.FieldIsIn:
+			values[i] = new(sql.NullBool)
 		case assettransferdetails.FieldID, assettransferdetails.FieldAssetID, assettransferdetails.FieldTransferID:
 			values[i] = new(sql.NullInt64)
 		case assettransferdetails.FieldRemark:
@@ -164,6 +168,12 @@ func (atd *AssetTransferDetails) assignValues(columns []string, values []any) er
 			} else if value.Valid {
 				atd.TransferID = uint64(value.Int64)
 			}
+		case assettransferdetails.FieldIsIn:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_in", values[i])
+			} else if value.Valid {
+				atd.IsIn = value.Bool
+			}
 		default:
 			atd.selectValues.Set(columns[i], values[i])
 		}
@@ -237,6 +247,9 @@ func (atd *AssetTransferDetails) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("transfer_id=")
 	builder.WriteString(fmt.Sprintf("%v", atd.TransferID))
+	builder.WriteString(", ")
+	builder.WriteString("is_in=")
+	builder.WriteString(fmt.Sprintf("%v", atd.IsIn))
 	builder.WriteByte(')')
 	return builder.String()
 }

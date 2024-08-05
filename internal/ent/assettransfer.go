@@ -11,7 +11,15 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/manager"
+	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
 // AssetTransfer is the model entity for the AssetTransfer schema.
@@ -35,11 +43,11 @@ type AssetTransfer struct {
 	Status uint8 `json:"status,omitempty"`
 	// 调拨单号
 	Sn string `json:"sn,omitempty"`
-	// 开始位置类型 1:仓库 2:门店 3:站点 4:运维
-	FromLocationType uint8 `json:"from_location_type,omitempty"`
+	// 开始位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	FromLocationType *uint8 `json:"from_location_type,omitempty"`
 	// 开始位置ID
-	FromLocationID uint64 `json:"from_location_id,omitempty"`
-	// 目标位置类型 1:仓库 2:门店 3:站点 4:运维
+	FromLocationID *uint64 `json:"from_location_id,omitempty"`
+	// 目标位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
 	ToLocationType uint8 `json:"to_location_type,omitempty"`
 	// 目标位置ID
 	ToLocationID uint64 `json:"to_location_id,omitempty"`
@@ -48,19 +56,17 @@ type AssetTransfer struct {
 	// 调入数量
 	InNum uint `json:"in_num,omitempty"`
 	// 出库人id
-	OutUserID uint64 `json:"out_user_id,omitempty"`
-	// 出库角色类型 1:资产后台管理员 2:运维人员 3:代理管理员 4:门店店员
-	OutRoleType uint8 `json:"out_role_type,omitempty"`
+	OutOperateID *uint64 `json:"out_operate_id,omitempty"`
+	// 出库角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手
+	OutOperateType *uint8 `json:"out_operate_type,omitempty"`
 	// 入库人id
-	InUserID uint64 `json:"in_user_id,omitempty"`
-	// 入库角色类型 1:资产后台管理员 2:运维人员 3:代理管理员 4:门店店员
-	InRoleType uint8 `json:"in_role_type,omitempty"`
+	InOperateID uint64 `json:"in_operate_id,omitempty"`
+	// 入库角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手
+	InOperateType uint8 `json:"in_operate_type,omitempty"`
 	// 出库时间
 	OutTimeAt time.Time `json:"out_time_at,omitempty"`
 	// 入库时间
 	InTimeAt time.Time `json:"in_time_at,omitempty"`
-	// 调拨类型 1:初始入库 2:平台调拨 3:门店调拨 4:代理调拨 5:运维调拨 6:系统业务自动调拨
-	TransferType uint8 `json:"transfer_type,omitempty"`
 	// 调拨事由
 	Reason string `json:"reason,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -73,9 +79,57 @@ type AssetTransfer struct {
 type AssetTransferEdges struct {
 	// Details holds the value of the details edge.
 	Details []*AssetTransferDetails `json:"details,omitempty"`
+	// LocationStore holds the value of the location_store edge.
+	LocationStore *Store `json:"location_store,omitempty"`
+	// LocationCabinet holds the value of the location_cabinet edge.
+	LocationCabinet *Cabinet `json:"location_cabinet,omitempty"`
+	// LocationStation holds the value of the location_station edge.
+	LocationStation *EnterpriseStation `json:"location_station,omitempty"`
+	// LocationRider holds the value of the location_rider edge.
+	LocationRider *Rider `json:"location_rider,omitempty"`
+	// LocationOperator holds the value of the location_operator edge.
+	LocationOperator *Maintainer `json:"location_operator,omitempty"`
+	// LocationWarehouse holds the value of the location_warehouse edge.
+	LocationWarehouse *Warehouse `json:"location_warehouse,omitempty"`
+	// ToStore holds the value of the to_store edge.
+	ToStore *Store `json:"to_store,omitempty"`
+	// ToCabinet holds the value of the to_cabinet edge.
+	ToCabinet *Cabinet `json:"to_cabinet,omitempty"`
+	// ToStation holds the value of the to_station edge.
+	ToStation *EnterpriseStation `json:"to_station,omitempty"`
+	// ToRider holds the value of the to_rider edge.
+	ToRider *Rider `json:"to_rider,omitempty"`
+	// ToOperator holds the value of the to_operator edge.
+	ToOperator *Maintainer `json:"to_operator,omitempty"`
+	// ToWarehouse holds the value of the to_warehouse edge.
+	ToWarehouse *Warehouse `json:"to_warehouse,omitempty"`
+	// OutOperateManager holds the value of the out_operate_manager edge.
+	OutOperateManager *Manager `json:"out_operate_manager,omitempty"`
+	// OutOperateStore holds the value of the out_operate_store edge.
+	OutOperateStore *Store `json:"out_operate_store,omitempty"`
+	// OutOperateAgent holds the value of the out_operate_agent edge.
+	OutOperateAgent *Agent `json:"out_operate_agent,omitempty"`
+	// OutOperateMaintainer holds the value of the out_operate_maintainer edge.
+	OutOperateMaintainer *Maintainer `json:"out_operate_maintainer,omitempty"`
+	// OutOperateCabinet holds the value of the out_operate_cabinet edge.
+	OutOperateCabinet *Cabinet `json:"out_operate_cabinet,omitempty"`
+	// OutOperateRider holds the value of the out_operate_rider edge.
+	OutOperateRider *Rider `json:"out_operate_rider,omitempty"`
+	// InOperateManager holds the value of the in_operate_manager edge.
+	InOperateManager *Manager `json:"in_operate_manager,omitempty"`
+	// InOperateStore holds the value of the in_operate_store edge.
+	InOperateStore *Store `json:"in_operate_store,omitempty"`
+	// InOperateAgent holds the value of the in_operate_agent edge.
+	InOperateAgent *Agent `json:"in_operate_agent,omitempty"`
+	// InOperateMaintainer holds the value of the in_operate_maintainer edge.
+	InOperateMaintainer *Maintainer `json:"in_operate_maintainer,omitempty"`
+	// InOperateCabinet holds the value of the in_operate_cabinet edge.
+	InOperateCabinet *Cabinet `json:"in_operate_cabinet,omitempty"`
+	// InOperateRider holds the value of the in_operate_rider edge.
+	InOperateRider *Rider `json:"in_operate_rider,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [25]bool
 }
 
 // DetailsOrErr returns the Details value or an error if the edge
@@ -87,6 +141,270 @@ func (e AssetTransferEdges) DetailsOrErr() ([]*AssetTransferDetails, error) {
 	return nil, &NotLoadedError{edge: "details"}
 }
 
+// LocationStoreOrErr returns the LocationStore value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) LocationStoreOrErr() (*Store, error) {
+	if e.LocationStore != nil {
+		return e.LocationStore, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: store.Label}
+	}
+	return nil, &NotLoadedError{edge: "location_store"}
+}
+
+// LocationCabinetOrErr returns the LocationCabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) LocationCabinetOrErr() (*Cabinet, error) {
+	if e.LocationCabinet != nil {
+		return e.LocationCabinet, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: cabinet.Label}
+	}
+	return nil, &NotLoadedError{edge: "location_cabinet"}
+}
+
+// LocationStationOrErr returns the LocationStation value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) LocationStationOrErr() (*EnterpriseStation, error) {
+	if e.LocationStation != nil {
+		return e.LocationStation, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: enterprisestation.Label}
+	}
+	return nil, &NotLoadedError{edge: "location_station"}
+}
+
+// LocationRiderOrErr returns the LocationRider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) LocationRiderOrErr() (*Rider, error) {
+	if e.LocationRider != nil {
+		return e.LocationRider, nil
+	} else if e.loadedTypes[4] {
+		return nil, &NotFoundError{label: rider.Label}
+	}
+	return nil, &NotLoadedError{edge: "location_rider"}
+}
+
+// LocationOperatorOrErr returns the LocationOperator value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) LocationOperatorOrErr() (*Maintainer, error) {
+	if e.LocationOperator != nil {
+		return e.LocationOperator, nil
+	} else if e.loadedTypes[5] {
+		return nil, &NotFoundError{label: maintainer.Label}
+	}
+	return nil, &NotLoadedError{edge: "location_operator"}
+}
+
+// LocationWarehouseOrErr returns the LocationWarehouse value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) LocationWarehouseOrErr() (*Warehouse, error) {
+	if e.LocationWarehouse != nil {
+		return e.LocationWarehouse, nil
+	} else if e.loadedTypes[6] {
+		return nil, &NotFoundError{label: warehouse.Label}
+	}
+	return nil, &NotLoadedError{edge: "location_warehouse"}
+}
+
+// ToStoreOrErr returns the ToStore value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) ToStoreOrErr() (*Store, error) {
+	if e.ToStore != nil {
+		return e.ToStore, nil
+	} else if e.loadedTypes[7] {
+		return nil, &NotFoundError{label: store.Label}
+	}
+	return nil, &NotLoadedError{edge: "to_store"}
+}
+
+// ToCabinetOrErr returns the ToCabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) ToCabinetOrErr() (*Cabinet, error) {
+	if e.ToCabinet != nil {
+		return e.ToCabinet, nil
+	} else if e.loadedTypes[8] {
+		return nil, &NotFoundError{label: cabinet.Label}
+	}
+	return nil, &NotLoadedError{edge: "to_cabinet"}
+}
+
+// ToStationOrErr returns the ToStation value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) ToStationOrErr() (*EnterpriseStation, error) {
+	if e.ToStation != nil {
+		return e.ToStation, nil
+	} else if e.loadedTypes[9] {
+		return nil, &NotFoundError{label: enterprisestation.Label}
+	}
+	return nil, &NotLoadedError{edge: "to_station"}
+}
+
+// ToRiderOrErr returns the ToRider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) ToRiderOrErr() (*Rider, error) {
+	if e.ToRider != nil {
+		return e.ToRider, nil
+	} else if e.loadedTypes[10] {
+		return nil, &NotFoundError{label: rider.Label}
+	}
+	return nil, &NotLoadedError{edge: "to_rider"}
+}
+
+// ToOperatorOrErr returns the ToOperator value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) ToOperatorOrErr() (*Maintainer, error) {
+	if e.ToOperator != nil {
+		return e.ToOperator, nil
+	} else if e.loadedTypes[11] {
+		return nil, &NotFoundError{label: maintainer.Label}
+	}
+	return nil, &NotLoadedError{edge: "to_operator"}
+}
+
+// ToWarehouseOrErr returns the ToWarehouse value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) ToWarehouseOrErr() (*Warehouse, error) {
+	if e.ToWarehouse != nil {
+		return e.ToWarehouse, nil
+	} else if e.loadedTypes[12] {
+		return nil, &NotFoundError{label: warehouse.Label}
+	}
+	return nil, &NotLoadedError{edge: "to_warehouse"}
+}
+
+// OutOperateManagerOrErr returns the OutOperateManager value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) OutOperateManagerOrErr() (*Manager, error) {
+	if e.OutOperateManager != nil {
+		return e.OutOperateManager, nil
+	} else if e.loadedTypes[13] {
+		return nil, &NotFoundError{label: manager.Label}
+	}
+	return nil, &NotLoadedError{edge: "out_operate_manager"}
+}
+
+// OutOperateStoreOrErr returns the OutOperateStore value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) OutOperateStoreOrErr() (*Store, error) {
+	if e.OutOperateStore != nil {
+		return e.OutOperateStore, nil
+	} else if e.loadedTypes[14] {
+		return nil, &NotFoundError{label: store.Label}
+	}
+	return nil, &NotLoadedError{edge: "out_operate_store"}
+}
+
+// OutOperateAgentOrErr returns the OutOperateAgent value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) OutOperateAgentOrErr() (*Agent, error) {
+	if e.OutOperateAgent != nil {
+		return e.OutOperateAgent, nil
+	} else if e.loadedTypes[15] {
+		return nil, &NotFoundError{label: agent.Label}
+	}
+	return nil, &NotLoadedError{edge: "out_operate_agent"}
+}
+
+// OutOperateMaintainerOrErr returns the OutOperateMaintainer value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) OutOperateMaintainerOrErr() (*Maintainer, error) {
+	if e.OutOperateMaintainer != nil {
+		return e.OutOperateMaintainer, nil
+	} else if e.loadedTypes[16] {
+		return nil, &NotFoundError{label: maintainer.Label}
+	}
+	return nil, &NotLoadedError{edge: "out_operate_maintainer"}
+}
+
+// OutOperateCabinetOrErr returns the OutOperateCabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) OutOperateCabinetOrErr() (*Cabinet, error) {
+	if e.OutOperateCabinet != nil {
+		return e.OutOperateCabinet, nil
+	} else if e.loadedTypes[17] {
+		return nil, &NotFoundError{label: cabinet.Label}
+	}
+	return nil, &NotLoadedError{edge: "out_operate_cabinet"}
+}
+
+// OutOperateRiderOrErr returns the OutOperateRider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) OutOperateRiderOrErr() (*Rider, error) {
+	if e.OutOperateRider != nil {
+		return e.OutOperateRider, nil
+	} else if e.loadedTypes[18] {
+		return nil, &NotFoundError{label: rider.Label}
+	}
+	return nil, &NotLoadedError{edge: "out_operate_rider"}
+}
+
+// InOperateManagerOrErr returns the InOperateManager value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) InOperateManagerOrErr() (*Manager, error) {
+	if e.InOperateManager != nil {
+		return e.InOperateManager, nil
+	} else if e.loadedTypes[19] {
+		return nil, &NotFoundError{label: manager.Label}
+	}
+	return nil, &NotLoadedError{edge: "in_operate_manager"}
+}
+
+// InOperateStoreOrErr returns the InOperateStore value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) InOperateStoreOrErr() (*Store, error) {
+	if e.InOperateStore != nil {
+		return e.InOperateStore, nil
+	} else if e.loadedTypes[20] {
+		return nil, &NotFoundError{label: store.Label}
+	}
+	return nil, &NotLoadedError{edge: "in_operate_store"}
+}
+
+// InOperateAgentOrErr returns the InOperateAgent value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) InOperateAgentOrErr() (*Agent, error) {
+	if e.InOperateAgent != nil {
+		return e.InOperateAgent, nil
+	} else if e.loadedTypes[21] {
+		return nil, &NotFoundError{label: agent.Label}
+	}
+	return nil, &NotLoadedError{edge: "in_operate_agent"}
+}
+
+// InOperateMaintainerOrErr returns the InOperateMaintainer value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) InOperateMaintainerOrErr() (*Maintainer, error) {
+	if e.InOperateMaintainer != nil {
+		return e.InOperateMaintainer, nil
+	} else if e.loadedTypes[22] {
+		return nil, &NotFoundError{label: maintainer.Label}
+	}
+	return nil, &NotLoadedError{edge: "in_operate_maintainer"}
+}
+
+// InOperateCabinetOrErr returns the InOperateCabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) InOperateCabinetOrErr() (*Cabinet, error) {
+	if e.InOperateCabinet != nil {
+		return e.InOperateCabinet, nil
+	} else if e.loadedTypes[23] {
+		return nil, &NotFoundError{label: cabinet.Label}
+	}
+	return nil, &NotLoadedError{edge: "in_operate_cabinet"}
+}
+
+// InOperateRiderOrErr returns the InOperateRider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) InOperateRiderOrErr() (*Rider, error) {
+	if e.InOperateRider != nil {
+		return e.InOperateRider, nil
+	} else if e.loadedTypes[24] {
+		return nil, &NotFoundError{label: rider.Label}
+	}
+	return nil, &NotLoadedError{edge: "in_operate_rider"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*AssetTransfer) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -94,7 +412,7 @@ func (*AssetTransfer) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case assettransfer.FieldCreator, assettransfer.FieldLastModifier:
 			values[i] = new([]byte)
-		case assettransfer.FieldID, assettransfer.FieldStatus, assettransfer.FieldFromLocationType, assettransfer.FieldFromLocationID, assettransfer.FieldToLocationType, assettransfer.FieldToLocationID, assettransfer.FieldOutNum, assettransfer.FieldInNum, assettransfer.FieldOutUserID, assettransfer.FieldOutRoleType, assettransfer.FieldInUserID, assettransfer.FieldInRoleType, assettransfer.FieldTransferType:
+		case assettransfer.FieldID, assettransfer.FieldStatus, assettransfer.FieldFromLocationType, assettransfer.FieldFromLocationID, assettransfer.FieldToLocationType, assettransfer.FieldToLocationID, assettransfer.FieldOutNum, assettransfer.FieldInNum, assettransfer.FieldOutOperateID, assettransfer.FieldOutOperateType, assettransfer.FieldInOperateID, assettransfer.FieldInOperateType:
 			values[i] = new(sql.NullInt64)
 		case assettransfer.FieldRemark, assettransfer.FieldSn, assettransfer.FieldReason:
 			values[i] = new(sql.NullString)
@@ -178,13 +496,15 @@ func (at *AssetTransfer) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field from_location_type", values[i])
 			} else if value.Valid {
-				at.FromLocationType = uint8(value.Int64)
+				at.FromLocationType = new(uint8)
+				*at.FromLocationType = uint8(value.Int64)
 			}
 		case assettransfer.FieldFromLocationID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field from_location_id", values[i])
 			} else if value.Valid {
-				at.FromLocationID = uint64(value.Int64)
+				at.FromLocationID = new(uint64)
+				*at.FromLocationID = uint64(value.Int64)
 			}
 		case assettransfer.FieldToLocationType:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -210,29 +530,31 @@ func (at *AssetTransfer) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				at.InNum = uint(value.Int64)
 			}
-		case assettransfer.FieldOutUserID:
+		case assettransfer.FieldOutOperateID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field out_user_id", values[i])
+				return fmt.Errorf("unexpected type %T for field out_operate_id", values[i])
 			} else if value.Valid {
-				at.OutUserID = uint64(value.Int64)
+				at.OutOperateID = new(uint64)
+				*at.OutOperateID = uint64(value.Int64)
 			}
-		case assettransfer.FieldOutRoleType:
+		case assettransfer.FieldOutOperateType:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field out_role_type", values[i])
+				return fmt.Errorf("unexpected type %T for field out_operate_type", values[i])
 			} else if value.Valid {
-				at.OutRoleType = uint8(value.Int64)
+				at.OutOperateType = new(uint8)
+				*at.OutOperateType = uint8(value.Int64)
 			}
-		case assettransfer.FieldInUserID:
+		case assettransfer.FieldInOperateID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field in_user_id", values[i])
+				return fmt.Errorf("unexpected type %T for field in_operate_id", values[i])
 			} else if value.Valid {
-				at.InUserID = uint64(value.Int64)
+				at.InOperateID = uint64(value.Int64)
 			}
-		case assettransfer.FieldInRoleType:
+		case assettransfer.FieldInOperateType:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field in_role_type", values[i])
+				return fmt.Errorf("unexpected type %T for field in_operate_type", values[i])
 			} else if value.Valid {
-				at.InRoleType = uint8(value.Int64)
+				at.InOperateType = uint8(value.Int64)
 			}
 		case assettransfer.FieldOutTimeAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -245,12 +567,6 @@ func (at *AssetTransfer) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field in_time_at", values[i])
 			} else if value.Valid {
 				at.InTimeAt = value.Time
-			}
-		case assettransfer.FieldTransferType:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field transfer_type", values[i])
-			} else if value.Valid {
-				at.TransferType = uint8(value.Int64)
 			}
 		case assettransfer.FieldReason:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -274,6 +590,126 @@ func (at *AssetTransfer) Value(name string) (ent.Value, error) {
 // QueryDetails queries the "details" edge of the AssetTransfer entity.
 func (at *AssetTransfer) QueryDetails() *AssetTransferDetailsQuery {
 	return NewAssetTransferClient(at.config).QueryDetails(at)
+}
+
+// QueryLocationStore queries the "location_store" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryLocationStore() *StoreQuery {
+	return NewAssetTransferClient(at.config).QueryLocationStore(at)
+}
+
+// QueryLocationCabinet queries the "location_cabinet" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryLocationCabinet() *CabinetQuery {
+	return NewAssetTransferClient(at.config).QueryLocationCabinet(at)
+}
+
+// QueryLocationStation queries the "location_station" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryLocationStation() *EnterpriseStationQuery {
+	return NewAssetTransferClient(at.config).QueryLocationStation(at)
+}
+
+// QueryLocationRider queries the "location_rider" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryLocationRider() *RiderQuery {
+	return NewAssetTransferClient(at.config).QueryLocationRider(at)
+}
+
+// QueryLocationOperator queries the "location_operator" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryLocationOperator() *MaintainerQuery {
+	return NewAssetTransferClient(at.config).QueryLocationOperator(at)
+}
+
+// QueryLocationWarehouse queries the "location_warehouse" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryLocationWarehouse() *WarehouseQuery {
+	return NewAssetTransferClient(at.config).QueryLocationWarehouse(at)
+}
+
+// QueryToStore queries the "to_store" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryToStore() *StoreQuery {
+	return NewAssetTransferClient(at.config).QueryToStore(at)
+}
+
+// QueryToCabinet queries the "to_cabinet" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryToCabinet() *CabinetQuery {
+	return NewAssetTransferClient(at.config).QueryToCabinet(at)
+}
+
+// QueryToStation queries the "to_station" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryToStation() *EnterpriseStationQuery {
+	return NewAssetTransferClient(at.config).QueryToStation(at)
+}
+
+// QueryToRider queries the "to_rider" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryToRider() *RiderQuery {
+	return NewAssetTransferClient(at.config).QueryToRider(at)
+}
+
+// QueryToOperator queries the "to_operator" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryToOperator() *MaintainerQuery {
+	return NewAssetTransferClient(at.config).QueryToOperator(at)
+}
+
+// QueryToWarehouse queries the "to_warehouse" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryToWarehouse() *WarehouseQuery {
+	return NewAssetTransferClient(at.config).QueryToWarehouse(at)
+}
+
+// QueryOutOperateManager queries the "out_operate_manager" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryOutOperateManager() *ManagerQuery {
+	return NewAssetTransferClient(at.config).QueryOutOperateManager(at)
+}
+
+// QueryOutOperateStore queries the "out_operate_store" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryOutOperateStore() *StoreQuery {
+	return NewAssetTransferClient(at.config).QueryOutOperateStore(at)
+}
+
+// QueryOutOperateAgent queries the "out_operate_agent" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryOutOperateAgent() *AgentQuery {
+	return NewAssetTransferClient(at.config).QueryOutOperateAgent(at)
+}
+
+// QueryOutOperateMaintainer queries the "out_operate_maintainer" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryOutOperateMaintainer() *MaintainerQuery {
+	return NewAssetTransferClient(at.config).QueryOutOperateMaintainer(at)
+}
+
+// QueryOutOperateCabinet queries the "out_operate_cabinet" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryOutOperateCabinet() *CabinetQuery {
+	return NewAssetTransferClient(at.config).QueryOutOperateCabinet(at)
+}
+
+// QueryOutOperateRider queries the "out_operate_rider" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryOutOperateRider() *RiderQuery {
+	return NewAssetTransferClient(at.config).QueryOutOperateRider(at)
+}
+
+// QueryInOperateManager queries the "in_operate_manager" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryInOperateManager() *ManagerQuery {
+	return NewAssetTransferClient(at.config).QueryInOperateManager(at)
+}
+
+// QueryInOperateStore queries the "in_operate_store" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryInOperateStore() *StoreQuery {
+	return NewAssetTransferClient(at.config).QueryInOperateStore(at)
+}
+
+// QueryInOperateAgent queries the "in_operate_agent" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryInOperateAgent() *AgentQuery {
+	return NewAssetTransferClient(at.config).QueryInOperateAgent(at)
+}
+
+// QueryInOperateMaintainer queries the "in_operate_maintainer" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryInOperateMaintainer() *MaintainerQuery {
+	return NewAssetTransferClient(at.config).QueryInOperateMaintainer(at)
+}
+
+// QueryInOperateCabinet queries the "in_operate_cabinet" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryInOperateCabinet() *CabinetQuery {
+	return NewAssetTransferClient(at.config).QueryInOperateCabinet(at)
+}
+
+// QueryInOperateRider queries the "in_operate_rider" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryInOperateRider() *RiderQuery {
+	return NewAssetTransferClient(at.config).QueryInOperateRider(at)
 }
 
 // Update returns a builder for updating this AssetTransfer.
@@ -325,11 +761,15 @@ func (at *AssetTransfer) String() string {
 	builder.WriteString("sn=")
 	builder.WriteString(at.Sn)
 	builder.WriteString(", ")
-	builder.WriteString("from_location_type=")
-	builder.WriteString(fmt.Sprintf("%v", at.FromLocationType))
+	if v := at.FromLocationType; v != nil {
+		builder.WriteString("from_location_type=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
-	builder.WriteString("from_location_id=")
-	builder.WriteString(fmt.Sprintf("%v", at.FromLocationID))
+	if v := at.FromLocationID; v != nil {
+		builder.WriteString("from_location_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("to_location_type=")
 	builder.WriteString(fmt.Sprintf("%v", at.ToLocationType))
@@ -343,26 +783,27 @@ func (at *AssetTransfer) String() string {
 	builder.WriteString("in_num=")
 	builder.WriteString(fmt.Sprintf("%v", at.InNum))
 	builder.WriteString(", ")
-	builder.WriteString("out_user_id=")
-	builder.WriteString(fmt.Sprintf("%v", at.OutUserID))
+	if v := at.OutOperateID; v != nil {
+		builder.WriteString("out_operate_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
-	builder.WriteString("out_role_type=")
-	builder.WriteString(fmt.Sprintf("%v", at.OutRoleType))
+	if v := at.OutOperateType; v != nil {
+		builder.WriteString("out_operate_type=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
-	builder.WriteString("in_user_id=")
-	builder.WriteString(fmt.Sprintf("%v", at.InUserID))
+	builder.WriteString("in_operate_id=")
+	builder.WriteString(fmt.Sprintf("%v", at.InOperateID))
 	builder.WriteString(", ")
-	builder.WriteString("in_role_type=")
-	builder.WriteString(fmt.Sprintf("%v", at.InRoleType))
+	builder.WriteString("in_operate_type=")
+	builder.WriteString(fmt.Sprintf("%v", at.InOperateType))
 	builder.WriteString(", ")
 	builder.WriteString("out_time_at=")
 	builder.WriteString(at.OutTimeAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("in_time_at=")
 	builder.WriteString(at.InTimeAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("transfer_type=")
-	builder.WriteString(fmt.Sprintf("%v", at.TransferType))
 	builder.WriteString(", ")
 	builder.WriteString("reason=")
 	builder.WriteString(at.Reason)

@@ -3080,7 +3080,7 @@ const docTemplate = `{
                     "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.AssetLocationsType"
+                            "$ref": "#/definitions/model.LocationsType"
                         }
                     ]
                 },
@@ -3113,7 +3113,7 @@ const docTemplate = `{
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.AssetLocationsType"
+                            "$ref": "#/definitions/model.LocationsType"
                         }
                     ]
                 },
@@ -3249,7 +3249,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AssetLocationsType": {
+        "model.LocationsType": {
             "type": "integer",
             "enum": [
                 1,
@@ -3518,7 +3518,7 @@ const docTemplate = `{
                     "description": "调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 (初始调拨此字段不填写)",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.AssetLocationsType"
+                            "$ref": "#/definitions/model.LocationsType"
                         }
                     ]
                 },
@@ -3534,7 +3534,7 @@ const docTemplate = `{
                     "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.AssetLocationsType"
+                            "$ref": "#/definitions/model.LocationsType"
                         }
                     ]
                 }

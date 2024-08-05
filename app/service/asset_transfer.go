@@ -7,9 +7,12 @@ import (
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
@@ -47,8 +50,8 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 			SetFromLocationID(*req.FromLocationID).
 			SetStatus(model.AssetTransferStatusDelivering.Value()).
 			SetOutTimeAt(time.Now()).
-			SetOutUserID(modifier.ID).
-			SetOutRoleType(model.AssetOperateRoleAdmin.Value()).
+			SetOutOperateID(modifier.ID).
+			SetOutOperateType(model.AssetOperateRoleManager.Value()).
 			SetOutNum(uint(len(assetIDs)))
 	}
 	// 初始调拨
@@ -60,8 +63,8 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 		q.SetInNum(uint(len(assetIDs))).
 			SetInTimeAt(time.Now()).
 			SetStatus(model.AssetTransferStatusStock.Value()).
-			SetInUserID(modifier.ID).
-			SetInRoleType(model.AssetOperateRoleAdmin.Value()).
+			SetInOperateID(modifier.ID).
+			SetInOperateType(model.AssetOperateRoleManager.Value()).
 			SetRemark("初始化调拨")
 	}
 
@@ -308,4 +311,197 @@ func (s *assetTransferService) initialTransferWithoutSN(ctx context.Context, req
 		assetIDs = append(assetIDs, v.ID)
 	}
 	return assetIDs, nil
+}
+
+// TransferList 调拨列表
+func (s *assetTransferService) TransferList(ctx context.Context, req *model.AssetTransferListReq) (res *model.PaginationRes, err error) {
+	q := ent.Database.AssetTransfer.QueryNotDeleted().WithDetails()
+	s.filter(ctx, q, &req.AssetTransferFilter)
+
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetTransfer) (res *model.AssetTransferListRes) {
+		res = &model.AssetTransferListRes{
+			ID:        item.ID,
+			SN:        item.Sn,
+			Reason:    item.Reason,
+			Remark:    item.Remark,
+			Status:    model.AssetTransferStatus(item.Status).String(),
+			OutNum:    item.OutNum,
+			InNum:     item.InNum,
+			OutTimeAt: item.OutTimeAt.Format("2006-01-02 15:04:05"),
+			InTimeAt:  item.InTimeAt.Format("2006-01-02 15:04:05"),
+		}
+
+		if item.FromLocationType != nil && item.FromLocationID != nil {
+			switch model.AssetLocationsType(*item.FromLocationType) {
+			case model.AssetLocationsTypeWarehouse:
+				if item.Edges.LocationWarehouse != nil {
+					res.FromLocationName = "[仓库]" + item.Edges.LocationWarehouse.Name
+				}
+			case model.AssetLocationsTypeStore:
+				if item.Edges.LocationStore != nil {
+					res.FromLocationName = "[门店]" + item.Edges.LocationStore.Name
+				}
+			case model.AssetLocationsTypeStation:
+				if item.Edges.LocationStation != nil {
+					res.FromLocationName = "[站点]" + item.Edges.LocationStation.Name
+				}
+			case model.AssetLocationsTypeOperation:
+				if item.Edges.LocationOperator != nil {
+					res.FromLocationName = "[运维]" + item.Edges.LocationOperator.Name
+				}
+			default:
+			}
+		}
+
+		if item.ToLocationType != 0 && item.ToLocationID != 0 {
+			switch model.AssetLocationsType(item.ToLocationType) {
+			case model.AssetLocationsTypeWarehouse:
+				if item.Edges.LocationWarehouse != nil {
+					res.ToLocationName = "[仓库]" + item.Edges.LocationWarehouse.Name
+				}
+			case model.AssetLocationsTypeStore:
+				if item.Edges.LocationStore != nil {
+					res.ToLocationName = "[门店]" + item.Edges.LocationStore.Name
+				}
+			case model.AssetLocationsTypeStation:
+				if item.Edges.LocationStation != nil {
+					res.ToLocationName = "[站点]" + item.Edges.LocationStation.Name
+				}
+			case model.AssetLocationsTypeOperation:
+				if item.Edges.LocationOperator != nil {
+					res.ToLocationName = "[运维]" + item.Edges.LocationOperator.Name
+				}
+			default:
+			}
+		}
+
+		// 出库操作人
+		if item.OutOperateType != nil && item.OutOperateID != nil {
+			switch model.AssetOperateRoleType(*item.OutOperateType) {
+			case model.AssetOperateRoleManager:
+				if item.Edges.OutOperateManager != nil {
+					// 查询角色
+					var roleName string
+					if role, _ := item.Edges.OutOperateManager.QueryRole().First(ctx); role != nil {
+						roleName = role.Name
+					}
+					res.OutOperateName = "[" + roleName + "]" + item.Edges.OutOperateManager.Name
+				}
+			case model.AssetOperateRoleStore:
+				if item.Edges.OutOperateStore != nil {
+					res.OutOperateName = "[门店]" + item.Edges.OutOperateStore.Name
+				}
+			case model.AssetOperateRoleAgent:
+				if item.Edges.OutOperateAgent != nil {
+					res.OutOperateName = "[代理]" + item.Edges.OutOperateAgent.Name
+				}
+			case model.AssetOperateRoleOperation:
+				if item.Edges.OutOperateMaintainer != nil {
+					res.OutOperateName = "[运维]" + item.Edges.OutOperateMaintainer.Name
+				}
+			default:
+			}
+		}
+
+		// 入库操作人
+		if item.InOperateType != 0 && item.InOperateID != 0 {
+			switch model.AssetOperateRoleType(item.InOperateType) {
+			case model.AssetOperateRoleManager:
+				if item.Edges.InOperateManager != nil {
+					res.InOperateName = item.Edges.InOperateManager.Name
+				}
+			case model.AssetOperateRoleStore:
+				if item.Edges.InOperateStore != nil {
+					res.InOperateName = item.Edges.InOperateStore.Name
+				}
+			case model.AssetOperateRoleAgent:
+				if item.Edges.InOperateAgent != nil {
+					res.InOperateName = item.Edges.InOperateAgent.Name
+				}
+			case model.AssetOperateRoleOperation:
+				if item.Edges.InOperateMaintainer != nil {
+					res.InOperateName = item.Edges.InOperateMaintainer.Name
+				}
+			default:
+			}
+		}
+		return res
+	}), nil
+
+}
+
+// 筛选
+func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQuery, req *model.AssetTransferFilter) {
+	if req.FromLocationType != nil {
+		q.Where(assettransfer.FromLocationType((*req.FromLocationType).Value()))
+	}
+	if req.FromLocationID != nil {
+		q.Where(assettransfer.FromLocationID(*req.FromLocationID))
+	}
+	if req.ToLocationType != nil {
+		q.Where(assettransfer.ToLocationType((*req.ToLocationType).Value()))
+	}
+	if req.ToLocationID != nil {
+		q.Where(assettransfer.ToLocationID(*req.ToLocationID))
+	}
+	if req.Status != nil {
+		q.Where(assettransfer.Status((*req.Status).Value()))
+	}
+	if req.OutStart != nil && req.OutEnd != nil {
+		start := tools.NewTime().ParseDateStringX(*req.OutStart)
+		end := tools.NewTime().ParseNextDateStringX(*req.OutEnd)
+		q.Where(assettransfer.OutTimeAtGTE(start), assettransfer.OutTimeAtLTE(end))
+	}
+	if req.InStart != nil && req.InEnd != nil {
+		start := tools.NewTime().ParseDateStringX(*req.InStart)
+		end := tools.NewTime().ParseNextDateStringX(*req.InEnd)
+		q.Where(assettransfer.InTimeAtGTE(start), assettransfer.InTimeAtLTE(end))
+	}
+	if req.Keyword != nil {
+		q.Where(
+			assettransfer.Or(
+				assettransfer.SnContains(*req.Keyword),
+				assettransfer.ReasonContains(*req.Keyword),
+				// 资产后台
+				assettransfer.HasInOperateManagerWith(manager.NameContains(*req.Keyword)),
+				assettransfer.HasOutOperateManagerWith(manager.NameContains(*req.Keyword)),
+				// 门店
+				assettransfer.HasInOperateStoreWith(store.NameContains(*req.Keyword)),
+				assettransfer.HasOutOperateStoreWith(store.NameContains(*req.Keyword)),
+				// 代理
+				assettransfer.HasInOperateAgentWith(agent.NameContains(*req.Keyword)),
+				assettransfer.HasOutOperateAgentWith(agent.NameContains(*req.Keyword)),
+				// 运维
+				assettransfer.HasInOperateMaintainerWith(maintainer.NameContains(*req.Keyword)),
+				assettransfer.HasOutOperateMaintainerWith(maintainer.NameContains(*req.Keyword)),
+			),
+		)
+	}
+}
+
+// TransferDetail 调拨详情
+func (s *assetTransferService) TransferDetail(ctx context.Context, req *model.AssetTransferDetailReq) (res *model.AssetTransferDetail, err error) {
+	// todo 详情
+	// var result struct {
+	// 	OutNum    int    `json:"out_num"`    // 出库数量
+	// 	InNum     int    `json:"in_num"`     // 入库数量
+	// 	Name      string `json:"name"`       // 资产名称
+	// 	SN        string `json:"sn"`         // 资产编号
+	// 	AssetType int    `json:"asset_type"` // 资产类型
+	// }
+	//
+	// q := ent.Database.AssetTransferDetails.
+	// 	QueryNotDeleted().
+	// 	Where(assettransferdetails.TransferID(req.ID)).
+	// 	Modify(func(sel *sql.Selector) {
+	// 		a := sql.Table(asset.Table)
+	// 		m := sql.Table(material.Table)
+	// 		sel.LeftJoin(a).On(sel.C(assettransferdetails.FieldAssetID), a.C(asset.FieldID))
+	// 		sel.LeftJoin(m).On(a.C(asset.FieldMaterialID), m.C(material.FieldID))
+	// 		sel.Select(a.C(asset.FieldSn), a.C(asset.FieldType), a.C(asset.FieldName), m.C(material.FieldName))
+	// 	}).GroupBy(asset.FieldSn, asset.FieldMaterialID, asset.FieldType)
+	//
+	// q.Aggregate(ent.Sum(stock.FieldNum)).
+	// 	Scan(ctx, &result)
+	return res, nil
 }

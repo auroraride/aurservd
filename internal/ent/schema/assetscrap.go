@@ -62,7 +62,7 @@ func (AssetScrap) Fields() []ent.Field {
 		field.Uint8("reason_type").Optional().Comment("报废原因 1:丢失 2:损坏 3:其他"),
 		field.Time("scrap_at").Optional().Comment("报废时间"),
 		field.Uint64("operate_id").Optional().Nillable().Comment("操作报废人员ID"),
-		field.Uint8("operate_role_type").Optional().Nillable().Comment("报废人员角色类型 1:后台管理员 2:门店管理员 3:运维 4:物资管理员 5:代理管理员"),
+		field.Uint8("operate_role_type").Optional().Nillable().Comment("报废人员角色类型 1:后台管理 2:门店 3:代理 4:运维 5:电柜 6:骑手"),
 		field.String("sn").Optional().Comment("报废编号"),
 		field.Uint("num").Optional().Comment("报废数量"),
 	}

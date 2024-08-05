@@ -85,6 +85,11 @@ func TransferID(v uint64) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(sql.FieldEQ(FieldTransferID, v))
 }
 
+// IsIn applies equality check predicate on the "is_in" field. It's identical to IsInEQ.
+func IsIn(v bool) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldEQ(FieldIsIn, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(sql.FieldEQ(FieldCreatedAt, v))
@@ -368,6 +373,16 @@ func TransferIDIsNil() predicate.AssetTransferDetails {
 // TransferIDNotNil applies the NotNil predicate on the "transfer_id" field.
 func TransferIDNotNil() predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(sql.FieldNotNull(FieldTransferID))
+}
+
+// IsInEQ applies the EQ predicate on the "is_in" field.
+func IsInEQ(v bool) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldEQ(FieldIsIn, v))
+}
+
+// IsInNEQ applies the NEQ predicate on the "is_in" field.
+func IsInNEQ(v bool) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNEQ(FieldIsIn, v))
 }
 
 // HasAsset applies the HasEdge predicate on the "asset" edge.

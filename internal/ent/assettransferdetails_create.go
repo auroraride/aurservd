@@ -121,6 +121,20 @@ func (atdc *AssetTransferDetailsCreate) SetNillableTransferID(u *uint64) *AssetT
 	return atdc
 }
 
+// SetIsIn sets the "is_in" field.
+func (atdc *AssetTransferDetailsCreate) SetIsIn(b bool) *AssetTransferDetailsCreate {
+	atdc.mutation.SetIsIn(b)
+	return atdc
+}
+
+// SetNillableIsIn sets the "is_in" field if the given value is not nil.
+func (atdc *AssetTransferDetailsCreate) SetNillableIsIn(b *bool) *AssetTransferDetailsCreate {
+	if b != nil {
+		atdc.SetIsIn(*b)
+	}
+	return atdc
+}
+
 // SetAsset sets the "asset" edge to the Asset entity.
 func (atdc *AssetTransferDetailsCreate) SetAsset(a *Asset) *AssetTransferDetailsCreate {
 	return atdc.SetAssetID(a.ID)
@@ -182,6 +196,10 @@ func (atdc *AssetTransferDetailsCreate) defaults() error {
 		v := assettransferdetails.DefaultUpdatedAt()
 		atdc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := atdc.mutation.IsIn(); !ok {
+		v := assettransferdetails.DefaultIsIn
+		atdc.mutation.SetIsIn(v)
+	}
 	return nil
 }
 
@@ -192,6 +210,9 @@ func (atdc *AssetTransferDetailsCreate) check() error {
 	}
 	if _, ok := atdc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "AssetTransferDetails.updated_at"`)}
+	}
+	if _, ok := atdc.mutation.IsIn(); !ok {
+		return &ValidationError{Name: "is_in", err: errors.New(`ent: missing required field "AssetTransferDetails.is_in"`)}
 	}
 	return nil
 }
@@ -243,6 +264,10 @@ func (atdc *AssetTransferDetailsCreate) createSpec() (*AssetTransferDetails, *sq
 	if value, ok := atdc.mutation.Remark(); ok {
 		_spec.SetField(assettransferdetails.FieldRemark, field.TypeString, value)
 		_node.Remark = value
+	}
+	if value, ok := atdc.mutation.IsIn(); ok {
+		_spec.SetField(assettransferdetails.FieldIsIn, field.TypeBool, value)
+		_node.IsIn = value
 	}
 	if nodes := atdc.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -432,6 +457,18 @@ func (u *AssetTransferDetailsUpsert) ClearTransferID() *AssetTransferDetailsUpse
 	return u
 }
 
+// SetIsIn sets the "is_in" field.
+func (u *AssetTransferDetailsUpsert) SetIsIn(v bool) *AssetTransferDetailsUpsert {
+	u.Set(assettransferdetails.FieldIsIn, v)
+	return u
+}
+
+// UpdateIsIn sets the "is_in" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsert) UpdateIsIn() *AssetTransferDetailsUpsert {
+	u.SetExcluded(assettransferdetails.FieldIsIn)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -596,6 +633,20 @@ func (u *AssetTransferDetailsUpsertOne) UpdateTransferID() *AssetTransferDetails
 func (u *AssetTransferDetailsUpsertOne) ClearTransferID() *AssetTransferDetailsUpsertOne {
 	return u.Update(func(s *AssetTransferDetailsUpsert) {
 		s.ClearTransferID()
+	})
+}
+
+// SetIsIn sets the "is_in" field.
+func (u *AssetTransferDetailsUpsertOne) SetIsIn(v bool) *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.SetIsIn(v)
+	})
+}
+
+// UpdateIsIn sets the "is_in" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsertOne) UpdateIsIn() *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.UpdateIsIn()
 	})
 }
 
@@ -929,6 +980,20 @@ func (u *AssetTransferDetailsUpsertBulk) UpdateTransferID() *AssetTransferDetail
 func (u *AssetTransferDetailsUpsertBulk) ClearTransferID() *AssetTransferDetailsUpsertBulk {
 	return u.Update(func(s *AssetTransferDetailsUpsert) {
 		s.ClearTransferID()
+	})
+}
+
+// SetIsIn sets the "is_in" field.
+func (u *AssetTransferDetailsUpsertBulk) SetIsIn(v bool) *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.SetIsIn(v)
+	})
+}
+
+// UpdateIsIn sets the "is_in" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsertBulk) UpdateIsIn() *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.UpdateIsIn()
 	})
 }
 

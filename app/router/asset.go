@@ -60,6 +60,7 @@ func loadAssersRoutes() {
 	asset.DELETE("/material/:id", assetapi.Material.Delete) // 删除仓库
 
 	// 资产调拨
-	asset.POST("/transfer", assetapi.AssetTransfer.Transfer) // 资产调拨
-
+	asset.POST("/transfer", assetapi.AssetTransfer.Transfer)          // 资产调拨
+	asset.GET("/transfer", assetapi.AssetTransfer.TransferList)       // 资产调拨列表
+	asset.GET("/transfer/:id", assetapi.AssetTransfer.TransferDetail) // 资产调拨详情
 }

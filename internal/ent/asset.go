@@ -59,7 +59,7 @@ type Asset struct {
 	Status uint8 `json:"status,omitempty"`
 	// 是否启用
 	Enable bool `json:"enable,omitempty"`
-	// 资产位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维
+	// 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
 	LocationsType uint8 `json:"locations_type,omitempty"`
 	// 资产位置ID
 	LocationsID uint64 `json:"locations_id,omitempty"`

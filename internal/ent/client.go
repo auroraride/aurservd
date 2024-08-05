@@ -3053,6 +3053,390 @@ func (c *AssetTransferClient) QueryDetails(at *AssetTransfer) *AssetTransferDeta
 	return query
 }
 
+// QueryLocationStore queries the location_store edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryLocationStore(at *AssetTransfer) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.LocationStoreTable, assettransfer.LocationStoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLocationCabinet queries the location_cabinet edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryLocationCabinet(at *AssetTransfer) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.LocationCabinetTable, assettransfer.LocationCabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLocationStation queries the location_station edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryLocationStation(at *AssetTransfer) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.LocationStationTable, assettransfer.LocationStationColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLocationRider queries the location_rider edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryLocationRider(at *AssetTransfer) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.LocationRiderTable, assettransfer.LocationRiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLocationOperator queries the location_operator edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryLocationOperator(at *AssetTransfer) *MaintainerQuery {
+	query := (&MaintainerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(maintainer.Table, maintainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.LocationOperatorTable, assettransfer.LocationOperatorColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLocationWarehouse queries the location_warehouse edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryLocationWarehouse(at *AssetTransfer) *WarehouseQuery {
+	query := (&WarehouseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(warehouse.Table, warehouse.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.LocationWarehouseTable, assettransfer.LocationWarehouseColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryToStore queries the to_store edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryToStore(at *AssetTransfer) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.ToStoreTable, assettransfer.ToStoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryToCabinet queries the to_cabinet edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryToCabinet(at *AssetTransfer) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.ToCabinetTable, assettransfer.ToCabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryToStation queries the to_station edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryToStation(at *AssetTransfer) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.ToStationTable, assettransfer.ToStationColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryToRider queries the to_rider edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryToRider(at *AssetTransfer) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.ToRiderTable, assettransfer.ToRiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryToOperator queries the to_operator edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryToOperator(at *AssetTransfer) *MaintainerQuery {
+	query := (&MaintainerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(maintainer.Table, maintainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.ToOperatorTable, assettransfer.ToOperatorColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryToWarehouse queries the to_warehouse edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryToWarehouse(at *AssetTransfer) *WarehouseQuery {
+	query := (&WarehouseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(warehouse.Table, warehouse.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.ToWarehouseTable, assettransfer.ToWarehouseColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOutOperateManager queries the out_operate_manager edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryOutOperateManager(at *AssetTransfer) *ManagerQuery {
+	query := (&ManagerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateManagerTable, assettransfer.OutOperateManagerColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOutOperateStore queries the out_operate_store edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryOutOperateStore(at *AssetTransfer) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateStoreTable, assettransfer.OutOperateStoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOutOperateAgent queries the out_operate_agent edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryOutOperateAgent(at *AssetTransfer) *AgentQuery {
+	query := (&AgentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateAgentTable, assettransfer.OutOperateAgentColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOutOperateMaintainer queries the out_operate_maintainer edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryOutOperateMaintainer(at *AssetTransfer) *MaintainerQuery {
+	query := (&MaintainerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(maintainer.Table, maintainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateMaintainerTable, assettransfer.OutOperateMaintainerColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOutOperateCabinet queries the out_operate_cabinet edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryOutOperateCabinet(at *AssetTransfer) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateCabinetTable, assettransfer.OutOperateCabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOutOperateRider queries the out_operate_rider edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryOutOperateRider(at *AssetTransfer) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateRiderTable, assettransfer.OutOperateRiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInOperateManager queries the in_operate_manager edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryInOperateManager(at *AssetTransfer) *ManagerQuery {
+	query := (&ManagerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.InOperateManagerTable, assettransfer.InOperateManagerColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInOperateStore queries the in_operate_store edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryInOperateStore(at *AssetTransfer) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.InOperateStoreTable, assettransfer.InOperateStoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInOperateAgent queries the in_operate_agent edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryInOperateAgent(at *AssetTransfer) *AgentQuery {
+	query := (&AgentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.InOperateAgentTable, assettransfer.InOperateAgentColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInOperateMaintainer queries the in_operate_maintainer edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryInOperateMaintainer(at *AssetTransfer) *MaintainerQuery {
+	query := (&MaintainerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(maintainer.Table, maintainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.InOperateMaintainerTable, assettransfer.InOperateMaintainerColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInOperateCabinet queries the in_operate_cabinet edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryInOperateCabinet(at *AssetTransfer) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.InOperateCabinetTable, assettransfer.InOperateCabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInOperateRider queries the in_operate_rider edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryInOperateRider(at *AssetTransfer) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.InOperateRiderTable, assettransfer.InOperateRiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *AssetTransferClient) Hooks() []Hook {
 	hooks := c.hooks.AssetTransfer

@@ -31,6 +31,8 @@ const (
 	FieldAssetID = "asset_id"
 	// FieldTransferID holds the string denoting the transfer_id field in the database.
 	FieldTransferID = "transfer_id"
+	// FieldIsIn holds the string denoting the is_in field in the database.
+	FieldIsIn = "is_in"
 	// EdgeAsset holds the string denoting the asset edge name in mutations.
 	EdgeAsset = "asset"
 	// EdgeTransfer holds the string denoting the transfer edge name in mutations.
@@ -64,6 +66,7 @@ var Columns = []string{
 	FieldRemark,
 	FieldAssetID,
 	FieldTransferID,
+	FieldIsIn,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -89,6 +92,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultIsIn holds the default value on creation for the "is_in" field.
+	DefaultIsIn bool
 )
 
 // OrderOption defines the ordering options for the AssetTransferDetails queries.
@@ -127,6 +132,11 @@ func ByAssetID(opts ...sql.OrderTermOption) OrderOption {
 // ByTransferID orders the results by the transfer_id field.
 func ByTransferID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTransferID, opts...).ToFunc()
+}
+
+// ByIsIn orders the results by the is_in field.
+func ByIsIn(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsIn, opts...).ToFunc()
 }
 
 // ByAssetField orders the results by asset field.

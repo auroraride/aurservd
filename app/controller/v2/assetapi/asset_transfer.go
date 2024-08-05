@@ -26,3 +26,33 @@ func (*assetTransfer) Transfer(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.AssetTransferCreateReq](c)
 	return ctx.SendResponse(service.NewAssetTransfer().Transfer(ctx.Request().Context(), req, ctx.Modifier))
 }
+
+// TransferList
+// @ID		AssetTransferList
+// @Router	/manager/v2/asset/transfer [GET]
+// @Summary	资产调拨列表
+// @Tags	资产
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string													true	"管理员校验token"
+// @Param	query			query		model.AssetTransferListReq									true	"查询参数"
+// @Success	200				{object}	model.PaginationRes{items=[]model.AssetTransferListRes}	"请求成功"
+func (*assetTransfer) TransferList(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.AssetTransferListReq](c)
+	return ctx.SendResponse(service.NewAssetTransfer().TransferList(ctx.Request().Context(), req))
+}
+
+// TransferDetail
+// @ID		AssetTransferDetail
+// @Router	/manager/v2/asset/transfer/:id [GET]
+// @Summary	资产调拨详情
+// @Tags	资产
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string							true	"管理员校验token"
+// @Param	id				path		uint64							true	"调拨ID"
+// @Success	200				{object}	model.AssetTransferDetailReq	"请求成功"
+func (*assetTransfer) TransferDetail(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.AssetTransferDetailReq](c)
+	return ctx.SendResponse(service.NewAssetTransfer().TransferDetail(ctx.Request().Context(), req))
+}

@@ -64,7 +64,7 @@ func (Asset) Fields() []ent.Field {
 		field.String("sn").Optional().Comment("资产编号"),
 		field.Uint8("status").Default(0).Comment("资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废"),
 		field.Bool("enable").Default(false).Comment("是否启用"),
-		field.Uint8("locations_type").Optional().Comment("资产位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维"),
+		field.Uint8("locations_type").Optional().Comment("资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"),
 		field.Uint64("locations_id").Optional().Comment("资产位置ID"),
 		field.Uint64("rto_rider_id").Optional().Nillable().Comment("以租代购骑手ID，生成后禁止修改"),
 		field.Time("inventory_at").Optional().Comment("盘点时间"),

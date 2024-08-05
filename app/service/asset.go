@@ -791,49 +791,49 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 			)
 		}
 	}
-	if req.AssetLocationsType != nil && req.AssetLocationsKeywork != nil {
-		q.Where(asset.LocationsType(req.AssetLocationsType.Value()))
-		switch *req.AssetLocationsType {
+	if req.LocationsType != nil && req.LocationsKeywork != nil {
+		q.Where(asset.LocationsType(req.LocationsType.Value()))
+		switch *req.LocationsType {
 		case model.AssetLocationsTypeWarehouse:
 			q.Where(
 				asset.HasWarehouseWith(
-					warehouse.NameContains(*req.AssetLocationsKeywork),
+					warehouse.NameContains(*req.LocationsKeywork),
 				),
 			)
 		case model.AssetLocationsTypeStore:
 			q.Where(
 				asset.HasStoreWith(
-					store.NameContains(*req.AssetLocationsKeywork),
+					store.NameContains(*req.LocationsKeywork),
 				),
 			)
 		case model.AssetLocationsTypeCabinet:
 			q.Where(
 				asset.HasCabinetWith(
-					cabinet.NameContains(*req.AssetLocationsKeywork),
+					cabinet.NameContains(*req.LocationsKeywork),
 				),
 			)
 		case model.AssetLocationsTypeStation:
 			q.Where(
 				asset.HasStationWith(
-					enterprisestation.NameContains(*req.AssetLocationsKeywork),
+					enterprisestation.NameContains(*req.LocationsKeywork),
 				),
 			)
 		case model.AssetLocationsTypeRider:
 			q.Where(
 				asset.HasRiderWith(
-					rider.NameContains(*req.AssetLocationsKeywork),
+					rider.NameContains(*req.LocationsKeywork),
 				),
 			)
 		case model.AssetLocationsTypeOperation:
 			q.Where(
 				asset.HasOperatorWith(
-					maintainer.NameContains(*req.AssetLocationsKeywork),
+					maintainer.NameContains(*req.LocationsKeywork),
 				),
 			)
 		}
 	}
-	if req.AssetStatus != nil {
-		q.Where(asset.Status(*req.AssetStatus))
+	if req.Status != nil {
+		q.Where(asset.Status(*req.Status))
 	}
 	if req.Enable != nil {
 		q.Where(asset.Enable(*req.Enable))

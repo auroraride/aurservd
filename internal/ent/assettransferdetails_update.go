@@ -130,6 +130,20 @@ func (atdu *AssetTransferDetailsUpdate) ClearTransferID() *AssetTransferDetailsU
 	return atdu
 }
 
+// SetIsIn sets the "is_in" field.
+func (atdu *AssetTransferDetailsUpdate) SetIsIn(b bool) *AssetTransferDetailsUpdate {
+	atdu.mutation.SetIsIn(b)
+	return atdu
+}
+
+// SetNillableIsIn sets the "is_in" field if the given value is not nil.
+func (atdu *AssetTransferDetailsUpdate) SetNillableIsIn(b *bool) *AssetTransferDetailsUpdate {
+	if b != nil {
+		atdu.SetIsIn(*b)
+	}
+	return atdu
+}
+
 // SetAsset sets the "asset" edge to the Asset entity.
 func (atdu *AssetTransferDetailsUpdate) SetAsset(a *Asset) *AssetTransferDetailsUpdate {
 	return atdu.SetAssetID(a.ID)
@@ -237,6 +251,9 @@ func (atdu *AssetTransferDetailsUpdate) sqlSave(ctx context.Context) (n int, err
 	}
 	if atdu.mutation.RemarkCleared() {
 		_spec.ClearField(assettransferdetails.FieldRemark, field.TypeString)
+	}
+	if value, ok := atdu.mutation.IsIn(); ok {
+		_spec.SetField(assettransferdetails.FieldIsIn, field.TypeBool, value)
 	}
 	if atdu.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -416,6 +433,20 @@ func (atduo *AssetTransferDetailsUpdateOne) ClearTransferID() *AssetTransferDeta
 	return atduo
 }
 
+// SetIsIn sets the "is_in" field.
+func (atduo *AssetTransferDetailsUpdateOne) SetIsIn(b bool) *AssetTransferDetailsUpdateOne {
+	atduo.mutation.SetIsIn(b)
+	return atduo
+}
+
+// SetNillableIsIn sets the "is_in" field if the given value is not nil.
+func (atduo *AssetTransferDetailsUpdateOne) SetNillableIsIn(b *bool) *AssetTransferDetailsUpdateOne {
+	if b != nil {
+		atduo.SetIsIn(*b)
+	}
+	return atduo
+}
+
 // SetAsset sets the "asset" edge to the Asset entity.
 func (atduo *AssetTransferDetailsUpdateOne) SetAsset(a *Asset) *AssetTransferDetailsUpdateOne {
 	return atduo.SetAssetID(a.ID)
@@ -553,6 +584,9 @@ func (atduo *AssetTransferDetailsUpdateOne) sqlSave(ctx context.Context) (_node 
 	}
 	if atduo.mutation.RemarkCleared() {
 		_spec.ClearField(assettransferdetails.FieldRemark, field.TypeString)
+	}
+	if value, ok := atduo.mutation.IsIn(); ok {
+		_spec.SetField(assettransferdetails.FieldIsIn, field.TypeBool, value)
 	}
 	if atduo.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{

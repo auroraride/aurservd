@@ -43,24 +43,70 @@ const (
 	FieldOutNum = "out_num"
 	// FieldInNum holds the string denoting the in_num field in the database.
 	FieldInNum = "in_num"
-	// FieldOutUserID holds the string denoting the out_user_id field in the database.
-	FieldOutUserID = "out_user_id"
-	// FieldOutRoleType holds the string denoting the out_role_type field in the database.
-	FieldOutRoleType = "out_role_type"
-	// FieldInUserID holds the string denoting the in_user_id field in the database.
-	FieldInUserID = "in_user_id"
-	// FieldInRoleType holds the string denoting the in_role_type field in the database.
-	FieldInRoleType = "in_role_type"
+	// FieldOutOperateID holds the string denoting the out_operate_id field in the database.
+	FieldOutOperateID = "out_operate_id"
+	// FieldOutOperateType holds the string denoting the out_operate_type field in the database.
+	FieldOutOperateType = "out_operate_type"
+	// FieldInOperateID holds the string denoting the in_operate_id field in the database.
+	FieldInOperateID = "in_operate_id"
+	// FieldInOperateType holds the string denoting the in_operate_type field in the database.
+	FieldInOperateType = "in_operate_type"
 	// FieldOutTimeAt holds the string denoting the out_time_at field in the database.
 	FieldOutTimeAt = "out_time_at"
 	// FieldInTimeAt holds the string denoting the in_time_at field in the database.
 	FieldInTimeAt = "in_time_at"
-	// FieldTransferType holds the string denoting the transfer_type field in the database.
-	FieldTransferType = "transfer_type"
 	// FieldReason holds the string denoting the reason field in the database.
 	FieldReason = "reason"
 	// EdgeDetails holds the string denoting the details edge name in mutations.
 	EdgeDetails = "details"
+	// EdgeLocationStore holds the string denoting the location_store edge name in mutations.
+	EdgeLocationStore = "location_store"
+	// EdgeLocationCabinet holds the string denoting the location_cabinet edge name in mutations.
+	EdgeLocationCabinet = "location_cabinet"
+	// EdgeLocationStation holds the string denoting the location_station edge name in mutations.
+	EdgeLocationStation = "location_station"
+	// EdgeLocationRider holds the string denoting the location_rider edge name in mutations.
+	EdgeLocationRider = "location_rider"
+	// EdgeLocationOperator holds the string denoting the location_operator edge name in mutations.
+	EdgeLocationOperator = "location_operator"
+	// EdgeLocationWarehouse holds the string denoting the location_warehouse edge name in mutations.
+	EdgeLocationWarehouse = "location_warehouse"
+	// EdgeToStore holds the string denoting the to_store edge name in mutations.
+	EdgeToStore = "to_store"
+	// EdgeToCabinet holds the string denoting the to_cabinet edge name in mutations.
+	EdgeToCabinet = "to_cabinet"
+	// EdgeToStation holds the string denoting the to_station edge name in mutations.
+	EdgeToStation = "to_station"
+	// EdgeToRider holds the string denoting the to_rider edge name in mutations.
+	EdgeToRider = "to_rider"
+	// EdgeToOperator holds the string denoting the to_operator edge name in mutations.
+	EdgeToOperator = "to_operator"
+	// EdgeToWarehouse holds the string denoting the to_warehouse edge name in mutations.
+	EdgeToWarehouse = "to_warehouse"
+	// EdgeOutOperateManager holds the string denoting the out_operate_manager edge name in mutations.
+	EdgeOutOperateManager = "out_operate_manager"
+	// EdgeOutOperateStore holds the string denoting the out_operate_store edge name in mutations.
+	EdgeOutOperateStore = "out_operate_store"
+	// EdgeOutOperateAgent holds the string denoting the out_operate_agent edge name in mutations.
+	EdgeOutOperateAgent = "out_operate_agent"
+	// EdgeOutOperateMaintainer holds the string denoting the out_operate_maintainer edge name in mutations.
+	EdgeOutOperateMaintainer = "out_operate_maintainer"
+	// EdgeOutOperateCabinet holds the string denoting the out_operate_cabinet edge name in mutations.
+	EdgeOutOperateCabinet = "out_operate_cabinet"
+	// EdgeOutOperateRider holds the string denoting the out_operate_rider edge name in mutations.
+	EdgeOutOperateRider = "out_operate_rider"
+	// EdgeInOperateManager holds the string denoting the in_operate_manager edge name in mutations.
+	EdgeInOperateManager = "in_operate_manager"
+	// EdgeInOperateStore holds the string denoting the in_operate_store edge name in mutations.
+	EdgeInOperateStore = "in_operate_store"
+	// EdgeInOperateAgent holds the string denoting the in_operate_agent edge name in mutations.
+	EdgeInOperateAgent = "in_operate_agent"
+	// EdgeInOperateMaintainer holds the string denoting the in_operate_maintainer edge name in mutations.
+	EdgeInOperateMaintainer = "in_operate_maintainer"
+	// EdgeInOperateCabinet holds the string denoting the in_operate_cabinet edge name in mutations.
+	EdgeInOperateCabinet = "in_operate_cabinet"
+	// EdgeInOperateRider holds the string denoting the in_operate_rider edge name in mutations.
+	EdgeInOperateRider = "in_operate_rider"
 	// Table holds the table name of the assettransfer in the database.
 	Table = "asset_transfer"
 	// DetailsTable is the table that holds the details relation/edge.
@@ -70,6 +116,174 @@ const (
 	DetailsInverseTable = "asset_transfer_details"
 	// DetailsColumn is the table column denoting the details relation/edge.
 	DetailsColumn = "transfer_id"
+	// LocationStoreTable is the table that holds the location_store relation/edge.
+	LocationStoreTable = "asset_transfer"
+	// LocationStoreInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	LocationStoreInverseTable = "store"
+	// LocationStoreColumn is the table column denoting the location_store relation/edge.
+	LocationStoreColumn = "from_location_id"
+	// LocationCabinetTable is the table that holds the location_cabinet relation/edge.
+	LocationCabinetTable = "asset_transfer"
+	// LocationCabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	LocationCabinetInverseTable = "cabinet"
+	// LocationCabinetColumn is the table column denoting the location_cabinet relation/edge.
+	LocationCabinetColumn = "from_location_id"
+	// LocationStationTable is the table that holds the location_station relation/edge.
+	LocationStationTable = "asset_transfer"
+	// LocationStationInverseTable is the table name for the EnterpriseStation entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
+	LocationStationInverseTable = "enterprise_station"
+	// LocationStationColumn is the table column denoting the location_station relation/edge.
+	LocationStationColumn = "from_location_id"
+	// LocationRiderTable is the table that holds the location_rider relation/edge.
+	LocationRiderTable = "asset_transfer"
+	// LocationRiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	LocationRiderInverseTable = "rider"
+	// LocationRiderColumn is the table column denoting the location_rider relation/edge.
+	LocationRiderColumn = "from_location_id"
+	// LocationOperatorTable is the table that holds the location_operator relation/edge.
+	LocationOperatorTable = "asset_transfer"
+	// LocationOperatorInverseTable is the table name for the Maintainer entity.
+	// It exists in this package in order to avoid circular dependency with the "maintainer" package.
+	LocationOperatorInverseTable = "maintainer"
+	// LocationOperatorColumn is the table column denoting the location_operator relation/edge.
+	LocationOperatorColumn = "from_location_id"
+	// LocationWarehouseTable is the table that holds the location_warehouse relation/edge.
+	LocationWarehouseTable = "asset_transfer"
+	// LocationWarehouseInverseTable is the table name for the Warehouse entity.
+	// It exists in this package in order to avoid circular dependency with the "warehouse" package.
+	LocationWarehouseInverseTable = "warehouse"
+	// LocationWarehouseColumn is the table column denoting the location_warehouse relation/edge.
+	LocationWarehouseColumn = "from_location_id"
+	// ToStoreTable is the table that holds the to_store relation/edge.
+	ToStoreTable = "asset_transfer"
+	// ToStoreInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	ToStoreInverseTable = "store"
+	// ToStoreColumn is the table column denoting the to_store relation/edge.
+	ToStoreColumn = "to_location_id"
+	// ToCabinetTable is the table that holds the to_cabinet relation/edge.
+	ToCabinetTable = "asset_transfer"
+	// ToCabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	ToCabinetInverseTable = "cabinet"
+	// ToCabinetColumn is the table column denoting the to_cabinet relation/edge.
+	ToCabinetColumn = "to_location_id"
+	// ToStationTable is the table that holds the to_station relation/edge.
+	ToStationTable = "asset_transfer"
+	// ToStationInverseTable is the table name for the EnterpriseStation entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
+	ToStationInverseTable = "enterprise_station"
+	// ToStationColumn is the table column denoting the to_station relation/edge.
+	ToStationColumn = "to_location_id"
+	// ToRiderTable is the table that holds the to_rider relation/edge.
+	ToRiderTable = "asset_transfer"
+	// ToRiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	ToRiderInverseTable = "rider"
+	// ToRiderColumn is the table column denoting the to_rider relation/edge.
+	ToRiderColumn = "to_location_id"
+	// ToOperatorTable is the table that holds the to_operator relation/edge.
+	ToOperatorTable = "asset_transfer"
+	// ToOperatorInverseTable is the table name for the Maintainer entity.
+	// It exists in this package in order to avoid circular dependency with the "maintainer" package.
+	ToOperatorInverseTable = "maintainer"
+	// ToOperatorColumn is the table column denoting the to_operator relation/edge.
+	ToOperatorColumn = "to_location_id"
+	// ToWarehouseTable is the table that holds the to_warehouse relation/edge.
+	ToWarehouseTable = "asset_transfer"
+	// ToWarehouseInverseTable is the table name for the Warehouse entity.
+	// It exists in this package in order to avoid circular dependency with the "warehouse" package.
+	ToWarehouseInverseTable = "warehouse"
+	// ToWarehouseColumn is the table column denoting the to_warehouse relation/edge.
+	ToWarehouseColumn = "to_location_id"
+	// OutOperateManagerTable is the table that holds the out_operate_manager relation/edge.
+	OutOperateManagerTable = "asset_transfer"
+	// OutOperateManagerInverseTable is the table name for the Manager entity.
+	// It exists in this package in order to avoid circular dependency with the "manager" package.
+	OutOperateManagerInverseTable = "manager"
+	// OutOperateManagerColumn is the table column denoting the out_operate_manager relation/edge.
+	OutOperateManagerColumn = "out_operate_id"
+	// OutOperateStoreTable is the table that holds the out_operate_store relation/edge.
+	OutOperateStoreTable = "asset_transfer"
+	// OutOperateStoreInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	OutOperateStoreInverseTable = "store"
+	// OutOperateStoreColumn is the table column denoting the out_operate_store relation/edge.
+	OutOperateStoreColumn = "out_operate_id"
+	// OutOperateAgentTable is the table that holds the out_operate_agent relation/edge.
+	OutOperateAgentTable = "asset_transfer"
+	// OutOperateAgentInverseTable is the table name for the Agent entity.
+	// It exists in this package in order to avoid circular dependency with the "agent" package.
+	OutOperateAgentInverseTable = "agent"
+	// OutOperateAgentColumn is the table column denoting the out_operate_agent relation/edge.
+	OutOperateAgentColumn = "out_operate_id"
+	// OutOperateMaintainerTable is the table that holds the out_operate_maintainer relation/edge.
+	OutOperateMaintainerTable = "asset_transfer"
+	// OutOperateMaintainerInverseTable is the table name for the Maintainer entity.
+	// It exists in this package in order to avoid circular dependency with the "maintainer" package.
+	OutOperateMaintainerInverseTable = "maintainer"
+	// OutOperateMaintainerColumn is the table column denoting the out_operate_maintainer relation/edge.
+	OutOperateMaintainerColumn = "out_operate_id"
+	// OutOperateCabinetTable is the table that holds the out_operate_cabinet relation/edge.
+	OutOperateCabinetTable = "asset_transfer"
+	// OutOperateCabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	OutOperateCabinetInverseTable = "cabinet"
+	// OutOperateCabinetColumn is the table column denoting the out_operate_cabinet relation/edge.
+	OutOperateCabinetColumn = "out_operate_id"
+	// OutOperateRiderTable is the table that holds the out_operate_rider relation/edge.
+	OutOperateRiderTable = "asset_transfer"
+	// OutOperateRiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	OutOperateRiderInverseTable = "rider"
+	// OutOperateRiderColumn is the table column denoting the out_operate_rider relation/edge.
+	OutOperateRiderColumn = "out_operate_id"
+	// InOperateManagerTable is the table that holds the in_operate_manager relation/edge.
+	InOperateManagerTable = "asset_transfer"
+	// InOperateManagerInverseTable is the table name for the Manager entity.
+	// It exists in this package in order to avoid circular dependency with the "manager" package.
+	InOperateManagerInverseTable = "manager"
+	// InOperateManagerColumn is the table column denoting the in_operate_manager relation/edge.
+	InOperateManagerColumn = "in_operate_id"
+	// InOperateStoreTable is the table that holds the in_operate_store relation/edge.
+	InOperateStoreTable = "asset_transfer"
+	// InOperateStoreInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	InOperateStoreInverseTable = "store"
+	// InOperateStoreColumn is the table column denoting the in_operate_store relation/edge.
+	InOperateStoreColumn = "in_operate_id"
+	// InOperateAgentTable is the table that holds the in_operate_agent relation/edge.
+	InOperateAgentTable = "asset_transfer"
+	// InOperateAgentInverseTable is the table name for the Agent entity.
+	// It exists in this package in order to avoid circular dependency with the "agent" package.
+	InOperateAgentInverseTable = "agent"
+	// InOperateAgentColumn is the table column denoting the in_operate_agent relation/edge.
+	InOperateAgentColumn = "in_operate_id"
+	// InOperateMaintainerTable is the table that holds the in_operate_maintainer relation/edge.
+	InOperateMaintainerTable = "asset_transfer"
+	// InOperateMaintainerInverseTable is the table name for the Maintainer entity.
+	// It exists in this package in order to avoid circular dependency with the "maintainer" package.
+	InOperateMaintainerInverseTable = "maintainer"
+	// InOperateMaintainerColumn is the table column denoting the in_operate_maintainer relation/edge.
+	InOperateMaintainerColumn = "in_operate_id"
+	// InOperateCabinetTable is the table that holds the in_operate_cabinet relation/edge.
+	InOperateCabinetTable = "asset_transfer"
+	// InOperateCabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	InOperateCabinetInverseTable = "cabinet"
+	// InOperateCabinetColumn is the table column denoting the in_operate_cabinet relation/edge.
+	InOperateCabinetColumn = "in_operate_id"
+	// InOperateRiderTable is the table that holds the in_operate_rider relation/edge.
+	InOperateRiderTable = "asset_transfer"
+	// InOperateRiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	InOperateRiderInverseTable = "rider"
+	// InOperateRiderColumn is the table column denoting the in_operate_rider relation/edge.
+	InOperateRiderColumn = "in_operate_id"
 )
 
 // Columns holds all SQL columns for assettransfer fields.
@@ -89,13 +303,12 @@ var Columns = []string{
 	FieldToLocationID,
 	FieldOutNum,
 	FieldInNum,
-	FieldOutUserID,
-	FieldOutRoleType,
-	FieldInUserID,
-	FieldInRoleType,
+	FieldOutOperateID,
+	FieldOutOperateType,
+	FieldInOperateID,
+	FieldInOperateType,
 	FieldOutTimeAt,
 	FieldInTimeAt,
-	FieldTransferType,
 	FieldReason,
 }
 
@@ -192,24 +405,24 @@ func ByInNum(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldInNum, opts...).ToFunc()
 }
 
-// ByOutUserID orders the results by the out_user_id field.
-func ByOutUserID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOutUserID, opts...).ToFunc()
+// ByOutOperateID orders the results by the out_operate_id field.
+func ByOutOperateID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOutOperateID, opts...).ToFunc()
 }
 
-// ByOutRoleType orders the results by the out_role_type field.
-func ByOutRoleType(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOutRoleType, opts...).ToFunc()
+// ByOutOperateType orders the results by the out_operate_type field.
+func ByOutOperateType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOutOperateType, opts...).ToFunc()
 }
 
-// ByInUserID orders the results by the in_user_id field.
-func ByInUserID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldInUserID, opts...).ToFunc()
+// ByInOperateID orders the results by the in_operate_id field.
+func ByInOperateID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInOperateID, opts...).ToFunc()
 }
 
-// ByInRoleType orders the results by the in_role_type field.
-func ByInRoleType(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldInRoleType, opts...).ToFunc()
+// ByInOperateType orders the results by the in_operate_type field.
+func ByInOperateType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInOperateType, opts...).ToFunc()
 }
 
 // ByOutTimeAt orders the results by the out_time_at field.
@@ -220,11 +433,6 @@ func ByOutTimeAt(opts ...sql.OrderTermOption) OrderOption {
 // ByInTimeAt orders the results by the in_time_at field.
 func ByInTimeAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldInTimeAt, opts...).ToFunc()
-}
-
-// ByTransferType orders the results by the transfer_type field.
-func ByTransferType(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldTransferType, opts...).ToFunc()
 }
 
 // ByReason orders the results by the reason field.
@@ -245,10 +453,346 @@ func ByDetails(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newDetailsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByLocationStoreField orders the results by location_store field.
+func ByLocationStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLocationStoreStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByLocationCabinetField orders the results by location_cabinet field.
+func ByLocationCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLocationCabinetStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByLocationStationField orders the results by location_station field.
+func ByLocationStationField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLocationStationStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByLocationRiderField orders the results by location_rider field.
+func ByLocationRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLocationRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByLocationOperatorField orders the results by location_operator field.
+func ByLocationOperatorField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLocationOperatorStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByLocationWarehouseField orders the results by location_warehouse field.
+func ByLocationWarehouseField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLocationWarehouseStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByToStoreField orders the results by to_store field.
+func ByToStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newToStoreStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByToCabinetField orders the results by to_cabinet field.
+func ByToCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newToCabinetStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByToStationField orders the results by to_station field.
+func ByToStationField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newToStationStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByToRiderField orders the results by to_rider field.
+func ByToRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newToRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByToOperatorField orders the results by to_operator field.
+func ByToOperatorField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newToOperatorStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByToWarehouseField orders the results by to_warehouse field.
+func ByToWarehouseField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newToWarehouseStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByOutOperateManagerField orders the results by out_operate_manager field.
+func ByOutOperateManagerField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newOutOperateManagerStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByOutOperateStoreField orders the results by out_operate_store field.
+func ByOutOperateStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newOutOperateStoreStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByOutOperateAgentField orders the results by out_operate_agent field.
+func ByOutOperateAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newOutOperateAgentStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByOutOperateMaintainerField orders the results by out_operate_maintainer field.
+func ByOutOperateMaintainerField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newOutOperateMaintainerStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByOutOperateCabinetField orders the results by out_operate_cabinet field.
+func ByOutOperateCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newOutOperateCabinetStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByOutOperateRiderField orders the results by out_operate_rider field.
+func ByOutOperateRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newOutOperateRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByInOperateManagerField orders the results by in_operate_manager field.
+func ByInOperateManagerField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInOperateManagerStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByInOperateStoreField orders the results by in_operate_store field.
+func ByInOperateStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInOperateStoreStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByInOperateAgentField orders the results by in_operate_agent field.
+func ByInOperateAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInOperateAgentStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByInOperateMaintainerField orders the results by in_operate_maintainer field.
+func ByInOperateMaintainerField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInOperateMaintainerStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByInOperateCabinetField orders the results by in_operate_cabinet field.
+func ByInOperateCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInOperateCabinetStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByInOperateRiderField orders the results by in_operate_rider field.
+func ByInOperateRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInOperateRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newDetailsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(DetailsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, DetailsTable, DetailsColumn),
+	)
+}
+func newLocationStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(LocationStoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, LocationStoreTable, LocationStoreColumn),
+	)
+}
+func newLocationCabinetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(LocationCabinetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, LocationCabinetTable, LocationCabinetColumn),
+	)
+}
+func newLocationStationStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(LocationStationInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, LocationStationTable, LocationStationColumn),
+	)
+}
+func newLocationRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(LocationRiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, LocationRiderTable, LocationRiderColumn),
+	)
+}
+func newLocationOperatorStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(LocationOperatorInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, LocationOperatorTable, LocationOperatorColumn),
+	)
+}
+func newLocationWarehouseStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(LocationWarehouseInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, LocationWarehouseTable, LocationWarehouseColumn),
+	)
+}
+func newToStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ToStoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, ToStoreTable, ToStoreColumn),
+	)
+}
+func newToCabinetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ToCabinetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, ToCabinetTable, ToCabinetColumn),
+	)
+}
+func newToStationStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ToStationInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, ToStationTable, ToStationColumn),
+	)
+}
+func newToRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ToRiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, ToRiderTable, ToRiderColumn),
+	)
+}
+func newToOperatorStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ToOperatorInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, ToOperatorTable, ToOperatorColumn),
+	)
+}
+func newToWarehouseStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ToWarehouseInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, ToWarehouseTable, ToWarehouseColumn),
+	)
+}
+func newOutOperateManagerStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(OutOperateManagerInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, OutOperateManagerTable, OutOperateManagerColumn),
+	)
+}
+func newOutOperateStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(OutOperateStoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, OutOperateStoreTable, OutOperateStoreColumn),
+	)
+}
+func newOutOperateAgentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(OutOperateAgentInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, OutOperateAgentTable, OutOperateAgentColumn),
+	)
+}
+func newOutOperateMaintainerStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(OutOperateMaintainerInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, OutOperateMaintainerTable, OutOperateMaintainerColumn),
+	)
+}
+func newOutOperateCabinetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(OutOperateCabinetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, OutOperateCabinetTable, OutOperateCabinetColumn),
+	)
+}
+func newOutOperateRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(OutOperateRiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, OutOperateRiderTable, OutOperateRiderColumn),
+	)
+}
+func newInOperateManagerStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InOperateManagerInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, InOperateManagerTable, InOperateManagerColumn),
+	)
+}
+func newInOperateStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InOperateStoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, InOperateStoreTable, InOperateStoreColumn),
+	)
+}
+func newInOperateAgentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InOperateAgentInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, InOperateAgentTable, InOperateAgentColumn),
+	)
+}
+func newInOperateMaintainerStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InOperateMaintainerInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, InOperateMaintainerTable, InOperateMaintainerColumn),
+	)
+}
+func newInOperateCabinetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InOperateCabinetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, InOperateCabinetTable, InOperateCabinetColumn),
+	)
+}
+func newInOperateRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InOperateRiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, InOperateRiderTable, InOperateRiderColumn),
 	)
 }

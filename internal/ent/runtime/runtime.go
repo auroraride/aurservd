@@ -344,6 +344,10 @@ func init() {
 	assettransferdetails.DefaultUpdatedAt = assettransferdetailsDescUpdatedAt.Default.(func() time.Time)
 	// assettransferdetails.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	assettransferdetails.UpdateDefaultUpdatedAt = assettransferdetailsDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// assettransferdetailsDescIsIn is the schema descriptor for is_in field.
+	assettransferdetailsDescIsIn := assettransferdetailsFields[1].Descriptor()
+	// assettransferdetails.DefaultIsIn holds the default value on creation for the is_in field.
+	assettransferdetails.DefaultIsIn = assettransferdetailsDescIsIn.Default.(bool)
 	assistanceMixin := schema.Assistance{}.Mixin()
 	assistanceMixinHooks2 := assistanceMixin[2].Hooks()
 	assistance.Hooks[0] = assistanceMixinHooks2[0]
