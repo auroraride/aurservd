@@ -1256,7 +1256,7 @@ func HasTransferDetails() predicate.Asset {
 	return predicate.Asset(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, TransferDetailsTable, TransferDetailsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, TransferDetailsTable, TransferDetailsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

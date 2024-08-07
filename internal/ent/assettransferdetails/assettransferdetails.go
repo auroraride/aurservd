@@ -325,6 +325,6 @@ func newAssetStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AssetInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, true, AssetTable, AssetColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, AssetTable, AssetColumn),
 	)
 }

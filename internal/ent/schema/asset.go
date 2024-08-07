@@ -93,7 +93,7 @@ func (Asset) Edges() []ent.Edge {
 		edge.To("scrap_details", AssetScrapDetails.Type),
 
 		// 关联调拨详情
-		edge.To("transfer_details", AssetTransferDetails.Type).Unique(),
+		edge.To("transfer_details", AssetTransferDetails.Type),
 	}
 }
 

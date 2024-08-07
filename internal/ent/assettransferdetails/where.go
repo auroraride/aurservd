@@ -520,6 +520,16 @@ func AssetIDNotIn(vs ...uint64) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(sql.FieldNotIn(FieldAssetID, vs...))
 }
 
+// AssetIDIsNil applies the IsNil predicate on the "asset_id" field.
+func AssetIDIsNil() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldIsNull(FieldAssetID))
+}
+
+// AssetIDNotNil applies the NotNil predicate on the "asset_id" field.
+func AssetIDNotNil() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNotNull(FieldAssetID))
+}
+
 // HasTransfer applies the HasEdge predicate on the "transfer" edge.
 func HasTransfer() predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(func(s *sql.Selector) {
@@ -686,7 +696,7 @@ func HasAsset() predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, AssetTable, AssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, AssetTable, AssetColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

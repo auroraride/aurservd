@@ -100,9 +100,9 @@ func ToLocationID(v int) predicate.AssetHistory {
 	return predicate.AssetHistory(sql.FieldEQ(FieldToLocationID, v))
 }
 
-// ChangeType applies equality check predicate on the "change_type" field. It's identical to ChangeTypeEQ.
-func ChangeType(v uint8) predicate.AssetHistory {
-	return predicate.AssetHistory(sql.FieldEQ(FieldChangeType, v))
+// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
+func Type(v uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldEQ(FieldType, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -560,44 +560,54 @@ func ToLocationIDNotNil() predicate.AssetHistory {
 	return predicate.AssetHistory(sql.FieldNotNull(FieldToLocationID))
 }
 
-// ChangeTypeEQ applies the EQ predicate on the "change_type" field.
-func ChangeTypeEQ(v uint8) predicate.AssetHistory {
-	return predicate.AssetHistory(sql.FieldEQ(FieldChangeType, v))
+// TypeEQ applies the EQ predicate on the "type" field.
+func TypeEQ(v uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldEQ(FieldType, v))
 }
 
-// ChangeTypeNEQ applies the NEQ predicate on the "change_type" field.
-func ChangeTypeNEQ(v uint8) predicate.AssetHistory {
-	return predicate.AssetHistory(sql.FieldNEQ(FieldChangeType, v))
+// TypeNEQ applies the NEQ predicate on the "type" field.
+func TypeNEQ(v uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldNEQ(FieldType, v))
 }
 
-// ChangeTypeIn applies the In predicate on the "change_type" field.
-func ChangeTypeIn(vs ...uint8) predicate.AssetHistory {
-	return predicate.AssetHistory(sql.FieldIn(FieldChangeType, vs...))
+// TypeIn applies the In predicate on the "type" field.
+func TypeIn(vs ...uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldIn(FieldType, vs...))
 }
 
-// ChangeTypeNotIn applies the NotIn predicate on the "change_type" field.
-func ChangeTypeNotIn(vs ...uint8) predicate.AssetHistory {
-	return predicate.AssetHistory(sql.FieldNotIn(FieldChangeType, vs...))
+// TypeNotIn applies the NotIn predicate on the "type" field.
+func TypeNotIn(vs ...uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldNotIn(FieldType, vs...))
 }
 
-// ChangeTypeGT applies the GT predicate on the "change_type" field.
-func ChangeTypeGT(v uint8) predicate.AssetHistory {
-	return predicate.AssetHistory(sql.FieldGT(FieldChangeType, v))
+// TypeGT applies the GT predicate on the "type" field.
+func TypeGT(v uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldGT(FieldType, v))
 }
 
-// ChangeTypeGTE applies the GTE predicate on the "change_type" field.
-func ChangeTypeGTE(v uint8) predicate.AssetHistory {
-	return predicate.AssetHistory(sql.FieldGTE(FieldChangeType, v))
+// TypeGTE applies the GTE predicate on the "type" field.
+func TypeGTE(v uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldGTE(FieldType, v))
 }
 
-// ChangeTypeLT applies the LT predicate on the "change_type" field.
-func ChangeTypeLT(v uint8) predicate.AssetHistory {
-	return predicate.AssetHistory(sql.FieldLT(FieldChangeType, v))
+// TypeLT applies the LT predicate on the "type" field.
+func TypeLT(v uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldLT(FieldType, v))
 }
 
-// ChangeTypeLTE applies the LTE predicate on the "change_type" field.
-func ChangeTypeLTE(v uint8) predicate.AssetHistory {
-	return predicate.AssetHistory(sql.FieldLTE(FieldChangeType, v))
+// TypeLTE applies the LTE predicate on the "type" field.
+func TypeLTE(v uint8) predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldLTE(FieldType, v))
+}
+
+// TypeIsNil applies the IsNil predicate on the "type" field.
+func TypeIsNil() predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldIsNull(FieldType))
+}
+
+// TypeNotNil applies the NotNil predicate on the "type" field.
+func TypeNotNil() predicate.AssetHistory {
+	return predicate.AssetHistory(sql.FieldNotNull(FieldType))
 }
 
 // HasAsset applies the HasEdge predicate on the "asset" edge.

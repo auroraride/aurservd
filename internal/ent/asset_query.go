@@ -363,7 +363,7 @@ func (aq *AssetQuery) QueryTransferDetails() *AssetTransferDetailsQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(asset.Table, asset.FieldID, selector),
 			sqlgraph.To(assettransferdetails.Table, assettransferdetails.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, asset.TransferDetailsTable, asset.TransferDetailsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, asset.TransferDetailsTable, asset.TransferDetailsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -915,8 +915,9 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 		}
 	}
 	if query := aq.withTransferDetails; query != nil {
-		if err := aq.loadTransferDetails(ctx, query, nodes, nil,
-			func(n *Asset, e *AssetTransferDetails) { n.Edges.TransferDetails = e }); err != nil {
+		if err := aq.loadTransferDetails(ctx, query, nodes,
+			func(n *Asset) { n.Edges.TransferDetails = []*AssetTransferDetails{} },
+			func(n *Asset, e *AssetTransferDetails) { n.Edges.TransferDetails = append(n.Edges.TransferDetails, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1291,6 +1292,9 @@ func (aq *AssetQuery) loadTransferDetails(ctx context.Context, query *AssetTrans
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
 	}
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(assettransferdetails.FieldAssetID)

@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/asset"
-	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -103,7 +102,7 @@ type AssetEdges struct {
 	// ScrapDetails holds the value of the scrap_details edge.
 	ScrapDetails []*AssetScrapDetails `json:"scrap_details,omitempty"`
 	// TransferDetails holds the value of the transfer_details edge.
-	TransferDetails *AssetTransferDetails `json:"transfer_details,omitempty"`
+	TransferDetails []*AssetTransferDetails `json:"transfer_details,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [13]bool
@@ -238,12 +237,10 @@ func (e AssetEdges) ScrapDetailsOrErr() ([]*AssetScrapDetails, error) {
 }
 
 // TransferDetailsOrErr returns the TransferDetails value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e AssetEdges) TransferDetailsOrErr() (*AssetTransferDetails, error) {
-	if e.TransferDetails != nil {
+// was not loaded in eager-loading.
+func (e AssetEdges) TransferDetailsOrErr() ([]*AssetTransferDetails, error) {
+	if e.loadedTypes[12] {
 		return e.TransferDetails, nil
-	} else if e.loadedTypes[12] {
-		return nil, &NotFoundError{label: assettransferdetails.Label}
 	}
 	return nil, &NotLoadedError{edge: "transfer_details"}
 }

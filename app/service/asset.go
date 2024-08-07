@@ -127,6 +127,27 @@ func (s *assetService) Create(ctx context.Context, req *model.AssetCreateReq, mo
 	if err != nil {
 		return err
 	}
+	// 创建调拨单
+	if req.LocationsType != nil && req.LocationsID != nil {
+		t, _ := ent.Database.AssetTransfer.Create().
+			SetToLocationType(req.LocationsType.Value()).
+			SetToLocationID(*req.LocationsID).
+			SetReason("初始入库").
+			SetCreator(modifier).
+			SetLastModifier(modifier).
+			SetInNum(1).
+			SetSn(tools.NewUnique().NewSN28()).
+			SetStatus(model.AssetTransferStatusDelivering.Value()).
+			Save(ctx)
+		if t != nil {
+			_ = ent.Database.AssetTransferDetails.Create().
+				SetAssetID(item.ID).
+				SetCreator(modifier).
+				SetLastModifier(modifier).
+				SetTransferID(t.ID).
+				Exec(ctx)
+		}
+	}
 	return nil
 }
 
@@ -164,7 +185,7 @@ func (s *assetService) BatchCreate(ctx echo.Context, req *model.AssetBatchCreate
 }
 
 // BatchCreateEbike 批量创建电车
-// 0-型号:brand(需查询) 1-车架号:sn 2-生产批次:exFactory 3-车牌号:plate 4-终端编号:machine 5-SIM卡:sim 6-颜色:color
+// 0-型号:brand(需查询) 1-车架号:sn 2-仓库:warehouse 3-生产批次:exFactory 4-车牌号:plate 5-终端编号:machine 6-SIM卡:sim 7-颜色:color
 func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifier) (failed []string, err error) {
 	// 查询所有电车属性
 	attr, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.AssetType(model.AssetTypeEbike.Value())).Order(ent.Asc(assetattributes.FieldCreatedAt)).All(ctx.Request().Context())
@@ -181,6 +202,13 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 	bm := make(map[string]uint64)
 	for _, brand := range brands {
 		bm[brand.Name] = brand.ID
+	}
+
+	// 获取仓库
+	warehouseIds := make(map[string]uint64)
+	warehouses, _ := ent.Database.Warehouse.QueryNotDeleted().All(ctx.Request().Context())
+	for _, v := range warehouses {
+		warehouseIds[v.Name] = v.ID
 	}
 
 	assetAll, _ := ent.Database.Asset.QueryNotDeleted().Where(asset.SnIn(sns...), asset.Type(model.AssetTypeEbike.Value())).All(s.ctx)
@@ -202,6 +230,9 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 		}
 	}
 
+	// 仓库分组
+	groupWarehouse := make(map[uint64][]uint64)
+
 	// rows 去除标题
 	rows = rows[1:]
 	for _, columns := range rows {
@@ -213,6 +244,13 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 
 		if _, ok = exists[columns[1]]; ok {
 			failed = append(failed, fmt.Sprintf("车架号重复:%s", strings.Join(columns, ",")))
+			continue
+		}
+
+		wID, ok := warehouseIds[columns[2]]
+		// 判定仓库
+		if !ok {
+			failed = append(failed, fmt.Sprintf("仓库未找到:%s", strings.Join(columns, ",")))
 			continue
 		}
 
@@ -228,35 +266,65 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 			SetBrandName(columns[0]).
 			SetCreator(modifier).
 			SetLastModifier(modifier).
+			SetLocationsType(model.AssetLocationsTypeWarehouse.Value()).
+			SetLocationsID(wID).
 			Save(ctx.Request().Context())
 		if save == nil {
 			failed = append(failed, fmt.Sprintf("保存失败:%s", strings.Join(columns, ",")))
 			continue
 		}
 		// 获取标题对应id
-		for i := 1; i < len(title)-2; i++ {
+		for i := 1; i < len(title)-3; i++ {
 			// 判定属性值是否存在
-			if b, _ := ent.Database.AssetAttributeValues.Query().Where(assetattributevalues.AttributeID(titleID[i-1]), assetattributevalues.AssetID(save.ID)).Exist(ctx.Request().Context()); b {
+			if b, _ := ent.Database.AssetAttributeValues.Query().Where(assetattributevalues.AttributeID(titleID[i-2]), assetattributevalues.AssetID(save.ID)).Exist(ctx.Request().Context()); b {
 				failed = append(failed, fmt.Sprintf("属性值重复:%s", strings.Join(columns, ",")))
 				continue
 			}
 			err = ent.Database.AssetAttributeValues.Create().
 				SetValue(columns[i]).
 				SetAssetID(save.ID).
-				SetAttributeID(titleID[i-1]).
+				SetAttributeID(titleID[i-2]).
 				Exec(ctx.Request().Context())
 			if err != nil {
 				failed = append(failed, fmt.Sprintf("保存失败:%s", strings.Join(columns, ",")))
 			}
 		}
+		// 仓库分组加入物资id
+		groupWarehouse[wID] = append(groupWarehouse[wID], save.ID)
 	}
+
+	// 创建调拨单
+	for k, v := range groupWarehouse {
+		t, _ := ent.Database.AssetTransfer.Create().
+			SetToLocationType(model.AssetLocationsTypeWarehouse.Value()).
+			SetToLocationID(k).
+			SetReason("初始入库").
+			SetCreator(modifier).
+			SetLastModifier(modifier).
+			SetInNum(uint(len(v))).
+			SetStatus(model.AssetTransferStatusDelivering.Value()).
+			SetSn(tools.NewUnique().NewSN28()).
+			Save(ctx.Request().Context())
+		if t != nil {
+			bulk := make([]*ent.AssetTransferDetailsCreate, 0)
+			for _, vl := range v {
+				bulk = append(bulk, ent.Database.AssetTransferDetails.Create().
+					SetAssetID(vl).
+					SetCreator(modifier).
+					SetLastModifier(modifier).
+					SetTransferID(t.ID))
+			}
+			_ = ent.Database.AssetTransferDetails.CreateBulk(bulk...).Exec(ctx.Request().Context())
+		}
+	}
+
 	return failed, nil
 }
 
 // BatchCreateBattery 批量创建电池
-// 0-城市:city 1-电池编号:sn
+// 0-城市:city 1-电池编号:sn 2-仓库:warehouse
 func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modifier) (failed []string, err error) {
-	rows, sns, failed, err := s.BaseService.GetXlsxRows(ctx, 2, 2, 1)
+	rows, sns, failed, err := s.BaseService.GetXlsxRows(ctx, 2, 3, 1)
 	if err != nil || len(failed) != 0 {
 		return failed, err
 	}
@@ -294,6 +362,16 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 		mm[md.Model] = md.ID
 	}
 
+	// 获取仓库
+	warehouseIds := make(map[string]uint64)
+	warehouses, _ := ent.Database.Warehouse.QueryNotDeleted().All(ctx.Request().Context())
+	for _, v := range warehouses {
+		warehouseIds[v.Name] = v.ID
+	}
+
+	// 仓库分组
+	groupWarehouse := make(map[uint64][]uint64)
+
 	for _, row := range rows {
 		sn := row[1]
 		if m[sn] {
@@ -308,28 +386,36 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 			continue
 		}
 
-		creator := s.orm.Create()
-
 		// 城市
-		if cid, ok := cm[row[0]]; ok {
-			creator.SetCityID(cid)
-		} else {
+		cid, ok := cm[row[0]]
+		if !ok {
 			failed = append(failed, fmt.Sprintf("城市%s查询失败", row[0]))
 			continue
 		}
 
 		// 型号
-		if mid, ok := mm[ab.Model]; ok {
-			creator.SetModelID(mid)
-		} else {
+		mid, ok := mm[ab.Model]
+		if !ok {
 			failed = append(failed, fmt.Sprintf("型号%s查询失败", ab.Model))
 			continue
 		}
+
+		// 仓库
+		wid, ok := warehouseIds[row[2]]
+		if !ok {
+			failed = append(failed, fmt.Sprintf("仓库%s查询失败", row[2]))
+			continue
+		}
+
 		name := s.getAssetName(model.AssetTypeSmartBattery)
-		err = creator.
+		err = s.orm.Create().
 			SetBrandName(ab.Brand.String()).
 			SetSn(sn).
 			SetName(name).
+			SetModelID(mid).
+			SetCityID(cid).
+			SetLocationsType(model.AssetLocationsTypeWarehouse.Value()).
+			SetLocationsID(wid).
 			SetStatus(model.AssetStatusPending.Value()).
 			SetType(model.AssetTypeSmartBattery.Value()).
 			SetEnable(true).
@@ -341,7 +427,35 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 			failed = append(failed, fmt.Sprintf("%s保存失败: %v", sn, err))
 		}
 
+		// 仓库分组加入物资id
+		groupWarehouse[wid] = append(groupWarehouse[wid], wid)
 	}
+
+	// 创建调拨单
+	for k, v := range groupWarehouse {
+		t, _ := ent.Database.AssetTransfer.Create().
+			SetToLocationType(model.AssetLocationsTypeWarehouse.Value()).
+			SetToLocationID(k).
+			SetReason("初始入库").
+			SetCreator(modifier).
+			SetLastModifier(modifier).
+			SetInNum(uint(len(v))).
+			SetStatus(model.AssetTransferStatusDelivering.Value()).
+			SetSn(tools.NewUnique().NewSN28()).
+			Save(ctx.Request().Context())
+		if t != nil {
+			bulk := make([]*ent.AssetTransferDetailsCreate, 0)
+			for _, vl := range v {
+				bulk = append(bulk, ent.Database.AssetTransferDetails.Create().
+					SetAssetID(vl).
+					SetCreator(modifier).
+					SetLastModifier(modifier).
+					SetTransferID(t.ID))
+			}
+			_ = ent.Database.AssetTransferDetails.CreateBulk(bulk...).Exec(ctx.Request().Context())
+		}
+	}
+
 	return failed, nil
 }
 

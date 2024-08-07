@@ -175,6 +175,14 @@ func (atdc *AssetTransferDetailsCreate) SetAssetID(u uint64) *AssetTransferDetai
 	return atdc
 }
 
+// SetNillableAssetID sets the "asset_id" field if the given value is not nil.
+func (atdc *AssetTransferDetailsCreate) SetNillableAssetID(u *uint64) *AssetTransferDetailsCreate {
+	if u != nil {
+		atdc.SetAssetID(*u)
+	}
+	return atdc
+}
+
 // SetTransfer sets the "transfer" edge to the AssetTransfer entity.
 func (atdc *AssetTransferDetailsCreate) SetTransfer(a *AssetTransfer) *AssetTransferDetailsCreate {
 	return atdc.SetTransferID(a.ID)
@@ -368,12 +376,6 @@ func (atdc *AssetTransferDetailsCreate) check() error {
 	if _, ok := atdc.mutation.IsIn(); !ok {
 		return &ValidationError{Name: "is_in", err: errors.New(`ent: missing required field "AssetTransferDetails.is_in"`)}
 	}
-	if _, ok := atdc.mutation.AssetID(); !ok {
-		return &ValidationError{Name: "asset_id", err: errors.New(`ent: missing required field "AssetTransferDetails.asset_id"`)}
-	}
-	if _, ok := atdc.mutation.AssetID(); !ok {
-		return &ValidationError{Name: "asset", err: errors.New(`ent: missing required edge "AssetTransferDetails.asset"`)}
-	}
 	return nil
 }
 
@@ -558,7 +560,7 @@ func (atdc *AssetTransferDetailsCreate) createSpec() (*AssetTransferDetails, *sq
 	}
 	if nodes := atdc.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   assettransferdetails.AssetTable,
 			Columns: []string{assettransferdetails.AssetColumn},
@@ -790,6 +792,12 @@ func (u *AssetTransferDetailsUpsert) SetAssetID(v uint64) *AssetTransferDetailsU
 // UpdateAssetID sets the "asset_id" field to the value that was provided on create.
 func (u *AssetTransferDetailsUpsert) UpdateAssetID() *AssetTransferDetailsUpsert {
 	u.SetExcluded(assettransferdetails.FieldAssetID)
+	return u
+}
+
+// ClearAssetID clears the value of the "asset_id" field.
+func (u *AssetTransferDetailsUpsert) ClearAssetID() *AssetTransferDetailsUpsert {
+	u.SetNull(assettransferdetails.FieldAssetID)
 	return u
 }
 
@@ -1034,6 +1042,13 @@ func (u *AssetTransferDetailsUpsertOne) SetAssetID(v uint64) *AssetTransferDetai
 func (u *AssetTransferDetailsUpsertOne) UpdateAssetID() *AssetTransferDetailsUpsertOne {
 	return u.Update(func(s *AssetTransferDetailsUpsert) {
 		s.UpdateAssetID()
+	})
+}
+
+// ClearAssetID clears the value of the "asset_id" field.
+func (u *AssetTransferDetailsUpsertOne) ClearAssetID() *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.ClearAssetID()
 	})
 }
 
@@ -1444,6 +1459,13 @@ func (u *AssetTransferDetailsUpsertBulk) SetAssetID(v uint64) *AssetTransferDeta
 func (u *AssetTransferDetailsUpsertBulk) UpdateAssetID() *AssetTransferDetailsUpsertBulk {
 	return u.Update(func(s *AssetTransferDetailsUpsert) {
 		s.UpdateAssetID()
+	})
+}
+
+// ClearAssetID clears the value of the "asset_id" field.
+func (u *AssetTransferDetailsUpsertBulk) ClearAssetID() *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.ClearAssetID()
 	})
 }
 

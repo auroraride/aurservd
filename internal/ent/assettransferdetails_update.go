@@ -211,6 +211,12 @@ func (atdu *AssetTransferDetailsUpdate) SetNillableAssetID(u *uint64) *AssetTran
 	return atdu
 }
 
+// ClearAssetID clears the value of the "asset_id" field.
+func (atdu *AssetTransferDetailsUpdate) ClearAssetID() *AssetTransferDetailsUpdate {
+	atdu.mutation.ClearAssetID()
+	return atdu
+}
+
 // SetTransfer sets the "transfer" edge to the AssetTransfer entity.
 func (atdu *AssetTransferDetailsUpdate) SetTransfer(a *AssetTransfer) *AssetTransferDetailsUpdate {
 	return atdu.SetTransferID(a.ID)
@@ -430,14 +436,6 @@ func (atdu *AssetTransferDetailsUpdate) defaults() error {
 	return nil
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (atdu *AssetTransferDetailsUpdate) check() error {
-	if _, ok := atdu.mutation.AssetID(); atdu.mutation.AssetCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "AssetTransferDetails.asset"`)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (atdu *AssetTransferDetailsUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AssetTransferDetailsUpdate {
 	atdu.modifiers = append(atdu.modifiers, modifiers...)
@@ -445,9 +443,6 @@ func (atdu *AssetTransferDetailsUpdate) Modify(modifiers ...func(u *sql.UpdateBu
 }
 
 func (atdu *AssetTransferDetailsUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := atdu.check(); err != nil {
-		return n, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(assettransferdetails.Table, assettransferdetails.Columns, sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64))
 	if ps := atdu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -703,7 +698,7 @@ func (atdu *AssetTransferDetailsUpdate) sqlSave(ctx context.Context) (n int, err
 	}
 	if atdu.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   assettransferdetails.AssetTable,
 			Columns: []string{assettransferdetails.AssetColumn},
@@ -716,7 +711,7 @@ func (atdu *AssetTransferDetailsUpdate) sqlSave(ctx context.Context) (n int, err
 	}
 	if nodes := atdu.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   assettransferdetails.AssetTable,
 			Columns: []string{assettransferdetails.AssetColumn},
@@ -922,6 +917,12 @@ func (atduo *AssetTransferDetailsUpdateOne) SetNillableAssetID(u *uint64) *Asset
 	if u != nil {
 		atduo.SetAssetID(*u)
 	}
+	return atduo
+}
+
+// ClearAssetID clears the value of the "asset_id" field.
+func (atduo *AssetTransferDetailsUpdateOne) ClearAssetID() *AssetTransferDetailsUpdateOne {
+	atduo.mutation.ClearAssetID()
 	return atduo
 }
 
@@ -1157,14 +1158,6 @@ func (atduo *AssetTransferDetailsUpdateOne) defaults() error {
 	return nil
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (atduo *AssetTransferDetailsUpdateOne) check() error {
-	if _, ok := atduo.mutation.AssetID(); atduo.mutation.AssetCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "AssetTransferDetails.asset"`)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (atduo *AssetTransferDetailsUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AssetTransferDetailsUpdateOne {
 	atduo.modifiers = append(atduo.modifiers, modifiers...)
@@ -1172,9 +1165,6 @@ func (atduo *AssetTransferDetailsUpdateOne) Modify(modifiers ...func(u *sql.Upda
 }
 
 func (atduo *AssetTransferDetailsUpdateOne) sqlSave(ctx context.Context) (_node *AssetTransferDetails, err error) {
-	if err := atduo.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(assettransferdetails.Table, assettransferdetails.Columns, sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64))
 	id, ok := atduo.mutation.ID()
 	if !ok {
@@ -1447,7 +1437,7 @@ func (atduo *AssetTransferDetailsUpdateOne) sqlSave(ctx context.Context) (_node 
 	}
 	if atduo.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   assettransferdetails.AssetTable,
 			Columns: []string{assettransferdetails.AssetColumn},
@@ -1460,7 +1450,7 @@ func (atduo *AssetTransferDetailsUpdateOne) sqlSave(ctx context.Context) (_node 
 	}
 	if nodes := atduo.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   assettransferdetails.AssetTable,
 			Columns: []string{assettransferdetails.AssetColumn},

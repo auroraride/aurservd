@@ -306,7 +306,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assethistory.FieldFromLocationID:   {Type: field.TypeInt, Column: assethistory.FieldFromLocationID},
 			assethistory.FieldToLocationType:   {Type: field.TypeInt, Column: assethistory.FieldToLocationType},
 			assethistory.FieldToLocationID:     {Type: field.TypeInt, Column: assethistory.FieldToLocationID},
-			assethistory.FieldChangeType:       {Type: field.TypeUint8, Column: assethistory.FieldChangeType},
+			assethistory.FieldType:             {Type: field.TypeUint8, Column: assethistory.FieldType},
 		},
 	}
 	graph.Nodes[8] = &sqlgraph.Node{
@@ -380,7 +380,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assettransfer.FieldOutOperateType:   {Type: field.TypeUint8, Column: assettransfer.FieldOutOperateType},
 			assettransfer.FieldOutTimeAt:        {Type: field.TypeTime, Column: assettransfer.FieldOutTimeAt},
 			assettransfer.FieldReason:           {Type: field.TypeString, Column: assettransfer.FieldReason},
-			assettransfer.FieldType:             {Type: field.TypeUint8, Column: assettransfer.FieldType},
 		},
 	}
 	graph.Nodes[11] = &sqlgraph.Node{
@@ -2963,7 +2962,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 	graph.MustAddE(
 		"transfer_details",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   asset.TransferDetailsTable,
 			Columns: []string{asset.TransferDetailsColumn},
@@ -3431,7 +3430,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 	graph.MustAddE(
 		"asset",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   assettransferdetails.AssetTable,
 			Columns: []string{assettransferdetails.AssetColumn},
@@ -8346,9 +8345,9 @@ func (f *AssetHistoryFilter) WhereToLocationID(p entql.IntP) {
 	f.Where(p.Field(assethistory.FieldToLocationID))
 }
 
-// WhereChangeType applies the entql uint8 predicate on the change_type field.
-func (f *AssetHistoryFilter) WhereChangeType(p entql.Uint8P) {
-	f.Where(p.Field(assethistory.FieldChangeType))
+// WhereType applies the entql uint8 predicate on the type field.
+func (f *AssetHistoryFilter) WhereType(p entql.Uint8P) {
+	f.Where(p.Field(assethistory.FieldType))
 }
 
 // WhereHasAsset applies a predicate to check if query has an edge asset.
@@ -8765,11 +8764,6 @@ func (f *AssetTransferFilter) WhereOutTimeAt(p entql.TimeP) {
 // WhereReason applies the entql string predicate on the reason field.
 func (f *AssetTransferFilter) WhereReason(p entql.StringP) {
 	f.Where(p.Field(assettransfer.FieldReason))
-}
-
-// WhereType applies the entql uint8 predicate on the type field.
-func (f *AssetTransferFilter) WhereType(p entql.Uint8P) {
-	f.Where(p.Field(assettransfer.FieldType))
 }
 
 // WhereHasTransferDetails applies a predicate to check if query has an edge transfer_details.

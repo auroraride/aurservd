@@ -448,23 +448,19 @@ func (ac *AssetCreate) AddScrapDetails(a ...*AssetScrapDetails) *AssetCreate {
 	return ac.AddScrapDetailIDs(ids...)
 }
 
-// SetTransferDetailsID sets the "transfer_details" edge to the AssetTransferDetails entity by ID.
-func (ac *AssetCreate) SetTransferDetailsID(id uint64) *AssetCreate {
-	ac.mutation.SetTransferDetailsID(id)
+// AddTransferDetailIDs adds the "transfer_details" edge to the AssetTransferDetails entity by IDs.
+func (ac *AssetCreate) AddTransferDetailIDs(ids ...uint64) *AssetCreate {
+	ac.mutation.AddTransferDetailIDs(ids...)
 	return ac
 }
 
-// SetNillableTransferDetailsID sets the "transfer_details" edge to the AssetTransferDetails entity by ID if the given value is not nil.
-func (ac *AssetCreate) SetNillableTransferDetailsID(id *uint64) *AssetCreate {
-	if id != nil {
-		ac = ac.SetTransferDetailsID(*id)
+// AddTransferDetails adds the "transfer_details" edges to the AssetTransferDetails entity.
+func (ac *AssetCreate) AddTransferDetails(a ...*AssetTransferDetails) *AssetCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return ac
-}
-
-// SetTransferDetails sets the "transfer_details" edge to the AssetTransferDetails entity.
-func (ac *AssetCreate) SetTransferDetails(a *AssetTransferDetails) *AssetCreate {
-	return ac.SetTransferDetailsID(a.ID)
+	return ac.AddTransferDetailIDs(ids...)
 }
 
 // Mutation returns the AssetMutation object of the builder.
@@ -840,7 +836,7 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 	}
 	if nodes := ac.mutation.TransferDetailsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   asset.TransferDetailsTable,
 			Columns: []string{asset.TransferDetailsColumn},

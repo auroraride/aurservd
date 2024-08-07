@@ -217,24 +217,30 @@ func (ahu *AssetHistoryUpdate) ClearToLocationID() *AssetHistoryUpdate {
 	return ahu
 }
 
-// SetChangeType sets the "change_type" field.
-func (ahu *AssetHistoryUpdate) SetChangeType(u uint8) *AssetHistoryUpdate {
-	ahu.mutation.ResetChangeType()
-	ahu.mutation.SetChangeType(u)
+// SetType sets the "type" field.
+func (ahu *AssetHistoryUpdate) SetType(u uint8) *AssetHistoryUpdate {
+	ahu.mutation.ResetType()
+	ahu.mutation.SetType(u)
 	return ahu
 }
 
-// SetNillableChangeType sets the "change_type" field if the given value is not nil.
-func (ahu *AssetHistoryUpdate) SetNillableChangeType(u *uint8) *AssetHistoryUpdate {
+// SetNillableType sets the "type" field if the given value is not nil.
+func (ahu *AssetHistoryUpdate) SetNillableType(u *uint8) *AssetHistoryUpdate {
 	if u != nil {
-		ahu.SetChangeType(*u)
+		ahu.SetType(*u)
 	}
 	return ahu
 }
 
-// AddChangeType adds u to the "change_type" field.
-func (ahu *AssetHistoryUpdate) AddChangeType(u int8) *AssetHistoryUpdate {
-	ahu.mutation.AddChangeType(u)
+// AddType adds u to the "type" field.
+func (ahu *AssetHistoryUpdate) AddType(u int8) *AssetHistoryUpdate {
+	ahu.mutation.AddType(u)
+	return ahu
+}
+
+// ClearType clears the value of the "type" field.
+func (ahu *AssetHistoryUpdate) ClearType() *AssetHistoryUpdate {
+	ahu.mutation.ClearType()
 	return ahu
 }
 
@@ -371,11 +377,14 @@ func (ahu *AssetHistoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if ahu.mutation.ToLocationIDCleared() {
 		_spec.ClearField(assethistory.FieldToLocationID, field.TypeInt)
 	}
-	if value, ok := ahu.mutation.ChangeType(); ok {
-		_spec.SetField(assethistory.FieldChangeType, field.TypeUint8, value)
+	if value, ok := ahu.mutation.GetType(); ok {
+		_spec.SetField(assethistory.FieldType, field.TypeUint8, value)
 	}
-	if value, ok := ahu.mutation.AddedChangeType(); ok {
-		_spec.AddField(assethistory.FieldChangeType, field.TypeUint8, value)
+	if value, ok := ahu.mutation.AddedType(); ok {
+		_spec.AddField(assethistory.FieldType, field.TypeUint8, value)
+	}
+	if ahu.mutation.TypeCleared() {
+		_spec.ClearField(assethistory.FieldType, field.TypeUint8)
 	}
 	if ahu.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -614,24 +623,30 @@ func (ahuo *AssetHistoryUpdateOne) ClearToLocationID() *AssetHistoryUpdateOne {
 	return ahuo
 }
 
-// SetChangeType sets the "change_type" field.
-func (ahuo *AssetHistoryUpdateOne) SetChangeType(u uint8) *AssetHistoryUpdateOne {
-	ahuo.mutation.ResetChangeType()
-	ahuo.mutation.SetChangeType(u)
+// SetType sets the "type" field.
+func (ahuo *AssetHistoryUpdateOne) SetType(u uint8) *AssetHistoryUpdateOne {
+	ahuo.mutation.ResetType()
+	ahuo.mutation.SetType(u)
 	return ahuo
 }
 
-// SetNillableChangeType sets the "change_type" field if the given value is not nil.
-func (ahuo *AssetHistoryUpdateOne) SetNillableChangeType(u *uint8) *AssetHistoryUpdateOne {
+// SetNillableType sets the "type" field if the given value is not nil.
+func (ahuo *AssetHistoryUpdateOne) SetNillableType(u *uint8) *AssetHistoryUpdateOne {
 	if u != nil {
-		ahuo.SetChangeType(*u)
+		ahuo.SetType(*u)
 	}
 	return ahuo
 }
 
-// AddChangeType adds u to the "change_type" field.
-func (ahuo *AssetHistoryUpdateOne) AddChangeType(u int8) *AssetHistoryUpdateOne {
-	ahuo.mutation.AddChangeType(u)
+// AddType adds u to the "type" field.
+func (ahuo *AssetHistoryUpdateOne) AddType(u int8) *AssetHistoryUpdateOne {
+	ahuo.mutation.AddType(u)
+	return ahuo
+}
+
+// ClearType clears the value of the "type" field.
+func (ahuo *AssetHistoryUpdateOne) ClearType() *AssetHistoryUpdateOne {
+	ahuo.mutation.ClearType()
 	return ahuo
 }
 
@@ -798,11 +813,14 @@ func (ahuo *AssetHistoryUpdateOne) sqlSave(ctx context.Context) (_node *AssetHis
 	if ahuo.mutation.ToLocationIDCleared() {
 		_spec.ClearField(assethistory.FieldToLocationID, field.TypeInt)
 	}
-	if value, ok := ahuo.mutation.ChangeType(); ok {
-		_spec.SetField(assethistory.FieldChangeType, field.TypeUint8, value)
+	if value, ok := ahuo.mutation.GetType(); ok {
+		_spec.SetField(assethistory.FieldType, field.TypeUint8, value)
 	}
-	if value, ok := ahuo.mutation.AddedChangeType(); ok {
-		_spec.AddField(assethistory.FieldChangeType, field.TypeUint8, value)
+	if value, ok := ahuo.mutation.AddedType(); ok {
+		_spec.AddField(assethistory.FieldType, field.TypeUint8, value)
+	}
+	if ahuo.mutation.TypeCleared() {
+		_spec.ClearField(assethistory.FieldType, field.TypeUint8)
 	}
 	if ahuo.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{

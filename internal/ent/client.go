@@ -2052,7 +2052,7 @@ func (c *AssetClient) QueryTransferDetails(a *Asset) *AssetTransferDetailsQuery 
 		step := sqlgraph.NewStep(
 			sqlgraph.From(asset.Table, asset.FieldID, id),
 			sqlgraph.To(assettransferdetails.Table, assettransferdetails.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, asset.TransferDetailsTable, asset.TransferDetailsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, asset.TransferDetailsTable, asset.TransferDetailsColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -3611,7 +3611,7 @@ func (c *AssetTransferDetailsClient) QueryAsset(atd *AssetTransferDetails) *Asse
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assettransferdetails.Table, assettransferdetails.FieldID, id),
 			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, assettransferdetails.AssetTable, assettransferdetails.AssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, assettransferdetails.AssetTable, assettransferdetails.AssetColumn),
 		)
 		fromV = sqlgraph.Neighbors(atd.driver.Dialect(), step)
 		return fromV, nil

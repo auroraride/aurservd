@@ -549,23 +549,19 @@ func (au *AssetUpdate) AddScrapDetails(a ...*AssetScrapDetails) *AssetUpdate {
 	return au.AddScrapDetailIDs(ids...)
 }
 
-// SetTransferDetailsID sets the "transfer_details" edge to the AssetTransferDetails entity by ID.
-func (au *AssetUpdate) SetTransferDetailsID(id uint64) *AssetUpdate {
-	au.mutation.SetTransferDetailsID(id)
+// AddTransferDetailIDs adds the "transfer_details" edge to the AssetTransferDetails entity by IDs.
+func (au *AssetUpdate) AddTransferDetailIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.AddTransferDetailIDs(ids...)
 	return au
 }
 
-// SetNillableTransferDetailsID sets the "transfer_details" edge to the AssetTransferDetails entity by ID if the given value is not nil.
-func (au *AssetUpdate) SetNillableTransferDetailsID(id *uint64) *AssetUpdate {
-	if id != nil {
-		au = au.SetTransferDetailsID(*id)
+// AddTransferDetails adds the "transfer_details" edges to the AssetTransferDetails entity.
+func (au *AssetUpdate) AddTransferDetails(a ...*AssetTransferDetails) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return au
-}
-
-// SetTransferDetails sets the "transfer_details" edge to the AssetTransferDetails entity.
-func (au *AssetUpdate) SetTransferDetails(a *AssetTransferDetails) *AssetUpdate {
-	return au.SetTransferDetailsID(a.ID)
+	return au.AddTransferDetailIDs(ids...)
 }
 
 // Mutation returns the AssetMutation object of the builder.
@@ -675,10 +671,25 @@ func (au *AssetUpdate) RemoveScrapDetails(a ...*AssetScrapDetails) *AssetUpdate 
 	return au.RemoveScrapDetailIDs(ids...)
 }
 
-// ClearTransferDetails clears the "transfer_details" edge to the AssetTransferDetails entity.
+// ClearTransferDetails clears all "transfer_details" edges to the AssetTransferDetails entity.
 func (au *AssetUpdate) ClearTransferDetails() *AssetUpdate {
 	au.mutation.ClearTransferDetails()
 	return au
+}
+
+// RemoveTransferDetailIDs removes the "transfer_details" edge to AssetTransferDetails entities by IDs.
+func (au *AssetUpdate) RemoveTransferDetailIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.RemoveTransferDetailIDs(ids...)
+	return au
+}
+
+// RemoveTransferDetails removes "transfer_details" edges to AssetTransferDetails entities.
+func (au *AssetUpdate) RemoveTransferDetails(a ...*AssetTransferDetails) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.RemoveTransferDetailIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1198,7 +1209,7 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if au.mutation.TransferDetailsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   asset.TransferDetailsTable,
 			Columns: []string{asset.TransferDetailsColumn},
@@ -1209,9 +1220,25 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
+	if nodes := au.mutation.RemovedTransferDetailsIDs(); len(nodes) > 0 && !au.mutation.TransferDetailsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.TransferDetailsTable,
+			Columns: []string{asset.TransferDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
 	if nodes := au.mutation.TransferDetailsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   asset.TransferDetailsTable,
 			Columns: []string{asset.TransferDetailsColumn},
@@ -1753,23 +1780,19 @@ func (auo *AssetUpdateOne) AddScrapDetails(a ...*AssetScrapDetails) *AssetUpdate
 	return auo.AddScrapDetailIDs(ids...)
 }
 
-// SetTransferDetailsID sets the "transfer_details" edge to the AssetTransferDetails entity by ID.
-func (auo *AssetUpdateOne) SetTransferDetailsID(id uint64) *AssetUpdateOne {
-	auo.mutation.SetTransferDetailsID(id)
+// AddTransferDetailIDs adds the "transfer_details" edge to the AssetTransferDetails entity by IDs.
+func (auo *AssetUpdateOne) AddTransferDetailIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.AddTransferDetailIDs(ids...)
 	return auo
 }
 
-// SetNillableTransferDetailsID sets the "transfer_details" edge to the AssetTransferDetails entity by ID if the given value is not nil.
-func (auo *AssetUpdateOne) SetNillableTransferDetailsID(id *uint64) *AssetUpdateOne {
-	if id != nil {
-		auo = auo.SetTransferDetailsID(*id)
+// AddTransferDetails adds the "transfer_details" edges to the AssetTransferDetails entity.
+func (auo *AssetUpdateOne) AddTransferDetails(a ...*AssetTransferDetails) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return auo
-}
-
-// SetTransferDetails sets the "transfer_details" edge to the AssetTransferDetails entity.
-func (auo *AssetUpdateOne) SetTransferDetails(a *AssetTransferDetails) *AssetUpdateOne {
-	return auo.SetTransferDetailsID(a.ID)
+	return auo.AddTransferDetailIDs(ids...)
 }
 
 // Mutation returns the AssetMutation object of the builder.
@@ -1879,10 +1902,25 @@ func (auo *AssetUpdateOne) RemoveScrapDetails(a ...*AssetScrapDetails) *AssetUpd
 	return auo.RemoveScrapDetailIDs(ids...)
 }
 
-// ClearTransferDetails clears the "transfer_details" edge to the AssetTransferDetails entity.
+// ClearTransferDetails clears all "transfer_details" edges to the AssetTransferDetails entity.
 func (auo *AssetUpdateOne) ClearTransferDetails() *AssetUpdateOne {
 	auo.mutation.ClearTransferDetails()
 	return auo
+}
+
+// RemoveTransferDetailIDs removes the "transfer_details" edge to AssetTransferDetails entities by IDs.
+func (auo *AssetUpdateOne) RemoveTransferDetailIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.RemoveTransferDetailIDs(ids...)
+	return auo
+}
+
+// RemoveTransferDetails removes "transfer_details" edges to AssetTransferDetails entities.
+func (auo *AssetUpdateOne) RemoveTransferDetails(a ...*AssetTransferDetails) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.RemoveTransferDetailIDs(ids...)
 }
 
 // Where appends a list predicates to the AssetUpdate builder.
@@ -2432,7 +2470,7 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	}
 	if auo.mutation.TransferDetailsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   asset.TransferDetailsTable,
 			Columns: []string{asset.TransferDetailsColumn},
@@ -2443,9 +2481,25 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
+	if nodes := auo.mutation.RemovedTransferDetailsIDs(); len(nodes) > 0 && !auo.mutation.TransferDetailsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.TransferDetailsTable,
+			Columns: []string{asset.TransferDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
 	if nodes := auo.mutation.TransferDetailsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   asset.TransferDetailsTable,
 			Columns: []string{asset.TransferDetailsColumn},

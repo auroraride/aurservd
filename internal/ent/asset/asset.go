@@ -426,10 +426,17 @@ func ByScrapDetails(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
-// ByTransferDetailsField orders the results by transfer_details field.
-func ByTransferDetailsField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByTransferDetailsCount orders the results by transfer_details count.
+func ByTransferDetailsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newTransferDetailsStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborsCount(s, newTransferDetailsStep(), opts...)
+	}
+}
+
+// ByTransferDetails orders the results by transfer_details terms.
+func ByTransferDetails(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTransferDetailsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newBrandStep() *sqlgraph.Step {
@@ -520,6 +527,6 @@ func newTransferDetailsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TransferDetailsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, false, TransferDetailsTable, TransferDetailsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, false, TransferDetailsTable, TransferDetailsColumn),
 	)
 }

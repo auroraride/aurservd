@@ -162,9 +162,17 @@ func (ahc *AssetHistoryCreate) SetNillableToLocationID(i *int) *AssetHistoryCrea
 	return ahc
 }
 
-// SetChangeType sets the "change_type" field.
-func (ahc *AssetHistoryCreate) SetChangeType(u uint8) *AssetHistoryCreate {
-	ahc.mutation.SetChangeType(u)
+// SetType sets the "type" field.
+func (ahc *AssetHistoryCreate) SetType(u uint8) *AssetHistoryCreate {
+	ahc.mutation.SetType(u)
+	return ahc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (ahc *AssetHistoryCreate) SetNillableType(u *uint8) *AssetHistoryCreate {
+	if u != nil {
+		ahc.SetType(*u)
+	}
 	return ahc
 }
 
@@ -235,9 +243,6 @@ func (ahc *AssetHistoryCreate) check() error {
 	if _, ok := ahc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "AssetHistory.updated_at"`)}
 	}
-	if _, ok := ahc.mutation.ChangeType(); !ok {
-		return &ValidationError{Name: "change_type", err: errors.New(`ent: missing required field "AssetHistory.change_type"`)}
-	}
 	return nil
 }
 
@@ -305,9 +310,9 @@ func (ahc *AssetHistoryCreate) createSpec() (*AssetHistory, *sqlgraph.CreateSpec
 		_spec.SetField(assethistory.FieldToLocationID, field.TypeInt, value)
 		_node.ToLocationID = value
 	}
-	if value, ok := ahc.mutation.ChangeType(); ok {
-		_spec.SetField(assethistory.FieldChangeType, field.TypeUint8, value)
-		_node.ChangeType = value
+	if value, ok := ahc.mutation.GetType(); ok {
+		_spec.SetField(assethistory.FieldType, field.TypeUint8, value)
+		_node.Type = value
 	}
 	if nodes := ahc.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -558,21 +563,27 @@ func (u *AssetHistoryUpsert) ClearToLocationID() *AssetHistoryUpsert {
 	return u
 }
 
-// SetChangeType sets the "change_type" field.
-func (u *AssetHistoryUpsert) SetChangeType(v uint8) *AssetHistoryUpsert {
-	u.Set(assethistory.FieldChangeType, v)
+// SetType sets the "type" field.
+func (u *AssetHistoryUpsert) SetType(v uint8) *AssetHistoryUpsert {
+	u.Set(assethistory.FieldType, v)
 	return u
 }
 
-// UpdateChangeType sets the "change_type" field to the value that was provided on create.
-func (u *AssetHistoryUpsert) UpdateChangeType() *AssetHistoryUpsert {
-	u.SetExcluded(assethistory.FieldChangeType)
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *AssetHistoryUpsert) UpdateType() *AssetHistoryUpsert {
+	u.SetExcluded(assethistory.FieldType)
 	return u
 }
 
-// AddChangeType adds v to the "change_type" field.
-func (u *AssetHistoryUpsert) AddChangeType(v uint8) *AssetHistoryUpsert {
-	u.Add(assethistory.FieldChangeType, v)
+// AddType adds v to the "type" field.
+func (u *AssetHistoryUpsert) AddType(v uint8) *AssetHistoryUpsert {
+	u.Add(assethistory.FieldType, v)
+	return u
+}
+
+// ClearType clears the value of the "type" field.
+func (u *AssetHistoryUpsert) ClearType() *AssetHistoryUpsert {
+	u.SetNull(assethistory.FieldType)
 	return u
 }
 
@@ -834,24 +845,31 @@ func (u *AssetHistoryUpsertOne) ClearToLocationID() *AssetHistoryUpsertOne {
 	})
 }
 
-// SetChangeType sets the "change_type" field.
-func (u *AssetHistoryUpsertOne) SetChangeType(v uint8) *AssetHistoryUpsertOne {
+// SetType sets the "type" field.
+func (u *AssetHistoryUpsertOne) SetType(v uint8) *AssetHistoryUpsertOne {
 	return u.Update(func(s *AssetHistoryUpsert) {
-		s.SetChangeType(v)
+		s.SetType(v)
 	})
 }
 
-// AddChangeType adds v to the "change_type" field.
-func (u *AssetHistoryUpsertOne) AddChangeType(v uint8) *AssetHistoryUpsertOne {
+// AddType adds v to the "type" field.
+func (u *AssetHistoryUpsertOne) AddType(v uint8) *AssetHistoryUpsertOne {
 	return u.Update(func(s *AssetHistoryUpsert) {
-		s.AddChangeType(v)
+		s.AddType(v)
 	})
 }
 
-// UpdateChangeType sets the "change_type" field to the value that was provided on create.
-func (u *AssetHistoryUpsertOne) UpdateChangeType() *AssetHistoryUpsertOne {
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *AssetHistoryUpsertOne) UpdateType() *AssetHistoryUpsertOne {
 	return u.Update(func(s *AssetHistoryUpsert) {
-		s.UpdateChangeType()
+		s.UpdateType()
+	})
+}
+
+// ClearType clears the value of the "type" field.
+func (u *AssetHistoryUpsertOne) ClearType() *AssetHistoryUpsertOne {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.ClearType()
 	})
 }
 
@@ -1279,24 +1297,31 @@ func (u *AssetHistoryUpsertBulk) ClearToLocationID() *AssetHistoryUpsertBulk {
 	})
 }
 
-// SetChangeType sets the "change_type" field.
-func (u *AssetHistoryUpsertBulk) SetChangeType(v uint8) *AssetHistoryUpsertBulk {
+// SetType sets the "type" field.
+func (u *AssetHistoryUpsertBulk) SetType(v uint8) *AssetHistoryUpsertBulk {
 	return u.Update(func(s *AssetHistoryUpsert) {
-		s.SetChangeType(v)
+		s.SetType(v)
 	})
 }
 
-// AddChangeType adds v to the "change_type" field.
-func (u *AssetHistoryUpsertBulk) AddChangeType(v uint8) *AssetHistoryUpsertBulk {
+// AddType adds v to the "type" field.
+func (u *AssetHistoryUpsertBulk) AddType(v uint8) *AssetHistoryUpsertBulk {
 	return u.Update(func(s *AssetHistoryUpsert) {
-		s.AddChangeType(v)
+		s.AddType(v)
 	})
 }
 
-// UpdateChangeType sets the "change_type" field to the value that was provided on create.
-func (u *AssetHistoryUpsertBulk) UpdateChangeType() *AssetHistoryUpsertBulk {
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *AssetHistoryUpsertBulk) UpdateType() *AssetHistoryUpsertBulk {
 	return u.Update(func(s *AssetHistoryUpsert) {
-		s.UpdateChangeType()
+		s.UpdateType()
+	})
+}
+
+// ClearType clears the value of the "type" field.
+func (u *AssetHistoryUpsertBulk) ClearType() *AssetHistoryUpsertBulk {
+	return u.Update(func(s *AssetHistoryUpsert) {
+		s.ClearType()
 	})
 }
 

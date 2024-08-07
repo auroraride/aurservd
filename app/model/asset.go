@@ -1,7 +1,7 @@
 package model
 
 // AssetEbikeAttributesColumns 资产电车导入固定列
-var AssetEbikeAttributesColumns = []any{"型号", "车架号"}
+var AssetEbikeAttributesColumns = []any{"型号", "车架号", "仓库"}
 
 // AssetCreateReq 创建资产请求
 type AssetCreateReq struct {
@@ -77,7 +77,7 @@ type AssetFlowDetail struct {
 
 // AssetBatchCreateReq 批量创建资产请求
 type AssetBatchCreateReq struct {
-	AssetType AssetType `json:"assetType" validate:"required"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+	AssetType AssetType `json:"assetType" validate:"required" form:"assetType" query:"assetType"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
 }
 
 // AssetExportTemplateReq 导出模版请求

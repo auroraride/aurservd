@@ -72,7 +72,6 @@ type AssetTransferCreateReq struct {
 	ToLocationID     uint64                      `json:"toLocationID" validate:"required"`          // 调拨后位置ID
 	Details          []AssetTransferCreateDetail `json:"details" validate:"required,dive,required"` // 资产调拨详情
 	Reason           string                      `json:"reason" validate:"required"`                // 调拨事由
-	Type             *AssetTransferType          `json:"type" enums:"1,2,3,4,5"`                    // 调拨类型 1:初始入库 2:平台调拨 3:门店调拨 4:代理调拨 5:运维调拨
 }
 
 // AssetTransferCreateDetail 资产调拨详情
@@ -147,7 +146,7 @@ type AssetTransferReceiveReq struct {
 
 // AssetTransferReceiveBatchReq 批量接收资产
 type AssetTransferReceiveBatchReq struct {
-	OperateType          uint8                     `json:"operateType" validate:"required" enums:"1,2,3,4,5,6"` // 操作类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手
+	OperateType          AssetOperateRoleType      `json:"operateType" validate:"required" enums:"1,2,3,4,5,6"` // 操作类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手
 	AssetTransferReceive []AssetTransferReceiveReq `json:"assetTransferReceive" validate:"required,dive,required"`
 }
 

@@ -135,11 +135,6 @@ func Reason(v string) predicate.AssetTransfer {
 	return predicate.AssetTransfer(sql.FieldEQ(FieldReason, v))
 }
 
-// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
-func Type(v uint8) predicate.AssetTransfer {
-	return predicate.AssetTransfer(sql.FieldEQ(FieldType, v))
-}
-
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.AssetTransfer {
 	return predicate.AssetTransfer(sql.FieldEQ(FieldCreatedAt, v))
@@ -933,56 +928,6 @@ func ReasonEqualFold(v string) predicate.AssetTransfer {
 // ReasonContainsFold applies the ContainsFold predicate on the "reason" field.
 func ReasonContainsFold(v string) predicate.AssetTransfer {
 	return predicate.AssetTransfer(sql.FieldContainsFold(FieldReason, v))
-}
-
-// TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v uint8) predicate.AssetTransfer {
-	return predicate.AssetTransfer(sql.FieldEQ(FieldType, v))
-}
-
-// TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v uint8) predicate.AssetTransfer {
-	return predicate.AssetTransfer(sql.FieldNEQ(FieldType, v))
-}
-
-// TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...uint8) predicate.AssetTransfer {
-	return predicate.AssetTransfer(sql.FieldIn(FieldType, vs...))
-}
-
-// TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...uint8) predicate.AssetTransfer {
-	return predicate.AssetTransfer(sql.FieldNotIn(FieldType, vs...))
-}
-
-// TypeGT applies the GT predicate on the "type" field.
-func TypeGT(v uint8) predicate.AssetTransfer {
-	return predicate.AssetTransfer(sql.FieldGT(FieldType, v))
-}
-
-// TypeGTE applies the GTE predicate on the "type" field.
-func TypeGTE(v uint8) predicate.AssetTransfer {
-	return predicate.AssetTransfer(sql.FieldGTE(FieldType, v))
-}
-
-// TypeLT applies the LT predicate on the "type" field.
-func TypeLT(v uint8) predicate.AssetTransfer {
-	return predicate.AssetTransfer(sql.FieldLT(FieldType, v))
-}
-
-// TypeLTE applies the LTE predicate on the "type" field.
-func TypeLTE(v uint8) predicate.AssetTransfer {
-	return predicate.AssetTransfer(sql.FieldLTE(FieldType, v))
-}
-
-// TypeIsNil applies the IsNil predicate on the "type" field.
-func TypeIsNil() predicate.AssetTransfer {
-	return predicate.AssetTransfer(sql.FieldIsNull(FieldType))
-}
-
-// TypeNotNil applies the NotNil predicate on the "type" field.
-func TypeNotNil() predicate.AssetTransfer {
-	return predicate.AssetTransfer(sql.FieldNotNull(FieldType))
 }
 
 // HasTransferDetails applies the HasEdge predicate on the "transfer_details" edge.

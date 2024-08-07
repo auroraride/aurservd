@@ -242,7 +242,7 @@ func (atdq *AssetTransferDetailsQuery) QueryAsset() *AssetQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assettransferdetails.Table, assettransferdetails.FieldID, selector),
 			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, assettransferdetails.AssetTable, assettransferdetails.AssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, assettransferdetails.AssetTable, assettransferdetails.AssetColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(atdq.driver.Dialect(), step)
 		return fromU, nil

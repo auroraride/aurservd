@@ -64,7 +64,7 @@ func (AssetTransferDetails) Fields() []ent.Field {
 		field.Uint64("in_operate_id").Optional().Comment("入库人id"),
 		field.Uint8("in_operate_type").Optional().Comment("入库角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手"),
 		field.Time("in_time_at").Optional().Nillable().Comment("入库时间"),
-		field.Uint64("asset_id").Comment("资产ID"),
+		field.Uint64("asset_id").Optional().Comment("资产ID"),
 	}
 }
 
@@ -82,7 +82,7 @@ func (AssetTransferDetails) Edges() []ent.Edge {
 		edge.To("in_operate_rider", Rider.Type).Unique().Field("in_operate_id"),           // 骑手
 
 		// 关联资产
-		edge.From("asset", Asset.Type).Ref("transfer_details").Unique().Required().Field("asset_id"),
+		edge.From("asset", Asset.Type).Ref("transfer_details").Unique().Field("asset_id"),
 	}
 }
 

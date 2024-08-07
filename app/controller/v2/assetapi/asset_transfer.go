@@ -24,8 +24,6 @@ var AssetTransfer = new(assetTransfer)
 // @Success	200				{object}	model.StatusResponse			"请求成功"
 func (*assetTransfer) Transfer(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.AssetTransferCreateReq](c)
-	platform := model.AssetTransferTypePlatform
-	req.Type = &platform
 	return ctx.SendResponse(service.NewAssetTransfer().Transfer(ctx.Request().Context(), req, ctx.Modifier))
 }
 
@@ -87,4 +85,19 @@ func (*assetTransfer) TransferCancel(c echo.Context) (err error) {
 func (*assetTransfer) GetTransferBySN(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.GetTransferBySNReq](c)
 	return ctx.SendResponse(service.NewAssetTransfer().GetTransferBySN(ctx.Request().Context(), req))
+}
+
+// TransferReceive
+// @ID		AssetTransferReceive
+// @Router	/manager/v2/asset/transfer/receive [POST]
+// @Summary	接收资产调拨
+// @Tags	资产
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string									true	"管理员校验token"
+// @Param	body			body		model.AssetTransferReceiveBatchReq				true	"接收参数"
+// @Success	200				{object}	model.StatusResponse					"请求成功"
+func (*assetTransfer) TransferReceive(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.AssetTransferReceiveBatchReq](c)
+	return ctx.SendResponse(service.NewAssetTransfer().TransferReceive(ctx.Request().Context(), req, ctx.Modifier))
 }
