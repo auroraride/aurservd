@@ -34,12 +34,12 @@ func loadAssersRoutes() {
 	asset.GET("/template", assetapi.Assets.Template)  // 导出模版
 
 	// 仓库
-	asset.POST("/warehouse", assetapi.Warehouse.Create)        // 创建仓库
-	asset.GET("/warehouse", assetapi.Warehouse.List)           // 仓库列表
-	asset.GET("/warehouse/:id", assetapi.Warehouse.Detail)     // 仓库详情
-	asset.PUT("/warehouse/:id", assetapi.Warehouse.Modify)     // 更新仓库
-	asset.DELETE("/warehouse/:id", assetapi.Warehouse.Delete)  // 删除仓库
-	asset.GET("/warehouse_assets ", assetapi.Warehouse.Assets) // 仓库物资
+	asset.POST("/warehouse", assetapi.Warehouse.Create)       // 创建仓库
+	asset.GET("/warehouse", assetapi.Warehouse.List)          // 仓库列表
+	asset.GET("/warehouse/:id", assetapi.Warehouse.Detail)    // 仓库详情
+	asset.PUT("/warehouse/:id", assetapi.Warehouse.Modify)    // 更新仓库
+	asset.DELETE("/warehouse/:id", assetapi.Warehouse.Delete) // 删除仓库
+	asset.GET("/warehouse_assets", assetapi.Warehouse.Assets) // 仓库物资
 
 	// 门店物资
 	asset.GET("/store_assets", assetapi.Store.StoreAsset) // 门店物资列表
@@ -51,7 +51,7 @@ func loadAssersRoutes() {
 	asset.GET("/cabinet_assets", assetapi.Cabinet.CabinetAsset) // 电柜物资列表
 
 	// 团签物资
-	asset.GET("/cabinet_assets", assetapi.Cabinet.CabinetAsset) // 团签物资列表
+	asset.GET("/enterprise_assets", assetapi.Enterprise.EnterpriseAsset) // 团签物资列表
 
 	// 其他物资
 	asset.POST("/material", assetapi.Material.Create)       // 创建仓库

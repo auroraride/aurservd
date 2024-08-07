@@ -35,7 +35,7 @@ func (*assetTransfer) Transfer(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string													true	"管理员校验token"
-// @Param	query			query		model.AssetTransferListReq									true	"查询参数"
+// @Param	query			query		model.AssetTransferListReq								true	"查询参数"
 // @Success	200				{object}	model.PaginationRes{items=[]model.AssetTransferListRes}	"请求成功"
 func (*assetTransfer) TransferList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.AssetTransferListReq](c)
@@ -64,9 +64,9 @@ func (*assetTransfer) TransferDetail(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string							true	"管理员校验token"
-// @Param	id				path		uint64							true	"调拨ID"
-// @Success	200				{object}	model.StatusResponse			"请求成功"
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	id				path		uint64					true	"调拨ID"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*assetTransfer) TransferCancel(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.AssetTransferDetailReq](c)
 	return ctx.SendResponse(service.NewAssetTransfer().TransferCancel(ctx.Request().Context(), req, ctx.Modifier))
@@ -94,9 +94,9 @@ func (*assetTransfer) GetTransferBySN(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string									true	"管理员校验token"
-// @Param	body			body		model.AssetTransferReceiveBatchReq				true	"接收参数"
-// @Success	200				{object}	model.StatusResponse					"请求成功"
+// @Param	X-Manager-Token	header		string								true	"管理员校验token"
+// @Param	body			body		model.AssetTransferReceiveBatchReq	true	"接收参数"
+// @Success	200				{object}	model.StatusResponse				"请求成功"
 func (*assetTransfer) TransferReceive(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.AssetTransferReceiveBatchReq](c)
 	return ctx.SendResponse(service.NewAssetTransfer().TransferReceive(ctx.Request().Context(), req, ctx.Modifier))

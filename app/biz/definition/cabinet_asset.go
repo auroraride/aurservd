@@ -28,8 +28,8 @@ type CabinetAssetDetail struct {
 
 // CabinetAsset 电柜资产
 type CabinetAsset struct {
-	SmartBatteryTotal    int                    `json:"smartBatteryTotal"`    // 智能电池总数
-	SmartBatteries       []*model.StockMaterial `json:"smartBatteries"`       // 智能电池物资详情
-	NonSmartBatteryTotal int                    `json:"nonSmartBatteryTotal"` // 非智能电池总数
-	NonSmartBatteries    []*model.StockMaterial `json:"nonSmartBatteries"`    // 非智能电池物资详情
+	SmartBatteryTotal    int              `json:"smartBatteryTotal"`    // 智能电池总数
+	SmartBatteries       []*AssetMaterial `json:"smartBatteries"`       // 智能电池物资详情
+	NonSmartBatteryTotal int              `json:"nonSmartBatteryTotal"` // 非智能电池总数
+	NonSmartBatteries    []*AssetMaterial `json:"nonSmartBatteries"`    // 非智能电池物资详情
 }

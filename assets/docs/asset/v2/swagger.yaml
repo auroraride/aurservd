@@ -1,5 +1,25 @@
 basePath: /
 definitions:
+  definition.AssetMaterial:
+    properties:
+      exception:
+        description: 异常数量(电柜无)
+        type: integer
+      inbound:
+        description: 入库数量
+        type: integer
+      name:
+        description: |-
+          Type      model.AssetType `json:"type"`                // 物资类别
+          ID        uint64          `json:"id"`                  // 物资ID
+        type: string
+      outbound:
+        description: 出库数量
+        type: integer
+      surplus:
+        description: 剩余
+        type: integer
+    type: object
   definition.BatteryModelCreateReq:
     properties:
       capacity:
@@ -82,7 +102,7 @@ definitions:
       nonSmartBatteries:
         description: 非智能电池物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       nonSmartBatteryTotal:
         description: 非智能电池总数
@@ -90,7 +110,7 @@ definitions:
       smartBatteries:
         description: 智能电池物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       smartBatteryTotal:
         description: 智能电池总数
@@ -121,7 +141,7 @@ definitions:
       cabinetAccessories:
         description: 电柜配件物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       cabinetAccessoryTotal:
         description: 电柜配件总数
@@ -129,7 +149,7 @@ definitions:
       ebikeAccessories:
         description: 电车配件物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       ebikeAccessoryTotal:
         description: 电车配件总数
@@ -140,12 +160,12 @@ definitions:
       ebikes:
         description: 电车物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       nonSmartBatteries:
         description: 非智能电池物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       nonSmartBatteryTotal:
         description: 非智能电池总数
@@ -156,12 +176,12 @@ definitions:
       otherAssets:
         description: 其他物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       smartBatteries:
         description: 智能电池物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       smartBatteryTotal:
         description: 智能电池总数
@@ -203,7 +223,7 @@ definitions:
       cabinetAccessories:
         description: 电柜配件物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       cabinetAccessoryTotal:
         description: 电柜配件总数
@@ -211,7 +231,7 @@ definitions:
       ebikeAccessories:
         description: 电车配件物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       ebikeAccessoryTotal:
         description: 电车配件总数
@@ -222,12 +242,12 @@ definitions:
       ebikes:
         description: 电车物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       nonSmartBatteries:
         description: 非智能电池物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       nonSmartBatteryTotal:
         description: 非智能电池总数
@@ -238,12 +258,12 @@ definitions:
       otherAssets:
         description: 其他物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       smartBatteries:
         description: 智能电池物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       smartBatteryTotal:
         description: 智能电池总数
@@ -343,7 +363,7 @@ definitions:
       cabinetAccessories:
         description: 电柜配件物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       cabinetAccessoryTotal:
         description: 电柜配件总数
@@ -351,7 +371,7 @@ definitions:
       ebikeAccessories:
         description: 电车配件物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       ebikeAccessoryTotal:
         description: 电车配件总数
@@ -362,12 +382,12 @@ definitions:
       ebikes:
         description: 电车物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       nonSmartBatteries:
         description: 非智能电池物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       nonSmartBatteryTotal:
         description: 非智能电池总数
@@ -378,12 +398,12 @@ definitions:
       otherAssets:
         description: 其他物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       smartBatteries:
         description: 智能电池物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       smartBatteryTotal:
         description: 智能电池总数
@@ -488,7 +508,7 @@ definitions:
       cabinetAccessories:
         description: 电柜配件物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       cabinetAccessoryTotal:
         description: 电柜配件总数
@@ -496,7 +516,7 @@ definitions:
       ebikeAccessories:
         description: 电车配件物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       ebikeAccessoryTotal:
         description: 电车配件总数
@@ -507,12 +527,12 @@ definitions:
       ebikes:
         description: 电车物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       nonSmartBatteries:
         description: 非智能电池物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       nonSmartBatteryTotal:
         description: 非智能电池总数
@@ -523,12 +543,12 @@ definitions:
       otherAssets:
         description: 其他物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       smartBatteries:
         description: 智能电池物资详情
         items:
-          $ref: '#/definitions/model.StockMaterial'
+          $ref: '#/definitions/definition.AssetMaterial'
         type: array
       smartBatteryTotal:
         description: 智能电池总数
@@ -712,29 +732,6 @@ definitions:
     type: object
   model.AssetListReq:
     properties:
-      assetKeywork:
-        description: 资产位置关键词
-        type: string
-      assetLocationsType:
-        allOf:
-        - $ref: '#/definitions/model.AssetLocationsType'
-        description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
-        enum:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-      assetStatus:
-        description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
-        enum:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        type: integer
       assetType:
         allOf:
         - $ref: '#/definitions/model.AssetType'
@@ -763,6 +760,20 @@ definitions:
       enable:
         description: 是否启用
         type: boolean
+      keywork:
+        description: 资产位置关键词
+        type: string
+      locationsType:
+        allOf:
+        - $ref: '#/definitions/model.AssetLocationsType'
+        description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
       model:
         description: 型号ID
         type: integer
@@ -783,6 +794,15 @@ definitions:
         type: string
       stationId:
         description: 站点ID
+        type: integer
+      status:
+        description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
         type: integer
     type: object
   model.AssetListRes:
@@ -1018,12 +1038,112 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.AssetLocationsType'
         description: 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维
+      type:
+        allOf:
+        - $ref: '#/definitions/model.AssetTransferType'
+        description: 调拨类型 1:初始入库 2:平台调拨 3:门店调拨 4:代理调拨 5:运维调拨
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
     required:
     - details
     - reason
     - toLocationID
     - toLocationType
     type: object
+  model.AssetTransferDetailReq:
+    type: object
+  model.AssetTransferListRes:
+    properties:
+      fromLocationID:
+        description: 调出目标ID
+        type: integer
+      fromLocationName:
+        description: 调出目标名称
+        type: string
+      fromLocationType:
+        description: 调出目标类型
+        type: integer
+      id:
+        description: 调拨ID
+        type: integer
+      inNum:
+        description: 入库数量
+        type: integer
+      outNum:
+        description: 出库数量
+        type: integer
+      outOperateName:
+        description: 出库操作人
+        type: string
+      outTimeAt:
+        description: 出库时间
+        type: string
+      reason:
+        description: 调拨事由
+        type: string
+      remark:
+        description: 备注
+        type: string
+      sn:
+        description: 调拨单号
+        type: string
+      status:
+        description: 调拨状态
+        type: string
+      toLocationID:
+        description: 调入目标ID
+        type: integer
+      toLocationName:
+        description: 调入目标名称
+        type: string
+      toLocationType:
+        description: 调入目标类型
+        type: integer
+    type: object
+  model.AssetTransferStatus:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
+    x-enum-comments:
+      AssetTransferStatusCancel: 已取消
+      AssetTransferStatusDelivering: 配送中
+      AssetTransferStatusPending: 待入库
+      AssetTransferStatusStock: 已入库
+    x-enum-varnames:
+    - AssetTransferStatusDelivering
+    - AssetTransferStatusPending
+    - AssetTransferStatusStock
+    - AssetTransferStatusCancel
+  model.AssetTransferType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    type: integer
+    x-enum-comments:
+      AssetTransferTypeAgent: 代理调拨
+      AssetTransferTypeInitial: 初始入库
+      AssetTransferTypeOperation: 运维调拨
+      AssetTransferTypePlatform: 平台调拨
+      AssetTransferTypeStore: 门店调拨
+      AssetTransferTypeSystem: 系统业务自动调拨
+    x-enum-varnames:
+    - AssetTransferTypeInitial
+    - AssetTransferTypePlatform
+    - AssetTransferTypeStore
+    - AssetTransferTypeAgent
+    - AssetTransferTypeOperation
+    - AssetTransferTypeSystem
   model.AssetType:
     enum:
     - 1
@@ -1113,24 +1233,6 @@ definitions:
     properties:
       status:
         type: boolean
-    type: object
-  model.StockMaterial:
-    properties:
-      exception:
-        description: 异常数量(电柜无)
-        type: integer
-      inbound:
-        description: 入库数量
-        type: integer
-      name:
-        description: 物资名称
-        type: string
-      outbound:
-        description: 出库数量
-        type: integer
-      surplus:
-        description: 剩余
-        type: integer
     type: object
 info:
   contact: {}
@@ -1229,45 +1331,6 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 资产位置关键词
-        in: query
-        name: assetKeywork
-        type: string
-      - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
-        enum:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        in: query
-        name: assetLocationsType
-        type: integer
-        x-enum-comments:
-          AssetLocationsTypeCabinet: 电柜
-          AssetLocationsTypeOperation: 运维
-          AssetLocationsTypeRider: 骑手
-          AssetLocationsTypeStation: 站点
-          AssetLocationsTypeStore: 门店
-          AssetLocationsTypeWarehouse: 仓库
-        x-enum-varnames:
-        - AssetLocationsTypeWarehouse
-        - AssetLocationsTypeStore
-        - AssetLocationsTypeStation
-        - AssetLocationsTypeOperation
-        - AssetLocationsTypeCabinet
-        - AssetLocationsTypeRider
-      - description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
-        enum:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        in: query
-        name: assetStatus
-        type: integer
       - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
         enum:
         - 1
@@ -1309,6 +1372,35 @@ paths:
         in: query
         name: enable
         type: boolean
+      - description: 资产位置关键词
+        in: query
+        name: keywork
+        type: string
+      - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: locationsType
+        type: integer
+        x-enum-comments:
+          AssetLocationsTypeCabinet: 电柜
+          AssetLocationsTypeOperation: 运维
+          AssetLocationsTypeRider: 骑手
+          AssetLocationsTypeStation: 站点
+          AssetLocationsTypeStore: 门店
+          AssetLocationsTypeWarehouse: 仓库
+        x-enum-varnames:
+        - AssetLocationsTypeWarehouse
+        - AssetLocationsTypeStore
+        - AssetLocationsTypeStation
+        - AssetLocationsTypeOperation
+        - AssetLocationsTypeCabinet
+        - AssetLocationsTypeRider
       - description: 型号ID
         in: query
         name: model
@@ -1335,6 +1427,16 @@ paths:
       - description: 站点ID
         in: query
         name: stationId
+        type: integer
+      - description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        in: query
+        name: status
         type: integer
       produces:
       - application/json
@@ -1601,45 +1703,6 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 资产位置关键词
-        in: query
-        name: assetKeywork
-        type: string
-      - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
-        enum:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        in: query
-        name: assetLocationsType
-        type: integer
-        x-enum-comments:
-          AssetLocationsTypeCabinet: 电柜
-          AssetLocationsTypeOperation: 运维
-          AssetLocationsTypeRider: 骑手
-          AssetLocationsTypeStation: 站点
-          AssetLocationsTypeStore: 门店
-          AssetLocationsTypeWarehouse: 仓库
-        x-enum-varnames:
-        - AssetLocationsTypeWarehouse
-        - AssetLocationsTypeStore
-        - AssetLocationsTypeStation
-        - AssetLocationsTypeOperation
-        - AssetLocationsTypeCabinet
-        - AssetLocationsTypeRider
-      - description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
-        enum:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        in: query
-        name: assetStatus
-        type: integer
       - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
         enum:
         - 1
@@ -1677,6 +1740,35 @@ paths:
         in: query
         name: enable
         type: boolean
+      - description: 资产位置关键词
+        in: query
+        name: keywork
+        type: string
+      - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: locationsType
+        type: integer
+        x-enum-comments:
+          AssetLocationsTypeCabinet: 电柜
+          AssetLocationsTypeOperation: 运维
+          AssetLocationsTypeRider: 骑手
+          AssetLocationsTypeStation: 站点
+          AssetLocationsTypeStore: 门店
+          AssetLocationsTypeWarehouse: 仓库
+        x-enum-varnames:
+        - AssetLocationsTypeWarehouse
+        - AssetLocationsTypeStore
+        - AssetLocationsTypeStation
+        - AssetLocationsTypeOperation
+        - AssetLocationsTypeCabinet
+        - AssetLocationsTypeRider
       - description: 型号ID
         in: query
         name: model
@@ -1699,6 +1791,16 @@ paths:
       - description: 站点ID
         in: query
         name: stationId
+        type: integer
+      - description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        in: query
+        name: status
         type: integer
       produces:
       - application/json
@@ -2258,6 +2360,138 @@ paths:
       tags:
       - 资产
   /manager/v2/asset/transfer:
+    get:
+      consumes:
+      - application/json
+      operationId: AssetTransferList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 调拨前位置ID
+        in: query
+        name: fromLocationID
+        type: integer
+      - description: 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: fromLocationType
+        type: integer
+        x-enum-comments:
+          AssetLocationsTypeCabinet: 电柜
+          AssetLocationsTypeOperation: 运维
+          AssetLocationsTypeRider: 骑手
+          AssetLocationsTypeStation: 站点
+          AssetLocationsTypeStore: 门店
+          AssetLocationsTypeWarehouse: 仓库
+        x-enum-varnames:
+        - AssetLocationsTypeWarehouse
+        - AssetLocationsTypeStore
+        - AssetLocationsTypeStation
+        - AssetLocationsTypeOperation
+        - AssetLocationsTypeCabinet
+        - AssetLocationsTypeRider
+      - description: 入库结束时间
+        in: query
+        name: inEnd
+        type: string
+      - description: 入库开始时间
+        in: query
+        name: inStart
+        type: string
+      - description: 关键字 (调拨单号，调拨事由、出库人、接收人)
+        in: query
+        name: keyword
+        type: string
+      - description: 出库结束时间
+        in: query
+        name: outEnd
+        type: string
+      - description: 出库开始时间
+        in: query
+        name: outStart
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 调拨状态 1:配送中 2:待入库 3:已入库 4:已取消
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        in: query
+        name: status
+        type: integer
+        x-enum-comments:
+          AssetTransferStatusCancel: 已取消
+          AssetTransferStatusDelivering: 配送中
+          AssetTransferStatusPending: 待入库
+          AssetTransferStatusStock: 已入库
+        x-enum-varnames:
+        - AssetTransferStatusDelivering
+        - AssetTransferStatusPending
+        - AssetTransferStatusStock
+        - AssetTransferStatusCancel
+      - description: 调拨后位置ID
+        in: query
+        name: toLocationID
+        type: integer
+      - description: 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: toLocationType
+        type: integer
+        x-enum-comments:
+          AssetLocationsTypeCabinet: 电柜
+          AssetLocationsTypeOperation: 运维
+          AssetLocationsTypeRider: 骑手
+          AssetLocationsTypeStation: 站点
+          AssetLocationsTypeStore: 门店
+          AssetLocationsTypeWarehouse: 仓库
+        x-enum-varnames:
+        - AssetLocationsTypeWarehouse
+        - AssetLocationsTypeStore
+        - AssetLocationsTypeStation
+        - AssetLocationsTypeOperation
+        - AssetLocationsTypeCabinet
+        - AssetLocationsTypeRider
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.AssetTransferListRes'
+                  type: array
+              type: object
+      summary: 资产调拨列表
+      tags:
+      - 资产
     post:
       consumes:
       - application/json
@@ -2282,6 +2516,84 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: 资产调拨
+      tags:
+      - 资产
+  /manager/v2/asset/transfer/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: AssetTransferDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 调拨ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AssetTransferDetailReq'
+      summary: 资产调拨详情
+      tags:
+      - 资产
+  /manager/v2/asset/transfer/cancel/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: AssetTransferCancel
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 调拨ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 取消资产调拨
+      tags:
+      - 资产
+  /manager/v2/asset/transfer/sn/{sn}:
+    get:
+      consumes:
+      - application/json
+      operationId: GetTransferBySN
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 调拨单号
+        in: path
+        name: sn
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AssetTransferDetailReq'
+      summary: 根据调拨单号获取调拨详情
       tags:
       - 资产
   /manager/v2/asset/warehouse:
