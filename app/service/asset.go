@@ -138,6 +138,7 @@ func (s *assetService) Create(ctx context.Context, req *model.AssetCreateReq, mo
 			SetInNum(1).
 			SetSn(tools.NewUnique().NewSN28()).
 			SetStatus(model.AssetTransferStatusDelivering.Value()).
+			SetType(model.AssetTransferTypeInitial.Value()).
 			Save(ctx)
 		if t != nil {
 			_ = ent.Database.AssetTransferDetails.Create().
@@ -303,6 +304,7 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 			SetLastModifier(modifier).
 			SetInNum(uint(len(v))).
 			SetStatus(model.AssetTransferStatusDelivering.Value()).
+			SetType(model.AssetTransferTypeInitial.Value()).
 			SetSn(tools.NewUnique().NewSN28()).
 			Save(ctx.Request().Context())
 		if t != nil {
@@ -441,6 +443,7 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 			SetLastModifier(modifier).
 			SetInNum(uint(len(v))).
 			SetStatus(model.AssetTransferStatusDelivering.Value()).
+			SetType(model.AssetTransferTypeInitial.Value()).
 			SetSn(tools.NewUnique().NewSN28()).
 			Save(ctx.Request().Context())
 		if t != nil {
@@ -986,11 +989,6 @@ func (s *assetService) ebikeFilter(q *ent.AssetQuery, req *model.AssetFilter) *e
 		q.Where(asset.RtoRiderIDIsNil())
 	}
 	return q
-}
-
-// FlowDetail 电池流转明细
-func (s *assetService) FlowDetail(ctx context.Context, id uint64) []*model.AssetFlowDetail {
-	return nil
 }
 
 // Count 查询有效的资产数量

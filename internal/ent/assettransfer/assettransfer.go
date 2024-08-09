@@ -51,6 +51,8 @@ const (
 	FieldOutTimeAt = "out_time_at"
 	// FieldReason holds the string denoting the reason field in the database.
 	FieldReason = "reason"
+	// FieldType holds the string denoting the type field in the database.
+	FieldType = "type"
 	// EdgeTransferDetails holds the string denoting the transfer_details edge name in mutations.
 	EdgeTransferDetails = "transfer_details"
 	// EdgeFromLocationStore holds the string denoting the from_location_store edge name in mutations.
@@ -247,6 +249,7 @@ var Columns = []string{
 	FieldOutOperateType,
 	FieldOutTimeAt,
 	FieldReason,
+	FieldType,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -362,6 +365,11 @@ func ByOutTimeAt(opts ...sql.OrderTermOption) OrderOption {
 // ByReason orders the results by the reason field.
 func ByReason(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldReason, opts...).ToFunc()
+}
+
+// ByType orders the results by the type field.
+func ByType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldType, opts...).ToFunc()
 }
 
 // ByTransferDetailsCount orders the results by transfer_details count.

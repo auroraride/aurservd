@@ -367,6 +367,33 @@ func (atu *AssetTransferUpdate) ClearReason() *AssetTransferUpdate {
 	return atu
 }
 
+// SetType sets the "type" field.
+func (atu *AssetTransferUpdate) SetType(u uint8) *AssetTransferUpdate {
+	atu.mutation.ResetType()
+	atu.mutation.SetType(u)
+	return atu
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableType(u *uint8) *AssetTransferUpdate {
+	if u != nil {
+		atu.SetType(*u)
+	}
+	return atu
+}
+
+// AddType adds u to the "type" field.
+func (atu *AssetTransferUpdate) AddType(u int8) *AssetTransferUpdate {
+	atu.mutation.AddType(u)
+	return atu
+}
+
+// ClearType clears the value of the "type" field.
+func (atu *AssetTransferUpdate) ClearType() *AssetTransferUpdate {
+	atu.mutation.ClearType()
+	return atu
+}
+
 // AddTransferDetailIDs adds the "transfer_details" edge to the AssetTransferDetails entity by IDs.
 func (atu *AssetTransferUpdate) AddTransferDetailIDs(ids ...uint64) *AssetTransferUpdate {
 	atu.mutation.AddTransferDetailIDs(ids...)
@@ -1004,6 +1031,15 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if atu.mutation.ReasonCleared() {
 		_spec.ClearField(assettransfer.FieldReason, field.TypeString)
+	}
+	if value, ok := atu.mutation.GetType(); ok {
+		_spec.SetField(assettransfer.FieldType, field.TypeUint8, value)
+	}
+	if value, ok := atu.mutation.AddedType(); ok {
+		_spec.AddField(assettransfer.FieldType, field.TypeUint8, value)
+	}
+	if atu.mutation.TypeCleared() {
+		_spec.ClearField(assettransfer.FieldType, field.TypeUint8)
 	}
 	if atu.mutation.TransferDetailsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1922,6 +1958,33 @@ func (atuo *AssetTransferUpdateOne) ClearReason() *AssetTransferUpdateOne {
 	return atuo
 }
 
+// SetType sets the "type" field.
+func (atuo *AssetTransferUpdateOne) SetType(u uint8) *AssetTransferUpdateOne {
+	atuo.mutation.ResetType()
+	atuo.mutation.SetType(u)
+	return atuo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableType(u *uint8) *AssetTransferUpdateOne {
+	if u != nil {
+		atuo.SetType(*u)
+	}
+	return atuo
+}
+
+// AddType adds u to the "type" field.
+func (atuo *AssetTransferUpdateOne) AddType(u int8) *AssetTransferUpdateOne {
+	atuo.mutation.AddType(u)
+	return atuo
+}
+
+// ClearType clears the value of the "type" field.
+func (atuo *AssetTransferUpdateOne) ClearType() *AssetTransferUpdateOne {
+	atuo.mutation.ClearType()
+	return atuo
+}
+
 // AddTransferDetailIDs adds the "transfer_details" edge to the AssetTransferDetails entity by IDs.
 func (atuo *AssetTransferUpdateOne) AddTransferDetailIDs(ids ...uint64) *AssetTransferUpdateOne {
 	atuo.mutation.AddTransferDetailIDs(ids...)
@@ -2589,6 +2652,15 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 	}
 	if atuo.mutation.ReasonCleared() {
 		_spec.ClearField(assettransfer.FieldReason, field.TypeString)
+	}
+	if value, ok := atuo.mutation.GetType(); ok {
+		_spec.SetField(assettransfer.FieldType, field.TypeUint8, value)
+	}
+	if value, ok := atuo.mutation.AddedType(); ok {
+		_spec.AddField(assettransfer.FieldType, field.TypeUint8, value)
+	}
+	if atuo.mutation.TypeCleared() {
+		_spec.ClearField(assettransfer.FieldType, field.TypeUint8)
 	}
 	if atuo.mutation.TransferDetailsCleared() {
 		edge := &sqlgraph.EdgeSpec{

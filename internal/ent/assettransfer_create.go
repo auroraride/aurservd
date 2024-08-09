@@ -260,6 +260,20 @@ func (atc *AssetTransferCreate) SetNillableReason(s *string) *AssetTransferCreat
 	return atc
 }
 
+// SetType sets the "type" field.
+func (atc *AssetTransferCreate) SetType(u uint8) *AssetTransferCreate {
+	atc.mutation.SetType(u)
+	return atc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (atc *AssetTransferCreate) SetNillableType(u *uint8) *AssetTransferCreate {
+	if u != nil {
+		atc.SetType(*u)
+	}
+	return atc
+}
+
 // AddTransferDetailIDs adds the "transfer_details" edge to the AssetTransferDetails entity by IDs.
 func (atc *AssetTransferCreate) AddTransferDetailIDs(ids ...uint64) *AssetTransferCreate {
 	atc.mutation.AddTransferDetailIDs(ids...)
@@ -775,6 +789,10 @@ func (atc *AssetTransferCreate) createSpec() (*AssetTransfer, *sqlgraph.CreateSp
 	if value, ok := atc.mutation.Reason(); ok {
 		_spec.SetField(assettransfer.FieldReason, field.TypeString, value)
 		_node.Reason = value
+	}
+	if value, ok := atc.mutation.GetType(); ok {
+		_spec.SetField(assettransfer.FieldType, field.TypeUint8, value)
+		_node.Type = value
 	}
 	if nodes := atc.mutation.TransferDetailsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1456,6 +1474,30 @@ func (u *AssetTransferUpsert) ClearReason() *AssetTransferUpsert {
 	return u
 }
 
+// SetType sets the "type" field.
+func (u *AssetTransferUpsert) SetType(v uint8) *AssetTransferUpsert {
+	u.Set(assettransfer.FieldType, v)
+	return u
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *AssetTransferUpsert) UpdateType() *AssetTransferUpsert {
+	u.SetExcluded(assettransfer.FieldType)
+	return u
+}
+
+// AddType adds v to the "type" field.
+func (u *AssetTransferUpsert) AddType(v uint8) *AssetTransferUpsert {
+	u.Add(assettransfer.FieldType, v)
+	return u
+}
+
+// ClearType clears the value of the "type" field.
+func (u *AssetTransferUpsert) ClearType() *AssetTransferUpsert {
+	u.SetNull(assettransfer.FieldType)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1858,6 +1900,34 @@ func (u *AssetTransferUpsertOne) UpdateReason() *AssetTransferUpsertOne {
 func (u *AssetTransferUpsertOne) ClearReason() *AssetTransferUpsertOne {
 	return u.Update(func(s *AssetTransferUpsert) {
 		s.ClearReason()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *AssetTransferUpsertOne) SetType(v uint8) *AssetTransferUpsertOne {
+	return u.Update(func(s *AssetTransferUpsert) {
+		s.SetType(v)
+	})
+}
+
+// AddType adds v to the "type" field.
+func (u *AssetTransferUpsertOne) AddType(v uint8) *AssetTransferUpsertOne {
+	return u.Update(func(s *AssetTransferUpsert) {
+		s.AddType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *AssetTransferUpsertOne) UpdateType() *AssetTransferUpsertOne {
+	return u.Update(func(s *AssetTransferUpsert) {
+		s.UpdateType()
+	})
+}
+
+// ClearType clears the value of the "type" field.
+func (u *AssetTransferUpsertOne) ClearType() *AssetTransferUpsertOne {
+	return u.Update(func(s *AssetTransferUpsert) {
+		s.ClearType()
 	})
 }
 
@@ -2429,6 +2499,34 @@ func (u *AssetTransferUpsertBulk) UpdateReason() *AssetTransferUpsertBulk {
 func (u *AssetTransferUpsertBulk) ClearReason() *AssetTransferUpsertBulk {
 	return u.Update(func(s *AssetTransferUpsert) {
 		s.ClearReason()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *AssetTransferUpsertBulk) SetType(v uint8) *AssetTransferUpsertBulk {
+	return u.Update(func(s *AssetTransferUpsert) {
+		s.SetType(v)
+	})
+}
+
+// AddType adds v to the "type" field.
+func (u *AssetTransferUpsertBulk) AddType(v uint8) *AssetTransferUpsertBulk {
+	return u.Update(func(s *AssetTransferUpsert) {
+		s.AddType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *AssetTransferUpsertBulk) UpdateType() *AssetTransferUpsertBulk {
+	return u.Update(func(s *AssetTransferUpsert) {
+		s.UpdateType()
+	})
+}
+
+// ClearType clears the value of the "type" field.
+func (u *AssetTransferUpsertBulk) ClearType() *AssetTransferUpsertBulk {
+	return u.Update(func(s *AssetTransferUpsert) {
+		s.ClearType()
 	})
 }
 

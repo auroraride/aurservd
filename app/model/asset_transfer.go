@@ -33,28 +33,31 @@ func (s AssetTransferStatus) Value() uint8 {
 type AssetTransferType uint8
 
 const (
-	AssetTransferTypeInitial   AssetTransferType = iota + 1 // 初始入库
-	AssetTransferTypePlatform                               // 平台调拨
-	AssetTransferTypeStore                                  // 门店调拨
-	AssetTransferTypeAgent                                  // 代理调拨
-	AssetTransferTypeOperation                              // 运维调拨
-	AssetTransferTypeSystem                                 // 系统业务自动调拨
+	AssetTransferTypeInitial     AssetTransferType = iota + 1 // 初始入库
+	AssetTransferTypeTransfer                                 // 调拨
+	AssetTransferTypeActive                                   // 激活
+	AssetTransferTypePause                                    // 寄存
+	AssetTransferTypeContinue                                 // 取消寄存
+	AssetTransferTypeUnSubscribe                              // 退租
+	AssetTransferTypeExchange                                 // 换电
 )
 
 func (s AssetTransferType) String() string {
 	switch s {
 	case AssetTransferTypeInitial:
 		return "初始入库"
-	case AssetTransferTypePlatform:
-		return "平台调拨"
-	case AssetTransferTypeStore:
-		return "门店调拨"
-	case AssetTransferTypeAgent:
-		return "代理调拨"
-	case AssetTransferTypeOperation:
-		return "运维调拨"
-	case AssetTransferTypeSystem:
-		return "系统业务自动调拨"
+	case AssetTransferTypeTransfer:
+		return "调拨"
+	case AssetTransferTypeActive:
+		return "激活"
+	case AssetTransferTypePause:
+		return "寄存"
+	case AssetTransferTypeContinue:
+		return "取消寄存"
+	case AssetTransferTypeUnSubscribe:
+		return "退租"
+	case AssetTransferTypeExchange:
+		return "换电"
 	default:
 		return "未知"
 	}
@@ -66,12 +69,13 @@ func (s AssetTransferType) Value() uint8 {
 
 // AssetTransferCreateReq 资产调拨请求
 type AssetTransferCreateReq struct {
-	FromLocationType *AssetLocationsType         `json:"fromLocationType"`                          // 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 (初始调拨此字段不填写)
-	FromLocationID   *uint64                     `json:"fromLocationID"`                            // 调拨前位置ID (初始调拨此字段不填写)
-	ToLocationType   AssetLocationsType          `json:"toLocationType" validate:"required"`        // 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维
-	ToLocationID     uint64                      `json:"toLocationID" validate:"required"`          // 调拨后位置ID
-	Details          []AssetTransferCreateDetail `json:"details" validate:"required,dive,required"` // 资产调拨详情
-	Reason           string                      `json:"reason" validate:"required"`                // 调拨事由
+	FromLocationType  *AssetLocationsType         `json:"fromLocationType"`                          // 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 (初始调拨此字段不填写)
+	FromLocationID    *uint64                     `json:"fromLocationID"`                            // 调拨前位置ID (初始调拨此字段不填写)
+	ToLocationType    AssetLocationsType          `json:"toLocationType" validate:"required"`        // 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维
+	ToLocationID      uint64                      `json:"toLocationID" validate:"required"`          // 调拨后位置ID
+	Details           []AssetTransferCreateDetail `json:"details" validate:"required,dive,required"` // 资产调拨详情
+	Reason            string                      `json:"reason" validate:"required"`                // 调拨事由
+	AssetTransferType *AssetTransferType          `json:"assetTransferType" enums:"1,2,3,4,5,6"`     // 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
 }
 
 // AssetTransferCreateDetail 资产调拨详情
@@ -161,4 +165,27 @@ type AssetTransferReceiveDetail struct {
 // GetTransferBySNReq 根据调拨单号获取调拨请求
 type GetTransferBySNReq struct {
 	SN string `json:"sn" param:"sn" validate:"required"`
+}
+
+// AssetTransferFlowReq 资产流转明细请求
+type AssetTransferFlowReq struct {
+	SN        string     `json:"sn" param:"sn" validate:"required" query:"sn"`    // 资产编号
+	Start     *string    `json:"start" query:"start"`                             // 开始时间
+	End       *string    `json:"end" query:"end"`                                 // 结束时间
+	AssetType *AssetType `json:"assetType" query:"assetType" enums:"1,2,3,4,5,6"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+}
+
+// AssetTransferFlow 资产流转明细
+type AssetTransferFlow struct {
+	Out AssetTransferFlowDetail `json:"out"` // 出库
+	In  AssetTransferFlowDetail `json:"in"`  // 入库
+}
+
+// AssetTransferFlowDetail 资产流转明细详情
+type AssetTransferFlowDetail struct {
+	LocationsType    string `json:"locationsType"`    // 位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	LocationsName    string `json:"locationsName"`    // 位置名称
+	TransferTypeName string `json:"transferTypeName"` // 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
+	TimeAt           string `json:"timeAt"`           // 时间
+	OperatorName     string `json:"operatorName"`     // 操作人
 }

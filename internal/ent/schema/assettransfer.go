@@ -71,6 +71,7 @@ func (AssetTransfer) Fields() []ent.Field {
 		field.Uint8("out_operate_type").Optional().Nillable().Comment("出库角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手"),
 		field.Time("out_time_at").Optional().Nillable().Comment("出库时间"),
 		field.String("reason").Optional().Comment("调拨事由"),
+		field.Uint8("type").Optional().Comment("调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租"),
 	}
 }
 

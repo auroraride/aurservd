@@ -66,4 +66,5 @@ func loadAssersRoutes() {
 	asset.PUT("/transfer/cancel/:id", assetapi.AssetTransfer.TransferCancel) // 取消资产调拨
 	asset.POST("/transfer/receive", assetapi.AssetTransfer.TransferReceive)  // 接收资产
 	asset.GET("/transfer/sn/:sn", assetapi.AssetTransfer.GetTransferBySN)    // 根据sn查询调拨单
+	asset.GET("/transfer/flow/:sn", assetapi.AssetTransfer.TransferFlow)     // 调拨流水列表
 }

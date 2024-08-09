@@ -63,6 +63,8 @@ type AssetTransfer struct {
 	OutTimeAt *time.Time `json:"out_time_at,omitempty"`
 	// 调拨事由
 	Reason string `json:"reason,omitempty"`
+	// 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
+	Type uint8 `json:"type,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetTransferQuery when eager-loading is set.
 	Edges        AssetTransferEdges `json:"edges"`
@@ -328,7 +330,7 @@ func (*AssetTransfer) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case assettransfer.FieldCreator, assettransfer.FieldLastModifier:
 			values[i] = new([]byte)
-		case assettransfer.FieldID, assettransfer.FieldStatus, assettransfer.FieldFromLocationType, assettransfer.FieldFromLocationID, assettransfer.FieldToLocationType, assettransfer.FieldToLocationID, assettransfer.FieldOutNum, assettransfer.FieldInNum, assettransfer.FieldOutOperateID, assettransfer.FieldOutOperateType:
+		case assettransfer.FieldID, assettransfer.FieldStatus, assettransfer.FieldFromLocationType, assettransfer.FieldFromLocationID, assettransfer.FieldToLocationType, assettransfer.FieldToLocationID, assettransfer.FieldOutNum, assettransfer.FieldInNum, assettransfer.FieldOutOperateID, assettransfer.FieldOutOperateType, assettransfer.FieldType:
 			values[i] = new(sql.NullInt64)
 		case assettransfer.FieldRemark, assettransfer.FieldSn, assettransfer.FieldReason:
 			values[i] = new(sql.NullString)
@@ -472,6 +474,12 @@ func (at *AssetTransfer) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field reason", values[i])
 			} else if value.Valid {
 				at.Reason = value.String
+			}
+		case assettransfer.FieldType:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field type", values[i])
+			} else if value.Valid {
+				at.Type = uint8(value.Int64)
 			}
 		default:
 			at.selectValues.Set(columns[i], values[i])
@@ -669,6 +677,9 @@ func (at *AssetTransfer) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("reason=")
 	builder.WriteString(at.Reason)
+	builder.WriteString(", ")
+	builder.WriteString("type=")
+	builder.WriteString(fmt.Sprintf("%v", at.Type))
 	builder.WriteByte(')')
 	return builder.String()
 }

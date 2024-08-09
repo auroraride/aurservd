@@ -380,6 +380,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assettransfer.FieldOutOperateType:   {Type: field.TypeUint8, Column: assettransfer.FieldOutOperateType},
 			assettransfer.FieldOutTimeAt:        {Type: field.TypeTime, Column: assettransfer.FieldOutTimeAt},
 			assettransfer.FieldReason:           {Type: field.TypeString, Column: assettransfer.FieldReason},
+			assettransfer.FieldType:             {Type: field.TypeUint8, Column: assettransfer.FieldType},
 		},
 	}
 	graph.Nodes[11] = &sqlgraph.Node{
@@ -8764,6 +8765,11 @@ func (f *AssetTransferFilter) WhereOutTimeAt(p entql.TimeP) {
 // WhereReason applies the entql string predicate on the reason field.
 func (f *AssetTransferFilter) WhereReason(p entql.StringP) {
 	f.Where(p.Field(assettransfer.FieldReason))
+}
+
+// WhereType applies the entql uint8 predicate on the type field.
+func (f *AssetTransferFilter) WhereType(p entql.Uint8P) {
+	f.Where(p.Field(assettransfer.FieldType))
 }
 
 // WhereHasTransferDetails applies a predicate to check if query has an edge transfer_details.

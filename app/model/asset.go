@@ -65,16 +65,6 @@ type AssetListRes struct {
 	Attribute      map[uint64]AssetAttribute `json:"attribute"`          // 属性
 }
 
-// AssetFlowDetail 资产流转明细
-type AssetFlowDetail struct {
-	ID       uint64 `json:"id"`       // 资产ID
-	SN       string `json:"sn"`       // 资产编号
-	Model    string `json:"model"`    // 资产型号
-	Brand    string `json:"brand"`    // 资产品牌
-	FlowID   uint64 `json:"flowId"`   // 流水ID
-	FlowType uint8  `json:"flowType"` // 流水类型
-}
-
 // AssetBatchCreateReq 批量创建资产请求
 type AssetBatchCreateReq struct {
 	AssetType AssetType `json:"assetType" validate:"required" form:"assetType" query:"assetType"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它

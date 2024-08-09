@@ -242,25 +242,25 @@ func (s AssetStatus) Value() uint8 {
 type AssetOperateRoleType uint8
 
 const (
-	AssetOperateRoleManager   AssetOperateRoleType = iota + 1 // 资产后台
-	AssetOperateRoleStore                                     // 门店
-	AssetOperateRoleAgent                                     // 代理
-	AssetOperateRoleOperation                                 // 运维
-	AssetOperateRoleCabinet                                   // 电柜
-	AssetOperateRoleTypeRider                                 // 骑手
+	AssetOperateRoleTypeManager   AssetOperateRoleType = iota + 1 // 资产后台
+	AssetOperateRoleTypeStore                                     // 门店
+	AssetOperateRoleTypeAgent                                     // 代理
+	AssetOperateRoleTypeOperation                                 // 运维
+	AssetOperateRoleTypeCabinet                                   // 电柜
+	AssetOperateRoleTypeRider                                     // 骑手
 )
 
 func (s AssetOperateRoleType) String() string {
 	switch s {
-	case AssetOperateRoleManager:
+	case AssetOperateRoleTypeManager:
 		return "资产后台"
-	case AssetOperateRoleStore:
+	case AssetOperateRoleTypeStore:
 		return "门店"
-	case AssetOperateRoleAgent:
+	case AssetOperateRoleTypeAgent:
 		return "代理"
-	case AssetOperateRoleOperation:
+	case AssetOperateRoleTypeOperation:
 		return "运维"
-	case AssetOperateRoleCabinet:
+	case AssetOperateRoleTypeCabinet:
 		return "电柜"
 	case AssetOperateRoleTypeRider:
 		return "骑手"
