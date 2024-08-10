@@ -60,11 +60,12 @@ func loadAssersRoutes() {
 	asset.DELETE("/material/:id", assetapi.Material.Delete) // 删除仓库
 
 	// 资产调拨
-	asset.POST("/transfer", assetapi.AssetTransfer.Transfer)                 // 资产调拨
-	asset.GET("/transfer", assetapi.AssetTransfer.TransferList)              // 资产调拨列表
-	asset.GET("/transfer/:id", assetapi.AssetTransfer.TransferDetail)        // 资产调拨详情
-	asset.PUT("/transfer/cancel/:id", assetapi.AssetTransfer.TransferCancel) // 取消资产调拨
-	asset.POST("/transfer/receive", assetapi.AssetTransfer.TransferReceive)  // 接收资产
-	asset.GET("/transfer/sn/:sn", assetapi.AssetTransfer.GetTransferBySN)    // 根据sn查询调拨单
-	asset.GET("/transfer/flow/:sn", assetapi.AssetTransfer.TransferFlow)     // 调拨流水列表
+	asset.POST("/transfer", assetapi.AssetTransfer.Transfer)                   // 资产调拨
+	asset.GET("/transfer", assetapi.AssetTransfer.TransferList)                // 资产调拨列表
+	asset.GET("/transfer/:id", assetapi.AssetTransfer.TransferDetail)          // 资产调拨详情
+	asset.PUT("/transfer/cancel/:id", assetapi.AssetTransfer.TransferCancel)   // 取消资产调拨
+	asset.POST("/transfer/receive", assetapi.AssetTransfer.TransferReceive)    // 接收资产
+	asset.GET("/transfer/sn/:sn", assetapi.AssetTransfer.GetTransferBySN)      // 根据sn查询调拨单
+	asset.GET("/transfer/flow/:sn", assetapi.AssetTransfer.TransferFlow)       // 调拨流转记录
+	asset.GET("/transfer/details", assetapi.AssetTransfer.TransferDetailsList) // 调拨详情列表(出入库明细)
 }

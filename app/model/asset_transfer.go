@@ -189,3 +189,37 @@ type AssetTransferFlowDetail struct {
 	TimeAt           string `json:"timeAt"`           // 时间
 	OperatorName     string `json:"operatorName"`     // 操作人
 }
+
+// AssetTransferDetailListReq 资产出入库明细请求
+type AssetTransferDetailListReq struct {
+	PaginationReq
+	CityID            *uint64             `json:"cityId" query:"cityId"`                                           // 城市ID
+	AssetTransferType *AssetTransferType  `json:"assetTransferType" query:"assetTransferType" enums:"1,2,3,4,5,6"` // 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
+	Start             *string             `json:"start" query:"start"`                                             // 开始时间
+	End               *string             `json:"end" query:"end"`                                                 // 结束时间
+	AssetType         *AssetType          `json:"assetType" query:"assetType" enums:"1,2,3,4,5,6"`                 // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+	FromLocationType  *AssetLocationsType `json:"fromLocationType" query:"fromLocationType" enums:"1,2,3,4"`       // 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	FromLocationID    *uint64             `json:"fromLocationID" query:"fromLocationID"`                           // 调拨前位置ID
+	ToLocationType    *AssetLocationsType `json:"toLocationType" query:"toLocationType" enums:"1,2,3,4"`           // 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	ToLocationID      *uint64             `json:"toLocationID" query:"toLocationID"`                               // 调拨后位置ID
+	CabinetSN         *string             `json:"cabinetSN" query:"cabinetSN"`                                     // 电柜SN
+	SN                *string             `json:"sn" query:"sn"`                                                   // 资产SN
+}
+
+// AssetTransferDetailListRes 资产出入库明细
+type AssetTransferDetailListRes struct {
+	CityName         string                   `json:"cityName"`      // 城市
+	AssetName        string                   `json:"assetName"`     // 物资名称
+	Out              *AssetTransferDetailList `json:"out,omitempty"` // 出库
+	In               AssetTransferDetailList  `json:"in"`            // 入库
+	TransferTypeName string                   `json:"transferType"`  // 调拨类型
+}
+
+// AssetTransferDetailList 资产出入库明细
+type AssetTransferDetailList struct {
+	LocationsName string `json:"locationsName"` // 位置名称
+	TimeAt        string `json:"timeAt"`        // 时间
+	OperatorName  string `json:"operatorName"`  // 操作人
+	Remark        string `json:"remark"`        // 备注
+	Num           uint   `json:"num"`           // 数量
+}

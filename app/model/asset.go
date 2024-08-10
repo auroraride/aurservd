@@ -7,7 +7,6 @@ var AssetEbikeAttributesColumns = []any{"型号", "车架号", "仓库"}
 type AssetCreateReq struct {
 	AssetType     AssetType              `json:"assetType" validate:"required"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
 	SN            *string                `json:"sn"`                            // 资产编号
-	Name          *string                `json:"name"`                          // 资产名称(AssetType为 4:电柜配件 5:电车配件 6:其它 需要填写)
 	CityID        *uint64                `json:"cityId"`                        // 城市ID(AssetType为 2:智能电池 需要填写)
 	LocationsType *AssetLocationsType    `json:"locationsType"`                 // 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
 	LocationsID   *uint64                `json:"locationsId"`                   // 资产位置ID

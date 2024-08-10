@@ -21,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
@@ -89,10 +90,7 @@ func (s *assetService) Create(ctx context.Context, req *model.AssetCreateReq, mo
 		return errors.New("未知类型")
 	}
 
-	name := s.getAssetName(req.AssetType)
-	if req.Name != nil {
-		name = *req.Name
-	}
+	name := s.getAssetName(req.AssetType, nil)
 
 	q.SetType(req.AssetType.Value()).
 		SetName(name).
@@ -153,19 +151,21 @@ func (s *assetService) Create(ctx context.Context, req *model.AssetCreateReq, mo
 }
 
 // 获取资产名称
-func (s *assetService) getAssetName(assetType model.AssetType) string {
+func (s *assetService) getAssetName(assetType model.AssetType, materialID *uint64) string {
 	var name string
 	switch assetType {
 	case model.AssetTypeSmartBattery:
 		name = "智能电池"
 	case model.AssetTypeEbike:
 		name = "电车"
-	case model.AssetTypeNonSmartBattery:
-		name = "非智能电池"
-	case model.AssetTypeCabinetAccessory:
-		name = "电柜配件"
-	case model.AssetTypeOtherAccessory:
-		name = "其它配件"
+	case model.AssetTypeNonSmartBattery, model.AssetTypeCabinetAccessory, model.AssetTypeEbikeAccessory, model.AssetTypeOtherAccessory:
+		if materialID != nil {
+			only, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(*materialID)).Only(s.ctx)
+			if only == nil {
+				return "未知"
+			}
+			name = only.Name
+		}
 	default:
 		name = "未知"
 	}
@@ -255,7 +255,7 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 			continue
 		}
 
-		name := s.getAssetName(model.AssetTypeEbike)
+		name := s.getAssetName(model.AssetTypeEbike, nil)
 		save, _ := s.orm.Create().
 			SetSn(columns[1]).
 			SetType(model.AssetTypeEbike.Value()).
@@ -409,7 +409,7 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 			continue
 		}
 
-		name := s.getAssetName(model.AssetTypeSmartBattery)
+		name := s.getAssetName(model.AssetTypeSmartBattery, nil)
 		err = s.orm.Create().
 			SetBrandName(ab.Brand.String()).
 			SetSn(sn).

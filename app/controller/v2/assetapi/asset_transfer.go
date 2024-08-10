@@ -116,3 +116,18 @@ func (*assetTransfer) TransferFlow(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.AssetTransferFlowReq](c)
 	return ctx.SendResponse(service.NewAssetTransfer().Flow(ctx.Request().Context(), req))
 }
+
+// TransferDetailsList
+// @ID		AssetTransferDetailsList
+// @Router	/manager/v2/asset/transfer/details [GET]
+// @Summary	调拨详情列表(出入库明细)
+// @Tags	资产
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string													true	"管理员校验token"
+// @Param	query			query		model.AssetTransferDetailListReq							true	"查询参数"
+// @Success	200				{object}	model.PaginationRes{items=[]model.AssetTransferDetailListRes}	"请求成功"
+func (*assetTransfer) TransferDetailsList(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.AssetTransferDetailListReq](c)
+	return ctx.SendResponse(service.NewAssetTransfer().TransferDetailsList(ctx.Request().Context(), req))
+}

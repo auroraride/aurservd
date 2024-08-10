@@ -10,6 +10,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/material"
@@ -969,4 +970,244 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 		})
 	}
 	return res
+}
+
+// TransferDetailsList 出入库明细列表
+func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *model.AssetTransferDetailListReq) (res *model.PaginationRes, err error) {
+	q := ent.Database.AssetTransfer.QueryNotDeleted().
+		Where(
+			assettransfer.StatusNEQ(model.AssetTransferStatusCancel.Value()),
+		).WithTransferDetails(func(query *ent.AssetTransferDetailsQuery) {
+		query.WithInOperateAgent().WithInOperateManager().WithInOperateStore().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().
+			WithAsset(func(query *ent.AssetQuery) {
+				query.WithMaterial().WithCity().WithModel().WithBrand()
+			})
+	}).WithFromLocationOperator().WithFromLocationStation().WithFromLocationStore().WithFromLocationWarehouse().WithFromLocationCabinet().WithFromLocationRider().
+		WithToLocationOperator().WithToLocationStation().WithToLocationStore().WithToLocationWarehouse().WithToLocationCabinet().WithToLocationRider().
+		Order(ent.Desc(asset.FieldCreatedAt))
+
+	if req.Start != nil && req.End != nil {
+		start := tools.NewTime().ParseDateStringX(*req.Start)
+		end := tools.NewTime().ParseNextDateStringX(*req.End)
+		q.Where(
+			assettransfer.CreatedAtGTE(start),
+			assettransfer.CreatedAtLTE(end),
+			assettransfer.Or(
+				assettransfer.HasTransferDetailsWith(
+					assettransferdetails.InTimeAtGTE(start),
+					assettransferdetails.InTimeAtLTE(end),
+				),
+			),
+		)
+	}
+	if req.AssetType != nil {
+		q.Where(assettransfer.HasTransferDetailsWith(assettransferdetails.HasAssetWith(asset.Type(req.AssetType.Value()))))
+	}
+	if req.CityID != nil {
+		q.Where(assettransfer.HasTransferDetailsWith(assettransferdetails.HasAssetWith(asset.CityID(*req.CityID))))
+	}
+	if req.SN != nil {
+		q.Where(assettransfer.HasTransferDetailsWith(assettransferdetails.HasAssetWith(asset.Sn(*req.SN))))
+	}
+	if req.FromLocationType != nil && req.FromLocationID != nil {
+		q.Where(
+			assettransfer.FromLocationType(req.FromLocationType.Value()),
+			assettransfer.FromLocationID(*req.FromLocationID),
+		)
+	}
+	if req.ToLocationType != nil && req.ToLocationID != nil {
+		q.Where(
+			assettransfer.ToLocationType(req.ToLocationType.Value()),
+			assettransfer.ToLocationID(*req.ToLocationID),
+		)
+	}
+	if req.AssetTransferType != nil {
+		q.Where(assettransfer.Type(req.AssetTransferType.Value()))
+	}
+	if req.CabinetSN != nil {
+		q.Where(
+			assettransfer.Or(
+				assettransfer.HasTransferDetailsWith(assettransferdetails.HasInOperateCabinetWith(cabinet.Sn(*req.CabinetSN))),
+				assettransfer.HasOutOperateCabinetWith(cabinet.Sn(*req.CabinetSN)),
+			),
+		)
+	}
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetTransfer) (res *model.AssetTransferDetailListRes) {
+		var fromOperateName, toOperateName, fromLocationName, toLocationName, outTimeAt, inTimeAt, cityName, assetName, inRemark string
+		if item.OutTimeAt != nil {
+			outTimeAt = item.OutTimeAt.Format("2006-01-02 15:04:05")
+		}
+		// 入库操作人
+		if item.Edges.TransferDetails != nil {
+			// 其它物资类型有很多记录 所以只取第一条
+			details := item.Edges.TransferDetails[0]
+			if details != nil {
+				inTimeAt = details.InTimeAt.Format("2006-01-02 15:04:05")
+				switch model.AssetOperateRoleType(details.InOperateType) {
+				case model.AssetOperateRoleTypeManager:
+					if details.Edges.InOperateManager != nil {
+						if r, _ := details.Edges.InOperateManager.QueryRole().First(ctx); r != nil {
+							toOperateName = "[" + r.Name + "]" + details.Edges.InOperateManager.Name
+						}
+					}
+				case model.AssetOperateRoleTypeStore:
+					if details.Edges.InOperateStore != nil {
+						toOperateName = "[门店]" + details.Edges.InOperateStore.Name
+					}
+				case model.AssetOperateRoleTypeAgent:
+					if details.Edges.InOperateAgent != nil {
+						toOperateName = "[代理]" + details.Edges.InOperateAgent.Name
+					}
+				case model.AssetOperateRoleTypeOperation:
+					if details.Edges.InOperateMaintainer != nil {
+						toOperateName = "[运维]" + details.Edges.InOperateMaintainer.Name
+					}
+				case model.AssetOperateRoleTypeCabinet:
+					if details.Edges.InOperateCabinet != nil {
+						toOperateName = "[电柜]" + details.Edges.InOperateCabinet.Name
+					}
+				case model.AssetOperateRoleTypeRider:
+					if details.Edges.InOperateRider != nil {
+						toOperateName = "[骑手]" + details.Edges.InOperateRider.Name
+					}
+				default:
+				}
+				if details.Edges.Asset != nil {
+					if details.Edges.Asset.Edges.City != nil {
+						cityName = details.Edges.Asset.Edges.City.Name
+					}
+					switch model.AssetType(details.Edges.Asset.Type) {
+					case model.AssetTypeSmartBattery:
+						if details.Edges.Asset.Edges.Model != nil {
+							assetName = "[" + details.Edges.Asset.Edges.Model.Model + "]" + details.Edges.Asset.Sn
+						}
+					case model.AssetTypeEbike:
+						if details.Edges.Asset.Edges.Brand != nil {
+							assetName = "[" + details.Edges.Asset.Edges.Brand.Name + "]" + details.Edges.Asset.Sn
+						}
+					case model.AssetTypeNonSmartBattery, model.AssetTypeCabinetAccessory, model.AssetTypeEbikeAccessory, model.AssetTypeOtherAccessory:
+						if details.Edges.Asset.Edges.Material != nil {
+							assetName = details.Edges.Asset.Edges.Material.Name
+						}
+					}
+				}
+				inRemark = details.Remark
+			}
+		}
+		if item.FromLocationType != nil && item.FromLocationID != nil {
+			switch model.AssetLocationsType(*item.FromLocationType) {
+			case model.AssetLocationsTypeWarehouse:
+				if item.Edges.FromLocationWarehouse != nil {
+					fromLocationName = "[仓库]" + item.Edges.FromLocationWarehouse.Name
+				}
+			case model.AssetLocationsTypeStore:
+				if item.Edges.FromLocationStore != nil {
+					fromLocationName = "[门店]" + item.Edges.FromLocationStore.Name
+				}
+			case model.AssetLocationsTypeStation:
+				if item.Edges.FromLocationStation != nil {
+					fromLocationName = "[站点]" + item.Edges.FromLocationStation.Name
+				}
+			case model.AssetLocationsTypeOperation:
+				if item.Edges.FromLocationOperator != nil {
+					fromLocationName = "[运维]" + item.Edges.FromLocationOperator.Name
+				}
+			case model.AssetLocationsTypeCabinet:
+				if item.Edges.FromLocationCabinet != nil {
+					fromLocationName = "[电柜]" + item.Edges.FromLocationCabinet.Name
+				}
+			case model.AssetLocationsTypeRider:
+				if item.Edges.FromLocationRider != nil {
+					fromLocationName = "[骑手]" + item.Edges.FromLocationRider.Name
+				}
+			default:
+			}
+		}
+		// 入库位置
+		if item.ToLocationType != 0 && item.ToLocationID != 0 {
+			switch model.AssetLocationsType(item.ToLocationType) {
+			case model.AssetLocationsTypeWarehouse:
+				if item.Edges.ToLocationWarehouse != nil {
+					toLocationName = "[仓库]" + item.Edges.ToLocationWarehouse.Name
+				}
+			case model.AssetLocationsTypeStore:
+				if item.Edges.ToLocationStore != nil {
+					toLocationName = "[门店]" + item.Edges.ToLocationStore.Name
+				}
+			case model.AssetLocationsTypeStation:
+				if item.Edges.ToLocationStation != nil {
+					toLocationName = "[站点]" + item.Edges.ToLocationStation.Name
+				}
+			case model.AssetLocationsTypeOperation:
+				if item.Edges.ToLocationOperator != nil {
+					toLocationName = "[运维]" + item.Edges.ToLocationOperator.Name
+				}
+			case model.AssetLocationsTypeCabinet:
+				if item.Edges.ToLocationCabinet != nil {
+					toLocationName = "[电柜]" + item.Edges.ToLocationCabinet.Name
+				}
+			case model.AssetLocationsTypeRider:
+				if item.Edges.ToLocationRider != nil {
+					toLocationName = "[骑手]" + item.Edges.ToLocationRider.Name
+				}
+			default:
+			}
+		}
+		// 出库操作人
+		if item.OutOperateType != nil && item.OutOperateID != nil {
+			switch model.AssetOperateRoleType(*item.OutOperateType) {
+			case model.AssetOperateRoleTypeManager:
+				if item.Edges.OutOperateManager != nil {
+					if r, _ := item.Edges.OutOperateManager.QueryRole().First(ctx); r != nil {
+						fromOperateName = "[" + r.Name + "]" + item.Edges.OutOperateManager.Name
+					}
+				}
+			case model.AssetOperateRoleTypeStore:
+				if item.Edges.OutOperateStore != nil {
+					fromOperateName = "[门店]" + item.Edges.OutOperateStore.Name
+				}
+			case model.AssetOperateRoleTypeAgent:
+				if item.Edges.OutOperateAgent != nil {
+					fromOperateName = "[代理]" + item.Edges.OutOperateAgent.Name
+				}
+			case model.AssetOperateRoleTypeOperation:
+				if item.Edges.OutOperateMaintainer != nil {
+					fromOperateName = "[运维]" + item.Edges.OutOperateMaintainer.Name
+				}
+			case model.AssetOperateRoleTypeCabinet:
+				if item.Edges.OutOperateCabinet != nil {
+					fromOperateName = "[电柜]" + item.Edges.OutOperateCabinet.Name
+				}
+			case model.AssetOperateRoleTypeRider:
+				if item.Edges.OutOperateRider != nil {
+					fromOperateName = "[骑手]" + item.Edges.OutOperateRider.Name
+				}
+			default:
+			}
+		}
+
+		in := model.AssetTransferDetailList{
+			OperatorName:  toOperateName,
+			LocationsName: toLocationName,
+			TimeAt:        inTimeAt,
+			Remark:        inRemark,
+			Num:           item.InNum,
+		}
+		res = &model.AssetTransferDetailListRes{
+			CityName:         cityName,
+			AssetName:        assetName,
+			In:               in,
+			TransferTypeName: model.AssetTransferType(item.Type).String(),
+		}
+		if fromLocationName != "" && fromOperateName != "" {
+			res.Out = &model.AssetTransferDetailList{
+				LocationsName: fromLocationName,
+				OperatorName:  fromOperateName,
+				Remark:        item.Remark,
+				TimeAt:        outTimeAt,
+				Num:           item.OutNum,
+			}
+		}
+		return res
+	}), nil
 }
