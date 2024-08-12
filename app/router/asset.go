@@ -54,10 +54,10 @@ func loadAssersRoutes() {
 	asset.GET("/enterprise_assets", assetapi.Enterprise.EnterpriseAsset) // 团签物资列表
 
 	// 其他物资
-	asset.POST("/material", assetapi.Material.Create)       // 创建仓库
-	asset.GET("/material", assetapi.Material.List)          // 仓库列表
-	asset.PUT("/material/:id", assetapi.Material.Modify)    // 更新仓库
-	asset.DELETE("/material/:id", assetapi.Material.Delete) // 删除仓库
+	asset.POST("/material", assetapi.Material.Create)       // 创建其他物资
+	asset.GET("/material", assetapi.Material.List)          // 其他物资列表
+	asset.PUT("/material/:id", assetapi.Material.Modify)    // 更新其他物资
+	asset.DELETE("/material/:id", assetapi.Material.Delete) // 删除其他物资
 
 	// 资产调拨
 	asset.POST("/transfer", assetapi.AssetTransfer.Transfer)                   // 资产调拨

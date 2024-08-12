@@ -3,6 +3,9 @@ package service
 import (
 	"context"
 	"errors"
+	"slices"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/auroraride/aurservd/app/model"
@@ -507,29 +510,155 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 }
 
 // TransferDetail 调拨详情
-func (s *assetTransferService) TransferDetail(ctx context.Context, req *model.AssetTransferDetailReq) (res *model.AssetTransferDetail, err error) {
-	// todo 详情
-	// var result struct {
-	// 	OutNum    int    `json:"out_num"`    // 出库数量
-	// 	InNum     int    `json:"in_num"`     // 入库数量
-	// 	Name      string `json:"name"`       // 资产名称
-	// 	SN        string `json:"sn"`         // 资产编号
-	// 	AssetType int    `json:"asset_type"` // 资产类型
-	// }
-	//
-	// q := ent.Database.AssetTransferDetails.
-	// 	QueryNotDeleted().
-	// 	Where(assettransferdetails.TransferID(req.ID)).
-	// 	Modify(func(sel *sql.Selector) {
-	// 		a := sql.Table(asset.Table)
-	// 		m := sql.Table(material.Table)
-	// 		sel.LeftJoin(a).On(sel.C(assettransferdetails.FieldAssetID), a.C(asset.FieldID))
-	// 		sel.LeftJoin(m).On(a.C(asset.FieldMaterialID), m.C(material.FieldID))
-	// 		sel.Select(a.C(asset.FieldSn), a.C(asset.FieldType), a.C(asset.FieldName), m.C(material.FieldName))
-	// 	}).GroupBy(asset.FieldSn, asset.FieldMaterialID, asset.FieldType)
-	//
-	// q.Aggregate(ent.Sum(stock.FieldNum)).
-	// 	Scan(ctx, &result)
+func (s *assetTransferService) TransferDetail(ctx context.Context, req *model.AssetTransferDetailReq) (res []*model.AssetTransferDetail, err error) {
+	ebikeSnMap := make(map[string]*ent.Asset)
+	ebikeSnAstMap := make(map[string]*model.TransferAssetDetail)
+	sBModelAstMap := make(map[string]*model.TransferAssetDetail)
+	nSbModelAstMap := make(map[string]*model.TransferAssetDetail)
+	cabAccNameAstMap := make(map[string]*model.TransferAssetDetail)
+	ebikeAccNameAstMap := make(map[string]*model.TransferAssetDetail)
+	otherAccNameAstMap := make(map[string]*model.TransferAssetDetail)
+
+	atds, err := ent.Database.AssetTransferDetails.QueryNotDeleted().
+		Where(
+			assettransferdetails.TransferID(req.ID),
+			assettransferdetails.HasAssetWith(
+				asset.DeletedAtIsNil(),
+			),
+		).WithAsset(func(query *ent.AssetQuery) {
+		query.WithBrand().WithModel().WithMaterial()
+	}).All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// 分类统计调拨详情资产数据
+	for _, atd := range atds {
+		ast := atd.Edges.Asset
+		if ast != nil {
+			switch ast.Type {
+			case model.AssetTypeEbike.Value():
+				// 电车类型资产需要以单辆车为单位进行统计
+				NewAssetTransferDetail().TransferDetailCount(ebikeSnAstMap, ast.Sn, atd.IsIn)
+				ebikeSnMap[ast.Sn] = ast
+			case model.AssetTypeSmartBattery.Value():
+				if ast.Edges.Model != nil {
+					modelName := ast.Edges.Model.Model
+					NewAssetTransferDetail().TransferDetailCount(sBModelAstMap, modelName, atd.IsIn)
+				}
+			case model.AssetTypeNonSmartBattery.Value():
+				if ast.Edges.Model != nil {
+					modelName := ast.Edges.Model.Model
+					NewAssetTransferDetail().TransferDetailCount(nSbModelAstMap, modelName, atd.IsIn)
+				}
+			case model.AssetTypeCabinetAccessory.Value():
+				if ast.Edges.Material != nil {
+					materialName := ast.Edges.Material.Name
+					NewAssetTransferDetail().TransferDetailCount(cabAccNameAstMap, materialName, atd.IsIn)
+				}
+			case model.AssetTypeEbikeAccessory.Value():
+				if ast.Edges.Material != nil {
+					materialName := ast.Edges.Material.Name
+					NewAssetTransferDetail().TransferDetailCount(ebikeAccNameAstMap, materialName, atd.IsIn)
+				}
+			case model.AssetTypeOtherAccessory.Value():
+				if ast.Edges.Material != nil {
+					materialName := ast.Edges.Material.Name
+					NewAssetTransferDetail().TransferDetailCount(otherAccNameAstMap, materialName, atd.IsIn)
+				}
+			}
+
+		}
+	}
+
+	// 分组组装调拨详情数据
+	ebikeResList := make([]*model.AssetTransferDetail, 0)
+	for k, v := range ebikeSnAstMap {
+		if ebikeSnMap[k] == nil {
+			continue
+		}
+		ebikeResList = append(ebikeResList, &model.AssetTransferDetail{
+			AssetType: model.AssetTypeEbike,
+			SN:        k,
+			Name:      ebikeSnMap[k].BrandName,
+			OutNum:    v.Outbound,
+			InNum:     v.Inbound,
+		})
+	}
+
+	sBResList := make([]*model.AssetTransferDetail, 0)
+	for _, v := range sBModelAstMap {
+		sBResList = append(sBResList, &model.AssetTransferDetail{
+			AssetType: model.AssetTypeSmartBattery,
+			Name:      v.Name,
+			OutNum:    v.Outbound,
+			InNum:     v.Inbound,
+		})
+	}
+
+	nSbResList := make([]*model.AssetTransferDetail, 0)
+	for _, v := range nSbModelAstMap {
+		nSbResList = append(nSbResList, &model.AssetTransferDetail{
+			AssetType: model.AssetTypeNonSmartBattery,
+			Name:      v.Name,
+			OutNum:    v.Outbound,
+			InNum:     v.Inbound,
+		})
+	}
+
+	cabAccResList := make([]*model.AssetTransferDetail, 0)
+	for _, v := range cabAccNameAstMap {
+		cabAccResList = append(cabAccResList, &model.AssetTransferDetail{
+			AssetType: model.AssetTypeCabinetAccessory,
+			Name:      v.Name,
+			OutNum:    v.Outbound,
+			InNum:     v.Inbound,
+		})
+	}
+
+	ebikeAccResList := make([]*model.AssetTransferDetail, 0)
+	for _, v := range ebikeAccNameAstMap {
+		ebikeAccResList = append(ebikeAccResList, &model.AssetTransferDetail{
+			AssetType: model.AssetTypeEbikeAccessory,
+			Name:      v.Name,
+			OutNum:    v.Outbound,
+			InNum:     v.Inbound,
+		})
+	}
+
+	otherAccResList := make([]*model.AssetTransferDetail, 0)
+	for _, v := range otherAccNameAstMap {
+		otherAccResList = append(otherAccResList, &model.AssetTransferDetail{
+			AssetType: model.AssetTypeOtherAccessory,
+			Name:      v.Name,
+			OutNum:    v.Outbound,
+			InNum:     v.Inbound,
+		})
+	}
+
+	// 排序分组结果集
+	sort.Slice(ebikeResList, func(i, j int) bool {
+		return strings.Compare(ebikeResList[i].Name, ebikeResList[j].Name) < 0
+	})
+	sort.Slice(sBResList, func(i, j int) bool {
+		return strings.Compare(sBResList[i].Name, sBResList[j].Name) < 0
+	})
+	sort.Slice(nSbResList, func(i, j int) bool {
+		return strings.Compare(nSbResList[i].Name, nSbResList[j].Name) < 0
+	})
+	sort.Slice(cabAccResList, func(i, j int) bool {
+		return strings.Compare(cabAccResList[i].Name, cabAccResList[j].Name) < 0
+	})
+	sort.Slice(ebikeAccResList, func(i, j int) bool {
+		return strings.Compare(ebikeAccResList[i].Name, ebikeAccResList[j].Name) < 0
+	})
+	sort.Slice(otherAccResList, func(i, j int) bool {
+		return strings.Compare(otherAccResList[i].Name, otherAccResList[j].Name) < 0
+	})
+
+	// 整合详情数据
+	res = slices.Concat(ebikeResList, sBResList, nSbResList, cabAccResList, ebikeAccResList, otherAccResList)
+
 	return res, nil
 }
 

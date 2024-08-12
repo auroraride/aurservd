@@ -2112,7 +2112,10 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.AssetTransferDetailReq"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.AssetTransferDetail"
+                            }
                         }
                     }
                 }
@@ -4243,6 +4246,35 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.AssetLocationsType"
                         }
                     ]
+                }
+            }
+        },
+        "model.AssetTransferDetail": {
+            "type": "object",
+            "properties": {
+                "assetType": {
+                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                },
+                "in": {
+                    "description": "入库数量",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "资产名称",
+                    "type": "string"
+                },
+                "out": {
+                    "description": "出库数量",
+                    "type": "integer"
+                },
+                "sn": {
+                    "description": "资产编号",
+                    "type": "string"
                 }
             }
         },

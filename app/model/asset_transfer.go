@@ -133,12 +133,11 @@ type AssetTransferDetailReq struct {
 
 // AssetTransferDetail 资产调拨详情
 type AssetTransferDetail struct {
-	ID        uint64    `json:"id"`        // 资产ID
 	AssetType AssetType `json:"assetType"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
 	SN        string    `json:"sn"`        // 资产编号
 	Name      string    `json:"name"`      // 资产名称
-	OutNum    uint      `json:"out"`       // 出库数量
-	InNum     uint      `json:"in"`        // 入库数量
+	OutNum    int       `json:"out"`       // 出库数量
+	InNum     int       `json:"in"`        // 入库数量
 }
 
 // AssetTransferReceiveReq 接收资产调拨
