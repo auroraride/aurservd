@@ -3699,6 +3699,7 @@ var (
 		{Name: "rto_days", Type: field.TypeUint, Nullable: true, Comment: "以租代购天数条件"},
 		{Name: "overdue_fee", Type: field.TypeFloat64, Comment: "滞纳金单价", Default: 99999},
 		{Name: "daily", Type: field.TypeBool, Comment: "是否日租", Default: false},
+		{Name: "introduction_image", Type: field.TypeString, Nullable: true, Comment: "商品介绍图"},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true, Comment: "品牌ID"},
 		{Name: "agreement_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true, Comment: "父级"},
@@ -3711,19 +3712,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "plan_ebike_brand_plans",
-				Columns:    []*schema.Column{PlanColumns[30]},
+				Columns:    []*schema.Column{PlanColumns[31]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "plan_agreement_agreement",
-				Columns:    []*schema.Column{PlanColumns[31]},
+				Columns:    []*schema.Column{PlanColumns[32]},
 				RefColumns: []*schema.Column{AgreementColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "plan_plan_complexes",
-				Columns:    []*schema.Column{PlanColumns[32]},
+				Columns:    []*schema.Column{PlanColumns[33]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3742,7 +3743,7 @@ var (
 			{
 				Name:    "plan_agreement_id",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[31]},
+				Columns: []*schema.Column{PlanColumns[32]},
 			},
 			{
 				Name:    "plan_type",
