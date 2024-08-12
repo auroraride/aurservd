@@ -1691,6 +1691,348 @@
                 }
             }
         },
+        "/manager/v2/asset/transfer/details": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资产"
+                ],
+                "summary": "调拨详情列表(出入库明细)",
+                "operationId": "AssetTransferDetailsList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetTransferTypeActive": "激活",
+                            "AssetTransferTypeContinue": "取消寄存",
+                            "AssetTransferTypeExchange": "换电",
+                            "AssetTransferTypeInitial": "初始入库",
+                            "AssetTransferTypePause": "寄存",
+                            "AssetTransferTypeTransfer": "调拨",
+                            "AssetTransferTypeUnSubscribe": "退租"
+                        },
+                        "x-enum-varnames": [
+                            "AssetTransferTypeInitial",
+                            "AssetTransferTypeTransfer",
+                            "AssetTransferTypeActive",
+                            "AssetTransferTypePause",
+                            "AssetTransferTypeContinue",
+                            "AssetTransferTypeUnSubscribe",
+                            "AssetTransferTypeExchange"
+                        ],
+                        "description": "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
+                        "name": "assetTransferType",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetTypeCabinetAccessory": "电柜配件",
+                            "AssetTypeEbike": "电车",
+                            "AssetTypeEbikeAccessory": "电车配件",
+                            "AssetTypeNonSmartBattery": "非智能电池",
+                            "AssetTypeOtherAccessory": "其它配件",
+                            "AssetTypeSmartBattery": "智能电池"
+                        },
+                        "x-enum-varnames": [
+                            "AssetTypeEbike",
+                            "AssetTypeSmartBattery",
+                            "AssetTypeNonSmartBattery",
+                            "AssetTypeCabinetAccessory",
+                            "AssetTypeEbikeAccessory",
+                            "AssetTypeOtherAccessory"
+                        ],
+                        "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                        "name": "assetType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜SN",
+                        "name": "cabinetSN",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "调拨前位置ID",
+                        "name": "fromLocationID",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetLocationsTypeCabinet": "电柜",
+                            "AssetLocationsTypeOperation": "运维",
+                            "AssetLocationsTypeRider": "骑手",
+                            "AssetLocationsTypeStation": "站点",
+                            "AssetLocationsTypeStore": "门店",
+                            "AssetLocationsTypeWarehouse": "仓库"
+                        },
+                        "x-enum-varnames": [
+                            "AssetLocationsTypeWarehouse",
+                            "AssetLocationsTypeStore",
+                            "AssetLocationsTypeStation",
+                            "AssetLocationsTypeOperation",
+                            "AssetLocationsTypeCabinet",
+                            "AssetLocationsTypeRider"
+                        ],
+                        "description": "调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                        "name": "fromLocationType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "资产SN",
+                        "name": "sn",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "调拨后位置ID",
+                        "name": "toLocationID",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetLocationsTypeCabinet": "电柜",
+                            "AssetLocationsTypeOperation": "运维",
+                            "AssetLocationsTypeRider": "骑手",
+                            "AssetLocationsTypeStation": "站点",
+                            "AssetLocationsTypeStore": "门店",
+                            "AssetLocationsTypeWarehouse": "仓库"
+                        },
+                        "x-enum-varnames": [
+                            "AssetLocationsTypeWarehouse",
+                            "AssetLocationsTypeStore",
+                            "AssetLocationsTypeStation",
+                            "AssetLocationsTypeOperation",
+                            "AssetLocationsTypeCabinet",
+                            "AssetLocationsTypeRider"
+                        ],
+                        "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                        "name": "toLocationType",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AssetTransferDetailListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/transfer/flow/{sn}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资产"
+                ],
+                "summary": "资产流转明细",
+                "operationId": "AssetTransferFlow",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetTypeCabinetAccessory": "电柜配件",
+                            "AssetTypeEbike": "电车",
+                            "AssetTypeEbikeAccessory": "电车配件",
+                            "AssetTypeNonSmartBattery": "非智能电池",
+                            "AssetTypeOtherAccessory": "其它配件",
+                            "AssetTypeSmartBattery": "智能电池"
+                        },
+                        "x-enum-varnames": [
+                            "AssetTypeEbike",
+                            "AssetTypeSmartBattery",
+                            "AssetTypeNonSmartBattery",
+                            "AssetTypeCabinetAccessory",
+                            "AssetTypeEbikeAccessory",
+                            "AssetTypeOtherAccessory"
+                        ],
+                        "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                        "name": "assetType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.AssetTransferFlow"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/transfer/receive": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资产"
+                ],
+                "summary": "接收资产调拨",
+                "operationId": "AssetTransferReceive",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "接收参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetTransferReceiveBatchReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/transfer/sn/{sn}": {
             "get": {
                 "consumes": [
@@ -1763,7 +2105,10 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.AssetTransferDetailReq"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.AssetTransferDetail"
+                            }
                         }
                     }
                 }
@@ -3402,10 +3747,6 @@
                         }
                     ]
                 },
-                "name": {
-                    "description": "资产名称(AssetType为 4:电柜配件 5:电车配件 6:其它 需要填写)",
-                    "type": "string"
-                },
                 "sn": {
                     "description": "资产编号",
                     "type": "string"
@@ -3633,6 +3974,33 @@
                 }
             }
         },
+        "model.AssetOperateRoleType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "x-enum-comments": {
+                "AssetOperateRoleTypeAgent": "代理",
+                "AssetOperateRoleTypeCabinet": "电柜",
+                "AssetOperateRoleTypeManager": "资产后台",
+                "AssetOperateRoleTypeOperation": "运维",
+                "AssetOperateRoleTypeRider": "骑手",
+                "AssetOperateRoleTypeStore": "门店"
+            },
+            "x-enum-varnames": [
+                "AssetOperateRoleTypeManager",
+                "AssetOperateRoleTypeStore",
+                "AssetOperateRoleTypeAgent",
+                "AssetOperateRoleTypeOperation",
+                "AssetOperateRoleTypeCabinet",
+                "AssetOperateRoleTypeRider"
+            ]
+        },
         "model.AssetScrapBatchRestoreReq": {
             "type": "object",
             "required": [
@@ -3821,6 +4189,22 @@
                 "toLocationType"
             ],
             "properties": {
+                "assetTransferType": {
+                    "description": "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferType"
+                        }
+                    ]
+                },
                 "details": {
                     "description": "资产调拨详情",
                     "type": "array",
@@ -3855,26 +4239,144 @@
                             "$ref": "#/definitions/model.AssetLocationsType"
                         }
                     ]
-                },
-                "type": {
-                    "description": "调拨类型 1:初始入库 2:平台调拨 3:门店调拨 4:代理调拨 5:运维调拨",
-                    "enum": [
-                        1,
-                        2,
-                        3,
-                        4,
-                        5
-                    ],
+                }
+            }
+        },
+        "model.AssetTransferDetail": {
+            "type": "object",
+            "properties": {
+                "assetType": {
+                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.AssetTransferType"
+                            "$ref": "#/definitions/model.AssetType"
                         }
                     ]
+                },
+                "in": {
+                    "description": "入库数量",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "资产名称",
+                    "type": "string"
+                },
+                "out": {
+                    "description": "出库数量",
+                    "type": "integer"
+                },
+                "sn": {
+                    "description": "资产编号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetTransferDetailList": {
+            "type": "object",
+            "properties": {
+                "locationsName": {
+                    "description": "位置名称",
+                    "type": "string"
+                },
+                "num": {
+                    "description": "数量",
+                    "type": "integer"
+                },
+                "operatorName": {
+                    "description": "操作人",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "timeAt": {
+                    "description": "时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetTransferDetailListRes": {
+            "type": "object",
+            "properties": {
+                "assetName": {
+                    "description": "物资名称",
+                    "type": "string"
+                },
+                "cityName": {
+                    "description": "城市",
+                    "type": "string"
+                },
+                "in": {
+                    "description": "入库",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferDetailList"
+                        }
+                    ]
+                },
+                "out": {
+                    "description": "出库",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferDetailList"
+                        }
+                    ]
+                },
+                "transferType": {
+                    "description": "调拨类型",
+                    "type": "string"
                 }
             }
         },
         "model.AssetTransferDetailReq": {
             "type": "object"
+        },
+        "model.AssetTransferFlow": {
+            "type": "object",
+            "properties": {
+                "in": {
+                    "description": "入库",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferFlowDetail"
+                        }
+                    ]
+                },
+                "out": {
+                    "description": "出库",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferFlowDetail"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.AssetTransferFlowDetail": {
+            "type": "object",
+            "properties": {
+                "locationsName": {
+                    "description": "位置名称",
+                    "type": "string"
+                },
+                "locationsType": {
+                    "description": "位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                    "type": "string"
+                },
+                "operatorName": {
+                    "description": "操作人",
+                    "type": "string"
+                },
+                "timeAt": {
+                    "description": "时间",
+                    "type": "string"
+                },
+                "transferTypeName": {
+                    "description": "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
+                    "type": "string"
+                }
+            }
         },
         "model.AssetTransferListRes": {
             "type": "object",
@@ -3941,6 +4443,84 @@
                 }
             }
         },
+        "model.AssetTransferReceiveBatchReq": {
+            "type": "object",
+            "required": [
+                "assetTransferReceive",
+                "operateType"
+            ],
+            "properties": {
+                "assetTransferReceive": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetTransferReceiveReq"
+                    }
+                },
+                "operateType": {
+                    "description": "操作类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetOperateRoleType"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.AssetTransferReceiveDetail": {
+            "type": "object",
+            "required": [
+                "assetType"
+            ],
+            "properties": {
+                "assetType": {
+                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                },
+                "materialId": {
+                    "description": "其它物资分类ID",
+                    "type": "integer"
+                },
+                "num": {
+                    "description": "调拨数量",
+                    "type": "integer"
+                },
+                "sn": {
+                    "description": "资产编号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetTransferReceiveReq": {
+            "type": "object",
+            "required": [
+                "detail"
+            ],
+            "properties": {
+                "detail": {
+                    "description": "资产明细",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetTransferReceiveDetail"
+                    }
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                }
+            }
+        },
         "model.AssetTransferStatus": {
             "type": "integer",
             "enum": [
@@ -3970,23 +4550,26 @@
                 3,
                 4,
                 5,
-                6
+                6,
+                7
             ],
             "x-enum-comments": {
-                "AssetTransferTypeAgent": "代理调拨",
+                "AssetTransferTypeActive": "激活",
+                "AssetTransferTypeContinue": "取消寄存",
+                "AssetTransferTypeExchange": "换电",
                 "AssetTransferTypeInitial": "初始入库",
-                "AssetTransferTypeOperation": "运维调拨",
-                "AssetTransferTypePlatform": "平台调拨",
-                "AssetTransferTypeStore": "门店调拨",
-                "AssetTransferTypeSystem": "系统业务自动调拨"
+                "AssetTransferTypePause": "寄存",
+                "AssetTransferTypeTransfer": "调拨",
+                "AssetTransferTypeUnSubscribe": "退租"
             },
             "x-enum-varnames": [
                 "AssetTransferTypeInitial",
-                "AssetTransferTypePlatform",
-                "AssetTransferTypeStore",
-                "AssetTransferTypeAgent",
-                "AssetTransferTypeOperation",
-                "AssetTransferTypeSystem"
+                "AssetTransferTypeTransfer",
+                "AssetTransferTypeActive",
+                "AssetTransferTypePause",
+                "AssetTransferTypeContinue",
+                "AssetTransferTypeUnSubscribe",
+                "AssetTransferTypeExchange"
             ]
         },
         "model.AssetType": {
