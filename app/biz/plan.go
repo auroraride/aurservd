@@ -114,11 +114,17 @@ func (b *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 			for _, c := range item.Edges.Cities {
 				cs = append(cs, c.Name)
 			}
+
+			introImage := intro[serv.Key(item.Model, item.BrandID)]
+			if item.IntroductionImage != "" {
+				introImage = item.IntroductionImage
+			}
+
 			// 封装电池型号
 			m = &model.PlanModelOption{
 				Children: new(model.PlanDaysPriceOptions),
 				Model:    item.Model,
-				Intro:    intro[serv.Key(item.Model, item.BrandID)],
+				Intro:    introImage,
 				Notes:    append(item.Notes, fmt.Sprintf("仅限 %s 使用", strings.Join(cs, " / "))),
 			}
 			mmap[key] = m
@@ -336,11 +342,17 @@ func (b *planBiz) EbikeList(brandIds []uint64) (res definition.PlanNewlyRes) {
 		for _, c := range item.Edges.Cities {
 			cs = append(cs, c.Name)
 		}
+
+		introImage := intro[serv.Key(item.Model, item.BrandID)]
+		if item.IntroductionImage != "" {
+			introImage = item.IntroductionImage
+		}
+
 		// 封装电池型号
 		m := &model.PlanModelOption{
 			Children: new(model.PlanDaysPriceOptions),
 			Model:    item.Model,
-			Intro:    intro[serv.Key(item.Model, item.BrandID)],
+			Intro:    introImage,
 			Notes:    append(item.Notes, fmt.Sprintf("仅限 %s 使用", strings.Join(cs, " / "))),
 		}
 		switch item.Type {
@@ -696,11 +708,17 @@ func (b *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 			for _, c := range item.Edges.Cities {
 				cs = append(cs, c.Name)
 			}
+
+			introImage := intro[serv.Key(item.Model, item.BrandID)]
+			if item.IntroductionImage != "" {
+				introImage = item.IntroductionImage
+			}
+
 			// 封装电池型号
 			m = &model.PlanModelOption{
 				Children: new(model.PlanDaysPriceOptions),
 				Model:    item.Model,
-				Intro:    intro[serv.Key(item.Model, item.BrandID)],
+				Intro:    introImage,
 				Notes:    append(item.Notes, fmt.Sprintf("仅限 %s 使用", strings.Join(cs, " / "))),
 			}
 			mmap[key] = m

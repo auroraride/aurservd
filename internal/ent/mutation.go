@@ -72642,6 +72642,7 @@ type PlanMutation struct {
 	overdue_fee                *float64
 	addoverdue_fee             *float64
 	daily                      *bool
+	introduction_image         *string
 	clearedFields              map[string]struct{}
 	agreement                  *uint64
 	clearedagreement           bool
@@ -74333,6 +74334,55 @@ func (m *PlanMutation) ResetDaily() {
 	m.daily = nil
 }
 
+// SetIntroductionImage sets the "introduction_image" field.
+func (m *PlanMutation) SetIntroductionImage(s string) {
+	m.introduction_image = &s
+}
+
+// IntroductionImage returns the value of the "introduction_image" field in the mutation.
+func (m *PlanMutation) IntroductionImage() (r string, exists bool) {
+	v := m.introduction_image
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIntroductionImage returns the old "introduction_image" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldIntroductionImage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIntroductionImage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIntroductionImage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIntroductionImage: %w", err)
+	}
+	return oldValue.IntroductionImage, nil
+}
+
+// ClearIntroductionImage clears the value of the "introduction_image" field.
+func (m *PlanMutation) ClearIntroductionImage() {
+	m.introduction_image = nil
+	m.clearedFields[plan.FieldIntroductionImage] = struct{}{}
+}
+
+// IntroductionImageCleared returns if the "introduction_image" field was cleared in this mutation.
+func (m *PlanMutation) IntroductionImageCleared() bool {
+	_, ok := m.clearedFields[plan.FieldIntroductionImage]
+	return ok
+}
+
+// ResetIntroductionImage resets all changes to the "introduction_image" field.
+func (m *PlanMutation) ResetIntroductionImage() {
+	m.introduction_image = nil
+	delete(m.clearedFields, plan.FieldIntroductionImage)
+}
+
 // ClearAgreement clears the "agreement" edge to the Agreement entity.
 func (m *PlanMutation) ClearAgreement() {
 	m.clearedagreement = true
@@ -74610,7 +74660,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 32)
+	fields := make([]string, 0, 33)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -74707,6 +74757,9 @@ func (m *PlanMutation) Fields() []string {
 	if m.daily != nil {
 		fields = append(fields, plan.FieldDaily)
 	}
+	if m.introduction_image != nil {
+		fields = append(fields, plan.FieldIntroductionImage)
+	}
 	return fields
 }
 
@@ -74779,6 +74832,8 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.BrandID()
 	case plan.FieldDaily:
 		return m.Daily()
+	case plan.FieldIntroductionImage:
+		return m.IntroductionImage()
 	}
 	return nil, false
 }
@@ -74852,6 +74907,8 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldBrandID(ctx)
 	case plan.FieldDaily:
 		return m.OldDaily(ctx)
+	case plan.FieldIntroductionImage:
+		return m.OldIntroductionImage(ctx)
 	}
 	return nil, fmt.Errorf("unknown Plan field %s", name)
 }
@@ -75085,6 +75142,13 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDaily(v)
 		return nil
+	case plan.FieldIntroductionImage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIntroductionImage(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
 }
@@ -75277,6 +75341,9 @@ func (m *PlanMutation) ClearedFields() []string {
 	if m.FieldCleared(plan.FieldBrandID) {
 		fields = append(fields, plan.FieldBrandID)
 	}
+	if m.FieldCleared(plan.FieldIntroductionImage) {
+		fields = append(fields, plan.FieldIntroductionImage)
+	}
 	return fields
 }
 
@@ -75341,6 +75408,9 @@ func (m *PlanMutation) ClearField(name string) error {
 		return nil
 	case plan.FieldBrandID:
 		m.ClearBrandID()
+		return nil
+	case plan.FieldIntroductionImage:
+		m.ClearIntroductionImage()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan nullable field %s", name)
@@ -75445,6 +75515,9 @@ func (m *PlanMutation) ResetField(name string) error {
 		return nil
 	case plan.FieldDaily:
 		m.ResetDaily()
+		return nil
+	case plan.FieldIntroductionImage:
+		m.ResetIntroductionImage()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)

@@ -79,6 +79,8 @@ const (
 	FieldBrandID = "brand_id"
 	// FieldDaily holds the string denoting the daily field in the database.
 	FieldDaily = "daily"
+	// FieldIntroductionImage holds the string denoting the introduction_image field in the database.
+	FieldIntroductionImage = "introduction_image"
 	// EdgeAgreement holds the string denoting the agreement edge name in mutations.
 	EdgeAgreement = "agreement"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
@@ -164,6 +166,7 @@ var Columns = []string{
 	FieldOverdueFee,
 	FieldBrandID,
 	FieldDaily,
+	FieldIntroductionImage,
 }
 
 var (
@@ -368,6 +371,11 @@ func ByBrandID(opts ...sql.OrderTermOption) OrderOption {
 // ByDaily orders the results by the daily field.
 func ByDaily(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDaily, opts...).ToFunc()
+}
+
+// ByIntroductionImage orders the results by the introduction_image field.
+func ByIntroductionImage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIntroductionImage, opts...).ToFunc()
 }
 
 // ByAgreementField orders the results by agreement field.
