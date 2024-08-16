@@ -460,8 +460,8 @@ var (
 			},
 		},
 	}
-	// AssetHistoryColumns holds the columns for the "asset_history" table.
-	AssetHistoryColumns = []*schema.Column{
+	// AssetMaintenanceColumns holds the columns for the "asset_maintenance" table.
+	AssetMaintenanceColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -469,41 +469,107 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
-		{Name: "from_location_type", Type: field.TypeInt, Nullable: true, Comment: "开始位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维"},
-		{Name: "from_location_id", Type: field.TypeInt, Nullable: true, Comment: "开始位置ID"},
-		{Name: "to_location_type", Type: field.TypeInt, Nullable: true, Comment: "目标位置类型 1:仓库 2:门店 3:电柜 4:站点 5:骑手 6:运维"},
-		{Name: "to_location_id", Type: field.TypeInt, Nullable: true, Comment: "目标位置ID"},
-		{Name: "type", Type: field.TypeUint8, Nullable: true, Comment: "调拨类型 1:初始入库 2:平台调拨 3:门店调拨 4:代理调拨 5:运维调拨 6:系统业务自动调拨"},
-		{Name: "asset_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "reason", Type: field.TypeString, Comment: "原因"},
+		{Name: "content", Type: field.TypeString, Comment: "内容"},
+		{Name: "status", Type: field.TypeUint8, Comment: "维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消", Default: 0},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
+		{Name: "maintainer_id", Type: field.TypeUint64, Nullable: true},
 	}
-	// AssetHistoryTable holds the schema information for the "asset_history" table.
-	AssetHistoryTable = &schema.Table{
-		Name:       "asset_history",
-		Columns:    AssetHistoryColumns,
-		PrimaryKey: []*schema.Column{AssetHistoryColumns[0]},
+	// AssetMaintenanceTable holds the schema information for the "asset_maintenance" table.
+	AssetMaintenanceTable = &schema.Table{
+		Name:       "asset_maintenance",
+		Columns:    AssetMaintenanceColumns,
+		PrimaryKey: []*schema.Column{AssetMaintenanceColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "asset_history_asset_asset",
-				Columns:    []*schema.Column{AssetHistoryColumns[12]},
-				RefColumns: []*schema.Column{AssetColumns[0]},
+				Symbol:     "asset_maintenance_cabinet_cabinet",
+				Columns:    []*schema.Column{AssetMaintenanceColumns[10]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_maintenance_maintainer_maintainer",
+				Columns:    []*schema.Column{AssetMaintenanceColumns[11]},
+				RefColumns: []*schema.Column{MaintainerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "assethistory_created_at",
+				Name:    "assetmaintenance_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{AssetHistoryColumns[1]},
+				Columns: []*schema.Column{AssetMaintenanceColumns[1]},
 			},
 			{
-				Name:    "assethistory_deleted_at",
+				Name:    "assetmaintenance_deleted_at",
 				Unique:  false,
-				Columns: []*schema.Column{AssetHistoryColumns[3]},
+				Columns: []*schema.Column{AssetMaintenanceColumns[3]},
 			},
 			{
-				Name:    "assethistory_asset_id",
+				Name:    "assetmaintenance_cabinet_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetHistoryColumns[12]},
+				Columns: []*schema.Column{AssetMaintenanceColumns[10]},
+			},
+			{
+				Name:    "assetmaintenance_maintainer_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetMaintenanceColumns[11]},
+			},
+		},
+	}
+	// AssetMaintenanceDetailsColumns holds the columns for the "asset_maintenance_details" table.
+	AssetMaintenanceDetailsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "asset_id", Type: field.TypeUint64, Nullable: true, Comment: "资产ID"},
+		{Name: "maintenance_id", Type: field.TypeUint64, Nullable: true, Comment: "维修ID"},
+		{Name: "material_id", Type: field.TypeUint64, Nullable: true, Comment: "物资ID"},
+	}
+	// AssetMaintenanceDetailsTable holds the schema information for the "asset_maintenance_details" table.
+	AssetMaintenanceDetailsTable = &schema.Table{
+		Name:       "asset_maintenance_details",
+		Columns:    AssetMaintenanceDetailsColumns,
+		PrimaryKey: []*schema.Column{AssetMaintenanceDetailsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "asset_maintenance_details_asset_maintenance_details",
+				Columns:    []*schema.Column{AssetMaintenanceDetailsColumns[7]},
+				RefColumns: []*schema.Column{AssetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_maintenance_details_asset_maintenance_maintenance_details",
+				Columns:    []*schema.Column{AssetMaintenanceDetailsColumns[8]},
+				RefColumns: []*schema.Column{AssetMaintenanceColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_maintenance_details_material_material",
+				Columns:    []*schema.Column{AssetMaintenanceDetailsColumns[9]},
+				RefColumns: []*schema.Column{MaterialColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "assetmaintenancedetails_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AssetMaintenanceDetailsColumns[1]},
+			},
+			{
+				Name:    "assetmaintenancedetails_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{AssetMaintenanceDetailsColumns[3]},
+			},
+			{
+				Name:    "assetmaintenancedetails_material_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetMaintenanceDetailsColumns[9]},
 			},
 		},
 	}
@@ -1613,7 +1679,7 @@ var (
 		{Name: "serial", Type: field.TypeString, Comment: "原始编号"},
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
 		{Name: "doors", Type: field.TypeInt, Comment: "柜门数量"},
-		{Name: "status", Type: field.TypeUint8, Comment: "投放状态"},
+		{Name: "status", Type: field.TypeUint8, Comment: "投放状态 0:未投放 1:运营中 2:维护中"},
 		{Name: "lng", Type: field.TypeFloat64, Nullable: true, Comment: "经度"},
 		{Name: "lat", Type: field.TypeFloat64, Nullable: true, Comment: "纬度"},
 		{Name: "geom", Type: field.TypeOther, Nullable: true, Comment: "坐标", SchemaType: map[string]string{"postgres": "geometry"}},
@@ -1629,8 +1695,11 @@ var (
 		{Name: "battery_charging_num", Type: field.TypeInt, Comment: "充电总数", Default: 0},
 		{Name: "empty_bin_num", Type: field.TypeInt, Comment: "空仓数量", Default: 0},
 		{Name: "locked_bin_num", Type: field.TypeInt, Comment: "锁仓数量", Default: 0},
+		{Name: "maintenance_at", Type: field.TypeTime, Nullable: true, Comment: "维护时间"},
 		{Name: "branch_id", Type: field.TypeUint64, Nullable: true, Comment: "网点"},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
+		{Name: "maintainer_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "团签ID"},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
 	}
@@ -1642,25 +1711,37 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cabinet_branch_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[28]},
+				Columns:    []*schema.Column{CabinetColumns[29]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_city_city",
-				Columns:    []*schema.Column{CabinetColumns[29]},
+				Columns:    []*schema.Column{CabinetColumns[30]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
+				Symbol:     "cabinet_store_store",
+				Columns:    []*schema.Column{CabinetColumns[31]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "cabinet_maintainer_maintainer",
+				Columns:    []*schema.Column{CabinetColumns[32]},
+				RefColumns: []*schema.Column{MaintainerColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "cabinet_enterprise_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[30]},
+				Columns:    []*schema.Column{CabinetColumns[33]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_enterprise_station_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[31]},
+				Columns:    []*schema.Column{CabinetColumns[34]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1679,12 +1760,22 @@ var (
 			{
 				Name:    "cabinet_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[29]},
+				Columns: []*schema.Column{CabinetColumns[30]},
+			},
+			{
+				Name:    "cabinet_store_id",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetColumns[31]},
+			},
+			{
+				Name:    "cabinet_maintainer_id",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetColumns[32]},
 			},
 			{
 				Name:    "cabinet_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[28]},
+				Columns: []*schema.Column{CabinetColumns[29]},
 			},
 			{
 				Name:    "cabinet_brand",
@@ -6961,7 +7052,8 @@ var (
 		AssetTable,
 		AssetAttributeValuesTable,
 		AssetAttributesTable,
-		AssetHistoryTable,
+		AssetMaintenanceTable,
+		AssetMaintenanceDetailsTable,
 		AssetScrapTable,
 		AssetScrapDetailsTable,
 		AssetTransferTable,
@@ -7102,9 +7194,16 @@ func init() {
 	AssetAttributesTable.Annotation = &entsql.Annotation{
 		Table: "asset_attributes",
 	}
-	AssetHistoryTable.ForeignKeys[0].RefTable = AssetTable
-	AssetHistoryTable.Annotation = &entsql.Annotation{
-		Table: "asset_history",
+	AssetMaintenanceTable.ForeignKeys[0].RefTable = CabinetTable
+	AssetMaintenanceTable.ForeignKeys[1].RefTable = MaintainerTable
+	AssetMaintenanceTable.Annotation = &entsql.Annotation{
+		Table: "asset_maintenance",
+	}
+	AssetMaintenanceDetailsTable.ForeignKeys[0].RefTable = AssetTable
+	AssetMaintenanceDetailsTable.ForeignKeys[1].RefTable = AssetMaintenanceTable
+	AssetMaintenanceDetailsTable.ForeignKeys[2].RefTable = MaterialTable
+	AssetMaintenanceDetailsTable.Annotation = &entsql.Annotation{
+		Table: "asset_maintenance_details",
 	}
 	AssetScrapTable.ForeignKeys[0].RefTable = ManagerTable
 	AssetScrapTable.ForeignKeys[1].RefTable = EmployeeTable
@@ -7212,8 +7311,10 @@ func init() {
 	}
 	CabinetTable.ForeignKeys[0].RefTable = BranchTable
 	CabinetTable.ForeignKeys[1].RefTable = CityTable
-	CabinetTable.ForeignKeys[2].RefTable = EnterpriseTable
-	CabinetTable.ForeignKeys[3].RefTable = EnterpriseStationTable
+	CabinetTable.ForeignKeys[2].RefTable = StoreTable
+	CabinetTable.ForeignKeys[3].RefTable = MaintainerTable
+	CabinetTable.ForeignKeys[4].RefTable = EnterpriseTable
+	CabinetTable.ForeignKeys[5].RefTable = EnterpriseStationTable
 	CabinetTable.Annotation = &entsql.Annotation{
 		Table: "cabinet",
 	}

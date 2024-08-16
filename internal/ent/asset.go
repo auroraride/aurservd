@@ -103,9 +103,11 @@ type AssetEdges struct {
 	ScrapDetails []*AssetScrapDetails `json:"scrap_details,omitempty"`
 	// TransferDetails holds the value of the transfer_details edge.
 	TransferDetails []*AssetTransferDetails `json:"transfer_details,omitempty"`
+	// MaintenanceDetails holds the value of the maintenance_details edge.
+	MaintenanceDetails []*AssetMaintenanceDetails `json:"maintenance_details,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [13]bool
+	loadedTypes [14]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
@@ -243,6 +245,15 @@ func (e AssetEdges) TransferDetailsOrErr() ([]*AssetTransferDetails, error) {
 		return e.TransferDetails, nil
 	}
 	return nil, &NotLoadedError{edge: "transfer_details"}
+}
+
+// MaintenanceDetailsOrErr returns the MaintenanceDetails value or an error if the edge
+// was not loaded in eager-loading.
+func (e AssetEdges) MaintenanceDetailsOrErr() ([]*AssetMaintenanceDetails, error) {
+	if e.loadedTypes[13] {
+		return e.MaintenanceDetails, nil
+	}
+	return nil, &NotLoadedError{edge: "maintenance_details"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -487,6 +498,11 @@ func (a *Asset) QueryScrapDetails() *AssetScrapDetailsQuery {
 // QueryTransferDetails queries the "transfer_details" edge of the Asset entity.
 func (a *Asset) QueryTransferDetails() *AssetTransferDetailsQuery {
 	return NewAssetClient(a.config).QueryTransferDetails(a)
+}
+
+// QueryMaintenanceDetails queries the "maintenance_details" edge of the Asset entity.
+func (a *Asset) QueryMaintenanceDetails() *AssetMaintenanceDetailsQuery {
+	return NewAssetClient(a.config).QueryMaintenanceDetails(a)
 }
 
 // Update returns a builder for updating this Asset.

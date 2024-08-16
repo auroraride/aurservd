@@ -226,20 +226,51 @@ func (aaq *AssetAttributesQuery) PaginationResult(req model.PaginationReq) model
 	}
 }
 
-// Pagination returns pagination query builder for AssetHistoryQuery.
-func (ahq *AssetHistoryQuery) Pagination(req model.PaginationReq) *AssetHistoryQuery {
-	ahq.Offset(req.GetOffset()).Limit(req.GetLimit())
-	return ahq
+// Pagination returns pagination query builder for AssetMaintenanceQuery.
+func (amq *AssetMaintenanceQuery) Pagination(req model.PaginationReq) *AssetMaintenanceQuery {
+	amq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return amq
 }
 
-// PaginationItems returns pagination query builder for AssetHistoryQuery.
-func (ahq *AssetHistoryQuery) PaginationItemsX(req model.PaginationReq) any {
-	return ahq.Pagination(req).AllX(context.Background())
+// PaginationItems returns pagination query builder for AssetMaintenanceQuery.
+func (amq *AssetMaintenanceQuery) PaginationItemsX(req model.PaginationReq) any {
+	return amq.Pagination(req).AllX(context.Background())
 }
 
-// PaginationResult returns pagination for AssetHistoryQuery.
-func (ahq *AssetHistoryQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	query := ahq.Clone()
+// PaginationResult returns pagination for AssetMaintenanceQuery.
+func (amq *AssetMaintenanceQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := amq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for AssetMaintenanceDetailsQuery.
+func (amdq *AssetMaintenanceDetailsQuery) Pagination(req model.PaginationReq) *AssetMaintenanceDetailsQuery {
+	amdq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return amdq
+}
+
+// PaginationItems returns pagination query builder for AssetMaintenanceDetailsQuery.
+func (amdq *AssetMaintenanceDetailsQuery) PaginationItemsX(req model.PaginationReq) any {
+	return amdq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for AssetMaintenanceDetailsQuery.
+func (amdq *AssetMaintenanceDetailsQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := amdq.Clone()
 	query.order = nil
 	query.ctx.Limit = nil
 	query.ctx.Offset = nil

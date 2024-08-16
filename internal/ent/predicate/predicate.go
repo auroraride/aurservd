@@ -27,8 +27,11 @@ type AssetAttributeValues func(*sql.Selector)
 // AssetAttributes is the predicate function for assetattributes builders.
 type AssetAttributes func(*sql.Selector)
 
-// AssetHistory is the predicate function for assethistory builders.
-type AssetHistory func(*sql.Selector)
+// AssetMaintenance is the predicate function for assetmaintenance builders.
+type AssetMaintenance func(*sql.Selector)
+
+// AssetMaintenanceDetails is the predicate function for assetmaintenancedetails builders.
+type AssetMaintenanceDetails func(*sql.Selector)
 
 // AssetScrap is the predicate function for assetscrap builders.
 type AssetScrap func(*sql.Selector)

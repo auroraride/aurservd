@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
+	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
@@ -31,24 +32,25 @@ import (
 // AssetQuery is the builder for querying Asset entities.
 type AssetQuery struct {
 	config
-	ctx                 *QueryContext
-	order               []asset.OrderOption
-	inters              []Interceptor
-	predicates          []predicate.Asset
-	withBrand           *EbikeBrandQuery
-	withModel           *BatteryModelQuery
-	withCity            *CityQuery
-	withMaterial        *MaterialQuery
-	withValues          *AssetAttributeValuesQuery
-	withWarehouse       *WarehouseQuery
-	withStore           *StoreQuery
-	withCabinet         *CabinetQuery
-	withStation         *EnterpriseStationQuery
-	withRider           *RiderQuery
-	withOperator        *MaintainerQuery
-	withScrapDetails    *AssetScrapDetailsQuery
-	withTransferDetails *AssetTransferDetailsQuery
-	modifiers           []func(*sql.Selector)
+	ctx                    *QueryContext
+	order                  []asset.OrderOption
+	inters                 []Interceptor
+	predicates             []predicate.Asset
+	withBrand              *EbikeBrandQuery
+	withModel              *BatteryModelQuery
+	withCity               *CityQuery
+	withMaterial           *MaterialQuery
+	withValues             *AssetAttributeValuesQuery
+	withWarehouse          *WarehouseQuery
+	withStore              *StoreQuery
+	withCabinet            *CabinetQuery
+	withStation            *EnterpriseStationQuery
+	withRider              *RiderQuery
+	withOperator           *MaintainerQuery
+	withScrapDetails       *AssetScrapDetailsQuery
+	withTransferDetails    *AssetTransferDetailsQuery
+	withMaintenanceDetails *AssetMaintenanceDetailsQuery
+	modifiers              []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -371,6 +373,28 @@ func (aq *AssetQuery) QueryTransferDetails() *AssetTransferDetailsQuery {
 	return query
 }
 
+// QueryMaintenanceDetails chains the current query on the "maintenance_details" edge.
+func (aq *AssetQuery) QueryMaintenanceDetails() *AssetMaintenanceDetailsQuery {
+	query := (&AssetMaintenanceDetailsClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(assetmaintenancedetails.Table, assetmaintenancedetails.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, asset.MaintenanceDetailsTable, asset.MaintenanceDetailsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Asset entity from the query.
 // Returns a *NotFoundError when no Asset was found.
 func (aq *AssetQuery) First(ctx context.Context) (*Asset, error) {
@@ -558,24 +582,25 @@ func (aq *AssetQuery) Clone() *AssetQuery {
 		return nil
 	}
 	return &AssetQuery{
-		config:              aq.config,
-		ctx:                 aq.ctx.Clone(),
-		order:               append([]asset.OrderOption{}, aq.order...),
-		inters:              append([]Interceptor{}, aq.inters...),
-		predicates:          append([]predicate.Asset{}, aq.predicates...),
-		withBrand:           aq.withBrand.Clone(),
-		withModel:           aq.withModel.Clone(),
-		withCity:            aq.withCity.Clone(),
-		withMaterial:        aq.withMaterial.Clone(),
-		withValues:          aq.withValues.Clone(),
-		withWarehouse:       aq.withWarehouse.Clone(),
-		withStore:           aq.withStore.Clone(),
-		withCabinet:         aq.withCabinet.Clone(),
-		withStation:         aq.withStation.Clone(),
-		withRider:           aq.withRider.Clone(),
-		withOperator:        aq.withOperator.Clone(),
-		withScrapDetails:    aq.withScrapDetails.Clone(),
-		withTransferDetails: aq.withTransferDetails.Clone(),
+		config:                 aq.config,
+		ctx:                    aq.ctx.Clone(),
+		order:                  append([]asset.OrderOption{}, aq.order...),
+		inters:                 append([]Interceptor{}, aq.inters...),
+		predicates:             append([]predicate.Asset{}, aq.predicates...),
+		withBrand:              aq.withBrand.Clone(),
+		withModel:              aq.withModel.Clone(),
+		withCity:               aq.withCity.Clone(),
+		withMaterial:           aq.withMaterial.Clone(),
+		withValues:             aq.withValues.Clone(),
+		withWarehouse:          aq.withWarehouse.Clone(),
+		withStore:              aq.withStore.Clone(),
+		withCabinet:            aq.withCabinet.Clone(),
+		withStation:            aq.withStation.Clone(),
+		withRider:              aq.withRider.Clone(),
+		withOperator:           aq.withOperator.Clone(),
+		withScrapDetails:       aq.withScrapDetails.Clone(),
+		withTransferDetails:    aq.withTransferDetails.Clone(),
+		withMaintenanceDetails: aq.withMaintenanceDetails.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -725,6 +750,17 @@ func (aq *AssetQuery) WithTransferDetails(opts ...func(*AssetTransferDetailsQuer
 	return aq
 }
 
+// WithMaintenanceDetails tells the query-builder to eager-load the nodes that are connected to
+// the "maintenance_details" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithMaintenanceDetails(opts ...func(*AssetMaintenanceDetailsQuery)) *AssetQuery {
+	query := (&AssetMaintenanceDetailsClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withMaintenanceDetails = query
+	return aq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -803,7 +839,7 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 	var (
 		nodes       = []*Asset{}
 		_spec       = aq.querySpec()
-		loadedTypes = [13]bool{
+		loadedTypes = [14]bool{
 			aq.withBrand != nil,
 			aq.withModel != nil,
 			aq.withCity != nil,
@@ -817,6 +853,7 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 			aq.withOperator != nil,
 			aq.withScrapDetails != nil,
 			aq.withTransferDetails != nil,
+			aq.withMaintenanceDetails != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -918,6 +955,15 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 		if err := aq.loadTransferDetails(ctx, query, nodes,
 			func(n *Asset) { n.Edges.TransferDetails = []*AssetTransferDetails{} },
 			func(n *Asset, e *AssetTransferDetails) { n.Edges.TransferDetails = append(n.Edges.TransferDetails, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withMaintenanceDetails; query != nil {
+		if err := aq.loadMaintenanceDetails(ctx, query, nodes,
+			func(n *Asset) { n.Edges.MaintenanceDetails = []*AssetMaintenanceDetails{} },
+			func(n *Asset, e *AssetMaintenanceDetails) {
+				n.Edges.MaintenanceDetails = append(n.Edges.MaintenanceDetails, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -1316,6 +1362,36 @@ func (aq *AssetQuery) loadTransferDetails(ctx context.Context, query *AssetTrans
 	}
 	return nil
 }
+func (aq *AssetQuery) loadMaintenanceDetails(ctx context.Context, query *AssetMaintenanceDetailsQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *AssetMaintenanceDetails)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Asset)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(assetmaintenancedetails.FieldAssetID)
+	}
+	query.Where(predicate.AssetMaintenanceDetails(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(asset.MaintenanceDetailsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AssetID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (aq *AssetQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
@@ -1443,19 +1519,20 @@ func (aq *AssetQuery) Modify(modifiers ...func(s *sql.Selector)) *AssetSelect {
 type AssetQueryWith string
 
 var (
-	AssetQueryWithBrand           AssetQueryWith = "Brand"
-	AssetQueryWithModel           AssetQueryWith = "Model"
-	AssetQueryWithCity            AssetQueryWith = "City"
-	AssetQueryWithMaterial        AssetQueryWith = "Material"
-	AssetQueryWithValues          AssetQueryWith = "Values"
-	AssetQueryWithWarehouse       AssetQueryWith = "Warehouse"
-	AssetQueryWithStore           AssetQueryWith = "Store"
-	AssetQueryWithCabinet         AssetQueryWith = "Cabinet"
-	AssetQueryWithStation         AssetQueryWith = "Station"
-	AssetQueryWithRider           AssetQueryWith = "Rider"
-	AssetQueryWithOperator        AssetQueryWith = "Operator"
-	AssetQueryWithScrapDetails    AssetQueryWith = "ScrapDetails"
-	AssetQueryWithTransferDetails AssetQueryWith = "TransferDetails"
+	AssetQueryWithBrand              AssetQueryWith = "Brand"
+	AssetQueryWithModel              AssetQueryWith = "Model"
+	AssetQueryWithCity               AssetQueryWith = "City"
+	AssetQueryWithMaterial           AssetQueryWith = "Material"
+	AssetQueryWithValues             AssetQueryWith = "Values"
+	AssetQueryWithWarehouse          AssetQueryWith = "Warehouse"
+	AssetQueryWithStore              AssetQueryWith = "Store"
+	AssetQueryWithCabinet            AssetQueryWith = "Cabinet"
+	AssetQueryWithStation            AssetQueryWith = "Station"
+	AssetQueryWithRider              AssetQueryWith = "Rider"
+	AssetQueryWithOperator           AssetQueryWith = "Operator"
+	AssetQueryWithScrapDetails       AssetQueryWith = "ScrapDetails"
+	AssetQueryWithTransferDetails    AssetQueryWith = "TransferDetails"
+	AssetQueryWithMaintenanceDetails AssetQueryWith = "MaintenanceDetails"
 )
 
 func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
@@ -1487,6 +1564,8 @@ func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
 			aq.WithScrapDetails()
 		case AssetQueryWithTransferDetails:
 			aq.WithTransferDetails()
+		case AssetQueryWithMaintenanceDetails:
+			aq.WithMaintenanceDetails()
 		}
 	}
 	return aq

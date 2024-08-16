@@ -58,12 +58,18 @@ func (AssetMaintenanceDetails) Annotations() []schema.Annotation {
 
 // Fields of the AssetMaintenanceDetails.
 func (AssetMaintenanceDetails) Fields() []ent.Field {
-	return []ent.Field{}
+	return []ent.Field{
+		field.Uint64("asset_id").Optional().Comment("资产ID"),
+		field.Uint64("maintenance_id").Optional().Comment("维修ID"),
+	}
 }
 
 // Edges of the AssetMaintenanceDetails.
 func (AssetMaintenanceDetails) Edges() []ent.Edge {
-	return []ent.Edge{}
+	return []ent.Edge{
+		edge.From("asset", Asset.Type).Ref("maintenance_details").Unique().Field("asset_id"),
+		edge.From("maintenance", AssetMaintenance.Type).Ref("maintenance_details").Unique().Field("maintenance_id"),
+	}
 }
 
 func (AssetMaintenanceDetails) Mixin() []ent.Mixin {
@@ -71,6 +77,7 @@ func (AssetMaintenanceDetails) Mixin() []ent.Mixin {
 		internal.TimeMixin{},
 		internal.DeleteMixin{},
 		internal.Modifier{},
+		MaterialMixin{Optional: true},
 	}
 }
 

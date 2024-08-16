@@ -92,14 +92,24 @@ func (aa *AssetAttributes) GetName() string {
 	return aa.Name
 }
 
-// GetTableName returns table name for AssetHistory.
-func (ah *AssetHistory) GetTableName() string {
-	return "asset_history"
+// GetTableName returns table name for AssetMaintenance.
+func (am *AssetMaintenance) GetTableName() string {
+	return "asset_maintenance"
 }
 
-// GetID returns id for AssetHistory.
-func (ah *AssetHistory) GetID() uint64 {
-	return ah.ID
+// GetID returns id for AssetMaintenance.
+func (am *AssetMaintenance) GetID() uint64 {
+	return am.ID
+}
+
+// GetTableName returns table name for AssetMaintenanceDetails.
+func (amd *AssetMaintenanceDetails) GetTableName() string {
+	return "asset_maintenance_details"
+}
+
+// GetID returns id for AssetMaintenanceDetails.
+func (amd *AssetMaintenanceDetails) GetID() uint64 {
+	return amd.ID
 }
 
 // GetTableName returns table name for AssetScrap.

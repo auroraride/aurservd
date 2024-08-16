@@ -94,6 +94,9 @@ func (Asset) Edges() []ent.Edge {
 
 		// 关联调拨详情
 		edge.To("transfer_details", AssetTransferDetails.Type),
+
+		// 关联维护详情
+		edge.To("maintenance_details", AssetMaintenanceDetails.Type),
 	}
 }
 

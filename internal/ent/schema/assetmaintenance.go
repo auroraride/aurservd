@@ -58,12 +58,18 @@ func (AssetMaintenance) Annotations() []schema.Annotation {
 
 // Fields of the AssetMaintenance.
 func (AssetMaintenance) Fields() []ent.Field {
-	return []ent.Field{}
+	return []ent.Field{
+		field.String("reason").Comment("原因"),
+		field.String("content").Comment("内容"),
+		field.Uint8("status").Default(0).Comment("维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消"),
+	}
 }
 
 // Edges of the AssetMaintenance.
 func (AssetMaintenance) Edges() []ent.Edge {
-	return []ent.Edge{}
+	return []ent.Edge{
+		edge.To("maintenance_details", AssetMaintenanceDetails.Type),
+	}
 }
 
 func (AssetMaintenance) Mixin() []ent.Mixin {
@@ -71,6 +77,8 @@ func (AssetMaintenance) Mixin() []ent.Mixin {
 		internal.TimeMixin{},
 		internal.DeleteMixin{},
 		internal.Modifier{},
+		CabinetMixin{Optional: true},
+		MaintainerMixin{Optional: true},
 	}
 }
 

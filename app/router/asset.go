@@ -68,4 +68,8 @@ func loadAssersRoutes() {
 	asset.GET("/transfer/sn/:sn", assetapi.AssetTransfer.GetTransferBySN)      // 根据sn查询调拨单
 	asset.GET("/transfer/flow/:sn", assetapi.AssetTransfer.TransferFlow)       // 调拨流转记录
 	asset.GET("/transfer/details", assetapi.AssetTransfer.TransferDetailsList) // 调拨详情列表(出入库明细)
+
+	// 资产维修
+	asset.GET("/maintenance", assetapi.AssetMaintenance.List)    // 资产维修列表
+	asset.POST("/maintenance", assetapi.AssetMaintenance.Create) // 创建维修记录
 }

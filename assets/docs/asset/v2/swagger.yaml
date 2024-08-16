@@ -863,6 +863,119 @@ definitions:
     - AssetLocationsTypeOperation
     - AssetLocationsTypeCabinet
     - AssetLocationsTypeRider
+  model.AssetMaintenanceCreateDetail:
+    properties:
+      materialId:
+        description: 其它物资分类ID
+        type: integer
+      num:
+        description: 数量
+        type: integer
+    required:
+      - materialId
+      - num
+    type: object
+  model.AssetMaintenanceCreateReq:
+    properties:
+      cabinetId:
+        description: 电柜ID
+        type: integer
+      content:
+        description: 维护内容
+        type: string
+      details:
+        description: 维护详情
+        items:
+          $ref: '#/definitions/model.AssetMaintenanceCreateDetail'
+        type: array
+      operateRoleType:
+        description: 维护人角色类型
+        type: integer
+      opratorId:
+        description: 维护人ID
+        type: integer
+      reason:
+        description: 维护理由
+        type: string
+      status:
+        allOf:
+          - $ref: '#/definitions/model.AssetMaintenanceStatus'
+        description: 维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消
+    required:
+      - cabinetId
+      - content
+      - details
+      - reason
+      - status
+    type: object
+  model.AssetMaintenanceDetail:
+    properties:
+      assetName:
+        description: 资产名称
+        type: string
+      assetType:
+        description: 资产类型
+        type: string
+      num:
+        description: 数量
+        type: integer
+    required:
+      - assetName
+      - assetType
+      - num
+    type: object
+  model.AssetMaintenanceListRes:
+    properties:
+      cabinetName:
+        description: 电柜名称
+        type: string
+      cabinetSn:
+        description: 电柜编号
+        type: string
+      createdAt:
+        description: 维护时间
+        type: string
+      details:
+        description: 维护详情
+        items:
+          $ref: '#/definitions/model.AssetMaintenanceDetail'
+        type: array
+      id:
+        description: ID
+        type: integer
+      opratorName:
+        description: 维护人
+        type: string
+      opratorPhone:
+        description: 维护人电话
+        type: string
+      reason:
+        description: 维护理由
+        type: string
+      status:
+        description: 维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消
+        type: string
+    type: object
+  model.AssetMaintenanceStatus:
+    enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+    type: integer
+    x-enum-comments:
+      AssetMaintenanceStatusCancel: 已取消
+      AssetMaintenanceStatusFail: 维修失败
+      AssetMaintenanceStatusSuccess: 已维修
+      AssetMaintenanceStatusUnder: 维修中
+      AssetMaintenanceStatusWait: 待维修
+    x-enum-varnames:
+      - AssetMaintenanceStatusWait
+      - AssetMaintenanceStatusUnder
+      - AssetMaintenanceStatusSuccess
+      - AssetMaintenanceStatusFail
+      - AssetMaintenanceStatusCancel
   model.AssetModifyReq:
     properties:
       assetType:
@@ -897,9 +1010,11 @@ definitions:
     - 4
     - 5
     - 6
+    - 7
     type: integer
     x-enum-comments:
       AssetOperateRoleTypeAgent: 代理
+      AssetOperateRoleTypeBusinessManager: 业务后台
       AssetOperateRoleTypeCabinet: 电柜
       AssetOperateRoleTypeManager: 资产后台
       AssetOperateRoleTypeOperation: 运维
@@ -912,6 +1027,7 @@ definitions:
     - AssetOperateRoleTypeOperation
     - AssetOperateRoleTypeCabinet
     - AssetOperateRoleTypeRider
+    - AssetOperateRoleTypeBusinessManager
   model.AssetScrapBatchRestoreReq:
     properties:
       ids:
@@ -2117,6 +2233,80 @@ paths:
       summary: 运维物资
       tags:
       - 运维 - Maintainer
+  /manager/v2/asset/maintenance:
+    get:
+      consumes:
+        - application/json
+      operationId: AssetMaintenanceList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 当前页, 从1开始, 默认1
+          in: query
+          name: current
+          type: integer
+        - description: 结束时间
+          in: query
+          name: end
+          type: string
+        - description: 是否使用配件
+          in: query
+          name: isUseAccessory
+          type: boolean
+        - in: query
+          name: keyword
+          type: string
+        - description: 每页数据, 默认20
+          in: query
+          name: pageSize
+          type: integer
+        - description: 开始时间
+          in: query
+          name: start
+          type: string
+        - description: 状态 2:已维修 3:维修失败
+          in: query
+          name: status
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AssetMaintenanceListRes'
+      summary: 维修记录列表
+      tags:
+        - 资产
+    post:
+      consumes:
+        - application/json
+      operationId: AssetMaintenanceCreate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 创建参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/model.AssetMaintenanceCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建维修记录
+      tags:
+        - 资产
   /manager/v2/asset/material:
     get:
       consumes:

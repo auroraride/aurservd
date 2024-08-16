@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
+	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
@@ -463,6 +464,21 @@ func (ac *AssetCreate) AddTransferDetails(a ...*AssetTransferDetails) *AssetCrea
 	return ac.AddTransferDetailIDs(ids...)
 }
 
+// AddMaintenanceDetailIDs adds the "maintenance_details" edge to the AssetMaintenanceDetails entity by IDs.
+func (ac *AssetCreate) AddMaintenanceDetailIDs(ids ...uint64) *AssetCreate {
+	ac.mutation.AddMaintenanceDetailIDs(ids...)
+	return ac
+}
+
+// AddMaintenanceDetails adds the "maintenance_details" edges to the AssetMaintenanceDetails entity.
+func (ac *AssetCreate) AddMaintenanceDetails(a ...*AssetMaintenanceDetails) *AssetCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ac.AddMaintenanceDetailIDs(ids...)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (ac *AssetCreate) Mutation() *AssetMutation {
 	return ac.mutation
@@ -843,6 +859,22 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.MaintenanceDetailsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.MaintenanceDetailsTable,
+			Columns: []string{asset.MaintenanceDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetmaintenancedetails.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

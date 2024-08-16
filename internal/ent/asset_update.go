@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
+	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
@@ -564,6 +565,21 @@ func (au *AssetUpdate) AddTransferDetails(a ...*AssetTransferDetails) *AssetUpda
 	return au.AddTransferDetailIDs(ids...)
 }
 
+// AddMaintenanceDetailIDs adds the "maintenance_details" edge to the AssetMaintenanceDetails entity by IDs.
+func (au *AssetUpdate) AddMaintenanceDetailIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.AddMaintenanceDetailIDs(ids...)
+	return au
+}
+
+// AddMaintenanceDetails adds the "maintenance_details" edges to the AssetMaintenanceDetails entity.
+func (au *AssetUpdate) AddMaintenanceDetails(a ...*AssetMaintenanceDetails) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.AddMaintenanceDetailIDs(ids...)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (au *AssetUpdate) Mutation() *AssetMutation {
 	return au.mutation
@@ -690,6 +706,27 @@ func (au *AssetUpdate) RemoveTransferDetails(a ...*AssetTransferDetails) *AssetU
 		ids[i] = a[i].ID
 	}
 	return au.RemoveTransferDetailIDs(ids...)
+}
+
+// ClearMaintenanceDetails clears all "maintenance_details" edges to the AssetMaintenanceDetails entity.
+func (au *AssetUpdate) ClearMaintenanceDetails() *AssetUpdate {
+	au.mutation.ClearMaintenanceDetails()
+	return au
+}
+
+// RemoveMaintenanceDetailIDs removes the "maintenance_details" edge to AssetMaintenanceDetails entities by IDs.
+func (au *AssetUpdate) RemoveMaintenanceDetailIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.RemoveMaintenanceDetailIDs(ids...)
+	return au
+}
+
+// RemoveMaintenanceDetails removes "maintenance_details" edges to AssetMaintenanceDetails entities.
+func (au *AssetUpdate) RemoveMaintenanceDetails(a ...*AssetMaintenanceDetails) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.RemoveMaintenanceDetailIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1252,6 +1289,51 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.MaintenanceDetailsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.MaintenanceDetailsTable,
+			Columns: []string{asset.MaintenanceDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetmaintenancedetails.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedMaintenanceDetailsIDs(); len(nodes) > 0 && !au.mutation.MaintenanceDetailsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.MaintenanceDetailsTable,
+			Columns: []string{asset.MaintenanceDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetmaintenancedetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.MaintenanceDetailsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.MaintenanceDetailsTable,
+			Columns: []string{asset.MaintenanceDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetmaintenancedetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(au.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -1795,6 +1877,21 @@ func (auo *AssetUpdateOne) AddTransferDetails(a ...*AssetTransferDetails) *Asset
 	return auo.AddTransferDetailIDs(ids...)
 }
 
+// AddMaintenanceDetailIDs adds the "maintenance_details" edge to the AssetMaintenanceDetails entity by IDs.
+func (auo *AssetUpdateOne) AddMaintenanceDetailIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.AddMaintenanceDetailIDs(ids...)
+	return auo
+}
+
+// AddMaintenanceDetails adds the "maintenance_details" edges to the AssetMaintenanceDetails entity.
+func (auo *AssetUpdateOne) AddMaintenanceDetails(a ...*AssetMaintenanceDetails) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.AddMaintenanceDetailIDs(ids...)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (auo *AssetUpdateOne) Mutation() *AssetMutation {
 	return auo.mutation
@@ -1921,6 +2018,27 @@ func (auo *AssetUpdateOne) RemoveTransferDetails(a ...*AssetTransferDetails) *As
 		ids[i] = a[i].ID
 	}
 	return auo.RemoveTransferDetailIDs(ids...)
+}
+
+// ClearMaintenanceDetails clears all "maintenance_details" edges to the AssetMaintenanceDetails entity.
+func (auo *AssetUpdateOne) ClearMaintenanceDetails() *AssetUpdateOne {
+	auo.mutation.ClearMaintenanceDetails()
+	return auo
+}
+
+// RemoveMaintenanceDetailIDs removes the "maintenance_details" edge to AssetMaintenanceDetails entities by IDs.
+func (auo *AssetUpdateOne) RemoveMaintenanceDetailIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.RemoveMaintenanceDetailIDs(ids...)
+	return auo
+}
+
+// RemoveMaintenanceDetails removes "maintenance_details" edges to AssetMaintenanceDetails entities.
+func (auo *AssetUpdateOne) RemoveMaintenanceDetails(a ...*AssetMaintenanceDetails) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.RemoveMaintenanceDetailIDs(ids...)
 }
 
 // Where appends a list predicates to the AssetUpdate builder.
@@ -2506,6 +2624,51 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assettransferdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.MaintenanceDetailsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.MaintenanceDetailsTable,
+			Columns: []string{asset.MaintenanceDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetmaintenancedetails.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedMaintenanceDetailsIDs(); len(nodes) > 0 && !auo.mutation.MaintenanceDetailsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.MaintenanceDetailsTable,
+			Columns: []string{asset.MaintenanceDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetmaintenancedetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.MaintenanceDetailsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.MaintenanceDetailsTable,
+			Columns: []string{asset.MaintenanceDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetmaintenancedetails.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

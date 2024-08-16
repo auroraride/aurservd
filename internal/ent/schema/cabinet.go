@@ -86,8 +86,7 @@ func (Cabinet) Fields() []ent.Field {
 		field.String("serial").Comment("原始编号"),
 		field.String("name").Comment("名称"),
 		field.Int("doors").Comment("柜门数量"),
-		field.Uint8("status").Comment("投放状态"),
-
+		field.Uint8("status").Comment("投放状态 0:未投放 1:运营中 2:维护中"),
 		field.Float("lng").Optional().Comment("经度"),
 		field.Float("lat").Optional().Comment("纬度"),
 		field.Other("geom", &model.Geometry{}).Optional().SchemaType(map[string]string{
@@ -108,6 +107,7 @@ func (Cabinet) Fields() []ent.Field {
 		field.Int("battery_charging_num").Default(0).Comment("充电总数"),
 		field.Int("empty_bin_num").Default(0).Comment("空仓数量"),
 		field.Int("locked_bin_num").Default(0).Comment("锁仓数量"),
+		field.Time("maintenance_at").Optional().Comment("维护时间"),
 	}
 }
 
@@ -136,6 +136,8 @@ func (Cabinet) Mixin() []ent.Mixin {
 		internal.Modifier{},
 
 		CityMixin{Optional: true},
+		StoreMixin{Optional: true},
+		MaintainerMixin{Optional: true},
 	}
 }
 

@@ -81,6 +81,8 @@ const (
 	EdgeScrapDetails = "scrap_details"
 	// EdgeTransferDetails holds the string denoting the transfer_details edge name in mutations.
 	EdgeTransferDetails = "transfer_details"
+	// EdgeMaintenanceDetails holds the string denoting the maintenance_details edge name in mutations.
+	EdgeMaintenanceDetails = "maintenance_details"
 	// Table holds the table name of the asset in the database.
 	Table = "asset"
 	// BrandTable is the table that holds the brand relation/edge.
@@ -174,6 +176,13 @@ const (
 	TransferDetailsInverseTable = "asset_transfer_details"
 	// TransferDetailsColumn is the table column denoting the transfer_details relation/edge.
 	TransferDetailsColumn = "asset_id"
+	// MaintenanceDetailsTable is the table that holds the maintenance_details relation/edge.
+	MaintenanceDetailsTable = "asset_maintenance_details"
+	// MaintenanceDetailsInverseTable is the table name for the AssetMaintenanceDetails entity.
+	// It exists in this package in order to avoid circular dependency with the "assetmaintenancedetails" package.
+	MaintenanceDetailsInverseTable = "asset_maintenance_details"
+	// MaintenanceDetailsColumn is the table column denoting the maintenance_details relation/edge.
+	MaintenanceDetailsColumn = "asset_id"
 )
 
 // Columns holds all SQL columns for asset fields.
@@ -439,6 +448,20 @@ func ByTransferDetails(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newTransferDetailsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByMaintenanceDetailsCount orders the results by maintenance_details count.
+func ByMaintenanceDetailsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMaintenanceDetailsStep(), opts...)
+	}
+}
+
+// ByMaintenanceDetails orders the results by maintenance_details terms.
+func ByMaintenanceDetails(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMaintenanceDetailsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBrandStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -528,5 +551,12 @@ func newTransferDetailsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TransferDetailsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, TransferDetailsTable, TransferDetailsColumn),
+	)
+}
+func newMaintenanceDetailsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MaintenanceDetailsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, MaintenanceDetailsTable, MaintenanceDetailsColumn),
 	)
 }

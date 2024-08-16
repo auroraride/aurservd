@@ -831,6 +831,118 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/maintenance": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资产"
+                ],
+                "summary": "维修记录列表",
+                "operationId": "AssetMaintenanceList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否使用配件",
+                        "name": "isUseAccessory",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态 2:已维修 3:维修失败",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetMaintenanceListRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资产"
+                ],
+                "summary": "创建维修记录",
+                "operationId": "AssetMaintenanceCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "创建参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetMaintenanceCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/material": {
             "get": {
                 "consumes": [
@@ -3942,6 +4054,160 @@ const docTemplate = `{
                 "AssetLocationsTypeRider"
             ]
         },
+        "model.AssetMaintenanceCreateDetail": {
+            "type": "object",
+            "required": [
+                "materialId",
+                "num"
+            ],
+            "properties": {
+                "materialId": {
+                    "description": "其它物资分类ID",
+                    "type": "integer"
+                },
+                "num": {
+                    "description": "数量",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.AssetMaintenanceCreateReq": {
+            "type": "object",
+            "required": [
+                "cabinetId",
+                "content",
+                "details",
+                "reason",
+                "status"
+            ],
+            "properties": {
+                "cabinetId": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "content": {
+                    "description": "维护内容",
+                    "type": "string"
+                },
+                "details": {
+                    "description": "维护详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetMaintenanceCreateDetail"
+                    }
+                },
+                "operateRoleType": {
+                    "description": "维护人角色类型",
+                    "type": "integer"
+                },
+                "opratorId": {
+                    "description": "维护人ID",
+                    "type": "integer"
+                },
+                "reason": {
+                    "description": "维护理由",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetMaintenanceStatus"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.AssetMaintenanceDetail": {
+            "type": "object",
+            "required": [
+                "assetName",
+                "assetType",
+                "num"
+            ],
+            "properties": {
+                "assetName": {
+                    "description": "资产名称",
+                    "type": "string"
+                },
+                "assetType": {
+                    "description": "资产类型",
+                    "type": "string"
+                },
+                "num": {
+                    "description": "数量",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.AssetMaintenanceListRes": {
+            "type": "object",
+            "properties": {
+                "cabinetName": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "cabinetSn": {
+                    "description": "电柜编号",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "维护时间",
+                    "type": "string"
+                },
+                "details": {
+                    "description": "维护详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetMaintenanceDetail"
+                    }
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "opratorName": {
+                    "description": "维护人",
+                    "type": "string"
+                },
+                "opratorPhone": {
+                    "description": "维护人电话",
+                    "type": "string"
+                },
+                "reason": {
+                    "description": "维护理由",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetMaintenanceStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
+            "x-enum-comments": {
+                "AssetMaintenanceStatusCancel": "已取消",
+                "AssetMaintenanceStatusFail": "维修失败",
+                "AssetMaintenanceStatusSuccess": "已维修",
+                "AssetMaintenanceStatusUnder": "维修中",
+                "AssetMaintenanceStatusWait": "待维修"
+            },
+            "x-enum-varnames": [
+                "AssetMaintenanceStatusWait",
+                "AssetMaintenanceStatusUnder",
+                "AssetMaintenanceStatusSuccess",
+                "AssetMaintenanceStatusFail",
+                "AssetMaintenanceStatusCancel"
+            ]
+        },
         "model.AssetModifyReq": {
             "type": "object",
             "required": [
@@ -3989,10 +4255,12 @@ const docTemplate = `{
                 3,
                 4,
                 5,
-                6
+                6,
+                7
             ],
             "x-enum-comments": {
                 "AssetOperateRoleTypeAgent": "代理",
+                "AssetOperateRoleTypeBusinessManager": "业务后台",
                 "AssetOperateRoleTypeCabinet": "电柜",
                 "AssetOperateRoleTypeManager": "资产后台",
                 "AssetOperateRoleTypeOperation": "运维",
@@ -4005,7 +4273,8 @@ const docTemplate = `{
                 "AssetOperateRoleTypeAgent",
                 "AssetOperateRoleTypeOperation",
                 "AssetOperateRoleTypeCabinet",
-                "AssetOperateRoleTypeRider"
+                "AssetOperateRoleTypeRider",
+                "AssetOperateRoleTypeBusinessManager"
             ]
         },
         "model.AssetScrapBatchRestoreReq": {

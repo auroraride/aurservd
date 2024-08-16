@@ -10,7 +10,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/asset"
-	"github.com/auroraride/aurservd/internal/ent/assethistory"
+	"github.com/auroraride/aurservd/internal/ent/assetmaintenance"
+	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
@@ -234,39 +235,79 @@ func (c *AssetClient) GetNotDeletedX(ctx context.Context, id uint64) *Asset {
 	return obj
 }
 
-// SoftDelete returns an soft delete builder for AssetHistory.
-func (c *AssetHistoryClient) SoftDelete() *AssetHistoryUpdate {
-	mutation := newAssetHistoryMutation(c.config, OpUpdate)
+// SoftDelete returns an soft delete builder for AssetMaintenance.
+func (c *AssetMaintenanceClient) SoftDelete() *AssetMaintenanceUpdate {
+	mutation := newAssetMaintenanceMutation(c.config, OpUpdate)
 	mutation.SetDeletedAt(time.Now())
-	return &AssetHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return &AssetMaintenanceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *AssetHistoryClient) SoftDeleteOne(ah *AssetHistory) *AssetHistoryUpdateOne {
-	mutation := newAssetHistoryMutation(c.config, OpUpdateOne, withAssetHistory(ah))
+func (c *AssetMaintenanceClient) SoftDeleteOne(am *AssetMaintenance) *AssetMaintenanceUpdateOne {
+	mutation := newAssetMaintenanceMutation(c.config, OpUpdateOne, withAssetMaintenance(am))
 	mutation.SetDeletedAt(time.Now())
-	return &AssetHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return &AssetMaintenanceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *AssetHistoryClient) SoftDeleteOneID(id uint64) *AssetHistoryUpdateOne {
-	mutation := newAssetHistoryMutation(c.config, OpUpdateOne, withAssetHistoryID(id))
+func (c *AssetMaintenanceClient) SoftDeleteOneID(id uint64) *AssetMaintenanceUpdateOne {
+	mutation := newAssetMaintenanceMutation(c.config, OpUpdateOne, withAssetMaintenanceID(id))
 	mutation.SetDeletedAt(time.Now())
-	return &AssetHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return &AssetMaintenanceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// QueryNotDeleted returns a query not deleted builder for AssetHistory.
-func (c *AssetHistoryClient) QueryNotDeleted() *AssetHistoryQuery {
-	return c.Query().Where(assethistory.DeletedAtIsNil())
+// QueryNotDeleted returns a query not deleted builder for AssetMaintenance.
+func (c *AssetMaintenanceClient) QueryNotDeleted() *AssetMaintenanceQuery {
+	return c.Query().Where(assetmaintenance.DeletedAtIsNil())
 }
 
-// GetNotDeleted returns a AssetHistory not deleted entity by its id.
-func (c *AssetHistoryClient) GetNotDeleted(ctx context.Context, id uint64) (*AssetHistory, error) {
-	return c.Query().Where(assethistory.ID(id), assethistory.DeletedAtIsNil()).Only(ctx)
+// GetNotDeleted returns a AssetMaintenance not deleted entity by its id.
+func (c *AssetMaintenanceClient) GetNotDeleted(ctx context.Context, id uint64) (*AssetMaintenance, error) {
+	return c.Query().Where(assetmaintenance.ID(id), assetmaintenance.DeletedAtIsNil()).Only(ctx)
 }
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *AssetHistoryClient) GetNotDeletedX(ctx context.Context, id uint64) *AssetHistory {
+func (c *AssetMaintenanceClient) GetNotDeletedX(ctx context.Context, id uint64) *AssetMaintenance {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for AssetMaintenanceDetails.
+func (c *AssetMaintenanceDetailsClient) SoftDelete() *AssetMaintenanceDetailsUpdate {
+	mutation := newAssetMaintenanceDetailsMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &AssetMaintenanceDetailsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *AssetMaintenanceDetailsClient) SoftDeleteOne(amd *AssetMaintenanceDetails) *AssetMaintenanceDetailsUpdateOne {
+	mutation := newAssetMaintenanceDetailsMutation(c.config, OpUpdateOne, withAssetMaintenanceDetails(amd))
+	mutation.SetDeletedAt(time.Now())
+	return &AssetMaintenanceDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *AssetMaintenanceDetailsClient) SoftDeleteOneID(id uint64) *AssetMaintenanceDetailsUpdateOne {
+	mutation := newAssetMaintenanceDetailsMutation(c.config, OpUpdateOne, withAssetMaintenanceDetailsID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &AssetMaintenanceDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for AssetMaintenanceDetails.
+func (c *AssetMaintenanceDetailsClient) QueryNotDeleted() *AssetMaintenanceDetailsQuery {
+	return c.Query().Where(assetmaintenancedetails.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a AssetMaintenanceDetails not deleted entity by its id.
+func (c *AssetMaintenanceDetailsClient) GetNotDeleted(ctx context.Context, id uint64) (*AssetMaintenanceDetails, error) {
+	return c.Query().Where(assetmaintenancedetails.ID(id), assetmaintenancedetails.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *AssetMaintenanceDetailsClient) GetNotDeletedX(ctx context.Context, id uint64) *AssetMaintenanceDetails {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)
