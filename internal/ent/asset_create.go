@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
+	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
@@ -479,6 +480,21 @@ func (ac *AssetCreate) AddMaintenanceDetails(a ...*AssetMaintenanceDetails) *Ass
 	return ac.AddMaintenanceDetailIDs(ids...)
 }
 
+// AddCheckDetailIDs adds the "check_details" edge to the AssetCheckDetails entity by IDs.
+func (ac *AssetCreate) AddCheckDetailIDs(ids ...uint64) *AssetCreate {
+	ac.mutation.AddCheckDetailIDs(ids...)
+	return ac
+}
+
+// AddCheckDetails adds the "check_details" edges to the AssetCheckDetails entity.
+func (ac *AssetCreate) AddCheckDetails(a ...*AssetCheckDetails) *AssetCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ac.AddCheckDetailIDs(ids...)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (ac *AssetCreate) Mutation() *AssetMutation {
 	return ac.mutation
@@ -875,6 +891,22 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmaintenancedetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.CheckDetailsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.CheckDetailsTable,
+			Columns: []string{asset.CheckDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetcheckdetails.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -22,6 +22,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributes"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
+	"github.com/auroraride/aurservd/internal/ent/assetcheck"
+	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenance"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
@@ -134,6 +136,10 @@ type Client struct {
 	AssetAttributeValues *AssetAttributeValuesClient
 	// AssetAttributes is the client for interacting with the AssetAttributes builders.
 	AssetAttributes *AssetAttributesClient
+	// AssetCheck is the client for interacting with the AssetCheck builders.
+	AssetCheck *AssetCheckClient
+	// AssetCheckDetails is the client for interacting with the AssetCheckDetails builders.
+	AssetCheckDetails *AssetCheckDetailsClient
 	// AssetMaintenance is the client for interacting with the AssetMaintenance builders.
 	AssetMaintenance *AssetMaintenanceClient
 	// AssetMaintenanceDetails is the client for interacting with the AssetMaintenanceDetails builders.
@@ -330,6 +336,8 @@ func (c *Client) init() {
 	c.Asset = NewAssetClient(c.config)
 	c.AssetAttributeValues = NewAssetAttributeValuesClient(c.config)
 	c.AssetAttributes = NewAssetAttributesClient(c.config)
+	c.AssetCheck = NewAssetCheckClient(c.config)
+	c.AssetCheckDetails = NewAssetCheckDetailsClient(c.config)
 	c.AssetMaintenance = NewAssetMaintenanceClient(c.config)
 	c.AssetMaintenanceDetails = NewAssetMaintenanceDetailsClient(c.config)
 	c.AssetScrap = NewAssetScrapClient(c.config)
@@ -518,6 +526,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Asset:                      NewAssetClient(cfg),
 		AssetAttributeValues:       NewAssetAttributeValuesClient(cfg),
 		AssetAttributes:            NewAssetAttributesClient(cfg),
+		AssetCheck:                 NewAssetCheckClient(cfg),
+		AssetCheckDetails:          NewAssetCheckDetailsClient(cfg),
 		AssetMaintenance:           NewAssetMaintenanceClient(cfg),
 		AssetMaintenanceDetails:    NewAssetMaintenanceDetailsClient(cfg),
 		AssetScrap:                 NewAssetScrapClient(cfg),
@@ -633,6 +643,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Asset:                      NewAssetClient(cfg),
 		AssetAttributeValues:       NewAssetAttributeValuesClient(cfg),
 		AssetAttributes:            NewAssetAttributesClient(cfg),
+		AssetCheck:                 NewAssetCheckClient(cfg),
+		AssetCheckDetails:          NewAssetCheckDetailsClient(cfg),
 		AssetMaintenance:           NewAssetMaintenanceClient(cfg),
 		AssetMaintenanceDetails:    NewAssetMaintenanceDetailsClient(cfg),
 		AssetScrap:                 NewAssetScrapClient(cfg),
@@ -752,25 +764,26 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Asset, c.AssetAttributeValues,
-		c.AssetAttributes, c.AssetMaintenance, c.AssetMaintenanceDetails, c.AssetScrap,
-		c.AssetScrapDetails, c.AssetTransfer, c.AssetTransferDetails, c.Assistance,
-		c.Attendance, c.Battery, c.BatteryFlow, c.BatteryModel, c.BatteryModelNew,
-		c.Branch, c.BranchContract, c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault,
-		c.City, c.Commission, c.Contract, c.ContractTemplate, c.Coupon,
-		c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand,
-		c.EbikeBrandAttribute, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
-		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
-		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
-		c.Exchange, c.Export, c.Fault, c.Feedback, c.Goods, c.Instructions,
-		c.Inventory, c.Maintainer, c.Manager, c.Material, c.Order, c.OrderRefund,
-		c.Person, c.Plan, c.PlanIntroduce, c.PointLog, c.PromotionAchievement,
-		c.PromotionBankCard, c.PromotionCommission, c.PromotionCommissionPlan,
-		c.PromotionEarnings, c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask,
-		c.PromotionMember, c.PromotionMemberCommission, c.PromotionPerson,
-		c.PromotionPrivilege, c.PromotionReferrals, c.PromotionReferralsProgress,
-		c.PromotionSetting, c.PromotionWithdrawal, c.Question, c.QuestionCategory,
-		c.Reserve, c.Rider, c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting,
-		c.Stock, c.StockSummary, c.Store, c.StoreGoods, c.Subscribe, c.SubscribeAlter,
+		c.AssetAttributes, c.AssetCheck, c.AssetCheckDetails, c.AssetMaintenance,
+		c.AssetMaintenanceDetails, c.AssetScrap, c.AssetScrapDetails, c.AssetTransfer,
+		c.AssetTransferDetails, c.Assistance, c.Attendance, c.Battery, c.BatteryFlow,
+		c.BatteryModel, c.BatteryModelNew, c.Branch, c.BranchContract, c.Business,
+		c.Cabinet, c.CabinetEc, c.CabinetFault, c.City, c.Commission, c.Contract,
+		c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate, c.Ebike,
+		c.EbikeBrand, c.EbikeBrandAttribute, c.Employee, c.Enterprise,
+		c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
+		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
+		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
+		c.Goods, c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Material,
+		c.Order, c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog,
+		c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
+		c.PromotionCommissionPlan, c.PromotionEarnings, c.PromotionGrowth,
+		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
+		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
+		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
+		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
+		c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting, c.Stock,
+		c.StockSummary, c.Store, c.StoreGoods, c.Subscribe, c.SubscribeAlter,
 		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend, c.Version,
 		c.Warehouse,
 	} {
@@ -783,25 +796,26 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Asset, c.AssetAttributeValues,
-		c.AssetAttributes, c.AssetMaintenance, c.AssetMaintenanceDetails, c.AssetScrap,
-		c.AssetScrapDetails, c.AssetTransfer, c.AssetTransferDetails, c.Assistance,
-		c.Attendance, c.Battery, c.BatteryFlow, c.BatteryModel, c.BatteryModelNew,
-		c.Branch, c.BranchContract, c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault,
-		c.City, c.Commission, c.Contract, c.ContractTemplate, c.Coupon,
-		c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand,
-		c.EbikeBrandAttribute, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
-		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
-		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
-		c.Exchange, c.Export, c.Fault, c.Feedback, c.Goods, c.Instructions,
-		c.Inventory, c.Maintainer, c.Manager, c.Material, c.Order, c.OrderRefund,
-		c.Person, c.Plan, c.PlanIntroduce, c.PointLog, c.PromotionAchievement,
-		c.PromotionBankCard, c.PromotionCommission, c.PromotionCommissionPlan,
-		c.PromotionEarnings, c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask,
-		c.PromotionMember, c.PromotionMemberCommission, c.PromotionPerson,
-		c.PromotionPrivilege, c.PromotionReferrals, c.PromotionReferralsProgress,
-		c.PromotionSetting, c.PromotionWithdrawal, c.Question, c.QuestionCategory,
-		c.Reserve, c.Rider, c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting,
-		c.Stock, c.StockSummary, c.Store, c.StoreGoods, c.Subscribe, c.SubscribeAlter,
+		c.AssetAttributes, c.AssetCheck, c.AssetCheckDetails, c.AssetMaintenance,
+		c.AssetMaintenanceDetails, c.AssetScrap, c.AssetScrapDetails, c.AssetTransfer,
+		c.AssetTransferDetails, c.Assistance, c.Attendance, c.Battery, c.BatteryFlow,
+		c.BatteryModel, c.BatteryModelNew, c.Branch, c.BranchContract, c.Business,
+		c.Cabinet, c.CabinetEc, c.CabinetFault, c.City, c.Commission, c.Contract,
+		c.ContractTemplate, c.Coupon, c.CouponAssembly, c.CouponTemplate, c.Ebike,
+		c.EbikeBrand, c.EbikeBrandAttribute, c.Employee, c.Enterprise,
+		c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
+		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
+		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
+		c.Goods, c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Material,
+		c.Order, c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog,
+		c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
+		c.PromotionCommissionPlan, c.PromotionEarnings, c.PromotionGrowth,
+		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
+		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
+		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
+		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
+		c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting, c.Stock,
+		c.StockSummary, c.Store, c.StoreGoods, c.Subscribe, c.SubscribeAlter,
 		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend, c.Version,
 		c.Warehouse,
 	} {
@@ -826,6 +840,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AssetAttributeValues.mutate(ctx, m)
 	case *AssetAttributesMutation:
 		return c.AssetAttributes.mutate(ctx, m)
+	case *AssetCheckMutation:
+		return c.AssetCheck.mutate(ctx, m)
+	case *AssetCheckDetailsMutation:
+		return c.AssetCheckDetails.mutate(ctx, m)
 	case *AssetMaintenanceMutation:
 		return c.AssetMaintenance.mutate(ctx, m)
 	case *AssetMaintenanceDetailsMutation:
@@ -2084,6 +2102,22 @@ func (c *AssetClient) QueryMaintenanceDetails(a *Asset) *AssetMaintenanceDetails
 	return query
 }
 
+// QueryCheckDetails queries the check_details edge of a Asset.
+func (c *AssetClient) QueryCheckDetails(a *Asset) *AssetCheckDetailsQuery {
+	query := (&AssetCheckDetailsClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, id),
+			sqlgraph.To(assetcheckdetails.Table, assetcheckdetails.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, asset.CheckDetailsTable, asset.CheckDetailsColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *AssetClient) Hooks() []Hook {
 	hooks := c.hooks.Asset
@@ -2421,6 +2455,418 @@ func (c *AssetAttributesClient) mutate(ctx context.Context, m *AssetAttributesMu
 		return (&AssetAttributesDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown AssetAttributes mutation op: %q", m.Op())
+	}
+}
+
+// AssetCheckClient is a client for the AssetCheck schema.
+type AssetCheckClient struct {
+	config
+}
+
+// NewAssetCheckClient returns a client for the AssetCheck from the given config.
+func NewAssetCheckClient(c config) *AssetCheckClient {
+	return &AssetCheckClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `assetcheck.Hooks(f(g(h())))`.
+func (c *AssetCheckClient) Use(hooks ...Hook) {
+	c.hooks.AssetCheck = append(c.hooks.AssetCheck, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `assetcheck.Intercept(f(g(h())))`.
+func (c *AssetCheckClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AssetCheck = append(c.inters.AssetCheck, interceptors...)
+}
+
+// Create returns a builder for creating a AssetCheck entity.
+func (c *AssetCheckClient) Create() *AssetCheckCreate {
+	mutation := newAssetCheckMutation(c.config, OpCreate)
+	return &AssetCheckCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AssetCheck entities.
+func (c *AssetCheckClient) CreateBulk(builders ...*AssetCheckCreate) *AssetCheckCreateBulk {
+	return &AssetCheckCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AssetCheckClient) MapCreateBulk(slice any, setFunc func(*AssetCheckCreate, int)) *AssetCheckCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AssetCheckCreateBulk{err: fmt.Errorf("calling to AssetCheckClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AssetCheckCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AssetCheckCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AssetCheck.
+func (c *AssetCheckClient) Update() *AssetCheckUpdate {
+	mutation := newAssetCheckMutation(c.config, OpUpdate)
+	return &AssetCheckUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AssetCheckClient) UpdateOne(ac *AssetCheck) *AssetCheckUpdateOne {
+	mutation := newAssetCheckMutation(c.config, OpUpdateOne, withAssetCheck(ac))
+	return &AssetCheckUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AssetCheckClient) UpdateOneID(id uint64) *AssetCheckUpdateOne {
+	mutation := newAssetCheckMutation(c.config, OpUpdateOne, withAssetCheckID(id))
+	return &AssetCheckUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AssetCheck.
+func (c *AssetCheckClient) Delete() *AssetCheckDelete {
+	mutation := newAssetCheckMutation(c.config, OpDelete)
+	return &AssetCheckDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AssetCheckClient) DeleteOne(ac *AssetCheck) *AssetCheckDeleteOne {
+	return c.DeleteOneID(ac.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AssetCheckClient) DeleteOneID(id uint64) *AssetCheckDeleteOne {
+	builder := c.Delete().Where(assetcheck.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AssetCheckDeleteOne{builder}
+}
+
+// Query returns a query builder for AssetCheck.
+func (c *AssetCheckClient) Query() *AssetCheckQuery {
+	return &AssetCheckQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAssetCheck},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AssetCheck entity by its id.
+func (c *AssetCheckClient) Get(ctx context.Context, id uint64) (*AssetCheck, error) {
+	return c.Query().Where(assetcheck.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AssetCheckClient) GetX(ctx context.Context, id uint64) *AssetCheck {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCheckDetails queries the check_details edge of a AssetCheck.
+func (c *AssetCheckClient) QueryCheckDetails(ac *AssetCheck) *AssetCheckDetailsQuery {
+	query := (&AssetCheckDetailsClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ac.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheck.Table, assetcheck.FieldID, id),
+			sqlgraph.To(assetcheckdetails.Table, assetcheckdetails.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, assetcheck.CheckDetailsTable, assetcheck.CheckDetailsColumn),
+		)
+		fromV = sqlgraph.Neighbors(ac.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOperateManager queries the operate_manager edge of a AssetCheck.
+func (c *AssetCheckClient) QueryOperateManager(ac *AssetCheck) *ManagerQuery {
+	query := (&ManagerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ac.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheck.Table, assetcheck.FieldID, id),
+			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.OperateManagerTable, assetcheck.OperateManagerColumn),
+		)
+		fromV = sqlgraph.Neighbors(ac.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOperateStore queries the operate_store edge of a AssetCheck.
+func (c *AssetCheckClient) QueryOperateStore(ac *AssetCheck) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ac.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheck.Table, assetcheck.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.OperateStoreTable, assetcheck.OperateStoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(ac.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOperateAgent queries the operate_agent edge of a AssetCheck.
+func (c *AssetCheckClient) QueryOperateAgent(ac *AssetCheck) *AgentQuery {
+	query := (&AgentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ac.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheck.Table, assetcheck.FieldID, id),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.OperateAgentTable, assetcheck.OperateAgentColumn),
+		)
+		fromV = sqlgraph.Neighbors(ac.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryWarehouse queries the warehouse edge of a AssetCheck.
+func (c *AssetCheckClient) QueryWarehouse(ac *AssetCheck) *WarehouseQuery {
+	query := (&WarehouseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ac.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheck.Table, assetcheck.FieldID, id),
+			sqlgraph.To(warehouse.Table, warehouse.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.WarehouseTable, assetcheck.WarehouseColumn),
+		)
+		fromV = sqlgraph.Neighbors(ac.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a AssetCheck.
+func (c *AssetCheckClient) QueryStore(ac *AssetCheck) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ac.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheck.Table, assetcheck.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.StoreTable, assetcheck.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(ac.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStation queries the station edge of a AssetCheck.
+func (c *AssetCheckClient) QueryStation(ac *AssetCheck) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ac.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheck.Table, assetcheck.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.StationTable, assetcheck.StationColumn),
+		)
+		fromV = sqlgraph.Neighbors(ac.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AssetCheckClient) Hooks() []Hook {
+	hooks := c.hooks.AssetCheck
+	return append(hooks[:len(hooks):len(hooks)], assetcheck.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *AssetCheckClient) Interceptors() []Interceptor {
+	return c.inters.AssetCheck
+}
+
+func (c *AssetCheckClient) mutate(ctx context.Context, m *AssetCheckMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AssetCheckCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AssetCheckUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AssetCheckUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AssetCheckDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AssetCheck mutation op: %q", m.Op())
+	}
+}
+
+// AssetCheckDetailsClient is a client for the AssetCheckDetails schema.
+type AssetCheckDetailsClient struct {
+	config
+}
+
+// NewAssetCheckDetailsClient returns a client for the AssetCheckDetails from the given config.
+func NewAssetCheckDetailsClient(c config) *AssetCheckDetailsClient {
+	return &AssetCheckDetailsClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `assetcheckdetails.Hooks(f(g(h())))`.
+func (c *AssetCheckDetailsClient) Use(hooks ...Hook) {
+	c.hooks.AssetCheckDetails = append(c.hooks.AssetCheckDetails, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `assetcheckdetails.Intercept(f(g(h())))`.
+func (c *AssetCheckDetailsClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AssetCheckDetails = append(c.inters.AssetCheckDetails, interceptors...)
+}
+
+// Create returns a builder for creating a AssetCheckDetails entity.
+func (c *AssetCheckDetailsClient) Create() *AssetCheckDetailsCreate {
+	mutation := newAssetCheckDetailsMutation(c.config, OpCreate)
+	return &AssetCheckDetailsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AssetCheckDetails entities.
+func (c *AssetCheckDetailsClient) CreateBulk(builders ...*AssetCheckDetailsCreate) *AssetCheckDetailsCreateBulk {
+	return &AssetCheckDetailsCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AssetCheckDetailsClient) MapCreateBulk(slice any, setFunc func(*AssetCheckDetailsCreate, int)) *AssetCheckDetailsCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AssetCheckDetailsCreateBulk{err: fmt.Errorf("calling to AssetCheckDetailsClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AssetCheckDetailsCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AssetCheckDetailsCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AssetCheckDetails.
+func (c *AssetCheckDetailsClient) Update() *AssetCheckDetailsUpdate {
+	mutation := newAssetCheckDetailsMutation(c.config, OpUpdate)
+	return &AssetCheckDetailsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AssetCheckDetailsClient) UpdateOne(acd *AssetCheckDetails) *AssetCheckDetailsUpdateOne {
+	mutation := newAssetCheckDetailsMutation(c.config, OpUpdateOne, withAssetCheckDetails(acd))
+	return &AssetCheckDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AssetCheckDetailsClient) UpdateOneID(id uint64) *AssetCheckDetailsUpdateOne {
+	mutation := newAssetCheckDetailsMutation(c.config, OpUpdateOne, withAssetCheckDetailsID(id))
+	return &AssetCheckDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AssetCheckDetails.
+func (c *AssetCheckDetailsClient) Delete() *AssetCheckDetailsDelete {
+	mutation := newAssetCheckDetailsMutation(c.config, OpDelete)
+	return &AssetCheckDetailsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AssetCheckDetailsClient) DeleteOne(acd *AssetCheckDetails) *AssetCheckDetailsDeleteOne {
+	return c.DeleteOneID(acd.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AssetCheckDetailsClient) DeleteOneID(id uint64) *AssetCheckDetailsDeleteOne {
+	builder := c.Delete().Where(assetcheckdetails.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AssetCheckDetailsDeleteOne{builder}
+}
+
+// Query returns a query builder for AssetCheckDetails.
+func (c *AssetCheckDetailsClient) Query() *AssetCheckDetailsQuery {
+	return &AssetCheckDetailsQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAssetCheckDetails},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AssetCheckDetails entity by its id.
+func (c *AssetCheckDetailsClient) Get(ctx context.Context, id uint64) (*AssetCheckDetails, error) {
+	return c.Query().Where(assetcheckdetails.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AssetCheckDetailsClient) GetX(ctx context.Context, id uint64) *AssetCheckDetails {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryAsset queries the asset edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryAsset(acd *AssetCheckDetails) *AssetQuery {
+	query := (&AssetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, assetcheckdetails.AssetTable, assetcheckdetails.AssetColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCheck queries the check edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryCheck(acd *AssetCheckDetails) *AssetCheckQuery {
+	query := (&AssetCheckClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(assetcheck.Table, assetcheck.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, assetcheckdetails.CheckTable, assetcheckdetails.CheckColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AssetCheckDetailsClient) Hooks() []Hook {
+	hooks := c.hooks.AssetCheckDetails
+	return append(hooks[:len(hooks):len(hooks)], assetcheckdetails.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *AssetCheckDetailsClient) Interceptors() []Interceptor {
+	return c.inters.AssetCheckDetails
+}
+
+func (c *AssetCheckDetailsClient) mutate(ctx context.Context, m *AssetCheckDetailsMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AssetCheckDetailsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AssetCheckDetailsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AssetCheckDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AssetCheckDetailsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AssetCheckDetails mutation op: %q", m.Op())
 	}
 }
 
@@ -19952,45 +20398,47 @@ func (c *WarehouseClient) mutate(ctx context.Context, m *WarehouseMutation) (Val
 type (
 	hooks struct {
 		Activity, Agent, Agreement, Allocate, Asset, AssetAttributeValues,
-		AssetAttributes, AssetMaintenance, AssetMaintenanceDetails, AssetScrap,
-		AssetScrapDetails, AssetTransfer, AssetTransferDetails, Assistance, Attendance,
-		Battery, BatteryFlow, BatteryModel, BatteryModelNew, Branch, BranchContract,
-		Business, Cabinet, CabinetEc, CabinetFault, City, Commission, Contract,
-		ContractTemplate, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand,
-		EbikeBrandAttribute, Employee, Enterprise, EnterpriseBatterySwap,
-		EnterpriseBill, EnterpriseContract, EnterprisePrepayment, EnterprisePrice,
-		EnterpriseStatement, EnterpriseStation, Exception, Exchange, Export, Fault,
-		Feedback, Goods, Instructions, Inventory, Maintainer, Manager, Material, Order,
-		OrderRefund, Person, Plan, PlanIntroduce, PointLog, PromotionAchievement,
-		PromotionBankCard, PromotionCommission, PromotionCommissionPlan,
-		PromotionEarnings, PromotionGrowth, PromotionLevel, PromotionLevelTask,
-		PromotionMember, PromotionMemberCommission, PromotionPerson,
-		PromotionPrivilege, PromotionReferrals, PromotionReferralsProgress,
-		PromotionSetting, PromotionWithdrawal, Question, QuestionCategory, Reserve,
-		Rider, RiderFollowUp, RiderPhoneDevice, Role, Setting, Stock, StockSummary,
-		Store, StoreGoods, Subscribe, SubscribeAlter, SubscribePause,
-		SubscribeReminder, SubscribeSuspend, Version, Warehouse []ent.Hook
+		AssetAttributes, AssetCheck, AssetCheckDetails, AssetMaintenance,
+		AssetMaintenanceDetails, AssetScrap, AssetScrapDetails, AssetTransfer,
+		AssetTransferDetails, Assistance, Attendance, Battery, BatteryFlow,
+		BatteryModel, BatteryModelNew, Branch, BranchContract, Business, Cabinet,
+		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
+		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, EbikeBrandAttribute,
+		Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
+		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
+		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Goods,
+		Instructions, Inventory, Maintainer, Manager, Material, Order, OrderRefund,
+		Person, Plan, PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
+		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
+		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
+		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
+		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
+		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
+		RiderPhoneDevice, Role, Setting, Stock, StockSummary, Store, StoreGoods,
+		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		Version, Warehouse []ent.Hook
 	}
 	inters struct {
 		Activity, Agent, Agreement, Allocate, Asset, AssetAttributeValues,
-		AssetAttributes, AssetMaintenance, AssetMaintenanceDetails, AssetScrap,
-		AssetScrapDetails, AssetTransfer, AssetTransferDetails, Assistance, Attendance,
-		Battery, BatteryFlow, BatteryModel, BatteryModelNew, Branch, BranchContract,
-		Business, Cabinet, CabinetEc, CabinetFault, City, Commission, Contract,
-		ContractTemplate, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand,
-		EbikeBrandAttribute, Employee, Enterprise, EnterpriseBatterySwap,
-		EnterpriseBill, EnterpriseContract, EnterprisePrepayment, EnterprisePrice,
-		EnterpriseStatement, EnterpriseStation, Exception, Exchange, Export, Fault,
-		Feedback, Goods, Instructions, Inventory, Maintainer, Manager, Material, Order,
-		OrderRefund, Person, Plan, PlanIntroduce, PointLog, PromotionAchievement,
-		PromotionBankCard, PromotionCommission, PromotionCommissionPlan,
-		PromotionEarnings, PromotionGrowth, PromotionLevel, PromotionLevelTask,
-		PromotionMember, PromotionMemberCommission, PromotionPerson,
-		PromotionPrivilege, PromotionReferrals, PromotionReferralsProgress,
-		PromotionSetting, PromotionWithdrawal, Question, QuestionCategory, Reserve,
-		Rider, RiderFollowUp, RiderPhoneDevice, Role, Setting, Stock, StockSummary,
-		Store, StoreGoods, Subscribe, SubscribeAlter, SubscribePause,
-		SubscribeReminder, SubscribeSuspend, Version, Warehouse []ent.Interceptor
+		AssetAttributes, AssetCheck, AssetCheckDetails, AssetMaintenance,
+		AssetMaintenanceDetails, AssetScrap, AssetScrapDetails, AssetTransfer,
+		AssetTransferDetails, Assistance, Attendance, Battery, BatteryFlow,
+		BatteryModel, BatteryModelNew, Branch, BranchContract, Business, Cabinet,
+		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
+		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, EbikeBrandAttribute,
+		Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
+		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
+		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Goods,
+		Instructions, Inventory, Maintainer, Manager, Material, Order, OrderRefund,
+		Person, Plan, PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
+		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
+		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
+		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
+		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
+		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
+		RiderPhoneDevice, Role, Setting, Stock, StockSummary, Store, StoreGoods,
+		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		Version, Warehouse []ent.Interceptor
 	}
 )
 

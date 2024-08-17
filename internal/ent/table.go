@@ -92,6 +92,26 @@ func (aa *AssetAttributes) GetName() string {
 	return aa.Name
 }
 
+// GetTableName returns table name for AssetCheck.
+func (ac *AssetCheck) GetTableName() string {
+	return "asset_check"
+}
+
+// GetID returns id for AssetCheck.
+func (ac *AssetCheck) GetID() uint64 {
+	return ac.ID
+}
+
+// GetTableName returns table name for AssetCheckDetails.
+func (acd *AssetCheckDetails) GetTableName() string {
+	return "asset_check_details"
+}
+
+// GetID returns id for AssetCheckDetails.
+func (acd *AssetCheckDetails) GetID() uint64 {
+	return acd.ID
+}
+
 // GetTableName returns table name for AssetMaintenance.
 func (am *AssetMaintenance) GetTableName() string {
 	return "asset_maintenance"

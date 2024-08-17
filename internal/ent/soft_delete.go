@@ -10,6 +10,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/assetcheck"
+	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenance"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
@@ -228,6 +230,86 @@ func (c *AssetClient) GetNotDeleted(ctx context.Context, id uint64) (*Asset, err
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *AssetClient) GetNotDeletedX(ctx context.Context, id uint64) *Asset {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for AssetCheck.
+func (c *AssetCheckClient) SoftDelete() *AssetCheckUpdate {
+	mutation := newAssetCheckMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &AssetCheckUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *AssetCheckClient) SoftDeleteOne(ac *AssetCheck) *AssetCheckUpdateOne {
+	mutation := newAssetCheckMutation(c.config, OpUpdateOne, withAssetCheck(ac))
+	mutation.SetDeletedAt(time.Now())
+	return &AssetCheckUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *AssetCheckClient) SoftDeleteOneID(id uint64) *AssetCheckUpdateOne {
+	mutation := newAssetCheckMutation(c.config, OpUpdateOne, withAssetCheckID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &AssetCheckUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for AssetCheck.
+func (c *AssetCheckClient) QueryNotDeleted() *AssetCheckQuery {
+	return c.Query().Where(assetcheck.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a AssetCheck not deleted entity by its id.
+func (c *AssetCheckClient) GetNotDeleted(ctx context.Context, id uint64) (*AssetCheck, error) {
+	return c.Query().Where(assetcheck.ID(id), assetcheck.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *AssetCheckClient) GetNotDeletedX(ctx context.Context, id uint64) *AssetCheck {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for AssetCheckDetails.
+func (c *AssetCheckDetailsClient) SoftDelete() *AssetCheckDetailsUpdate {
+	mutation := newAssetCheckDetailsMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &AssetCheckDetailsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *AssetCheckDetailsClient) SoftDeleteOne(acd *AssetCheckDetails) *AssetCheckDetailsUpdateOne {
+	mutation := newAssetCheckDetailsMutation(c.config, OpUpdateOne, withAssetCheckDetails(acd))
+	mutation.SetDeletedAt(time.Now())
+	return &AssetCheckDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *AssetCheckDetailsClient) SoftDeleteOneID(id uint64) *AssetCheckDetailsUpdateOne {
+	mutation := newAssetCheckDetailsMutation(c.config, OpUpdateOne, withAssetCheckDetailsID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &AssetCheckDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryNotDeleted() *AssetCheckDetailsQuery {
+	return c.Query().Where(assetcheckdetails.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a AssetCheckDetails not deleted entity by its id.
+func (c *AssetCheckDetailsClient) GetNotDeleted(ctx context.Context, id uint64) (*AssetCheckDetails, error) {
+	return c.Query().Where(assetcheckdetails.ID(id), assetcheckdetails.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *AssetCheckDetailsClient) GetNotDeletedX(ctx context.Context, id uint64) *AssetCheckDetails {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

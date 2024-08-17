@@ -90,13 +90,14 @@ func (Asset) Edges() []ent.Edge {
 		// 关联运维
 		edge.To("operator", Maintainer.Type).Unique().Field("locations_id"),
 
+		// 关联报废详情
 		edge.To("scrap_details", AssetScrapDetails.Type),
-
 		// 关联调拨详情
 		edge.To("transfer_details", AssetTransferDetails.Type),
-
 		// 关联维护详情
 		edge.To("maintenance_details", AssetMaintenanceDetails.Type),
+		// 关联盘点详情
+		edge.To("check_details", AssetCheckDetails.Type),
 	}
 }
 

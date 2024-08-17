@@ -83,6 +83,8 @@ const (
 	EdgeTransferDetails = "transfer_details"
 	// EdgeMaintenanceDetails holds the string denoting the maintenance_details edge name in mutations.
 	EdgeMaintenanceDetails = "maintenance_details"
+	// EdgeCheckDetails holds the string denoting the check_details edge name in mutations.
+	EdgeCheckDetails = "check_details"
 	// Table holds the table name of the asset in the database.
 	Table = "asset"
 	// BrandTable is the table that holds the brand relation/edge.
@@ -183,6 +185,13 @@ const (
 	MaintenanceDetailsInverseTable = "asset_maintenance_details"
 	// MaintenanceDetailsColumn is the table column denoting the maintenance_details relation/edge.
 	MaintenanceDetailsColumn = "asset_id"
+	// CheckDetailsTable is the table that holds the check_details relation/edge.
+	CheckDetailsTable = "asset_check_details"
+	// CheckDetailsInverseTable is the table name for the AssetCheckDetails entity.
+	// It exists in this package in order to avoid circular dependency with the "assetcheckdetails" package.
+	CheckDetailsInverseTable = "asset_check_details"
+	// CheckDetailsColumn is the table column denoting the check_details relation/edge.
+	CheckDetailsColumn = "asset_id"
 )
 
 // Columns holds all SQL columns for asset fields.
@@ -462,6 +471,20 @@ func ByMaintenanceDetails(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOptio
 		sqlgraph.OrderByNeighborTerms(s, newMaintenanceDetailsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByCheckDetailsCount orders the results by check_details count.
+func ByCheckDetailsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCheckDetailsStep(), opts...)
+	}
+}
+
+// ByCheckDetails orders the results by check_details terms.
+func ByCheckDetails(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCheckDetailsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBrandStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -558,5 +581,12 @@ func newMaintenanceDetailsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MaintenanceDetailsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, MaintenanceDetailsTable, MaintenanceDetailsColumn),
+	)
+}
+func newCheckDetailsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CheckDetailsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CheckDetailsTable, CheckDetailsColumn),
 	)
 }

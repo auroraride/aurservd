@@ -93,6 +93,30 @@ func (f AssetAttributesFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Va
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AssetAttributesMutation", m)
 }
 
+// The AssetCheckFunc type is an adapter to allow the use of ordinary
+// function as AssetCheck mutator.
+type AssetCheckFunc func(context.Context, *ent.AssetCheckMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AssetCheckFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AssetCheckMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AssetCheckMutation", m)
+}
+
+// The AssetCheckDetailsFunc type is an adapter to allow the use of ordinary
+// function as AssetCheckDetails mutator.
+type AssetCheckDetailsFunc func(context.Context, *ent.AssetCheckDetailsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AssetCheckDetailsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AssetCheckDetailsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AssetCheckDetailsMutation", m)
+}
+
 // The AssetMaintenanceFunc type is an adapter to allow the use of ordinary
 // function as AssetMaintenance mutator.
 type AssetMaintenanceFunc func(context.Context, *ent.AssetMaintenanceMutation) (ent.Value, error)

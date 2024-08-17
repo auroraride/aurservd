@@ -100,6 +100,20 @@ func (c *AssetAttributesClient) ModifyOne(old *AssetAttributes, data any) *Asset
 	return EntitySetAttributes[AssetAttributesUpdateOne, AssetAttributes](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for AssetCheck.
+func (c *AssetCheckClient) ModifyOne(old *AssetCheck, data any) *AssetCheckUpdateOne {
+	mutation := newAssetCheckMutation(c.config, OpUpdateOne, withAssetCheck(old))
+	up := &AssetCheckUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetCheckUpdateOne, AssetCheck](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for AssetCheckDetails.
+func (c *AssetCheckDetailsClient) ModifyOne(old *AssetCheckDetails, data any) *AssetCheckDetailsUpdateOne {
+	mutation := newAssetCheckDetailsMutation(c.config, OpUpdateOne, withAssetCheckDetails(old))
+	up := &AssetCheckDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetCheckDetailsUpdateOne, AssetCheckDetails](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for AssetMaintenance.
 func (c *AssetMaintenanceClient) ModifyOne(old *AssetMaintenance, data any) *AssetMaintenanceUpdateOne {
 	mutation := newAssetMaintenanceMutation(c.config, OpUpdateOne, withAssetMaintenance(old))

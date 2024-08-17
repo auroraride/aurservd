@@ -10,7 +10,7 @@ type AssetCreateReq struct {
 	CityID        *uint64                `json:"cityId"`                        // 城市ID(AssetType为 2:智能电池 需要填写)
 	LocationsType *AssetLocationsType    `json:"locationsType"`                 // 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
 	LocationsID   *uint64                `json:"locationsId"`                   // 资产位置ID
-	Attribute     []AssetAttributeCreate `json:"attributes"`                    // 属性
+	Attribute     []AssetAttributeCreate `json:"attribute"`                     // 属性
 	Enable        *bool                  `json:"enable"`                        // 是否启用
 	BrandID       *uint64                `json:"brandId"`                       // 品牌ID(AssetType为 1:电车 需要填写)
 }
@@ -53,9 +53,11 @@ type AssetListReq struct {
 type AssetListRes struct {
 	ID             uint64                    `json:"id"`                 // 资产ID
 	CityName       string                    `json:"cityName,omitempty"` // 城市
+	CityID         uint64                    `json:"cityId,omitempty"`   // 城市ID
 	Belong         string                    `json:"belong"`             // 归属
 	AssetLocations string                    `json:"assetLocations"`     // 资产位置
 	Brand          string                    `json:"brand"`              // 品牌
+	BrandID        uint64                    `json:"brandId"`            // 品牌ID
 	Model          string                    `json:"model,omitempty"`    // 资产型号
 	SN             string                    `json:"sn"`                 // 编号
 	AssetStatus    string                    `json:"assetStatus"`        // 资产状态
@@ -67,6 +69,7 @@ type AssetListRes struct {
 // AssetBatchCreateReq 批量创建资产请求
 type AssetBatchCreateReq struct {
 	AssetType AssetType `json:"assetType" validate:"required" form:"assetType" query:"assetType"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+
 }
 
 // AssetExportTemplateReq 导出模版请求

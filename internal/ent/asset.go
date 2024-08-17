@@ -105,9 +105,11 @@ type AssetEdges struct {
 	TransferDetails []*AssetTransferDetails `json:"transfer_details,omitempty"`
 	// MaintenanceDetails holds the value of the maintenance_details edge.
 	MaintenanceDetails []*AssetMaintenanceDetails `json:"maintenance_details,omitempty"`
+	// CheckDetails holds the value of the check_details edge.
+	CheckDetails []*AssetCheckDetails `json:"check_details,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [14]bool
+	loadedTypes [15]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
@@ -254,6 +256,15 @@ func (e AssetEdges) MaintenanceDetailsOrErr() ([]*AssetMaintenanceDetails, error
 		return e.MaintenanceDetails, nil
 	}
 	return nil, &NotLoadedError{edge: "maintenance_details"}
+}
+
+// CheckDetailsOrErr returns the CheckDetails value or an error if the edge
+// was not loaded in eager-loading.
+func (e AssetEdges) CheckDetailsOrErr() ([]*AssetCheckDetails, error) {
+	if e.loadedTypes[14] {
+		return e.CheckDetails, nil
+	}
+	return nil, &NotLoadedError{edge: "check_details"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -503,6 +514,11 @@ func (a *Asset) QueryTransferDetails() *AssetTransferDetailsQuery {
 // QueryMaintenanceDetails queries the "maintenance_details" edge of the Asset entity.
 func (a *Asset) QueryMaintenanceDetails() *AssetMaintenanceDetailsQuery {
 	return NewAssetClient(a.config).QueryMaintenanceDetails(a)
+}
+
+// QueryCheckDetails queries the "check_details" edge of the Asset entity.
+func (a *Asset) QueryCheckDetails() *AssetCheckDetailsQuery {
+	return NewAssetClient(a.config).QueryCheckDetails(a)
 }
 
 // Update returns a builder for updating this Asset.

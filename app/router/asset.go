@@ -72,4 +72,9 @@ func loadAssersRoutes() {
 	// 资产维修
 	asset.GET("/maintenance", assetapi.AssetMaintenance.List)    // 资产维修列表
 	asset.POST("/maintenance", assetapi.AssetMaintenance.Create) // 创建维修记录
+
+	// 资产盘点
+	asset.POST("/check", assetapi.AssetCheck.Create)          // 盘点资产
+	asset.GET("/check/:sn", assetapi.AssetCheck.GetAssetBySN) // 通过SN查询资产
+
 }

@@ -28,6 +28,10 @@ type Tx struct {
 	AssetAttributeValues *AssetAttributeValuesClient
 	// AssetAttributes is the client for interacting with the AssetAttributes builders.
 	AssetAttributes *AssetAttributesClient
+	// AssetCheck is the client for interacting with the AssetCheck builders.
+	AssetCheck *AssetCheckClient
+	// AssetCheckDetails is the client for interacting with the AssetCheckDetails builders.
+	AssetCheckDetails *AssetCheckDetailsClient
 	// AssetMaintenance is the client for interacting with the AssetMaintenance builders.
 	AssetMaintenance *AssetMaintenanceClient
 	// AssetMaintenanceDetails is the client for interacting with the AssetMaintenanceDetails builders.
@@ -344,6 +348,8 @@ func (tx *Tx) init() {
 	tx.Asset = NewAssetClient(tx.config)
 	tx.AssetAttributeValues = NewAssetAttributeValuesClient(tx.config)
 	tx.AssetAttributes = NewAssetAttributesClient(tx.config)
+	tx.AssetCheck = NewAssetCheckClient(tx.config)
+	tx.AssetCheckDetails = NewAssetCheckDetailsClient(tx.config)
 	tx.AssetMaintenance = NewAssetMaintenanceClient(tx.config)
 	tx.AssetMaintenanceDetails = NewAssetMaintenanceDetailsClient(tx.config)
 	tx.AssetScrap = NewAssetScrapClient(tx.config)

@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
+	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
@@ -580,6 +581,21 @@ func (au *AssetUpdate) AddMaintenanceDetails(a ...*AssetMaintenanceDetails) *Ass
 	return au.AddMaintenanceDetailIDs(ids...)
 }
 
+// AddCheckDetailIDs adds the "check_details" edge to the AssetCheckDetails entity by IDs.
+func (au *AssetUpdate) AddCheckDetailIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.AddCheckDetailIDs(ids...)
+	return au
+}
+
+// AddCheckDetails adds the "check_details" edges to the AssetCheckDetails entity.
+func (au *AssetUpdate) AddCheckDetails(a ...*AssetCheckDetails) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.AddCheckDetailIDs(ids...)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (au *AssetUpdate) Mutation() *AssetMutation {
 	return au.mutation
@@ -727,6 +743,27 @@ func (au *AssetUpdate) RemoveMaintenanceDetails(a ...*AssetMaintenanceDetails) *
 		ids[i] = a[i].ID
 	}
 	return au.RemoveMaintenanceDetailIDs(ids...)
+}
+
+// ClearCheckDetails clears all "check_details" edges to the AssetCheckDetails entity.
+func (au *AssetUpdate) ClearCheckDetails() *AssetUpdate {
+	au.mutation.ClearCheckDetails()
+	return au
+}
+
+// RemoveCheckDetailIDs removes the "check_details" edge to AssetCheckDetails entities by IDs.
+func (au *AssetUpdate) RemoveCheckDetailIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.RemoveCheckDetailIDs(ids...)
+	return au
+}
+
+// RemoveCheckDetails removes "check_details" edges to AssetCheckDetails entities.
+func (au *AssetUpdate) RemoveCheckDetails(a ...*AssetCheckDetails) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.RemoveCheckDetailIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1334,6 +1371,51 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.CheckDetailsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.CheckDetailsTable,
+			Columns: []string{asset.CheckDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetcheckdetails.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedCheckDetailsIDs(); len(nodes) > 0 && !au.mutation.CheckDetailsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.CheckDetailsTable,
+			Columns: []string{asset.CheckDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetcheckdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.CheckDetailsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.CheckDetailsTable,
+			Columns: []string{asset.CheckDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetcheckdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(au.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -1892,6 +1974,21 @@ func (auo *AssetUpdateOne) AddMaintenanceDetails(a ...*AssetMaintenanceDetails) 
 	return auo.AddMaintenanceDetailIDs(ids...)
 }
 
+// AddCheckDetailIDs adds the "check_details" edge to the AssetCheckDetails entity by IDs.
+func (auo *AssetUpdateOne) AddCheckDetailIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.AddCheckDetailIDs(ids...)
+	return auo
+}
+
+// AddCheckDetails adds the "check_details" edges to the AssetCheckDetails entity.
+func (auo *AssetUpdateOne) AddCheckDetails(a ...*AssetCheckDetails) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.AddCheckDetailIDs(ids...)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (auo *AssetUpdateOne) Mutation() *AssetMutation {
 	return auo.mutation
@@ -2039,6 +2136,27 @@ func (auo *AssetUpdateOne) RemoveMaintenanceDetails(a ...*AssetMaintenanceDetail
 		ids[i] = a[i].ID
 	}
 	return auo.RemoveMaintenanceDetailIDs(ids...)
+}
+
+// ClearCheckDetails clears all "check_details" edges to the AssetCheckDetails entity.
+func (auo *AssetUpdateOne) ClearCheckDetails() *AssetUpdateOne {
+	auo.mutation.ClearCheckDetails()
+	return auo
+}
+
+// RemoveCheckDetailIDs removes the "check_details" edge to AssetCheckDetails entities by IDs.
+func (auo *AssetUpdateOne) RemoveCheckDetailIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.RemoveCheckDetailIDs(ids...)
+	return auo
+}
+
+// RemoveCheckDetails removes "check_details" edges to AssetCheckDetails entities.
+func (auo *AssetUpdateOne) RemoveCheckDetails(a ...*AssetCheckDetails) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.RemoveCheckDetailIDs(ids...)
 }
 
 // Where appends a list predicates to the AssetUpdate builder.
@@ -2669,6 +2787,51 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmaintenancedetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.CheckDetailsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.CheckDetailsTable,
+			Columns: []string{asset.CheckDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetcheckdetails.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedCheckDetailsIDs(); len(nodes) > 0 && !auo.mutation.CheckDetailsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.CheckDetailsTable,
+			Columns: []string{asset.CheckDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetcheckdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.CheckDetailsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.CheckDetailsTable,
+			Columns: []string{asset.CheckDetailsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetcheckdetails.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

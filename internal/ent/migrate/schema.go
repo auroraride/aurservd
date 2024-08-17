@@ -460,6 +460,127 @@ var (
 			},
 		},
 	}
+	// AssetCheckColumns holds the columns for the "asset_check" table.
+	AssetCheckColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "status", Type: field.TypeUint8, Nullable: true, Comment: "盘点状态 1:待盘点 2:已盘点"},
+		{Name: "battery_num", Type: field.TypeUint, Nullable: true, Comment: "应盘点电池数量"},
+		{Name: "battery_num_real", Type: field.TypeUint, Nullable: true, Comment: "实盘电池数量"},
+		{Name: "ebike_num", Type: field.TypeUint, Nullable: true, Comment: "应盘电车数量"},
+		{Name: "ebike_num_real", Type: field.TypeUint, Nullable: true, Comment: "实盘电车数量"},
+		{Name: "operate_type", Type: field.TypeUint8, Nullable: true, Comment: "盘点角色类型 1:资产后台 2:门店 3:代理"},
+		{Name: "locations_type", Type: field.TypeUint8, Nullable: true, Comment: "盘点位置类型 1:仓库 2:门店 3:代理"},
+		{Name: "start_at", Type: field.TypeTime, Nullable: true, Comment: "盘点开始时间"},
+		{Name: "end_at", Type: field.TypeTime, Nullable: true, Comment: "盘点结束时间"},
+		{Name: "operate_id", Type: field.TypeUint64, Nullable: true, Comment: "盘点人id"},
+		{Name: "locations_id", Type: field.TypeUint64, Nullable: true, Comment: "盘点位置id"},
+	}
+	// AssetCheckTable holds the schema information for the "asset_check" table.
+	AssetCheckTable = &schema.Table{
+		Name:       "asset_check",
+		Columns:    AssetCheckColumns,
+		PrimaryKey: []*schema.Column{AssetCheckColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "asset_check_manager_operate_manager",
+				Columns:    []*schema.Column{AssetCheckColumns[16]},
+				RefColumns: []*schema.Column{ManagerColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_store_operate_store",
+				Columns:    []*schema.Column{AssetCheckColumns[16]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_agent_operate_agent",
+				Columns:    []*schema.Column{AssetCheckColumns[16]},
+				RefColumns: []*schema.Column{AgentColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_warehouse_warehouse",
+				Columns:    []*schema.Column{AssetCheckColumns[17]},
+				RefColumns: []*schema.Column{WarehouseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_store_store",
+				Columns:    []*schema.Column{AssetCheckColumns[17]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_enterprise_station_station",
+				Columns:    []*schema.Column{AssetCheckColumns[17]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "assetcheck_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AssetCheckColumns[1]},
+			},
+			{
+				Name:    "assetcheck_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{AssetCheckColumns[3]},
+			},
+		},
+	}
+	// AssetCheckDetailsColumns holds the columns for the "asset_check_details" table.
+	AssetCheckDetailsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "asset_id", Type: field.TypeUint64, Nullable: true, Comment: "资产ID"},
+		{Name: "check_id", Type: field.TypeUint64, Nullable: true, Comment: "盘点ID"},
+	}
+	// AssetCheckDetailsTable holds the schema information for the "asset_check_details" table.
+	AssetCheckDetailsTable = &schema.Table{
+		Name:       "asset_check_details",
+		Columns:    AssetCheckDetailsColumns,
+		PrimaryKey: []*schema.Column{AssetCheckDetailsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "asset_check_details_asset_check_details",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[7]},
+				RefColumns: []*schema.Column{AssetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_details_asset_check_check_details",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[8]},
+				RefColumns: []*schema.Column{AssetCheckColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "assetcheckdetails_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AssetCheckDetailsColumns[1]},
+			},
+			{
+				Name:    "assetcheckdetails_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{AssetCheckDetailsColumns[3]},
+			},
+		},
+	}
 	// AssetMaintenanceColumns holds the columns for the "asset_maintenance" table.
 	AssetMaintenanceColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -7052,6 +7173,8 @@ var (
 		AssetTable,
 		AssetAttributeValuesTable,
 		AssetAttributesTable,
+		AssetCheckTable,
+		AssetCheckDetailsTable,
 		AssetMaintenanceTable,
 		AssetMaintenanceDetailsTable,
 		AssetScrapTable,
@@ -7193,6 +7316,20 @@ func init() {
 	}
 	AssetAttributesTable.Annotation = &entsql.Annotation{
 		Table: "asset_attributes",
+	}
+	AssetCheckTable.ForeignKeys[0].RefTable = ManagerTable
+	AssetCheckTable.ForeignKeys[1].RefTable = StoreTable
+	AssetCheckTable.ForeignKeys[2].RefTable = AgentTable
+	AssetCheckTable.ForeignKeys[3].RefTable = WarehouseTable
+	AssetCheckTable.ForeignKeys[4].RefTable = StoreTable
+	AssetCheckTable.ForeignKeys[5].RefTable = EnterpriseStationTable
+	AssetCheckTable.Annotation = &entsql.Annotation{
+		Table: "asset_check",
+	}
+	AssetCheckDetailsTable.ForeignKeys[0].RefTable = AssetTable
+	AssetCheckDetailsTable.ForeignKeys[1].RefTable = AssetCheckTable
+	AssetCheckDetailsTable.Annotation = &entsql.Annotation{
+		Table: "asset_check_details",
 	}
 	AssetMaintenanceTable.ForeignKeys[0].RefTable = CabinetTable
 	AssetMaintenanceTable.ForeignKeys[1].RefTable = MaintainerTable

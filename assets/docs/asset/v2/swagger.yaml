@@ -666,12 +666,12 @@ definitions:
     type: object
   model.AssetAttributeUpdate:
     properties:
+      attributeId:
+        description: 属性ID
+        type: integer
       attributeValue:
         description: 属性值
         type: string
-      attributeValueId:
-        description: 属性值ID
-        type: integer
     type: object
   model.AssetAttributesListRes:
     properties:
@@ -685,14 +685,63 @@ definitions:
         description: 属性名称
         type: string
     type: object
-  model.AssetBatchCreateReq:
+  model.AssetCheckByAssetSnRes:
     properties:
+      assetId:
+        description: 资产ID
+        type: integer
+      assetSN:
+        description: 资产编号
+        type: string
       assetType:
         allOf:
         - $ref: '#/definitions/model.AssetType'
-        description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+        description: 资产类型 1:电车 2:智能电池
+      brandName:
+        description: 品牌
+        type: string
+      model:
+        description: 型号
+        type: string
+    type: object
+  model.AssetCheckCreateDetail:
+    properties:
+      assetId:
+        description: 资产ID
+        type: integer
+      assetType:
+        allOf:
+          - $ref: '#/definitions/model.AssetType'
+        description: 资产类型 1:电车 2:智能电池
     required:
+      - assetId
     - assetType
+    type: object
+  model.AssetCheckCreateReq:
+    properties:
+      details:
+        description: 资产盘点请求详情
+        items:
+          $ref: '#/definitions/model.AssetCheckCreateDetail'
+        type: array
+      locationsId:
+        description: 位置ID
+        type: integer
+      locationsType:
+        allOf:
+          - $ref: '#/definitions/model.AssetLocationsType'
+        description: 位置类型 1:仓库 2:门店 3:站点
+      opratorId:
+        description: 操作人ID
+        type: integer
+      opratorType:
+        allOf:
+          - $ref: '#/definitions/model.AssetOperateRoleType'
+        description: 操作人类型 1:资产后台(仓库) 2:门店 3:代理
+    required:
+      - details
+      - locationsId
+      - locationsType
     type: object
   model.AssetCreateReq:
     properties:
@@ -700,7 +749,7 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-      attributes:
+      attribute:
         description: 属性
         items:
           $ref: '#/definitions/model.AssetAttributeCreate'
@@ -821,6 +870,12 @@ definitions:
       brand:
         description: 品牌
         type: string
+      brandId:
+        description: 品牌ID
+        type: integer
+      cityId:
+        description: 城市ID
+        type: integer
       cityName:
         description: 城市
         type: string
@@ -1016,7 +1071,7 @@ definitions:
       AssetOperateRoleTypeAgent: 代理
       AssetOperateRoleTypeBusinessManager: 业务后台
       AssetOperateRoleTypeCabinet: 电柜
-      AssetOperateRoleTypeManager: 资产后台
+      AssetOperateRoleTypeManager: 资产后台(仓库)
       AssetOperateRoleTypeOperation: 运维
       AssetOperateRoleTypeRider: 骑手
       AssetOperateRoleTypeStore: 门店
@@ -1820,6 +1875,11 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 资产ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: 修改参数
         in: body
         name: body
@@ -1894,12 +1954,16 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 创建参数
-        in: body
-        name: body
+      - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+        in: formData
+        name: assetType
         required: true
-        schema:
-          $ref: '#/definitions/model.AssetBatchCreateReq'
+        type: integer
+      - description: 文件
+        in: formData
+        name: file
+        required: true
+        type: file
       produces:
       - application/json
       responses:
@@ -1970,6 +2034,59 @@ paths:
       summary: 电柜物资
       tags:
       - 电柜 - Cabinet
+  /manager/v2/asset/check:
+    post:
+      consumes:
+        - application/json
+      operationId: AssetCheckCreate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 盘点参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/model.AssetCheckCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 盘点资产
+      tags:
+        - 资产
+  /manager/v2/asset/check/{sn}:
+    get:
+      consumes:
+        - application/json
+      operationId: AssetCheckGetAssetBySN
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 资产SN
+          in: path
+          name: sn
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AssetCheckByAssetSnRes'
+      summary: 通过SN查询资产
+      tags:
+        - 资产
   /manager/v2/asset/count:
     get:
       consumes:

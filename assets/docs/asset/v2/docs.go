@@ -329,13 +329,18 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "创建参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.AssetBatchCreateReq"
-                        }
+                        "type": "integer",
+                        "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                        "name": "assetType",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "文件",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -438,6 +443,86 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/check": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资产"
+                ],
+                "summary": "盘点资产",
+                "operationId": "AssetCheckCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "盘点参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetCheckCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/check/{sn}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资产"
+                ],
+                "summary": "通过SN查询资产",
+                "operationId": "AssetCheckGetAssetBySN",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "资产SN",
+                        "name": "sn",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetCheckByAssetSnRes"
                         }
                     }
                 }
@@ -2558,6 +2643,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "资产ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "修改参数",
                         "name": "body",
                         "in": "body",
@@ -3778,13 +3870,13 @@ const docTemplate = `{
         "model.AssetAttributeUpdate": {
             "type": "object",
             "properties": {
+                "attributeId": {
+                    "description": "属性ID",
+                    "type": "integer"
+                },
                 "attributeValue": {
                     "description": "属性值",
                     "type": "string"
-                },
-                "attributeValueId": {
-                    "description": "属性值ID",
-                    "type": "integer"
                 }
             }
         },
@@ -3805,17 +3897,92 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AssetBatchCreateReq": {
+        "model.AssetCheckByAssetSnRes": {
             "type": "object",
-            "required": [
-                "assetType"
-            ],
             "properties": {
+                "assetId": {
+                    "description": "资产ID",
+                    "type": "integer"
+                },
+                "assetSN": {
+                    "description": "资产编号",
+                    "type": "string"
+                },
                 "assetType": {
-                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                    "description": "资产类型 1:电车 2:智能电池",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                },
+                "brandName": {
+                    "description": "品牌",
+                    "type": "string"
+                },
+                "model": {
+                    "description": "型号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetCheckCreateDetail": {
+            "type": "object",
+            "required": [
+                "assetId",
+                "assetType"
+            ],
+            "properties": {
+                "assetId": {
+                    "description": "资产ID",
+                    "type": "integer"
+                },
+                "assetType": {
+                    "description": "资产类型 1:电车 2:智能电池",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.AssetCheckCreateReq": {
+            "type": "object",
+            "required": [
+                "details",
+                "locationsId",
+                "locationsType"
+            ],
+            "properties": {
+                "details": {
+                    "description": "资产盘点请求详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetCheckCreateDetail"
+                    }
+                },
+                "locationsId": {
+                    "description": "位置ID",
+                    "type": "integer"
+                },
+                "locationsType": {
+                    "description": "位置类型 1:仓库 2:门店 3:站点",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
+                },
+                "opratorId": {
+                    "description": "操作人ID",
+                    "type": "integer"
+                },
+                "opratorType": {
+                    "description": "操作人类型 1:资产后台(仓库) 2:门店 3:代理",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetOperateRoleType"
                         }
                     ]
                 }
@@ -3835,7 +4002,7 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "attributes": {
+                "attribute": {
                     "description": "属性",
                     "type": "array",
                     "items": {
@@ -4000,6 +4167,14 @@ const docTemplate = `{
                 "brand": {
                     "description": "品牌",
                     "type": "string"
+                },
+                "brandId": {
+                    "description": "品牌ID",
+                    "type": "integer"
+                },
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
                 },
                 "cityName": {
                     "description": "城市",
@@ -4262,7 +4437,7 @@ const docTemplate = `{
                 "AssetOperateRoleTypeAgent": "代理",
                 "AssetOperateRoleTypeBusinessManager": "业务后台",
                 "AssetOperateRoleTypeCabinet": "电柜",
-                "AssetOperateRoleTypeManager": "资产后台",
+                "AssetOperateRoleTypeManager": "资产后台(仓库)",
                 "AssetOperateRoleTypeOperation": "运维",
                 "AssetOperateRoleTypeRider": "骑手",
                 "AssetOperateRoleTypeStore": "门店"

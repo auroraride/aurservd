@@ -326,7 +326,7 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 // BatchCreateBattery 批量创建电池
 // 0-城市:city 1-电池编号:sn 2-仓库:warehouse
 func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modifier) (failed []string, err error) {
-	rows, sns, failed, err := s.BaseService.GetXlsxRows(ctx, 2, 3, 1)
+	rows, sns, failed, err := s.BaseService.GetXlsxRows(ctx, 1, 3, 1)
 	if err != nil || len(failed) != 0 {
 		return failed, err
 	}
@@ -355,6 +355,7 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 	}
 
 	// 查询型号是否存在
+	// todo 改模型 用老表
 	modelInfo, _ := ent.Database.BatteryModelNew.QueryNotDeleted().Where(batterymodelnew.Type(1)).All(s.ctx)
 	if len(modelInfo) == 0 {
 		return nil, errors.New("电池型号未配置")
@@ -374,6 +375,8 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 	// 仓库分组
 	groupWarehouse := make(map[uint64][]uint64)
 
+	// rows 去除标题
+	rows = rows[1:]
 	for _, row := range rows {
 		sn := row[1]
 		if m[sn] {
@@ -502,7 +505,7 @@ func (s *assetService) Modify(ctx context.Context, req *model.AssetModifyReq, mo
 	// 修改属性
 	if len(req.Attribute) > 0 {
 		for _, v := range req.Attribute {
-			if err = ent.Database.AssetAttributeValues.UpdateOneID(v.AttributeValueID).SetValue(v.AttributeValue).Exec(ctx); err != nil {
+			if err = ent.Database.AssetAttributeValues.Update().Where(assetattributevalues.AssetID(req.ID), assetattributevalues.AttributeID(v.AttributeID)).SetValue(v.AttributeValue).Exec(ctx); err != nil {
 				return fmt.Errorf("资产属性修改失败: %w", err)
 			}
 		}
@@ -567,7 +570,7 @@ func (s *assetService) getEbikeColumns(ctx context.Context) (columns []any) {
 // 下载电池模版
 func (s *assetService) downloadBatteryTemplate(ctx context.Context) (path string, name string, err error) {
 	data := [][]any{
-		{"城市", "编号"},
+		{"城市", "编号", "仓库"},
 	}
 	name = "导入电池模版"
 	path = filepath.Join("runtime/export", fmt.Sprintf("%s-%s.xlsx", "", "battery"))
@@ -800,8 +803,10 @@ func (s *assetService) List(ctx context.Context, req *model.AssetListReq) *model
 	q.Order(ent.Desc(asset.FieldCreatedAt))
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Asset) *model.AssetListRes {
 		var cityName, belong, assetLocations string
+		var cityID uint64
 		if item.Edges.City != nil {
 			cityName = item.Edges.City.Name
+			cityID = item.Edges.City.ID
 		}
 		belong = "平台"
 		if item.LocationsType == model.AssetLocationsTypeStation.Value() {
@@ -846,8 +851,10 @@ func (s *assetService) List(ctx context.Context, req *model.AssetListReq) *model
 		}
 
 		var brandName string
+		var brandID uint64
 		if item.Edges.Brand != nil {
 			brandName = item.Edges.Brand.Name
+			brandID = item.Edges.Brand.ID
 		}
 		if item.Type == model.AssetTypeNonSmartBattery.Value() || item.Type == model.AssetTypeSmartBattery.Value() {
 			brandName = item.BrandName
@@ -856,9 +863,11 @@ func (s *assetService) List(ctx context.Context, req *model.AssetListReq) *model
 		res := &model.AssetListRes{
 			ID:             item.ID,
 			CityName:       cityName,
+			CityID:         cityID,
 			Belong:         belong,
 			AssetLocations: assetLocations,
 			Brand:          brandName,
+			BrandID:        brandID,
 			Model:          modelStr,
 			SN:             item.Sn,
 			AssetStatus:    model.AssetStatus(item.Status).String(),

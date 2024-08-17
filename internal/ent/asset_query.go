@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
+	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
@@ -50,6 +51,7 @@ type AssetQuery struct {
 	withScrapDetails       *AssetScrapDetailsQuery
 	withTransferDetails    *AssetTransferDetailsQuery
 	withMaintenanceDetails *AssetMaintenanceDetailsQuery
+	withCheckDetails       *AssetCheckDetailsQuery
 	modifiers              []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -395,6 +397,28 @@ func (aq *AssetQuery) QueryMaintenanceDetails() *AssetMaintenanceDetailsQuery {
 	return query
 }
 
+// QueryCheckDetails chains the current query on the "check_details" edge.
+func (aq *AssetQuery) QueryCheckDetails() *AssetCheckDetailsQuery {
+	query := (&AssetCheckDetailsClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(assetcheckdetails.Table, assetcheckdetails.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, asset.CheckDetailsTable, asset.CheckDetailsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Asset entity from the query.
 // Returns a *NotFoundError when no Asset was found.
 func (aq *AssetQuery) First(ctx context.Context) (*Asset, error) {
@@ -601,6 +625,7 @@ func (aq *AssetQuery) Clone() *AssetQuery {
 		withScrapDetails:       aq.withScrapDetails.Clone(),
 		withTransferDetails:    aq.withTransferDetails.Clone(),
 		withMaintenanceDetails: aq.withMaintenanceDetails.Clone(),
+		withCheckDetails:       aq.withCheckDetails.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -761,6 +786,17 @@ func (aq *AssetQuery) WithMaintenanceDetails(opts ...func(*AssetMaintenanceDetai
 	return aq
 }
 
+// WithCheckDetails tells the query-builder to eager-load the nodes that are connected to
+// the "check_details" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithCheckDetails(opts ...func(*AssetCheckDetailsQuery)) *AssetQuery {
+	query := (&AssetCheckDetailsClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withCheckDetails = query
+	return aq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -839,7 +875,7 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 	var (
 		nodes       = []*Asset{}
 		_spec       = aq.querySpec()
-		loadedTypes = [14]bool{
+		loadedTypes = [15]bool{
 			aq.withBrand != nil,
 			aq.withModel != nil,
 			aq.withCity != nil,
@@ -854,6 +890,7 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 			aq.withScrapDetails != nil,
 			aq.withTransferDetails != nil,
 			aq.withMaintenanceDetails != nil,
+			aq.withCheckDetails != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -964,6 +1001,13 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 			func(n *Asset, e *AssetMaintenanceDetails) {
 				n.Edges.MaintenanceDetails = append(n.Edges.MaintenanceDetails, e)
 			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withCheckDetails; query != nil {
+		if err := aq.loadCheckDetails(ctx, query, nodes,
+			func(n *Asset) { n.Edges.CheckDetails = []*AssetCheckDetails{} },
+			func(n *Asset, e *AssetCheckDetails) { n.Edges.CheckDetails = append(n.Edges.CheckDetails, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1392,6 +1436,36 @@ func (aq *AssetQuery) loadMaintenanceDetails(ctx context.Context, query *AssetMa
 	}
 	return nil
 }
+func (aq *AssetQuery) loadCheckDetails(ctx context.Context, query *AssetCheckDetailsQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *AssetCheckDetails)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Asset)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(assetcheckdetails.FieldAssetID)
+	}
+	query.Where(predicate.AssetCheckDetails(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(asset.CheckDetailsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AssetID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (aq *AssetQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
@@ -1533,6 +1607,7 @@ var (
 	AssetQueryWithScrapDetails       AssetQueryWith = "ScrapDetails"
 	AssetQueryWithTransferDetails    AssetQueryWith = "TransferDetails"
 	AssetQueryWithMaintenanceDetails AssetQueryWith = "MaintenanceDetails"
+	AssetQueryWithCheckDetails       AssetQueryWith = "CheckDetails"
 )
 
 func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
@@ -1566,6 +1641,8 @@ func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
 			aq.WithTransferDetails()
 		case AssetQueryWithMaintenanceDetails:
 			aq.WithMaintenanceDetails()
+		case AssetQueryWithCheckDetails:
+			aq.WithCheckDetails()
 		}
 	}
 	return aq

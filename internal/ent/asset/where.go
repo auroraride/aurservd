@@ -1297,6 +1297,29 @@ func HasMaintenanceDetailsWith(preds ...predicate.AssetMaintenanceDetails) predi
 	})
 }
 
+// HasCheckDetails applies the HasEdge predicate on the "check_details" edge.
+func HasCheckDetails() predicate.Asset {
+	return predicate.Asset(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CheckDetailsTable, CheckDetailsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCheckDetailsWith applies the HasEdge predicate on the "check_details" edge with a given conditions (other predicates).
+func HasCheckDetailsWith(preds ...predicate.AssetCheckDetails) predicate.Asset {
+	return predicate.Asset(func(s *sql.Selector) {
+		step := newCheckDetailsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Asset) predicate.Asset {
 	return predicate.Asset(sql.AndPredicates(predicates...))

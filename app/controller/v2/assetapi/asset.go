@@ -64,6 +64,7 @@ func (*assets) Create(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	id				path		uint64					true	"资产ID"
 // @Param	body			body		model.AssetModifyReq	true	"修改参数"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*assets) Update(c echo.Context) (err error) {
@@ -93,9 +94,10 @@ func (*assets) Delete(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string						true	"管理员校验token"
-// @Param	body			body		model.AssetBatchCreateReq	true	"创建参数"
-// @Success	200				{object}	model.StatusResponse		"请求成功"
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	assetType		formData	uint8					true	"资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它"
+// @Param	file			formData	file					true	"文件"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*assets) BatchCreate(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.AssetBatchCreateReq](c)
 	return ctx.SendResponse(service.NewAsset().BatchCreate(ctx, req, ctx.Modifier))

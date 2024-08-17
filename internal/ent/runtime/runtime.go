@@ -14,6 +14,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributes"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
+	"github.com/auroraride/aurservd/internal/ent/assetcheck"
+	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenance"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
@@ -262,6 +264,40 @@ func init() {
 	assetattributes.DefaultUpdatedAt = assetattributesDescUpdatedAt.Default.(func() time.Time)
 	// assetattributes.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	assetattributes.UpdateDefaultUpdatedAt = assetattributesDescUpdatedAt.UpdateDefault.(func() time.Time)
+	assetcheckMixin := schema.AssetCheck{}.Mixin()
+	assetcheckMixinHooks2 := assetcheckMixin[2].Hooks()
+	assetcheck.Hooks[0] = assetcheckMixinHooks2[0]
+	assetcheckMixinFields0 := assetcheckMixin[0].Fields()
+	_ = assetcheckMixinFields0
+	assetcheckFields := schema.AssetCheck{}.Fields()
+	_ = assetcheckFields
+	// assetcheckDescCreatedAt is the schema descriptor for created_at field.
+	assetcheckDescCreatedAt := assetcheckMixinFields0[0].Descriptor()
+	// assetcheck.DefaultCreatedAt holds the default value on creation for the created_at field.
+	assetcheck.DefaultCreatedAt = assetcheckDescCreatedAt.Default.(func() time.Time)
+	// assetcheckDescUpdatedAt is the schema descriptor for updated_at field.
+	assetcheckDescUpdatedAt := assetcheckMixinFields0[1].Descriptor()
+	// assetcheck.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	assetcheck.DefaultUpdatedAt = assetcheckDescUpdatedAt.Default.(func() time.Time)
+	// assetcheck.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	assetcheck.UpdateDefaultUpdatedAt = assetcheckDescUpdatedAt.UpdateDefault.(func() time.Time)
+	assetcheckdetailsMixin := schema.AssetCheckDetails{}.Mixin()
+	assetcheckdetailsMixinHooks2 := assetcheckdetailsMixin[2].Hooks()
+	assetcheckdetails.Hooks[0] = assetcheckdetailsMixinHooks2[0]
+	assetcheckdetailsMixinFields0 := assetcheckdetailsMixin[0].Fields()
+	_ = assetcheckdetailsMixinFields0
+	assetcheckdetailsFields := schema.AssetCheckDetails{}.Fields()
+	_ = assetcheckdetailsFields
+	// assetcheckdetailsDescCreatedAt is the schema descriptor for created_at field.
+	assetcheckdetailsDescCreatedAt := assetcheckdetailsMixinFields0[0].Descriptor()
+	// assetcheckdetails.DefaultCreatedAt holds the default value on creation for the created_at field.
+	assetcheckdetails.DefaultCreatedAt = assetcheckdetailsDescCreatedAt.Default.(func() time.Time)
+	// assetcheckdetailsDescUpdatedAt is the schema descriptor for updated_at field.
+	assetcheckdetailsDescUpdatedAt := assetcheckdetailsMixinFields0[1].Descriptor()
+	// assetcheckdetails.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	assetcheckdetails.DefaultUpdatedAt = assetcheckdetailsDescUpdatedAt.Default.(func() time.Time)
+	// assetcheckdetails.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	assetcheckdetails.UpdateDefaultUpdatedAt = assetcheckdetailsDescUpdatedAt.UpdateDefault.(func() time.Time)
 	assetmaintenanceMixin := schema.AssetMaintenance{}.Mixin()
 	assetmaintenanceMixinHooks2 := assetmaintenanceMixin[2].Hooks()
 	assetmaintenance.Hooks[0] = assetmaintenanceMixinHooks2[0]

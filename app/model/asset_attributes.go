@@ -56,8 +56,8 @@ type AssetAttributeCreate struct {
 
 // AssetAttributeUpdate 属性更新
 type AssetAttributeUpdate struct {
-	AttributeValue   string `json:"attributeValue,omitempty"`   // 属性值
-	AttributeValueID uint64 `json:"attributeValueId,omitempty"` // 属性值ID
+	AttributeValue string `json:"attributeValue,omitempty"` // 属性值
+	AttributeID    uint64 `json:"attributeId"`              // 属性ID
 }
 
 // AssetAttribute 属性返回
