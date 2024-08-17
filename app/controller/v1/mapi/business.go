@@ -29,7 +29,7 @@ var Business = new(business)
 // @Success	200				{object}	model.PaginationRes{items=[]model.BusinessListRes}	"请求成功"
 func (*business) List(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BusinessListReq](c)
-	return ctx.SendResponse(service.NewBusiness().ListManager(req))
+	return ctx.SendResponse(service.NewBusinessWithModifier(ctx.Modifier).ListManager(req))
 }
 
 // Pause
