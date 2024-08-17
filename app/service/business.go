@@ -230,6 +230,11 @@ func (s *businessService) listFilter(req model.BusinessFilter) (q *ent.BusinessQ
 		q.Where(business.EnterpriseIDNotNil())
 	}
 
+	// 限制查询汉中市
+	if s.modifier != nil && s.modifier.Phone == "19992789355" {
+		req.CityID = 610700
+	}
+
 	if req.CityID != 0 {
 		info["城市"] = ent.NewExportInfo(req.CityID, city.Table)
 		q.Where(business.CityID(req.CityID))

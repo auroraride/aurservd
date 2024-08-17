@@ -575,6 +575,11 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 		info[key] = value
 	}
 
+	// 限制查询汉中市
+	if s.modifier != nil && s.modifier.Phone == "19992789355" {
+		req.CityID = silk.UInt64(610700)
+	}
+
 	if req.CityID != nil {
 		info["城市"] = ent.NewExportInfo(*req.CityID, city.Table)
 		subqs = append(subqs, subscribe.CityID(*req.CityID))
