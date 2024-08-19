@@ -128,6 +128,20 @@ func (c *AssetMaintenanceDetailsClient) ModifyOne(old *AssetMaintenanceDetails, 
 	return EntitySetAttributes[AssetMaintenanceDetailsUpdateOne, AssetMaintenanceDetails](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for AssetManager.
+func (c *AssetManagerClient) ModifyOne(old *AssetManager, data any) *AssetManagerUpdateOne {
+	mutation := newAssetManagerMutation(c.config, OpUpdateOne, withAssetManager(old))
+	up := &AssetManagerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetManagerUpdateOne, AssetManager](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for AssetRole.
+func (c *AssetRoleClient) ModifyOne(old *AssetRole, data any) *AssetRoleUpdateOne {
+	mutation := newAssetRoleMutation(c.config, OpUpdateOne, withAssetRole(old))
+	up := &AssetRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetRoleUpdateOne, AssetRole](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for AssetScrap.
 func (c *AssetScrapClient) ModifyOne(old *AssetScrap, data any) *AssetScrapUpdateOne {
 	mutation := newAssetScrapMutation(c.config, OpUpdateOne, withAssetScrap(old))

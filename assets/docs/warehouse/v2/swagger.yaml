@@ -1,0 +1,542 @@
+basePath: /
+definitions:
+  definition.TransferListReq:
+    properties:
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      fromLocationID:
+        description: 调拨前位置ID
+        type: integer
+      fromLocationType:
+        allOf:
+        - $ref: '#/definitions/model.AssetLocationsType'
+        description: 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+      keyword:
+        description: 关键字 (调拨单号，调拨事由、出库人、接收人)
+        type: string
+      outEnd:
+        description: 出库结束时间
+        type: string
+      outStart:
+        description: 出库开始时间
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      status:
+        allOf:
+        - $ref: '#/definitions/model.AssetTransferStatus'
+        description: 调拨状态 1:配送中 2:待入库 3:已入库 4:已取消
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+      toLocationID:
+        description: 调拨后位置ID
+        type: integer
+      toLocationType:
+        allOf:
+        - $ref: '#/definitions/model.AssetLocationsType'
+        description: 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+    type: object
+  definition.WarehousePeopleProfile:
+    properties:
+      id:
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 手机号
+        type: string
+    type: object
+  definition.WarehousePeopleSigninReq:
+    properties:
+      code:
+        description: 验证码
+        type: string
+      phone:
+        description: 电话
+        type: string
+      signinType:
+        enum:
+        - 1
+        - 2
+        type: integer
+      smsId:
+        description: 短信ID
+        type: string
+    required:
+    - signinType
+    type: object
+  definition.WarehousePeopleSigninRes:
+    properties:
+      profile:
+        $ref: '#/definitions/definition.WarehousePeopleProfile'
+      token:
+        type: string
+    type: object
+  model.AssetLocationsType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    type: integer
+    x-enum-comments:
+      AssetLocationsTypeCabinet: 电柜
+      AssetLocationsTypeOperation: 运维
+      AssetLocationsTypeRider: 骑手
+      AssetLocationsTypeStation: 站点
+      AssetLocationsTypeStore: 门店
+      AssetLocationsTypeWarehouse: 仓库
+    x-enum-varnames:
+    - AssetLocationsTypeWarehouse
+    - AssetLocationsTypeStore
+    - AssetLocationsTypeStation
+    - AssetLocationsTypeOperation
+    - AssetLocationsTypeCabinet
+    - AssetLocationsTypeRider
+  model.AssetOperateRoleType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    type: integer
+    x-enum-comments:
+      AssetOperateRoleTypeAgent: 代理
+      AssetOperateRoleTypeBusinessManager: 业务后台
+      AssetOperateRoleTypeCabinet: 电柜
+      AssetOperateRoleTypeManager: 资产后台
+      AssetOperateRoleTypeOperation: 运维
+      AssetOperateRoleTypeRider: 骑手
+      AssetOperateRoleTypeStore: 门店
+    x-enum-varnames:
+    - AssetOperateRoleTypeManager
+    - AssetOperateRoleTypeStore
+    - AssetOperateRoleTypeAgent
+    - AssetOperateRoleTypeOperation
+    - AssetOperateRoleTypeCabinet
+    - AssetOperateRoleTypeRider
+    - AssetOperateRoleTypeBusinessManager
+  model.AssetTransferDetailReq:
+    type: object
+  model.AssetTransferListRes:
+    properties:
+      fromLocationID:
+        description: 调出目标ID
+        type: integer
+      fromLocationName:
+        description: 调出目标名称
+        type: string
+      fromLocationType:
+        description: 调出目标类型
+        type: integer
+      id:
+        description: 调拨ID
+        type: integer
+      inNum:
+        description: 入库数量
+        type: integer
+      outNum:
+        description: 出库数量
+        type: integer
+      outOperateName:
+        description: 出库操作人
+        type: string
+      outTimeAt:
+        description: 出库时间
+        type: string
+      reason:
+        description: 调拨事由
+        type: string
+      remark:
+        description: 备注
+        type: string
+      sn:
+        description: 调拨单号
+        type: string
+      status:
+        description: 调拨状态
+        type: string
+      toLocationID:
+        description: 调入目标ID
+        type: integer
+      toLocationName:
+        description: 调入目标名称
+        type: string
+      toLocationType:
+        description: 调入目标类型
+        type: integer
+    type: object
+  model.AssetTransferReceiveBatchReq:
+    properties:
+      assetTransferReceive:
+        items:
+          $ref: '#/definitions/model.AssetTransferReceiveReq'
+        type: array
+      operateType:
+        allOf:
+        - $ref: '#/definitions/model.AssetOperateRoleType'
+        description: 操作类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+    required:
+    - assetTransferReceive
+    - operateType
+    type: object
+  model.AssetTransferReceiveDetail:
+    properties:
+      assetType:
+        allOf:
+        - $ref: '#/definitions/model.AssetType'
+        description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+      materialId:
+        description: 其它物资分类ID
+        type: integer
+      num:
+        description: 调拨数量
+        type: integer
+      sn:
+        description: 资产编号
+        type: string
+    required:
+    - assetType
+    type: object
+  model.AssetTransferReceiveReq:
+    properties:
+      detail:
+        description: 资产明细
+        items:
+          $ref: '#/definitions/model.AssetTransferReceiveDetail'
+        type: array
+      remark:
+        description: 备注
+        type: string
+    required:
+    - detail
+    type: object
+  model.AssetTransferStatus:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
+    x-enum-comments:
+      AssetTransferStatusCancel: 已取消
+      AssetTransferStatusDelivering: 配送中
+      AssetTransferStatusPending: 待入库
+      AssetTransferStatusStock: 已入库
+    x-enum-varnames:
+    - AssetTransferStatusDelivering
+    - AssetTransferStatusPending
+    - AssetTransferStatusStock
+    - AssetTransferStatusCancel
+  model.AssetType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    type: integer
+    x-enum-comments:
+      AssetTypeCabinetAccessory: 电柜配件
+      AssetTypeEbike: 电车
+      AssetTypeEbikeAccessory: 电车配件
+      AssetTypeNonSmartBattery: 非智能电池
+      AssetTypeOtherAccessory: 其它配件
+      AssetTypeSmartBattery: 智能电池
+    x-enum-varnames:
+    - AssetTypeEbike
+    - AssetTypeSmartBattery
+    - AssetTypeNonSmartBattery
+    - AssetTypeCabinetAccessory
+    - AssetTypeEbikeAccessory
+    - AssetTypeOtherAccessory
+  model.OpenidRes:
+    properties:
+      openid:
+        type: string
+    type: object
+  model.Pagination:
+    properties:
+      current:
+        description: 当前页
+        type: integer
+      pages:
+        description: 总页数
+        type: integer
+      total:
+        description: 总条数
+        type: integer
+    type: object
+  model.PaginationRes:
+    properties:
+      items:
+        description: 返回数据
+      pagination:
+        allOf:
+        - $ref: '#/definitions/model.Pagination'
+        description: 分页属性
+    type: object
+  model.StatusResponse:
+    properties:
+      status:
+        type: boolean
+    type: object
+info:
+  contact: {}
+  description: |
+    ### 说明
+    接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。
+    <br>
+    接口返回说明查看 **[返回](#返回)**
+    <br>
+    图片/附件前缀 `https://cdn.auroraride.com/`
+
+    <br />
+
+    <br />
+
+    ### 接口编号
+
+    第一位代表接口端分类
+
+    - M 管理端
+    - R 骑手端
+    - E 门店端
+    - C 通用
+
+    第二位代表子分类（36进制）
+
+    后三位代表子编号（10进制）
+
+    <br />
+
+    <br />
+
+
+    ### 认证
+    项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`
+    |  header   |  类型  |  接口  |
+    | :-----: | :----: | :--: |
+    |  X-Rider-Token   |  string   |  骑手API  |
+    | X-Manager-Token | string |  后台API  |
+    |  X-Employee-Token   | string |  员工API  |
+
+    <br />
+
+    <br />
+
+    ### 返回
+
+    一个标准的返回应包含以下结构
+
+    |  字段   |  类型  |  必填  |  说明  |
+    | :-----: | :----: | :--: | :--: |
+    |  code   |  int   |  是  |  返回代码  |
+    | message | string |  是  |  返回消息  |
+    |  data   | object |  是  |  返回数据  |
+
+    `code`代码取值说明
+
+    | 十进制 | 十六进制 | 说明 |
+    | :----: | :------: | :--: |
+    | 0  |  0x000  | 请求成功 |
+    | 256 |  0x100  | 请求失败 |
+    | 512 |  0x200  | *需要认证(跳转登录) |
+    | 768 |  0x300  | *用户被封禁 |
+    | 1024 |  0x400  | 资源未获 |
+    | 1280 |  0x500  | 未知错误 |
+    | 1536 |  0x600  | *需要实名 |
+    | 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |
+    | 2048 |  0x800  | *需要联系人 |
+    | 2304 |  0x900  | 请求过期 |
+
+    > 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{"url": "string"}`, 直接跳转url
+
+
+    比如：
+    > 默认成功返回
+    ```json
+    {
+      "code": 0,
+      "message": "OK",
+      "data": {
+        "status": true
+      }
+    }
+    ```
+  title: 极光出行API - 仓管api
+  version: "2.0"
+paths:
+  /warehouse/v2/openid:
+    get:
+      consumes:
+      - application/json
+      operationId: WarehouseGetOpenid
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warehouse-Token
+        required: true
+        type: string
+      - description: 微信code
+        in: query
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.OpenidRes'
+      summary: 获取openid
+      tags:
+      - '[W]仓管接口'
+  /warehouse/v2/signin:
+    post:
+      consumes:
+      - application/json
+      operationId: WarehouseSignin
+      parameters:
+      - description: 登录请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.WarehousePeopleSigninReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.WarehousePeopleSigninRes'
+      summary: 登录
+      tags:
+      - '[W]仓管接口'
+  /warehouse/v2/transfer:
+    get:
+      consumes:
+      - application/json
+      operationId: WarehouseTransferList
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warehouse-Token
+        required: true
+        type: string
+      - description: 接收参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.TransferListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.AssetTransferListRes'
+                  type: array
+              type: object
+      summary: 调拨记录列表
+      tags:
+      - '[W]仓管接口'
+  /warehouse/v2/transfer/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: WarehouseTransferDetail
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warehouse-Token
+        required: true
+        type: string
+      - description: 接收参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetTransferDetailReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.AssetTransferListRes'
+                  type: array
+              type: object
+      summary: 调拨记录详情
+      tags:
+      - '[W]仓管接口'
+  /warehouse/v2/transfer/receive:
+    post:
+      consumes:
+      - application/json
+      operationId: WarehouseTransferReceive
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warehouse-Token
+        required: true
+        type: string
+      - description: 接收参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetTransferReceiveBatchReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 接收资产调拨
+      tags:
+      - '[W]仓管接口'
+swagger: "2.0"

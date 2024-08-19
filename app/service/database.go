@@ -8,18 +8,22 @@ package service
 import (
 	"context"
 
+	jsoniter "github.com/json-iterator/go"
+
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
+	"github.com/auroraride/aurservd/internal/ent/assetrole"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/utils"
-	jsoniter "github.com/json-iterator/go"
 )
 
 func DatabaseInitial() {
 	cityInitial()
 	managerInitial(roleInitial())
+	assetManagerInitial(assetRoleInitial())
 }
 
 func managerInitial(r *ent.Role) {
@@ -95,4 +99,33 @@ func cityInitial() {
 			return nil
 		})
 	}
+}
+
+func assetRoleInitial() *ent.AssetRole {
+	client := ent.Database.AssetRole
+	ctx := context.Background()
+	name := "超级管理员"
+	if e, _ := client.Query().Where(assetrole.Buildin(true)).First(ctx); e != nil {
+		return e
+	}
+	return client.Create().SetName(name).SetSuper(true).SetBuildin(true).SaveX(ctx)
+}
+
+func assetManagerInitial(r *ent.AssetRole) {
+	client := ent.Database.AssetManager
+	p := "18888888888"
+
+	if e, _ := client.QueryNotDeleted().
+		Where(assetmanager.Phone(p)).
+		Exist(context.Background()); e {
+		return
+	}
+
+	password, _ := utils.PasswordGenerate("AuroraAdmin@2022#!")
+	client.Create().
+		SetName("超级管理员").
+		SetPhone(p).
+		SetPassword(password).
+		SetRoleID(r.ID).
+		ExecX(context.Background())
 }

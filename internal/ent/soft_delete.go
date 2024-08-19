@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenance"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
@@ -390,6 +391,46 @@ func (c *AssetMaintenanceDetailsClient) GetNotDeleted(ctx context.Context, id ui
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *AssetMaintenanceDetailsClient) GetNotDeletedX(ctx context.Context, id uint64) *AssetMaintenanceDetails {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for AssetManager.
+func (c *AssetManagerClient) SoftDelete() *AssetManagerUpdate {
+	mutation := newAssetManagerMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &AssetManagerUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *AssetManagerClient) SoftDeleteOne(am *AssetManager) *AssetManagerUpdateOne {
+	mutation := newAssetManagerMutation(c.config, OpUpdateOne, withAssetManager(am))
+	mutation.SetDeletedAt(time.Now())
+	return &AssetManagerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *AssetManagerClient) SoftDeleteOneID(id uint64) *AssetManagerUpdateOne {
+	mutation := newAssetManagerMutation(c.config, OpUpdateOne, withAssetManagerID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &AssetManagerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for AssetManager.
+func (c *AssetManagerClient) QueryNotDeleted() *AssetManagerQuery {
+	return c.Query().Where(assetmanager.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a AssetManager not deleted entity by its id.
+func (c *AssetManagerClient) GetNotDeleted(ctx context.Context, id uint64) (*AssetManager, error) {
+	return c.Query().Where(assetmanager.ID(id), assetmanager.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *AssetManagerClient) GetNotDeletedX(ctx context.Context, id uint64) *AssetManager {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

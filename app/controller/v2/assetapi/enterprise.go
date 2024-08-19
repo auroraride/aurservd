@@ -23,10 +23,10 @@ var Enterprise = new(enterprise)
 // @Tags	团签 - Enterprise
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string															true	"管理员校验token"
-// @Param	query			query		definition.EnterpriseAssetListReq								true	"查询参数"
-// @Success	200				{object}	model.PaginationRes{items=[]definition.EnterpriseAssetDetail}	"请求成功"
+// @Param	X-AssetManager-Token	header		string															true	"管理员校验token"
+// @Param	query					query		definition.EnterpriseAssetListReq								true	"查询参数"
+// @Success	200						{object}	model.PaginationRes{items=[]definition.EnterpriseAssetDetail}	"请求成功"
 func (*enterprise) EnterpriseAsset(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.EnterpriseAssetListReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[definition.EnterpriseAssetListReq](c)
 	return ctx.SendResponse(biz.NewEnterpriseAsset().Assets(req))
 }

@@ -694,6 +694,103 @@ var (
 			},
 		},
 	}
+	// AssetManagerColumns holds the columns for the "asset_manager" table.
+	AssetManagerColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "name", Type: field.TypeString, Size: 30, Comment: "姓名"},
+		{Name: "phone", Type: field.TypeString, Size: 30, Comment: "账户/手机号"},
+		{Name: "password", Type: field.TypeString, Comment: "密码"},
+		{Name: "mini_enable", Type: field.TypeBool, Comment: "仓管小程序人员是否启用", Default: false},
+		{Name: "mini_limit", Type: field.TypeUint, Comment: "仓管小程序人员限制范围(km)", Default: 0},
+		{Name: "last_signin_at", Type: field.TypeTime, Nullable: true, Comment: "最后登录时间"},
+		{Name: "role_id", Type: field.TypeUint64, Nullable: true, Comment: "角色ID"},
+	}
+	// AssetManagerTable holds the schema information for the "asset_manager" table.
+	AssetManagerTable = &schema.Table{
+		Name:       "asset_manager",
+		Columns:    AssetManagerColumns,
+		PrimaryKey: []*schema.Column{AssetManagerColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "asset_manager_asset_role_asset_managers",
+				Columns:    []*schema.Column{AssetManagerColumns[13]},
+				RefColumns: []*schema.Column{AssetRoleColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "assetmanager_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AssetManagerColumns[1]},
+			},
+			{
+				Name:    "assetmanager_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{AssetManagerColumns[3]},
+			},
+			{
+				Name:    "assetmanager_role_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetManagerColumns[13]},
+			},
+			{
+				Name:    "assetmanager_phone",
+				Unique:  false,
+				Columns: []*schema.Column{AssetManagerColumns[8]},
+				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+			{
+				Name:    "assetmanager_name",
+				Unique:  false,
+				Columns: []*schema.Column{AssetManagerColumns[7]},
+				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+		},
+	}
+	// AssetRoleColumns holds the columns for the "asset_role" table.
+	AssetRoleColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "name", Type: field.TypeString, Unique: true, Comment: "角色"},
+		{Name: "permissions", Type: field.TypeJSON, Nullable: true, Comment: "权限列表"},
+		{Name: "buildin", Type: field.TypeBool, Comment: "是否内置角色", Default: false},
+		{Name: "super", Type: field.TypeBool, Comment: "是否超级管理员", Default: false},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// AssetRoleTable holds the schema information for the "asset_role" table.
+	AssetRoleTable = &schema.Table{
+		Name:       "asset_role",
+		Columns:    AssetRoleColumns,
+		PrimaryKey: []*schema.Column{AssetRoleColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "assetrole_name",
+				Unique:  false,
+				Columns: []*schema.Column{AssetRoleColumns[1]},
+			},
+			{
+				Name:    "assetrole_buildin",
+				Unique:  false,
+				Columns: []*schema.Column{AssetRoleColumns[3]},
+			},
+		},
+	}
 	// AssetScrapColumns holds the columns for the "asset_scrap" table.
 	AssetScrapColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -7164,6 +7261,31 @@ var (
 			},
 		},
 	}
+	// WarehouseAssetManagersColumns holds the columns for the "warehouse_asset_managers" table.
+	WarehouseAssetManagersColumns = []*schema.Column{
+		{Name: "warehouse_id", Type: field.TypeInt},
+		{Name: "asset_manager_id", Type: field.TypeInt},
+	}
+	// WarehouseAssetManagersTable holds the schema information for the "warehouse_asset_managers" table.
+	WarehouseAssetManagersTable = &schema.Table{
+		Name:       "warehouse_asset_managers",
+		Columns:    WarehouseAssetManagersColumns,
+		PrimaryKey: []*schema.Column{WarehouseAssetManagersColumns[0], WarehouseAssetManagersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "warehouse_asset_managers_warehouse_id",
+				Columns:    []*schema.Column{WarehouseAssetManagersColumns[0]},
+				RefColumns: []*schema.Column{WarehouseColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "warehouse_asset_managers_asset_manager_id",
+				Columns:    []*schema.Column{WarehouseAssetManagersColumns[1]},
+				RefColumns: []*schema.Column{AssetManagerColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ActivityTable,
@@ -7177,6 +7299,8 @@ var (
 		AssetCheckDetailsTable,
 		AssetMaintenanceTable,
 		AssetMaintenanceDetailsTable,
+		AssetManagerTable,
+		AssetRoleTable,
 		AssetScrapTable,
 		AssetScrapDetailsTable,
 		AssetTransferTable,
@@ -7268,6 +7392,7 @@ var (
 		CabinetModelsTable,
 		CityMaintainersTable,
 		PlanCitiesTable,
+		WarehouseAssetManagersTable,
 	}
 )
 
@@ -7341,6 +7466,13 @@ func init() {
 	AssetMaintenanceDetailsTable.ForeignKeys[2].RefTable = MaterialTable
 	AssetMaintenanceDetailsTable.Annotation = &entsql.Annotation{
 		Table: "asset_maintenance_details",
+	}
+	AssetManagerTable.ForeignKeys[0].RefTable = AssetRoleTable
+	AssetManagerTable.Annotation = &entsql.Annotation{
+		Table: "asset_manager",
+	}
+	AssetRoleTable.Annotation = &entsql.Annotation{
+		Table: "asset_role",
 	}
 	AssetScrapTable.ForeignKeys[0].RefTable = ManagerTable
 	AssetScrapTable.ForeignKeys[1].RefTable = EmployeeTable
@@ -7868,4 +8000,6 @@ func init() {
 	CityMaintainersTable.ForeignKeys[1].RefTable = MaintainerTable
 	PlanCitiesTable.ForeignKeys[0].RefTable = PlanTable
 	PlanCitiesTable.ForeignKeys[1].RefTable = CityTable
+	WarehouseAssetManagersTable.ForeignKeys[0].RefTable = WarehouseTable
+	WarehouseAssetManagersTable.ForeignKeys[1].RefTable = AssetManagerTable
 }

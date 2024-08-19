@@ -41,6 +41,8 @@ const (
 	FieldSn = "sn"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
+	// EdgeAssetManagers holds the string denoting the asset_managers edge name in mutations.
+	EdgeAssetManagers = "asset_managers"
 	// Table holds the table name of the warehouse in the database.
 	Table = "warehouse"
 	// CityTable is the table that holds the city relation/edge.
@@ -50,6 +52,11 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
+	// AssetManagersTable is the table that holds the asset_managers relation/edge. The primary key declared below.
+	AssetManagersTable = "warehouse_asset_managers"
+	// AssetManagersInverseTable is the table name for the AssetManager entity.
+	// It exists in this package in order to avoid circular dependency with the "assetmanager" package.
+	AssetManagersInverseTable = "asset_manager"
 )
 
 // Columns holds all SQL columns for warehouse fields.
@@ -68,6 +75,12 @@ var Columns = []string{
 	FieldAddress,
 	FieldSn,
 }
+
+var (
+	// AssetManagersPrimaryKey and AssetManagersColumn2 are the table columns denoting the
+	// primary key for the asset_managers relation (M2M).
+	AssetManagersPrimaryKey = []string{"warehouse_id", "asset_manager_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -158,10 +171,31 @@ func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCityStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByAssetManagersCount orders the results by asset_managers count.
+func ByAssetManagersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAssetManagersStep(), opts...)
+	}
+}
+
+// ByAssetManagers orders the results by asset_managers terms.
+func ByAssetManagers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAssetManagersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CityInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+	)
+}
+func newAssetManagersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AssetManagersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, AssetManagersTable, AssetManagersPrimaryKey...),
 	)
 }

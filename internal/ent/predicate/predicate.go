@@ -39,6 +39,12 @@ type AssetMaintenance func(*sql.Selector)
 // AssetMaintenanceDetails is the predicate function for assetmaintenancedetails builders.
 type AssetMaintenanceDetails func(*sql.Selector)
 
+// AssetManager is the predicate function for assetmanager builders.
+type AssetManager func(*sql.Selector)
+
+// AssetRole is the predicate function for assetrole builders.
+type AssetRole func(*sql.Selector)
+
 // AssetScrap is the predicate function for assetscrap builders.
 type AssetScrap func(*sql.Selector)
 

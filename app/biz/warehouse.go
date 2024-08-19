@@ -15,6 +15,7 @@ import (
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
@@ -36,12 +37,12 @@ func NewWarehouse() *warehouseBiz {
 }
 
 func NewWarehouseWithModifier(m *model.Modifier) *warehouseBiz {
-	s := NewWarehouse()
+	b := NewWarehouse()
 	if m != nil {
-		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
-		s.modifier = m
+		b.ctx = context.WithValue(b.ctx, model.CtxModifierKey{}, m)
+		b.modifier = m
 	}
-	return s
+	return b
 }
 
 // List 仓库列表
@@ -364,4 +365,94 @@ func (b *warehouseBiz) transferInOut(ebikeNameMap, sBNameMap, nSbNameMap,
 			}
 		}
 	}
+}
+
+// ListByCity 城市仓库列表
+func (b *warehouseBiz) ListByCity() (res []*definition.WarehouseByCityRes) {
+	whList, _ := b.orm.QueryNotDeleted().WithCity().Order(ent.Asc(warehouse.FieldID)).All(b.ctx)
+	cityIds := make([]uint64, 0)
+	cityIdMap := make(map[uint64]*ent.City)
+	cityIdListMap := make(map[uint64][]*definition.WarehouseByCityDetail)
+	for _, wh := range whList {
+		if wh.Edges.City != nil {
+			cityIds = append(cityIds, wh.CityID)
+			cityIdMap[wh.CityID] = wh.Edges.City
+			cityIdListMap[wh.CityID] = append(cityIdListMap[wh.CityID], &definition.WarehouseByCityDetail{
+				ID:   wh.ID,
+				Name: wh.Name,
+			})
+		}
+	}
+
+	for _, cityId := range cityIds {
+		if cityIdMap[cityId] != nil && len(cityIdListMap[cityId]) != 0 {
+			res = append(res, &definition.WarehouseByCityRes{
+				City: model.City{
+					ID:   cityIdMap[cityId].ID,
+					Name: cityIdMap[cityId].Name,
+				},
+				WarehouseList: cityIdListMap[cityId],
+			})
+		}
+	}
+
+	return
+}
+
+// TransferList 调拨记录列表
+func (b *warehouseBiz) TransferList(req *definition.TransferListReq, wId uint64) (res *model.PaginationRes, err error) {
+	newReq := model.AssetTransferListReq{
+		PaginationReq: req.PaginationReq,
+		AssetTransferFilter: model.AssetTransferFilter{
+			Status:   req.Status,
+			OutStart: req.OutStart,
+			OutEnd:   req.OutEnd,
+			Keyword:  req.Keyword,
+		},
+	}
+
+	// 确定入库方，那么默认出库方为自己
+	if req.ToLocationType != nil && req.ToLocationID != nil {
+		fType := model.AssetLocationsTypeWarehouse
+		req.FromLocationType = &fType
+		req.FromLocationID = &wId
+	}
+
+	// 确定出库方，那么默认入库方为自己
+	if req.FromLocationType != nil && req.FromLocationID != nil {
+		tType := model.AssetLocationsTypeWarehouse
+		req.ToLocationType = &tType
+		req.ToLocationID = &wId
+	}
+
+	return service.NewAssetTransfer().TransferList(context.Background(), &newReq)
+}
+
+// TransferDetail 调拨记录详情
+func (b *warehouseBiz) TransferDetail(req *definition.TransferListReq, wId uint64) (res *model.PaginationRes, err error) {
+	newReq := model.AssetTransferListReq{
+		PaginationReq: req.PaginationReq,
+		AssetTransferFilter: model.AssetTransferFilter{
+			Status:   req.Status,
+			OutStart: req.OutStart,
+			OutEnd:   req.OutEnd,
+			Keyword:  req.Keyword,
+		},
+	}
+
+	// 确定入库方，那么默认出库方为自己
+	if req.ToLocationType != nil && req.ToLocationID != nil {
+		fType := model.AssetLocationsTypeWarehouse
+		req.FromLocationType = &fType
+		req.FromLocationID = &wId
+	}
+
+	// 确定出库方，那么默认入库方为自己
+	if req.FromLocationType != nil && req.FromLocationID != nil {
+		tType := model.AssetLocationsTypeWarehouse
+		req.ToLocationType = &tType
+		req.ToLocationID = &wId
+	}
+
+	return service.NewAssetTransfer().TransferList(context.Background(), &newReq)
 }

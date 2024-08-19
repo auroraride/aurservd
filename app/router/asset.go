@@ -5,12 +5,31 @@ import (
 	"github.com/auroraride/aurservd/app/middleware"
 )
 
-func loadAssersRoutes() {
+func loadAssetsRoutes() {
 	g := root.Group("manager/v2")
 
 	asset := g.Group("/asset")
 
-	asset.Use(middleware.ManagerMiddleware())
+	asset.POST("/user/signin", assetapi.AssetManager.Signin) // 登录
+
+	asset.Use(middleware.AssetManagerMiddleware())
+
+	// 管理员
+	asset.POST("/user", assetapi.AssetManager.Create)
+	asset.GET("/user", assetapi.AssetManager.List)
+	asset.DELETE("/user/:id", assetapi.AssetManager.Delete)
+	asset.PUT("/user/:id", assetapi.AssetManager.Modify)
+	asset.GET("/user/profile", assetapi.AssetManager.Profile)
+
+	// 角色权限
+	asset.GET("/permission", assetapi.AssetPermission.List)
+	asset.GET("/permission/role", assetapi.AssetPermission.ListRole)
+	asset.POST("/permission/role", assetapi.AssetPermission.CreateRole)
+	asset.PUT("/permission/role/:id", assetapi.AssetPermission.ModifyRole)
+	asset.DELETE("/permission/role/:id", assetapi.AssetPermission.DeleteRole)
+
+	// 筛选数据
+	asset.GET("/selection/warehouse_city", assetapi.Selection.WarehouseByCity) // 仓库城市筛选
 
 	// 基础档案
 	asset.POST("", assetapi.Assets.Create)       // 创建资产

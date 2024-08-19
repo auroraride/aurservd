@@ -18,6 +18,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenance"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
+	"github.com/auroraride/aurservd/internal/ent/assetrole"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
@@ -336,6 +338,53 @@ func init() {
 	assetmaintenancedetails.DefaultUpdatedAt = assetmaintenancedetailsDescUpdatedAt.Default.(func() time.Time)
 	// assetmaintenancedetails.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	assetmaintenancedetails.UpdateDefaultUpdatedAt = assetmaintenancedetailsDescUpdatedAt.UpdateDefault.(func() time.Time)
+	assetmanagerMixin := schema.AssetManager{}.Mixin()
+	assetmanagerMixinHooks2 := assetmanagerMixin[2].Hooks()
+	assetmanager.Hooks[0] = assetmanagerMixinHooks2[0]
+	assetmanagerMixinFields0 := assetmanagerMixin[0].Fields()
+	_ = assetmanagerMixinFields0
+	assetmanagerFields := schema.AssetManager{}.Fields()
+	_ = assetmanagerFields
+	// assetmanagerDescCreatedAt is the schema descriptor for created_at field.
+	assetmanagerDescCreatedAt := assetmanagerMixinFields0[0].Descriptor()
+	// assetmanager.DefaultCreatedAt holds the default value on creation for the created_at field.
+	assetmanager.DefaultCreatedAt = assetmanagerDescCreatedAt.Default.(func() time.Time)
+	// assetmanagerDescUpdatedAt is the schema descriptor for updated_at field.
+	assetmanagerDescUpdatedAt := assetmanagerMixinFields0[1].Descriptor()
+	// assetmanager.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	assetmanager.DefaultUpdatedAt = assetmanagerDescUpdatedAt.Default.(func() time.Time)
+	// assetmanager.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	assetmanager.UpdateDefaultUpdatedAt = assetmanagerDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// assetmanagerDescName is the schema descriptor for name field.
+	assetmanagerDescName := assetmanagerFields[0].Descriptor()
+	// assetmanager.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	assetmanager.NameValidator = assetmanagerDescName.Validators[0].(func(string) error)
+	// assetmanagerDescPhone is the schema descriptor for phone field.
+	assetmanagerDescPhone := assetmanagerFields[1].Descriptor()
+	// assetmanager.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
+	assetmanager.PhoneValidator = assetmanagerDescPhone.Validators[0].(func(string) error)
+	// assetmanagerDescMiniEnable is the schema descriptor for mini_enable field.
+	assetmanagerDescMiniEnable := assetmanagerFields[4].Descriptor()
+	// assetmanager.DefaultMiniEnable holds the default value on creation for the mini_enable field.
+	assetmanager.DefaultMiniEnable = assetmanagerDescMiniEnable.Default.(bool)
+	// assetmanagerDescMiniLimit is the schema descriptor for mini_limit field.
+	assetmanagerDescMiniLimit := assetmanagerFields[5].Descriptor()
+	// assetmanager.DefaultMiniLimit holds the default value on creation for the mini_limit field.
+	assetmanager.DefaultMiniLimit = assetmanagerDescMiniLimit.Default.(uint)
+	assetroleFields := schema.AssetRole{}.Fields()
+	_ = assetroleFields
+	// assetroleDescBuildin is the schema descriptor for buildin field.
+	assetroleDescBuildin := assetroleFields[2].Descriptor()
+	// assetrole.DefaultBuildin holds the default value on creation for the buildin field.
+	assetrole.DefaultBuildin = assetroleDescBuildin.Default.(bool)
+	// assetroleDescSuper is the schema descriptor for super field.
+	assetroleDescSuper := assetroleFields[3].Descriptor()
+	// assetrole.DefaultSuper holds the default value on creation for the super field.
+	assetrole.DefaultSuper = assetroleDescSuper.Default.(bool)
+	// assetroleDescCreatedAt is the schema descriptor for created_at field.
+	assetroleDescCreatedAt := assetroleFields[4].Descriptor()
+	// assetrole.DefaultCreatedAt holds the default value on creation for the created_at field.
+	assetrole.DefaultCreatedAt = assetroleDescCreatedAt.Default.(func() time.Time)
 	assetscrapMixin := schema.AssetScrap{}.Mixin()
 	assetscrapMixinHooks1 := assetscrapMixin[1].Hooks()
 	assetscrap.Hooks[0] = assetscrapMixinHooks1[0]

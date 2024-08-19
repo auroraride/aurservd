@@ -19,11 +19,11 @@ var AssetScrap = new(assetScrap)
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	body			body		model.AssetScrapReq		true	"报废参数"
-// @Success	200				{object}	model.StatusResponse	"请求成功"
+// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	body					body		model.AssetScrapReq		true	"报废参数"
+// @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*assetScrap) Scrap(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.AssetScrapReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetScrapReq](c)
 	return ctx.SendResponse(service.NewAssetScrap().Scrap(ctx.Request().Context(), req, ctx.Modifier))
 }
 
@@ -34,11 +34,11 @@ func (*assetScrap) Scrap(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string													true	"管理员校验token"
-// @Param	query			query		model.AssetScrapListReq									true	"查询参数"
-// @Success	200				{object}	model.PaginationRes{items=[]model.AssetScrapListRes}	"请求成功"
+// @Param	X-AssetManager-Token	header		string													true	"管理员校验token"
+// @Param	query					query		model.AssetScrapListReq									true	"查询参数"
+// @Success	200						{object}	model.PaginationRes{items=[]model.AssetScrapListRes}	"请求成功"
 func (*assetScrap) ScrapList(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.AssetScrapListReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetScrapListReq](c)
 	return ctx.SendResponse(service.NewAssetScrap().ScrapList(ctx.Request().Context(), req))
 }
 
@@ -49,11 +49,11 @@ func (*assetScrap) ScrapList(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string							true	"管理员校验token"
-// @Param	body			body		model.AssetScrapBatchRestoreReq	true	"还原参数"
-// @Success	200				{object}	model.StatusResponse			"请求成功"
+// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	body					body		model.AssetScrapBatchRestoreReq	true	"还原参数"
+// @Success	200						{object}	model.StatusResponse			"请求成功"
 func (*assetScrap) ScrapBatchRestore(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.AssetScrapBatchRestoreReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetScrapBatchRestoreReq](c)
 	return ctx.SendResponse(service.NewAssetScrap().ScrapBatchRestore(ctx.Request().Context(), req, ctx.Modifier))
 }
 
@@ -64,8 +64,8 @@ func (*assetScrap) ScrapBatchRestore(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Success	200				{object}	[]model.SelectOption	"请求成功"
+// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Success	200						{object}	[]model.SelectOption	"请求成功"
 func (*assetScrap) ScrapReasonSelect(c echo.Context) (err error) {
 	ctx := app.GetManagerContext(c)
 	return ctx.SendResponse(service.NewAssetScrap().ScrapReasonSelect(ctx.Request().Context()))

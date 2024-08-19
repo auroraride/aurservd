@@ -132,6 +132,34 @@ func (amd *AssetMaintenanceDetails) GetID() uint64 {
 	return amd.ID
 }
 
+// GetTableName returns table name for AssetManager.
+func (am *AssetManager) GetTableName() string {
+	return "asset_manager"
+}
+
+// GetID returns id for AssetManager.
+func (am *AssetManager) GetID() uint64 {
+	return am.ID
+}
+
+func (am *AssetManager) GetName() string {
+	return am.Name
+}
+
+// GetTableName returns table name for AssetRole.
+func (ar *AssetRole) GetTableName() string {
+	return "asset_role"
+}
+
+// GetID returns id for AssetRole.
+func (ar *AssetRole) GetID() uint64 {
+	return ar.ID
+}
+
+func (ar *AssetRole) GetName() string {
+	return ar.Name
+}
+
 // GetTableName returns table name for AssetScrap.
 func (as *AssetScrap) GetTableName() string {
 	return "asset_scrap"
