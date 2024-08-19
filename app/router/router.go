@@ -140,8 +140,8 @@ func Run() {
 	loadMaintainerRoutes() // 运维路由
 	loadPromotionRoutes()
 
-	loadAssetsRoutes()
-	loadWarehouseRoutes()
+	loadAssetsRoutes()    // 仓库后台
+	loadWarestoreRoutes() // 库管路由
 
 	zap.L().Fatal("路由启动失败", zap.Error(e.Start(cfg.Bind)))
 }

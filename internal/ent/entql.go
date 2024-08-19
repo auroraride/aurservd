@@ -5074,6 +5074,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Assistance",
 	)
 	graph.MustAddE(
+		"stores",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   employee.StoresTable,
+			Columns: employee.StoresPrimaryKey,
+			Bidi:    false,
+		},
+		"Employee",
+		"Store",
+	)
+	graph.MustAddE(
 		"city",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -7160,6 +7172,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Store",
 		"StoreGoods",
+	)
+	graph.MustAddE(
+		"employees",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   store.EmployeesTable,
+			Columns: store.EmployeesPrimaryKey,
+			Bidi:    false,
+		},
+		"Store",
+		"Employee",
 	)
 	graph.MustAddE(
 		"goods",
@@ -14717,6 +14741,20 @@ func (f *EmployeeFilter) WhereHasAssistances() {
 // WhereHasAssistancesWith applies a predicate to check if query has an edge assistances with a given conditions (other predicates).
 func (f *EmployeeFilter) WhereHasAssistancesWith(preds ...predicate.Assistance) {
 	f.Where(entql.HasEdgeWith("assistances", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStores applies a predicate to check if query has an edge stores.
+func (f *EmployeeFilter) WhereHasStores() {
+	f.Where(entql.HasEdge("stores"))
+}
+
+// WhereHasStoresWith applies a predicate to check if query has an edge stores with a given conditions (other predicates).
+func (f *EmployeeFilter) WhereHasStoresWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("stores", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -22708,6 +22746,20 @@ func (f *StoreFilter) WhereHasGoods() {
 // WhereHasGoodsWith applies a predicate to check if query has an edge goods with a given conditions (other predicates).
 func (f *StoreFilter) WhereHasGoodsWith(preds ...predicate.StoreGoods) {
 	f.Where(entql.HasEdgeWith("goods", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasEmployees applies a predicate to check if query has an edge employees.
+func (f *StoreFilter) WhereHasEmployees() {
+	f.Where(entql.HasEdge("employees"))
+}
+
+// WhereHasEmployeesWith applies a predicate to check if query has an edge employees with a given conditions (other predicates).
+func (f *StoreFilter) WhereHasEmployeesWith(preds ...predicate.Employee) {
+	f.Where(entql.HasEdgeWith("employees", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

@@ -9409,6 +9409,22 @@ func (c *EmployeeClient) QueryAssistances(e *Employee) *AssistanceQuery {
 	return query
 }
 
+// QueryStores queries the stores edge of a Employee.
+func (c *EmployeeClient) QueryStores(e *Employee) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, employee.StoresTable, employee.StoresPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EmployeeClient) Hooks() []Hook {
 	hooks := c.hooks.Employee
@@ -19142,6 +19158,22 @@ func (c *StoreClient) QueryGoods(s *Store) *StoreGoodsQuery {
 			sqlgraph.From(store.Table, store.FieldID, id),
 			sqlgraph.To(storegoods.Table, storegoods.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, store.GoodsTable, store.GoodsColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmployees queries the employees edge of a Store.
+func (c *StoreClient) QueryEmployees(s *Store) *EmployeeQuery {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, store.EmployeesTable, store.EmployeesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

@@ -36,6 +36,7 @@ type StoreQuery struct {
 	withAttendances *AttendanceQuery
 	withExceptions  *ExceptionQuery
 	withGoods       *StoreGoodsQuery
+	withEmployees   *EmployeeQuery
 	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -220,6 +221,28 @@ func (sq *StoreQuery) QueryGoods() *StoreGoodsQuery {
 			sqlgraph.From(store.Table, store.FieldID, selector),
 			sqlgraph.To(storegoods.Table, storegoods.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, store.GoodsTable, store.GoodsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEmployees chains the current query on the "employees" edge.
+func (sq *StoreQuery) QueryEmployees() *EmployeeQuery {
+	query := (&EmployeeClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, selector),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, store.EmployeesTable, store.EmployeesPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -426,6 +449,7 @@ func (sq *StoreQuery) Clone() *StoreQuery {
 		withAttendances: sq.withAttendances.Clone(),
 		withExceptions:  sq.withExceptions.Clone(),
 		withGoods:       sq.withGoods.Clone(),
+		withEmployees:   sq.withEmployees.Clone(),
 		// clone intermediate query.
 		sql:  sq.sql.Clone(),
 		path: sq.path,
@@ -509,6 +533,17 @@ func (sq *StoreQuery) WithGoods(opts ...func(*StoreGoodsQuery)) *StoreQuery {
 	return sq
 }
 
+// WithEmployees tells the query-builder to eager-load the nodes that are connected to
+// the "employees" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StoreQuery) WithEmployees(opts ...func(*EmployeeQuery)) *StoreQuery {
+	query := (&EmployeeClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withEmployees = query
+	return sq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -587,7 +622,7 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 	var (
 		nodes       = []*Store{}
 		_spec       = sq.querySpec()
-		loadedTypes = [7]bool{
+		loadedTypes = [8]bool{
 			sq.withCity != nil,
 			sq.withBranch != nil,
 			sq.withEmployee != nil,
@@ -595,6 +630,7 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 			sq.withAttendances != nil,
 			sq.withExceptions != nil,
 			sq.withGoods != nil,
+			sq.withEmployees != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -661,6 +697,13 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 		if err := sq.loadGoods(ctx, query, nodes,
 			func(n *Store) { n.Edges.Goods = []*StoreGoods{} },
 			func(n *Store, e *StoreGoods) { n.Edges.Goods = append(n.Edges.Goods, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withEmployees; query != nil {
+		if err := sq.loadEmployees(ctx, query, nodes,
+			func(n *Store) { n.Edges.Employees = []*Employee{} },
+			func(n *Store, e *Employee) { n.Edges.Employees = append(n.Edges.Employees, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -881,6 +924,67 @@ func (sq *StoreQuery) loadGoods(ctx context.Context, query *StoreGoodsQuery, nod
 	}
 	return nil
 }
+func (sq *StoreQuery) loadEmployees(ctx context.Context, query *EmployeeQuery, nodes []*Store, init func(*Store), assign func(*Store, *Employee)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[uint64]*Store)
+	nids := make(map[uint64]map[*Store]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(store.EmployeesTable)
+		s.Join(joinT).On(s.C(employee.FieldID), joinT.C(store.EmployeesPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(store.EmployeesPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(store.EmployeesPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Store]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Employee](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "employees" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
 
 func (sq *StoreQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := sq.querySpec()
@@ -994,6 +1098,7 @@ var (
 	StoreQueryWithAttendances StoreQueryWith = "Attendances"
 	StoreQueryWithExceptions  StoreQueryWith = "Exceptions"
 	StoreQueryWithGoods       StoreQueryWith = "Goods"
+	StoreQueryWithEmployees   StoreQueryWith = "Employees"
 )
 
 func (sq *StoreQuery) With(withEdges ...StoreQueryWith) *StoreQuery {
@@ -1013,6 +1118,8 @@ func (sq *StoreQuery) With(withEdges ...StoreQueryWith) *StoreQuery {
 			sq.WithExceptions()
 		case StoreQueryWithGoods:
 			sq.WithGoods()
+		case StoreQueryWithEmployees:
+			sq.WithEmployees()
 		}
 	}
 	return sq

@@ -24,7 +24,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[W]仓管接口"
+                    "仓管接口 - Warestore"
                 ],
                 "summary": "获取openid",
                 "operationId": "WarehouseGetOpenid",
@@ -63,7 +63,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[W]仓管接口"
+                    "仓管接口 - Warestore"
                 ],
                 "summary": "登录",
                 "operationId": "WarehouseSignin",
@@ -74,7 +74,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/definition.WarehousePeopleSigninReq"
+                            "$ref": "#/definitions/definition.WarestorePeopleSigninReq"
                         }
                     }
                 ],
@@ -82,7 +82,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.WarehousePeopleSigninRes"
+                            "$ref": "#/definitions/definition.WarestorePeopleSigninRes"
                         }
                     }
                 }
@@ -97,7 +97,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[W]仓管接口"
+                    "仓管接口 - Warestore"
                 ],
                 "summary": "调拨记录列表",
                 "operationId": "WarehouseTransferList",
@@ -153,7 +153,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[W]仓管接口"
+                    "仓管接口 - Warestore"
                 ],
                 "summary": "接收资产调拨",
                 "operationId": "WarehouseTransferReceive",
@@ -194,7 +194,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[W]仓管接口"
+                    "仓管接口 - Warestore"
                 ],
                 "summary": "调拨记录详情",
                 "operationId": "WarehouseTransferDetail",
@@ -243,11 +243,34 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "definition.PlatType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "PlatTypeStore": "门店平台登录",
+                "PlatTypeWarehouse": "仓库平台登录"
+            },
+            "x-enum-varnames": [
+                "PlatTypeWarehouse",
+                "PlatTypeStore"
+            ]
+        },
         "definition.TransferListReq": {
             "type": "object",
             "properties": {
+                "assetManagerID": {
+                    "description": "仓库管理员ID",
+                    "type": "integer"
+                },
                 "current": {
                     "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "employeeID": {
+                    "description": "门店管理员ID",
                     "type": "integer"
                 },
                 "fromLocationID": {
@@ -267,6 +290,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.AssetLocationsType"
                         }
                     ]
+                },
+                "inEnd": {
+                    "description": "入库结束时间",
+                    "type": "string"
+                },
+                "inStart": {
+                    "description": "入库开始时间",
+                    "type": "string"
                 },
                 "keyword": {
                     "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
@@ -318,7 +349,7 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.WarehousePeopleProfile": {
+        "definition.WarestorePeopleProfile": {
             "type": "object",
             "properties": {
                 "id": {
@@ -334,9 +365,10 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.WarehousePeopleSigninReq": {
+        "definition.WarestorePeopleSigninReq": {
             "type": "object",
             "required": [
+                "platType",
                 "signinType"
             ],
             "properties": {
@@ -347,6 +379,18 @@ const docTemplate = `{
                 "phone": {
                     "description": "电话",
                     "type": "string"
+                },
+                "platType": {
+                    "description": "登录平台类型",
+                    "enum": [
+                        1,
+                        2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.PlatType"
+                        }
+                    ]
                 },
                 "signinType": {
                     "type": "integer",
@@ -361,11 +405,11 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.WarehousePeopleSigninRes": {
+        "definition.WarestorePeopleSigninRes": {
             "type": "object",
             "properties": {
                 "profile": {
-                    "$ref": "#/definitions/definition.WarehousePeopleProfile"
+                    "$ref": "#/definitions/definition.WarestorePeopleProfile"
                 },
                 "token": {
                     "type": "string"

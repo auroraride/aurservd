@@ -104,6 +104,8 @@ type AssetTransferFilter struct {
 	InStart          *string              `json:"inStart" query:"inStart"`                                   // 入库开始时间
 	InEnd            *string              `json:"inEnd" query:"inEnd"`                                       // 入库结束时间
 	Keyword          *string              `json:"keyword" query:"keyword"`                                   // 关键字 (调拨单号，调拨事由、出库人、接收人)
+	AssetManagerID   uint64               `json:"assetManagerID" query:"assetManagerID"`                     // 仓库管理员ID
+	EmployeeID       uint64               `json:"employeeID" query:"employeeID"`                             // 门店管理员ID
 }
 
 // AssetTransferListRes 资产调拨列表响应

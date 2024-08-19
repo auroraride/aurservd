@@ -23,11 +23,15 @@ func Warestore() echo.MiddlewareFunc {
 				ep *ent.Employee
 			)
 			// 查看是否是登录态
-			token := strings.TrimSpace(c.Request().Header.Get(app.HeaderWarestoreToken))
-			if token != "" {
-				// 查找登录用户
-				am = biz.NewWarestore().TokenVerify(token)
+			wToken := strings.TrimSpace(c.Request().Header.Get(app.HeaderWarehouseToken))
+			sToken := strings.TrimSpace(c.Request().Header.Get(app.HeaderStoreToken))
+			if wToken != "" {
+				am, _ = biz.NewWarestore().TokenVerify(wToken)
 			}
+			if sToken != "" {
+				_, ep = biz.NewWarestore().TokenVerify(sToken)
+			}
+
 			return next(app.NewWarestoreContext(c, am, ep))
 		}
 	}
@@ -40,7 +44,6 @@ func WarestoreAuth() echo.MiddlewareFunc {
 			if ctx.AssetManager == nil && ctx.Employee == nil {
 				snag.Panic(snag.StatusUnauthorized)
 			}
-
 			return next(ctx)
 		}
 	}

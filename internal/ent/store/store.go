@@ -75,6 +75,8 @@ const (
 	EdgeExceptions = "exceptions"
 	// EdgeGoods holds the string denoting the goods edge name in mutations.
 	EdgeGoods = "goods"
+	// EdgeEmployees holds the string denoting the employees edge name in mutations.
+	EdgeEmployees = "employees"
 	// Table holds the table name of the store in the database.
 	Table = "store"
 	// CityTable is the table that holds the city relation/edge.
@@ -126,6 +128,11 @@ const (
 	GoodsInverseTable = "store_goods"
 	// GoodsColumn is the table column denoting the goods relation/edge.
 	GoodsColumn = "store_id"
+	// EmployeesTable is the table that holds the employees relation/edge. The primary key declared below.
+	EmployeesTable = "store_employees"
+	// EmployeesInverseTable is the table name for the Employee entity.
+	// It exists in this package in order to avoid circular dependency with the "employee" package.
+	EmployeesInverseTable = "employee"
 )
 
 // Columns holds all SQL columns for store fields.
@@ -155,6 +162,12 @@ var Columns = []string{
 	FieldPhone,
 	FieldHeadPic,
 }
+
+var (
+	// EmployeesPrimaryKey and EmployeesColumn2 are the table columns denoting the
+	// primary key for the employees relation (M2M).
+	EmployeesPrimaryKey = []string{"store_id", "employee_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -381,6 +394,20 @@ func ByGoods(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newGoodsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByEmployeesCount orders the results by employees count.
+func ByEmployeesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newEmployeesStep(), opts...)
+	}
+}
+
+// ByEmployees orders the results by employees terms.
+func ByEmployees(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEmployeesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -428,5 +455,12 @@ func newGoodsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(GoodsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, GoodsTable, GoodsColumn),
+	)
+}
+func newEmployeesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EmployeesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, EmployeesTable, EmployeesPrimaryKey...),
 	)
 }

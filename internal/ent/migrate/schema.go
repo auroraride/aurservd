@@ -7353,6 +7353,31 @@ var (
 			},
 		},
 	}
+	// StoreEmployeesColumns holds the columns for the "store_employees" table.
+	StoreEmployeesColumns = []*schema.Column{
+		{Name: "store_id", Type: field.TypeInt},
+		{Name: "employee_id", Type: field.TypeInt},
+	}
+	// StoreEmployeesTable holds the schema information for the "store_employees" table.
+	StoreEmployeesTable = &schema.Table{
+		Name:       "store_employees",
+		Columns:    StoreEmployeesColumns,
+		PrimaryKey: []*schema.Column{StoreEmployeesColumns[0], StoreEmployeesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "store_employees_store_id",
+				Columns:    []*schema.Column{StoreEmployeesColumns[0]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "store_employees_employee_id",
+				Columns:    []*schema.Column{StoreEmployeesColumns[1]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// WarehouseAssetManagersColumns holds the columns for the "warehouse_asset_managers" table.
 	WarehouseAssetManagersColumns = []*schema.Column{
 		{Name: "warehouse_id", Type: field.TypeInt},
@@ -7484,6 +7509,7 @@ var (
 		CabinetModelsTable,
 		CityMaintainersTable,
 		PlanCitiesTable,
+		StoreEmployeesTable,
 		WarehouseAssetManagersTable,
 	}
 )
@@ -8105,6 +8131,8 @@ func init() {
 	CityMaintainersTable.ForeignKeys[1].RefTable = MaintainerTable
 	PlanCitiesTable.ForeignKeys[0].RefTable = PlanTable
 	PlanCitiesTable.ForeignKeys[1].RefTable = CityTable
+	StoreEmployeesTable.ForeignKeys[0].RefTable = StoreTable
+	StoreEmployeesTable.ForeignKeys[1].RefTable = EmployeeTable
 	WarehouseAssetManagersTable.ForeignKeys[0].RefTable = WarehouseTable
 	WarehouseAssetManagersTable.ForeignKeys[1].RefTable = AssetManagerTable
 }

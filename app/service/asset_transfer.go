@@ -11,9 +11,11 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/material"
@@ -504,6 +506,47 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 			assettransfer.Or(
 				assettransfer.SnContains(*req.Keyword),
 				assettransfer.ReasonContains(*req.Keyword),
+			),
+		)
+	}
+	if req.AssetManagerID != 0 {
+		// 查询库管人员配置的仓库数据
+		wIds := make([]uint64, 0)
+		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithWarehouses().
+			Where(
+				assetmanager.ID(req.AssetManagerID),
+				assetmanager.HasWarehousesWith(warehouse.DeletedAtIsNil()),
+			).First(context.Background())
+		if am != nil {
+			for _, wh := range am.Edges.Warehouses {
+				wIds = append(wIds, wh.ID)
+			}
+		}
+		q.Where(
+			assettransfer.Or(
+				assettransfer.HasFromLocationWarehouseWith(warehouse.IDIn(wIds...)),
+				assettransfer.HasToLocationWarehouseWith(warehouse.IDIn(wIds...)),
+			),
+		)
+	}
+
+	if req.EmployeeID != 0 {
+		// 查询门店人员配置的门店数据
+		sIds := make([]uint64, 0)
+		ep, _ := ent.Database.Employee.QueryNotDeleted().WithStores().
+			Where(
+				employee.ID(req.EmployeeID),
+				employee.HasStoresWith(store.DeletedAtIsNil()),
+			).First(context.Background())
+		if ep != nil {
+			for _, st := range ep.Edges.Stores {
+				sIds = append(sIds, st.ID)
+			}
+		}
+		q.Where(
+			assettransfer.Or(
+				assettransfer.HasFromLocationStoreWith(store.IDIn(sIds...)),
+				assettransfer.HasToLocationStoreWith(store.IDIn(sIds...)),
 			),
 		)
 	}

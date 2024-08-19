@@ -1,669 +1,713 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "description": "### 说明\n接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。\n\u003cbr\u003e\n接口返回说明查看 **[返回](#返回)**\n\u003cbr\u003e\n图片/附件前缀 `https://cdn.auroraride.com/`\n\n\u003cbr /\u003e\n\n\u003cbr /\u003e\n\n### 接口编号\n\n第一位代表接口端分类\n\n- M 管理端\n- R 骑手端\n- E 门店端\n- C 通用\n\n第二位代表子分类（36进制）\n\n后三位代表子编号（10进制）\n\n\u003cbr /\u003e\n\n\u003cbr /\u003e\n\n\n### 认证\n项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`\n|  header   |  类型  |  接口  |\n| :-----: | :----: | :--: |\n|  X-Rider-Token   |  string   |  骑手API  |\n| X-Manager-Token | string |  后台API  |\n|  X-Employee-Token   | string |  员工API  |\n\n\u003cbr /\u003e\n\n\u003cbr /\u003e\n\n### 返回\n\n一个标准的返回应包含以下结构\n\n|  字段   |  类型  |  必填  |  说明  |\n| :-----: | :----: | :--: | :--: |\n|  code   |  int   |  是  |  返回代码  |\n| message | string |  是  |  返回消息  |\n|  data   | object |  是  |  返回数据  |\n\n`code`代码取值说明\n\n| 十进制 | 十六进制 | 说明 |\n| :----: | :------: | :--: |\n| 0  |  0x000  | 请求成功 |\n| 256 |  0x100  | 请求失败 |\n| 512 |  0x200  | *需要认证(跳转登录) |\n| 768 |  0x300  | *用户被封禁 |\n| 1024 |  0x400  | 资源未获 |\n| 1280 |  0x500  | 未知错误 |\n| 1536 |  0x600  | *需要实名 |\n| 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |\n| 2048 |  0x800  | *需要联系人 |\n| 2304 |  0x900  | 请求过期 |\n\n\u003e 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{\"url\": \"string\"}`, 直接跳转url\n\n\n比如：\n\u003e 默认成功返回\n```json\n{\n  \"code\": 0,\n  \"message\": \"OK\",\n  \"data\": {\n    \"status\": true\n  }\n}\n```\n",
-    "title": "极光出行API - 仓管api",
-    "contact": {},
-    "version": "2.0"
-  },
-  "basePath": "/",
-  "paths": {
-    "/warestore/v2/openid": {
-      "get": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "[W]仓管接口"
-        ],
-        "summary": "获取openid",
-        "operationId": "WarehouseGetOpenid",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "仓管校验token",
-            "name": "X-Warehouse-Token",
-            "in": "header",
-            "required": true
-          },
-          {
-            "type": "string",
-            "description": "微信code",
-            "name": "code",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "请求成功",
-            "schema": {
-              "$ref": "#/definitions/model.OpenidRes"
-            }
-          }
-        }
-      }
+    "swagger": "2.0",
+    "info": {
+        "description": "### 说明\n接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。\n\u003cbr\u003e\n接口返回说明查看 **[返回](#返回)**\n\u003cbr\u003e\n图片/附件前缀 `https://cdn.auroraride.com/`\n\n\u003cbr /\u003e\n\n\u003cbr /\u003e\n\n### 接口编号\n\n第一位代表接口端分类\n\n- M 管理端\n- R 骑手端\n- E 门店端\n- C 通用\n\n第二位代表子分类（36进制）\n\n后三位代表子编号（10进制）\n\n\u003cbr /\u003e\n\n\u003cbr /\u003e\n\n\n### 认证\n项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`\n|  header   |  类型  |  接口  |\n| :-----: | :----: | :--: |\n|  X-Rider-Token   |  string   |  骑手API  |\n| X-Manager-Token | string |  后台API  |\n|  X-Employee-Token   | string |  员工API  |\n\n\u003cbr /\u003e\n\n\u003cbr /\u003e\n\n### 返回\n\n一个标准的返回应包含以下结构\n\n|  字段   |  类型  |  必填  |  说明  |\n| :-----: | :----: | :--: | :--: |\n|  code   |  int   |  是  |  返回代码  |\n| message | string |  是  |  返回消息  |\n|  data   | object |  是  |  返回数据  |\n\n`code`代码取值说明\n\n| 十进制 | 十六进制 | 说明 |\n| :----: | :------: | :--: |\n| 0  |  0x000  | 请求成功 |\n| 256 |  0x100  | 请求失败 |\n| 512 |  0x200  | *需要认证(跳转登录) |\n| 768 |  0x300  | *用户被封禁 |\n| 1024 |  0x400  | 资源未获 |\n| 1280 |  0x500  | 未知错误 |\n| 1536 |  0x600  | *需要实名 |\n| 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |\n| 2048 |  0x800  | *需要联系人 |\n| 2304 |  0x900  | 请求过期 |\n\n\u003e 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{\"url\": \"string\"}`, 直接跳转url\n\n\n比如：\n\u003e 默认成功返回\n```json\n{\n  \"code\": 0,\n  \"message\": \"OK\",\n  \"data\": {\n    \"status\": true\n  }\n}\n```\n",
+        "title": "极光出行API - 仓管api",
+        "contact": {},
+        "version": "2.0"
     },
-    "/warestore/v2/signin": {
-      "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "[W]仓管接口"
-        ],
-        "summary": "登录",
-        "operationId": "WarehouseSignin",
-        "parameters": [
-          {
-            "description": "登录请求",
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/definition.WarehousePeopleSigninReq"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "请求成功",
-            "schema": {
-              "$ref": "#/definitions/definition.WarehousePeopleSigninRes"
-            }
-          }
-        }
-      }
-    },
-    "/warestore/v2/transfer": {
-      "get": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "[W]仓管接口"
-        ],
-        "summary": "调拨记录列表",
-        "operationId": "WarehouseTransferList",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "仓管校验token",
-            "name": "X-Warehouse-Token",
-            "in": "header",
-            "required": true
-          },
-          {
-            "description": "接收参数",
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/definition.TransferListReq"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "请求成功",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/model.PaginationRes"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "items": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/model.AssetTransferListRes"
-                      }
+    "basePath": "/",
+    "paths": {
+        "/warestore/v2/openid": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "仓管接口 - Warestore"
+                ],
+                "summary": "获取openid",
+                "operationId": "WarehouseGetOpenid",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warehouse-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "微信code",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
                     }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "/warestore/v2/transfer/receive": {
-      "post": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "[W]仓管接口"
-        ],
-        "summary": "接收资产调拨",
-        "operationId": "WarehouseTransferReceive",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "仓管校验token",
-            "name": "X-Warehouse-Token",
-            "in": "header",
-            "required": true
-          },
-          {
-            "description": "接收参数",
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/model.AssetTransferReceiveBatchReq"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "请求成功",
-            "schema": {
-              "$ref": "#/definitions/model.StatusResponse"
-            }
-          }
-        }
-      }
-    },
-    "/warestore/v2/transfer/{id}": {
-      "get": {
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "[W]仓管接口"
-        ],
-        "summary": "调拨记录详情",
-        "operationId": "WarehouseTransferDetail",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "仓管校验token",
-            "name": "X-Warehouse-Token",
-            "in": "header",
-            "required": true
-          },
-          {
-            "description": "接收参数",
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/model.AssetTransferDetailReq"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "请求成功",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/model.PaginationRes"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "items": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/model.AssetTransferListRes"
-                      }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.OpenidRes"
+                        }
                     }
-                  }
                 }
-              ]
             }
-          }
+        },
+        "/warestore/v2/signin": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "仓管接口 - Warestore"
+                ],
+                "summary": "登录",
+                "operationId": "WarehouseSignin",
+                "parameters": [
+                    {
+                        "description": "登录请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.WarestorePeopleSigninReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.WarestorePeopleSigninRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/transfer": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "仓管接口 - Warestore"
+                ],
+                "summary": "调拨记录列表",
+                "operationId": "WarehouseTransferList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warehouse-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "接收参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.TransferListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AssetTransferListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/transfer/receive": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "仓管接口 - Warestore"
+                ],
+                "summary": "接收资产调拨",
+                "operationId": "WarehouseTransferReceive",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warehouse-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "接收参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetTransferReceiveBatchReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/transfer/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "仓管接口 - Warestore"
+                ],
+                "summary": "调拨记录详情",
+                "operationId": "WarehouseTransferDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warehouse-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "接收参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetTransferDetailReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AssetTransferListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
         }
-      }
+    },
+    "definitions": {
+        "definition.PlatType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "PlatTypeStore": "门店平台登录",
+                "PlatTypeWarehouse": "仓库平台登录"
+            },
+            "x-enum-varnames": [
+                "PlatTypeWarehouse",
+                "PlatTypeStore"
+            ]
+        },
+        "definition.TransferListReq": {
+            "type": "object",
+            "properties": {
+                "assetManagerID": {
+                    "description": "仓库管理员ID",
+                    "type": "integer"
+                },
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "employeeID": {
+                    "description": "门店管理员ID",
+                    "type": "integer"
+                },
+                "fromLocationID": {
+                    "description": "调拨前位置ID",
+                    "type": "integer"
+                },
+                "fromLocationType": {
+                    "description": "调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
+                },
+                "inEnd": {
+                    "description": "入库结束时间",
+                    "type": "string"
+                },
+                "inStart": {
+                    "description": "入库开始时间",
+                    "type": "string"
+                },
+                "keyword": {
+                    "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
+                    "type": "string"
+                },
+                "outEnd": {
+                    "description": "出库结束时间",
+                    "type": "string"
+                },
+                "outStart": {
+                    "description": "出库开始时间",
+                    "type": "string"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "调拨状态 1:配送中 2:待入库 3:已入库 4:已取消",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferStatus"
+                        }
+                    ]
+                },
+                "toLocationID": {
+                    "description": "调拨后位置ID",
+                    "type": "integer"
+                },
+                "toLocationType": {
+                    "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
+                }
+            }
+        },
+        "definition.WarestorePeopleProfile": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.WarestorePeopleSigninReq": {
+            "type": "object",
+            "required": [
+                "platType",
+                "signinType"
+            ],
+            "properties": {
+                "code": {
+                    "description": "验证码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "platType": {
+                    "description": "登录平台类型",
+                    "enum": [
+                        1,
+                        2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.PlatType"
+                        }
+                    ]
+                },
+                "signinType": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "smsId": {
+                    "description": "短信ID",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.WarestorePeopleSigninRes": {
+            "type": "object",
+            "properties": {
+                "profile": {
+                    "$ref": "#/definitions/definition.WarestorePeopleProfile"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetLocationsType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "x-enum-comments": {
+                "AssetLocationsTypeCabinet": "电柜",
+                "AssetLocationsTypeOperation": "运维",
+                "AssetLocationsTypeRider": "骑手",
+                "AssetLocationsTypeStation": "站点",
+                "AssetLocationsTypeStore": "门店",
+                "AssetLocationsTypeWarehouse": "仓库"
+            },
+            "x-enum-varnames": [
+                "AssetLocationsTypeWarehouse",
+                "AssetLocationsTypeStore",
+                "AssetLocationsTypeStation",
+                "AssetLocationsTypeOperation",
+                "AssetLocationsTypeCabinet",
+                "AssetLocationsTypeRider"
+            ]
+        },
+        "model.AssetOperateRoleType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+            ],
+            "x-enum-comments": {
+                "AssetOperateRoleTypeAgent": "代理",
+                "AssetOperateRoleTypeBusinessManager": "业务后台",
+                "AssetOperateRoleTypeCabinet": "电柜",
+                "AssetOperateRoleTypeManager": "资产后台(仓库)",
+                "AssetOperateRoleTypeOperation": "运维",
+                "AssetOperateRoleTypeRider": "骑手",
+                "AssetOperateRoleTypeStore": "门店"
+            },
+            "x-enum-varnames": [
+                "AssetOperateRoleTypeManager",
+                "AssetOperateRoleTypeStore",
+                "AssetOperateRoleTypeAgent",
+                "AssetOperateRoleTypeOperation",
+                "AssetOperateRoleTypeCabinet",
+                "AssetOperateRoleTypeRider",
+                "AssetOperateRoleTypeBusinessManager"
+            ]
+        },
+        "model.AssetTransferDetailReq": {
+            "type": "object"
+        },
+        "model.AssetTransferListRes": {
+            "type": "object",
+            "properties": {
+                "fromLocationID": {
+                    "description": "调出目标ID",
+                    "type": "integer"
+                },
+                "fromLocationName": {
+                    "description": "调出目标名称",
+                    "type": "string"
+                },
+                "fromLocationType": {
+                    "description": "调出目标类型",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "调拨ID",
+                    "type": "integer"
+                },
+                "inNum": {
+                    "description": "入库数量",
+                    "type": "integer"
+                },
+                "outNum": {
+                    "description": "出库数量",
+                    "type": "integer"
+                },
+                "outOperateName": {
+                    "description": "出库操作人",
+                    "type": "string"
+                },
+                "outTimeAt": {
+                    "description": "出库时间",
+                    "type": "string"
+                },
+                "reason": {
+                    "description": "调拨事由",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "调拨单号",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "调拨状态",
+                    "type": "string"
+                },
+                "toLocationID": {
+                    "description": "调入目标ID",
+                    "type": "integer"
+                },
+                "toLocationName": {
+                    "description": "调入目标名称",
+                    "type": "string"
+                },
+                "toLocationType": {
+                    "description": "调入目标类型",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.AssetTransferReceiveBatchReq": {
+            "type": "object",
+            "required": [
+                "assetTransferReceive",
+                "operateType"
+            ],
+            "properties": {
+                "assetTransferReceive": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetTransferReceiveReq"
+                    }
+                },
+                "operateType": {
+                    "description": "操作类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetOperateRoleType"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.AssetTransferReceiveDetail": {
+            "type": "object",
+            "required": [
+                "assetType"
+            ],
+            "properties": {
+                "assetType": {
+                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                },
+                "materialId": {
+                    "description": "其它物资分类ID",
+                    "type": "integer"
+                },
+                "num": {
+                    "description": "调拨数量",
+                    "type": "integer"
+                },
+                "sn": {
+                    "description": "资产编号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetTransferReceiveReq": {
+            "type": "object",
+            "required": [
+                "detail"
+            ],
+            "properties": {
+                "detail": {
+                    "description": "资产明细",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetTransferReceiveDetail"
+                    }
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetTransferStatus": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "x-enum-comments": {
+                "AssetTransferStatusCancel": "已取消",
+                "AssetTransferStatusDelivering": "配送中",
+                "AssetTransferStatusPending": "待入库",
+                "AssetTransferStatusStock": "已入库"
+            },
+            "x-enum-varnames": [
+                "AssetTransferStatusDelivering",
+                "AssetTransferStatusPending",
+                "AssetTransferStatusStock",
+                "AssetTransferStatusCancel"
+            ]
+        },
+        "model.AssetType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "x-enum-comments": {
+                "AssetTypeCabinetAccessory": "电柜配件",
+                "AssetTypeEbike": "电车",
+                "AssetTypeEbikeAccessory": "电车配件",
+                "AssetTypeNonSmartBattery": "非智能电池",
+                "AssetTypeOtherAccessory": "其它配件",
+                "AssetTypeSmartBattery": "智能电池"
+            },
+            "x-enum-varnames": [
+                "AssetTypeEbike",
+                "AssetTypeSmartBattery",
+                "AssetTypeNonSmartBattery",
+                "AssetTypeCabinetAccessory",
+                "AssetTypeEbikeAccessory",
+                "AssetTypeOtherAccessory"
+            ]
+        },
+        "model.OpenidRes": {
+            "type": "object",
+            "properties": {
+                "openid": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Pagination": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "description": "当前页",
+                    "type": "integer"
+                },
+                "pages": {
+                    "description": "总页数",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "总条数",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.PaginationRes": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "返回数据"
+                },
+                "pagination": {
+                    "description": "分页属性",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Pagination"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.StatusResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        }
     }
-  },
-  "definitions": {
-    "definition.TransferListReq": {
-      "type": "object",
-      "properties": {
-        "current": {
-          "description": "当前页, 从1开始, 默认1",
-          "type": "integer"
-        },
-        "fromLocationID": {
-          "description": "调拨前位置ID",
-          "type": "integer"
-        },
-        "fromLocationType": {
-          "description": "调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-          "enum": [
-            1,
-            2,
-            3,
-            4
-          ],
-          "allOf": [
-            {
-              "$ref": "#/definitions/model.AssetLocationsType"
-            }
-          ]
-        },
-        "keyword": {
-          "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
-          "type": "string"
-        },
-        "outEnd": {
-          "description": "出库结束时间",
-          "type": "string"
-        },
-        "outStart": {
-          "description": "出库开始时间",
-          "type": "string"
-        },
-        "pageSize": {
-          "description": "每页数据, 默认20",
-          "type": "integer"
-        },
-        "status": {
-          "description": "调拨状态 1:配送中 2:待入库 3:已入库 4:已取消",
-          "enum": [
-            1,
-            2,
-            3,
-            4
-          ],
-          "allOf": [
-            {
-              "$ref": "#/definitions/model.AssetTransferStatus"
-            }
-          ]
-        },
-        "toLocationID": {
-          "description": "调拨后位置ID",
-          "type": "integer"
-        },
-        "toLocationType": {
-          "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-          "enum": [
-            1,
-            2,
-            3,
-            4
-          ],
-          "allOf": [
-            {
-              "$ref": "#/definitions/model.AssetLocationsType"
-            }
-          ]
-        }
-      }
-    },
-    "definition.WarehousePeopleProfile": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer"
-        },
-        "name": {
-          "description": "姓名",
-          "type": "string"
-        },
-        "phone": {
-          "description": "手机号",
-          "type": "string"
-        }
-      }
-    },
-    "definition.WarehousePeopleSigninReq": {
-      "type": "object",
-      "required": [
-        "signinType"
-      ],
-      "properties": {
-        "code": {
-          "description": "验证码",
-          "type": "string"
-        },
-        "phone": {
-          "description": "电话",
-          "type": "string"
-        },
-        "signinType": {
-          "type": "integer",
-          "enum": [
-            1,
-            2
-          ]
-        },
-        "smsId": {
-          "description": "短信ID",
-          "type": "string"
-        }
-      }
-    },
-    "definition.WarehousePeopleSigninRes": {
-      "type": "object",
-      "properties": {
-        "profile": {
-          "$ref": "#/definitions/definition.WarehousePeopleProfile"
-        },
-        "token": {
-          "type": "string"
-        }
-      }
-    },
-    "model.AssetLocationsType": {
-      "type": "integer",
-      "enum": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "x-enum-comments": {
-        "AssetLocationsTypeCabinet": "电柜",
-        "AssetLocationsTypeOperation": "运维",
-        "AssetLocationsTypeRider": "骑手",
-        "AssetLocationsTypeStation": "站点",
-        "AssetLocationsTypeStore": "门店",
-        "AssetLocationsTypeWarehouse": "仓库"
-      },
-      "x-enum-varnames": [
-        "AssetLocationsTypeWarehouse",
-        "AssetLocationsTypeStore",
-        "AssetLocationsTypeStation",
-        "AssetLocationsTypeOperation",
-        "AssetLocationsTypeCabinet",
-        "AssetLocationsTypeRider"
-      ]
-    },
-    "model.AssetOperateRoleType": {
-      "type": "integer",
-      "enum": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
-      ],
-      "x-enum-comments": {
-        "AssetOperateRoleTypeAgent": "代理",
-        "AssetOperateRoleTypeBusinessManager": "业务后台",
-        "AssetOperateRoleTypeCabinet": "电柜",
-        "AssetOperateRoleTypeManager": "资产后台(仓库)",
-        "AssetOperateRoleTypeOperation": "运维",
-        "AssetOperateRoleTypeRider": "骑手",
-        "AssetOperateRoleTypeStore": "门店"
-      },
-      "x-enum-varnames": [
-        "AssetOperateRoleTypeManager",
-        "AssetOperateRoleTypeStore",
-        "AssetOperateRoleTypeAgent",
-        "AssetOperateRoleTypeOperation",
-        "AssetOperateRoleTypeCabinet",
-        "AssetOperateRoleTypeRider",
-        "AssetOperateRoleTypeBusinessManager"
-      ]
-    },
-    "model.AssetTransferDetailReq": {
-      "type": "object"
-    },
-    "model.AssetTransferListRes": {
-      "type": "object",
-      "properties": {
-        "fromLocationID": {
-          "description": "调出目标ID",
-          "type": "integer"
-        },
-        "fromLocationName": {
-          "description": "调出目标名称",
-          "type": "string"
-        },
-        "fromLocationType": {
-          "description": "调出目标类型",
-          "type": "integer"
-        },
-        "id": {
-          "description": "调拨ID",
-          "type": "integer"
-        },
-        "inNum": {
-          "description": "入库数量",
-          "type": "integer"
-        },
-        "outNum": {
-          "description": "出库数量",
-          "type": "integer"
-        },
-        "outOperateName": {
-          "description": "出库操作人",
-          "type": "string"
-        },
-        "outTimeAt": {
-          "description": "出库时间",
-          "type": "string"
-        },
-        "reason": {
-          "description": "调拨事由",
-          "type": "string"
-        },
-        "remark": {
-          "description": "备注",
-          "type": "string"
-        },
-        "sn": {
-          "description": "调拨单号",
-          "type": "string"
-        },
-        "status": {
-          "description": "调拨状态",
-          "type": "string"
-        },
-        "toLocationID": {
-          "description": "调入目标ID",
-          "type": "integer"
-        },
-        "toLocationName": {
-          "description": "调入目标名称",
-          "type": "string"
-        },
-        "toLocationType": {
-          "description": "调入目标类型",
-          "type": "integer"
-        }
-      }
-    },
-    "model.AssetTransferReceiveBatchReq": {
-      "type": "object",
-      "required": [
-        "assetTransferReceive",
-        "operateType"
-      ],
-      "properties": {
-        "assetTransferReceive": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/model.AssetTransferReceiveReq"
-          }
-        },
-        "operateType": {
-          "description": "操作类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手",
-          "enum": [
-            1,
-            2,
-            3,
-            4,
-            5,
-            6
-          ],
-          "allOf": [
-            {
-              "$ref": "#/definitions/model.AssetOperateRoleType"
-            }
-          ]
-        }
-      }
-    },
-    "model.AssetTransferReceiveDetail": {
-      "type": "object",
-      "required": [
-        "assetType"
-      ],
-      "properties": {
-        "assetType": {
-          "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
-          "allOf": [
-            {
-              "$ref": "#/definitions/model.AssetType"
-            }
-          ]
-        },
-        "materialId": {
-          "description": "其它物资分类ID",
-          "type": "integer"
-        },
-        "num": {
-          "description": "调拨数量",
-          "type": "integer"
-        },
-        "sn": {
-          "description": "资产编号",
-          "type": "string"
-        }
-      }
-    },
-    "model.AssetTransferReceiveReq": {
-      "type": "object",
-      "required": [
-        "detail"
-      ],
-      "properties": {
-        "detail": {
-          "description": "资产明细",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/model.AssetTransferReceiveDetail"
-          }
-        },
-        "remark": {
-          "description": "备注",
-          "type": "string"
-        }
-      }
-    },
-    "model.AssetTransferStatus": {
-      "type": "integer",
-      "enum": [
-        1,
-        2,
-        3,
-        4
-      ],
-      "x-enum-comments": {
-        "AssetTransferStatusCancel": "已取消",
-        "AssetTransferStatusDelivering": "配送中",
-        "AssetTransferStatusPending": "待入库",
-        "AssetTransferStatusStock": "已入库"
-      },
-      "x-enum-varnames": [
-        "AssetTransferStatusDelivering",
-        "AssetTransferStatusPending",
-        "AssetTransferStatusStock",
-        "AssetTransferStatusCancel"
-      ]
-    },
-    "model.AssetType": {
-      "type": "integer",
-      "enum": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "x-enum-comments": {
-        "AssetTypeCabinetAccessory": "电柜配件",
-        "AssetTypeEbike": "电车",
-        "AssetTypeEbikeAccessory": "电车配件",
-        "AssetTypeNonSmartBattery": "非智能电池",
-        "AssetTypeOtherAccessory": "其它配件",
-        "AssetTypeSmartBattery": "智能电池"
-      },
-      "x-enum-varnames": [
-        "AssetTypeEbike",
-        "AssetTypeSmartBattery",
-        "AssetTypeNonSmartBattery",
-        "AssetTypeCabinetAccessory",
-        "AssetTypeEbikeAccessory",
-        "AssetTypeOtherAccessory"
-      ]
-    },
-    "model.OpenidRes": {
-      "type": "object",
-      "properties": {
-        "openid": {
-          "type": "string"
-        }
-      }
-    },
-    "model.Pagination": {
-      "type": "object",
-      "properties": {
-        "current": {
-          "description": "当前页",
-          "type": "integer"
-        },
-        "pages": {
-          "description": "总页数",
-          "type": "integer"
-        },
-        "total": {
-          "description": "总条数",
-          "type": "integer"
-        }
-      }
-    },
-    "model.PaginationRes": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "description": "返回数据"
-        },
-        "pagination": {
-          "description": "分页属性",
-          "allOf": [
-            {
-              "$ref": "#/definitions/model.Pagination"
-            }
-          ]
-        }
-      }
-    },
-    "model.StatusResponse": {
-      "type": "object",
-      "properties": {
-        "status": {
-          "type": "boolean"
-        }
-      }
-    }
-  }
 }

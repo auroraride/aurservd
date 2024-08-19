@@ -15,7 +15,6 @@ import (
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
@@ -397,62 +396,4 @@ func (b *warehouseBiz) ListByCity() (res []*definition.WarehouseByCityRes) {
 	}
 
 	return
-}
-
-// TransferList 调拨记录列表
-func (b *warehouseBiz) TransferList(req *definition.TransferListReq, wId uint64) (res *model.PaginationRes, err error) {
-	newReq := model.AssetTransferListReq{
-		PaginationReq: req.PaginationReq,
-		AssetTransferFilter: model.AssetTransferFilter{
-			Status:   req.Status,
-			OutStart: req.OutStart,
-			OutEnd:   req.OutEnd,
-			Keyword:  req.Keyword,
-		},
-	}
-
-	// 确定入库方，那么默认出库方为自己
-	if req.ToLocationType != nil && req.ToLocationID != nil {
-		fType := model.AssetLocationsTypeWarehouse
-		req.FromLocationType = &fType
-		req.FromLocationID = &wId
-	}
-
-	// 确定出库方，那么默认入库方为自己
-	if req.FromLocationType != nil && req.FromLocationID != nil {
-		tType := model.AssetLocationsTypeWarehouse
-		req.ToLocationType = &tType
-		req.ToLocationID = &wId
-	}
-
-	return service.NewAssetTransfer().TransferList(context.Background(), &newReq)
-}
-
-// TransferDetail 调拨记录详情
-func (b *warehouseBiz) TransferDetail(req *definition.TransferListReq, wId uint64) (res *model.PaginationRes, err error) {
-	newReq := model.AssetTransferListReq{
-		PaginationReq: req.PaginationReq,
-		AssetTransferFilter: model.AssetTransferFilter{
-			Status:   req.Status,
-			OutStart: req.OutStart,
-			OutEnd:   req.OutEnd,
-			Keyword:  req.Keyword,
-		},
-	}
-
-	// 确定入库方，那么默认出库方为自己
-	if req.ToLocationType != nil && req.ToLocationID != nil {
-		fType := model.AssetLocationsTypeWarehouse
-		req.FromLocationType = &fType
-		req.FromLocationID = &wId
-	}
-
-	// 确定出库方，那么默认入库方为自己
-	if req.FromLocationType != nil && req.FromLocationID != nil {
-		tType := model.AssetLocationsTypeWarehouse
-		req.ToLocationType = &tType
-		req.ToLocationID = &wId
-	}
-
-	return service.NewAssetTransfer().TransferList(context.Background(), &newReq)
 }

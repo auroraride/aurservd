@@ -15,10 +15,10 @@ definitions:
         description: 角色ID
         type: integer
     required:
-      - name
-      - password
-      - phone
-      - roleId
+    - name
+    - password
+    - phone
+    - roleId
     type: object
   definition.AssetManagerListRes:
     properties:
@@ -32,7 +32,7 @@ definitions:
         type: string
       role:
         allOf:
-          - $ref: '#/definitions/definition.AssetRole'
+        - $ref: '#/definitions/definition.AssetRole'
         description: 角色
     type: object
   definition.AssetManagerModifyReq:
@@ -59,8 +59,8 @@ definitions:
         description: 手机号
         type: string
     required:
-      - password
-      - phone
+    - password
+    - phone
     type: object
   definition.AssetMaterial:
     properties:
@@ -112,7 +112,7 @@ definitions:
           type: string
         type: array
     required:
-      - name
+    - name
     type: object
   definition.AssetRoleModifyReq:
     properties:
@@ -675,7 +675,7 @@ definitions:
     properties:
       city:
         allOf:
-          - $ref: '#/definitions/model.City'
+        - $ref: '#/definitions/model.City'
         description: 城市
       warehouseList:
         description: 仓库信息
@@ -876,10 +876,10 @@ definitions:
         type: integer
       assetType:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池
     required:
-      - assetId
+    - assetId
     - assetType
     type: object
   model.AssetCheckCreateReq:
@@ -897,24 +897,24 @@ definitions:
         type: integer
       locationsType:
         allOf:
-          - $ref: '#/definitions/model.AssetLocationsType'
+        - $ref: '#/definitions/model.AssetLocationsType'
         description: 位置类型 1:仓库 2:门店 3:站点
       opratorId:
         description: 操作人ID
         type: integer
       opratorType:
         allOf:
-          - $ref: '#/definitions/model.AssetOperateRoleType'
+        - $ref: '#/definitions/model.AssetOperateRoleType'
         description: 操作人类型 1:资产后台(仓库) 2:门店 3:代理
       startAt:
         description: 盘点开始时间
         type: string
     required:
-      - details
-      - endAt
-      - locationsId
-      - locationsType
-      - startAt
+    - details
+    - endAt
+    - locationsId
+    - locationsType
+    - startAt
     type: object
   model.AssetCheckListRes:
     properties:
@@ -1055,7 +1055,7 @@ definitions:
         type: integer
       status:
         allOf:
-          - $ref: '#/definitions/model.AssetStatus'
+        - $ref: '#/definitions/model.AssetStatus'
         description: 资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
         enum:
         - 1
@@ -1140,8 +1140,8 @@ definitions:
         description: 数量
         type: integer
     required:
-      - materialId
-      - num
+    - materialId
+    - num
     type: object
   model.AssetMaintenanceCreateReq:
     properties:
@@ -1167,14 +1167,14 @@ definitions:
         type: string
       status:
         allOf:
-          - $ref: '#/definitions/model.AssetMaintenanceStatus'
+        - $ref: '#/definitions/model.AssetMaintenanceStatus'
         description: 维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消
     required:
-      - cabinetId
-      - content
-      - details
-      - reason
-      - status
+    - cabinetId
+    - content
+    - details
+    - reason
+    - status
     type: object
   model.AssetMaintenanceDetail:
     properties:
@@ -1188,9 +1188,9 @@ definitions:
         description: 数量
         type: integer
     required:
-      - assetName
-      - assetType
-      - num
+    - assetName
+    - assetType
+    - num
     type: object
   model.AssetMaintenanceListRes:
     properties:
@@ -1226,11 +1226,11 @@ definitions:
     type: object
   model.AssetMaintenanceStatus:
     enum:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
     type: integer
     x-enum-comments:
       AssetMaintenanceStatusCancel: 已取消
@@ -1239,11 +1239,11 @@ definitions:
       AssetMaintenanceStatusUnder: 维修中
       AssetMaintenanceStatusWait: 待维修
     x-enum-varnames:
-      - AssetMaintenanceStatusWait
-      - AssetMaintenanceStatusUnder
-      - AssetMaintenanceStatusSuccess
-      - AssetMaintenanceStatusFail
-      - AssetMaintenanceStatusCancel
+    - AssetMaintenanceStatusWait
+    - AssetMaintenanceStatusUnder
+    - AssetMaintenanceStatusSuccess
+    - AssetMaintenanceStatusFail
+    - AssetMaintenanceStatusCancel
   model.AssetModifyReq:
     properties:
       assetType:
@@ -1399,12 +1399,12 @@ definitions:
     type: object
   model.AssetStatus:
     enum:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
     type: integer
     x-enum-comments:
       AssetStatusDelivering: 配送中
@@ -1414,12 +1414,12 @@ definitions:
       AssetStatusStock: 库存中
       AssetStatusUsing: 使用中
     x-enum-varnames:
-      - AssetStatusPending
-      - AssetStatusStock
-      - AssetStatusDelivering
-      - AssetStatusUsing
-      - AssetStatusFault
-      - AssetStatusScrap
+    - AssetStatusPending
+    - AssetStatusStock
+    - AssetStatusDelivering
+    - AssetStatusUsing
+    - AssetStatusFault
+    - AssetStatusScrap
   model.AssetTransferCreateDetail:
     properties:
       assetType:
@@ -2062,7 +2062,7 @@ paths:
         type: integer
       - description: 资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
         enum:
-          - 0
+        - 0
         - 1
         - 2
         - 3
@@ -2079,12 +2079,12 @@ paths:
           AssetStatusStock: 库存中
           AssetStatusUsing: 使用中
         x-enum-varnames:
-          - AssetStatusPending
-          - AssetStatusStock
-          - AssetStatusDelivering
-          - AssetStatusUsing
-          - AssetStatusFault
-          - AssetStatusScrap
+        - AssetStatusPending
+        - AssetStatusStock
+        - AssetStatusDelivering
+        - AssetStatusUsing
+        - AssetStatusFault
+        - AssetStatusScrap
       produces:
       - application/json
       responses:
@@ -2351,100 +2351,100 @@ paths:
   /manager/v2/asset/check:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetCheckList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 结束时间
-          in: query
-          name: endAt
-          type: string
-        - description: 关键字
-          in: query
-          name: keyword
-          type: string
-        - description: 位置ID
-          in: query
-          name: locationsId
-          required: true
-          type: integer
-        - description: 位置类型 1:仓库 2:门店 3:站点
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          in: query
-          name: locationsType
-          required: true
-          type: integer
-          x-enum-comments:
-            AssetLocationsTypeCabinet: 电柜
-            AssetLocationsTypeOperation: 运维
-            AssetLocationsTypeRider: 骑手
-            AssetLocationsTypeStation: 站点
-            AssetLocationsTypeStore: 门店
-            AssetLocationsTypeWarehouse: 仓库
-          x-enum-varnames:
-            - AssetLocationsTypeWarehouse
-            - AssetLocationsTypeStore
-            - AssetLocationsTypeStation
-            - AssetLocationsTypeOperation
-            - AssetLocationsTypeCabinet
-            - AssetLocationsTypeRider
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
-        - description: 开始时间
-          in: query
-          name: startAt
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: endAt
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 位置ID
+        in: query
+        name: locationsId
+        required: true
+        type: integer
+      - description: 位置类型 1:仓库 2:门店 3:站点
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: locationsType
+        required: true
+        type: integer
+        x-enum-comments:
+          AssetLocationsTypeCabinet: 电柜
+          AssetLocationsTypeOperation: 运维
+          AssetLocationsTypeRider: 骑手
+          AssetLocationsTypeStation: 站点
+          AssetLocationsTypeStore: 门店
+          AssetLocationsTypeWarehouse: 仓库
+        x-enum-varnames:
+        - AssetLocationsTypeWarehouse
+        - AssetLocationsTypeStore
+        - AssetLocationsTypeStation
+        - AssetLocationsTypeOperation
+        - AssetLocationsTypeCabinet
+        - AssetLocationsTypeRider
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: startAt
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/model.AssetCheckListRes'
-                    type: array
-                type: object
+                    $ref: '#/definitions/model.AssetCheckListRes'
+                  type: array
+              type: object
       summary: 盘点列表
       tags:
-        - 资产
+      - 资产
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetCheckCreate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 盘点参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.AssetCheckCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 盘点参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetCheckCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2452,25 +2452,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 盘点资产
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/check/{sn}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetCheckGetAssetBySN
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 资产SN
-          in: path
-          name: sn
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 资产SN
+        in: path
+        name: sn
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2478,40 +2478,40 @@ paths:
             $ref: '#/definitions/model.AssetCheckByAssetSnRes'
       summary: 通过SN查询资产
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/check/abnormal:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetCheckAbnormal
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 盘点ID
-          in: query
-          name: assetCheckId
-          required: true
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 盘点ID
+        in: query
+        name: assetCheckId
+        required: true
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/model.AssetCheckAbnormal'
-                    type: array
-                type: object
+                    $ref: '#/definitions/model.AssetCheckAbnormal'
+                  type: array
+              type: object
       summary: 盘点异常
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/count:
     get:
       consumes:
@@ -2614,7 +2614,7 @@ paths:
         type: integer
       - description: 资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
         enum:
-          - 0
+        - 0
         - 1
         - 2
         - 3
@@ -2631,12 +2631,12 @@ paths:
           AssetStatusStock: 库存中
           AssetStatusUsing: 使用中
         x-enum-varnames:
-          - AssetStatusPending
-          - AssetStatusStock
-          - AssetStatusDelivering
-          - AssetStatusUsing
-          - AssetStatusFault
-          - AssetStatusScrap
+        - AssetStatusPending
+        - AssetStatusStock
+        - AssetStatusDelivering
+        - AssetStatusUsing
+        - AssetStatusFault
+        - AssetStatusScrap
       produces:
       - application/json
       responses:
@@ -2793,43 +2793,43 @@ paths:
   /manager/v2/asset/maintenance:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetMaintenanceList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-AssetManager-Token
-          required: true
-          type: string
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 结束时间
-          in: query
-          name: end
-          type: string
-        - description: 是否使用配件
-          in: query
-          name: isUseAccessory
-          type: boolean
-        - in: query
-          name: keyword
-          type: string
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
-        - description: 开始时间
-          in: query
-          name: start
-          type: string
-        - description: 状态 2:已维修 3:维修失败
-          in: query
-          name: status
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-AssetManager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 是否使用配件
+        in: query
+        name: isUseAccessory
+        type: boolean
+      - in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 状态 2:已维修 3:维修失败
+        in: query
+        name: status
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2837,25 +2837,25 @@ paths:
             $ref: '#/definitions/model.AssetMaintenanceListRes'
       summary: 维修记录列表
       tags:
-        - 资产
+      - 资产
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetMaintenanceCreate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-AssetManager-Token
-          required: true
-          type: string
-        - description: 创建参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.AssetMaintenanceCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-AssetManager-Token
+        required: true
+        type: string
+      - description: 创建参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetMaintenanceCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2863,7 +2863,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建维修记录
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/material:
     get:
       consumes:
@@ -2979,16 +2979,16 @@ paths:
   /manager/v2/asset/permission:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetManagerPermissionList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-AssetManager-Token
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-AssetManager-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2998,20 +2998,20 @@ paths:
             type: array
       summary: 权限列表
       tags:
-        - 权限 - AssetPermission
+      - 权限 - AssetPermission
   /manager/v2/asset/permission/role:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetManagerPermissionListRole
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-AssetManager-Token
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-AssetManager-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -3021,25 +3021,25 @@ paths:
             type: array
       summary: 角色列表
       tags:
-        - 权限 - AssetPermission
+      - 权限 - AssetPermission
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetManagerPermissionCreateRole
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-AssetManager-Token
-          required: true
-          type: string
-        - description: 角色字段
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.AssetRoleCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-AssetManager-Token
+        required: true
+        type: string
+      - description: 角色字段
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.AssetRoleCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -3047,25 +3047,25 @@ paths:
             $ref: '#/definitions/definition.AssetRole'
       summary: 创建角色
       tags:
-        - 权限 - AssetPermission
+      - 权限 - AssetPermission
   /manager/v2/asset/permission/role/{id}:
     delete:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetManagerPermissionDeleteRole
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-AssetManager-Token
-          required: true
-          type: string
-        - description: 角色ID
-          in: path
-          name: id
-          required: true
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-AssetManager-Token
+        required: true
+        type: string
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -3073,30 +3073,30 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除角色
       tags:
-        - 权限 - AssetPermission
+      - 权限 - AssetPermission
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetManagerPermissionModifyRole
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-AssetManager-Token
-          required: true
-          type: string
-        - description: 角色ID
-          in: path
-          name: id
-          required: true
-          type: integer
-        - description: 角色详情
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.AssetRoleModifyReq'
+      - description: 管理员校验token
+        in: header
+        name: X-AssetManager-Token
+        required: true
+        type: string
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 角色详情
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.AssetRoleModifyReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -3104,7 +3104,7 @@ paths:
             $ref: '#/definitions/definition.AssetRole'
       summary: 修改角色
       tags:
-        - 权限 - AssetPermission
+      - 权限 - AssetPermission
   /manager/v2/asset/scrap:
     get:
       consumes:
@@ -3285,16 +3285,16 @@ paths:
   /manager/v2/asset/selection/warehouse_city:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: SelectionWarehouseByCity
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-AssetManager-Token
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-AssetManager-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -3304,7 +3304,7 @@ paths:
             type: array
       summary: 城市仓库列表
       tags:
-        - Selection - 筛选
+      - Selection - 筛选
   /manager/v2/asset/store_assets:
     get:
       consumes:
@@ -3431,9 +3431,17 @@ paths:
         name: X-AssetManager-Token
         required: true
         type: string
+      - description: 仓库管理员ID
+        in: query
+        name: assetManagerID
+        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
+        type: integer
+      - description: 门店管理员ID
+        in: query
+        name: employeeID
         type: integer
       - description: 调拨前位置ID
         in: query
@@ -3912,61 +3920,61 @@ paths:
   /manager/v2/asset/user:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetManagerList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-AssetManager-Token
-          required: true
-          type: string
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 搜索关键词 姓名/手机号
-          in: query
-          name: keyword
-          type: string
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-AssetManager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 搜索关键词 姓名/手机号
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/definition.AssetManagerListRes'
-                    type: array
-                type: object
+                    $ref: '#/definitions/definition.AssetManagerListRes'
+                  type: array
+              type: object
       summary: 列举管理员
       tags:
-        - 管理 - AssetManager
+      - 管理 - AssetManager
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetManagerCreate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-AssetManager-Token
-          required: true
-          type: string
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.AssetManagerCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-AssetManager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.AssetManagerCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -3974,25 +3982,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 新增管理员
       tags:
-        - 管理 - AssetManager
+      - 管理 - AssetManager
   /manager/v2/asset/user/{id}:
     delete:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetManagerDelete
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-AssetManager-Token
-          required: true
-          type: string
-        - description: 管理员ID
-          in: path
-          name: id
-          required: true
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-AssetManager-Token
+        required: true
+        type: string
+      - description: 管理员ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4000,30 +4008,30 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除管理员
       tags:
-        - 管理 - AssetManager
+      - 管理 - AssetManager
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetManagerModify
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-AssetManager-Token
-          required: true
-          type: string
-        - description: 管理员ID
-          in: path
-          name: id
-          required: true
-          type: integer
-        - description: 编辑属性
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.AssetManagerModifyReq'
+      - description: 管理员校验token
+        in: header
+        name: X-AssetManager-Token
+        required: true
+        type: string
+      - description: 管理员ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 编辑属性
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.AssetManagerModifyReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4031,20 +4039,20 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 编辑管理员
       tags:
-        - 管理 - AssetManager
+      - 管理 - AssetManager
   /manager/v2/asset/user/profile:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetManagerProfile
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-AssetManager-Token
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-AssetManager-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
@@ -4052,21 +4060,21 @@ paths:
             $ref: '#/definitions/model.ManagerSigninRes'
       summary: 管理员信息
       tags:
-        - 管理 - AssetManager
+      - 管理 - AssetManager
   /manager/v2/asset/user/signin:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetManagerSignin
       parameters:
-        - description: desc
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.AssetManagerSigninReq'
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.AssetManagerSigninReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4074,7 +4082,7 @@ paths:
             $ref: '#/definitions/model.ManagerSigninRes'
       summary: 管理员登录
       tags:
-        - 管理 - AssetManager
+      - 管理 - AssetManager
   /manager/v2/asset/warehouse:
     get:
       consumes:
