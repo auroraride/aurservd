@@ -15,6 +15,12 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
 // AssetCheckDetailsCreate is the builder for creating a AssetCheckDetails entity.
@@ -93,6 +99,20 @@ func (acdc *AssetCheckDetailsCreate) SetNillableRemark(s *string) *AssetCheckDet
 	return acdc
 }
 
+// SetMaintainerID sets the "maintainer_id" field.
+func (acdc *AssetCheckDetailsCreate) SetMaintainerID(u uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetMaintainerID(u)
+	return acdc
+}
+
+// SetNillableMaintainerID sets the "maintainer_id" field if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableMaintainerID(u *uint64) *AssetCheckDetailsCreate {
+	if u != nil {
+		acdc.SetMaintainerID(*u)
+	}
+	return acdc
+}
+
 // SetAssetID sets the "asset_id" field.
 func (acdc *AssetCheckDetailsCreate) SetAssetID(u uint64) *AssetCheckDetailsCreate {
 	acdc.mutation.SetAssetID(u)
@@ -121,6 +141,123 @@ func (acdc *AssetCheckDetailsCreate) SetNillableCheckID(u *uint64) *AssetCheckDe
 	return acdc
 }
 
+// SetRealLocationsID sets the "real_locations_id" field.
+func (acdc *AssetCheckDetailsCreate) SetRealLocationsID(u uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetRealLocationsID(u)
+	return acdc
+}
+
+// SetNillableRealLocationsID sets the "real_locations_id" field if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableRealLocationsID(u *uint64) *AssetCheckDetailsCreate {
+	if u != nil {
+		acdc.SetRealLocationsID(*u)
+	}
+	return acdc
+}
+
+// SetRealLocationsType sets the "real_locations_type" field.
+func (acdc *AssetCheckDetailsCreate) SetRealLocationsType(u uint8) *AssetCheckDetailsCreate {
+	acdc.mutation.SetRealLocationsType(u)
+	return acdc
+}
+
+// SetNillableRealLocationsType sets the "real_locations_type" field if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableRealLocationsType(u *uint8) *AssetCheckDetailsCreate {
+	if u != nil {
+		acdc.SetRealLocationsType(*u)
+	}
+	return acdc
+}
+
+// SetLocationsID sets the "locations_id" field.
+func (acdc *AssetCheckDetailsCreate) SetLocationsID(u uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetLocationsID(u)
+	return acdc
+}
+
+// SetNillableLocationsID sets the "locations_id" field if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableLocationsID(u *uint64) *AssetCheckDetailsCreate {
+	if u != nil {
+		acdc.SetLocationsID(*u)
+	}
+	return acdc
+}
+
+// SetLocationsType sets the "locations_type" field.
+func (acdc *AssetCheckDetailsCreate) SetLocationsType(u uint8) *AssetCheckDetailsCreate {
+	acdc.mutation.SetLocationsType(u)
+	return acdc
+}
+
+// SetNillableLocationsType sets the "locations_type" field if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableLocationsType(u *uint8) *AssetCheckDetailsCreate {
+	if u != nil {
+		acdc.SetLocationsType(*u)
+	}
+	return acdc
+}
+
+// SetStatus sets the "status" field.
+func (acdc *AssetCheckDetailsCreate) SetStatus(u uint8) *AssetCheckDetailsCreate {
+	acdc.mutation.SetStatus(u)
+	return acdc
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableStatus(u *uint8) *AssetCheckDetailsCreate {
+	if u != nil {
+		acdc.SetStatus(*u)
+	}
+	return acdc
+}
+
+// SetResult sets the "result" field.
+func (acdc *AssetCheckDetailsCreate) SetResult(u uint8) *AssetCheckDetailsCreate {
+	acdc.mutation.SetResult(u)
+	return acdc
+}
+
+// SetNillableResult sets the "result" field if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableResult(u *uint8) *AssetCheckDetailsCreate {
+	if u != nil {
+		acdc.SetResult(*u)
+	}
+	return acdc
+}
+
+// SetOperateID sets the "operate_id" field.
+func (acdc *AssetCheckDetailsCreate) SetOperateID(u uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetOperateID(u)
+	return acdc
+}
+
+// SetNillableOperateID sets the "operate_id" field if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableOperateID(u *uint64) *AssetCheckDetailsCreate {
+	if u != nil {
+		acdc.SetOperateID(*u)
+	}
+	return acdc
+}
+
+// SetOperateAt sets the "operate_at" field.
+func (acdc *AssetCheckDetailsCreate) SetOperateAt(t time.Time) *AssetCheckDetailsCreate {
+	acdc.mutation.SetOperateAt(t)
+	return acdc
+}
+
+// SetNillableOperateAt sets the "operate_at" field if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableOperateAt(t *time.Time) *AssetCheckDetailsCreate {
+	if t != nil {
+		acdc.SetOperateAt(*t)
+	}
+	return acdc
+}
+
+// SetMaintainer sets the "maintainer" edge to the Maintainer entity.
+func (acdc *AssetCheckDetailsCreate) SetMaintainer(m *Maintainer) *AssetCheckDetailsCreate {
+	return acdc.SetMaintainerID(m.ID)
+}
+
 // SetAsset sets the "asset" edge to the Asset entity.
 func (acdc *AssetCheckDetailsCreate) SetAsset(a *Asset) *AssetCheckDetailsCreate {
 	return acdc.SetAssetID(a.ID)
@@ -129,6 +266,234 @@ func (acdc *AssetCheckDetailsCreate) SetAsset(a *Asset) *AssetCheckDetailsCreate
 // SetCheck sets the "check" edge to the AssetCheck entity.
 func (acdc *AssetCheckDetailsCreate) SetCheck(a *AssetCheck) *AssetCheckDetailsCreate {
 	return acdc.SetCheckID(a.ID)
+}
+
+// SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
+func (acdc *AssetCheckDetailsCreate) SetWarehouseID(id uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetWarehouseID(id)
+	return acdc
+}
+
+// SetNillableWarehouseID sets the "warehouse" edge to the Warehouse entity by ID if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableWarehouseID(id *uint64) *AssetCheckDetailsCreate {
+	if id != nil {
+		acdc = acdc.SetWarehouseID(*id)
+	}
+	return acdc
+}
+
+// SetWarehouse sets the "warehouse" edge to the Warehouse entity.
+func (acdc *AssetCheckDetailsCreate) SetWarehouse(w *Warehouse) *AssetCheckDetailsCreate {
+	return acdc.SetWarehouseID(w.ID)
+}
+
+// SetStoreID sets the "store" edge to the Store entity by ID.
+func (acdc *AssetCheckDetailsCreate) SetStoreID(id uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetStoreID(id)
+	return acdc
+}
+
+// SetNillableStoreID sets the "store" edge to the Store entity by ID if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableStoreID(id *uint64) *AssetCheckDetailsCreate {
+	if id != nil {
+		acdc = acdc.SetStoreID(*id)
+	}
+	return acdc
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (acdc *AssetCheckDetailsCreate) SetStore(s *Store) *AssetCheckDetailsCreate {
+	return acdc.SetStoreID(s.ID)
+}
+
+// SetCabinetID sets the "cabinet" edge to the Cabinet entity by ID.
+func (acdc *AssetCheckDetailsCreate) SetCabinetID(id uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetCabinetID(id)
+	return acdc
+}
+
+// SetNillableCabinetID sets the "cabinet" edge to the Cabinet entity by ID if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableCabinetID(id *uint64) *AssetCheckDetailsCreate {
+	if id != nil {
+		acdc = acdc.SetCabinetID(*id)
+	}
+	return acdc
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (acdc *AssetCheckDetailsCreate) SetCabinet(c *Cabinet) *AssetCheckDetailsCreate {
+	return acdc.SetCabinetID(c.ID)
+}
+
+// SetStationID sets the "station" edge to the EnterpriseStation entity by ID.
+func (acdc *AssetCheckDetailsCreate) SetStationID(id uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetStationID(id)
+	return acdc
+}
+
+// SetNillableStationID sets the "station" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableStationID(id *uint64) *AssetCheckDetailsCreate {
+	if id != nil {
+		acdc = acdc.SetStationID(*id)
+	}
+	return acdc
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (acdc *AssetCheckDetailsCreate) SetStation(e *EnterpriseStation) *AssetCheckDetailsCreate {
+	return acdc.SetStationID(e.ID)
+}
+
+// SetRiderID sets the "rider" edge to the Rider entity by ID.
+func (acdc *AssetCheckDetailsCreate) SetRiderID(id uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetRiderID(id)
+	return acdc
+}
+
+// SetNillableRiderID sets the "rider" edge to the Rider entity by ID if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableRiderID(id *uint64) *AssetCheckDetailsCreate {
+	if id != nil {
+		acdc = acdc.SetRiderID(*id)
+	}
+	return acdc
+}
+
+// SetRider sets the "rider" edge to the Rider entity.
+func (acdc *AssetCheckDetailsCreate) SetRider(r *Rider) *AssetCheckDetailsCreate {
+	return acdc.SetRiderID(r.ID)
+}
+
+// SetOperatorID sets the "operator" edge to the Maintainer entity by ID.
+func (acdc *AssetCheckDetailsCreate) SetOperatorID(id uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetOperatorID(id)
+	return acdc
+}
+
+// SetNillableOperatorID sets the "operator" edge to the Maintainer entity by ID if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableOperatorID(id *uint64) *AssetCheckDetailsCreate {
+	if id != nil {
+		acdc = acdc.SetOperatorID(*id)
+	}
+	return acdc
+}
+
+// SetOperator sets the "operator" edge to the Maintainer entity.
+func (acdc *AssetCheckDetailsCreate) SetOperator(m *Maintainer) *AssetCheckDetailsCreate {
+	return acdc.SetOperatorID(m.ID)
+}
+
+// SetRealWarehouseID sets the "real_warehouse" edge to the Warehouse entity by ID.
+func (acdc *AssetCheckDetailsCreate) SetRealWarehouseID(id uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetRealWarehouseID(id)
+	return acdc
+}
+
+// SetNillableRealWarehouseID sets the "real_warehouse" edge to the Warehouse entity by ID if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableRealWarehouseID(id *uint64) *AssetCheckDetailsCreate {
+	if id != nil {
+		acdc = acdc.SetRealWarehouseID(*id)
+	}
+	return acdc
+}
+
+// SetRealWarehouse sets the "real_warehouse" edge to the Warehouse entity.
+func (acdc *AssetCheckDetailsCreate) SetRealWarehouse(w *Warehouse) *AssetCheckDetailsCreate {
+	return acdc.SetRealWarehouseID(w.ID)
+}
+
+// SetRealStoreID sets the "real_store" edge to the Store entity by ID.
+func (acdc *AssetCheckDetailsCreate) SetRealStoreID(id uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetRealStoreID(id)
+	return acdc
+}
+
+// SetNillableRealStoreID sets the "real_store" edge to the Store entity by ID if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableRealStoreID(id *uint64) *AssetCheckDetailsCreate {
+	if id != nil {
+		acdc = acdc.SetRealStoreID(*id)
+	}
+	return acdc
+}
+
+// SetRealStore sets the "real_store" edge to the Store entity.
+func (acdc *AssetCheckDetailsCreate) SetRealStore(s *Store) *AssetCheckDetailsCreate {
+	return acdc.SetRealStoreID(s.ID)
+}
+
+// SetRealCabinetID sets the "real_cabinet" edge to the Cabinet entity by ID.
+func (acdc *AssetCheckDetailsCreate) SetRealCabinetID(id uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetRealCabinetID(id)
+	return acdc
+}
+
+// SetNillableRealCabinetID sets the "real_cabinet" edge to the Cabinet entity by ID if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableRealCabinetID(id *uint64) *AssetCheckDetailsCreate {
+	if id != nil {
+		acdc = acdc.SetRealCabinetID(*id)
+	}
+	return acdc
+}
+
+// SetRealCabinet sets the "real_cabinet" edge to the Cabinet entity.
+func (acdc *AssetCheckDetailsCreate) SetRealCabinet(c *Cabinet) *AssetCheckDetailsCreate {
+	return acdc.SetRealCabinetID(c.ID)
+}
+
+// SetRealStationID sets the "real_station" edge to the EnterpriseStation entity by ID.
+func (acdc *AssetCheckDetailsCreate) SetRealStationID(id uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetRealStationID(id)
+	return acdc
+}
+
+// SetNillableRealStationID sets the "real_station" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableRealStationID(id *uint64) *AssetCheckDetailsCreate {
+	if id != nil {
+		acdc = acdc.SetRealStationID(*id)
+	}
+	return acdc
+}
+
+// SetRealStation sets the "real_station" edge to the EnterpriseStation entity.
+func (acdc *AssetCheckDetailsCreate) SetRealStation(e *EnterpriseStation) *AssetCheckDetailsCreate {
+	return acdc.SetRealStationID(e.ID)
+}
+
+// SetRealRiderID sets the "real_rider" edge to the Rider entity by ID.
+func (acdc *AssetCheckDetailsCreate) SetRealRiderID(id uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetRealRiderID(id)
+	return acdc
+}
+
+// SetNillableRealRiderID sets the "real_rider" edge to the Rider entity by ID if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableRealRiderID(id *uint64) *AssetCheckDetailsCreate {
+	if id != nil {
+		acdc = acdc.SetRealRiderID(*id)
+	}
+	return acdc
+}
+
+// SetRealRider sets the "real_rider" edge to the Rider entity.
+func (acdc *AssetCheckDetailsCreate) SetRealRider(r *Rider) *AssetCheckDetailsCreate {
+	return acdc.SetRealRiderID(r.ID)
+}
+
+// SetRealOperatorID sets the "real_operator" edge to the Maintainer entity by ID.
+func (acdc *AssetCheckDetailsCreate) SetRealOperatorID(id uint64) *AssetCheckDetailsCreate {
+	acdc.mutation.SetRealOperatorID(id)
+	return acdc
+}
+
+// SetNillableRealOperatorID sets the "real_operator" edge to the Maintainer entity by ID if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableRealOperatorID(id *uint64) *AssetCheckDetailsCreate {
+	if id != nil {
+		acdc = acdc.SetRealOperatorID(*id)
+	}
+	return acdc
+}
+
+// SetRealOperator sets the "real_operator" edge to the Maintainer entity.
+func (acdc *AssetCheckDetailsCreate) SetRealOperator(m *Maintainer) *AssetCheckDetailsCreate {
+	return acdc.SetRealOperatorID(m.ID)
 }
 
 // Mutation returns the AssetCheckDetailsMutation object of the builder.
@@ -181,6 +546,14 @@ func (acdc *AssetCheckDetailsCreate) defaults() error {
 		}
 		v := assetcheckdetails.DefaultUpdatedAt()
 		acdc.mutation.SetUpdatedAt(v)
+	}
+	if _, ok := acdc.mutation.Status(); !ok {
+		v := assetcheckdetails.DefaultStatus
+		acdc.mutation.SetStatus(v)
+	}
+	if _, ok := acdc.mutation.Result(); !ok {
+		v := assetcheckdetails.DefaultResult
+		acdc.mutation.SetResult(v)
 	}
 	return nil
 }
@@ -244,6 +617,47 @@ func (acdc *AssetCheckDetailsCreate) createSpec() (*AssetCheckDetails, *sqlgraph
 		_spec.SetField(assetcheckdetails.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
+	if value, ok := acdc.mutation.RealLocationsType(); ok {
+		_spec.SetField(assetcheckdetails.FieldRealLocationsType, field.TypeUint8, value)
+		_node.RealLocationsType = value
+	}
+	if value, ok := acdc.mutation.LocationsType(); ok {
+		_spec.SetField(assetcheckdetails.FieldLocationsType, field.TypeUint8, value)
+		_node.LocationsType = value
+	}
+	if value, ok := acdc.mutation.Status(); ok {
+		_spec.SetField(assetcheckdetails.FieldStatus, field.TypeUint8, value)
+		_node.Status = value
+	}
+	if value, ok := acdc.mutation.Result(); ok {
+		_spec.SetField(assetcheckdetails.FieldResult, field.TypeUint8, value)
+		_node.Result = value
+	}
+	if value, ok := acdc.mutation.OperateID(); ok {
+		_spec.SetField(assetcheckdetails.FieldOperateID, field.TypeUint64, value)
+		_node.OperateID = value
+	}
+	if value, ok := acdc.mutation.OperateAt(); ok {
+		_spec.SetField(assetcheckdetails.FieldOperateAt, field.TypeTime, value)
+		_node.OperateAt = &value
+	}
+	if nodes := acdc.mutation.MaintainerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.MaintainerTable,
+			Columns: []string{assetcheckdetails.MaintainerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.MaintainerID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := acdc.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -276,6 +690,210 @@ func (acdc *AssetCheckDetailsCreate) createSpec() (*AssetCheckDetails, *sqlgraph
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.CheckID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := acdc.mutation.WarehouseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.WarehouseTable,
+			Columns: []string{assetcheckdetails.WarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.LocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := acdc.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.StoreTable,
+			Columns: []string{assetcheckdetails.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.LocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := acdc.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.CabinetTable,
+			Columns: []string{assetcheckdetails.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.LocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := acdc.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.StationTable,
+			Columns: []string{assetcheckdetails.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.LocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := acdc.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RiderTable,
+			Columns: []string{assetcheckdetails.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.LocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := acdc.mutation.OperatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.OperatorTable,
+			Columns: []string{assetcheckdetails.OperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.LocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := acdc.mutation.RealWarehouseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealWarehouseTable,
+			Columns: []string{assetcheckdetails.RealWarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RealLocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := acdc.mutation.RealStoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealStoreTable,
+			Columns: []string{assetcheckdetails.RealStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RealLocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := acdc.mutation.RealCabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealCabinetTable,
+			Columns: []string{assetcheckdetails.RealCabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RealLocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := acdc.mutation.RealStationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealStationTable,
+			Columns: []string{assetcheckdetails.RealStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RealLocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := acdc.mutation.RealRiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealRiderTable,
+			Columns: []string{assetcheckdetails.RealRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RealLocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := acdc.mutation.RealOperatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealOperatorTable,
+			Columns: []string{assetcheckdetails.RealOperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RealLocationsID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -396,6 +1014,24 @@ func (u *AssetCheckDetailsUpsert) ClearRemark() *AssetCheckDetailsUpsert {
 	return u
 }
 
+// SetMaintainerID sets the "maintainer_id" field.
+func (u *AssetCheckDetailsUpsert) SetMaintainerID(v uint64) *AssetCheckDetailsUpsert {
+	u.Set(assetcheckdetails.FieldMaintainerID, v)
+	return u
+}
+
+// UpdateMaintainerID sets the "maintainer_id" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsert) UpdateMaintainerID() *AssetCheckDetailsUpsert {
+	u.SetExcluded(assetcheckdetails.FieldMaintainerID)
+	return u
+}
+
+// ClearMaintainerID clears the value of the "maintainer_id" field.
+func (u *AssetCheckDetailsUpsert) ClearMaintainerID() *AssetCheckDetailsUpsert {
+	u.SetNull(assetcheckdetails.FieldMaintainerID)
+	return u
+}
+
 // SetAssetID sets the "asset_id" field.
 func (u *AssetCheckDetailsUpsert) SetAssetID(v uint64) *AssetCheckDetailsUpsert {
 	u.Set(assetcheckdetails.FieldAssetID, v)
@@ -429,6 +1065,180 @@ func (u *AssetCheckDetailsUpsert) UpdateCheckID() *AssetCheckDetailsUpsert {
 // ClearCheckID clears the value of the "check_id" field.
 func (u *AssetCheckDetailsUpsert) ClearCheckID() *AssetCheckDetailsUpsert {
 	u.SetNull(assetcheckdetails.FieldCheckID)
+	return u
+}
+
+// SetRealLocationsID sets the "real_locations_id" field.
+func (u *AssetCheckDetailsUpsert) SetRealLocationsID(v uint64) *AssetCheckDetailsUpsert {
+	u.Set(assetcheckdetails.FieldRealLocationsID, v)
+	return u
+}
+
+// UpdateRealLocationsID sets the "real_locations_id" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsert) UpdateRealLocationsID() *AssetCheckDetailsUpsert {
+	u.SetExcluded(assetcheckdetails.FieldRealLocationsID)
+	return u
+}
+
+// ClearRealLocationsID clears the value of the "real_locations_id" field.
+func (u *AssetCheckDetailsUpsert) ClearRealLocationsID() *AssetCheckDetailsUpsert {
+	u.SetNull(assetcheckdetails.FieldRealLocationsID)
+	return u
+}
+
+// SetRealLocationsType sets the "real_locations_type" field.
+func (u *AssetCheckDetailsUpsert) SetRealLocationsType(v uint8) *AssetCheckDetailsUpsert {
+	u.Set(assetcheckdetails.FieldRealLocationsType, v)
+	return u
+}
+
+// UpdateRealLocationsType sets the "real_locations_type" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsert) UpdateRealLocationsType() *AssetCheckDetailsUpsert {
+	u.SetExcluded(assetcheckdetails.FieldRealLocationsType)
+	return u
+}
+
+// AddRealLocationsType adds v to the "real_locations_type" field.
+func (u *AssetCheckDetailsUpsert) AddRealLocationsType(v uint8) *AssetCheckDetailsUpsert {
+	u.Add(assetcheckdetails.FieldRealLocationsType, v)
+	return u
+}
+
+// ClearRealLocationsType clears the value of the "real_locations_type" field.
+func (u *AssetCheckDetailsUpsert) ClearRealLocationsType() *AssetCheckDetailsUpsert {
+	u.SetNull(assetcheckdetails.FieldRealLocationsType)
+	return u
+}
+
+// SetLocationsID sets the "locations_id" field.
+func (u *AssetCheckDetailsUpsert) SetLocationsID(v uint64) *AssetCheckDetailsUpsert {
+	u.Set(assetcheckdetails.FieldLocationsID, v)
+	return u
+}
+
+// UpdateLocationsID sets the "locations_id" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsert) UpdateLocationsID() *AssetCheckDetailsUpsert {
+	u.SetExcluded(assetcheckdetails.FieldLocationsID)
+	return u
+}
+
+// ClearLocationsID clears the value of the "locations_id" field.
+func (u *AssetCheckDetailsUpsert) ClearLocationsID() *AssetCheckDetailsUpsert {
+	u.SetNull(assetcheckdetails.FieldLocationsID)
+	return u
+}
+
+// SetLocationsType sets the "locations_type" field.
+func (u *AssetCheckDetailsUpsert) SetLocationsType(v uint8) *AssetCheckDetailsUpsert {
+	u.Set(assetcheckdetails.FieldLocationsType, v)
+	return u
+}
+
+// UpdateLocationsType sets the "locations_type" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsert) UpdateLocationsType() *AssetCheckDetailsUpsert {
+	u.SetExcluded(assetcheckdetails.FieldLocationsType)
+	return u
+}
+
+// AddLocationsType adds v to the "locations_type" field.
+func (u *AssetCheckDetailsUpsert) AddLocationsType(v uint8) *AssetCheckDetailsUpsert {
+	u.Add(assetcheckdetails.FieldLocationsType, v)
+	return u
+}
+
+// ClearLocationsType clears the value of the "locations_type" field.
+func (u *AssetCheckDetailsUpsert) ClearLocationsType() *AssetCheckDetailsUpsert {
+	u.SetNull(assetcheckdetails.FieldLocationsType)
+	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *AssetCheckDetailsUpsert) SetStatus(v uint8) *AssetCheckDetailsUpsert {
+	u.Set(assetcheckdetails.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsert) UpdateStatus() *AssetCheckDetailsUpsert {
+	u.SetExcluded(assetcheckdetails.FieldStatus)
+	return u
+}
+
+// AddStatus adds v to the "status" field.
+func (u *AssetCheckDetailsUpsert) AddStatus(v uint8) *AssetCheckDetailsUpsert {
+	u.Add(assetcheckdetails.FieldStatus, v)
+	return u
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *AssetCheckDetailsUpsert) ClearStatus() *AssetCheckDetailsUpsert {
+	u.SetNull(assetcheckdetails.FieldStatus)
+	return u
+}
+
+// SetResult sets the "result" field.
+func (u *AssetCheckDetailsUpsert) SetResult(v uint8) *AssetCheckDetailsUpsert {
+	u.Set(assetcheckdetails.FieldResult, v)
+	return u
+}
+
+// UpdateResult sets the "result" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsert) UpdateResult() *AssetCheckDetailsUpsert {
+	u.SetExcluded(assetcheckdetails.FieldResult)
+	return u
+}
+
+// AddResult adds v to the "result" field.
+func (u *AssetCheckDetailsUpsert) AddResult(v uint8) *AssetCheckDetailsUpsert {
+	u.Add(assetcheckdetails.FieldResult, v)
+	return u
+}
+
+// ClearResult clears the value of the "result" field.
+func (u *AssetCheckDetailsUpsert) ClearResult() *AssetCheckDetailsUpsert {
+	u.SetNull(assetcheckdetails.FieldResult)
+	return u
+}
+
+// SetOperateID sets the "operate_id" field.
+func (u *AssetCheckDetailsUpsert) SetOperateID(v uint64) *AssetCheckDetailsUpsert {
+	u.Set(assetcheckdetails.FieldOperateID, v)
+	return u
+}
+
+// UpdateOperateID sets the "operate_id" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsert) UpdateOperateID() *AssetCheckDetailsUpsert {
+	u.SetExcluded(assetcheckdetails.FieldOperateID)
+	return u
+}
+
+// AddOperateID adds v to the "operate_id" field.
+func (u *AssetCheckDetailsUpsert) AddOperateID(v uint64) *AssetCheckDetailsUpsert {
+	u.Add(assetcheckdetails.FieldOperateID, v)
+	return u
+}
+
+// ClearOperateID clears the value of the "operate_id" field.
+func (u *AssetCheckDetailsUpsert) ClearOperateID() *AssetCheckDetailsUpsert {
+	u.SetNull(assetcheckdetails.FieldOperateID)
+	return u
+}
+
+// SetOperateAt sets the "operate_at" field.
+func (u *AssetCheckDetailsUpsert) SetOperateAt(v time.Time) *AssetCheckDetailsUpsert {
+	u.Set(assetcheckdetails.FieldOperateAt, v)
+	return u
+}
+
+// UpdateOperateAt sets the "operate_at" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsert) UpdateOperateAt() *AssetCheckDetailsUpsert {
+	u.SetExcluded(assetcheckdetails.FieldOperateAt)
+	return u
+}
+
+// ClearOperateAt clears the value of the "operate_at" field.
+func (u *AssetCheckDetailsUpsert) ClearOperateAt() *AssetCheckDetailsUpsert {
+	u.SetNull(assetcheckdetails.FieldOperateAt)
 	return u
 }
 
@@ -557,6 +1367,27 @@ func (u *AssetCheckDetailsUpsertOne) ClearRemark() *AssetCheckDetailsUpsertOne {
 	})
 }
 
+// SetMaintainerID sets the "maintainer_id" field.
+func (u *AssetCheckDetailsUpsertOne) SetMaintainerID(v uint64) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetMaintainerID(v)
+	})
+}
+
+// UpdateMaintainerID sets the "maintainer_id" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertOne) UpdateMaintainerID() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateMaintainerID()
+	})
+}
+
+// ClearMaintainerID clears the value of the "maintainer_id" field.
+func (u *AssetCheckDetailsUpsertOne) ClearMaintainerID() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearMaintainerID()
+	})
+}
+
 // SetAssetID sets the "asset_id" field.
 func (u *AssetCheckDetailsUpsertOne) SetAssetID(v uint64) *AssetCheckDetailsUpsertOne {
 	return u.Update(func(s *AssetCheckDetailsUpsert) {
@@ -596,6 +1427,209 @@ func (u *AssetCheckDetailsUpsertOne) UpdateCheckID() *AssetCheckDetailsUpsertOne
 func (u *AssetCheckDetailsUpsertOne) ClearCheckID() *AssetCheckDetailsUpsertOne {
 	return u.Update(func(s *AssetCheckDetailsUpsert) {
 		s.ClearCheckID()
+	})
+}
+
+// SetRealLocationsID sets the "real_locations_id" field.
+func (u *AssetCheckDetailsUpsertOne) SetRealLocationsID(v uint64) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetRealLocationsID(v)
+	})
+}
+
+// UpdateRealLocationsID sets the "real_locations_id" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertOne) UpdateRealLocationsID() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateRealLocationsID()
+	})
+}
+
+// ClearRealLocationsID clears the value of the "real_locations_id" field.
+func (u *AssetCheckDetailsUpsertOne) ClearRealLocationsID() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearRealLocationsID()
+	})
+}
+
+// SetRealLocationsType sets the "real_locations_type" field.
+func (u *AssetCheckDetailsUpsertOne) SetRealLocationsType(v uint8) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetRealLocationsType(v)
+	})
+}
+
+// AddRealLocationsType adds v to the "real_locations_type" field.
+func (u *AssetCheckDetailsUpsertOne) AddRealLocationsType(v uint8) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.AddRealLocationsType(v)
+	})
+}
+
+// UpdateRealLocationsType sets the "real_locations_type" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertOne) UpdateRealLocationsType() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateRealLocationsType()
+	})
+}
+
+// ClearRealLocationsType clears the value of the "real_locations_type" field.
+func (u *AssetCheckDetailsUpsertOne) ClearRealLocationsType() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearRealLocationsType()
+	})
+}
+
+// SetLocationsID sets the "locations_id" field.
+func (u *AssetCheckDetailsUpsertOne) SetLocationsID(v uint64) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetLocationsID(v)
+	})
+}
+
+// UpdateLocationsID sets the "locations_id" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertOne) UpdateLocationsID() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateLocationsID()
+	})
+}
+
+// ClearLocationsID clears the value of the "locations_id" field.
+func (u *AssetCheckDetailsUpsertOne) ClearLocationsID() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearLocationsID()
+	})
+}
+
+// SetLocationsType sets the "locations_type" field.
+func (u *AssetCheckDetailsUpsertOne) SetLocationsType(v uint8) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetLocationsType(v)
+	})
+}
+
+// AddLocationsType adds v to the "locations_type" field.
+func (u *AssetCheckDetailsUpsertOne) AddLocationsType(v uint8) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.AddLocationsType(v)
+	})
+}
+
+// UpdateLocationsType sets the "locations_type" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertOne) UpdateLocationsType() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateLocationsType()
+	})
+}
+
+// ClearLocationsType clears the value of the "locations_type" field.
+func (u *AssetCheckDetailsUpsertOne) ClearLocationsType() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearLocationsType()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *AssetCheckDetailsUpsertOne) SetStatus(v uint8) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// AddStatus adds v to the "status" field.
+func (u *AssetCheckDetailsUpsertOne) AddStatus(v uint8) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.AddStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertOne) UpdateStatus() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *AssetCheckDetailsUpsertOne) ClearStatus() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearStatus()
+	})
+}
+
+// SetResult sets the "result" field.
+func (u *AssetCheckDetailsUpsertOne) SetResult(v uint8) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetResult(v)
+	})
+}
+
+// AddResult adds v to the "result" field.
+func (u *AssetCheckDetailsUpsertOne) AddResult(v uint8) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.AddResult(v)
+	})
+}
+
+// UpdateResult sets the "result" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertOne) UpdateResult() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateResult()
+	})
+}
+
+// ClearResult clears the value of the "result" field.
+func (u *AssetCheckDetailsUpsertOne) ClearResult() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearResult()
+	})
+}
+
+// SetOperateID sets the "operate_id" field.
+func (u *AssetCheckDetailsUpsertOne) SetOperateID(v uint64) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetOperateID(v)
+	})
+}
+
+// AddOperateID adds v to the "operate_id" field.
+func (u *AssetCheckDetailsUpsertOne) AddOperateID(v uint64) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.AddOperateID(v)
+	})
+}
+
+// UpdateOperateID sets the "operate_id" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertOne) UpdateOperateID() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateOperateID()
+	})
+}
+
+// ClearOperateID clears the value of the "operate_id" field.
+func (u *AssetCheckDetailsUpsertOne) ClearOperateID() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearOperateID()
+	})
+}
+
+// SetOperateAt sets the "operate_at" field.
+func (u *AssetCheckDetailsUpsertOne) SetOperateAt(v time.Time) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetOperateAt(v)
+	})
+}
+
+// UpdateOperateAt sets the "operate_at" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertOne) UpdateOperateAt() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateOperateAt()
+	})
+}
+
+// ClearOperateAt clears the value of the "operate_at" field.
+func (u *AssetCheckDetailsUpsertOne) ClearOperateAt() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearOperateAt()
 	})
 }
 
@@ -890,6 +1924,27 @@ func (u *AssetCheckDetailsUpsertBulk) ClearRemark() *AssetCheckDetailsUpsertBulk
 	})
 }
 
+// SetMaintainerID sets the "maintainer_id" field.
+func (u *AssetCheckDetailsUpsertBulk) SetMaintainerID(v uint64) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetMaintainerID(v)
+	})
+}
+
+// UpdateMaintainerID sets the "maintainer_id" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertBulk) UpdateMaintainerID() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateMaintainerID()
+	})
+}
+
+// ClearMaintainerID clears the value of the "maintainer_id" field.
+func (u *AssetCheckDetailsUpsertBulk) ClearMaintainerID() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearMaintainerID()
+	})
+}
+
 // SetAssetID sets the "asset_id" field.
 func (u *AssetCheckDetailsUpsertBulk) SetAssetID(v uint64) *AssetCheckDetailsUpsertBulk {
 	return u.Update(func(s *AssetCheckDetailsUpsert) {
@@ -929,6 +1984,209 @@ func (u *AssetCheckDetailsUpsertBulk) UpdateCheckID() *AssetCheckDetailsUpsertBu
 func (u *AssetCheckDetailsUpsertBulk) ClearCheckID() *AssetCheckDetailsUpsertBulk {
 	return u.Update(func(s *AssetCheckDetailsUpsert) {
 		s.ClearCheckID()
+	})
+}
+
+// SetRealLocationsID sets the "real_locations_id" field.
+func (u *AssetCheckDetailsUpsertBulk) SetRealLocationsID(v uint64) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetRealLocationsID(v)
+	})
+}
+
+// UpdateRealLocationsID sets the "real_locations_id" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertBulk) UpdateRealLocationsID() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateRealLocationsID()
+	})
+}
+
+// ClearRealLocationsID clears the value of the "real_locations_id" field.
+func (u *AssetCheckDetailsUpsertBulk) ClearRealLocationsID() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearRealLocationsID()
+	})
+}
+
+// SetRealLocationsType sets the "real_locations_type" field.
+func (u *AssetCheckDetailsUpsertBulk) SetRealLocationsType(v uint8) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetRealLocationsType(v)
+	})
+}
+
+// AddRealLocationsType adds v to the "real_locations_type" field.
+func (u *AssetCheckDetailsUpsertBulk) AddRealLocationsType(v uint8) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.AddRealLocationsType(v)
+	})
+}
+
+// UpdateRealLocationsType sets the "real_locations_type" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertBulk) UpdateRealLocationsType() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateRealLocationsType()
+	})
+}
+
+// ClearRealLocationsType clears the value of the "real_locations_type" field.
+func (u *AssetCheckDetailsUpsertBulk) ClearRealLocationsType() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearRealLocationsType()
+	})
+}
+
+// SetLocationsID sets the "locations_id" field.
+func (u *AssetCheckDetailsUpsertBulk) SetLocationsID(v uint64) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetLocationsID(v)
+	})
+}
+
+// UpdateLocationsID sets the "locations_id" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertBulk) UpdateLocationsID() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateLocationsID()
+	})
+}
+
+// ClearLocationsID clears the value of the "locations_id" field.
+func (u *AssetCheckDetailsUpsertBulk) ClearLocationsID() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearLocationsID()
+	})
+}
+
+// SetLocationsType sets the "locations_type" field.
+func (u *AssetCheckDetailsUpsertBulk) SetLocationsType(v uint8) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetLocationsType(v)
+	})
+}
+
+// AddLocationsType adds v to the "locations_type" field.
+func (u *AssetCheckDetailsUpsertBulk) AddLocationsType(v uint8) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.AddLocationsType(v)
+	})
+}
+
+// UpdateLocationsType sets the "locations_type" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertBulk) UpdateLocationsType() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateLocationsType()
+	})
+}
+
+// ClearLocationsType clears the value of the "locations_type" field.
+func (u *AssetCheckDetailsUpsertBulk) ClearLocationsType() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearLocationsType()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *AssetCheckDetailsUpsertBulk) SetStatus(v uint8) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// AddStatus adds v to the "status" field.
+func (u *AssetCheckDetailsUpsertBulk) AddStatus(v uint8) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.AddStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertBulk) UpdateStatus() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *AssetCheckDetailsUpsertBulk) ClearStatus() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearStatus()
+	})
+}
+
+// SetResult sets the "result" field.
+func (u *AssetCheckDetailsUpsertBulk) SetResult(v uint8) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetResult(v)
+	})
+}
+
+// AddResult adds v to the "result" field.
+func (u *AssetCheckDetailsUpsertBulk) AddResult(v uint8) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.AddResult(v)
+	})
+}
+
+// UpdateResult sets the "result" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertBulk) UpdateResult() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateResult()
+	})
+}
+
+// ClearResult clears the value of the "result" field.
+func (u *AssetCheckDetailsUpsertBulk) ClearResult() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearResult()
+	})
+}
+
+// SetOperateID sets the "operate_id" field.
+func (u *AssetCheckDetailsUpsertBulk) SetOperateID(v uint64) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetOperateID(v)
+	})
+}
+
+// AddOperateID adds v to the "operate_id" field.
+func (u *AssetCheckDetailsUpsertBulk) AddOperateID(v uint64) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.AddOperateID(v)
+	})
+}
+
+// UpdateOperateID sets the "operate_id" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertBulk) UpdateOperateID() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateOperateID()
+	})
+}
+
+// ClearOperateID clears the value of the "operate_id" field.
+func (u *AssetCheckDetailsUpsertBulk) ClearOperateID() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearOperateID()
+	})
+}
+
+// SetOperateAt sets the "operate_at" field.
+func (u *AssetCheckDetailsUpsertBulk) SetOperateAt(v time.Time) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetOperateAt(v)
+	})
+}
+
+// UpdateOperateAt sets the "operate_at" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertBulk) UpdateOperateAt() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateOperateAt()
+	})
+}
+
+// ClearOperateAt clears the value of the "operate_at" field.
+func (u *AssetCheckDetailsUpsertBulk) ClearOperateAt() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearOperateAt()
 	})
 }
 

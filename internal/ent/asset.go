@@ -66,7 +66,7 @@ type Asset struct {
 	// 以租代购骑手ID，生成后禁止修改
 	RtoRiderID *uint64 `json:"rto_rider_id,omitempty"`
 	// 盘点时间
-	InventoryAt time.Time `json:"inventory_at,omitempty"`
+	CheckAt time.Time `json:"check_at,omitempty"`
 	// 品牌名称
 	BrandName string `json:"brand_name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -280,7 +280,7 @@ func (*Asset) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case asset.FieldRemark, asset.FieldName, asset.FieldSn, asset.FieldBrandName:
 			values[i] = new(sql.NullString)
-		case asset.FieldCreatedAt, asset.FieldUpdatedAt, asset.FieldDeletedAt, asset.FieldInventoryAt:
+		case asset.FieldCreatedAt, asset.FieldUpdatedAt, asset.FieldDeletedAt, asset.FieldCheckAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -421,11 +421,11 @@ func (a *Asset) assignValues(columns []string, values []any) error {
 				a.RtoRiderID = new(uint64)
 				*a.RtoRiderID = uint64(value.Int64)
 			}
-		case asset.FieldInventoryAt:
+		case asset.FieldCheckAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field inventory_at", values[i])
+				return fmt.Errorf("unexpected type %T for field check_at", values[i])
 			} else if value.Valid {
-				a.InventoryAt = value.Time
+				a.CheckAt = value.Time
 			}
 		case asset.FieldBrandName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -610,8 +610,8 @@ func (a *Asset) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("inventory_at=")
-	builder.WriteString(a.InventoryAt.Format(time.ANSIC))
+	builder.WriteString("check_at=")
+	builder.WriteString(a.CheckAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("brand_name=")
 	builder.WriteString(a.BrandName)

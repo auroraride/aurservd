@@ -258,16 +258,16 @@ func (ac *AssetCreate) SetNillableRtoRiderID(u *uint64) *AssetCreate {
 	return ac
 }
 
-// SetInventoryAt sets the "inventory_at" field.
-func (ac *AssetCreate) SetInventoryAt(t time.Time) *AssetCreate {
-	ac.mutation.SetInventoryAt(t)
+// SetCheckAt sets the "check_at" field.
+func (ac *AssetCreate) SetCheckAt(t time.Time) *AssetCreate {
+	ac.mutation.SetCheckAt(t)
 	return ac
 }
 
-// SetNillableInventoryAt sets the "inventory_at" field if the given value is not nil.
-func (ac *AssetCreate) SetNillableInventoryAt(t *time.Time) *AssetCreate {
+// SetNillableCheckAt sets the "check_at" field if the given value is not nil.
+func (ac *AssetCreate) SetNillableCheckAt(t *time.Time) *AssetCreate {
 	if t != nil {
-		ac.SetInventoryAt(*t)
+		ac.SetCheckAt(*t)
 	}
 	return ac
 }
@@ -656,9 +656,9 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		_spec.SetField(asset.FieldRtoRiderID, field.TypeUint64, value)
 		_node.RtoRiderID = &value
 	}
-	if value, ok := ac.mutation.InventoryAt(); ok {
-		_spec.SetField(asset.FieldInventoryAt, field.TypeTime, value)
-		_node.InventoryAt = value
+	if value, ok := ac.mutation.CheckAt(); ok {
+		_spec.SetField(asset.FieldCheckAt, field.TypeTime, value)
+		_node.CheckAt = value
 	}
 	if value, ok := ac.mutation.BrandName(); ok {
 		_spec.SetField(asset.FieldBrandName, field.TypeString, value)
@@ -1248,21 +1248,21 @@ func (u *AssetUpsert) ClearRtoRiderID() *AssetUpsert {
 	return u
 }
 
-// SetInventoryAt sets the "inventory_at" field.
-func (u *AssetUpsert) SetInventoryAt(v time.Time) *AssetUpsert {
-	u.Set(asset.FieldInventoryAt, v)
+// SetCheckAt sets the "check_at" field.
+func (u *AssetUpsert) SetCheckAt(v time.Time) *AssetUpsert {
+	u.Set(asset.FieldCheckAt, v)
 	return u
 }
 
-// UpdateInventoryAt sets the "inventory_at" field to the value that was provided on create.
-func (u *AssetUpsert) UpdateInventoryAt() *AssetUpsert {
-	u.SetExcluded(asset.FieldInventoryAt)
+// UpdateCheckAt sets the "check_at" field to the value that was provided on create.
+func (u *AssetUpsert) UpdateCheckAt() *AssetUpsert {
+	u.SetExcluded(asset.FieldCheckAt)
 	return u
 }
 
-// ClearInventoryAt clears the value of the "inventory_at" field.
-func (u *AssetUpsert) ClearInventoryAt() *AssetUpsert {
-	u.SetNull(asset.FieldInventoryAt)
+// ClearCheckAt clears the value of the "check_at" field.
+func (u *AssetUpsert) ClearCheckAt() *AssetUpsert {
+	u.SetNull(asset.FieldCheckAt)
 	return u
 }
 
@@ -1661,24 +1661,24 @@ func (u *AssetUpsertOne) ClearRtoRiderID() *AssetUpsertOne {
 	})
 }
 
-// SetInventoryAt sets the "inventory_at" field.
-func (u *AssetUpsertOne) SetInventoryAt(v time.Time) *AssetUpsertOne {
+// SetCheckAt sets the "check_at" field.
+func (u *AssetUpsertOne) SetCheckAt(v time.Time) *AssetUpsertOne {
 	return u.Update(func(s *AssetUpsert) {
-		s.SetInventoryAt(v)
+		s.SetCheckAt(v)
 	})
 }
 
-// UpdateInventoryAt sets the "inventory_at" field to the value that was provided on create.
-func (u *AssetUpsertOne) UpdateInventoryAt() *AssetUpsertOne {
+// UpdateCheckAt sets the "check_at" field to the value that was provided on create.
+func (u *AssetUpsertOne) UpdateCheckAt() *AssetUpsertOne {
 	return u.Update(func(s *AssetUpsert) {
-		s.UpdateInventoryAt()
+		s.UpdateCheckAt()
 	})
 }
 
-// ClearInventoryAt clears the value of the "inventory_at" field.
-func (u *AssetUpsertOne) ClearInventoryAt() *AssetUpsertOne {
+// ClearCheckAt clears the value of the "check_at" field.
+func (u *AssetUpsertOne) ClearCheckAt() *AssetUpsertOne {
 	return u.Update(func(s *AssetUpsert) {
-		s.ClearInventoryAt()
+		s.ClearCheckAt()
 	})
 }
 
@@ -2246,24 +2246,24 @@ func (u *AssetUpsertBulk) ClearRtoRiderID() *AssetUpsertBulk {
 	})
 }
 
-// SetInventoryAt sets the "inventory_at" field.
-func (u *AssetUpsertBulk) SetInventoryAt(v time.Time) *AssetUpsertBulk {
+// SetCheckAt sets the "check_at" field.
+func (u *AssetUpsertBulk) SetCheckAt(v time.Time) *AssetUpsertBulk {
 	return u.Update(func(s *AssetUpsert) {
-		s.SetInventoryAt(v)
+		s.SetCheckAt(v)
 	})
 }
 
-// UpdateInventoryAt sets the "inventory_at" field to the value that was provided on create.
-func (u *AssetUpsertBulk) UpdateInventoryAt() *AssetUpsertBulk {
+// UpdateCheckAt sets the "check_at" field to the value that was provided on create.
+func (u *AssetUpsertBulk) UpdateCheckAt() *AssetUpsertBulk {
 	return u.Update(func(s *AssetUpsert) {
-		s.UpdateInventoryAt()
+		s.UpdateCheckAt()
 	})
 }
 
-// ClearInventoryAt clears the value of the "inventory_at" field.
-func (u *AssetUpsertBulk) ClearInventoryAt() *AssetUpsertBulk {
+// ClearCheckAt clears the value of the "check_at" field.
+func (u *AssetUpsertBulk) ClearCheckAt() *AssetUpsertBulk {
 	return u.Update(func(s *AssetUpsert) {
-		s.ClearInventoryAt()
+		s.ClearCheckAt()
 	})
 }
 

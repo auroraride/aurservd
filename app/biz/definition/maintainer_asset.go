@@ -10,8 +10,8 @@ import "github.com/auroraride/aurservd/app/model"
 type MaintainerAssetListReq struct {
 	model.PaginationReq
 	Keyword   *string `json:"keyword" query:"keyword"`     // 关键字 姓名，手机号
-	ModelID   *uint64 `json:"modelID" query:"modelID"`     // 电池型号ID
-	BrandId   *uint64 `json:"brandId" query:"brandId"`     // 电车型号ID
+	ModelID   *uint64 `json:"modelId" query:"modelId"`     // 电池型号ID
+	BrandID   *uint64 `json:"brandId" query:"brandId"`     // 电车型号ID
 	OtherName *string `json:"otherName" query:"otherName"` // 其他物资名称
 }
 
@@ -19,6 +19,7 @@ type MaintainerAssetListReq struct {
 type MaintainerAssetDetail struct {
 	ID              uint64          `json:"id"`             // 运维ID
 	Name            string          `json:"name"`           // 运维名称
+	Phone           string          `json:"phone"`          // 运维电话
 	MaintainerAsset MaintainerAsset `json:"warehouseAsset"` // 运维资产
 }
 

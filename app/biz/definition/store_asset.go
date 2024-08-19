@@ -12,7 +12,7 @@ type StoreAssetListReq struct {
 	CityID    *uint64 `json:"cityId" query:"cityId"`       // 城市ID
 	GroupID   *uint64 `json:"groupId" query:"groupId"`     // 门店集合ID
 	StoreID   *uint64 `json:"storeId" query:"storeId"`     // 门店ID
-	ModelID   *uint64 `json:"modelID" query:"modelID"`     // 电池型号ID
+	ModelID   *uint64 `json:"modelId" query:"modelId"`     // 电池型号ID
 	BrandId   *uint64 `json:"brandId" query:"brandId"`     // 电车型号ID
 	OtherName *string `json:"otherName" query:"otherName"` // 其他物资名称
 	Start     *string `json:"start" query:"start"`         // 开始时间

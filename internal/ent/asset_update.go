@@ -347,23 +347,23 @@ func (au *AssetUpdate) ClearRtoRiderID() *AssetUpdate {
 	return au
 }
 
-// SetInventoryAt sets the "inventory_at" field.
-func (au *AssetUpdate) SetInventoryAt(t time.Time) *AssetUpdate {
-	au.mutation.SetInventoryAt(t)
+// SetCheckAt sets the "check_at" field.
+func (au *AssetUpdate) SetCheckAt(t time.Time) *AssetUpdate {
+	au.mutation.SetCheckAt(t)
 	return au
 }
 
-// SetNillableInventoryAt sets the "inventory_at" field if the given value is not nil.
-func (au *AssetUpdate) SetNillableInventoryAt(t *time.Time) *AssetUpdate {
+// SetNillableCheckAt sets the "check_at" field if the given value is not nil.
+func (au *AssetUpdate) SetNillableCheckAt(t *time.Time) *AssetUpdate {
 	if t != nil {
-		au.SetInventoryAt(*t)
+		au.SetCheckAt(*t)
 	}
 	return au
 }
 
-// ClearInventoryAt clears the value of the "inventory_at" field.
-func (au *AssetUpdate) ClearInventoryAt() *AssetUpdate {
-	au.mutation.ClearInventoryAt()
+// ClearCheckAt clears the value of the "check_at" field.
+func (au *AssetUpdate) ClearCheckAt() *AssetUpdate {
+	au.mutation.ClearCheckAt()
 	return au
 }
 
@@ -889,11 +889,11 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if au.mutation.RtoRiderIDCleared() {
 		_spec.ClearField(asset.FieldRtoRiderID, field.TypeUint64)
 	}
-	if value, ok := au.mutation.InventoryAt(); ok {
-		_spec.SetField(asset.FieldInventoryAt, field.TypeTime, value)
+	if value, ok := au.mutation.CheckAt(); ok {
+		_spec.SetField(asset.FieldCheckAt, field.TypeTime, value)
 	}
-	if au.mutation.InventoryAtCleared() {
-		_spec.ClearField(asset.FieldInventoryAt, field.TypeTime)
+	if au.mutation.CheckAtCleared() {
+		_spec.ClearField(asset.FieldCheckAt, field.TypeTime)
 	}
 	if value, ok := au.mutation.BrandName(); ok {
 		_spec.SetField(asset.FieldBrandName, field.TypeString, value)
@@ -1740,23 +1740,23 @@ func (auo *AssetUpdateOne) ClearRtoRiderID() *AssetUpdateOne {
 	return auo
 }
 
-// SetInventoryAt sets the "inventory_at" field.
-func (auo *AssetUpdateOne) SetInventoryAt(t time.Time) *AssetUpdateOne {
-	auo.mutation.SetInventoryAt(t)
+// SetCheckAt sets the "check_at" field.
+func (auo *AssetUpdateOne) SetCheckAt(t time.Time) *AssetUpdateOne {
+	auo.mutation.SetCheckAt(t)
 	return auo
 }
 
-// SetNillableInventoryAt sets the "inventory_at" field if the given value is not nil.
-func (auo *AssetUpdateOne) SetNillableInventoryAt(t *time.Time) *AssetUpdateOne {
+// SetNillableCheckAt sets the "check_at" field if the given value is not nil.
+func (auo *AssetUpdateOne) SetNillableCheckAt(t *time.Time) *AssetUpdateOne {
 	if t != nil {
-		auo.SetInventoryAt(*t)
+		auo.SetCheckAt(*t)
 	}
 	return auo
 }
 
-// ClearInventoryAt clears the value of the "inventory_at" field.
-func (auo *AssetUpdateOne) ClearInventoryAt() *AssetUpdateOne {
-	auo.mutation.ClearInventoryAt()
+// ClearCheckAt clears the value of the "check_at" field.
+func (auo *AssetUpdateOne) ClearCheckAt() *AssetUpdateOne {
+	auo.mutation.ClearCheckAt()
 	return auo
 }
 
@@ -2312,11 +2312,11 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	if auo.mutation.RtoRiderIDCleared() {
 		_spec.ClearField(asset.FieldRtoRiderID, field.TypeUint64)
 	}
-	if value, ok := auo.mutation.InventoryAt(); ok {
-		_spec.SetField(asset.FieldInventoryAt, field.TypeTime, value)
+	if value, ok := auo.mutation.CheckAt(); ok {
+		_spec.SetField(asset.FieldCheckAt, field.TypeTime, value)
 	}
-	if auo.mutation.InventoryAtCleared() {
-		_spec.ClearField(asset.FieldInventoryAt, field.TypeTime)
+	if auo.mutation.CheckAtCleared() {
+		_spec.ClearField(asset.FieldCheckAt, field.TypeTime)
 	}
 	if value, ok := auo.mutation.BrandName(); ok {
 		_spec.SetField(asset.FieldBrandName, field.TypeString, value)

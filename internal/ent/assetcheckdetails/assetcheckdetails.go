@@ -27,16 +27,67 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldMaintainerID holds the string denoting the maintainer_id field in the database.
+	FieldMaintainerID = "maintainer_id"
 	// FieldAssetID holds the string denoting the asset_id field in the database.
 	FieldAssetID = "asset_id"
 	// FieldCheckID holds the string denoting the check_id field in the database.
 	FieldCheckID = "check_id"
+	// FieldRealLocationsID holds the string denoting the real_locations_id field in the database.
+	FieldRealLocationsID = "real_locations_id"
+	// FieldRealLocationsType holds the string denoting the real_locations_type field in the database.
+	FieldRealLocationsType = "real_locations_type"
+	// FieldLocationsID holds the string denoting the locations_id field in the database.
+	FieldLocationsID = "locations_id"
+	// FieldLocationsType holds the string denoting the locations_type field in the database.
+	FieldLocationsType = "locations_type"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
+	// FieldResult holds the string denoting the result field in the database.
+	FieldResult = "result"
+	// FieldOperateID holds the string denoting the operate_id field in the database.
+	FieldOperateID = "operate_id"
+	// FieldOperateAt holds the string denoting the operate_at field in the database.
+	FieldOperateAt = "operate_at"
+	// EdgeMaintainer holds the string denoting the maintainer edge name in mutations.
+	EdgeMaintainer = "maintainer"
 	// EdgeAsset holds the string denoting the asset edge name in mutations.
 	EdgeAsset = "asset"
 	// EdgeCheck holds the string denoting the check edge name in mutations.
 	EdgeCheck = "check"
+	// EdgeWarehouse holds the string denoting the warehouse edge name in mutations.
+	EdgeWarehouse = "warehouse"
+	// EdgeStore holds the string denoting the store edge name in mutations.
+	EdgeStore = "store"
+	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
+	EdgeCabinet = "cabinet"
+	// EdgeStation holds the string denoting the station edge name in mutations.
+	EdgeStation = "station"
+	// EdgeRider holds the string denoting the rider edge name in mutations.
+	EdgeRider = "rider"
+	// EdgeOperator holds the string denoting the operator edge name in mutations.
+	EdgeOperator = "operator"
+	// EdgeRealWarehouse holds the string denoting the real_warehouse edge name in mutations.
+	EdgeRealWarehouse = "real_warehouse"
+	// EdgeRealStore holds the string denoting the real_store edge name in mutations.
+	EdgeRealStore = "real_store"
+	// EdgeRealCabinet holds the string denoting the real_cabinet edge name in mutations.
+	EdgeRealCabinet = "real_cabinet"
+	// EdgeRealStation holds the string denoting the real_station edge name in mutations.
+	EdgeRealStation = "real_station"
+	// EdgeRealRider holds the string denoting the real_rider edge name in mutations.
+	EdgeRealRider = "real_rider"
+	// EdgeRealOperator holds the string denoting the real_operator edge name in mutations.
+	EdgeRealOperator = "real_operator"
 	// Table holds the table name of the assetcheckdetails in the database.
 	Table = "asset_check_details"
+	// MaintainerTable is the table that holds the maintainer relation/edge.
+	MaintainerTable = "asset_check_details"
+	// MaintainerInverseTable is the table name for the Maintainer entity.
+	// It exists in this package in order to avoid circular dependency with the "maintainer" package.
+	MaintainerInverseTable = "maintainer"
+	// MaintainerColumn is the table column denoting the maintainer relation/edge.
+	MaintainerColumn = "maintainer_id"
 	// AssetTable is the table that holds the asset relation/edge.
 	AssetTable = "asset_check_details"
 	// AssetInverseTable is the table name for the Asset entity.
@@ -51,6 +102,90 @@ const (
 	CheckInverseTable = "asset_check"
 	// CheckColumn is the table column denoting the check relation/edge.
 	CheckColumn = "check_id"
+	// WarehouseTable is the table that holds the warehouse relation/edge.
+	WarehouseTable = "asset_check_details"
+	// WarehouseInverseTable is the table name for the Warehouse entity.
+	// It exists in this package in order to avoid circular dependency with the "warehouse" package.
+	WarehouseInverseTable = "warehouse"
+	// WarehouseColumn is the table column denoting the warehouse relation/edge.
+	WarehouseColumn = "locations_id"
+	// StoreTable is the table that holds the store relation/edge.
+	StoreTable = "asset_check_details"
+	// StoreInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	StoreInverseTable = "store"
+	// StoreColumn is the table column denoting the store relation/edge.
+	StoreColumn = "locations_id"
+	// CabinetTable is the table that holds the cabinet relation/edge.
+	CabinetTable = "asset_check_details"
+	// CabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	CabinetInverseTable = "cabinet"
+	// CabinetColumn is the table column denoting the cabinet relation/edge.
+	CabinetColumn = "locations_id"
+	// StationTable is the table that holds the station relation/edge.
+	StationTable = "asset_check_details"
+	// StationInverseTable is the table name for the EnterpriseStation entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
+	StationInverseTable = "enterprise_station"
+	// StationColumn is the table column denoting the station relation/edge.
+	StationColumn = "locations_id"
+	// RiderTable is the table that holds the rider relation/edge.
+	RiderTable = "asset_check_details"
+	// RiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	RiderInverseTable = "rider"
+	// RiderColumn is the table column denoting the rider relation/edge.
+	RiderColumn = "locations_id"
+	// OperatorTable is the table that holds the operator relation/edge.
+	OperatorTable = "asset_check_details"
+	// OperatorInverseTable is the table name for the Maintainer entity.
+	// It exists in this package in order to avoid circular dependency with the "maintainer" package.
+	OperatorInverseTable = "maintainer"
+	// OperatorColumn is the table column denoting the operator relation/edge.
+	OperatorColumn = "locations_id"
+	// RealWarehouseTable is the table that holds the real_warehouse relation/edge.
+	RealWarehouseTable = "asset_check_details"
+	// RealWarehouseInverseTable is the table name for the Warehouse entity.
+	// It exists in this package in order to avoid circular dependency with the "warehouse" package.
+	RealWarehouseInverseTable = "warehouse"
+	// RealWarehouseColumn is the table column denoting the real_warehouse relation/edge.
+	RealWarehouseColumn = "real_locations_id"
+	// RealStoreTable is the table that holds the real_store relation/edge.
+	RealStoreTable = "asset_check_details"
+	// RealStoreInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	RealStoreInverseTable = "store"
+	// RealStoreColumn is the table column denoting the real_store relation/edge.
+	RealStoreColumn = "real_locations_id"
+	// RealCabinetTable is the table that holds the real_cabinet relation/edge.
+	RealCabinetTable = "asset_check_details"
+	// RealCabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	RealCabinetInverseTable = "cabinet"
+	// RealCabinetColumn is the table column denoting the real_cabinet relation/edge.
+	RealCabinetColumn = "real_locations_id"
+	// RealStationTable is the table that holds the real_station relation/edge.
+	RealStationTable = "asset_check_details"
+	// RealStationInverseTable is the table name for the EnterpriseStation entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
+	RealStationInverseTable = "enterprise_station"
+	// RealStationColumn is the table column denoting the real_station relation/edge.
+	RealStationColumn = "real_locations_id"
+	// RealRiderTable is the table that holds the real_rider relation/edge.
+	RealRiderTable = "asset_check_details"
+	// RealRiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	RealRiderInverseTable = "rider"
+	// RealRiderColumn is the table column denoting the real_rider relation/edge.
+	RealRiderColumn = "real_locations_id"
+	// RealOperatorTable is the table that holds the real_operator relation/edge.
+	RealOperatorTable = "asset_check_details"
+	// RealOperatorInverseTable is the table name for the Maintainer entity.
+	// It exists in this package in order to avoid circular dependency with the "maintainer" package.
+	RealOperatorInverseTable = "maintainer"
+	// RealOperatorColumn is the table column denoting the real_operator relation/edge.
+	RealOperatorColumn = "real_locations_id"
 )
 
 // Columns holds all SQL columns for assetcheckdetails fields.
@@ -62,8 +197,17 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldMaintainerID,
 	FieldAssetID,
 	FieldCheckID,
+	FieldRealLocationsID,
+	FieldRealLocationsType,
+	FieldLocationsID,
+	FieldLocationsType,
+	FieldStatus,
+	FieldResult,
+	FieldOperateID,
+	FieldOperateAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -89,6 +233,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultStatus holds the default value on creation for the "status" field.
+	DefaultStatus uint8
+	// DefaultResult holds the default value on creation for the "result" field.
+	DefaultResult uint8
 )
 
 // OrderOption defines the ordering options for the AssetCheckDetails queries.
@@ -119,6 +267,11 @@ func ByRemark(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRemark, opts...).ToFunc()
 }
 
+// ByMaintainerID orders the results by the maintainer_id field.
+func ByMaintainerID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMaintainerID, opts...).ToFunc()
+}
+
 // ByAssetID orders the results by the asset_id field.
 func ByAssetID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAssetID, opts...).ToFunc()
@@ -127,6 +280,53 @@ func ByAssetID(opts ...sql.OrderTermOption) OrderOption {
 // ByCheckID orders the results by the check_id field.
 func ByCheckID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCheckID, opts...).ToFunc()
+}
+
+// ByRealLocationsID orders the results by the real_locations_id field.
+func ByRealLocationsID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRealLocationsID, opts...).ToFunc()
+}
+
+// ByRealLocationsType orders the results by the real_locations_type field.
+func ByRealLocationsType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRealLocationsType, opts...).ToFunc()
+}
+
+// ByLocationsID orders the results by the locations_id field.
+func ByLocationsID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLocationsID, opts...).ToFunc()
+}
+
+// ByLocationsType orders the results by the locations_type field.
+func ByLocationsType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLocationsType, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByResult orders the results by the result field.
+func ByResult(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldResult, opts...).ToFunc()
+}
+
+// ByOperateID orders the results by the operate_id field.
+func ByOperateID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOperateID, opts...).ToFunc()
+}
+
+// ByOperateAt orders the results by the operate_at field.
+func ByOperateAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOperateAt, opts...).ToFunc()
+}
+
+// ByMaintainerField orders the results by maintainer field.
+func ByMaintainerField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMaintainerStep(), sql.OrderByField(field, opts...))
+	}
 }
 
 // ByAssetField orders the results by asset field.
@@ -142,6 +342,97 @@ func ByCheckField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCheckStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByWarehouseField orders the results by warehouse field.
+func ByWarehouseField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newWarehouseStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByStoreField orders the results by store field.
+func ByStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStoreStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByCabinetField orders the results by cabinet field.
+func ByCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCabinetStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByStationField orders the results by station field.
+func ByStationField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStationStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByRiderField orders the results by rider field.
+func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByOperatorField orders the results by operator field.
+func ByOperatorField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newOperatorStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByRealWarehouseField orders the results by real_warehouse field.
+func ByRealWarehouseField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRealWarehouseStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByRealStoreField orders the results by real_store field.
+func ByRealStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRealStoreStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByRealCabinetField orders the results by real_cabinet field.
+func ByRealCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRealCabinetStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByRealStationField orders the results by real_station field.
+func ByRealStationField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRealStationStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByRealRiderField orders the results by real_rider field.
+func ByRealRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRealRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByRealOperatorField orders the results by real_operator field.
+func ByRealOperatorField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRealOperatorStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newMaintainerStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MaintainerInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, MaintainerTable, MaintainerColumn),
+	)
+}
 func newAssetStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -154,5 +445,89 @@ func newCheckStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CheckInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, CheckTable, CheckColumn),
+	)
+}
+func newWarehouseStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(WarehouseInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, WarehouseTable, WarehouseColumn),
+	)
+}
+func newStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
+	)
+}
+func newCabinetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CabinetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
+	)
+}
+func newStationStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StationInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
+	)
+}
+func newRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
+	)
+}
+func newOperatorStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(OperatorInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, OperatorTable, OperatorColumn),
+	)
+}
+func newRealWarehouseStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RealWarehouseInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RealWarehouseTable, RealWarehouseColumn),
+	)
+}
+func newRealStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RealStoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RealStoreTable, RealStoreColumn),
+	)
+}
+func newRealCabinetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RealCabinetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RealCabinetTable, RealCabinetColumn),
+	)
+}
+func newRealStationStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RealStationInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RealStationTable, RealStationColumn),
+	)
+}
+func newRealRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RealRiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RealRiderTable, RealRiderColumn),
+	)
+}
+func newRealOperatorStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RealOperatorInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RealOperatorTable, RealOperatorColumn),
 	)
 }

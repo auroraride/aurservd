@@ -52,6 +52,7 @@ func (b *maintainerAssetBiz) Assets(req *definition.MaintainerAssetListReq) (res
 		result = &definition.MaintainerAssetDetail{
 			ID:              item.ID,
 			Name:            item.Name,
+			Phone:           item.Phone,
 			MaintainerAsset: b.assetForMaintainer(req, item.ID),
 		}
 		return result
@@ -82,9 +83,9 @@ func (b *maintainerAssetBiz) assetForMaintainer(req *definition.MaintainerAssetL
 			entasset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value()),
 		)
 	}
-	if req.BrandId != nil {
+	if req.BrandID != nil {
 		q.Where(
-			entasset.BrandID(*req.BrandId),
+			entasset.BrandID(*req.BrandID),
 			entasset.Type(model.AssetTypeEbike.Value()),
 		)
 	}

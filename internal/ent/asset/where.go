@@ -135,9 +135,9 @@ func RtoRiderID(v uint64) predicate.Asset {
 	return predicate.Asset(sql.FieldEQ(FieldRtoRiderID, v))
 }
 
-// InventoryAt applies equality check predicate on the "inventory_at" field. It's identical to InventoryAtEQ.
-func InventoryAt(v time.Time) predicate.Asset {
-	return predicate.Asset(sql.FieldEQ(FieldInventoryAt, v))
+// CheckAt applies equality check predicate on the "check_at" field. It's identical to CheckAtEQ.
+func CheckAt(v time.Time) predicate.Asset {
+	return predicate.Asset(sql.FieldEQ(FieldCheckAt, v))
 }
 
 // BrandName applies equality check predicate on the "brand_name" field. It's identical to BrandNameEQ.
@@ -850,54 +850,54 @@ func RtoRiderIDNotNil() predicate.Asset {
 	return predicate.Asset(sql.FieldNotNull(FieldRtoRiderID))
 }
 
-// InventoryAtEQ applies the EQ predicate on the "inventory_at" field.
-func InventoryAtEQ(v time.Time) predicate.Asset {
-	return predicate.Asset(sql.FieldEQ(FieldInventoryAt, v))
+// CheckAtEQ applies the EQ predicate on the "check_at" field.
+func CheckAtEQ(v time.Time) predicate.Asset {
+	return predicate.Asset(sql.FieldEQ(FieldCheckAt, v))
 }
 
-// InventoryAtNEQ applies the NEQ predicate on the "inventory_at" field.
-func InventoryAtNEQ(v time.Time) predicate.Asset {
-	return predicate.Asset(sql.FieldNEQ(FieldInventoryAt, v))
+// CheckAtNEQ applies the NEQ predicate on the "check_at" field.
+func CheckAtNEQ(v time.Time) predicate.Asset {
+	return predicate.Asset(sql.FieldNEQ(FieldCheckAt, v))
 }
 
-// InventoryAtIn applies the In predicate on the "inventory_at" field.
-func InventoryAtIn(vs ...time.Time) predicate.Asset {
-	return predicate.Asset(sql.FieldIn(FieldInventoryAt, vs...))
+// CheckAtIn applies the In predicate on the "check_at" field.
+func CheckAtIn(vs ...time.Time) predicate.Asset {
+	return predicate.Asset(sql.FieldIn(FieldCheckAt, vs...))
 }
 
-// InventoryAtNotIn applies the NotIn predicate on the "inventory_at" field.
-func InventoryAtNotIn(vs ...time.Time) predicate.Asset {
-	return predicate.Asset(sql.FieldNotIn(FieldInventoryAt, vs...))
+// CheckAtNotIn applies the NotIn predicate on the "check_at" field.
+func CheckAtNotIn(vs ...time.Time) predicate.Asset {
+	return predicate.Asset(sql.FieldNotIn(FieldCheckAt, vs...))
 }
 
-// InventoryAtGT applies the GT predicate on the "inventory_at" field.
-func InventoryAtGT(v time.Time) predicate.Asset {
-	return predicate.Asset(sql.FieldGT(FieldInventoryAt, v))
+// CheckAtGT applies the GT predicate on the "check_at" field.
+func CheckAtGT(v time.Time) predicate.Asset {
+	return predicate.Asset(sql.FieldGT(FieldCheckAt, v))
 }
 
-// InventoryAtGTE applies the GTE predicate on the "inventory_at" field.
-func InventoryAtGTE(v time.Time) predicate.Asset {
-	return predicate.Asset(sql.FieldGTE(FieldInventoryAt, v))
+// CheckAtGTE applies the GTE predicate on the "check_at" field.
+func CheckAtGTE(v time.Time) predicate.Asset {
+	return predicate.Asset(sql.FieldGTE(FieldCheckAt, v))
 }
 
-// InventoryAtLT applies the LT predicate on the "inventory_at" field.
-func InventoryAtLT(v time.Time) predicate.Asset {
-	return predicate.Asset(sql.FieldLT(FieldInventoryAt, v))
+// CheckAtLT applies the LT predicate on the "check_at" field.
+func CheckAtLT(v time.Time) predicate.Asset {
+	return predicate.Asset(sql.FieldLT(FieldCheckAt, v))
 }
 
-// InventoryAtLTE applies the LTE predicate on the "inventory_at" field.
-func InventoryAtLTE(v time.Time) predicate.Asset {
-	return predicate.Asset(sql.FieldLTE(FieldInventoryAt, v))
+// CheckAtLTE applies the LTE predicate on the "check_at" field.
+func CheckAtLTE(v time.Time) predicate.Asset {
+	return predicate.Asset(sql.FieldLTE(FieldCheckAt, v))
 }
 
-// InventoryAtIsNil applies the IsNil predicate on the "inventory_at" field.
-func InventoryAtIsNil() predicate.Asset {
-	return predicate.Asset(sql.FieldIsNull(FieldInventoryAt))
+// CheckAtIsNil applies the IsNil predicate on the "check_at" field.
+func CheckAtIsNil() predicate.Asset {
+	return predicate.Asset(sql.FieldIsNull(FieldCheckAt))
 }
 
-// InventoryAtNotNil applies the NotNil predicate on the "inventory_at" field.
-func InventoryAtNotNil() predicate.Asset {
-	return predicate.Asset(sql.FieldNotNull(FieldInventoryAt))
+// CheckAtNotNil applies the NotNil predicate on the "check_at" field.
+func CheckAtNotNil() predicate.Asset {
+	return predicate.Asset(sql.FieldNotNull(FieldCheckAt))
 }
 
 // BrandNameEQ applies the EQ predicate on the "brand_name" field.

@@ -724,6 +724,9 @@ definitions:
         items:
           $ref: '#/definitions/model.AssetCheckCreateDetail'
         type: array
+      endAt:
+        description: 盘点结束时间
+        type: string
       locationsId:
         description: 位置ID
         type: integer
@@ -738,10 +741,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/model.AssetOperateRoleType'
         description: 操作人类型 1:资产后台(仓库) 2:门店 3:代理
+      startAt:
+        description: 盘点开始时间
+        type: string
     required:
       - details
+      - endAt
       - locationsId
       - locationsType
+      - startAt
     type: object
   model.AssetCreateReq:
     properties:
@@ -842,14 +850,15 @@ definitions:
         description: 站点ID
         type: integer
       status:
-        description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
+        allOf:
+          - $ref: '#/definitions/model.AssetStatus'
+        description: 资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
         enum:
         - 1
         - 2
         - 3
         - 4
         - 5
-        type: integer
     type: object
   model.AssetListRes:
     properties:
@@ -1184,6 +1193,29 @@ definitions:
     - detail
     - scrapReasonType
     type: object
+  model.AssetStatus:
+    enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+    type: integer
+    x-enum-comments:
+      AssetStatusDelivering: 配送中
+      AssetStatusFault: 故障
+      AssetStatusPending: 待入库
+      AssetStatusScrap: 报废
+      AssetStatusStock: 库存中
+      AssetStatusUsing: 使用中
+    x-enum-varnames:
+      - AssetStatusPending
+      - AssetStatusStock
+      - AssetStatusDelivering
+      - AssetStatusUsing
+      - AssetStatusFault
+      - AssetStatusScrap
   model.AssetTransferCreateDetail:
     properties:
       assetType:
@@ -1193,9 +1225,6 @@ definitions:
       materialId:
         description: 其它物资分类ID
         type: integer
-      name:
-        description: 资产名称
-        type: string
       num:
         description: 调拨数量
         type: integer
@@ -1241,7 +1270,6 @@ definitions:
         - $ref: '#/definitions/model.AssetLocationsType'
         description: 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维
     required:
-    - details
     - reason
     - toLocationID
     - toLocationType
@@ -1761,8 +1789,9 @@ paths:
         in: query
         name: stationId
         type: integer
-      - description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
+      - description: 资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
         enum:
+          - 0
         - 1
         - 2
         - 3
@@ -1771,6 +1800,20 @@ paths:
         in: query
         name: status
         type: integer
+        x-enum-comments:
+          AssetStatusDelivering: 配送中
+          AssetStatusFault: 故障
+          AssetStatusPending: 待入库
+          AssetStatusScrap: 报废
+          AssetStatusStock: 库存中
+          AssetStatusUsing: 使用中
+        x-enum-varnames:
+          - AssetStatusPending
+          - AssetStatusStock
+          - AssetStatusDelivering
+          - AssetStatusUsing
+          - AssetStatusFault
+          - AssetStatusScrap
       produces:
       - application/json
       responses:
@@ -2187,8 +2230,9 @@ paths:
         in: query
         name: stationId
         type: integer
-      - description: 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
+      - description: 资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
         enum:
+          - 0
         - 1
         - 2
         - 3
@@ -2197,6 +2241,20 @@ paths:
         in: query
         name: status
         type: integer
+        x-enum-comments:
+          AssetStatusDelivering: 配送中
+          AssetStatusFault: 故障
+          AssetStatusPending: 待入库
+          AssetStatusScrap: 报废
+          AssetStatusStock: 库存中
+          AssetStatusUsing: 使用中
+        x-enum-varnames:
+          - AssetStatusPending
+          - AssetStatusStock
+          - AssetStatusDelivering
+          - AssetStatusUsing
+          - AssetStatusFault
+          - AssetStatusScrap
       produces:
       - application/json
       responses:
@@ -2204,7 +2262,7 @@ paths:
           description: 请求成功
           schema:
             type: int
-      summary: 资产统计
+      summary: 查询有效的资产数量
       tags:
       - 资产
   /manager/v2/asset/enterprise_assets:
@@ -2746,7 +2804,7 @@ paths:
         type: integer
       - description: 电池型号ID
         in: query
-        name: modelID
+        name: modelId
         type: integer
       - description: 其他物资名称
         in: query

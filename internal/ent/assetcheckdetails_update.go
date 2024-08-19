@@ -15,7 +15,13 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
 // AssetCheckDetailsUpdate is the builder for updating AssetCheckDetails entities.
@@ -90,6 +96,26 @@ func (acdu *AssetCheckDetailsUpdate) ClearRemark() *AssetCheckDetailsUpdate {
 	return acdu
 }
 
+// SetMaintainerID sets the "maintainer_id" field.
+func (acdu *AssetCheckDetailsUpdate) SetMaintainerID(u uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetMaintainerID(u)
+	return acdu
+}
+
+// SetNillableMaintainerID sets the "maintainer_id" field if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableMaintainerID(u *uint64) *AssetCheckDetailsUpdate {
+	if u != nil {
+		acdu.SetMaintainerID(*u)
+	}
+	return acdu
+}
+
+// ClearMaintainerID clears the value of the "maintainer_id" field.
+func (acdu *AssetCheckDetailsUpdate) ClearMaintainerID() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearMaintainerID()
+	return acdu
+}
+
 // SetAssetID sets the "asset_id" field.
 func (acdu *AssetCheckDetailsUpdate) SetAssetID(u uint64) *AssetCheckDetailsUpdate {
 	acdu.mutation.SetAssetID(u)
@@ -130,6 +156,206 @@ func (acdu *AssetCheckDetailsUpdate) ClearCheckID() *AssetCheckDetailsUpdate {
 	return acdu
 }
 
+// SetRealLocationsID sets the "real_locations_id" field.
+func (acdu *AssetCheckDetailsUpdate) SetRealLocationsID(u uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetRealLocationsID(u)
+	return acdu
+}
+
+// SetNillableRealLocationsID sets the "real_locations_id" field if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableRealLocationsID(u *uint64) *AssetCheckDetailsUpdate {
+	if u != nil {
+		acdu.SetRealLocationsID(*u)
+	}
+	return acdu
+}
+
+// ClearRealLocationsID clears the value of the "real_locations_id" field.
+func (acdu *AssetCheckDetailsUpdate) ClearRealLocationsID() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearRealLocationsID()
+	return acdu
+}
+
+// SetRealLocationsType sets the "real_locations_type" field.
+func (acdu *AssetCheckDetailsUpdate) SetRealLocationsType(u uint8) *AssetCheckDetailsUpdate {
+	acdu.mutation.ResetRealLocationsType()
+	acdu.mutation.SetRealLocationsType(u)
+	return acdu
+}
+
+// SetNillableRealLocationsType sets the "real_locations_type" field if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableRealLocationsType(u *uint8) *AssetCheckDetailsUpdate {
+	if u != nil {
+		acdu.SetRealLocationsType(*u)
+	}
+	return acdu
+}
+
+// AddRealLocationsType adds u to the "real_locations_type" field.
+func (acdu *AssetCheckDetailsUpdate) AddRealLocationsType(u int8) *AssetCheckDetailsUpdate {
+	acdu.mutation.AddRealLocationsType(u)
+	return acdu
+}
+
+// ClearRealLocationsType clears the value of the "real_locations_type" field.
+func (acdu *AssetCheckDetailsUpdate) ClearRealLocationsType() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearRealLocationsType()
+	return acdu
+}
+
+// SetLocationsID sets the "locations_id" field.
+func (acdu *AssetCheckDetailsUpdate) SetLocationsID(u uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetLocationsID(u)
+	return acdu
+}
+
+// SetNillableLocationsID sets the "locations_id" field if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableLocationsID(u *uint64) *AssetCheckDetailsUpdate {
+	if u != nil {
+		acdu.SetLocationsID(*u)
+	}
+	return acdu
+}
+
+// ClearLocationsID clears the value of the "locations_id" field.
+func (acdu *AssetCheckDetailsUpdate) ClearLocationsID() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearLocationsID()
+	return acdu
+}
+
+// SetLocationsType sets the "locations_type" field.
+func (acdu *AssetCheckDetailsUpdate) SetLocationsType(u uint8) *AssetCheckDetailsUpdate {
+	acdu.mutation.ResetLocationsType()
+	acdu.mutation.SetLocationsType(u)
+	return acdu
+}
+
+// SetNillableLocationsType sets the "locations_type" field if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableLocationsType(u *uint8) *AssetCheckDetailsUpdate {
+	if u != nil {
+		acdu.SetLocationsType(*u)
+	}
+	return acdu
+}
+
+// AddLocationsType adds u to the "locations_type" field.
+func (acdu *AssetCheckDetailsUpdate) AddLocationsType(u int8) *AssetCheckDetailsUpdate {
+	acdu.mutation.AddLocationsType(u)
+	return acdu
+}
+
+// ClearLocationsType clears the value of the "locations_type" field.
+func (acdu *AssetCheckDetailsUpdate) ClearLocationsType() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearLocationsType()
+	return acdu
+}
+
+// SetStatus sets the "status" field.
+func (acdu *AssetCheckDetailsUpdate) SetStatus(u uint8) *AssetCheckDetailsUpdate {
+	acdu.mutation.ResetStatus()
+	acdu.mutation.SetStatus(u)
+	return acdu
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableStatus(u *uint8) *AssetCheckDetailsUpdate {
+	if u != nil {
+		acdu.SetStatus(*u)
+	}
+	return acdu
+}
+
+// AddStatus adds u to the "status" field.
+func (acdu *AssetCheckDetailsUpdate) AddStatus(u int8) *AssetCheckDetailsUpdate {
+	acdu.mutation.AddStatus(u)
+	return acdu
+}
+
+// ClearStatus clears the value of the "status" field.
+func (acdu *AssetCheckDetailsUpdate) ClearStatus() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearStatus()
+	return acdu
+}
+
+// SetResult sets the "result" field.
+func (acdu *AssetCheckDetailsUpdate) SetResult(u uint8) *AssetCheckDetailsUpdate {
+	acdu.mutation.ResetResult()
+	acdu.mutation.SetResult(u)
+	return acdu
+}
+
+// SetNillableResult sets the "result" field if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableResult(u *uint8) *AssetCheckDetailsUpdate {
+	if u != nil {
+		acdu.SetResult(*u)
+	}
+	return acdu
+}
+
+// AddResult adds u to the "result" field.
+func (acdu *AssetCheckDetailsUpdate) AddResult(u int8) *AssetCheckDetailsUpdate {
+	acdu.mutation.AddResult(u)
+	return acdu
+}
+
+// ClearResult clears the value of the "result" field.
+func (acdu *AssetCheckDetailsUpdate) ClearResult() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearResult()
+	return acdu
+}
+
+// SetOperateID sets the "operate_id" field.
+func (acdu *AssetCheckDetailsUpdate) SetOperateID(u uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.ResetOperateID()
+	acdu.mutation.SetOperateID(u)
+	return acdu
+}
+
+// SetNillableOperateID sets the "operate_id" field if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableOperateID(u *uint64) *AssetCheckDetailsUpdate {
+	if u != nil {
+		acdu.SetOperateID(*u)
+	}
+	return acdu
+}
+
+// AddOperateID adds u to the "operate_id" field.
+func (acdu *AssetCheckDetailsUpdate) AddOperateID(u int64) *AssetCheckDetailsUpdate {
+	acdu.mutation.AddOperateID(u)
+	return acdu
+}
+
+// ClearOperateID clears the value of the "operate_id" field.
+func (acdu *AssetCheckDetailsUpdate) ClearOperateID() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearOperateID()
+	return acdu
+}
+
+// SetOperateAt sets the "operate_at" field.
+func (acdu *AssetCheckDetailsUpdate) SetOperateAt(t time.Time) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetOperateAt(t)
+	return acdu
+}
+
+// SetNillableOperateAt sets the "operate_at" field if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableOperateAt(t *time.Time) *AssetCheckDetailsUpdate {
+	if t != nil {
+		acdu.SetOperateAt(*t)
+	}
+	return acdu
+}
+
+// ClearOperateAt clears the value of the "operate_at" field.
+func (acdu *AssetCheckDetailsUpdate) ClearOperateAt() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearOperateAt()
+	return acdu
+}
+
+// SetMaintainer sets the "maintainer" edge to the Maintainer entity.
+func (acdu *AssetCheckDetailsUpdate) SetMaintainer(m *Maintainer) *AssetCheckDetailsUpdate {
+	return acdu.SetMaintainerID(m.ID)
+}
+
 // SetAsset sets the "asset" edge to the Asset entity.
 func (acdu *AssetCheckDetailsUpdate) SetAsset(a *Asset) *AssetCheckDetailsUpdate {
 	return acdu.SetAssetID(a.ID)
@@ -140,9 +366,243 @@ func (acdu *AssetCheckDetailsUpdate) SetCheck(a *AssetCheck) *AssetCheckDetailsU
 	return acdu.SetCheckID(a.ID)
 }
 
+// SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
+func (acdu *AssetCheckDetailsUpdate) SetWarehouseID(id uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetWarehouseID(id)
+	return acdu
+}
+
+// SetNillableWarehouseID sets the "warehouse" edge to the Warehouse entity by ID if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableWarehouseID(id *uint64) *AssetCheckDetailsUpdate {
+	if id != nil {
+		acdu = acdu.SetWarehouseID(*id)
+	}
+	return acdu
+}
+
+// SetWarehouse sets the "warehouse" edge to the Warehouse entity.
+func (acdu *AssetCheckDetailsUpdate) SetWarehouse(w *Warehouse) *AssetCheckDetailsUpdate {
+	return acdu.SetWarehouseID(w.ID)
+}
+
+// SetStoreID sets the "store" edge to the Store entity by ID.
+func (acdu *AssetCheckDetailsUpdate) SetStoreID(id uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetStoreID(id)
+	return acdu
+}
+
+// SetNillableStoreID sets the "store" edge to the Store entity by ID if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableStoreID(id *uint64) *AssetCheckDetailsUpdate {
+	if id != nil {
+		acdu = acdu.SetStoreID(*id)
+	}
+	return acdu
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (acdu *AssetCheckDetailsUpdate) SetStore(s *Store) *AssetCheckDetailsUpdate {
+	return acdu.SetStoreID(s.ID)
+}
+
+// SetCabinetID sets the "cabinet" edge to the Cabinet entity by ID.
+func (acdu *AssetCheckDetailsUpdate) SetCabinetID(id uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetCabinetID(id)
+	return acdu
+}
+
+// SetNillableCabinetID sets the "cabinet" edge to the Cabinet entity by ID if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableCabinetID(id *uint64) *AssetCheckDetailsUpdate {
+	if id != nil {
+		acdu = acdu.SetCabinetID(*id)
+	}
+	return acdu
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (acdu *AssetCheckDetailsUpdate) SetCabinet(c *Cabinet) *AssetCheckDetailsUpdate {
+	return acdu.SetCabinetID(c.ID)
+}
+
+// SetStationID sets the "station" edge to the EnterpriseStation entity by ID.
+func (acdu *AssetCheckDetailsUpdate) SetStationID(id uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetStationID(id)
+	return acdu
+}
+
+// SetNillableStationID sets the "station" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableStationID(id *uint64) *AssetCheckDetailsUpdate {
+	if id != nil {
+		acdu = acdu.SetStationID(*id)
+	}
+	return acdu
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (acdu *AssetCheckDetailsUpdate) SetStation(e *EnterpriseStation) *AssetCheckDetailsUpdate {
+	return acdu.SetStationID(e.ID)
+}
+
+// SetRiderID sets the "rider" edge to the Rider entity by ID.
+func (acdu *AssetCheckDetailsUpdate) SetRiderID(id uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetRiderID(id)
+	return acdu
+}
+
+// SetNillableRiderID sets the "rider" edge to the Rider entity by ID if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableRiderID(id *uint64) *AssetCheckDetailsUpdate {
+	if id != nil {
+		acdu = acdu.SetRiderID(*id)
+	}
+	return acdu
+}
+
+// SetRider sets the "rider" edge to the Rider entity.
+func (acdu *AssetCheckDetailsUpdate) SetRider(r *Rider) *AssetCheckDetailsUpdate {
+	return acdu.SetRiderID(r.ID)
+}
+
+// SetOperatorID sets the "operator" edge to the Maintainer entity by ID.
+func (acdu *AssetCheckDetailsUpdate) SetOperatorID(id uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetOperatorID(id)
+	return acdu
+}
+
+// SetNillableOperatorID sets the "operator" edge to the Maintainer entity by ID if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableOperatorID(id *uint64) *AssetCheckDetailsUpdate {
+	if id != nil {
+		acdu = acdu.SetOperatorID(*id)
+	}
+	return acdu
+}
+
+// SetOperator sets the "operator" edge to the Maintainer entity.
+func (acdu *AssetCheckDetailsUpdate) SetOperator(m *Maintainer) *AssetCheckDetailsUpdate {
+	return acdu.SetOperatorID(m.ID)
+}
+
+// SetRealWarehouseID sets the "real_warehouse" edge to the Warehouse entity by ID.
+func (acdu *AssetCheckDetailsUpdate) SetRealWarehouseID(id uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetRealWarehouseID(id)
+	return acdu
+}
+
+// SetNillableRealWarehouseID sets the "real_warehouse" edge to the Warehouse entity by ID if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableRealWarehouseID(id *uint64) *AssetCheckDetailsUpdate {
+	if id != nil {
+		acdu = acdu.SetRealWarehouseID(*id)
+	}
+	return acdu
+}
+
+// SetRealWarehouse sets the "real_warehouse" edge to the Warehouse entity.
+func (acdu *AssetCheckDetailsUpdate) SetRealWarehouse(w *Warehouse) *AssetCheckDetailsUpdate {
+	return acdu.SetRealWarehouseID(w.ID)
+}
+
+// SetRealStoreID sets the "real_store" edge to the Store entity by ID.
+func (acdu *AssetCheckDetailsUpdate) SetRealStoreID(id uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetRealStoreID(id)
+	return acdu
+}
+
+// SetNillableRealStoreID sets the "real_store" edge to the Store entity by ID if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableRealStoreID(id *uint64) *AssetCheckDetailsUpdate {
+	if id != nil {
+		acdu = acdu.SetRealStoreID(*id)
+	}
+	return acdu
+}
+
+// SetRealStore sets the "real_store" edge to the Store entity.
+func (acdu *AssetCheckDetailsUpdate) SetRealStore(s *Store) *AssetCheckDetailsUpdate {
+	return acdu.SetRealStoreID(s.ID)
+}
+
+// SetRealCabinetID sets the "real_cabinet" edge to the Cabinet entity by ID.
+func (acdu *AssetCheckDetailsUpdate) SetRealCabinetID(id uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetRealCabinetID(id)
+	return acdu
+}
+
+// SetNillableRealCabinetID sets the "real_cabinet" edge to the Cabinet entity by ID if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableRealCabinetID(id *uint64) *AssetCheckDetailsUpdate {
+	if id != nil {
+		acdu = acdu.SetRealCabinetID(*id)
+	}
+	return acdu
+}
+
+// SetRealCabinet sets the "real_cabinet" edge to the Cabinet entity.
+func (acdu *AssetCheckDetailsUpdate) SetRealCabinet(c *Cabinet) *AssetCheckDetailsUpdate {
+	return acdu.SetRealCabinetID(c.ID)
+}
+
+// SetRealStationID sets the "real_station" edge to the EnterpriseStation entity by ID.
+func (acdu *AssetCheckDetailsUpdate) SetRealStationID(id uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetRealStationID(id)
+	return acdu
+}
+
+// SetNillableRealStationID sets the "real_station" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableRealStationID(id *uint64) *AssetCheckDetailsUpdate {
+	if id != nil {
+		acdu = acdu.SetRealStationID(*id)
+	}
+	return acdu
+}
+
+// SetRealStation sets the "real_station" edge to the EnterpriseStation entity.
+func (acdu *AssetCheckDetailsUpdate) SetRealStation(e *EnterpriseStation) *AssetCheckDetailsUpdate {
+	return acdu.SetRealStationID(e.ID)
+}
+
+// SetRealRiderID sets the "real_rider" edge to the Rider entity by ID.
+func (acdu *AssetCheckDetailsUpdate) SetRealRiderID(id uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetRealRiderID(id)
+	return acdu
+}
+
+// SetNillableRealRiderID sets the "real_rider" edge to the Rider entity by ID if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableRealRiderID(id *uint64) *AssetCheckDetailsUpdate {
+	if id != nil {
+		acdu = acdu.SetRealRiderID(*id)
+	}
+	return acdu
+}
+
+// SetRealRider sets the "real_rider" edge to the Rider entity.
+func (acdu *AssetCheckDetailsUpdate) SetRealRider(r *Rider) *AssetCheckDetailsUpdate {
+	return acdu.SetRealRiderID(r.ID)
+}
+
+// SetRealOperatorID sets the "real_operator" edge to the Maintainer entity by ID.
+func (acdu *AssetCheckDetailsUpdate) SetRealOperatorID(id uint64) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetRealOperatorID(id)
+	return acdu
+}
+
+// SetNillableRealOperatorID sets the "real_operator" edge to the Maintainer entity by ID if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableRealOperatorID(id *uint64) *AssetCheckDetailsUpdate {
+	if id != nil {
+		acdu = acdu.SetRealOperatorID(*id)
+	}
+	return acdu
+}
+
+// SetRealOperator sets the "real_operator" edge to the Maintainer entity.
+func (acdu *AssetCheckDetailsUpdate) SetRealOperator(m *Maintainer) *AssetCheckDetailsUpdate {
+	return acdu.SetRealOperatorID(m.ID)
+}
+
 // Mutation returns the AssetCheckDetailsMutation object of the builder.
 func (acdu *AssetCheckDetailsUpdate) Mutation() *AssetCheckDetailsMutation {
 	return acdu.mutation
+}
+
+// ClearMaintainer clears the "maintainer" edge to the Maintainer entity.
+func (acdu *AssetCheckDetailsUpdate) ClearMaintainer() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearMaintainer()
+	return acdu
 }
 
 // ClearAsset clears the "asset" edge to the Asset entity.
@@ -154,6 +614,78 @@ func (acdu *AssetCheckDetailsUpdate) ClearAsset() *AssetCheckDetailsUpdate {
 // ClearCheck clears the "check" edge to the AssetCheck entity.
 func (acdu *AssetCheckDetailsUpdate) ClearCheck() *AssetCheckDetailsUpdate {
 	acdu.mutation.ClearCheck()
+	return acdu
+}
+
+// ClearWarehouse clears the "warehouse" edge to the Warehouse entity.
+func (acdu *AssetCheckDetailsUpdate) ClearWarehouse() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearWarehouse()
+	return acdu
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (acdu *AssetCheckDetailsUpdate) ClearStore() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearStore()
+	return acdu
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (acdu *AssetCheckDetailsUpdate) ClearCabinet() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearCabinet()
+	return acdu
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (acdu *AssetCheckDetailsUpdate) ClearStation() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearStation()
+	return acdu
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (acdu *AssetCheckDetailsUpdate) ClearRider() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearRider()
+	return acdu
+}
+
+// ClearOperator clears the "operator" edge to the Maintainer entity.
+func (acdu *AssetCheckDetailsUpdate) ClearOperator() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearOperator()
+	return acdu
+}
+
+// ClearRealWarehouse clears the "real_warehouse" edge to the Warehouse entity.
+func (acdu *AssetCheckDetailsUpdate) ClearRealWarehouse() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearRealWarehouse()
+	return acdu
+}
+
+// ClearRealStore clears the "real_store" edge to the Store entity.
+func (acdu *AssetCheckDetailsUpdate) ClearRealStore() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearRealStore()
+	return acdu
+}
+
+// ClearRealCabinet clears the "real_cabinet" edge to the Cabinet entity.
+func (acdu *AssetCheckDetailsUpdate) ClearRealCabinet() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearRealCabinet()
+	return acdu
+}
+
+// ClearRealStation clears the "real_station" edge to the EnterpriseStation entity.
+func (acdu *AssetCheckDetailsUpdate) ClearRealStation() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearRealStation()
+	return acdu
+}
+
+// ClearRealRider clears the "real_rider" edge to the Rider entity.
+func (acdu *AssetCheckDetailsUpdate) ClearRealRider() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearRealRider()
+	return acdu
+}
+
+// ClearRealOperator clears the "real_operator" edge to the Maintainer entity.
+func (acdu *AssetCheckDetailsUpdate) ClearRealOperator() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearRealOperator()
 	return acdu
 }
 
@@ -238,6 +770,86 @@ func (acdu *AssetCheckDetailsUpdate) sqlSave(ctx context.Context) (n int, err er
 	if acdu.mutation.RemarkCleared() {
 		_spec.ClearField(assetcheckdetails.FieldRemark, field.TypeString)
 	}
+	if value, ok := acdu.mutation.RealLocationsType(); ok {
+		_spec.SetField(assetcheckdetails.FieldRealLocationsType, field.TypeUint8, value)
+	}
+	if value, ok := acdu.mutation.AddedRealLocationsType(); ok {
+		_spec.AddField(assetcheckdetails.FieldRealLocationsType, field.TypeUint8, value)
+	}
+	if acdu.mutation.RealLocationsTypeCleared() {
+		_spec.ClearField(assetcheckdetails.FieldRealLocationsType, field.TypeUint8)
+	}
+	if value, ok := acdu.mutation.LocationsType(); ok {
+		_spec.SetField(assetcheckdetails.FieldLocationsType, field.TypeUint8, value)
+	}
+	if value, ok := acdu.mutation.AddedLocationsType(); ok {
+		_spec.AddField(assetcheckdetails.FieldLocationsType, field.TypeUint8, value)
+	}
+	if acdu.mutation.LocationsTypeCleared() {
+		_spec.ClearField(assetcheckdetails.FieldLocationsType, field.TypeUint8)
+	}
+	if value, ok := acdu.mutation.Status(); ok {
+		_spec.SetField(assetcheckdetails.FieldStatus, field.TypeUint8, value)
+	}
+	if value, ok := acdu.mutation.AddedStatus(); ok {
+		_spec.AddField(assetcheckdetails.FieldStatus, field.TypeUint8, value)
+	}
+	if acdu.mutation.StatusCleared() {
+		_spec.ClearField(assetcheckdetails.FieldStatus, field.TypeUint8)
+	}
+	if value, ok := acdu.mutation.Result(); ok {
+		_spec.SetField(assetcheckdetails.FieldResult, field.TypeUint8, value)
+	}
+	if value, ok := acdu.mutation.AddedResult(); ok {
+		_spec.AddField(assetcheckdetails.FieldResult, field.TypeUint8, value)
+	}
+	if acdu.mutation.ResultCleared() {
+		_spec.ClearField(assetcheckdetails.FieldResult, field.TypeUint8)
+	}
+	if value, ok := acdu.mutation.OperateID(); ok {
+		_spec.SetField(assetcheckdetails.FieldOperateID, field.TypeUint64, value)
+	}
+	if value, ok := acdu.mutation.AddedOperateID(); ok {
+		_spec.AddField(assetcheckdetails.FieldOperateID, field.TypeUint64, value)
+	}
+	if acdu.mutation.OperateIDCleared() {
+		_spec.ClearField(assetcheckdetails.FieldOperateID, field.TypeUint64)
+	}
+	if value, ok := acdu.mutation.OperateAt(); ok {
+		_spec.SetField(assetcheckdetails.FieldOperateAt, field.TypeTime, value)
+	}
+	if acdu.mutation.OperateAtCleared() {
+		_spec.ClearField(assetcheckdetails.FieldOperateAt, field.TypeTime)
+	}
+	if acdu.mutation.MaintainerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.MaintainerTable,
+			Columns: []string{assetcheckdetails.MaintainerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acdu.mutation.MaintainerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.MaintainerTable,
+			Columns: []string{assetcheckdetails.MaintainerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if acdu.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -289,6 +901,354 @@ func (acdu *AssetCheckDetailsUpdate) sqlSave(ctx context.Context) (n int, err er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetcheck.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acdu.mutation.WarehouseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.WarehouseTable,
+			Columns: []string{assetcheckdetails.WarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acdu.mutation.WarehouseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.WarehouseTable,
+			Columns: []string{assetcheckdetails.WarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acdu.mutation.StoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.StoreTable,
+			Columns: []string{assetcheckdetails.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acdu.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.StoreTable,
+			Columns: []string{assetcheckdetails.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acdu.mutation.CabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.CabinetTable,
+			Columns: []string{assetcheckdetails.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acdu.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.CabinetTable,
+			Columns: []string{assetcheckdetails.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acdu.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.StationTable,
+			Columns: []string{assetcheckdetails.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acdu.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.StationTable,
+			Columns: []string{assetcheckdetails.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acdu.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RiderTable,
+			Columns: []string{assetcheckdetails.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acdu.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RiderTable,
+			Columns: []string{assetcheckdetails.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acdu.mutation.OperatorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.OperatorTable,
+			Columns: []string{assetcheckdetails.OperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acdu.mutation.OperatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.OperatorTable,
+			Columns: []string{assetcheckdetails.OperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acdu.mutation.RealWarehouseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealWarehouseTable,
+			Columns: []string{assetcheckdetails.RealWarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acdu.mutation.RealWarehouseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealWarehouseTable,
+			Columns: []string{assetcheckdetails.RealWarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acdu.mutation.RealStoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealStoreTable,
+			Columns: []string{assetcheckdetails.RealStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acdu.mutation.RealStoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealStoreTable,
+			Columns: []string{assetcheckdetails.RealStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acdu.mutation.RealCabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealCabinetTable,
+			Columns: []string{assetcheckdetails.RealCabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acdu.mutation.RealCabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealCabinetTable,
+			Columns: []string{assetcheckdetails.RealCabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acdu.mutation.RealStationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealStationTable,
+			Columns: []string{assetcheckdetails.RealStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acdu.mutation.RealStationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealStationTable,
+			Columns: []string{assetcheckdetails.RealStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acdu.mutation.RealRiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealRiderTable,
+			Columns: []string{assetcheckdetails.RealRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acdu.mutation.RealRiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealRiderTable,
+			Columns: []string{assetcheckdetails.RealRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acdu.mutation.RealOperatorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealOperatorTable,
+			Columns: []string{assetcheckdetails.RealOperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acdu.mutation.RealOperatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealOperatorTable,
+			Columns: []string{assetcheckdetails.RealOperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -376,6 +1336,26 @@ func (acduo *AssetCheckDetailsUpdateOne) ClearRemark() *AssetCheckDetailsUpdateO
 	return acduo
 }
 
+// SetMaintainerID sets the "maintainer_id" field.
+func (acduo *AssetCheckDetailsUpdateOne) SetMaintainerID(u uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetMaintainerID(u)
+	return acduo
+}
+
+// SetNillableMaintainerID sets the "maintainer_id" field if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableMaintainerID(u *uint64) *AssetCheckDetailsUpdateOne {
+	if u != nil {
+		acduo.SetMaintainerID(*u)
+	}
+	return acduo
+}
+
+// ClearMaintainerID clears the value of the "maintainer_id" field.
+func (acduo *AssetCheckDetailsUpdateOne) ClearMaintainerID() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearMaintainerID()
+	return acduo
+}
+
 // SetAssetID sets the "asset_id" field.
 func (acduo *AssetCheckDetailsUpdateOne) SetAssetID(u uint64) *AssetCheckDetailsUpdateOne {
 	acduo.mutation.SetAssetID(u)
@@ -416,6 +1396,206 @@ func (acduo *AssetCheckDetailsUpdateOne) ClearCheckID() *AssetCheckDetailsUpdate
 	return acduo
 }
 
+// SetRealLocationsID sets the "real_locations_id" field.
+func (acduo *AssetCheckDetailsUpdateOne) SetRealLocationsID(u uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetRealLocationsID(u)
+	return acduo
+}
+
+// SetNillableRealLocationsID sets the "real_locations_id" field if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableRealLocationsID(u *uint64) *AssetCheckDetailsUpdateOne {
+	if u != nil {
+		acduo.SetRealLocationsID(*u)
+	}
+	return acduo
+}
+
+// ClearRealLocationsID clears the value of the "real_locations_id" field.
+func (acduo *AssetCheckDetailsUpdateOne) ClearRealLocationsID() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearRealLocationsID()
+	return acduo
+}
+
+// SetRealLocationsType sets the "real_locations_type" field.
+func (acduo *AssetCheckDetailsUpdateOne) SetRealLocationsType(u uint8) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ResetRealLocationsType()
+	acduo.mutation.SetRealLocationsType(u)
+	return acduo
+}
+
+// SetNillableRealLocationsType sets the "real_locations_type" field if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableRealLocationsType(u *uint8) *AssetCheckDetailsUpdateOne {
+	if u != nil {
+		acduo.SetRealLocationsType(*u)
+	}
+	return acduo
+}
+
+// AddRealLocationsType adds u to the "real_locations_type" field.
+func (acduo *AssetCheckDetailsUpdateOne) AddRealLocationsType(u int8) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.AddRealLocationsType(u)
+	return acduo
+}
+
+// ClearRealLocationsType clears the value of the "real_locations_type" field.
+func (acduo *AssetCheckDetailsUpdateOne) ClearRealLocationsType() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearRealLocationsType()
+	return acduo
+}
+
+// SetLocationsID sets the "locations_id" field.
+func (acduo *AssetCheckDetailsUpdateOne) SetLocationsID(u uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetLocationsID(u)
+	return acduo
+}
+
+// SetNillableLocationsID sets the "locations_id" field if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableLocationsID(u *uint64) *AssetCheckDetailsUpdateOne {
+	if u != nil {
+		acduo.SetLocationsID(*u)
+	}
+	return acduo
+}
+
+// ClearLocationsID clears the value of the "locations_id" field.
+func (acduo *AssetCheckDetailsUpdateOne) ClearLocationsID() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearLocationsID()
+	return acduo
+}
+
+// SetLocationsType sets the "locations_type" field.
+func (acduo *AssetCheckDetailsUpdateOne) SetLocationsType(u uint8) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ResetLocationsType()
+	acduo.mutation.SetLocationsType(u)
+	return acduo
+}
+
+// SetNillableLocationsType sets the "locations_type" field if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableLocationsType(u *uint8) *AssetCheckDetailsUpdateOne {
+	if u != nil {
+		acduo.SetLocationsType(*u)
+	}
+	return acduo
+}
+
+// AddLocationsType adds u to the "locations_type" field.
+func (acduo *AssetCheckDetailsUpdateOne) AddLocationsType(u int8) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.AddLocationsType(u)
+	return acduo
+}
+
+// ClearLocationsType clears the value of the "locations_type" field.
+func (acduo *AssetCheckDetailsUpdateOne) ClearLocationsType() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearLocationsType()
+	return acduo
+}
+
+// SetStatus sets the "status" field.
+func (acduo *AssetCheckDetailsUpdateOne) SetStatus(u uint8) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ResetStatus()
+	acduo.mutation.SetStatus(u)
+	return acduo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableStatus(u *uint8) *AssetCheckDetailsUpdateOne {
+	if u != nil {
+		acduo.SetStatus(*u)
+	}
+	return acduo
+}
+
+// AddStatus adds u to the "status" field.
+func (acduo *AssetCheckDetailsUpdateOne) AddStatus(u int8) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.AddStatus(u)
+	return acduo
+}
+
+// ClearStatus clears the value of the "status" field.
+func (acduo *AssetCheckDetailsUpdateOne) ClearStatus() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearStatus()
+	return acduo
+}
+
+// SetResult sets the "result" field.
+func (acduo *AssetCheckDetailsUpdateOne) SetResult(u uint8) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ResetResult()
+	acduo.mutation.SetResult(u)
+	return acduo
+}
+
+// SetNillableResult sets the "result" field if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableResult(u *uint8) *AssetCheckDetailsUpdateOne {
+	if u != nil {
+		acduo.SetResult(*u)
+	}
+	return acduo
+}
+
+// AddResult adds u to the "result" field.
+func (acduo *AssetCheckDetailsUpdateOne) AddResult(u int8) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.AddResult(u)
+	return acduo
+}
+
+// ClearResult clears the value of the "result" field.
+func (acduo *AssetCheckDetailsUpdateOne) ClearResult() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearResult()
+	return acduo
+}
+
+// SetOperateID sets the "operate_id" field.
+func (acduo *AssetCheckDetailsUpdateOne) SetOperateID(u uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ResetOperateID()
+	acduo.mutation.SetOperateID(u)
+	return acduo
+}
+
+// SetNillableOperateID sets the "operate_id" field if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableOperateID(u *uint64) *AssetCheckDetailsUpdateOne {
+	if u != nil {
+		acduo.SetOperateID(*u)
+	}
+	return acduo
+}
+
+// AddOperateID adds u to the "operate_id" field.
+func (acduo *AssetCheckDetailsUpdateOne) AddOperateID(u int64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.AddOperateID(u)
+	return acduo
+}
+
+// ClearOperateID clears the value of the "operate_id" field.
+func (acduo *AssetCheckDetailsUpdateOne) ClearOperateID() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearOperateID()
+	return acduo
+}
+
+// SetOperateAt sets the "operate_at" field.
+func (acduo *AssetCheckDetailsUpdateOne) SetOperateAt(t time.Time) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetOperateAt(t)
+	return acduo
+}
+
+// SetNillableOperateAt sets the "operate_at" field if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableOperateAt(t *time.Time) *AssetCheckDetailsUpdateOne {
+	if t != nil {
+		acduo.SetOperateAt(*t)
+	}
+	return acduo
+}
+
+// ClearOperateAt clears the value of the "operate_at" field.
+func (acduo *AssetCheckDetailsUpdateOne) ClearOperateAt() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearOperateAt()
+	return acduo
+}
+
+// SetMaintainer sets the "maintainer" edge to the Maintainer entity.
+func (acduo *AssetCheckDetailsUpdateOne) SetMaintainer(m *Maintainer) *AssetCheckDetailsUpdateOne {
+	return acduo.SetMaintainerID(m.ID)
+}
+
 // SetAsset sets the "asset" edge to the Asset entity.
 func (acduo *AssetCheckDetailsUpdateOne) SetAsset(a *Asset) *AssetCheckDetailsUpdateOne {
 	return acduo.SetAssetID(a.ID)
@@ -426,9 +1606,243 @@ func (acduo *AssetCheckDetailsUpdateOne) SetCheck(a *AssetCheck) *AssetCheckDeta
 	return acduo.SetCheckID(a.ID)
 }
 
+// SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
+func (acduo *AssetCheckDetailsUpdateOne) SetWarehouseID(id uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetWarehouseID(id)
+	return acduo
+}
+
+// SetNillableWarehouseID sets the "warehouse" edge to the Warehouse entity by ID if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableWarehouseID(id *uint64) *AssetCheckDetailsUpdateOne {
+	if id != nil {
+		acduo = acduo.SetWarehouseID(*id)
+	}
+	return acduo
+}
+
+// SetWarehouse sets the "warehouse" edge to the Warehouse entity.
+func (acduo *AssetCheckDetailsUpdateOne) SetWarehouse(w *Warehouse) *AssetCheckDetailsUpdateOne {
+	return acduo.SetWarehouseID(w.ID)
+}
+
+// SetStoreID sets the "store" edge to the Store entity by ID.
+func (acduo *AssetCheckDetailsUpdateOne) SetStoreID(id uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetStoreID(id)
+	return acduo
+}
+
+// SetNillableStoreID sets the "store" edge to the Store entity by ID if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableStoreID(id *uint64) *AssetCheckDetailsUpdateOne {
+	if id != nil {
+		acduo = acduo.SetStoreID(*id)
+	}
+	return acduo
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (acduo *AssetCheckDetailsUpdateOne) SetStore(s *Store) *AssetCheckDetailsUpdateOne {
+	return acduo.SetStoreID(s.ID)
+}
+
+// SetCabinetID sets the "cabinet" edge to the Cabinet entity by ID.
+func (acduo *AssetCheckDetailsUpdateOne) SetCabinetID(id uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetCabinetID(id)
+	return acduo
+}
+
+// SetNillableCabinetID sets the "cabinet" edge to the Cabinet entity by ID if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableCabinetID(id *uint64) *AssetCheckDetailsUpdateOne {
+	if id != nil {
+		acduo = acduo.SetCabinetID(*id)
+	}
+	return acduo
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (acduo *AssetCheckDetailsUpdateOne) SetCabinet(c *Cabinet) *AssetCheckDetailsUpdateOne {
+	return acduo.SetCabinetID(c.ID)
+}
+
+// SetStationID sets the "station" edge to the EnterpriseStation entity by ID.
+func (acduo *AssetCheckDetailsUpdateOne) SetStationID(id uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetStationID(id)
+	return acduo
+}
+
+// SetNillableStationID sets the "station" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableStationID(id *uint64) *AssetCheckDetailsUpdateOne {
+	if id != nil {
+		acduo = acduo.SetStationID(*id)
+	}
+	return acduo
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (acduo *AssetCheckDetailsUpdateOne) SetStation(e *EnterpriseStation) *AssetCheckDetailsUpdateOne {
+	return acduo.SetStationID(e.ID)
+}
+
+// SetRiderID sets the "rider" edge to the Rider entity by ID.
+func (acduo *AssetCheckDetailsUpdateOne) SetRiderID(id uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetRiderID(id)
+	return acduo
+}
+
+// SetNillableRiderID sets the "rider" edge to the Rider entity by ID if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableRiderID(id *uint64) *AssetCheckDetailsUpdateOne {
+	if id != nil {
+		acduo = acduo.SetRiderID(*id)
+	}
+	return acduo
+}
+
+// SetRider sets the "rider" edge to the Rider entity.
+func (acduo *AssetCheckDetailsUpdateOne) SetRider(r *Rider) *AssetCheckDetailsUpdateOne {
+	return acduo.SetRiderID(r.ID)
+}
+
+// SetOperatorID sets the "operator" edge to the Maintainer entity by ID.
+func (acduo *AssetCheckDetailsUpdateOne) SetOperatorID(id uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetOperatorID(id)
+	return acduo
+}
+
+// SetNillableOperatorID sets the "operator" edge to the Maintainer entity by ID if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableOperatorID(id *uint64) *AssetCheckDetailsUpdateOne {
+	if id != nil {
+		acduo = acduo.SetOperatorID(*id)
+	}
+	return acduo
+}
+
+// SetOperator sets the "operator" edge to the Maintainer entity.
+func (acduo *AssetCheckDetailsUpdateOne) SetOperator(m *Maintainer) *AssetCheckDetailsUpdateOne {
+	return acduo.SetOperatorID(m.ID)
+}
+
+// SetRealWarehouseID sets the "real_warehouse" edge to the Warehouse entity by ID.
+func (acduo *AssetCheckDetailsUpdateOne) SetRealWarehouseID(id uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetRealWarehouseID(id)
+	return acduo
+}
+
+// SetNillableRealWarehouseID sets the "real_warehouse" edge to the Warehouse entity by ID if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableRealWarehouseID(id *uint64) *AssetCheckDetailsUpdateOne {
+	if id != nil {
+		acduo = acduo.SetRealWarehouseID(*id)
+	}
+	return acduo
+}
+
+// SetRealWarehouse sets the "real_warehouse" edge to the Warehouse entity.
+func (acduo *AssetCheckDetailsUpdateOne) SetRealWarehouse(w *Warehouse) *AssetCheckDetailsUpdateOne {
+	return acduo.SetRealWarehouseID(w.ID)
+}
+
+// SetRealStoreID sets the "real_store" edge to the Store entity by ID.
+func (acduo *AssetCheckDetailsUpdateOne) SetRealStoreID(id uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetRealStoreID(id)
+	return acduo
+}
+
+// SetNillableRealStoreID sets the "real_store" edge to the Store entity by ID if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableRealStoreID(id *uint64) *AssetCheckDetailsUpdateOne {
+	if id != nil {
+		acduo = acduo.SetRealStoreID(*id)
+	}
+	return acduo
+}
+
+// SetRealStore sets the "real_store" edge to the Store entity.
+func (acduo *AssetCheckDetailsUpdateOne) SetRealStore(s *Store) *AssetCheckDetailsUpdateOne {
+	return acduo.SetRealStoreID(s.ID)
+}
+
+// SetRealCabinetID sets the "real_cabinet" edge to the Cabinet entity by ID.
+func (acduo *AssetCheckDetailsUpdateOne) SetRealCabinetID(id uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetRealCabinetID(id)
+	return acduo
+}
+
+// SetNillableRealCabinetID sets the "real_cabinet" edge to the Cabinet entity by ID if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableRealCabinetID(id *uint64) *AssetCheckDetailsUpdateOne {
+	if id != nil {
+		acduo = acduo.SetRealCabinetID(*id)
+	}
+	return acduo
+}
+
+// SetRealCabinet sets the "real_cabinet" edge to the Cabinet entity.
+func (acduo *AssetCheckDetailsUpdateOne) SetRealCabinet(c *Cabinet) *AssetCheckDetailsUpdateOne {
+	return acduo.SetRealCabinetID(c.ID)
+}
+
+// SetRealStationID sets the "real_station" edge to the EnterpriseStation entity by ID.
+func (acduo *AssetCheckDetailsUpdateOne) SetRealStationID(id uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetRealStationID(id)
+	return acduo
+}
+
+// SetNillableRealStationID sets the "real_station" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableRealStationID(id *uint64) *AssetCheckDetailsUpdateOne {
+	if id != nil {
+		acduo = acduo.SetRealStationID(*id)
+	}
+	return acduo
+}
+
+// SetRealStation sets the "real_station" edge to the EnterpriseStation entity.
+func (acduo *AssetCheckDetailsUpdateOne) SetRealStation(e *EnterpriseStation) *AssetCheckDetailsUpdateOne {
+	return acduo.SetRealStationID(e.ID)
+}
+
+// SetRealRiderID sets the "real_rider" edge to the Rider entity by ID.
+func (acduo *AssetCheckDetailsUpdateOne) SetRealRiderID(id uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetRealRiderID(id)
+	return acduo
+}
+
+// SetNillableRealRiderID sets the "real_rider" edge to the Rider entity by ID if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableRealRiderID(id *uint64) *AssetCheckDetailsUpdateOne {
+	if id != nil {
+		acduo = acduo.SetRealRiderID(*id)
+	}
+	return acduo
+}
+
+// SetRealRider sets the "real_rider" edge to the Rider entity.
+func (acduo *AssetCheckDetailsUpdateOne) SetRealRider(r *Rider) *AssetCheckDetailsUpdateOne {
+	return acduo.SetRealRiderID(r.ID)
+}
+
+// SetRealOperatorID sets the "real_operator" edge to the Maintainer entity by ID.
+func (acduo *AssetCheckDetailsUpdateOne) SetRealOperatorID(id uint64) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetRealOperatorID(id)
+	return acduo
+}
+
+// SetNillableRealOperatorID sets the "real_operator" edge to the Maintainer entity by ID if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableRealOperatorID(id *uint64) *AssetCheckDetailsUpdateOne {
+	if id != nil {
+		acduo = acduo.SetRealOperatorID(*id)
+	}
+	return acduo
+}
+
+// SetRealOperator sets the "real_operator" edge to the Maintainer entity.
+func (acduo *AssetCheckDetailsUpdateOne) SetRealOperator(m *Maintainer) *AssetCheckDetailsUpdateOne {
+	return acduo.SetRealOperatorID(m.ID)
+}
+
 // Mutation returns the AssetCheckDetailsMutation object of the builder.
 func (acduo *AssetCheckDetailsUpdateOne) Mutation() *AssetCheckDetailsMutation {
 	return acduo.mutation
+}
+
+// ClearMaintainer clears the "maintainer" edge to the Maintainer entity.
+func (acduo *AssetCheckDetailsUpdateOne) ClearMaintainer() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearMaintainer()
+	return acduo
 }
 
 // ClearAsset clears the "asset" edge to the Asset entity.
@@ -440,6 +1854,78 @@ func (acduo *AssetCheckDetailsUpdateOne) ClearAsset() *AssetCheckDetailsUpdateOn
 // ClearCheck clears the "check" edge to the AssetCheck entity.
 func (acduo *AssetCheckDetailsUpdateOne) ClearCheck() *AssetCheckDetailsUpdateOne {
 	acduo.mutation.ClearCheck()
+	return acduo
+}
+
+// ClearWarehouse clears the "warehouse" edge to the Warehouse entity.
+func (acduo *AssetCheckDetailsUpdateOne) ClearWarehouse() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearWarehouse()
+	return acduo
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (acduo *AssetCheckDetailsUpdateOne) ClearStore() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearStore()
+	return acduo
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (acduo *AssetCheckDetailsUpdateOne) ClearCabinet() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearCabinet()
+	return acduo
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (acduo *AssetCheckDetailsUpdateOne) ClearStation() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearStation()
+	return acduo
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (acduo *AssetCheckDetailsUpdateOne) ClearRider() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearRider()
+	return acduo
+}
+
+// ClearOperator clears the "operator" edge to the Maintainer entity.
+func (acduo *AssetCheckDetailsUpdateOne) ClearOperator() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearOperator()
+	return acduo
+}
+
+// ClearRealWarehouse clears the "real_warehouse" edge to the Warehouse entity.
+func (acduo *AssetCheckDetailsUpdateOne) ClearRealWarehouse() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearRealWarehouse()
+	return acduo
+}
+
+// ClearRealStore clears the "real_store" edge to the Store entity.
+func (acduo *AssetCheckDetailsUpdateOne) ClearRealStore() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearRealStore()
+	return acduo
+}
+
+// ClearRealCabinet clears the "real_cabinet" edge to the Cabinet entity.
+func (acduo *AssetCheckDetailsUpdateOne) ClearRealCabinet() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearRealCabinet()
+	return acduo
+}
+
+// ClearRealStation clears the "real_station" edge to the EnterpriseStation entity.
+func (acduo *AssetCheckDetailsUpdateOne) ClearRealStation() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearRealStation()
+	return acduo
+}
+
+// ClearRealRider clears the "real_rider" edge to the Rider entity.
+func (acduo *AssetCheckDetailsUpdateOne) ClearRealRider() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearRealRider()
+	return acduo
+}
+
+// ClearRealOperator clears the "real_operator" edge to the Maintainer entity.
+func (acduo *AssetCheckDetailsUpdateOne) ClearRealOperator() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearRealOperator()
 	return acduo
 }
 
@@ -554,6 +2040,86 @@ func (acduo *AssetCheckDetailsUpdateOne) sqlSave(ctx context.Context) (_node *As
 	if acduo.mutation.RemarkCleared() {
 		_spec.ClearField(assetcheckdetails.FieldRemark, field.TypeString)
 	}
+	if value, ok := acduo.mutation.RealLocationsType(); ok {
+		_spec.SetField(assetcheckdetails.FieldRealLocationsType, field.TypeUint8, value)
+	}
+	if value, ok := acduo.mutation.AddedRealLocationsType(); ok {
+		_spec.AddField(assetcheckdetails.FieldRealLocationsType, field.TypeUint8, value)
+	}
+	if acduo.mutation.RealLocationsTypeCleared() {
+		_spec.ClearField(assetcheckdetails.FieldRealLocationsType, field.TypeUint8)
+	}
+	if value, ok := acduo.mutation.LocationsType(); ok {
+		_spec.SetField(assetcheckdetails.FieldLocationsType, field.TypeUint8, value)
+	}
+	if value, ok := acduo.mutation.AddedLocationsType(); ok {
+		_spec.AddField(assetcheckdetails.FieldLocationsType, field.TypeUint8, value)
+	}
+	if acduo.mutation.LocationsTypeCleared() {
+		_spec.ClearField(assetcheckdetails.FieldLocationsType, field.TypeUint8)
+	}
+	if value, ok := acduo.mutation.Status(); ok {
+		_spec.SetField(assetcheckdetails.FieldStatus, field.TypeUint8, value)
+	}
+	if value, ok := acduo.mutation.AddedStatus(); ok {
+		_spec.AddField(assetcheckdetails.FieldStatus, field.TypeUint8, value)
+	}
+	if acduo.mutation.StatusCleared() {
+		_spec.ClearField(assetcheckdetails.FieldStatus, field.TypeUint8)
+	}
+	if value, ok := acduo.mutation.Result(); ok {
+		_spec.SetField(assetcheckdetails.FieldResult, field.TypeUint8, value)
+	}
+	if value, ok := acduo.mutation.AddedResult(); ok {
+		_spec.AddField(assetcheckdetails.FieldResult, field.TypeUint8, value)
+	}
+	if acduo.mutation.ResultCleared() {
+		_spec.ClearField(assetcheckdetails.FieldResult, field.TypeUint8)
+	}
+	if value, ok := acduo.mutation.OperateID(); ok {
+		_spec.SetField(assetcheckdetails.FieldOperateID, field.TypeUint64, value)
+	}
+	if value, ok := acduo.mutation.AddedOperateID(); ok {
+		_spec.AddField(assetcheckdetails.FieldOperateID, field.TypeUint64, value)
+	}
+	if acduo.mutation.OperateIDCleared() {
+		_spec.ClearField(assetcheckdetails.FieldOperateID, field.TypeUint64)
+	}
+	if value, ok := acduo.mutation.OperateAt(); ok {
+		_spec.SetField(assetcheckdetails.FieldOperateAt, field.TypeTime, value)
+	}
+	if acduo.mutation.OperateAtCleared() {
+		_spec.ClearField(assetcheckdetails.FieldOperateAt, field.TypeTime)
+	}
+	if acduo.mutation.MaintainerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.MaintainerTable,
+			Columns: []string{assetcheckdetails.MaintainerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acduo.mutation.MaintainerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.MaintainerTable,
+			Columns: []string{assetcheckdetails.MaintainerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if acduo.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -605,6 +2171,354 @@ func (acduo *AssetCheckDetailsUpdateOne) sqlSave(ctx context.Context) (_node *As
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetcheck.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acduo.mutation.WarehouseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.WarehouseTable,
+			Columns: []string{assetcheckdetails.WarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acduo.mutation.WarehouseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.WarehouseTable,
+			Columns: []string{assetcheckdetails.WarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acduo.mutation.StoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.StoreTable,
+			Columns: []string{assetcheckdetails.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acduo.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.StoreTable,
+			Columns: []string{assetcheckdetails.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acduo.mutation.CabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.CabinetTable,
+			Columns: []string{assetcheckdetails.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acduo.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.CabinetTable,
+			Columns: []string{assetcheckdetails.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acduo.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.StationTable,
+			Columns: []string{assetcheckdetails.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acduo.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.StationTable,
+			Columns: []string{assetcheckdetails.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acduo.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RiderTable,
+			Columns: []string{assetcheckdetails.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acduo.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RiderTable,
+			Columns: []string{assetcheckdetails.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acduo.mutation.OperatorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.OperatorTable,
+			Columns: []string{assetcheckdetails.OperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acduo.mutation.OperatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.OperatorTable,
+			Columns: []string{assetcheckdetails.OperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acduo.mutation.RealWarehouseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealWarehouseTable,
+			Columns: []string{assetcheckdetails.RealWarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acduo.mutation.RealWarehouseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealWarehouseTable,
+			Columns: []string{assetcheckdetails.RealWarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acduo.mutation.RealStoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealStoreTable,
+			Columns: []string{assetcheckdetails.RealStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acduo.mutation.RealStoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealStoreTable,
+			Columns: []string{assetcheckdetails.RealStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acduo.mutation.RealCabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealCabinetTable,
+			Columns: []string{assetcheckdetails.RealCabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acduo.mutation.RealCabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealCabinetTable,
+			Columns: []string{assetcheckdetails.RealCabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acduo.mutation.RealStationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealStationTable,
+			Columns: []string{assetcheckdetails.RealStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acduo.mutation.RealStationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealStationTable,
+			Columns: []string{assetcheckdetails.RealStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acduo.mutation.RealRiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealRiderTable,
+			Columns: []string{assetcheckdetails.RealRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acduo.mutation.RealRiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealRiderTable,
+			Columns: []string{assetcheckdetails.RealRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if acduo.mutation.RealOperatorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealOperatorTable,
+			Columns: []string{assetcheckdetails.RealOperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acduo.mutation.RealOperatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealOperatorTable,
+			Columns: []string{assetcheckdetails.RealOperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

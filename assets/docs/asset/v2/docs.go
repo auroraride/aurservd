@@ -168,6 +168,7 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
+                            0,
                             1,
                             2,
                             3,
@@ -175,7 +176,23 @@ const docTemplate = `{
                             5
                         ],
                         "type": "integer",
-                        "description": "资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障",
+                        "x-enum-comments": {
+                            "AssetStatusDelivering": "配送中",
+                            "AssetStatusFault": "故障",
+                            "AssetStatusPending": "待入库",
+                            "AssetStatusScrap": "报废",
+                            "AssetStatusStock": "库存中",
+                            "AssetStatusUsing": "使用中"
+                        },
+                        "x-enum-varnames": [
+                            "AssetStatusPending",
+                            "AssetStatusStock",
+                            "AssetStatusDelivering",
+                            "AssetStatusUsing",
+                            "AssetStatusFault",
+                            "AssetStatusScrap"
+                        ],
+                        "description": "资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废",
                         "name": "status",
                         "in": "query"
                     }
@@ -539,7 +556,7 @@ const docTemplate = `{
                 "tags": [
                     "资产"
                 ],
-                "summary": "资产统计",
+                "summary": "查询有效的资产数量",
                 "operationId": "AssetCount",
                 "parameters": [
                     {
@@ -669,6 +686,7 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
+                            0,
                             1,
                             2,
                             3,
@@ -676,7 +694,23 @@ const docTemplate = `{
                             5
                         ],
                         "type": "integer",
-                        "description": "资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障",
+                        "x-enum-comments": {
+                            "AssetStatusDelivering": "配送中",
+                            "AssetStatusFault": "故障",
+                            "AssetStatusPending": "待入库",
+                            "AssetStatusScrap": "报废",
+                            "AssetStatusStock": "库存中",
+                            "AssetStatusUsing": "使用中"
+                        },
+                        "x-enum-varnames": [
+                            "AssetStatusPending",
+                            "AssetStatusStock",
+                            "AssetStatusDelivering",
+                            "AssetStatusUsing",
+                            "AssetStatusFault",
+                            "AssetStatusScrap"
+                        ],
+                        "description": "资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废",
                         "name": "status",
                         "in": "query"
                     }
@@ -1516,7 +1550,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "电池型号ID",
-                        "name": "modelID",
+                        "name": "modelId",
                         "in": "query"
                     },
                     {
@@ -3951,8 +3985,10 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "details",
+                "endAt",
                 "locationsId",
-                "locationsType"
+                "locationsType",
+                "startAt"
             ],
             "properties": {
                 "details": {
@@ -3961,6 +3997,10 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.AssetCheckCreateDetail"
                     }
+                },
+                "endAt": {
+                    "description": "盘点结束时间",
+                    "type": "string"
                 },
                 "locationsId": {
                     "description": "位置ID",
@@ -3985,6 +4025,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.AssetOperateRoleType"
                         }
                     ]
+                },
+                "startAt": {
+                    "description": "盘点开始时间",
+                    "type": "string"
                 }
             }
         },
@@ -4130,14 +4174,18 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "status": {
-                    "description": "资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障",
-                    "type": "integer",
+                    "description": "资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废",
                     "enum": [
                         1,
                         2,
                         3,
                         4,
                         5
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetStatus"
+                        }
                     ]
                 }
             }
@@ -4599,6 +4647,33 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AssetStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "x-enum-comments": {
+                "AssetStatusDelivering": "配送中",
+                "AssetStatusFault": "故障",
+                "AssetStatusPending": "待入库",
+                "AssetStatusScrap": "报废",
+                "AssetStatusStock": "库存中",
+                "AssetStatusUsing": "使用中"
+            },
+            "x-enum-varnames": [
+                "AssetStatusPending",
+                "AssetStatusStock",
+                "AssetStatusDelivering",
+                "AssetStatusUsing",
+                "AssetStatusFault",
+                "AssetStatusScrap"
+            ]
+        },
         "model.AssetTransferCreateDetail": {
             "type": "object",
             "required": [
@@ -4617,10 +4692,6 @@ const docTemplate = `{
                     "description": "其它物资分类ID",
                     "type": "integer"
                 },
-                "name": {
-                    "description": "资产名称",
-                    "type": "string"
-                },
                 "num": {
                     "description": "调拨数量",
                     "type": "integer"
@@ -4634,7 +4705,6 @@ const docTemplate = `{
         "model.AssetTransferCreateReq": {
             "type": "object",
             "required": [
-                "details",
                 "reason",
                 "toLocationID",
                 "toLocationType"

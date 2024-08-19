@@ -51,8 +51,8 @@ const (
 	FieldLocationsID = "locations_id"
 	// FieldRtoRiderID holds the string denoting the rto_rider_id field in the database.
 	FieldRtoRiderID = "rto_rider_id"
-	// FieldInventoryAt holds the string denoting the inventory_at field in the database.
-	FieldInventoryAt = "inventory_at"
+	// FieldCheckAt holds the string denoting the check_at field in the database.
+	FieldCheckAt = "check_at"
 	// FieldBrandName holds the string denoting the brand_name field in the database.
 	FieldBrandName = "brand_name"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
@@ -215,7 +215,7 @@ var Columns = []string{
 	FieldLocationsType,
 	FieldLocationsID,
 	FieldRtoRiderID,
-	FieldInventoryAt,
+	FieldCheckAt,
 	FieldBrandName,
 }
 
@@ -336,9 +336,9 @@ func ByRtoRiderID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRtoRiderID, opts...).ToFunc()
 }
 
-// ByInventoryAt orders the results by the inventory_at field.
-func ByInventoryAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldInventoryAt, opts...).ToFunc()
+// ByCheckAt orders the results by the check_at field.
+func ByCheckAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCheckAt, opts...).ToFunc()
 }
 
 // ByBrandName orders the results by the brand_name field.

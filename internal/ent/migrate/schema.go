@@ -294,7 +294,7 @@ var (
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: false},
 		{Name: "locations_type", Type: field.TypeUint8, Nullable: true, Comment: "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"},
 		{Name: "rto_rider_id", Type: field.TypeUint64, Nullable: true, Comment: "以租代购骑手ID，生成后禁止修改"},
-		{Name: "inventory_at", Type: field.TypeTime, Nullable: true, Comment: "盘点时间"},
+		{Name: "check_at", Type: field.TypeTime, Nullable: true, Comment: "盘点时间"},
 		{Name: "brand_name", Type: field.TypeString, Nullable: true, Comment: "品牌名称"},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "model_id", Type: field.TypeUint64, Nullable: true},
@@ -546,8 +546,17 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "real_locations_type", Type: field.TypeUint8, Nullable: true, Comment: "实际位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"},
+		{Name: "locations_type", Type: field.TypeUint8, Nullable: true, Comment: "原位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"},
+		{Name: "status", Type: field.TypeUint8, Nullable: true, Comment: "处理状态 0:未处理 1:已入库 2:已出库 3:已报废", Default: 0},
+		{Name: "result", Type: field.TypeUint8, Nullable: true, Comment: "盘点结果 0:正常 1:亏 2:盈", Default: 0},
+		{Name: "operate_id", Type: field.TypeUint64, Nullable: true, Comment: "操作人id"},
+		{Name: "operate_at", Type: field.TypeTime, Nullable: true, Comment: "处理时间"},
 		{Name: "asset_id", Type: field.TypeUint64, Nullable: true, Comment: "资产ID"},
 		{Name: "check_id", Type: field.TypeUint64, Nullable: true, Comment: "盘点ID"},
+		{Name: "maintainer_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "locations_id", Type: field.TypeUint64, Nullable: true, Comment: "原位置ID"},
+		{Name: "real_locations_id", Type: field.TypeUint64, Nullable: true, Comment: "实际位置ID"},
 	}
 	// AssetCheckDetailsTable holds the schema information for the "asset_check_details" table.
 	AssetCheckDetailsTable = &schema.Table{
@@ -557,14 +566,92 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "asset_check_details_asset_check_details",
-				Columns:    []*schema.Column{AssetCheckDetailsColumns[7]},
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[13]},
 				RefColumns: []*schema.Column{AssetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_check_details_asset_check_check_details",
-				Columns:    []*schema.Column{AssetCheckDetailsColumns[8]},
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[14]},
 				RefColumns: []*schema.Column{AssetCheckColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_details_maintainer_maintainer",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[15]},
+				RefColumns: []*schema.Column{MaintainerColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_details_warehouse_warehouse",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[16]},
+				RefColumns: []*schema.Column{WarehouseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_details_store_store",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[16]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_details_cabinet_cabinet",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[16]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_details_enterprise_station_station",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[16]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_details_rider_rider",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[16]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_details_maintainer_operator",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[16]},
+				RefColumns: []*schema.Column{MaintainerColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_details_warehouse_real_warehouse",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[17]},
+				RefColumns: []*schema.Column{WarehouseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_details_store_real_store",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[17]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_details_cabinet_real_cabinet",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[17]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_details_enterprise_station_real_station",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[17]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_details_rider_real_rider",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[17]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_check_details_maintainer_real_operator",
+				Columns:    []*schema.Column{AssetCheckDetailsColumns[17]},
+				RefColumns: []*schema.Column{MaintainerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -578,6 +665,11 @@ var (
 				Name:    "assetcheckdetails_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{AssetCheckDetailsColumns[3]},
+			},
+			{
+				Name:    "assetcheckdetails_maintainer_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetCheckDetailsColumns[15]},
 			},
 		},
 	}
@@ -7328,6 +7420,19 @@ func init() {
 	}
 	AssetCheckDetailsTable.ForeignKeys[0].RefTable = AssetTable
 	AssetCheckDetailsTable.ForeignKeys[1].RefTable = AssetCheckTable
+	AssetCheckDetailsTable.ForeignKeys[2].RefTable = MaintainerTable
+	AssetCheckDetailsTable.ForeignKeys[3].RefTable = WarehouseTable
+	AssetCheckDetailsTable.ForeignKeys[4].RefTable = StoreTable
+	AssetCheckDetailsTable.ForeignKeys[5].RefTable = CabinetTable
+	AssetCheckDetailsTable.ForeignKeys[6].RefTable = EnterpriseStationTable
+	AssetCheckDetailsTable.ForeignKeys[7].RefTable = RiderTable
+	AssetCheckDetailsTable.ForeignKeys[8].RefTable = MaintainerTable
+	AssetCheckDetailsTable.ForeignKeys[9].RefTable = WarehouseTable
+	AssetCheckDetailsTable.ForeignKeys[10].RefTable = StoreTable
+	AssetCheckDetailsTable.ForeignKeys[11].RefTable = CabinetTable
+	AssetCheckDetailsTable.ForeignKeys[12].RefTable = EnterpriseStationTable
+	AssetCheckDetailsTable.ForeignKeys[13].RefTable = RiderTable
+	AssetCheckDetailsTable.ForeignKeys[14].RefTable = MaintainerTable
 	AssetCheckDetailsTable.Annotation = &entsql.Annotation{
 		Table: "asset_check_details",
 	}

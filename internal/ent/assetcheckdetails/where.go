@@ -75,6 +75,11 @@ func Remark(v string) predicate.AssetCheckDetails {
 	return predicate.AssetCheckDetails(sql.FieldEQ(FieldRemark, v))
 }
 
+// MaintainerID applies equality check predicate on the "maintainer_id" field. It's identical to MaintainerIDEQ.
+func MaintainerID(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldMaintainerID, v))
+}
+
 // AssetID applies equality check predicate on the "asset_id" field. It's identical to AssetIDEQ.
 func AssetID(v uint64) predicate.AssetCheckDetails {
 	return predicate.AssetCheckDetails(sql.FieldEQ(FieldAssetID, v))
@@ -83,6 +88,46 @@ func AssetID(v uint64) predicate.AssetCheckDetails {
 // CheckID applies equality check predicate on the "check_id" field. It's identical to CheckIDEQ.
 func CheckID(v uint64) predicate.AssetCheckDetails {
 	return predicate.AssetCheckDetails(sql.FieldEQ(FieldCheckID, v))
+}
+
+// RealLocationsID applies equality check predicate on the "real_locations_id" field. It's identical to RealLocationsIDEQ.
+func RealLocationsID(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldRealLocationsID, v))
+}
+
+// RealLocationsType applies equality check predicate on the "real_locations_type" field. It's identical to RealLocationsTypeEQ.
+func RealLocationsType(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldRealLocationsType, v))
+}
+
+// LocationsID applies equality check predicate on the "locations_id" field. It's identical to LocationsIDEQ.
+func LocationsID(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldLocationsID, v))
+}
+
+// LocationsType applies equality check predicate on the "locations_type" field. It's identical to LocationsTypeEQ.
+func LocationsType(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldLocationsType, v))
+}
+
+// Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
+func Status(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldStatus, v))
+}
+
+// Result applies equality check predicate on the "result" field. It's identical to ResultEQ.
+func Result(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldResult, v))
+}
+
+// OperateID applies equality check predicate on the "operate_id" field. It's identical to OperateIDEQ.
+func OperateID(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldOperateID, v))
+}
+
+// OperateAt applies equality check predicate on the "operate_at" field. It's identical to OperateAtEQ.
+func OperateAt(v time.Time) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldOperateAt, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -310,6 +355,36 @@ func RemarkContainsFold(v string) predicate.AssetCheckDetails {
 	return predicate.AssetCheckDetails(sql.FieldContainsFold(FieldRemark, v))
 }
 
+// MaintainerIDEQ applies the EQ predicate on the "maintainer_id" field.
+func MaintainerIDEQ(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldMaintainerID, v))
+}
+
+// MaintainerIDNEQ applies the NEQ predicate on the "maintainer_id" field.
+func MaintainerIDNEQ(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNEQ(FieldMaintainerID, v))
+}
+
+// MaintainerIDIn applies the In predicate on the "maintainer_id" field.
+func MaintainerIDIn(vs ...uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIn(FieldMaintainerID, vs...))
+}
+
+// MaintainerIDNotIn applies the NotIn predicate on the "maintainer_id" field.
+func MaintainerIDNotIn(vs ...uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotIn(FieldMaintainerID, vs...))
+}
+
+// MaintainerIDIsNil applies the IsNil predicate on the "maintainer_id" field.
+func MaintainerIDIsNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIsNull(FieldMaintainerID))
+}
+
+// MaintainerIDNotNil applies the NotNil predicate on the "maintainer_id" field.
+func MaintainerIDNotNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotNull(FieldMaintainerID))
+}
+
 // AssetIDEQ applies the EQ predicate on the "asset_id" field.
 func AssetIDEQ(v uint64) predicate.AssetCheckDetails {
 	return predicate.AssetCheckDetails(sql.FieldEQ(FieldAssetID, v))
@@ -370,6 +445,389 @@ func CheckIDNotNil() predicate.AssetCheckDetails {
 	return predicate.AssetCheckDetails(sql.FieldNotNull(FieldCheckID))
 }
 
+// RealLocationsIDEQ applies the EQ predicate on the "real_locations_id" field.
+func RealLocationsIDEQ(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldRealLocationsID, v))
+}
+
+// RealLocationsIDNEQ applies the NEQ predicate on the "real_locations_id" field.
+func RealLocationsIDNEQ(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNEQ(FieldRealLocationsID, v))
+}
+
+// RealLocationsIDIn applies the In predicate on the "real_locations_id" field.
+func RealLocationsIDIn(vs ...uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIn(FieldRealLocationsID, vs...))
+}
+
+// RealLocationsIDNotIn applies the NotIn predicate on the "real_locations_id" field.
+func RealLocationsIDNotIn(vs ...uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotIn(FieldRealLocationsID, vs...))
+}
+
+// RealLocationsIDIsNil applies the IsNil predicate on the "real_locations_id" field.
+func RealLocationsIDIsNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIsNull(FieldRealLocationsID))
+}
+
+// RealLocationsIDNotNil applies the NotNil predicate on the "real_locations_id" field.
+func RealLocationsIDNotNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotNull(FieldRealLocationsID))
+}
+
+// RealLocationsTypeEQ applies the EQ predicate on the "real_locations_type" field.
+func RealLocationsTypeEQ(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldRealLocationsType, v))
+}
+
+// RealLocationsTypeNEQ applies the NEQ predicate on the "real_locations_type" field.
+func RealLocationsTypeNEQ(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNEQ(FieldRealLocationsType, v))
+}
+
+// RealLocationsTypeIn applies the In predicate on the "real_locations_type" field.
+func RealLocationsTypeIn(vs ...uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIn(FieldRealLocationsType, vs...))
+}
+
+// RealLocationsTypeNotIn applies the NotIn predicate on the "real_locations_type" field.
+func RealLocationsTypeNotIn(vs ...uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotIn(FieldRealLocationsType, vs...))
+}
+
+// RealLocationsTypeGT applies the GT predicate on the "real_locations_type" field.
+func RealLocationsTypeGT(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldGT(FieldRealLocationsType, v))
+}
+
+// RealLocationsTypeGTE applies the GTE predicate on the "real_locations_type" field.
+func RealLocationsTypeGTE(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldGTE(FieldRealLocationsType, v))
+}
+
+// RealLocationsTypeLT applies the LT predicate on the "real_locations_type" field.
+func RealLocationsTypeLT(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldLT(FieldRealLocationsType, v))
+}
+
+// RealLocationsTypeLTE applies the LTE predicate on the "real_locations_type" field.
+func RealLocationsTypeLTE(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldLTE(FieldRealLocationsType, v))
+}
+
+// RealLocationsTypeIsNil applies the IsNil predicate on the "real_locations_type" field.
+func RealLocationsTypeIsNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIsNull(FieldRealLocationsType))
+}
+
+// RealLocationsTypeNotNil applies the NotNil predicate on the "real_locations_type" field.
+func RealLocationsTypeNotNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotNull(FieldRealLocationsType))
+}
+
+// LocationsIDEQ applies the EQ predicate on the "locations_id" field.
+func LocationsIDEQ(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldLocationsID, v))
+}
+
+// LocationsIDNEQ applies the NEQ predicate on the "locations_id" field.
+func LocationsIDNEQ(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNEQ(FieldLocationsID, v))
+}
+
+// LocationsIDIn applies the In predicate on the "locations_id" field.
+func LocationsIDIn(vs ...uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIn(FieldLocationsID, vs...))
+}
+
+// LocationsIDNotIn applies the NotIn predicate on the "locations_id" field.
+func LocationsIDNotIn(vs ...uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotIn(FieldLocationsID, vs...))
+}
+
+// LocationsIDIsNil applies the IsNil predicate on the "locations_id" field.
+func LocationsIDIsNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIsNull(FieldLocationsID))
+}
+
+// LocationsIDNotNil applies the NotNil predicate on the "locations_id" field.
+func LocationsIDNotNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotNull(FieldLocationsID))
+}
+
+// LocationsTypeEQ applies the EQ predicate on the "locations_type" field.
+func LocationsTypeEQ(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldLocationsType, v))
+}
+
+// LocationsTypeNEQ applies the NEQ predicate on the "locations_type" field.
+func LocationsTypeNEQ(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNEQ(FieldLocationsType, v))
+}
+
+// LocationsTypeIn applies the In predicate on the "locations_type" field.
+func LocationsTypeIn(vs ...uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIn(FieldLocationsType, vs...))
+}
+
+// LocationsTypeNotIn applies the NotIn predicate on the "locations_type" field.
+func LocationsTypeNotIn(vs ...uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotIn(FieldLocationsType, vs...))
+}
+
+// LocationsTypeGT applies the GT predicate on the "locations_type" field.
+func LocationsTypeGT(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldGT(FieldLocationsType, v))
+}
+
+// LocationsTypeGTE applies the GTE predicate on the "locations_type" field.
+func LocationsTypeGTE(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldGTE(FieldLocationsType, v))
+}
+
+// LocationsTypeLT applies the LT predicate on the "locations_type" field.
+func LocationsTypeLT(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldLT(FieldLocationsType, v))
+}
+
+// LocationsTypeLTE applies the LTE predicate on the "locations_type" field.
+func LocationsTypeLTE(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldLTE(FieldLocationsType, v))
+}
+
+// LocationsTypeIsNil applies the IsNil predicate on the "locations_type" field.
+func LocationsTypeIsNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIsNull(FieldLocationsType))
+}
+
+// LocationsTypeNotNil applies the NotNil predicate on the "locations_type" field.
+func LocationsTypeNotNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotNull(FieldLocationsType))
+}
+
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldStatus, v))
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNEQ(FieldStatus, v))
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIn(FieldStatus, vs...))
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotIn(FieldStatus, vs...))
+}
+
+// StatusGT applies the GT predicate on the "status" field.
+func StatusGT(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldGT(FieldStatus, v))
+}
+
+// StatusGTE applies the GTE predicate on the "status" field.
+func StatusGTE(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldGTE(FieldStatus, v))
+}
+
+// StatusLT applies the LT predicate on the "status" field.
+func StatusLT(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldLT(FieldStatus, v))
+}
+
+// StatusLTE applies the LTE predicate on the "status" field.
+func StatusLTE(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldLTE(FieldStatus, v))
+}
+
+// StatusIsNil applies the IsNil predicate on the "status" field.
+func StatusIsNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIsNull(FieldStatus))
+}
+
+// StatusNotNil applies the NotNil predicate on the "status" field.
+func StatusNotNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotNull(FieldStatus))
+}
+
+// ResultEQ applies the EQ predicate on the "result" field.
+func ResultEQ(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldResult, v))
+}
+
+// ResultNEQ applies the NEQ predicate on the "result" field.
+func ResultNEQ(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNEQ(FieldResult, v))
+}
+
+// ResultIn applies the In predicate on the "result" field.
+func ResultIn(vs ...uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIn(FieldResult, vs...))
+}
+
+// ResultNotIn applies the NotIn predicate on the "result" field.
+func ResultNotIn(vs ...uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotIn(FieldResult, vs...))
+}
+
+// ResultGT applies the GT predicate on the "result" field.
+func ResultGT(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldGT(FieldResult, v))
+}
+
+// ResultGTE applies the GTE predicate on the "result" field.
+func ResultGTE(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldGTE(FieldResult, v))
+}
+
+// ResultLT applies the LT predicate on the "result" field.
+func ResultLT(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldLT(FieldResult, v))
+}
+
+// ResultLTE applies the LTE predicate on the "result" field.
+func ResultLTE(v uint8) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldLTE(FieldResult, v))
+}
+
+// ResultIsNil applies the IsNil predicate on the "result" field.
+func ResultIsNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIsNull(FieldResult))
+}
+
+// ResultNotNil applies the NotNil predicate on the "result" field.
+func ResultNotNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotNull(FieldResult))
+}
+
+// OperateIDEQ applies the EQ predicate on the "operate_id" field.
+func OperateIDEQ(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldOperateID, v))
+}
+
+// OperateIDNEQ applies the NEQ predicate on the "operate_id" field.
+func OperateIDNEQ(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNEQ(FieldOperateID, v))
+}
+
+// OperateIDIn applies the In predicate on the "operate_id" field.
+func OperateIDIn(vs ...uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIn(FieldOperateID, vs...))
+}
+
+// OperateIDNotIn applies the NotIn predicate on the "operate_id" field.
+func OperateIDNotIn(vs ...uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotIn(FieldOperateID, vs...))
+}
+
+// OperateIDGT applies the GT predicate on the "operate_id" field.
+func OperateIDGT(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldGT(FieldOperateID, v))
+}
+
+// OperateIDGTE applies the GTE predicate on the "operate_id" field.
+func OperateIDGTE(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldGTE(FieldOperateID, v))
+}
+
+// OperateIDLT applies the LT predicate on the "operate_id" field.
+func OperateIDLT(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldLT(FieldOperateID, v))
+}
+
+// OperateIDLTE applies the LTE predicate on the "operate_id" field.
+func OperateIDLTE(v uint64) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldLTE(FieldOperateID, v))
+}
+
+// OperateIDIsNil applies the IsNil predicate on the "operate_id" field.
+func OperateIDIsNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIsNull(FieldOperateID))
+}
+
+// OperateIDNotNil applies the NotNil predicate on the "operate_id" field.
+func OperateIDNotNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotNull(FieldOperateID))
+}
+
+// OperateAtEQ applies the EQ predicate on the "operate_at" field.
+func OperateAtEQ(v time.Time) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldEQ(FieldOperateAt, v))
+}
+
+// OperateAtNEQ applies the NEQ predicate on the "operate_at" field.
+func OperateAtNEQ(v time.Time) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNEQ(FieldOperateAt, v))
+}
+
+// OperateAtIn applies the In predicate on the "operate_at" field.
+func OperateAtIn(vs ...time.Time) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIn(FieldOperateAt, vs...))
+}
+
+// OperateAtNotIn applies the NotIn predicate on the "operate_at" field.
+func OperateAtNotIn(vs ...time.Time) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotIn(FieldOperateAt, vs...))
+}
+
+// OperateAtGT applies the GT predicate on the "operate_at" field.
+func OperateAtGT(v time.Time) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldGT(FieldOperateAt, v))
+}
+
+// OperateAtGTE applies the GTE predicate on the "operate_at" field.
+func OperateAtGTE(v time.Time) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldGTE(FieldOperateAt, v))
+}
+
+// OperateAtLT applies the LT predicate on the "operate_at" field.
+func OperateAtLT(v time.Time) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldLT(FieldOperateAt, v))
+}
+
+// OperateAtLTE applies the LTE predicate on the "operate_at" field.
+func OperateAtLTE(v time.Time) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldLTE(FieldOperateAt, v))
+}
+
+// OperateAtIsNil applies the IsNil predicate on the "operate_at" field.
+func OperateAtIsNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldIsNull(FieldOperateAt))
+}
+
+// OperateAtNotNil applies the NotNil predicate on the "operate_at" field.
+func OperateAtNotNil() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(sql.FieldNotNull(FieldOperateAt))
+}
+
+// HasMaintainer applies the HasEdge predicate on the "maintainer" edge.
+func HasMaintainer() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, MaintainerTable, MaintainerColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMaintainerWith applies the HasEdge predicate on the "maintainer" edge with a given conditions (other predicates).
+func HasMaintainerWith(preds ...predicate.Maintainer) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := newMaintainerStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasAsset applies the HasEdge predicate on the "asset" edge.
 func HasAsset() predicate.AssetCheckDetails {
 	return predicate.AssetCheckDetails(func(s *sql.Selector) {
@@ -408,6 +866,282 @@ func HasCheck() predicate.AssetCheckDetails {
 func HasCheckWith(preds ...predicate.AssetCheck) predicate.AssetCheckDetails {
 	return predicate.AssetCheckDetails(func(s *sql.Selector) {
 		step := newCheckStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasWarehouse applies the HasEdge predicate on the "warehouse" edge.
+func HasWarehouse() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, WarehouseTable, WarehouseColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasWarehouseWith applies the HasEdge predicate on the "warehouse" edge with a given conditions (other predicates).
+func HasWarehouseWith(preds ...predicate.Warehouse) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := newWarehouseStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStore applies the HasEdge predicate on the "store" edge.
+func HasStore() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStoreWith applies the HasEdge predicate on the "store" edge with a given conditions (other predicates).
+func HasStoreWith(preds ...predicate.Store) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := newStoreStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCabinet applies the HasEdge predicate on the "cabinet" edge.
+func HasCabinet() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCabinetWith applies the HasEdge predicate on the "cabinet" edge with a given conditions (other predicates).
+func HasCabinetWith(preds ...predicate.Cabinet) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := newCabinetStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStation applies the HasEdge predicate on the "station" edge.
+func HasStation() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStationWith applies the HasEdge predicate on the "station" edge with a given conditions (other predicates).
+func HasStationWith(preds ...predicate.EnterpriseStation) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := newStationStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRider applies the HasEdge predicate on the "rider" edge.
+func HasRider() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
+func HasRiderWith(preds ...predicate.Rider) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := newRiderStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasOperator applies the HasEdge predicate on the "operator" edge.
+func HasOperator() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, OperatorTable, OperatorColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasOperatorWith applies the HasEdge predicate on the "operator" edge with a given conditions (other predicates).
+func HasOperatorWith(preds ...predicate.Maintainer) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := newOperatorStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRealWarehouse applies the HasEdge predicate on the "real_warehouse" edge.
+func HasRealWarehouse() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RealWarehouseTable, RealWarehouseColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRealWarehouseWith applies the HasEdge predicate on the "real_warehouse" edge with a given conditions (other predicates).
+func HasRealWarehouseWith(preds ...predicate.Warehouse) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := newRealWarehouseStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRealStore applies the HasEdge predicate on the "real_store" edge.
+func HasRealStore() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RealStoreTable, RealStoreColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRealStoreWith applies the HasEdge predicate on the "real_store" edge with a given conditions (other predicates).
+func HasRealStoreWith(preds ...predicate.Store) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := newRealStoreStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRealCabinet applies the HasEdge predicate on the "real_cabinet" edge.
+func HasRealCabinet() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RealCabinetTable, RealCabinetColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRealCabinetWith applies the HasEdge predicate on the "real_cabinet" edge with a given conditions (other predicates).
+func HasRealCabinetWith(preds ...predicate.Cabinet) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := newRealCabinetStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRealStation applies the HasEdge predicate on the "real_station" edge.
+func HasRealStation() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RealStationTable, RealStationColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRealStationWith applies the HasEdge predicate on the "real_station" edge with a given conditions (other predicates).
+func HasRealStationWith(preds ...predicate.EnterpriseStation) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := newRealStationStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRealRider applies the HasEdge predicate on the "real_rider" edge.
+func HasRealRider() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RealRiderTable, RealRiderColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRealRiderWith applies the HasEdge predicate on the "real_rider" edge with a given conditions (other predicates).
+func HasRealRiderWith(preds ...predicate.Rider) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := newRealRiderStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRealOperator applies the HasEdge predicate on the "real_operator" edge.
+func HasRealOperator() predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RealOperatorTable, RealOperatorColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRealOperatorWith applies the HasEdge predicate on the "real_operator" edge with a given conditions (other predicates).
+func HasRealOperatorWith(preds ...predicate.Maintainer) predicate.AssetCheckDetails {
+	return predicate.AssetCheckDetails(func(s *sql.Selector) {
+		step := newRealOperatorStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

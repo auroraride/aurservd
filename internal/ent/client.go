@@ -2812,6 +2812,22 @@ func (c *AssetCheckDetailsClient) GetX(ctx context.Context, id uint64) *AssetChe
 	return obj
 }
 
+// QueryMaintainer queries the maintainer edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryMaintainer(acd *AssetCheckDetails) *MaintainerQuery {
+	query := (&MaintainerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(maintainer.Table, maintainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.MaintainerTable, assetcheckdetails.MaintainerColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryAsset queries the asset edge of a AssetCheckDetails.
 func (c *AssetCheckDetailsClient) QueryAsset(acd *AssetCheckDetails) *AssetQuery {
 	query := (&AssetClient{config: c.config}).Query()
@@ -2837,6 +2853,198 @@ func (c *AssetCheckDetailsClient) QueryCheck(acd *AssetCheckDetails) *AssetCheck
 			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
 			sqlgraph.To(assetcheck.Table, assetcheck.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, assetcheckdetails.CheckTable, assetcheckdetails.CheckColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryWarehouse queries the warehouse edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryWarehouse(acd *AssetCheckDetails) *WarehouseQuery {
+	query := (&WarehouseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(warehouse.Table, warehouse.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.WarehouseTable, assetcheckdetails.WarehouseColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryStore(acd *AssetCheckDetails) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.StoreTable, assetcheckdetails.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinet queries the cabinet edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryCabinet(acd *AssetCheckDetails) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.CabinetTable, assetcheckdetails.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStation queries the station edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryStation(acd *AssetCheckDetails) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.StationTable, assetcheckdetails.StationColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryRider(acd *AssetCheckDetails) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.RiderTable, assetcheckdetails.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOperator queries the operator edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryOperator(acd *AssetCheckDetails) *MaintainerQuery {
+	query := (&MaintainerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(maintainer.Table, maintainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.OperatorTable, assetcheckdetails.OperatorColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRealWarehouse queries the real_warehouse edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryRealWarehouse(acd *AssetCheckDetails) *WarehouseQuery {
+	query := (&WarehouseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(warehouse.Table, warehouse.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.RealWarehouseTable, assetcheckdetails.RealWarehouseColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRealStore queries the real_store edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryRealStore(acd *AssetCheckDetails) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.RealStoreTable, assetcheckdetails.RealStoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRealCabinet queries the real_cabinet edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryRealCabinet(acd *AssetCheckDetails) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.RealCabinetTable, assetcheckdetails.RealCabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRealStation queries the real_station edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryRealStation(acd *AssetCheckDetails) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.RealStationTable, assetcheckdetails.RealStationColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRealRider queries the real_rider edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryRealRider(acd *AssetCheckDetails) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.RealRiderTable, assetcheckdetails.RealRiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRealOperator queries the real_operator edge of a AssetCheckDetails.
+func (c *AssetCheckDetailsClient) QueryRealOperator(acd *AssetCheckDetails) *MaintainerQuery {
+	query := (&MaintainerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := acd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, id),
+			sqlgraph.To(maintainer.Table, maintainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.RealOperatorTable, assetcheckdetails.RealOperatorColumn),
 		)
 		fromV = sqlgraph.Neighbors(acd.driver.Dialect(), step)
 		return fromV, nil

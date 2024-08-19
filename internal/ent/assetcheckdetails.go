@@ -14,6 +14,12 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
 // AssetCheckDetails is the model entity for the AssetCheckDetails schema.
@@ -33,10 +39,28 @@ type AssetCheckDetails struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// MaintainerID holds the value of the "maintainer_id" field.
+	MaintainerID *uint64 `json:"maintainer_id,omitempty"`
 	// 资产ID
 	AssetID uint64 `json:"asset_id,omitempty"`
 	// 盘点ID
 	CheckID uint64 `json:"check_id,omitempty"`
+	// 实际位置ID
+	RealLocationsID uint64 `json:"real_locations_id,omitempty"`
+	// 实际位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	RealLocationsType uint8 `json:"real_locations_type,omitempty"`
+	// 原位置ID
+	LocationsID uint64 `json:"locations_id,omitempty"`
+	// 原位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	LocationsType uint8 `json:"locations_type,omitempty"`
+	// 处理状态 0:未处理 1:已入库 2:已出库 3:已报废
+	Status uint8 `json:"status,omitempty"`
+	// 盘点结果 0:正常 1:亏 2:盈
+	Result uint8 `json:"result,omitempty"`
+	// 操作人id
+	OperateID uint64 `json:"operate_id,omitempty"`
+	// 处理时间
+	OperateAt *time.Time `json:"operate_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetCheckDetailsQuery when eager-loading is set.
 	Edges        AssetCheckDetailsEdges `json:"edges"`
@@ -45,13 +69,50 @@ type AssetCheckDetails struct {
 
 // AssetCheckDetailsEdges holds the relations/edges for other nodes in the graph.
 type AssetCheckDetailsEdges struct {
+	// Maintainer holds the value of the maintainer edge.
+	Maintainer *Maintainer `json:"maintainer,omitempty"`
 	// Asset holds the value of the asset edge.
 	Asset *Asset `json:"asset,omitempty"`
 	// Check holds the value of the check edge.
 	Check *AssetCheck `json:"check,omitempty"`
+	// Warehouse holds the value of the warehouse edge.
+	Warehouse *Warehouse `json:"warehouse,omitempty"`
+	// Store holds the value of the store edge.
+	Store *Store `json:"store,omitempty"`
+	// Cabinet holds the value of the cabinet edge.
+	Cabinet *Cabinet `json:"cabinet,omitempty"`
+	// Station holds the value of the station edge.
+	Station *EnterpriseStation `json:"station,omitempty"`
+	// Rider holds the value of the rider edge.
+	Rider *Rider `json:"rider,omitempty"`
+	// Operator holds the value of the operator edge.
+	Operator *Maintainer `json:"operator,omitempty"`
+	// RealWarehouse holds the value of the real_warehouse edge.
+	RealWarehouse *Warehouse `json:"real_warehouse,omitempty"`
+	// RealStore holds the value of the real_store edge.
+	RealStore *Store `json:"real_store,omitempty"`
+	// RealCabinet holds the value of the real_cabinet edge.
+	RealCabinet *Cabinet `json:"real_cabinet,omitempty"`
+	// RealStation holds the value of the real_station edge.
+	RealStation *EnterpriseStation `json:"real_station,omitempty"`
+	// RealRider holds the value of the real_rider edge.
+	RealRider *Rider `json:"real_rider,omitempty"`
+	// RealOperator holds the value of the real_operator edge.
+	RealOperator *Maintainer `json:"real_operator,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [15]bool
+}
+
+// MaintainerOrErr returns the Maintainer value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetCheckDetailsEdges) MaintainerOrErr() (*Maintainer, error) {
+	if e.Maintainer != nil {
+		return e.Maintainer, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: maintainer.Label}
+	}
+	return nil, &NotLoadedError{edge: "maintainer"}
 }
 
 // AssetOrErr returns the Asset value or an error if the edge
@@ -59,7 +120,7 @@ type AssetCheckDetailsEdges struct {
 func (e AssetCheckDetailsEdges) AssetOrErr() (*Asset, error) {
 	if e.Asset != nil {
 		return e.Asset, nil
-	} else if e.loadedTypes[0] {
+	} else if e.loadedTypes[1] {
 		return nil, &NotFoundError{label: asset.Label}
 	}
 	return nil, &NotLoadedError{edge: "asset"}
@@ -70,10 +131,142 @@ func (e AssetCheckDetailsEdges) AssetOrErr() (*Asset, error) {
 func (e AssetCheckDetailsEdges) CheckOrErr() (*AssetCheck, error) {
 	if e.Check != nil {
 		return e.Check, nil
-	} else if e.loadedTypes[1] {
+	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: assetcheck.Label}
 	}
 	return nil, &NotLoadedError{edge: "check"}
+}
+
+// WarehouseOrErr returns the Warehouse value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetCheckDetailsEdges) WarehouseOrErr() (*Warehouse, error) {
+	if e.Warehouse != nil {
+		return e.Warehouse, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: warehouse.Label}
+	}
+	return nil, &NotLoadedError{edge: "warehouse"}
+}
+
+// StoreOrErr returns the Store value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetCheckDetailsEdges) StoreOrErr() (*Store, error) {
+	if e.Store != nil {
+		return e.Store, nil
+	} else if e.loadedTypes[4] {
+		return nil, &NotFoundError{label: store.Label}
+	}
+	return nil, &NotLoadedError{edge: "store"}
+}
+
+// CabinetOrErr returns the Cabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetCheckDetailsEdges) CabinetOrErr() (*Cabinet, error) {
+	if e.Cabinet != nil {
+		return e.Cabinet, nil
+	} else if e.loadedTypes[5] {
+		return nil, &NotFoundError{label: cabinet.Label}
+	}
+	return nil, &NotLoadedError{edge: "cabinet"}
+}
+
+// StationOrErr returns the Station value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetCheckDetailsEdges) StationOrErr() (*EnterpriseStation, error) {
+	if e.Station != nil {
+		return e.Station, nil
+	} else if e.loadedTypes[6] {
+		return nil, &NotFoundError{label: enterprisestation.Label}
+	}
+	return nil, &NotLoadedError{edge: "station"}
+}
+
+// RiderOrErr returns the Rider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetCheckDetailsEdges) RiderOrErr() (*Rider, error) {
+	if e.Rider != nil {
+		return e.Rider, nil
+	} else if e.loadedTypes[7] {
+		return nil, &NotFoundError{label: rider.Label}
+	}
+	return nil, &NotLoadedError{edge: "rider"}
+}
+
+// OperatorOrErr returns the Operator value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetCheckDetailsEdges) OperatorOrErr() (*Maintainer, error) {
+	if e.Operator != nil {
+		return e.Operator, nil
+	} else if e.loadedTypes[8] {
+		return nil, &NotFoundError{label: maintainer.Label}
+	}
+	return nil, &NotLoadedError{edge: "operator"}
+}
+
+// RealWarehouseOrErr returns the RealWarehouse value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetCheckDetailsEdges) RealWarehouseOrErr() (*Warehouse, error) {
+	if e.RealWarehouse != nil {
+		return e.RealWarehouse, nil
+	} else if e.loadedTypes[9] {
+		return nil, &NotFoundError{label: warehouse.Label}
+	}
+	return nil, &NotLoadedError{edge: "real_warehouse"}
+}
+
+// RealStoreOrErr returns the RealStore value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetCheckDetailsEdges) RealStoreOrErr() (*Store, error) {
+	if e.RealStore != nil {
+		return e.RealStore, nil
+	} else if e.loadedTypes[10] {
+		return nil, &NotFoundError{label: store.Label}
+	}
+	return nil, &NotLoadedError{edge: "real_store"}
+}
+
+// RealCabinetOrErr returns the RealCabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetCheckDetailsEdges) RealCabinetOrErr() (*Cabinet, error) {
+	if e.RealCabinet != nil {
+		return e.RealCabinet, nil
+	} else if e.loadedTypes[11] {
+		return nil, &NotFoundError{label: cabinet.Label}
+	}
+	return nil, &NotLoadedError{edge: "real_cabinet"}
+}
+
+// RealStationOrErr returns the RealStation value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetCheckDetailsEdges) RealStationOrErr() (*EnterpriseStation, error) {
+	if e.RealStation != nil {
+		return e.RealStation, nil
+	} else if e.loadedTypes[12] {
+		return nil, &NotFoundError{label: enterprisestation.Label}
+	}
+	return nil, &NotLoadedError{edge: "real_station"}
+}
+
+// RealRiderOrErr returns the RealRider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetCheckDetailsEdges) RealRiderOrErr() (*Rider, error) {
+	if e.RealRider != nil {
+		return e.RealRider, nil
+	} else if e.loadedTypes[13] {
+		return nil, &NotFoundError{label: rider.Label}
+	}
+	return nil, &NotLoadedError{edge: "real_rider"}
+}
+
+// RealOperatorOrErr returns the RealOperator value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetCheckDetailsEdges) RealOperatorOrErr() (*Maintainer, error) {
+	if e.RealOperator != nil {
+		return e.RealOperator, nil
+	} else if e.loadedTypes[14] {
+		return nil, &NotFoundError{label: maintainer.Label}
+	}
+	return nil, &NotLoadedError{edge: "real_operator"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -83,11 +276,11 @@ func (*AssetCheckDetails) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case assetcheckdetails.FieldCreator, assetcheckdetails.FieldLastModifier:
 			values[i] = new([]byte)
-		case assetcheckdetails.FieldID, assetcheckdetails.FieldAssetID, assetcheckdetails.FieldCheckID:
+		case assetcheckdetails.FieldID, assetcheckdetails.FieldMaintainerID, assetcheckdetails.FieldAssetID, assetcheckdetails.FieldCheckID, assetcheckdetails.FieldRealLocationsID, assetcheckdetails.FieldRealLocationsType, assetcheckdetails.FieldLocationsID, assetcheckdetails.FieldLocationsType, assetcheckdetails.FieldStatus, assetcheckdetails.FieldResult, assetcheckdetails.FieldOperateID:
 			values[i] = new(sql.NullInt64)
 		case assetcheckdetails.FieldRemark:
 			values[i] = new(sql.NullString)
-		case assetcheckdetails.FieldCreatedAt, assetcheckdetails.FieldUpdatedAt, assetcheckdetails.FieldDeletedAt:
+		case assetcheckdetails.FieldCreatedAt, assetcheckdetails.FieldUpdatedAt, assetcheckdetails.FieldDeletedAt, assetcheckdetails.FieldOperateAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -151,6 +344,13 @@ func (acd *AssetCheckDetails) assignValues(columns []string, values []any) error
 			} else if value.Valid {
 				acd.Remark = value.String
 			}
+		case assetcheckdetails.FieldMaintainerID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field maintainer_id", values[i])
+			} else if value.Valid {
+				acd.MaintainerID = new(uint64)
+				*acd.MaintainerID = uint64(value.Int64)
+			}
 		case assetcheckdetails.FieldAssetID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field asset_id", values[i])
@@ -162,6 +362,55 @@ func (acd *AssetCheckDetails) assignValues(columns []string, values []any) error
 				return fmt.Errorf("unexpected type %T for field check_id", values[i])
 			} else if value.Valid {
 				acd.CheckID = uint64(value.Int64)
+			}
+		case assetcheckdetails.FieldRealLocationsID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field real_locations_id", values[i])
+			} else if value.Valid {
+				acd.RealLocationsID = uint64(value.Int64)
+			}
+		case assetcheckdetails.FieldRealLocationsType:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field real_locations_type", values[i])
+			} else if value.Valid {
+				acd.RealLocationsType = uint8(value.Int64)
+			}
+		case assetcheckdetails.FieldLocationsID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field locations_id", values[i])
+			} else if value.Valid {
+				acd.LocationsID = uint64(value.Int64)
+			}
+		case assetcheckdetails.FieldLocationsType:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field locations_type", values[i])
+			} else if value.Valid {
+				acd.LocationsType = uint8(value.Int64)
+			}
+		case assetcheckdetails.FieldStatus:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				acd.Status = uint8(value.Int64)
+			}
+		case assetcheckdetails.FieldResult:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field result", values[i])
+			} else if value.Valid {
+				acd.Result = uint8(value.Int64)
+			}
+		case assetcheckdetails.FieldOperateID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field operate_id", values[i])
+			} else if value.Valid {
+				acd.OperateID = uint64(value.Int64)
+			}
+		case assetcheckdetails.FieldOperateAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field operate_at", values[i])
+			} else if value.Valid {
+				acd.OperateAt = new(time.Time)
+				*acd.OperateAt = value.Time
 			}
 		default:
 			acd.selectValues.Set(columns[i], values[i])
@@ -176,6 +425,11 @@ func (acd *AssetCheckDetails) Value(name string) (ent.Value, error) {
 	return acd.selectValues.Get(name)
 }
 
+// QueryMaintainer queries the "maintainer" edge of the AssetCheckDetails entity.
+func (acd *AssetCheckDetails) QueryMaintainer() *MaintainerQuery {
+	return NewAssetCheckDetailsClient(acd.config).QueryMaintainer(acd)
+}
+
 // QueryAsset queries the "asset" edge of the AssetCheckDetails entity.
 func (acd *AssetCheckDetails) QueryAsset() *AssetQuery {
 	return NewAssetCheckDetailsClient(acd.config).QueryAsset(acd)
@@ -184,6 +438,66 @@ func (acd *AssetCheckDetails) QueryAsset() *AssetQuery {
 // QueryCheck queries the "check" edge of the AssetCheckDetails entity.
 func (acd *AssetCheckDetails) QueryCheck() *AssetCheckQuery {
 	return NewAssetCheckDetailsClient(acd.config).QueryCheck(acd)
+}
+
+// QueryWarehouse queries the "warehouse" edge of the AssetCheckDetails entity.
+func (acd *AssetCheckDetails) QueryWarehouse() *WarehouseQuery {
+	return NewAssetCheckDetailsClient(acd.config).QueryWarehouse(acd)
+}
+
+// QueryStore queries the "store" edge of the AssetCheckDetails entity.
+func (acd *AssetCheckDetails) QueryStore() *StoreQuery {
+	return NewAssetCheckDetailsClient(acd.config).QueryStore(acd)
+}
+
+// QueryCabinet queries the "cabinet" edge of the AssetCheckDetails entity.
+func (acd *AssetCheckDetails) QueryCabinet() *CabinetQuery {
+	return NewAssetCheckDetailsClient(acd.config).QueryCabinet(acd)
+}
+
+// QueryStation queries the "station" edge of the AssetCheckDetails entity.
+func (acd *AssetCheckDetails) QueryStation() *EnterpriseStationQuery {
+	return NewAssetCheckDetailsClient(acd.config).QueryStation(acd)
+}
+
+// QueryRider queries the "rider" edge of the AssetCheckDetails entity.
+func (acd *AssetCheckDetails) QueryRider() *RiderQuery {
+	return NewAssetCheckDetailsClient(acd.config).QueryRider(acd)
+}
+
+// QueryOperator queries the "operator" edge of the AssetCheckDetails entity.
+func (acd *AssetCheckDetails) QueryOperator() *MaintainerQuery {
+	return NewAssetCheckDetailsClient(acd.config).QueryOperator(acd)
+}
+
+// QueryRealWarehouse queries the "real_warehouse" edge of the AssetCheckDetails entity.
+func (acd *AssetCheckDetails) QueryRealWarehouse() *WarehouseQuery {
+	return NewAssetCheckDetailsClient(acd.config).QueryRealWarehouse(acd)
+}
+
+// QueryRealStore queries the "real_store" edge of the AssetCheckDetails entity.
+func (acd *AssetCheckDetails) QueryRealStore() *StoreQuery {
+	return NewAssetCheckDetailsClient(acd.config).QueryRealStore(acd)
+}
+
+// QueryRealCabinet queries the "real_cabinet" edge of the AssetCheckDetails entity.
+func (acd *AssetCheckDetails) QueryRealCabinet() *CabinetQuery {
+	return NewAssetCheckDetailsClient(acd.config).QueryRealCabinet(acd)
+}
+
+// QueryRealStation queries the "real_station" edge of the AssetCheckDetails entity.
+func (acd *AssetCheckDetails) QueryRealStation() *EnterpriseStationQuery {
+	return NewAssetCheckDetailsClient(acd.config).QueryRealStation(acd)
+}
+
+// QueryRealRider queries the "real_rider" edge of the AssetCheckDetails entity.
+func (acd *AssetCheckDetails) QueryRealRider() *RiderQuery {
+	return NewAssetCheckDetailsClient(acd.config).QueryRealRider(acd)
+}
+
+// QueryRealOperator queries the "real_operator" edge of the AssetCheckDetails entity.
+func (acd *AssetCheckDetails) QueryRealOperator() *MaintainerQuery {
+	return NewAssetCheckDetailsClient(acd.config).QueryRealOperator(acd)
 }
 
 // Update returns a builder for updating this AssetCheckDetails.
@@ -229,11 +543,42 @@ func (acd *AssetCheckDetails) String() string {
 	builder.WriteString("remark=")
 	builder.WriteString(acd.Remark)
 	builder.WriteString(", ")
+	if v := acd.MaintainerID; v != nil {
+		builder.WriteString("maintainer_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("asset_id=")
 	builder.WriteString(fmt.Sprintf("%v", acd.AssetID))
 	builder.WriteString(", ")
 	builder.WriteString("check_id=")
 	builder.WriteString(fmt.Sprintf("%v", acd.CheckID))
+	builder.WriteString(", ")
+	builder.WriteString("real_locations_id=")
+	builder.WriteString(fmt.Sprintf("%v", acd.RealLocationsID))
+	builder.WriteString(", ")
+	builder.WriteString("real_locations_type=")
+	builder.WriteString(fmt.Sprintf("%v", acd.RealLocationsType))
+	builder.WriteString(", ")
+	builder.WriteString("locations_id=")
+	builder.WriteString(fmt.Sprintf("%v", acd.LocationsID))
+	builder.WriteString(", ")
+	builder.WriteString("locations_type=")
+	builder.WriteString(fmt.Sprintf("%v", acd.LocationsType))
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(fmt.Sprintf("%v", acd.Status))
+	builder.WriteString(", ")
+	builder.WriteString("result=")
+	builder.WriteString(fmt.Sprintf("%v", acd.Result))
+	builder.WriteString(", ")
+	builder.WriteString("operate_id=")
+	builder.WriteString(fmt.Sprintf("%v", acd.OperateID))
+	builder.WriteString(", ")
+	if v := acd.OperateAt; v != nil {
+		builder.WriteString("operate_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

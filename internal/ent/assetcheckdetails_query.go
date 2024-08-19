@@ -13,19 +13,38 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
 // AssetCheckDetailsQuery is the builder for querying AssetCheckDetails entities.
 type AssetCheckDetailsQuery struct {
 	config
-	ctx        *QueryContext
-	order      []assetcheckdetails.OrderOption
-	inters     []Interceptor
-	predicates []predicate.AssetCheckDetails
-	withAsset  *AssetQuery
-	withCheck  *AssetCheckQuery
-	modifiers  []func(*sql.Selector)
+	ctx               *QueryContext
+	order             []assetcheckdetails.OrderOption
+	inters            []Interceptor
+	predicates        []predicate.AssetCheckDetails
+	withMaintainer    *MaintainerQuery
+	withAsset         *AssetQuery
+	withCheck         *AssetCheckQuery
+	withWarehouse     *WarehouseQuery
+	withStore         *StoreQuery
+	withCabinet       *CabinetQuery
+	withStation       *EnterpriseStationQuery
+	withRider         *RiderQuery
+	withOperator      *MaintainerQuery
+	withRealWarehouse *WarehouseQuery
+	withRealStore     *StoreQuery
+	withRealCabinet   *CabinetQuery
+	withRealStation   *EnterpriseStationQuery
+	withRealRider     *RiderQuery
+	withRealOperator  *MaintainerQuery
+	modifiers         []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -60,6 +79,28 @@ func (acdq *AssetCheckDetailsQuery) Unique(unique bool) *AssetCheckDetailsQuery 
 func (acdq *AssetCheckDetailsQuery) Order(o ...assetcheckdetails.OrderOption) *AssetCheckDetailsQuery {
 	acdq.order = append(acdq.order, o...)
 	return acdq
+}
+
+// QueryMaintainer chains the current query on the "maintainer" edge.
+func (acdq *AssetCheckDetailsQuery) QueryMaintainer() *MaintainerQuery {
+	query := (&MaintainerClient{config: acdq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acdq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acdq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, selector),
+			sqlgraph.To(maintainer.Table, maintainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.MaintainerTable, assetcheckdetails.MaintainerColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acdq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryAsset chains the current query on the "asset" edge.
@@ -99,6 +140,270 @@ func (acdq *AssetCheckDetailsQuery) QueryCheck() *AssetCheckQuery {
 			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, selector),
 			sqlgraph.To(assetcheck.Table, assetcheck.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, assetcheckdetails.CheckTable, assetcheckdetails.CheckColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acdq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryWarehouse chains the current query on the "warehouse" edge.
+func (acdq *AssetCheckDetailsQuery) QueryWarehouse() *WarehouseQuery {
+	query := (&WarehouseClient{config: acdq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acdq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acdq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, selector),
+			sqlgraph.To(warehouse.Table, warehouse.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.WarehouseTable, assetcheckdetails.WarehouseColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acdq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStore chains the current query on the "store" edge.
+func (acdq *AssetCheckDetailsQuery) QueryStore() *StoreQuery {
+	query := (&StoreClient{config: acdq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acdq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acdq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.StoreTable, assetcheckdetails.StoreColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acdq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCabinet chains the current query on the "cabinet" edge.
+func (acdq *AssetCheckDetailsQuery) QueryCabinet() *CabinetQuery {
+	query := (&CabinetClient{config: acdq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acdq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acdq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, selector),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.CabinetTable, assetcheckdetails.CabinetColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acdq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStation chains the current query on the "station" edge.
+func (acdq *AssetCheckDetailsQuery) QueryStation() *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: acdq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acdq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acdq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, selector),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.StationTable, assetcheckdetails.StationColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acdq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRider chains the current query on the "rider" edge.
+func (acdq *AssetCheckDetailsQuery) QueryRider() *RiderQuery {
+	query := (&RiderClient{config: acdq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acdq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acdq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, selector),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.RiderTable, assetcheckdetails.RiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acdq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryOperator chains the current query on the "operator" edge.
+func (acdq *AssetCheckDetailsQuery) QueryOperator() *MaintainerQuery {
+	query := (&MaintainerClient{config: acdq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acdq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acdq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, selector),
+			sqlgraph.To(maintainer.Table, maintainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.OperatorTable, assetcheckdetails.OperatorColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acdq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRealWarehouse chains the current query on the "real_warehouse" edge.
+func (acdq *AssetCheckDetailsQuery) QueryRealWarehouse() *WarehouseQuery {
+	query := (&WarehouseClient{config: acdq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acdq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acdq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, selector),
+			sqlgraph.To(warehouse.Table, warehouse.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.RealWarehouseTable, assetcheckdetails.RealWarehouseColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acdq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRealStore chains the current query on the "real_store" edge.
+func (acdq *AssetCheckDetailsQuery) QueryRealStore() *StoreQuery {
+	query := (&StoreClient{config: acdq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acdq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acdq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.RealStoreTable, assetcheckdetails.RealStoreColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acdq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRealCabinet chains the current query on the "real_cabinet" edge.
+func (acdq *AssetCheckDetailsQuery) QueryRealCabinet() *CabinetQuery {
+	query := (&CabinetClient{config: acdq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acdq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acdq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, selector),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.RealCabinetTable, assetcheckdetails.RealCabinetColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acdq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRealStation chains the current query on the "real_station" edge.
+func (acdq *AssetCheckDetailsQuery) QueryRealStation() *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: acdq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acdq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acdq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, selector),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.RealStationTable, assetcheckdetails.RealStationColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acdq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRealRider chains the current query on the "real_rider" edge.
+func (acdq *AssetCheckDetailsQuery) QueryRealRider() *RiderQuery {
+	query := (&RiderClient{config: acdq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acdq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acdq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, selector),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.RealRiderTable, assetcheckdetails.RealRiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acdq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRealOperator chains the current query on the "real_operator" edge.
+func (acdq *AssetCheckDetailsQuery) QueryRealOperator() *MaintainerQuery {
+	query := (&MaintainerClient{config: acdq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acdq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acdq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetcheckdetails.Table, assetcheckdetails.FieldID, selector),
+			sqlgraph.To(maintainer.Table, maintainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheckdetails.RealOperatorTable, assetcheckdetails.RealOperatorColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(acdq.driver.Dialect(), step)
 		return fromU, nil
@@ -293,17 +598,41 @@ func (acdq *AssetCheckDetailsQuery) Clone() *AssetCheckDetailsQuery {
 		return nil
 	}
 	return &AssetCheckDetailsQuery{
-		config:     acdq.config,
-		ctx:        acdq.ctx.Clone(),
-		order:      append([]assetcheckdetails.OrderOption{}, acdq.order...),
-		inters:     append([]Interceptor{}, acdq.inters...),
-		predicates: append([]predicate.AssetCheckDetails{}, acdq.predicates...),
-		withAsset:  acdq.withAsset.Clone(),
-		withCheck:  acdq.withCheck.Clone(),
+		config:            acdq.config,
+		ctx:               acdq.ctx.Clone(),
+		order:             append([]assetcheckdetails.OrderOption{}, acdq.order...),
+		inters:            append([]Interceptor{}, acdq.inters...),
+		predicates:        append([]predicate.AssetCheckDetails{}, acdq.predicates...),
+		withMaintainer:    acdq.withMaintainer.Clone(),
+		withAsset:         acdq.withAsset.Clone(),
+		withCheck:         acdq.withCheck.Clone(),
+		withWarehouse:     acdq.withWarehouse.Clone(),
+		withStore:         acdq.withStore.Clone(),
+		withCabinet:       acdq.withCabinet.Clone(),
+		withStation:       acdq.withStation.Clone(),
+		withRider:         acdq.withRider.Clone(),
+		withOperator:      acdq.withOperator.Clone(),
+		withRealWarehouse: acdq.withRealWarehouse.Clone(),
+		withRealStore:     acdq.withRealStore.Clone(),
+		withRealCabinet:   acdq.withRealCabinet.Clone(),
+		withRealStation:   acdq.withRealStation.Clone(),
+		withRealRider:     acdq.withRealRider.Clone(),
+		withRealOperator:  acdq.withRealOperator.Clone(),
 		// clone intermediate query.
 		sql:  acdq.sql.Clone(),
 		path: acdq.path,
 	}
+}
+
+// WithMaintainer tells the query-builder to eager-load the nodes that are connected to
+// the "maintainer" edge. The optional arguments are used to configure the query builder of the edge.
+func (acdq *AssetCheckDetailsQuery) WithMaintainer(opts ...func(*MaintainerQuery)) *AssetCheckDetailsQuery {
+	query := (&MaintainerClient{config: acdq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acdq.withMaintainer = query
+	return acdq
 }
 
 // WithAsset tells the query-builder to eager-load the nodes that are connected to
@@ -325,6 +654,138 @@ func (acdq *AssetCheckDetailsQuery) WithCheck(opts ...func(*AssetCheckQuery)) *A
 		opt(query)
 	}
 	acdq.withCheck = query
+	return acdq
+}
+
+// WithWarehouse tells the query-builder to eager-load the nodes that are connected to
+// the "warehouse" edge. The optional arguments are used to configure the query builder of the edge.
+func (acdq *AssetCheckDetailsQuery) WithWarehouse(opts ...func(*WarehouseQuery)) *AssetCheckDetailsQuery {
+	query := (&WarehouseClient{config: acdq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acdq.withWarehouse = query
+	return acdq
+}
+
+// WithStore tells the query-builder to eager-load the nodes that are connected to
+// the "store" edge. The optional arguments are used to configure the query builder of the edge.
+func (acdq *AssetCheckDetailsQuery) WithStore(opts ...func(*StoreQuery)) *AssetCheckDetailsQuery {
+	query := (&StoreClient{config: acdq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acdq.withStore = query
+	return acdq
+}
+
+// WithCabinet tells the query-builder to eager-load the nodes that are connected to
+// the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
+func (acdq *AssetCheckDetailsQuery) WithCabinet(opts ...func(*CabinetQuery)) *AssetCheckDetailsQuery {
+	query := (&CabinetClient{config: acdq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acdq.withCabinet = query
+	return acdq
+}
+
+// WithStation tells the query-builder to eager-load the nodes that are connected to
+// the "station" edge. The optional arguments are used to configure the query builder of the edge.
+func (acdq *AssetCheckDetailsQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *AssetCheckDetailsQuery {
+	query := (&EnterpriseStationClient{config: acdq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acdq.withStation = query
+	return acdq
+}
+
+// WithRider tells the query-builder to eager-load the nodes that are connected to
+// the "rider" edge. The optional arguments are used to configure the query builder of the edge.
+func (acdq *AssetCheckDetailsQuery) WithRider(opts ...func(*RiderQuery)) *AssetCheckDetailsQuery {
+	query := (&RiderClient{config: acdq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acdq.withRider = query
+	return acdq
+}
+
+// WithOperator tells the query-builder to eager-load the nodes that are connected to
+// the "operator" edge. The optional arguments are used to configure the query builder of the edge.
+func (acdq *AssetCheckDetailsQuery) WithOperator(opts ...func(*MaintainerQuery)) *AssetCheckDetailsQuery {
+	query := (&MaintainerClient{config: acdq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acdq.withOperator = query
+	return acdq
+}
+
+// WithRealWarehouse tells the query-builder to eager-load the nodes that are connected to
+// the "real_warehouse" edge. The optional arguments are used to configure the query builder of the edge.
+func (acdq *AssetCheckDetailsQuery) WithRealWarehouse(opts ...func(*WarehouseQuery)) *AssetCheckDetailsQuery {
+	query := (&WarehouseClient{config: acdq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acdq.withRealWarehouse = query
+	return acdq
+}
+
+// WithRealStore tells the query-builder to eager-load the nodes that are connected to
+// the "real_store" edge. The optional arguments are used to configure the query builder of the edge.
+func (acdq *AssetCheckDetailsQuery) WithRealStore(opts ...func(*StoreQuery)) *AssetCheckDetailsQuery {
+	query := (&StoreClient{config: acdq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acdq.withRealStore = query
+	return acdq
+}
+
+// WithRealCabinet tells the query-builder to eager-load the nodes that are connected to
+// the "real_cabinet" edge. The optional arguments are used to configure the query builder of the edge.
+func (acdq *AssetCheckDetailsQuery) WithRealCabinet(opts ...func(*CabinetQuery)) *AssetCheckDetailsQuery {
+	query := (&CabinetClient{config: acdq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acdq.withRealCabinet = query
+	return acdq
+}
+
+// WithRealStation tells the query-builder to eager-load the nodes that are connected to
+// the "real_station" edge. The optional arguments are used to configure the query builder of the edge.
+func (acdq *AssetCheckDetailsQuery) WithRealStation(opts ...func(*EnterpriseStationQuery)) *AssetCheckDetailsQuery {
+	query := (&EnterpriseStationClient{config: acdq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acdq.withRealStation = query
+	return acdq
+}
+
+// WithRealRider tells the query-builder to eager-load the nodes that are connected to
+// the "real_rider" edge. The optional arguments are used to configure the query builder of the edge.
+func (acdq *AssetCheckDetailsQuery) WithRealRider(opts ...func(*RiderQuery)) *AssetCheckDetailsQuery {
+	query := (&RiderClient{config: acdq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acdq.withRealRider = query
+	return acdq
+}
+
+// WithRealOperator tells the query-builder to eager-load the nodes that are connected to
+// the "real_operator" edge. The optional arguments are used to configure the query builder of the edge.
+func (acdq *AssetCheckDetailsQuery) WithRealOperator(opts ...func(*MaintainerQuery)) *AssetCheckDetailsQuery {
+	query := (&MaintainerClient{config: acdq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acdq.withRealOperator = query
 	return acdq
 }
 
@@ -406,9 +867,22 @@ func (acdq *AssetCheckDetailsQuery) sqlAll(ctx context.Context, hooks ...queryHo
 	var (
 		nodes       = []*AssetCheckDetails{}
 		_spec       = acdq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [15]bool{
+			acdq.withMaintainer != nil,
 			acdq.withAsset != nil,
 			acdq.withCheck != nil,
+			acdq.withWarehouse != nil,
+			acdq.withStore != nil,
+			acdq.withCabinet != nil,
+			acdq.withStation != nil,
+			acdq.withRider != nil,
+			acdq.withOperator != nil,
+			acdq.withRealWarehouse != nil,
+			acdq.withRealStore != nil,
+			acdq.withRealCabinet != nil,
+			acdq.withRealStation != nil,
+			acdq.withRealRider != nil,
+			acdq.withRealOperator != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -432,6 +906,12 @@ func (acdq *AssetCheckDetailsQuery) sqlAll(ctx context.Context, hooks ...queryHo
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := acdq.withMaintainer; query != nil {
+		if err := acdq.loadMaintainer(ctx, query, nodes, nil,
+			func(n *AssetCheckDetails, e *Maintainer) { n.Edges.Maintainer = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := acdq.withAsset; query != nil {
 		if err := acdq.loadAsset(ctx, query, nodes, nil,
 			func(n *AssetCheckDetails, e *Asset) { n.Edges.Asset = e }); err != nil {
@@ -444,9 +924,113 @@ func (acdq *AssetCheckDetailsQuery) sqlAll(ctx context.Context, hooks ...queryHo
 			return nil, err
 		}
 	}
+	if query := acdq.withWarehouse; query != nil {
+		if err := acdq.loadWarehouse(ctx, query, nodes, nil,
+			func(n *AssetCheckDetails, e *Warehouse) { n.Edges.Warehouse = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := acdq.withStore; query != nil {
+		if err := acdq.loadStore(ctx, query, nodes, nil,
+			func(n *AssetCheckDetails, e *Store) { n.Edges.Store = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := acdq.withCabinet; query != nil {
+		if err := acdq.loadCabinet(ctx, query, nodes, nil,
+			func(n *AssetCheckDetails, e *Cabinet) { n.Edges.Cabinet = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := acdq.withStation; query != nil {
+		if err := acdq.loadStation(ctx, query, nodes, nil,
+			func(n *AssetCheckDetails, e *EnterpriseStation) { n.Edges.Station = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := acdq.withRider; query != nil {
+		if err := acdq.loadRider(ctx, query, nodes, nil,
+			func(n *AssetCheckDetails, e *Rider) { n.Edges.Rider = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := acdq.withOperator; query != nil {
+		if err := acdq.loadOperator(ctx, query, nodes, nil,
+			func(n *AssetCheckDetails, e *Maintainer) { n.Edges.Operator = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := acdq.withRealWarehouse; query != nil {
+		if err := acdq.loadRealWarehouse(ctx, query, nodes, nil,
+			func(n *AssetCheckDetails, e *Warehouse) { n.Edges.RealWarehouse = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := acdq.withRealStore; query != nil {
+		if err := acdq.loadRealStore(ctx, query, nodes, nil,
+			func(n *AssetCheckDetails, e *Store) { n.Edges.RealStore = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := acdq.withRealCabinet; query != nil {
+		if err := acdq.loadRealCabinet(ctx, query, nodes, nil,
+			func(n *AssetCheckDetails, e *Cabinet) { n.Edges.RealCabinet = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := acdq.withRealStation; query != nil {
+		if err := acdq.loadRealStation(ctx, query, nodes, nil,
+			func(n *AssetCheckDetails, e *EnterpriseStation) { n.Edges.RealStation = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := acdq.withRealRider; query != nil {
+		if err := acdq.loadRealRider(ctx, query, nodes, nil,
+			func(n *AssetCheckDetails, e *Rider) { n.Edges.RealRider = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := acdq.withRealOperator; query != nil {
+		if err := acdq.loadRealOperator(ctx, query, nodes, nil,
+			func(n *AssetCheckDetails, e *Maintainer) { n.Edges.RealOperator = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
+func (acdq *AssetCheckDetailsQuery) loadMaintainer(ctx context.Context, query *MaintainerQuery, nodes []*AssetCheckDetails, init func(*AssetCheckDetails), assign func(*AssetCheckDetails, *Maintainer)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetCheckDetails)
+	for i := range nodes {
+		if nodes[i].MaintainerID == nil {
+			continue
+		}
+		fk := *nodes[i].MaintainerID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(maintainer.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "maintainer_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (acdq *AssetCheckDetailsQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []*AssetCheckDetails, init func(*AssetCheckDetails), assign func(*AssetCheckDetails, *Asset)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetCheckDetails)
@@ -505,6 +1089,354 @@ func (acdq *AssetCheckDetailsQuery) loadCheck(ctx context.Context, query *AssetC
 	}
 	return nil
 }
+func (acdq *AssetCheckDetailsQuery) loadWarehouse(ctx context.Context, query *WarehouseQuery, nodes []*AssetCheckDetails, init func(*AssetCheckDetails), assign func(*AssetCheckDetails, *Warehouse)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetCheckDetails)
+	for i := range nodes {
+		fk := nodes[i].LocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(warehouse.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (acdq *AssetCheckDetailsQuery) loadStore(ctx context.Context, query *StoreQuery, nodes []*AssetCheckDetails, init func(*AssetCheckDetails), assign func(*AssetCheckDetails, *Store)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetCheckDetails)
+	for i := range nodes {
+		fk := nodes[i].LocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(store.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (acdq *AssetCheckDetailsQuery) loadCabinet(ctx context.Context, query *CabinetQuery, nodes []*AssetCheckDetails, init func(*AssetCheckDetails), assign func(*AssetCheckDetails, *Cabinet)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetCheckDetails)
+	for i := range nodes {
+		fk := nodes[i].LocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(cabinet.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (acdq *AssetCheckDetailsQuery) loadStation(ctx context.Context, query *EnterpriseStationQuery, nodes []*AssetCheckDetails, init func(*AssetCheckDetails), assign func(*AssetCheckDetails, *EnterpriseStation)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetCheckDetails)
+	for i := range nodes {
+		fk := nodes[i].LocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(enterprisestation.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (acdq *AssetCheckDetailsQuery) loadRider(ctx context.Context, query *RiderQuery, nodes []*AssetCheckDetails, init func(*AssetCheckDetails), assign func(*AssetCheckDetails, *Rider)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetCheckDetails)
+	for i := range nodes {
+		fk := nodes[i].LocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(rider.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (acdq *AssetCheckDetailsQuery) loadOperator(ctx context.Context, query *MaintainerQuery, nodes []*AssetCheckDetails, init func(*AssetCheckDetails), assign func(*AssetCheckDetails, *Maintainer)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetCheckDetails)
+	for i := range nodes {
+		fk := nodes[i].LocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(maintainer.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (acdq *AssetCheckDetailsQuery) loadRealWarehouse(ctx context.Context, query *WarehouseQuery, nodes []*AssetCheckDetails, init func(*AssetCheckDetails), assign func(*AssetCheckDetails, *Warehouse)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetCheckDetails)
+	for i := range nodes {
+		fk := nodes[i].RealLocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(warehouse.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "real_locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (acdq *AssetCheckDetailsQuery) loadRealStore(ctx context.Context, query *StoreQuery, nodes []*AssetCheckDetails, init func(*AssetCheckDetails), assign func(*AssetCheckDetails, *Store)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetCheckDetails)
+	for i := range nodes {
+		fk := nodes[i].RealLocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(store.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "real_locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (acdq *AssetCheckDetailsQuery) loadRealCabinet(ctx context.Context, query *CabinetQuery, nodes []*AssetCheckDetails, init func(*AssetCheckDetails), assign func(*AssetCheckDetails, *Cabinet)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetCheckDetails)
+	for i := range nodes {
+		fk := nodes[i].RealLocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(cabinet.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "real_locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (acdq *AssetCheckDetailsQuery) loadRealStation(ctx context.Context, query *EnterpriseStationQuery, nodes []*AssetCheckDetails, init func(*AssetCheckDetails), assign func(*AssetCheckDetails, *EnterpriseStation)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetCheckDetails)
+	for i := range nodes {
+		fk := nodes[i].RealLocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(enterprisestation.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "real_locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (acdq *AssetCheckDetailsQuery) loadRealRider(ctx context.Context, query *RiderQuery, nodes []*AssetCheckDetails, init func(*AssetCheckDetails), assign func(*AssetCheckDetails, *Rider)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetCheckDetails)
+	for i := range nodes {
+		fk := nodes[i].RealLocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(rider.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "real_locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (acdq *AssetCheckDetailsQuery) loadRealOperator(ctx context.Context, query *MaintainerQuery, nodes []*AssetCheckDetails, init func(*AssetCheckDetails), assign func(*AssetCheckDetails, *Maintainer)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetCheckDetails)
+	for i := range nodes {
+		fk := nodes[i].RealLocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(maintainer.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "real_locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (acdq *AssetCheckDetailsQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := acdq.querySpec()
@@ -534,11 +1466,50 @@ func (acdq *AssetCheckDetailsQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
+		if acdq.withMaintainer != nil {
+			_spec.Node.AddColumnOnce(assetcheckdetails.FieldMaintainerID)
+		}
 		if acdq.withAsset != nil {
 			_spec.Node.AddColumnOnce(assetcheckdetails.FieldAssetID)
 		}
 		if acdq.withCheck != nil {
 			_spec.Node.AddColumnOnce(assetcheckdetails.FieldCheckID)
+		}
+		if acdq.withWarehouse != nil {
+			_spec.Node.AddColumnOnce(assetcheckdetails.FieldLocationsID)
+		}
+		if acdq.withStore != nil {
+			_spec.Node.AddColumnOnce(assetcheckdetails.FieldLocationsID)
+		}
+		if acdq.withCabinet != nil {
+			_spec.Node.AddColumnOnce(assetcheckdetails.FieldLocationsID)
+		}
+		if acdq.withStation != nil {
+			_spec.Node.AddColumnOnce(assetcheckdetails.FieldLocationsID)
+		}
+		if acdq.withRider != nil {
+			_spec.Node.AddColumnOnce(assetcheckdetails.FieldLocationsID)
+		}
+		if acdq.withOperator != nil {
+			_spec.Node.AddColumnOnce(assetcheckdetails.FieldLocationsID)
+		}
+		if acdq.withRealWarehouse != nil {
+			_spec.Node.AddColumnOnce(assetcheckdetails.FieldRealLocationsID)
+		}
+		if acdq.withRealStore != nil {
+			_spec.Node.AddColumnOnce(assetcheckdetails.FieldRealLocationsID)
+		}
+		if acdq.withRealCabinet != nil {
+			_spec.Node.AddColumnOnce(assetcheckdetails.FieldRealLocationsID)
+		}
+		if acdq.withRealStation != nil {
+			_spec.Node.AddColumnOnce(assetcheckdetails.FieldRealLocationsID)
+		}
+		if acdq.withRealRider != nil {
+			_spec.Node.AddColumnOnce(assetcheckdetails.FieldRealLocationsID)
+		}
+		if acdq.withRealOperator != nil {
+			_spec.Node.AddColumnOnce(assetcheckdetails.FieldRealLocationsID)
 		}
 	}
 	if ps := acdq.predicates; len(ps) > 0 {
@@ -608,17 +1579,56 @@ func (acdq *AssetCheckDetailsQuery) Modify(modifiers ...func(s *sql.Selector)) *
 type AssetCheckDetailsQueryWith string
 
 var (
-	AssetCheckDetailsQueryWithAsset AssetCheckDetailsQueryWith = "Asset"
-	AssetCheckDetailsQueryWithCheck AssetCheckDetailsQueryWith = "Check"
+	AssetCheckDetailsQueryWithMaintainer    AssetCheckDetailsQueryWith = "Maintainer"
+	AssetCheckDetailsQueryWithAsset         AssetCheckDetailsQueryWith = "Asset"
+	AssetCheckDetailsQueryWithCheck         AssetCheckDetailsQueryWith = "Check"
+	AssetCheckDetailsQueryWithWarehouse     AssetCheckDetailsQueryWith = "Warehouse"
+	AssetCheckDetailsQueryWithStore         AssetCheckDetailsQueryWith = "Store"
+	AssetCheckDetailsQueryWithCabinet       AssetCheckDetailsQueryWith = "Cabinet"
+	AssetCheckDetailsQueryWithStation       AssetCheckDetailsQueryWith = "Station"
+	AssetCheckDetailsQueryWithRider         AssetCheckDetailsQueryWith = "Rider"
+	AssetCheckDetailsQueryWithOperator      AssetCheckDetailsQueryWith = "Operator"
+	AssetCheckDetailsQueryWithRealWarehouse AssetCheckDetailsQueryWith = "RealWarehouse"
+	AssetCheckDetailsQueryWithRealStore     AssetCheckDetailsQueryWith = "RealStore"
+	AssetCheckDetailsQueryWithRealCabinet   AssetCheckDetailsQueryWith = "RealCabinet"
+	AssetCheckDetailsQueryWithRealStation   AssetCheckDetailsQueryWith = "RealStation"
+	AssetCheckDetailsQueryWithRealRider     AssetCheckDetailsQueryWith = "RealRider"
+	AssetCheckDetailsQueryWithRealOperator  AssetCheckDetailsQueryWith = "RealOperator"
 )
 
 func (acdq *AssetCheckDetailsQuery) With(withEdges ...AssetCheckDetailsQueryWith) *AssetCheckDetailsQuery {
 	for _, v := range withEdges {
 		switch v {
+		case AssetCheckDetailsQueryWithMaintainer:
+			acdq.WithMaintainer()
 		case AssetCheckDetailsQueryWithAsset:
 			acdq.WithAsset()
 		case AssetCheckDetailsQueryWithCheck:
 			acdq.WithCheck()
+		case AssetCheckDetailsQueryWithWarehouse:
+			acdq.WithWarehouse()
+		case AssetCheckDetailsQueryWithStore:
+			acdq.WithStore()
+		case AssetCheckDetailsQueryWithCabinet:
+			acdq.WithCabinet()
+		case AssetCheckDetailsQueryWithStation:
+			acdq.WithStation()
+		case AssetCheckDetailsQueryWithRider:
+			acdq.WithRider()
+		case AssetCheckDetailsQueryWithOperator:
+			acdq.WithOperator()
+		case AssetCheckDetailsQueryWithRealWarehouse:
+			acdq.WithRealWarehouse()
+		case AssetCheckDetailsQueryWithRealStore:
+			acdq.WithRealStore()
+		case AssetCheckDetailsQueryWithRealCabinet:
+			acdq.WithRealCabinet()
+		case AssetCheckDetailsQueryWithRealStation:
+			acdq.WithRealStation()
+		case AssetCheckDetailsQueryWithRealRider:
+			acdq.WithRealRider()
+		case AssetCheckDetailsQueryWithRealOperator:
+			acdq.WithRealOperator()
 		}
 	}
 	return acdq

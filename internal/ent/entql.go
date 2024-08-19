@@ -247,7 +247,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			asset.FieldLocationsType: {Type: field.TypeUint8, Column: asset.FieldLocationsType},
 			asset.FieldLocationsID:   {Type: field.TypeUint64, Column: asset.FieldLocationsID},
 			asset.FieldRtoRiderID:    {Type: field.TypeUint64, Column: asset.FieldRtoRiderID},
-			asset.FieldInventoryAt:   {Type: field.TypeTime, Column: asset.FieldInventoryAt},
+			asset.FieldCheckAt:       {Type: field.TypeTime, Column: asset.FieldCheckAt},
 			asset.FieldBrandName:     {Type: field.TypeString, Column: asset.FieldBrandName},
 		},
 	}
@@ -328,14 +328,23 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "AssetCheckDetails",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			assetcheckdetails.FieldCreatedAt:    {Type: field.TypeTime, Column: assetcheckdetails.FieldCreatedAt},
-			assetcheckdetails.FieldUpdatedAt:    {Type: field.TypeTime, Column: assetcheckdetails.FieldUpdatedAt},
-			assetcheckdetails.FieldDeletedAt:    {Type: field.TypeTime, Column: assetcheckdetails.FieldDeletedAt},
-			assetcheckdetails.FieldCreator:      {Type: field.TypeJSON, Column: assetcheckdetails.FieldCreator},
-			assetcheckdetails.FieldLastModifier: {Type: field.TypeJSON, Column: assetcheckdetails.FieldLastModifier},
-			assetcheckdetails.FieldRemark:       {Type: field.TypeString, Column: assetcheckdetails.FieldRemark},
-			assetcheckdetails.FieldAssetID:      {Type: field.TypeUint64, Column: assetcheckdetails.FieldAssetID},
-			assetcheckdetails.FieldCheckID:      {Type: field.TypeUint64, Column: assetcheckdetails.FieldCheckID},
+			assetcheckdetails.FieldCreatedAt:         {Type: field.TypeTime, Column: assetcheckdetails.FieldCreatedAt},
+			assetcheckdetails.FieldUpdatedAt:         {Type: field.TypeTime, Column: assetcheckdetails.FieldUpdatedAt},
+			assetcheckdetails.FieldDeletedAt:         {Type: field.TypeTime, Column: assetcheckdetails.FieldDeletedAt},
+			assetcheckdetails.FieldCreator:           {Type: field.TypeJSON, Column: assetcheckdetails.FieldCreator},
+			assetcheckdetails.FieldLastModifier:      {Type: field.TypeJSON, Column: assetcheckdetails.FieldLastModifier},
+			assetcheckdetails.FieldRemark:            {Type: field.TypeString, Column: assetcheckdetails.FieldRemark},
+			assetcheckdetails.FieldMaintainerID:      {Type: field.TypeUint64, Column: assetcheckdetails.FieldMaintainerID},
+			assetcheckdetails.FieldAssetID:           {Type: field.TypeUint64, Column: assetcheckdetails.FieldAssetID},
+			assetcheckdetails.FieldCheckID:           {Type: field.TypeUint64, Column: assetcheckdetails.FieldCheckID},
+			assetcheckdetails.FieldRealLocationsID:   {Type: field.TypeUint64, Column: assetcheckdetails.FieldRealLocationsID},
+			assetcheckdetails.FieldRealLocationsType: {Type: field.TypeUint8, Column: assetcheckdetails.FieldRealLocationsType},
+			assetcheckdetails.FieldLocationsID:       {Type: field.TypeUint64, Column: assetcheckdetails.FieldLocationsID},
+			assetcheckdetails.FieldLocationsType:     {Type: field.TypeUint8, Column: assetcheckdetails.FieldLocationsType},
+			assetcheckdetails.FieldStatus:            {Type: field.TypeUint8, Column: assetcheckdetails.FieldStatus},
+			assetcheckdetails.FieldResult:            {Type: field.TypeUint8, Column: assetcheckdetails.FieldResult},
+			assetcheckdetails.FieldOperateID:         {Type: field.TypeUint64, Column: assetcheckdetails.FieldOperateID},
+			assetcheckdetails.FieldOperateAt:         {Type: field.TypeTime, Column: assetcheckdetails.FieldOperateAt},
 		},
 	}
 	graph.Nodes[9] = &sqlgraph.Node{
@@ -3195,6 +3204,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"EnterpriseStation",
 	)
 	graph.MustAddE(
+		"maintainer",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.MaintainerTable,
+			Columns: []string{assetcheckdetails.MaintainerColumn},
+			Bidi:    false,
+		},
+		"AssetCheckDetails",
+		"Maintainer",
+	)
+	graph.MustAddE(
 		"asset",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -3217,6 +3238,150 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"AssetCheckDetails",
 		"AssetCheck",
+	)
+	graph.MustAddE(
+		"warehouse",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.WarehouseTable,
+			Columns: []string{assetcheckdetails.WarehouseColumn},
+			Bidi:    false,
+		},
+		"AssetCheckDetails",
+		"Warehouse",
+	)
+	graph.MustAddE(
+		"store",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.StoreTable,
+			Columns: []string{assetcheckdetails.StoreColumn},
+			Bidi:    false,
+		},
+		"AssetCheckDetails",
+		"Store",
+	)
+	graph.MustAddE(
+		"cabinet",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.CabinetTable,
+			Columns: []string{assetcheckdetails.CabinetColumn},
+			Bidi:    false,
+		},
+		"AssetCheckDetails",
+		"Cabinet",
+	)
+	graph.MustAddE(
+		"station",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.StationTable,
+			Columns: []string{assetcheckdetails.StationColumn},
+			Bidi:    false,
+		},
+		"AssetCheckDetails",
+		"EnterpriseStation",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RiderTable,
+			Columns: []string{assetcheckdetails.RiderColumn},
+			Bidi:    false,
+		},
+		"AssetCheckDetails",
+		"Rider",
+	)
+	graph.MustAddE(
+		"operator",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.OperatorTable,
+			Columns: []string{assetcheckdetails.OperatorColumn},
+			Bidi:    false,
+		},
+		"AssetCheckDetails",
+		"Maintainer",
+	)
+	graph.MustAddE(
+		"real_warehouse",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealWarehouseTable,
+			Columns: []string{assetcheckdetails.RealWarehouseColumn},
+			Bidi:    false,
+		},
+		"AssetCheckDetails",
+		"Warehouse",
+	)
+	graph.MustAddE(
+		"real_store",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealStoreTable,
+			Columns: []string{assetcheckdetails.RealStoreColumn},
+			Bidi:    false,
+		},
+		"AssetCheckDetails",
+		"Store",
+	)
+	graph.MustAddE(
+		"real_cabinet",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealCabinetTable,
+			Columns: []string{assetcheckdetails.RealCabinetColumn},
+			Bidi:    false,
+		},
+		"AssetCheckDetails",
+		"Cabinet",
+	)
+	graph.MustAddE(
+		"real_station",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealStationTable,
+			Columns: []string{assetcheckdetails.RealStationColumn},
+			Bidi:    false,
+		},
+		"AssetCheckDetails",
+		"EnterpriseStation",
+	)
+	graph.MustAddE(
+		"real_rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealRiderTable,
+			Columns: []string{assetcheckdetails.RealRiderColumn},
+			Bidi:    false,
+		},
+		"AssetCheckDetails",
+		"Rider",
+	)
+	graph.MustAddE(
+		"real_operator",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assetcheckdetails.RealOperatorTable,
+			Columns: []string{assetcheckdetails.RealOperatorColumn},
+			Bidi:    false,
+		},
+		"AssetCheckDetails",
+		"Maintainer",
 	)
 	graph.MustAddE(
 		"cabinet",
@@ -8181,9 +8346,9 @@ func (f *AssetFilter) WhereRtoRiderID(p entql.Uint64P) {
 	f.Where(p.Field(asset.FieldRtoRiderID))
 }
 
-// WhereInventoryAt applies the entql time.Time predicate on the inventory_at field.
-func (f *AssetFilter) WhereInventoryAt(p entql.TimeP) {
-	f.Where(p.Field(asset.FieldInventoryAt))
+// WhereCheckAt applies the entql time.Time predicate on the check_at field.
+func (f *AssetFilter) WhereCheckAt(p entql.TimeP) {
+	f.Where(p.Field(asset.FieldCheckAt))
 }
 
 // WhereBrandName applies the entql string predicate on the brand_name field.
@@ -8866,6 +9031,11 @@ func (f *AssetCheckDetailsFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(assetcheckdetails.FieldRemark))
 }
 
+// WhereMaintainerID applies the entql uint64 predicate on the maintainer_id field.
+func (f *AssetCheckDetailsFilter) WhereMaintainerID(p entql.Uint64P) {
+	f.Where(p.Field(assetcheckdetails.FieldMaintainerID))
+}
+
 // WhereAssetID applies the entql uint64 predicate on the asset_id field.
 func (f *AssetCheckDetailsFilter) WhereAssetID(p entql.Uint64P) {
 	f.Where(p.Field(assetcheckdetails.FieldAssetID))
@@ -8874,6 +9044,60 @@ func (f *AssetCheckDetailsFilter) WhereAssetID(p entql.Uint64P) {
 // WhereCheckID applies the entql uint64 predicate on the check_id field.
 func (f *AssetCheckDetailsFilter) WhereCheckID(p entql.Uint64P) {
 	f.Where(p.Field(assetcheckdetails.FieldCheckID))
+}
+
+// WhereRealLocationsID applies the entql uint64 predicate on the real_locations_id field.
+func (f *AssetCheckDetailsFilter) WhereRealLocationsID(p entql.Uint64P) {
+	f.Where(p.Field(assetcheckdetails.FieldRealLocationsID))
+}
+
+// WhereRealLocationsType applies the entql uint8 predicate on the real_locations_type field.
+func (f *AssetCheckDetailsFilter) WhereRealLocationsType(p entql.Uint8P) {
+	f.Where(p.Field(assetcheckdetails.FieldRealLocationsType))
+}
+
+// WhereLocationsID applies the entql uint64 predicate on the locations_id field.
+func (f *AssetCheckDetailsFilter) WhereLocationsID(p entql.Uint64P) {
+	f.Where(p.Field(assetcheckdetails.FieldLocationsID))
+}
+
+// WhereLocationsType applies the entql uint8 predicate on the locations_type field.
+func (f *AssetCheckDetailsFilter) WhereLocationsType(p entql.Uint8P) {
+	f.Where(p.Field(assetcheckdetails.FieldLocationsType))
+}
+
+// WhereStatus applies the entql uint8 predicate on the status field.
+func (f *AssetCheckDetailsFilter) WhereStatus(p entql.Uint8P) {
+	f.Where(p.Field(assetcheckdetails.FieldStatus))
+}
+
+// WhereResult applies the entql uint8 predicate on the result field.
+func (f *AssetCheckDetailsFilter) WhereResult(p entql.Uint8P) {
+	f.Where(p.Field(assetcheckdetails.FieldResult))
+}
+
+// WhereOperateID applies the entql uint64 predicate on the operate_id field.
+func (f *AssetCheckDetailsFilter) WhereOperateID(p entql.Uint64P) {
+	f.Where(p.Field(assetcheckdetails.FieldOperateID))
+}
+
+// WhereOperateAt applies the entql time.Time predicate on the operate_at field.
+func (f *AssetCheckDetailsFilter) WhereOperateAt(p entql.TimeP) {
+	f.Where(p.Field(assetcheckdetails.FieldOperateAt))
+}
+
+// WhereHasMaintainer applies a predicate to check if query has an edge maintainer.
+func (f *AssetCheckDetailsFilter) WhereHasMaintainer() {
+	f.Where(entql.HasEdge("maintainer"))
+}
+
+// WhereHasMaintainerWith applies a predicate to check if query has an edge maintainer with a given conditions (other predicates).
+func (f *AssetCheckDetailsFilter) WhereHasMaintainerWith(preds ...predicate.Maintainer) {
+	f.Where(entql.HasEdgeWith("maintainer", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // WhereHasAsset applies a predicate to check if query has an edge asset.
@@ -8898,6 +9122,174 @@ func (f *AssetCheckDetailsFilter) WhereHasCheck() {
 // WhereHasCheckWith applies a predicate to check if query has an edge check with a given conditions (other predicates).
 func (f *AssetCheckDetailsFilter) WhereHasCheckWith(preds ...predicate.AssetCheck) {
 	f.Where(entql.HasEdgeWith("check", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasWarehouse applies a predicate to check if query has an edge warehouse.
+func (f *AssetCheckDetailsFilter) WhereHasWarehouse() {
+	f.Where(entql.HasEdge("warehouse"))
+}
+
+// WhereHasWarehouseWith applies a predicate to check if query has an edge warehouse with a given conditions (other predicates).
+func (f *AssetCheckDetailsFilter) WhereHasWarehouseWith(preds ...predicate.Warehouse) {
+	f.Where(entql.HasEdgeWith("warehouse", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStore applies a predicate to check if query has an edge store.
+func (f *AssetCheckDetailsFilter) WhereHasStore() {
+	f.Where(entql.HasEdge("store"))
+}
+
+// WhereHasStoreWith applies a predicate to check if query has an edge store with a given conditions (other predicates).
+func (f *AssetCheckDetailsFilter) WhereHasStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCabinet applies a predicate to check if query has an edge cabinet.
+func (f *AssetCheckDetailsFilter) WhereHasCabinet() {
+	f.Where(entql.HasEdge("cabinet"))
+}
+
+// WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
+func (f *AssetCheckDetailsFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStation applies a predicate to check if query has an edge station.
+func (f *AssetCheckDetailsFilter) WhereHasStation() {
+	f.Where(entql.HasEdge("station"))
+}
+
+// WhereHasStationWith applies a predicate to check if query has an edge station with a given conditions (other predicates).
+func (f *AssetCheckDetailsFilter) WhereHasStationWith(preds ...predicate.EnterpriseStation) {
+	f.Where(entql.HasEdgeWith("station", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *AssetCheckDetailsFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *AssetCheckDetailsFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasOperator applies a predicate to check if query has an edge operator.
+func (f *AssetCheckDetailsFilter) WhereHasOperator() {
+	f.Where(entql.HasEdge("operator"))
+}
+
+// WhereHasOperatorWith applies a predicate to check if query has an edge operator with a given conditions (other predicates).
+func (f *AssetCheckDetailsFilter) WhereHasOperatorWith(preds ...predicate.Maintainer) {
+	f.Where(entql.HasEdgeWith("operator", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRealWarehouse applies a predicate to check if query has an edge real_warehouse.
+func (f *AssetCheckDetailsFilter) WhereHasRealWarehouse() {
+	f.Where(entql.HasEdge("real_warehouse"))
+}
+
+// WhereHasRealWarehouseWith applies a predicate to check if query has an edge real_warehouse with a given conditions (other predicates).
+func (f *AssetCheckDetailsFilter) WhereHasRealWarehouseWith(preds ...predicate.Warehouse) {
+	f.Where(entql.HasEdgeWith("real_warehouse", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRealStore applies a predicate to check if query has an edge real_store.
+func (f *AssetCheckDetailsFilter) WhereHasRealStore() {
+	f.Where(entql.HasEdge("real_store"))
+}
+
+// WhereHasRealStoreWith applies a predicate to check if query has an edge real_store with a given conditions (other predicates).
+func (f *AssetCheckDetailsFilter) WhereHasRealStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("real_store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRealCabinet applies a predicate to check if query has an edge real_cabinet.
+func (f *AssetCheckDetailsFilter) WhereHasRealCabinet() {
+	f.Where(entql.HasEdge("real_cabinet"))
+}
+
+// WhereHasRealCabinetWith applies a predicate to check if query has an edge real_cabinet with a given conditions (other predicates).
+func (f *AssetCheckDetailsFilter) WhereHasRealCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("real_cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRealStation applies a predicate to check if query has an edge real_station.
+func (f *AssetCheckDetailsFilter) WhereHasRealStation() {
+	f.Where(entql.HasEdge("real_station"))
+}
+
+// WhereHasRealStationWith applies a predicate to check if query has an edge real_station with a given conditions (other predicates).
+func (f *AssetCheckDetailsFilter) WhereHasRealStationWith(preds ...predicate.EnterpriseStation) {
+	f.Where(entql.HasEdgeWith("real_station", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRealRider applies a predicate to check if query has an edge real_rider.
+func (f *AssetCheckDetailsFilter) WhereHasRealRider() {
+	f.Where(entql.HasEdge("real_rider"))
+}
+
+// WhereHasRealRiderWith applies a predicate to check if query has an edge real_rider with a given conditions (other predicates).
+func (f *AssetCheckDetailsFilter) WhereHasRealRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("real_rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRealOperator applies a predicate to check if query has an edge real_operator.
+func (f *AssetCheckDetailsFilter) WhereHasRealOperator() {
+	f.Where(entql.HasEdge("real_operator"))
+}
+
+// WhereHasRealOperatorWith applies a predicate to check if query has an edge real_operator with a given conditions (other predicates).
+func (f *AssetCheckDetailsFilter) WhereHasRealOperatorWith(preds ...predicate.Maintainer) {
+	f.Where(entql.HasEdgeWith("real_operator", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

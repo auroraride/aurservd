@@ -959,7 +959,7 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 		}
 	}
 	if req.Status != nil {
-		q.Where(asset.Status(*req.Status))
+		q.Where(asset.Status(req.Status.Value()))
 	}
 	if req.Enable != nil {
 		q.Where(asset.Enable(*req.Enable))

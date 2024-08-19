@@ -298,6 +298,14 @@ func init() {
 	assetcheckdetails.DefaultUpdatedAt = assetcheckdetailsDescUpdatedAt.Default.(func() time.Time)
 	// assetcheckdetails.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	assetcheckdetails.UpdateDefaultUpdatedAt = assetcheckdetailsDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// assetcheckdetailsDescStatus is the schema descriptor for status field.
+	assetcheckdetailsDescStatus := assetcheckdetailsFields[6].Descriptor()
+	// assetcheckdetails.DefaultStatus holds the default value on creation for the status field.
+	assetcheckdetails.DefaultStatus = assetcheckdetailsDescStatus.Default.(uint8)
+	// assetcheckdetailsDescResult is the schema descriptor for result field.
+	assetcheckdetailsDescResult := assetcheckdetailsFields[7].Descriptor()
+	// assetcheckdetails.DefaultResult holds the default value on creation for the result field.
+	assetcheckdetails.DefaultResult = assetcheckdetailsDescResult.Default.(uint8)
 	assetmaintenanceMixin := schema.AssetMaintenance{}.Mixin()
 	assetmaintenanceMixinHooks2 := assetmaintenanceMixin[2].Hooks()
 	assetmaintenance.Hooks[0] = assetmaintenanceMixinHooks2[0]

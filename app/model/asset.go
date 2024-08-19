@@ -35,7 +35,7 @@ type AssetFilter struct {
 	StationID        *uint64                `json:"stationId" query:"stationId"`                             // 站点ID
 	LocationsType    *AssetLocationsType    `json:"locationsType" query:"locationsType" enums:"1,2,3,4,5,6"` // 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
 	LocationsKeywork *string                `json:"keywork" query:"Keywork"`                                 // 资产位置关键词
-	Status           *uint8                 `json:"status" query:"status" enums:"1,2,3,4,5"`                 // 资产状态 1:待入库 2:库存中 3:配送中 4:使用中 5:故障
+	Status           *AssetStatus           `json:"status" query:"status" enums:"1,2,3,4,5"`                 // 资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
 	Enable           *bool                  `json:"enable" query:"enable"`                                   // 是否启用
 	AssetType        *AssetType             `json:"assetType" query:"assetType" enums:"1,2,3,4,5,6"`         // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
 	BrandID          *uint64                `json:"brandId" query:"brandId"`                                 // 电车品牌ID
