@@ -72,3 +72,54 @@ type WarehouseAsset struct {
 	OtherAssetTotal       int              `json:"otherAssetTotal"`       // 其他物资总数
 	OtherAssets           []*AssetMaterial `json:"otherAssets"`           // 其他物资详情
 }
+
+// WarehouseByCityRes 城市仓库信息
+type WarehouseByCityRes struct {
+	City          model.City               `json:"city"`          // 城市
+	WarehouseList []*WarehouseByCityDetail `json:"warehouseList"` // 仓库信息
+}
+
+// WarehouseByCityDetail 城市仓库信息详情
+type WarehouseByCityDetail struct {
+	ID   uint64 `json:"id"`   // 仓库ID
+	Name string `json:"name"` // 仓库名称
+}
+
+type WarehousePeopleSigninReq struct {
+	Phone      string `json:"phone,omitempty" validate:"required_if=SigninType 1" trans:"电话"`
+	SmsId      string `json:"smsId,omitempty" validate:"required_if=SigninType 1" trans:"短信ID"`
+	Code       string `json:"code,omitempty" validate:"required_if=SigninType 1,required_if=SigninType 2" trans:"验证码"`
+	SigninType uint64 `json:"signinType" validate:"required,oneof=1 2"`
+}
+
+type WarehousePeopleSigninRes struct {
+	Profile WarehousePeopleProfile `json:"profile"`
+	Token   string                 `json:"token"`
+}
+
+type OpenidReq struct {
+	Code string `json:"code" query:"code"`
+}
+
+type OpenidRes struct {
+	Openid string `json:"openid"`
+}
+
+type WarehousePeopleProfile struct {
+	ID    uint64 `json:"id"`
+	Phone string `json:"phone"` // 手机号
+	Name  string `json:"name"`  // 姓名
+}
+
+// TransferListReq 调拨记录筛选条件
+type TransferListReq struct {
+	model.PaginationReq
+	FromLocationType *model.AssetLocationsType  `json:"fromLocationType" query:"fromLocationType" enums:"1,2,3,4"` // 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	FromLocationID   *uint64                    `json:"fromLocationID" query:"fromLocationID"`                     // 调拨前位置ID
+	ToLocationType   *model.AssetLocationsType  `json:"toLocationType" query:"toLocationType" enums:"1,2,3,4"`     // 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	ToLocationID     *uint64                    `json:"toLocationID" query:"toLocationID"`                         // 调拨后位置ID
+	Status           *model.AssetTransferStatus `json:"status" query:"status" enums:"1,2,3,4"`                     // 调拨状态 1:配送中 2:待入库 3:已入库 4:已取消
+	OutStart         *string                    `json:"outStart" query:"outStart"`                                 // 出库开始时间
+	OutEnd           *string                    `json:"outEnd" query:"outEnd"`                                     // 出库结束时间
+	Keyword          *string                    `json:"keyword" query:"keyword"`                                   // 关键字 (调拨单号，调拨事由、出库人、接收人)
+}

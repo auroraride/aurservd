@@ -20,6 +20,7 @@ APIS=(
   'controller/v1/oapi/oapi.go'
   'controller/v1/papi/papi.go'
   'controller/v2/assetapi/assetapi.go'
+  'controller/v2/wapi/wapi.go'
 )
 
 OUTPUTS=(
@@ -33,6 +34,7 @@ OUTPUTS=(
   './assets/docs/operator/v1'
   './assets/docs/promotion/v1'
   './assets/docs/asset/v2'
+  './assets/docs/warehouse/v2'
 )
 
 function exclude() {

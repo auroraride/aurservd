@@ -68,8 +68,8 @@ func (*assetCheck) List(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string								true	"管理员校验token"
-// @Param	query			query		model.AssetCheckListAbnormalReq			true	"查询参数"
+// @Param	X-Manager-Token	header		string													true	"管理员校验token"
+// @Param	query			query		model.AssetCheckListAbnormalReq							true	"查询参数"
 // @Success	200				{object}	model.PaginationRes{items=[]model.AssetCheckAbnormal}	"请求成功"
 func (*assetCheck) Abnormal(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.AssetCheckListAbnormalReq](c)

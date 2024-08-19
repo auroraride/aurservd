@@ -81,7 +81,9 @@ func (Warehouse) Fields() []ent.Field {
 
 // Edges of the Warehouse.
 func (Warehouse) Edges() []ent.Edge {
-	return []ent.Edge{}
+	return []ent.Edge{
+		edge.To("asset_managers", AssetManager.Type),
+	}
 }
 
 func (Warehouse) Mixin() []ent.Mixin {

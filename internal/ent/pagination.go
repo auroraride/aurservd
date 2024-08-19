@@ -350,6 +350,68 @@ func (amdq *AssetMaintenanceDetailsQuery) PaginationResult(req model.PaginationR
 	}
 }
 
+// Pagination returns pagination query builder for AssetManagerQuery.
+func (amq *AssetManagerQuery) Pagination(req model.PaginationReq) *AssetManagerQuery {
+	amq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return amq
+}
+
+// PaginationItems returns pagination query builder for AssetManagerQuery.
+func (amq *AssetManagerQuery) PaginationItemsX(req model.PaginationReq) any {
+	return amq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for AssetManagerQuery.
+func (amq *AssetManagerQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := amq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for AssetRoleQuery.
+func (arq *AssetRoleQuery) Pagination(req model.PaginationReq) *AssetRoleQuery {
+	arq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return arq
+}
+
+// PaginationItems returns pagination query builder for AssetRoleQuery.
+func (arq *AssetRoleQuery) PaginationItemsX(req model.PaginationReq) any {
+	return arq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for AssetRoleQuery.
+func (arq *AssetRoleQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := arq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for AssetScrapQuery.
 func (asq *AssetScrapQuery) Pagination(req model.PaginationReq) *AssetScrapQuery {
 	asq.Offset(req.GetOffset()).Limit(req.GetLimit())

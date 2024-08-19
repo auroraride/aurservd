@@ -32,7 +32,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -237,7 +237,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -278,7 +278,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -341,7 +341,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -387,7 +387,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -466,6 +466,119 @@ const docTemplate = `{
             }
         },
         "/manager/v2/asset/check": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资产"
+                ],
+                "summary": "盘点列表",
+                "operationId": "AssetCheckList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "endAt",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "位置ID",
+                        "name": "locationsId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetLocationsTypeCabinet": "电柜",
+                            "AssetLocationsTypeOperation": "运维",
+                            "AssetLocationsTypeRider": "骑手",
+                            "AssetLocationsTypeStation": "站点",
+                            "AssetLocationsTypeStore": "门店",
+                            "AssetLocationsTypeWarehouse": "仓库"
+                        },
+                        "x-enum-varnames": [
+                            "AssetLocationsTypeWarehouse",
+                            "AssetLocationsTypeStore",
+                            "AssetLocationsTypeStation",
+                            "AssetLocationsTypeOperation",
+                            "AssetLocationsTypeCabinet",
+                            "AssetLocationsTypeRider"
+                        ],
+                        "description": "位置类型 1:仓库 2:门店 3:站点",
+                        "name": "locationsType",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "startAt",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AssetCheckListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -501,6 +614,60 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/check/abnormal": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资产"
+                ],
+                "summary": "盘点异常",
+                "operationId": "AssetCheckAbnormal",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "盘点ID",
+                        "name": "assetCheckId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AssetCheckAbnormal"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -562,7 +729,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -742,7 +909,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -843,7 +1010,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -884,7 +1051,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -909,7 +1076,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "电池型号ID",
-                        "name": "modelID",
+                        "name": "modelId",
                         "in": "query"
                     },
                     {
@@ -967,7 +1134,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1038,7 +1205,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1079,7 +1246,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1133,7 +1300,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1174,7 +1341,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1213,13 +1380,207 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
                     {
                         "type": "string",
                         "description": "仓库ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/permission": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限 - AssetPermission"
+                ],
+                "summary": "权限列表",
+                "operationId": "AssetManagerPermissionList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-AssetManager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/permission.Group"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/permission/role": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限 - AssetPermission"
+                ],
+                "summary": "角色列表",
+                "operationId": "AssetManagerPermissionListRole",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-AssetManager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Role"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限 - AssetPermission"
+                ],
+                "summary": "创建角色",
+                "operationId": "AssetManagerPermissionCreateRole",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-AssetManager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "角色字段",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.AssetRoleCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.AssetRole"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/permission/role/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限 - AssetPermission"
+                ],
+                "summary": "修改角色",
+                "operationId": "AssetManagerPermissionModifyRole",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-AssetManager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "角色ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "角色详情",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.AssetRoleModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.AssetRole"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限 - AssetPermission"
+                ],
+                "summary": "删除角色",
+                "operationId": "AssetManagerPermissionDeleteRole",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-AssetManager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "角色ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1252,7 +1613,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1396,7 +1757,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1437,7 +1798,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1478,7 +1839,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     }
@@ -1490,6 +1851,41 @@ const docTemplate = `{
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/selection/warehouse_city": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "城市仓库列表",
+                "operationId": "SelectionWarehouseByCity",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-AssetManager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.WarehouseByCityRes"
                             }
                         }
                     }
@@ -1513,7 +1909,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1620,7 +2016,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1683,7 +2079,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1866,7 +2262,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1907,7 +2303,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1946,7 +2342,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2170,7 +2566,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2247,7 +2643,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2288,7 +2684,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2327,7 +2723,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2352,6 +2748,261 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/user": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理 - AssetManager"
+                ],
+                "summary": "列举管理员",
+                "operationId": "AssetManagerList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-AssetManager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索关键词 姓名/手机号",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/definition.AssetManagerListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理 - AssetManager"
+                ],
+                "summary": "新增管理员",
+                "operationId": "AssetManagerCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-AssetManager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.AssetManagerCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/user/profile": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理 - AssetManager"
+                ],
+                "summary": "管理员信息",
+                "operationId": "AssetManagerProfile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-AssetManager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ManagerSigninRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/user/signin": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理 - AssetManager"
+                ],
+                "summary": "管理员登录",
+                "operationId": "AssetManagerSignin",
+                "parameters": [
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.AssetManagerSigninReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ManagerSigninRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/user/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理 - AssetManager"
+                ],
+                "summary": "编辑管理员",
+                "operationId": "AssetManagerModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-AssetManager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "管理员ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "编辑属性",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.AssetManagerModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理 - AssetManager"
+                ],
+                "summary": "删除管理员",
+                "operationId": "AssetManagerDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-AssetManager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "管理员ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/warehouse": {
             "get": {
                 "consumes": [
@@ -2369,7 +3020,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2423,7 +3074,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2464,7 +3115,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2501,7 +3152,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2540,7 +3191,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2579,7 +3230,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2635,7 +3286,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2672,7 +3323,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2718,7 +3369,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2757,7 +3408,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2799,7 +3450,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2840,7 +3491,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2877,7 +3528,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2916,7 +3567,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2940,6 +3591,95 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "definition.AssetManagerCreateReq": {
+            "type": "object",
+            "required": [
+                "name",
+                "password",
+                "phone",
+                "roleId"
+            ],
+            "properties": {
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "roleId": {
+                    "description": "角色ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.AssetManagerListRes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "role": {
+                    "description": "角色",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.AssetRole"
+                        }
+                    ]
+                }
+            }
+        },
+        "definition.AssetManagerModifyReq": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "roleId": {
+                    "description": "角色ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.AssetManagerSigninReq": {
+            "type": "object",
+            "required": [
+                "password",
+                "phone"
+            ],
+            "properties": {
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                }
+            }
+        },
         "definition.AssetMaterial": {
             "type": "object",
             "properties": {
@@ -2962,6 +3702,68 @@ const docTemplate = `{
                 "surplus": {
                     "description": "剩余",
                     "type": "integer"
+                }
+            }
+        },
+        "definition.AssetRole": {
+            "type": "object",
+            "properties": {
+                "builtin": {
+                    "description": "是否内置角色, 内置角色无法编辑",
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "角色名称",
+                    "type": "string"
+                },
+                "permissions": {
+                    "description": "允许的权限列表 (权限key), 未分配权限的无此字段",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "super": {
+                    "description": "是否超级管理员, 超级管理员权限无法编辑且拥有全部权限",
+                    "type": "boolean"
+                }
+            }
+        },
+        "definition.AssetRoleCreateReq": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "description": "角色名称",
+                    "type": "string"
+                },
+                "permissions": {
+                    "description": "权限列表, 可以创建之后编辑再添加权限",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "definition.AssetRoleModifyReq": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "角色名称",
+                    "type": "string"
+                },
+                "permissions": {
+                    "description": "权限列表",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -3342,6 +4144,10 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "运维名称",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "运维电话",
                     "type": "string"
                 },
                 "warehouseAsset": {
@@ -3750,6 +4556,39 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.WarehouseByCityDetail": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "仓库ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "仓库名称",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.WarehouseByCityRes": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "warehouseList": {
+                    "description": "仓库信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.WarehouseByCityDetail"
+                    }
+                }
+            }
+        },
         "definition.WarehouseCreateReq": {
             "type": "object",
             "required": [
@@ -3931,6 +4770,55 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AssetCheckAbnormal": {
+            "type": "object",
+            "properties": {
+                "assetId": {
+                    "description": "资产ID",
+                    "type": "integer"
+                },
+                "brand": {
+                    "description": "品牌",
+                    "type": "string"
+                },
+                "locationsName": {
+                    "description": "理论位置名称",
+                    "type": "string"
+                },
+                "model": {
+                    "description": "型号",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "opratorAt": {
+                    "description": "操作时间",
+                    "type": "string"
+                },
+                "opratorName": {
+                    "description": "操作人名称",
+                    "type": "string"
+                },
+                "realLocationsName": {
+                    "description": "实际位置名称",
+                    "type": "string"
+                },
+                "result": {
+                    "description": "盘点结果 0:正常 1:亏 2:盈",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "资产编号",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "处理状态 0:未处理 1:已入库 2:已出库 3:已报废",
+                    "type": "string"
+                }
+            }
+        },
         "model.AssetCheckByAssetSnRes": {
             "type": "object",
             "properties": {
@@ -4025,6 +4913,59 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.AssetOperateRoleType"
                         }
                     ]
+                },
+                "startAt": {
+                    "description": "盘点开始时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetCheckListRes": {
+            "type": "object",
+            "properties": {
+                "batteryNum": {
+                    "description": "应盘点电池数量",
+                    "type": "integer"
+                },
+                "batteryNumReal": {
+                    "description": "实盘电池数量",
+                    "type": "integer"
+                },
+                "checkResult": {
+                    "description": "盘点结果 true:正常 false:异常",
+                    "type": "boolean"
+                },
+                "ebikeNum": {
+                    "description": "应盘点电车数量",
+                    "type": "integer"
+                },
+                "ebikeNumReal": {
+                    "description": "实盘电车数量",
+                    "type": "integer"
+                },
+                "endAt": {
+                    "description": "盘点结束时间",
+                    "type": "string"
+                },
+                "locationsId": {
+                    "description": "位置ID",
+                    "type": "integer"
+                },
+                "locationsName": {
+                    "description": "位置名称",
+                    "type": "string"
+                },
+                "locationsType": {
+                    "description": "位置类型",
+                    "type": "integer"
+                },
+                "opratorId": {
+                    "description": "操作人ID",
+                    "type": "integer"
+                },
+                "opratorName": {
+                    "description": "操作人名称",
+                    "type": "string"
                 },
                 "startAt": {
                     "description": "盘点开始时间",
@@ -5142,6 +6083,34 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ManagerSigninRes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "permissions": {
+                    "description": "权限列表",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "super": {
+                    "description": "是否超级管理员",
+                    "type": "boolean"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Pagination": {
             "type": "object",
             "properties": {
@@ -5172,6 +6141,33 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Pagination"
                         }
                     ]
+                }
+            }
+        },
+        "model.Role": {
+            "type": "object",
+            "properties": {
+                "builtin": {
+                    "description": "是否内置角色, 内置角色无法编辑",
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "角色名称",
+                    "type": "string"
+                },
+                "permissions": {
+                    "description": "允许的权限列表 (权限key), 未分配权限的无此字段",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "super": {
+                    "description": "是否超级管理员, 超级管理员权限无法编辑且拥有全部权限",
+                    "type": "boolean"
                 }
             }
         },
@@ -5215,6 +6211,47 @@ const docTemplate = `{
             "properties": {
                 "status": {
                     "type": "boolean"
+                }
+            }
+        },
+        "permission.Group": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "description": "权限分组描述",
+                    "type": "string"
+                },
+                "items": {
+                    "description": "权限列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/permission.Item"
+                    }
+                },
+                "name": {
+                    "description": "权限分组名称",
+                    "type": "string"
+                }
+            }
+        },
+        "permission.Item": {
+            "type": "object",
+            "properties": {
+                "api": {
+                    "description": "api请求path",
+                    "type": "string"
+                },
+                "desc": {
+                    "description": "接口描述",
+                    "type": "string"
+                },
+                "key": {
+                    "description": "权限KEY: MD5(METHOD + PATH)",
+                    "type": "string"
+                },
+                "method": {
+                    "description": "api请求method",
+                    "type": "string"
                 }
             }
         }

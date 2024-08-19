@@ -54,9 +54,11 @@ type Warehouse struct {
 type WarehouseEdges struct {
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
+	// AssetManagers holds the value of the asset_managers edge.
+	AssetManagers []*AssetManager `json:"asset_managers,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -68,6 +70,15 @@ func (e WarehouseEdges) CityOrErr() (*City, error) {
 		return nil, &NotFoundError{label: city.Label}
 	}
 	return nil, &NotLoadedError{edge: "city"}
+}
+
+// AssetManagersOrErr returns the AssetManagers value or an error if the edge
+// was not loaded in eager-loading.
+func (e WarehouseEdges) AssetManagersOrErr() ([]*AssetManager, error) {
+	if e.loadedTypes[1] {
+		return e.AssetManagers, nil
+	}
+	return nil, &NotLoadedError{edge: "asset_managers"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -199,6 +210,11 @@ func (w *Warehouse) Value(name string) (ent.Value, error) {
 // QueryCity queries the "city" edge of the Warehouse entity.
 func (w *Warehouse) QueryCity() *CityQuery {
 	return NewWarehouseClient(w.config).QueryCity(w)
+}
+
+// QueryAssetManagers queries the "asset_managers" edge of the Warehouse entity.
+func (w *Warehouse) QueryAssetManagers() *AssetManagerQuery {
+	return NewWarehouseClient(w.config).QueryAssetManagers(w)
 }
 
 // Update returns a builder for updating this Warehouse.

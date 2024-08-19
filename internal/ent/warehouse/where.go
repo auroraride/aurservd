@@ -658,6 +658,29 @@ func HasCityWith(preds ...predicate.City) predicate.Warehouse {
 	})
 }
 
+// HasAssetManagers applies the HasEdge predicate on the "asset_managers" edge.
+func HasAssetManagers() predicate.Warehouse {
+	return predicate.Warehouse(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, AssetManagersTable, AssetManagersPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAssetManagersWith applies the HasEdge predicate on the "asset_managers" edge with a given conditions (other predicates).
+func HasAssetManagersWith(preds ...predicate.AssetManager) predicate.Warehouse {
+	return predicate.Warehouse(func(s *sql.Selector) {
+		step := newAssetManagersStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Warehouse) predicate.Warehouse {
 	return predicate.Warehouse(sql.AndPredicates(predicates...))

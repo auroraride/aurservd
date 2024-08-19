@@ -24,11 +24,11 @@ var Material = new(material)
 // @Tags	其他物资 - Material
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string													true	"管理员校验token"
-// @Param	body			body		definition.MaterialListReq								true	"desc"
-// @Success	200				{object}	model.PaginationRes{items=[]definition.MaterialDetail}	"请求成功"
+// @Param	X-AssetManager-Token	header		string													true	"管理员校验token"
+// @Param	body					body		definition.MaterialListReq								true	"desc"
+// @Success	200						{object}	model.PaginationRes{items=[]definition.MaterialDetail}	"请求成功"
 func (*material) List(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.MaterialListReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[definition.MaterialListReq](c)
 	return ctx.SendResponse(biz.NewMaterial().List(req))
 }
 
@@ -39,11 +39,11 @@ func (*material) List(c echo.Context) (err error) {
 // @Tags	其他物资 - Material
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string							true	"管理员校验token"
-// @Param	body			body		definition.MaterialCreateReq	true	"desc"
-// @Success	200				{object}	model.StatusResponse			"请求成功"
+// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	body					body		definition.MaterialCreateReq	true	"desc"
+// @Success	200						{object}	model.StatusResponse			"请求成功"
 func (*material) Create(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.MaterialCreateReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[definition.MaterialCreateReq](c)
 	return ctx.SendResponse(biz.NewMaterialWithModifier(ctx.Modifier).Create(req))
 }
 
@@ -54,11 +54,11 @@ func (*material) Create(c echo.Context) (err error) {
 // @Tags	其他物资 - Material
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	id				path		string					true	"仓库ID"
-// @Success	200				{object}	model.StatusResponse	"请求成功"
+// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	id						path		string					true	"仓库ID"
+// @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*material) Delete(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewMaterialWithModifier(ctx.Modifier).Delete(req.ID))
 }
 
@@ -69,10 +69,10 @@ func (*material) Delete(c echo.Context) (err error) {
 // @Tags	其他物资 - Material
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string							true	"管理员校验token"
-// @Param	body			body		definition.MaterialModifyReq	true	"请求参数"
-// @Success	200				{object}	model.StatusResponse			"请求成功"
+// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	body					body		definition.MaterialModifyReq	true	"请求参数"
+// @Success	200						{object}	model.StatusResponse			"请求成功"
 func (*material) Modify(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.MaterialModifyReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[definition.MaterialModifyReq](c)
 	return ctx.SendResponse(biz.NewMaterialWithModifier(ctx.Modifier).Modify(req))
 }

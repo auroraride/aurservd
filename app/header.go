@@ -32,4 +32,8 @@ const (
 	HeaderPromotionToken = "X-Promotion-Token"
 	// HeaderToastVisible 自动显示toast（APP 2.x+）
 	HeaderToastVisible = "X-Toast-Visible"
+	// HeaderAssetManagerToken 仓库后台token
+	HeaderAssetManagerToken = "X-AssetManager-Token"
+	// HeaderWarestoreToken 库管token
+	HeaderWarestoreToken = "X-Warestore-Token"
 )

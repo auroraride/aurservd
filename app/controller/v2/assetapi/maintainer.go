@@ -23,10 +23,10 @@ var Maintainer = new(maintainer)
 // @Tags	运维 - Maintainer
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string															true	"管理员校验token"
-// @Param	query			query		definition.MaintainerAssetListReq								true	"查询参数"
-// @Success	200				{object}	model.PaginationRes{items=[]definition.MaintainerAssetDetail}	"请求成功"
+// @Param	X-AssetManager-Token	header		string															true	"管理员校验token"
+// @Param	query					query		definition.MaintainerAssetListReq								true	"查询参数"
+// @Success	200						{object}	model.PaginationRes{items=[]definition.MaintainerAssetDetail}	"请求成功"
 func (*maintainer) MaintainerAsset(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.MaintainerAssetListReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[definition.MaintainerAssetListReq](c)
 	return ctx.SendResponse(biz.NewMaintainerAsset().Assets(req))
 }

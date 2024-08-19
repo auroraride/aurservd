@@ -24,11 +24,11 @@ var BatteryModel = new(batterymodel)
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string							true	"管理员校验token"
-// @Param	body			body		definition.BatteryModelListReq	true	"desc"
-// @Success	200				{object}	[]definition.BatteryModelDetail	"请求成功"
+// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	body					body		definition.BatteryModelListReq	true	"desc"
+// @Success	200						{object}	[]definition.BatteryModelDetail	"请求成功"
 func (*batterymodel) List(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.BatteryModelListReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[definition.BatteryModelListReq](c)
 	return ctx.SendResponse(biz.NewBatteryModel().List(req))
 }
 
@@ -39,11 +39,11 @@ func (*batterymodel) List(c echo.Context) (err error) {
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string							true	"管理员校验token"
-// @Param	id				path		string							true	"仓库ID"
-// @Success	200				{object}	definition.BatteryModelDetail	"请求成功"
+// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	id						path		string							true	"仓库ID"
+// @Success	200						{object}	definition.BatteryModelDetail	"请求成功"
 func (*batterymodel) Detail(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewBatteryModel().Detail(req.ID))
 }
 
@@ -54,11 +54,11 @@ func (*batterymodel) Detail(c echo.Context) (err error) {
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string								true	"管理员校验token"
-// @Param	body			body		definition.BatteryModelCreateReq	true	"desc"
-// @Success	200				{object}	model.StatusResponse				"请求成功"
+// @Param	X-AssetManager-Token	header		string								true	"管理员校验token"
+// @Param	body					body		definition.BatteryModelCreateReq	true	"desc"
+// @Success	200						{object}	model.StatusResponse				"请求成功"
 func (*batterymodel) Create(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.BatteryModelCreateReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[definition.BatteryModelCreateReq](c)
 	return ctx.SendResponse(biz.NewBatteryModelWithModifier(ctx.Modifier).Create(req))
 }
 
@@ -69,11 +69,11 @@ func (*batterymodel) Create(c echo.Context) (err error) {
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	id				path		string					true	"仓库ID"
-// @Success	200				{object}	model.StatusResponse	"请求成功"
+// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	id						path		string					true	"仓库ID"
+// @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*batterymodel) Delete(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewBatteryModelWithModifier(ctx.Modifier).Delete(req.ID))
 }
 
@@ -84,10 +84,10 @@ func (*batterymodel) Delete(c echo.Context) (err error) {
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string								true	"管理员校验token"
-// @Param	body			body		definition.BatteryModelModifyReq	true	"请求参数"
-// @Success	200				{object}	model.StatusResponse				"请求成功"
+// @Param	X-AssetManager-Token	header		string								true	"管理员校验token"
+// @Param	body					body		definition.BatteryModelModifyReq	true	"请求参数"
+// @Success	200						{object}	model.StatusResponse				"请求成功"
 func (*batterymodel) Modify(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.BatteryModelModifyReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[definition.BatteryModelModifyReq](c)
 	return ctx.SendResponse(biz.NewBatteryModelWithModifier(ctx.Modifier).Modify(req))
 }
