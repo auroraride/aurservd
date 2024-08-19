@@ -837,10 +837,10 @@ definitions:
         type: integer
       assetType:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池
     required:
-      - assetId
+    - assetId
     - assetType
     type: object
   model.AssetCheckCreateReq:
@@ -855,19 +855,17 @@ definitions:
         type: integer
       locationsType:
         allOf:
-          - $ref: '#/definitions/model.AssetLocationsType'
+        - $ref: '#/definitions/model.AssetLocationsType'
         description: 位置类型 1:仓库 2:门店 3:站点
       opratorId:
         description: 操作人ID
         type: integer
       opratorType:
         allOf:
-          - $ref: '#/definitions/model.AssetOperateRoleType'
+        - $ref: '#/definitions/model.AssetOperateRoleType'
         description: 操作人类型 1:资产后台(仓库) 2:门店 3:代理
     required:
-      - details
-      - locationsId
-      - locationsType
+    - details
     type: object
   model.AssetCreateReq:
     properties:
@@ -2230,22 +2228,22 @@ paths:
   /manager/v2/asset/check:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetCheckCreate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 盘点参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.AssetCheckCreateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 盘点参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetCheckCreateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2253,25 +2251,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 盘点资产
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/check/{sn}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetCheckGetAssetBySN
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 资产SN
-          in: path
-          name: sn
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 资产SN
+        in: path
+        name: sn
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2279,7 +2277,7 @@ paths:
             $ref: '#/definitions/model.AssetCheckByAssetSnRes'
       summary: 通过SN查询资产
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/count:
     get:
       consumes:

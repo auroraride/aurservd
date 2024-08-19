@@ -4618,9 +4618,7 @@ const docTemplate = `{
         "model.AssetCheckCreateReq": {
             "type": "object",
             "required": [
-                "details",
-                "locationsId",
-                "locationsType"
+                "details"
             ],
             "properties": {
                 "details": {

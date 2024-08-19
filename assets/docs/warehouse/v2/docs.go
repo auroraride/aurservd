@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/warehouse/v2/openid": {
+        "/warestore/v2/openid": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -54,7 +54,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/warehouse/v2/signin": {
+        "/warestore/v2/signin": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -88,7 +88,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/warehouse/v2/transfer": {
+        "/warestore/v2/transfer": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -144,7 +144,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/warehouse/v2/transfer/receive": {
+        "/warestore/v2/transfer/receive": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -185,7 +185,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/warehouse/v2/transfer/{id}": {
+        "/warestore/v2/transfer/{id}": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -414,7 +414,7 @@ const docTemplate = `{
                 "AssetOperateRoleTypeAgent": "代理",
                 "AssetOperateRoleTypeBusinessManager": "业务后台",
                 "AssetOperateRoleTypeCabinet": "电柜",
-                "AssetOperateRoleTypeManager": "资产后台",
+                "AssetOperateRoleTypeManager": "资产后台(仓库)",
                 "AssetOperateRoleTypeOperation": "运维",
                 "AssetOperateRoleTypeRider": "骑手",
                 "AssetOperateRoleTypeStore": "门店"
