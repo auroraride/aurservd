@@ -160,7 +160,7 @@ func (b *warehouseBiz) Assets(req *definition.WareHouseAssetListReq) (res *model
 			Name:           item.Name,
 			Lng:            item.Lng,
 			Lat:            item.Lat,
-			WarehouseAsset: b.assetForWarehouse(req, item.ID),
+			WarehouseAsset: b.AssetForWarehouse(req, item.ID),
 		}
 		if item.Edges.City != nil {
 			result.City = model.City{
@@ -174,8 +174,8 @@ func (b *warehouseBiz) Assets(req *definition.WareHouseAssetListReq) (res *model
 	return res
 }
 
-// assetForWarehouse 仓库物资数据
-func (b *warehouseBiz) assetForWarehouse(req *definition.WareHouseAssetListReq, wId uint64) definition.WarehouseAsset {
+// AssetForWarehouse 仓库物资数据
+func (b *warehouseBiz) AssetForWarehouse(req *definition.WareHouseAssetListReq, wId uint64) definition.WarehouseAsset {
 	astRes := definition.WarehouseAsset{
 		Ebikes:             make([]*definition.AssetMaterial, 0),
 		SmartBatteries:     make([]*definition.AssetMaterial, 0),

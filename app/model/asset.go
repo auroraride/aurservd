@@ -41,6 +41,9 @@ type AssetFilter struct {
 	BrandID          *uint64             `json:"brandId" query:"brandId"`                                 // 电车品牌ID
 	Rto              *bool               `json:"rto" query:"rto"`                                         // 电车是否赠送
 	Attribute        *string             `json:"attribute" query:"attribute"`                             // 属性 id:value
+	AssetManagerID   uint64              `json:"assetManagerId" query:"assetManagerId"`                   // 仓管人员ID
+	EmployeeID       uint64              `json:"employeeId" query:"employeeId"`                           // 门店店员ID
+	Battery          *bool               `json:"battery" query:"battery"`                                 // 电池是否统一查询
 }
 
 // AssetListReq 资产列表请求

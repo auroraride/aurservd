@@ -1046,7 +1046,9 @@ definitions:
       locationsType:
         allOf:
         - $ref: '#/definitions/model.AssetLocationsType'
-        description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        description: 资产位置类型 1:仓库
+        enum:
+        - 1
       sn:
         description: 资产编号
         type: string
@@ -1055,6 +1057,9 @@ definitions:
     type: object
   model.AssetListReq:
     properties:
+      assetManagerId:
+        description: 仓管人员ID
+        type: integer
       assetType:
         allOf:
         - $ref: '#/definitions/model.AssetType'
@@ -1069,6 +1074,9 @@ definitions:
       attribute:
         description: 属性 id:value
         type: string
+      battery:
+        description: 电池是否统一查询
+        type: boolean
       brandId:
         description: 电车品牌ID
         type: integer
@@ -1077,6 +1085,9 @@ definitions:
         type: integer
       current:
         description: 当前页, 从1开始, 默认1
+        type: integer
+      employeeId:
+        description: 门店店员ID
         type: integer
       enable:
         description: 是否启用
@@ -1686,7 +1697,7 @@ definitions:
       operateType:
         allOf:
         - $ref: '#/definitions/model.AssetOperateRoleType'
-        description: 操作类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手
+        description: 操作人角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手
         enum:
         - 1
         - 2
@@ -1696,7 +1707,6 @@ definitions:
         - 6
     required:
     - assetTransferReceive
-    - operateType
     type: object
   model.AssetTransferReceiveDetail:
     properties:
@@ -1734,15 +1744,12 @@ definitions:
     - 1
     - 2
     - 3
-    - 4
     type: integer
     x-enum-comments:
       AssetTransferStatusCancel: 已取消
       AssetTransferStatusDelivering: 配送中
-      AssetTransferStatusPending: 待入库
       AssetTransferStatusStock: 已入库
     x-enum-varnames:
-    - AssetTransferStatusPending
     - AssetTransferStatusDelivering
     - AssetTransferStatusStock
     - AssetTransferStatusCancel
@@ -2043,6 +2050,10 @@ paths:
         name: X-Asset-Manager-Token
         required: true
         type: string
+      - description: 仓管人员ID
+        in: query
+        name: assetManagerId
+        type: integer
       - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
         enum:
         - 1
@@ -2072,6 +2083,10 @@ paths:
         in: query
         name: attribute
         type: string
+      - description: 电池是否统一查询
+        in: query
+        name: battery
+        type: boolean
       - description: 电车品牌ID
         in: query
         name: brandId
@@ -2083,6 +2098,10 @@ paths:
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
+        type: integer
+      - description: 门店店员ID
+        in: query
+        name: employeeId
         type: integer
       - description: 是否启用
         in: query
@@ -2559,12 +2578,12 @@ paths:
         type: integer
       - description: 资产类型 1:电车 2:智能电池
         enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
         in: query
         name: assetType
         type: integer
@@ -2576,12 +2595,12 @@ paths:
           AssetTypeOtherAccessory: 其它配件
           AssetTypeSmartBattery: 智能电池
         x-enum-varnames:
-          - AssetTypeEbike
-          - AssetTypeSmartBattery
-          - AssetTypeNonSmartBattery
-          - AssetTypeCabinetAccessory
-          - AssetTypeEbikeAccessory
-          - AssetTypeOtherAccessory
+        - AssetTypeEbike
+        - AssetTypeSmartBattery
+        - AssetTypeNonSmartBattery
+        - AssetTypeCabinetAccessory
+        - AssetTypeEbikeAccessory
+        - AssetTypeOtherAccessory
       - description: 属性 id:value
         in: query
         name: attribute
@@ -2609,13 +2628,13 @@ paths:
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/model.AssetCheckDetail'
-                    type: array
-                type: object
+                    $ref: '#/definitions/model.AssetCheckDetail'
+                  type: array
+              type: object
       summary: 盘点明细
       tags:
       - 资产
@@ -2651,25 +2670,25 @@ paths:
               type: object
       summary: 盘点异常
       tags:
-        - 资产
+      - 资产
     put:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetCheckAbnormalOperate
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Asset-Manager-Token
-          required: true
-          type: string
-        - description: 操作参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.AssetCheckAbnormalOperateReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 操作参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetCheckAbnormalOperateReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2677,25 +2696,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 盘点操作
       tags:
-        - 资产
+      - 资产
   /manager/v2/asset/check/sn/{sn}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetCheckGetAssetBySN
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Asset-Manager-Token
-          required: true
-          type: string
-        - description: 资产SN
-          in: path
-          name: sn
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 资产SN
+        in: path
+        name: sn
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2715,6 +2734,10 @@ paths:
         name: X-Asset-Manager-Token
         required: true
         type: string
+      - description: 仓管人员ID
+        in: query
+        name: assetManagerId
+        type: integer
       - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
         enum:
         - 1
@@ -2744,6 +2767,10 @@ paths:
         in: query
         name: attribute
         type: string
+      - description: 电池是否统一查询
+        in: query
+        name: battery
+        type: boolean
       - description: 电车品牌ID
         in: query
         name: brandId
@@ -2751,6 +2778,10 @@ paths:
       - description: 城市
         in: query
         name: cityId
+        type: integer
+      - description: 门店店员ID
+        in: query
+        name: employeeId
         type: integer
       - description: 是否启用
         in: query
@@ -3554,7 +3585,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: SelectionRole
+      operationId: SelectionAssetRole
       parameters:
       - description: 管理员校验token
         in: header
@@ -3815,17 +3846,14 @@ paths:
         - 1
         - 2
         - 3
-        - 4
         in: query
         name: status
         type: integer
         x-enum-comments:
           AssetTransferStatusCancel: 已取消
           AssetTransferStatusDelivering: 配送中
-          AssetTransferStatusPending: 待入库
           AssetTransferStatusStock: 已入库
         x-enum-varnames:
-          - AssetTransferStatusPending
         - AssetTransferStatusDelivering
         - AssetTransferStatusStock
         - AssetTransferStatusCancel

@@ -56,7 +56,7 @@ func (b *storeAssetBiz) Assets(req *definition.StoreAssetListReq) (res *model.Pa
 			Name:       item.Name,
 			Lng:        item.Lng,
 			Lat:        item.Lat,
-			StoreAsset: b.assetForStore(req, item.ID),
+			StoreAsset: b.AssetForStore(req, item.ID),
 		}
 		if item.Edges.City != nil {
 			result.City = model.City{
@@ -70,7 +70,7 @@ func (b *storeAssetBiz) Assets(req *definition.StoreAssetListReq) (res *model.Pa
 	return res
 }
 
-func (b *storeAssetBiz) assetForStore(req *definition.StoreAssetListReq, id uint64) definition.StoreAsset {
+func (b *storeAssetBiz) AssetForStore(req *definition.StoreAssetListReq, id uint64) definition.StoreAsset {
 	astRes := definition.StoreAsset{
 		Ebikes:             make([]*definition.AssetMaterial, 0),
 		SmartBatteries:     make([]*definition.AssetMaterial, 0),

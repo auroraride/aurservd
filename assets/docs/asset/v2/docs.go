@@ -37,6 +37,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "仓管人员ID",
+                        "name": "assetManagerId",
+                        "in": "query"
+                    },
+                    {
                         "enum": [
                             1,
                             2,
@@ -73,6 +79,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "boolean",
+                        "description": "电池是否统一查询",
+                        "name": "battery",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "电车品牌ID",
                         "name": "brandId",
@@ -88,6 +100,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店店员ID",
+                        "name": "employeeId",
                         "in": "query"
                     },
                     {
@@ -899,6 +917,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "仓管人员ID",
+                        "name": "assetManagerId",
+                        "in": "query"
+                    },
+                    {
                         "enum": [
                             1,
                             2,
@@ -935,6 +959,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "boolean",
+                        "description": "电池是否统一查询",
+                        "name": "battery",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "电车品牌ID",
                         "name": "brandId",
@@ -944,6 +974,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "城市",
                         "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店店员ID",
+                        "name": "employeeId",
                         "in": "query"
                     },
                     {
@@ -2150,7 +2186,7 @@ const docTemplate = `{
                     "Selection - 筛选"
                 ],
                 "summary": "筛选角色",
-                "operationId": "SelectionRole",
+                "operationId": "SelectionAssetRole",
                 "parameters": [
                     {
                         "type": "string",
@@ -2528,18 +2564,15 @@ const docTemplate = `{
                         "enum": [
                             1,
                             2,
-                            3,
-                            4
+                            3
                         ],
                         "type": "integer",
                         "x-enum-comments": {
                             "AssetTransferStatusCancel": "已取消",
                             "AssetTransferStatusDelivering": "配送中",
-                            "AssetTransferStatusPending": "待入库",
                             "AssetTransferStatusStock": "已入库"
                         },
                         "x-enum-varnames": [
-                            "AssetTransferStatusPending",
                             "AssetTransferStatusDelivering",
                             "AssetTransferStatusStock",
                             "AssetTransferStatusCancel"
@@ -5466,7 +5499,10 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "locationsType": {
-                    "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                    "description": "资产位置类型 1:仓库",
+                    "enum": [
+                        1
+                    ],
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.AssetLocationsType"
@@ -5482,6 +5518,10 @@ const docTemplate = `{
         "model.AssetListReq": {
             "type": "object",
             "properties": {
+                "assetManagerId": {
+                    "description": "仓管人员ID",
+                    "type": "integer"
+                },
                 "assetType": {
                     "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
                     "enum": [
@@ -5502,6 +5542,10 @@ const docTemplate = `{
                     "description": "属性 id:value",
                     "type": "string"
                 },
+                "battery": {
+                    "description": "电池是否统一查询",
+                    "type": "boolean"
+                },
                 "brandId": {
                     "description": "电车品牌ID",
                     "type": "integer"
@@ -5512,6 +5556,10 @@ const docTemplate = `{
                 },
                 "current": {
                     "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "employeeId": {
+                    "description": "门店店员ID",
                     "type": "integer"
                 },
                 "enable": {
@@ -6360,8 +6408,7 @@ const docTemplate = `{
         "model.AssetTransferReceiveBatchReq": {
             "type": "object",
             "required": [
-                "assetTransferReceive",
-                "operateType"
+                "assetTransferReceive"
             ],
             "properties": {
                 "assetTransferReceive": {
@@ -6371,7 +6418,7 @@ const docTemplate = `{
                     }
                 },
                 "operateType": {
-                    "description": "操作类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手",
+                    "description": "操作人角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手",
                     "enum": [
                         1,
                         2,
@@ -6440,17 +6487,14 @@ const docTemplate = `{
             "enum": [
                 1,
                 2,
-                3,
-                4
+                3
             ],
             "x-enum-comments": {
                 "AssetTransferStatusCancel": "已取消",
                 "AssetTransferStatusDelivering": "配送中",
-                "AssetTransferStatusPending": "待入库",
                 "AssetTransferStatusStock": "已入库"
             },
             "x-enum-varnames": [
-                "AssetTransferStatusPending",
                 "AssetTransferStatusDelivering",
                 "AssetTransferStatusStock",
                 "AssetTransferStatusCancel"

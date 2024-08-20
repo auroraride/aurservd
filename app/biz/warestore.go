@@ -16,7 +16,10 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
+	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/warehouse"
 	"github.com/auroraride/aurservd/pkg/utils"
 )
 
@@ -49,7 +52,7 @@ func (b *warestoreBiz) signin(am *ent.AssetManager, ep *ent.Employee, platType d
 		token = utils.NewEcdsaToken()
 
 		// 存储登录token和ID进行对应
-		ar.Redis.HSet(b.ctx, tokenKey, token, am.ID)
+		ar.Redis.HSet(b.ctx, tokenKey, token, idstr)
 		ar.Redis.HSet(b.ctx, tokenKey, idstr, token)
 	case platType == definition.PlatTypeStore && ep != nil:
 		idstr := definition.SignTokenStore + "-" + strconv.FormatUint(ep.ID, 10)
@@ -63,7 +66,7 @@ func (b *warestoreBiz) signin(am *ent.AssetManager, ep *ent.Employee, platType d
 		token = utils.NewEcdsaToken()
 
 		// 存储登录token和ID进行对应
-		ar.Redis.HSet(b.ctx, tokenKey, token, ep.ID)
+		ar.Redis.HSet(b.ctx, tokenKey, token, idstr)
 		ar.Redis.HSet(b.ctx, tokenKey, idstr, token)
 	default:
 		return nil, errors.New("登录平台失败")
@@ -133,6 +136,11 @@ func (b *warestoreBiz) Profile(am *ent.AssetManager, ep *ent.Employee, platType 
 	}
 }
 
+// AssetCount 仓管资产统计
+func (b *warestoreBiz) AssetCount(am *ent.AssetManager, ep *ent.Employee) definition.AssetCountRes {
+	return definition.AssetCountRes{}
+}
+
 // TokenVerify Token校验
 func (b *warestoreBiz) TokenVerify(token string) (am *ent.AssetManager, ep *ent.Employee) {
 	// 获取token对应ID
@@ -183,11 +191,36 @@ func (b *warestoreBiz) TransferList(am *ent.AssetManager, ep *ent.Employee, req 
 	return service.NewAssetTransfer().TransferList(context.Background(), &newReq)
 }
 
+// TransferDetail 调拨记录详情
+func (b *warestoreBiz) TransferDetail(ctx context.Context, req *model.AssetTransferDetailReq) (res *definition.TransferDetailRes, err error) {
+	var t *ent.AssetTransfer
+	t, err = ent.Database.AssetTransfer.QueryNotDeleted().Where(assettransfer.ID(req.ID)).First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	details, err := service.NewAssetTransfer().TransferDetail(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	atr := service.NewAssetTransfer().TransferInfo(t)
+	res = &definition.TransferDetailRes{
+		AssetTransferListRes: *atr,
+		Detail:               details,
+	}
+	return
+}
+
 // TransferReceive 接收资产
-func (b *warestoreBiz) TransferReceive(am *ent.AssetManager, ep *ent.Employee, req *model.AssetTransferReceiveBatchReq) (err error) {
+func (b *warestoreBiz) TransferReceive(am *ent.AssetManager, ep *ent.Employee, req *definition.AssetTransferReceiveBatchReq) (err error) {
 	var md model.Modifier
 
+	newReq := model.AssetTransferReceiveBatchReq{
+		AssetTransferReceive: req.AssetTransferReceive,
+	}
+
 	if am != nil {
+		newReq.OperateType = model.AssetOperateRoleTypeManager
 		md = model.Modifier{
 			ID:    am.ID,
 			Name:  am.Name,
@@ -195,6 +228,7 @@ func (b *warestoreBiz) TransferReceive(am *ent.AssetManager, ep *ent.Employee, r
 		}
 	}
 	if ep != nil {
+		newReq.OperateType = model.AssetOperateRoleTypeStore
 		md = model.Modifier{
 			ID:    ep.ID,
 			Name:  ep.Name,
@@ -202,5 +236,146 @@ func (b *warestoreBiz) TransferReceive(am *ent.AssetManager, ep *ent.Employee, r
 		}
 	}
 
-	return service.NewAssetTransfer().TransferReceive(b.ctx, req, &md)
+	return service.NewAssetTransfer().TransferReceive(b.ctx, &newReq, &md)
+}
+
+// Assets 物资数据
+func (b *warestoreBiz) Assets(am *ent.AssetManager, ep *ent.Employee, req *definition.WarestoreAssetsReq) (res []*definition.WarestoreAssetRes, err error) {
+	switch {
+	case am != nil && ep == nil:
+		// 确认为仓库管理员
+		return b.assetsForWarehouse(am.ID, req)
+	case am == nil && ep != nil:
+		// 确认为门店管理员
+		return b.assetsForStore(ep.ID, req)
+	default:
+		return nil, errors.New(ar.UserNotFound)
+	}
+}
+
+// assetsForWarehouse 仓库物资数据
+func (b *warestoreBiz) assetsForWarehouse(amId uint64, req *definition.WarestoreAssetsReq) (res []*definition.WarestoreAssetRes, err error) {
+	// 查询仓库数据
+	q := ent.Database.Warehouse.QueryNotDeleted().WithCity()
+
+	if req.WarehouseID != nil {
+		q.Where(warehouse.ID(*req.WarehouseID))
+	}
+
+	// 查询仓管人员负责的仓库信息
+	am, _ := ent.Database.AssetManager.QueryNotDeleted().WithWarehouses().
+		Where(
+			assetmanager.ID(amId),
+			assetmanager.MiniEnable(true),
+			assetmanager.HasWarehousesWith(warehouse.DeletedAtIsNil()),
+		).First(b.ctx)
+	if am != nil && len(am.Edges.Warehouses) != 0 {
+		wIds := make([]uint64, 0)
+		for _, wh := range am.Edges.Warehouses {
+			wIds = append(wIds, wh.ID)
+		}
+		q.Where(warehouse.IDIn(wIds...))
+	}
+
+	whs, err := q.All(b.ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range whs {
+		// 查询仓库资产详情
+		_ = NewWarehouse().AssetForWarehouse(&definition.WareHouseAssetListReq{
+			CityID: req.CityID,
+		}, item.ID)
+
+		wa := &definition.WarestoreAssetRes{
+			ID:     item.ID,
+			Name:   item.Name,
+			Detail: definition.WarestoreAssetDetail{
+				// EbikeTotal:            detail.EbikeTotal,
+				// Ebikes:                detail.Ebikes,
+				// SmartBatteryTotal:     detail.SmartBatteryTotal,
+				// SmartBatteries:        detail.SmartBatteries,
+				// NonSmartBatteryTotal:  detail.NonSmartBatteryTotal,
+				// NonSmartBatteries:     detail.NonSmartBatteries,
+				// CabinetAccessoryTotal: detail.CabinetAccessoryTotal,
+				// CabinetAccessories:    detail.CabinetAccessories,
+				// EbikeAccessoryTotal:   detail.EbikeAccessoryTotal,
+				// EbikeAccessories:      detail.EbikeAccessories,
+				// OtherAssetTotal:       detail.OtherAssetTotal,
+				// OtherAssets:           detail.OtherAssets,
+			},
+		}
+		if item.Edges.City != nil {
+			wa.City = model.City{
+				ID:   item.Edges.City.ID,
+				Name: item.Edges.City.Name,
+			}
+		}
+		res = append(res, wa)
+	}
+
+	return
+}
+
+// assetsForStore 门店物资数据
+func (b *warestoreBiz) assetsForStore(epId uint64, req *definition.WarestoreAssetsReq) (res []*definition.WarestoreAssetRes, err error) {
+	// 门店数据
+	q := ent.Database.Store.QueryNotDeleted().WithCity()
+	if req.StoreID != nil {
+		q.Where(store.ID(*req.StoreID))
+	}
+	// 查询门店人员负责的门店信息 todo 门店集合筛选
+	ep, _ := ent.Database.Employee.QueryNotDeleted().WithStores().
+		Where(
+			employee.ID(epId),
+			employee.HasStoresWith(store.DeletedAtIsNil()),
+		).First(b.ctx)
+	if ep != nil && len(ep.Edges.Stores) != 0 {
+		sIds := make([]uint64, 0)
+		for _, st := range ep.Edges.Stores {
+			sIds = append(sIds, st.ID)
+		}
+		q.Where(store.IDIn(sIds...))
+	}
+
+	sts, err := q.All(b.ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range sts {
+		// 查询仓库资产详情
+		_ = NewStoreAsset().AssetForStore(&definition.StoreAssetListReq{
+			CityID: req.CityID,
+		}, item.ID)
+
+		wa := &definition.WarestoreAssetRes{
+			ID:     item.ID,
+			Name:   item.Name,
+			Detail: definition.WarestoreAssetDetail{
+				// EbikeTotal:            detail.EbikeTotal,
+				// Ebikes:                detail.Ebikes,
+				// SmartBatteryTotal:     detail.SmartBatteryTotal,
+				// SmartBatteries:        detail.SmartBatteries,
+				// NonSmartBatteryTotal:  detail.NonSmartBatteryTotal,
+				// NonSmartBatteries:     detail.NonSmartBatteries,
+				// CabinetAccessoryTotal: detail.CabinetAccessoryTotal,
+				// CabinetAccessories:    detail.CabinetAccessories,
+				// EbikeAccessoryTotal:   detail.EbikeAccessoryTotal,
+				// EbikeAccessories:      detail.EbikeAccessories,
+				// OtherAssetTotal:       detail.OtherAssetTotal,
+				// OtherAssets:           detail.OtherAssets,
+			},
+		}
+		if item.Edges.City != nil {
+			wa.City = model.City{
+				ID:   item.Edges.City.ID,
+				Name: item.Edges.City.Name,
+			}
+		}
+		res = append(res, wa)
+	}
+
+	return
 }

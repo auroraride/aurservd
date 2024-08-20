@@ -10,8 +10,8 @@ import (
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assetrole"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
 
@@ -111,11 +111,23 @@ func (b *assetRoleBiz) List() []definition.AssetRole {
 
 func (b *assetRoleBiz) Delete(req *model.IDParamReq) {
 	// 查找是否有用户
-	if e, _ := ent.Database.Manager.QueryNotDeleted().Where(manager.RoleID(req.ID)).Exist(b.ctx); e {
+	if e, _ := ent.Database.AssetManager.QueryNotDeleted().Where(assetmanager.RoleID(req.ID)).Exist(b.ctx); e {
 		snag.Panic("角色存在用户, 无法删除")
 	}
 	err := b.orm.DeleteOneID(req.ID).Exec(b.ctx)
 	if err != nil {
 		snag.Panic("角色删除失败")
 	}
+}
+
+// RoleSelection 筛选角色
+func (b *assetRoleBiz) RoleSelection() (items []model.SelectOption) {
+	roles, _ := b.orm.Query().All(b.ctx)
+	for _, role := range roles {
+		items = append(items, model.SelectOption{
+			Value: role.ID,
+			Label: role.Name,
+		})
+	}
+	return
 }

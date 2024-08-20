@@ -394,97 +394,102 @@ func (s *assetTransferService) TransferList(ctx context.Context, req *model.Asse
 	s.filter(ctx, q, &req.AssetTransferFilter)
 
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetTransfer) (res *model.AssetTransferListRes) {
-		res = &model.AssetTransferListRes{
-			ID:     item.ID,
-			SN:     item.Sn,
-			Reason: item.Reason,
-			Remark: item.Remark,
-			Status: model.AssetTransferStatus(item.Status).String(),
-			OutNum: item.OutNum,
-			InNum:  item.InNum,
-		}
-
-		if item.OutTimeAt != nil {
-			res.OutTimeAt = item.OutTimeAt.Format("2006-01-02 15:04:05")
-		}
-		if item.FromLocationType != nil && item.FromLocationID != nil {
-			res.FromLocationType = *item.FromLocationType
-			res.FromLocationID = *item.FromLocationID
-			switch model.AssetLocationsType(*item.FromLocationType) {
-			case model.AssetLocationsTypeWarehouse:
-				if item.Edges.FromLocationWarehouse != nil {
-					res.FromLocationName = "[仓库]" + item.Edges.FromLocationWarehouse.Name
-				}
-			case model.AssetLocationsTypeStore:
-				if item.Edges.FromLocationStore != nil {
-					res.FromLocationName = "[门店]" + item.Edges.FromLocationStore.Name
-				}
-			case model.AssetLocationsTypeStation:
-				if item.Edges.FromLocationStation != nil {
-					res.FromLocationName = "[站点]" + item.Edges.FromLocationStation.Name
-				}
-			case model.AssetLocationsTypeOperation:
-				if item.Edges.FromLocationOperator != nil {
-					res.FromLocationName = "[运维]" + item.Edges.FromLocationOperator.Name
-				}
-			default:
-			}
-		}
-
-		if item.ToLocationType != 0 && item.ToLocationID != 0 {
-			res.ToLocationType = item.ToLocationType
-			res.ToLocationID = item.ToLocationID
-			switch model.AssetLocationsType(item.ToLocationType) {
-			case model.AssetLocationsTypeWarehouse:
-				if item.Edges.ToLocationWarehouse != nil {
-					res.ToLocationName = "[仓库]" + item.Edges.ToLocationWarehouse.Name
-				}
-			case model.AssetLocationsTypeStore:
-				if item.Edges.ToLocationStore != nil {
-					res.ToLocationName = "[门店]" + item.Edges.ToLocationStore.Name
-				}
-			case model.AssetLocationsTypeStation:
-				if item.Edges.ToLocationStation != nil {
-					res.ToLocationName = "[站点]" + item.Edges.ToLocationStation.Name
-				}
-			case model.AssetLocationsTypeOperation:
-				if item.Edges.ToLocationOperator != nil {
-					res.ToLocationName = "[运维]" + item.Edges.ToLocationOperator.Name
-				}
-			default:
-			}
-		}
-
-		// 出库操作人
-		if item.OutOperateType != nil && item.OutOperateID != nil {
-			switch model.AssetOperateRoleType(*item.OutOperateType) {
-			case model.AssetOperateRoleTypeManager:
-				if item.Edges.OutOperateManager != nil {
-					// 查询角色
-					var roleName string
-					if role, _ := item.Edges.OutOperateManager.QueryRole().First(ctx); role != nil {
-						roleName = role.Name
-					}
-					res.OutOperateName = "[" + roleName + "]" + item.Edges.OutOperateManager.Name
-				}
-			case model.AssetOperateRoleTypeStore:
-				if item.Edges.OutOperateStore != nil {
-					res.OutOperateName = "[门店]" + item.Edges.OutOperateStore.Name
-				}
-			case model.AssetOperateRoleTypeAgent:
-				if item.Edges.OutOperateAgent != nil {
-					res.OutOperateName = "[代理]" + item.Edges.OutOperateAgent.Name
-				}
-			case model.AssetOperateRoleTypeOperation:
-				if item.Edges.OutOperateMaintainer != nil {
-					res.OutOperateName = "[运维]" + item.Edges.OutOperateMaintainer.Name
-				}
-			default:
-			}
-		}
-		return res
+		return s.TransferInfo(item)
 	}), nil
 
+}
+
+// TransferInfo 补充完善调拨信息
+func (s *assetTransferService) TransferInfo(item *ent.AssetTransfer) (res *model.AssetTransferListRes) {
+	res = &model.AssetTransferListRes{
+		ID:     item.ID,
+		SN:     item.Sn,
+		Reason: item.Reason,
+		Remark: item.Remark,
+		Status: model.AssetTransferStatus(item.Status).String(),
+		OutNum: item.OutNum,
+		InNum:  item.InNum,
+	}
+
+	if item.OutTimeAt != nil {
+		res.OutTimeAt = item.OutTimeAt.Format("2006-01-02 15:04:05")
+	}
+	if item.FromLocationType != nil && item.FromLocationID != nil {
+		res.FromLocationType = *item.FromLocationType
+		res.FromLocationID = *item.FromLocationID
+		switch model.AssetLocationsType(*item.FromLocationType) {
+		case model.AssetLocationsTypeWarehouse:
+			if item.Edges.FromLocationWarehouse != nil {
+				res.FromLocationName = "[仓库]" + item.Edges.FromLocationWarehouse.Name
+			}
+		case model.AssetLocationsTypeStore:
+			if item.Edges.FromLocationStore != nil {
+				res.FromLocationName = "[门店]" + item.Edges.FromLocationStore.Name
+			}
+		case model.AssetLocationsTypeStation:
+			if item.Edges.FromLocationStation != nil {
+				res.FromLocationName = "[站点]" + item.Edges.FromLocationStation.Name
+			}
+		case model.AssetLocationsTypeOperation:
+			if item.Edges.FromLocationOperator != nil {
+				res.FromLocationName = "[运维]" + item.Edges.FromLocationOperator.Name
+			}
+		default:
+		}
+	}
+
+	if item.ToLocationType != 0 && item.ToLocationID != 0 {
+		res.ToLocationType = item.ToLocationType
+		res.ToLocationID = item.ToLocationID
+		switch model.AssetLocationsType(item.ToLocationType) {
+		case model.AssetLocationsTypeWarehouse:
+			if item.Edges.ToLocationWarehouse != nil {
+				res.ToLocationName = "[仓库]" + item.Edges.ToLocationWarehouse.Name
+			}
+		case model.AssetLocationsTypeStore:
+			if item.Edges.ToLocationStore != nil {
+				res.ToLocationName = "[门店]" + item.Edges.ToLocationStore.Name
+			}
+		case model.AssetLocationsTypeStation:
+			if item.Edges.ToLocationStation != nil {
+				res.ToLocationName = "[站点]" + item.Edges.ToLocationStation.Name
+			}
+		case model.AssetLocationsTypeOperation:
+			if item.Edges.ToLocationOperator != nil {
+				res.ToLocationName = "[运维]" + item.Edges.ToLocationOperator.Name
+			}
+		default:
+		}
+	}
+
+	// 出库操作人
+	if item.OutOperateType != nil && item.OutOperateID != nil {
+		switch model.AssetOperateRoleType(*item.OutOperateType) {
+		case model.AssetOperateRoleTypeManager:
+			if item.Edges.OutOperateManager != nil {
+				// 查询角色
+				var roleName string
+				if role, _ := item.Edges.OutOperateManager.QueryRole().First(context.Background()); role != nil {
+					roleName = role.Name
+				}
+				res.OutOperateName = "[" + roleName + "]" + item.Edges.OutOperateManager.Name
+			}
+		case model.AssetOperateRoleTypeStore:
+			if item.Edges.OutOperateStore != nil {
+				res.OutOperateName = "[门店]" + item.Edges.OutOperateStore.Name
+			}
+		case model.AssetOperateRoleTypeAgent:
+			if item.Edges.OutOperateAgent != nil {
+				res.OutOperateName = "[代理]" + item.Edges.OutOperateAgent.Name
+			}
+		case model.AssetOperateRoleTypeOperation:
+			if item.Edges.OutOperateMaintainer != nil {
+				res.OutOperateName = "[运维]" + item.Edges.OutOperateMaintainer.Name
+			}
+		default:
+		}
+	}
+	return res
 }
 
 // 筛选

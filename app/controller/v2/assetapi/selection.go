@@ -86,8 +86,8 @@ func (*selection) Enterprise(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewSelection().Enterprise())
 }
 
-// Role
-// @ID		SelectionRole
+// AssetRole
+// @ID		SelectionAssetRole
 // @Router	/manager/v2/asset/selection/role [GET]
 // @Summary	筛选角色
 // @Tags	Selection - 筛选
@@ -95,7 +95,7 @@ func (*selection) Enterprise(c echo.Context) (err error) {
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Success	200						{object}	[]model.SelectOption	"请求成功"
-func (*selection) Role(c echo.Context) (err error) {
+func (*selection) AssetRole(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AssetManagerContext](c)
-	return ctx.SendResponse(service.NewSelection().Role())
+	return ctx.SendResponse(biz.NewAssetRole().RoleSelection())
 }

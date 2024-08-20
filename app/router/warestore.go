@@ -19,8 +19,16 @@ func loadWarestoreRoutes() {
 	// 需校验
 	auth := g.Group("", middleware.Warestore(), middleware.WarestoreAuth())
 
+	// 资产统计
+	auth.GET("/asset/count", wapi.Warestore.AssetCount) // 资产统计
+
 	// 资产调拨
 	auth.GET("/transfer", wapi.Warestore.TransferList)             // 调拨列表
 	auth.GET("/transfer/:id", wapi.Warestore.TransferDetail)       // 调拨详情
 	auth.POST("/transfer/receive", wapi.Warestore.TransferReceive) // 调拨批量入库
+	auth.GET("/transfer/flow", wapi.Warestore.TransferFlow)        // 资产流转明细
+
+	// 物资管理
+	auth.GET("/assets", wapi.Warestore.Assets) // 资产数据
+
 }

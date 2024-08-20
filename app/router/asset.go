@@ -34,7 +34,7 @@ func loadAssetsRoutes() {
 	asset.GET("/selection/ebike/brand", assetapi.Selection.EbikeBrand)         // 电车品牌筛选
 	asset.GET("/selection/store", assetapi.Selection.Store)                    // 门店筛选
 	asset.GET("/selection/enterprise", assetapi.Selection.Enterprise)          // 企业筛选
-	asset.GET("/selection/role", assetapi.Selection.Role)                      // 角色筛选
+	asset.GET("/selection/role", assetapi.Selection.AssetRole)                 // 角色筛选
 
 	// 基础档案
 	asset.POST("", assetapi.Assets.Create)       // 创建资产
