@@ -44,6 +44,8 @@ type Employee struct {
 	Phone string `json:"phone,omitempty"`
 	// 启用状态
 	Enable bool `json:"enable,omitempty"`
+	// 密码
+	Password string `json:"password,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EmployeeQuery when eager-loading is set.
 	Edges        EmployeeEdges `json:"edges"`
@@ -160,7 +162,7 @@ func (*Employee) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case employee.FieldID, employee.FieldCityID:
 			values[i] = new(sql.NullInt64)
-		case employee.FieldRemark, employee.FieldName, employee.FieldPhone:
+		case employee.FieldRemark, employee.FieldName, employee.FieldPhone, employee.FieldPassword:
 			values[i] = new(sql.NullString)
 		case employee.FieldCreatedAt, employee.FieldUpdatedAt, employee.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -257,6 +259,12 @@ func (e *Employee) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field enable", values[i])
 			} else if value.Valid {
 				e.Enable = value.Bool
+			}
+		case employee.FieldPassword:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field password", values[i])
+			} else if value.Valid {
+				e.Password = value.String
 			}
 		default:
 			e.selectValues.Set(columns[i], values[i])
@@ -368,6 +376,9 @@ func (e *Employee) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("enable=")
 	builder.WriteString(fmt.Sprintf("%v", e.Enable))
+	builder.WriteString(", ")
+	builder.WriteString("password=")
+	builder.WriteString(e.Password)
 	builder.WriteByte(')')
 	return builder.String()
 }

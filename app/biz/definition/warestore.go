@@ -6,6 +6,11 @@ package definition
 
 import "github.com/auroraride/aurservd/app/model"
 
+const (
+	SignTokenWarehouse = "WAREHOUSE" // 仓库平台
+	SignTokenStore     = "STORE"     // 门店平台
+)
+
 type PlatType uint8
 
 const (
@@ -18,11 +23,9 @@ func (f PlatType) Value() uint8 {
 }
 
 type WarestorePeopleSigninReq struct {
-	Phone      string   `json:"phone,omitempty" validate:"required_if=SigninType 1" trans:"电话"`
-	SmsId      string   `json:"smsId,omitempty" validate:"required_if=SigninType 1" trans:"短信ID"`
-	Code       string   `json:"code,omitempty" validate:"required_if=SigninType 1,required_if=SigninType 2" trans:"验证码"`
-	SigninType uint64   `json:"signinType" validate:"required,oneof=1 2"`
-	PlatType   PlatType `json:"platType" validate:"required,oneof=1 2" trans:"登录平台类型"`
+	Phone    string   `json:"phone" validate:"required" trans:"电话"`
+	Password string   `json:"password" validate:"required" trans:"密码"`
+	PlatType PlatType `json:"platType" validate:"required,oneof=1 2" trans:"登录平台类型"`
 }
 
 type WarestorePeopleSigninRes struct {
@@ -39,9 +42,12 @@ type OpenidRes struct {
 }
 
 type WarestorePeopleProfile struct {
-	ID    uint64 `json:"id"`
-	Phone string `json:"phone"` // 手机号
-	Name  string `json:"name"`  // 姓名
+	ID           uint64 `json:"id"`
+	Phone        string `json:"phone"`        // 手机号
+	Name         string `json:"name"`         // 姓名
+	RoleName     string `json:"roleName"`     // 角色名称
+	Duty         bool   `json:"duty"`         // 上下班 `true`上班 `false`下班
+	DutyLocation string `json:"dutyLocation"` // 上班位置
 }
 
 // TransferListReq 调拨记录筛选条件

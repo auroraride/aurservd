@@ -37,6 +37,8 @@ const (
 	FieldPhone = "phone"
 	// FieldEnable holds the string denoting the enable field in the database.
 	FieldEnable = "enable"
+	// FieldPassword holds the string denoting the password field in the database.
+	FieldPassword = "password"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeStore holds the string denoting the store edge name in mutations.
@@ -125,6 +127,7 @@ var Columns = []string{
 	FieldName,
 	FieldPhone,
 	FieldEnable,
+	FieldPassword,
 }
 
 var (
@@ -211,6 +214,11 @@ func ByPhone(opts ...sql.OrderTermOption) OrderOption {
 // ByEnable orders the results by the enable field.
 func ByEnable(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEnable, opts...).ToFunc()
+}
+
+// ByPassword orders the results by the password field.
+func ByPassword(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPassword, opts...).ToFunc()
 }
 
 // ByCityField orders the results by city field.

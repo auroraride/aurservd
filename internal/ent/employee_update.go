@@ -172,6 +172,26 @@ func (eu *EmployeeUpdate) SetNillableEnable(b *bool) *EmployeeUpdate {
 	return eu
 }
 
+// SetPassword sets the "password" field.
+func (eu *EmployeeUpdate) SetPassword(s string) *EmployeeUpdate {
+	eu.mutation.SetPassword(s)
+	return eu
+}
+
+// SetNillablePassword sets the "password" field if the given value is not nil.
+func (eu *EmployeeUpdate) SetNillablePassword(s *string) *EmployeeUpdate {
+	if s != nil {
+		eu.SetPassword(*s)
+	}
+	return eu
+}
+
+// ClearPassword clears the value of the "password" field.
+func (eu *EmployeeUpdate) ClearPassword() *EmployeeUpdate {
+	eu.mutation.ClearPassword()
+	return eu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (eu *EmployeeUpdate) SetCity(c *City) *EmployeeUpdate {
 	return eu.SetCityID(c.ID)
@@ -535,6 +555,12 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := eu.mutation.Enable(); ok {
 		_spec.SetField(employee.FieldEnable, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.Password(); ok {
+		_spec.SetField(employee.FieldPassword, field.TypeString, value)
+	}
+	if eu.mutation.PasswordCleared() {
+		_spec.ClearField(employee.FieldPassword, field.TypeString)
 	}
 	if eu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1020,6 +1046,26 @@ func (euo *EmployeeUpdateOne) SetNillableEnable(b *bool) *EmployeeUpdateOne {
 	return euo
 }
 
+// SetPassword sets the "password" field.
+func (euo *EmployeeUpdateOne) SetPassword(s string) *EmployeeUpdateOne {
+	euo.mutation.SetPassword(s)
+	return euo
+}
+
+// SetNillablePassword sets the "password" field if the given value is not nil.
+func (euo *EmployeeUpdateOne) SetNillablePassword(s *string) *EmployeeUpdateOne {
+	if s != nil {
+		euo.SetPassword(*s)
+	}
+	return euo
+}
+
+// ClearPassword clears the value of the "password" field.
+func (euo *EmployeeUpdateOne) ClearPassword() *EmployeeUpdateOne {
+	euo.mutation.ClearPassword()
+	return euo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (euo *EmployeeUpdateOne) SetCity(c *City) *EmployeeUpdateOne {
 	return euo.SetCityID(c.ID)
@@ -1413,6 +1459,12 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 	}
 	if value, ok := euo.mutation.Enable(); ok {
 		_spec.SetField(employee.FieldEnable, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.Password(); ok {
+		_spec.SetField(employee.FieldPassword, field.TypeString, value)
+	}
+	if euo.mutation.PasswordCleared() {
+		_spec.ClearField(employee.FieldPassword, field.TypeString)
 	}
 	if euo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{

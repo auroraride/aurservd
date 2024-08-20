@@ -64,6 +64,7 @@ func (Employee) Fields() []ent.Field {
 		field.String("name").Comment("姓名"),
 		field.String("phone").Comment("电话"),
 		field.Bool("enable").Default(true).Comment("启用状态"),
+		field.String("password").Optional().Comment("密码"),
 	}
 }
 

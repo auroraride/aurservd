@@ -32,21 +32,6 @@ func (*warestore) Signin(c echo.Context) (err error) {
 	return ctx.SendResponse(biz.NewWarestore().Signin(req))
 }
 
-// GetOpenid
-// @ID		WarehouseGetOpenid
-// @Router	/warestore/v2/openid [GET]
-// @Summary	获取openid
-// @Tags	仓管接口 - Warestore
-// @Accept	json
-// @Produce	json
-// @Param	X-Warehouse-Token	header		string			true	"仓管校验token"
-// @Param	code				query		string			true	"微信code"
-// @Success	200					{object}	model.OpenidRes	"请求成功"
-func (*warestore) GetOpenid(c echo.Context) (err error) {
-	ctx, req := app.WarestoreContextAndBinding[definition.OpenidReq](c)
-	return ctx.SendResponse(service.NewminiProgram().GetAuth(req.Code))
-}
-
 // TransferList
 // @ID		WarehouseTransferList
 // @Router	/warestore/v2/transfer [GET]
@@ -54,7 +39,7 @@ func (*warestore) GetOpenid(c echo.Context) (err error) {
 // @Tags	仓管接口 - Warestore
 // @Accept	json
 // @Produce	json
-// @Param	X-Warehouse-Token	header		string													true	"仓管校验token"
+// @Param	X-Warestore-Token	header		string													true	"仓管校验token"
 // @Param	body				body		definition.TransferListReq								true	"接收参数"
 // @Success	200					{object}	model.PaginationRes{items=[]model.AssetTransferListRes}	"请求成功"
 func (*warestore) TransferList(c echo.Context) (err error) {
@@ -69,9 +54,9 @@ func (*warestore) TransferList(c echo.Context) (err error) {
 // @Tags	仓管接口 - Warestore
 // @Accept	json
 // @Produce	json
-// @Param	X-Warehouse-Token	header		string													true	"仓管校验token"
-// @Param	body				body		model.AssetTransferDetailReq							true	"接收参数"
-// @Success	200					{object}	model.PaginationRes{items=[]model.AssetTransferListRes}	"请求成功"
+// @Param	X-Warestore-Token	header		string						true	"仓管校验token"
+// @Param	id					path		uint64						true	"调拨ID"
+// @Success	200					{object}	[]model.AssetTransferDetail	"请求成功"
 func (*warestore) TransferDetail(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[model.AssetTransferDetailReq](c)
 	return ctx.SendResponse(service.NewAssetTransfer().TransferDetail(ctx.Request().Context(), req))
@@ -84,7 +69,7 @@ func (*warestore) TransferDetail(c echo.Context) (err error) {
 // @Tags	仓管接口 - Warestore
 // @Accept	json
 // @Produce	json
-// @Param	X-Warehouse-Token	header		string								true	"仓管校验token"
+// @Param	X-Warestore-Token	header		string								true	"仓管校验token"
 // @Param	body				body		model.AssetTransferReceiveBatchReq	true	"接收参数"
 // @Success	200					{object}	model.StatusResponse				"请求成功"
 func (*warestore) TransferReceive(c echo.Context) (err error) {

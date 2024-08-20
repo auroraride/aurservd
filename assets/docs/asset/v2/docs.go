@@ -1857,6 +1857,180 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/selection/city": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "筛选启用的城市",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/selection/ebike/brand": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "车辆型号列表",
+                "operationId": "SelectionEbikeBrand",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/selection/enterprise": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "筛选企业",
+                "operationId": "SelectionEnterprise",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/selection/role": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "筛选角色",
+                "operationId": "SelectionRole",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/selection/store": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "筛选门店",
+                "operationId": "SelectionStore",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/selection/warehouse_city": {
             "get": {
                 "consumes": [
@@ -1874,7 +2048,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     }
@@ -4789,6 +4963,14 @@ const docTemplate = `{
                     "description": "资产ID",
                     "type": "integer"
                 },
+                "assetType": {
+                    "description": "资产类型 1:电车 2:电池",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                },
                 "brand": {
                     "description": "品牌",
                     "type": "string"
@@ -4819,7 +5001,11 @@ const docTemplate = `{
                 },
                 "result": {
                     "description": "盘点结果 0:正常 1:亏 2:盈",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetCheckResult"
+                        }
+                    ]
                 },
                 "sn": {
                     "description": "资产编号",
@@ -4992,6 +5178,27 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.AssetCheckResult": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "AssetCheckResultLoss": "亏",
+                "AssetCheckResultNormal": "正常",
+                "AssetCheckResultSurplus": "盈",
+                "AssetCheckResultUntreated": "未盘点"
+            },
+            "x-enum-varnames": [
+                "AssetCheckResultUntreated",
+                "AssetCheckResultNormal",
+                "AssetCheckResultLoss",
+                "AssetCheckResultSurplus"
+            ]
         },
         "model.AssetCreateReq": {
             "type": "object",
@@ -6080,6 +6287,30 @@ const docTemplate = `{
                 "AssetTypeEbikeAccessory",
                 "AssetTypeOtherAccessory"
             ]
+        },
+        "model.CascaderOptionLevel2": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "级联选择子项目",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SelectOption"
+                    }
+                },
+                "desc": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "label": {
+                    "description": "选择项名称",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "选择项值 (ID)",
+                    "type": "integer"
+                }
+            }
         },
         "model.City": {
             "type": "object",

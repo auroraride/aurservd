@@ -76,6 +76,12 @@ definitions:
     type: object
   definition.WarestorePeopleProfile:
     properties:
+      duty:
+        description: 上下班 `true`上班 `false`下班
+        type: boolean
+      dutyLocation:
+        description: 上班位置
+        type: string
       id:
         type: integer
       name:
@@ -84,11 +90,14 @@ definitions:
       phone:
         description: 手机号
         type: string
+      roleName:
+        description: 角色名称
+        type: string
     type: object
   definition.WarestorePeopleSigninReq:
     properties:
-      code:
-        description: 验证码
+      password:
+        description: 密码
         type: string
       phone:
         description: 电话
@@ -100,17 +109,10 @@ definitions:
         enum:
         - 1
         - 2
-      signinType:
-        enum:
-        - 1
-        - 2
-        type: integer
-      smsId:
-        description: 短信ID
-        type: string
     required:
+    - password
+    - phone
     - platType
-    - signinType
     type: object
   definition.WarestorePeopleSigninRes:
     properties:
@@ -168,7 +170,24 @@ definitions:
     - AssetOperateRoleTypeCabinet
     - AssetOperateRoleTypeRider
     - AssetOperateRoleTypeBusinessManager
-  model.AssetTransferDetailReq:
+  model.AssetTransferDetail:
+    properties:
+      assetType:
+        allOf:
+        - $ref: '#/definitions/model.AssetType'
+        description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+      in:
+        description: 入库数量
+        type: integer
+      name:
+        description: 资产名称
+        type: string
+      out:
+        description: 出库数量
+        type: integer
+      sn:
+        description: 资产编号
+        type: string
     type: object
   model.AssetTransferListRes:
     properties:
@@ -310,11 +329,6 @@ definitions:
     - AssetTypeCabinetAccessory
     - AssetTypeEbikeAccessory
     - AssetTypeOtherAccessory
-  model.OpenidRes:
-    properties:
-      openid:
-        type: string
-    type: object
   model.Pagination:
     properties:
       current:
@@ -427,32 +441,6 @@ info:
   title: 极光出行API - 仓管api
   version: "2.0"
 paths:
-  /warestore/v2/openid:
-    get:
-      consumes:
-      - application/json
-      operationId: WarehouseGetOpenid
-      parameters:
-      - description: 仓管校验token
-        in: header
-        name: X-Warehouse-Token
-        required: true
-        type: string
-      - description: 微信code
-        in: query
-        name: code
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.OpenidRes'
-      summary: 获取openid
-      tags:
-      - 仓管接口 - Warestore
   /warestore/v2/signin:
     post:
       consumes:
@@ -483,7 +471,7 @@ paths:
       parameters:
       - description: 仓管校验token
         in: header
-        name: X-Warehouse-Token
+        name: X-Warestore-Token
         required: true
         type: string
       - description: 接收参数
@@ -517,29 +505,23 @@ paths:
       parameters:
       - description: 仓管校验token
         in: header
-        name: X-Warehouse-Token
+        name: X-Warestore-Token
         required: true
         type: string
-      - description: 接收参数
-        in: body
-        name: body
+      - description: 调拨ID
+        in: path
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/model.AssetTransferDetailReq'
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            allOf:
-            - $ref: '#/definitions/model.PaginationRes'
-            - properties:
-                items:
-                  items:
-                    $ref: '#/definitions/model.AssetTransferListRes'
-                  type: array
-              type: object
+            items:
+              $ref: '#/definitions/model.AssetTransferDetail'
+            type: array
       summary: 调拨记录详情
       tags:
       - 仓管接口 - Warestore
@@ -551,7 +533,7 @@ paths:
       parameters:
       - description: 仓管校验token
         in: header
-        name: X-Warehouse-Token
+        name: X-Warestore-Token
         required: true
         type: string
       - description: 接收参数

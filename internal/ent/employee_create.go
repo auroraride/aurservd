@@ -145,6 +145,20 @@ func (ec *EmployeeCreate) SetNillableEnable(b *bool) *EmployeeCreate {
 	return ec
 }
 
+// SetPassword sets the "password" field.
+func (ec *EmployeeCreate) SetPassword(s string) *EmployeeCreate {
+	ec.mutation.SetPassword(s)
+	return ec
+}
+
+// SetNillablePassword sets the "password" field if the given value is not nil.
+func (ec *EmployeeCreate) SetNillablePassword(s *string) *EmployeeCreate {
+	if s != nil {
+		ec.SetPassword(*s)
+	}
+	return ec
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (ec *EmployeeCreate) SetCity(c *City) *EmployeeCreate {
 	return ec.SetCityID(c.ID)
@@ -406,6 +420,10 @@ func (ec *EmployeeCreate) createSpec() (*Employee, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.Enable(); ok {
 		_spec.SetField(employee.FieldEnable, field.TypeBool, value)
 		_node.Enable = value
+	}
+	if value, ok := ec.mutation.Password(); ok {
+		_spec.SetField(employee.FieldPassword, field.TypeString, value)
+		_node.Password = value
 	}
 	if nodes := ec.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -720,6 +738,24 @@ func (u *EmployeeUpsert) UpdateEnable() *EmployeeUpsert {
 	return u
 }
 
+// SetPassword sets the "password" field.
+func (u *EmployeeUpsert) SetPassword(v string) *EmployeeUpsert {
+	u.Set(employee.FieldPassword, v)
+	return u
+}
+
+// UpdatePassword sets the "password" field to the value that was provided on create.
+func (u *EmployeeUpsert) UpdatePassword() *EmployeeUpsert {
+	u.SetExcluded(employee.FieldPassword)
+	return u
+}
+
+// ClearPassword clears the value of the "password" field.
+func (u *EmployeeUpsert) ClearPassword() *EmployeeUpsert {
+	u.SetNull(employee.FieldPassword)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -919,6 +955,27 @@ func (u *EmployeeUpsertOne) SetEnable(v bool) *EmployeeUpsertOne {
 func (u *EmployeeUpsertOne) UpdateEnable() *EmployeeUpsertOne {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.UpdateEnable()
+	})
+}
+
+// SetPassword sets the "password" field.
+func (u *EmployeeUpsertOne) SetPassword(v string) *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetPassword(v)
+	})
+}
+
+// UpdatePassword sets the "password" field to the value that was provided on create.
+func (u *EmployeeUpsertOne) UpdatePassword() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdatePassword()
+	})
+}
+
+// ClearPassword clears the value of the "password" field.
+func (u *EmployeeUpsertOne) ClearPassword() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.ClearPassword()
 	})
 }
 
@@ -1287,6 +1344,27 @@ func (u *EmployeeUpsertBulk) SetEnable(v bool) *EmployeeUpsertBulk {
 func (u *EmployeeUpsertBulk) UpdateEnable() *EmployeeUpsertBulk {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.UpdateEnable()
+	})
+}
+
+// SetPassword sets the "password" field.
+func (u *EmployeeUpsertBulk) SetPassword(v string) *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetPassword(v)
+	})
+}
+
+// UpdatePassword sets the "password" field to the value that was provided on create.
+func (u *EmployeeUpsertBulk) UpdatePassword() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdatePassword()
+	})
+}
+
+// ClearPassword clears the value of the "password" field.
+func (u *EmployeeUpsertBulk) ClearPassword() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.ClearPassword()
 	})
 }
 

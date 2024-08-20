@@ -6,7 +6,9 @@ package biz
 
 import (
 	"context"
+	"errors"
 	"strconv"
+	"strings"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
@@ -15,72 +17,68 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/employee"
-	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/utils"
 )
 
 type warestoreBiz struct {
 	ctx                    context.Context
-	warehouseTokenCacheKey string
-	storeTokenCacheKey     string
+	warestoreTokenCacheKey string
 }
 
 func NewWarestore() *warestoreBiz {
 	return &warestoreBiz{
 		ctx:                    context.Background(),
-		warehouseTokenCacheKey: ar.Config.Environment.UpperString() + ":" + "WAREHOUSE:TOKEN",
-		storeTokenCacheKey:     ar.Config.Environment.UpperString() + ":" + "STORE:TOKEN",
+		warestoreTokenCacheKey: ar.Config.Environment.UpperString() + ":" + "WARESTORE:TOKEN",
 	}
 }
 
 // signin 仓库、门店登录
-func (b *warestoreBiz) signin(am *ent.AssetManager, ep *ent.Employee, platType definition.PlatType) *definition.WarestorePeopleSigninRes {
+func (b *warestoreBiz) signin(am *ent.AssetManager, ep *ent.Employee, platType definition.PlatType) (res *definition.WarestorePeopleSigninRes, err error) {
+	var token string
+	tokenKey := b.warestoreTokenCacheKey
+	switch {
+	case platType == definition.PlatTypeWarehouse && am != nil:
+		idstr := definition.SignTokenWarehouse + "-" + strconv.FormatUint(am.ID, 10)
+		// 查询并删除旧token key
+		exists := ar.Redis.HGet(b.ctx, tokenKey, idstr).Val()
+		if exists != "" {
+			ar.Redis.HDel(b.ctx, tokenKey, exists)
+		}
 
-	var tokenKey string
+		// 生成token
+		token = utils.NewEcdsaToken()
 
-	switch platType {
-	case definition.PlatTypeWarehouse:
-		tokenKey = b.warehouseTokenCacheKey
-	case definition.PlatTypeStore:
-		tokenKey = b.storeTokenCacheKey
+		// 存储登录token和ID进行对应
+		ar.Redis.HSet(b.ctx, tokenKey, token, am.ID)
+		ar.Redis.HSet(b.ctx, tokenKey, idstr, token)
+	case platType == definition.PlatTypeStore && ep != nil:
+		idstr := definition.SignTokenStore + "-" + strconv.FormatUint(ep.ID, 10)
+		// 查询并删除旧token key
+		exists := ar.Redis.HGet(b.ctx, tokenKey, idstr).Val()
+		if exists != "" {
+			ar.Redis.HDel(b.ctx, tokenKey, exists)
+		}
+
+		// 生成token
+		token = utils.NewEcdsaToken()
+
+		// 存储登录token和ID进行对应
+		ar.Redis.HSet(b.ctx, tokenKey, token, ep.ID)
+		ar.Redis.HSet(b.ctx, tokenKey, idstr, token)
 	default:
-		return nil
+		return nil, errors.New("登录平台失败")
 	}
-
-	idstr := strconv.FormatUint(am.ID, 10)
-	// 查询并删除旧token key
-	exists := ar.Redis.HGet(b.ctx, tokenKey, idstr).Val()
-	if exists != "" {
-		ar.Redis.HDel(b.ctx, tokenKey, exists)
-	}
-
-	// 生成token
-	token := utils.NewEcdsaToken()
-
-	// 存储登录token和ID进行对应
-	ar.Redis.HSet(b.ctx, tokenKey, token, am.ID)
-	ar.Redis.HSet(b.ctx, tokenKey, idstr, token)
 
 	return &definition.WarestorePeopleSigninRes{
 		Profile: b.Profile(am, ep, platType),
 		Token:   token,
-	}
+	}, nil
 }
 
 // Signin 登录
-func (b *warestoreBiz) Signin(req *definition.WarestorePeopleSigninReq) *definition.WarestorePeopleSigninRes {
-	switch req.SigninType {
-	case model.SigninTypeSms:
-		// 校验短信
-		service.NewSms().VerifyCodeX(req.Phone, req.SmsId, req.Code)
-	case model.SigninTypeAuth:
-		// 获取手机号
-		req.Phone = service.NewminiProgram().GetPhoneNumber(req.Code)
-	}
-
+func (b *warestoreBiz) Signin(req *definition.WarestorePeopleSigninReq) (res *definition.WarestorePeopleSigninRes, err error) {
 	am := new(ent.AssetManager)
 	ep := new(ent.Employee)
-	var err error
 	switch req.PlatType {
 	case definition.PlatTypeWarehouse:
 		am, err = ent.Database.AssetManager.QueryNotDeleted().
@@ -89,12 +87,23 @@ func (b *warestoreBiz) Signin(req *definition.WarestorePeopleSigninReq) *definit
 				assetmanager.MiniEnable(true),
 			).First(b.ctx)
 		if am == nil || err != nil {
-			snag.Panic("账号不存在")
+			return nil, errors.New("账号不存在")
 		}
+
+		// 比对密码
+		if !utils.PasswordCompare(req.Password, am.Password) {
+			return nil, errors.New(ar.UserAuthenticationFailed)
+		}
+
 	case definition.PlatTypeStore:
 		ep, err = ent.Database.Employee.QueryNotDeleted().Where(employee.Phone(req.Phone)).First(b.ctx)
-		if am == nil || err != nil {
-			snag.Panic("账号不存在")
+		if ep == nil || err != nil {
+			return nil, errors.New("账号不存在")
+		}
+
+		// 比对密码
+		if !utils.PasswordCompare(req.Password, ep.Password) {
+			return nil, errors.New(ar.UserAuthenticationFailed)
 		}
 	}
 
@@ -105,6 +114,7 @@ func (b *warestoreBiz) Signin(req *definition.WarestorePeopleSigninReq) *definit
 func (b *warestoreBiz) Profile(am *ent.AssetManager, ep *ent.Employee, platType definition.PlatType) definition.WarestorePeopleProfile {
 	switch {
 	case platType == definition.PlatTypeWarehouse && am != nil:
+		// todo 上班信息
 		return definition.WarestorePeopleProfile{
 			ID:    am.ID,
 			Phone: am.Phone,
@@ -112,6 +122,7 @@ func (b *warestoreBiz) Profile(am *ent.AssetManager, ep *ent.Employee, platType 
 		}
 
 	case platType == definition.PlatTypeStore && ep != nil:
+		// todo 上班信息
 		return definition.WarestorePeopleProfile{
 			ID:    ep.ID,
 			Phone: ep.Phone,
@@ -125,26 +136,32 @@ func (b *warestoreBiz) Profile(am *ent.AssetManager, ep *ent.Employee, platType 
 // TokenVerify Token校验
 func (b *warestoreBiz) TokenVerify(token string) (am *ent.AssetManager, ep *ent.Employee) {
 	// 获取token对应ID
-	amId, _ := ar.Redis.HGet(b.ctx, b.warehouseTokenCacheKey, token).Uint64()
-	if amId > 0 {
+	tokenVal := ar.Redis.HGet(b.ctx, b.warestoreTokenCacheKey, token).Val()
+	vals := strings.Split(tokenVal, "-")
+	if len(vals) == 0 {
+		return
+	}
+	platType := vals[0]
+	wsId, _ := strconv.Atoi(vals[1])
+	// 判断仓管类型取出人员信息
+	switch platType {
+	case definition.SignTokenWarehouse:
 		// 反向校验token是否正确
-		if ar.Redis.HGet(b.ctx, b.warehouseTokenCacheKey, strconv.FormatUint(amId, 10)).Val() != token {
+		if ar.Redis.HGet(b.ctx, b.warestoreTokenCacheKey, definition.SignTokenWarehouse+"-"+strconv.FormatUint(uint64(wsId), 10)).Val() != token {
 			return
 		}
 		// 获取库管人员
-		am, _ = ent.Database.AssetManager.QueryNotDeleted().Where(assetmanager.ID(amId), assetmanager.MiniEnable(true)).First(b.ctx)
-	}
-
-	epId, _ := ar.Redis.HGet(b.ctx, b.storeTokenCacheKey, token).Uint64()
-	if amId > 0 {
+		am, _ = ent.Database.AssetManager.QueryNotDeleted().Where(assetmanager.ID(uint64(wsId)), assetmanager.MiniEnable(true)).First(b.ctx)
+	case definition.SignTokenStore:
 		// 反向校验token是否正确
-		if ar.Redis.HGet(b.ctx, b.storeTokenCacheKey, strconv.FormatUint(amId, 10)).Val() != token {
+		if ar.Redis.HGet(b.ctx, b.warestoreTokenCacheKey, definition.SignTokenStore+"-"+strconv.FormatUint(uint64(wsId), 10)).Val() != token {
 			return
 		}
 		// 获取门店人员
-		ep, _ = ent.Database.Employee.QueryNotDeleted().Where(employee.ID(epId)).First(b.ctx)
+		ep, _ = ent.Database.Employee.QueryNotDeleted().Where(employee.ID(uint64(wsId))).First(b.ctx)
 
 	}
+
 	return
 }
 

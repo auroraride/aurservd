@@ -23,13 +23,9 @@ func Warestore() echo.MiddlewareFunc {
 				ep *ent.Employee
 			)
 			// 查看是否是登录态
-			wToken := strings.TrimSpace(c.Request().Header.Get(app.HeaderWarehouseToken))
-			sToken := strings.TrimSpace(c.Request().Header.Get(app.HeaderStoreToken))
-			if wToken != "" {
-				am, _ = biz.NewWarestore().TokenVerify(wToken)
-			}
-			if sToken != "" {
-				_, ep = biz.NewWarestore().TokenVerify(sToken)
+			wsToken := strings.TrimSpace(c.Request().Header.Get(app.HeaderWarestoreToken))
+			if wsToken != "" {
+				am, ep = biz.NewWarestore().TokenVerify(wsToken)
 			}
 
 			return next(app.NewWarestoreContext(c, am, ep))

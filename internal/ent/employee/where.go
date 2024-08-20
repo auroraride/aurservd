@@ -101,6 +101,11 @@ func Enable(v bool) predicate.Employee {
 	return predicate.Employee(sql.FieldEQ(FieldEnable, v))
 }
 
+// Password applies equality check predicate on the "password" field. It's identical to PasswordEQ.
+func Password(v string) predicate.Employee {
+	return predicate.Employee(sql.FieldEQ(FieldPassword, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Employee {
 	return predicate.Employee(sql.FieldEQ(FieldCreatedAt, v))
@@ -534,6 +539,81 @@ func EnableEQ(v bool) predicate.Employee {
 // EnableNEQ applies the NEQ predicate on the "enable" field.
 func EnableNEQ(v bool) predicate.Employee {
 	return predicate.Employee(sql.FieldNEQ(FieldEnable, v))
+}
+
+// PasswordEQ applies the EQ predicate on the "password" field.
+func PasswordEQ(v string) predicate.Employee {
+	return predicate.Employee(sql.FieldEQ(FieldPassword, v))
+}
+
+// PasswordNEQ applies the NEQ predicate on the "password" field.
+func PasswordNEQ(v string) predicate.Employee {
+	return predicate.Employee(sql.FieldNEQ(FieldPassword, v))
+}
+
+// PasswordIn applies the In predicate on the "password" field.
+func PasswordIn(vs ...string) predicate.Employee {
+	return predicate.Employee(sql.FieldIn(FieldPassword, vs...))
+}
+
+// PasswordNotIn applies the NotIn predicate on the "password" field.
+func PasswordNotIn(vs ...string) predicate.Employee {
+	return predicate.Employee(sql.FieldNotIn(FieldPassword, vs...))
+}
+
+// PasswordGT applies the GT predicate on the "password" field.
+func PasswordGT(v string) predicate.Employee {
+	return predicate.Employee(sql.FieldGT(FieldPassword, v))
+}
+
+// PasswordGTE applies the GTE predicate on the "password" field.
+func PasswordGTE(v string) predicate.Employee {
+	return predicate.Employee(sql.FieldGTE(FieldPassword, v))
+}
+
+// PasswordLT applies the LT predicate on the "password" field.
+func PasswordLT(v string) predicate.Employee {
+	return predicate.Employee(sql.FieldLT(FieldPassword, v))
+}
+
+// PasswordLTE applies the LTE predicate on the "password" field.
+func PasswordLTE(v string) predicate.Employee {
+	return predicate.Employee(sql.FieldLTE(FieldPassword, v))
+}
+
+// PasswordContains applies the Contains predicate on the "password" field.
+func PasswordContains(v string) predicate.Employee {
+	return predicate.Employee(sql.FieldContains(FieldPassword, v))
+}
+
+// PasswordHasPrefix applies the HasPrefix predicate on the "password" field.
+func PasswordHasPrefix(v string) predicate.Employee {
+	return predicate.Employee(sql.FieldHasPrefix(FieldPassword, v))
+}
+
+// PasswordHasSuffix applies the HasSuffix predicate on the "password" field.
+func PasswordHasSuffix(v string) predicate.Employee {
+	return predicate.Employee(sql.FieldHasSuffix(FieldPassword, v))
+}
+
+// PasswordIsNil applies the IsNil predicate on the "password" field.
+func PasswordIsNil() predicate.Employee {
+	return predicate.Employee(sql.FieldIsNull(FieldPassword))
+}
+
+// PasswordNotNil applies the NotNil predicate on the "password" field.
+func PasswordNotNil() predicate.Employee {
+	return predicate.Employee(sql.FieldNotNull(FieldPassword))
+}
+
+// PasswordEqualFold applies the EqualFold predicate on the "password" field.
+func PasswordEqualFold(v string) predicate.Employee {
+	return predicate.Employee(sql.FieldEqualFold(FieldPassword, v))
+}
+
+// PasswordContainsFold applies the ContainsFold predicate on the "password" field.
+func PasswordContainsFold(v string) predicate.Employee {
+	return predicate.Employee(sql.FieldContainsFold(FieldPassword, v))
 }
 
 // HasCity applies the HasEdge predicate on the "city" edge.

@@ -34,7 +34,7 @@ OUTPUTS=(
   './assets/docs/operator/v1'
   './assets/docs/promotion/v1'
   './assets/docs/asset/v2'
-  './assets/docs/warehouse/v2'
+  './assets/docs/warestore/v2'
 )
 
 function exclude() {

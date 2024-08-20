@@ -34,8 +34,6 @@ const (
 	HeaderToastVisible = "X-Toast-Visible"
 	// HeaderAssetManagerToken 仓库后台token
 	HeaderAssetManagerToken = "X-Asset-Manager-Token"
-	// HeaderWarehouseToken 资产仓库端token
-	HeaderWarehouseToken = "X-Warehouse-Token"
-	// HeaderStoreToken 资产门店端token
-	HeaderStoreToken = "X-Store-Token"
+	// HeaderWarestoreToken 仓管token
+	HeaderWarestoreToken = "X-Warestore-Token"
 )

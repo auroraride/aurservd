@@ -19,9 +19,6 @@ func loadWarestoreRoutes() {
 	// 需校验
 	auth := g.Group("", middleware.Warestore(), middleware.WarestoreAuth())
 
-	// 用户
-	auth.GET("/openid", wapi.Warestore.GetOpenid) // 获取微信openid
-
 	// 资产调拨
 	auth.GET("/transfer", wapi.Warestore.TransferList)             // 调拨列表
 	auth.GET("/transfer/:id", wapi.Warestore.TransferDetail)       // 调拨详情
