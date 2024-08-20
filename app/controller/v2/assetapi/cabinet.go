@@ -23,7 +23,7 @@ var Cabinet = new(cabinet)
 // @Tags	电柜 - Cabinet
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string														true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string														true	"管理员校验token"
 // @Param	query					query		definition.CabinetAssetListReq								true	"查询参数"
 // @Success	200						{object}	model.PaginationRes{items=[]definition.CabinetAssetDetail}	"请求成功"
 func (*cabinet) CabinetAsset(c echo.Context) (err error) {

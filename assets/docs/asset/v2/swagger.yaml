@@ -2005,7 +2005,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
@@ -2154,7 +2154,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 创建参数
@@ -2181,7 +2181,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 资产ID
@@ -2206,7 +2206,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 资产ID
@@ -2231,7 +2231,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 资产ID
@@ -2263,7 +2263,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
@@ -2310,7 +2310,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
@@ -2341,7 +2341,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 城市ID
@@ -2401,7 +2401,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 当前页, 从1开始, 默认1
@@ -2479,7 +2479,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 盘点参数
@@ -2506,7 +2506,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 资产SN
@@ -2532,7 +2532,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 盘点ID
@@ -2565,7 +2565,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
@@ -2700,7 +2700,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 电车型号ID
@@ -2764,7 +2764,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 查询参数
@@ -2791,7 +2791,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 电车型号ID
@@ -2843,7 +2843,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 当前页, 从1开始, 默认1
@@ -2890,7 +2890,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 创建参数
@@ -2917,7 +2917,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: desc
@@ -2950,7 +2950,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: desc
@@ -2977,7 +2977,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 仓库ID
@@ -3002,7 +3002,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 请求参数
@@ -3029,7 +3029,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       produces:
@@ -3052,7 +3052,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       produces:
@@ -3074,7 +3074,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 角色字段
@@ -3101,7 +3101,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 角色ID
@@ -3126,7 +3126,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 角色ID
@@ -3158,7 +3158,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 资产名称
@@ -3258,7 +3258,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 报废参数
@@ -3285,7 +3285,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 还原参数
@@ -3312,7 +3312,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       produces:
@@ -3472,7 +3472,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 电车型号ID
@@ -3540,7 +3540,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
@@ -3587,7 +3587,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 仓库管理员ID
@@ -3727,7 +3727,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 调拨参数
@@ -3754,7 +3754,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 调拨ID
@@ -3782,7 +3782,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 调拨ID
@@ -3808,7 +3808,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
@@ -3975,7 +3975,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
@@ -4031,7 +4031,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 接收参数
@@ -4058,7 +4058,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 调拨单号
@@ -4084,7 +4084,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 当前页, 从1开始, 默认1
@@ -4123,7 +4123,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: desc
@@ -4150,7 +4150,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 管理员ID
@@ -4175,7 +4175,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 管理员ID
@@ -4207,7 +4207,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       produces:
@@ -4250,7 +4250,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: desc
@@ -4283,7 +4283,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: desc
@@ -4310,7 +4310,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 仓库ID
@@ -4335,7 +4335,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 仓库ID
@@ -4360,7 +4360,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 请求参数
@@ -4387,7 +4387,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: desc
@@ -4421,7 +4421,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: desc
@@ -4449,7 +4449,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: desc
@@ -4476,7 +4476,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 仓库ID
@@ -4501,7 +4501,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 仓库ID
@@ -4526,7 +4526,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-AssetManager-Token
+        name: X-Asset-Manager-Token
         required: true
         type: string
       - description: 请求参数

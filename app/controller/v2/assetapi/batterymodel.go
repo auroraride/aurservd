@@ -24,7 +24,7 @@ var BatteryModel = new(batterymodel)
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	body					body		definition.BatteryModelListReq	true	"desc"
 // @Success	200						{object}	[]definition.BatteryModelDetail	"请求成功"
 func (*batterymodel) List(c echo.Context) (err error) {
@@ -39,7 +39,7 @@ func (*batterymodel) List(c echo.Context) (err error) {
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	id						path		string							true	"仓库ID"
 // @Success	200						{object}	definition.BatteryModelDetail	"请求成功"
 func (*batterymodel) Detail(c echo.Context) (err error) {
@@ -54,7 +54,7 @@ func (*batterymodel) Detail(c echo.Context) (err error) {
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string								true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
 // @Param	body					body		definition.BatteryModelCreateReq	true	"desc"
 // @Success	200						{object}	model.StatusResponse				"请求成功"
 func (*batterymodel) Create(c echo.Context) (err error) {
@@ -69,7 +69,7 @@ func (*batterymodel) Create(c echo.Context) (err error) {
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Param	id						path		string					true	"仓库ID"
 // @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*batterymodel) Delete(c echo.Context) (err error) {
@@ -84,7 +84,7 @@ func (*batterymodel) Delete(c echo.Context) (err error) {
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string								true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
 // @Param	body					body		definition.BatteryModelModifyReq	true	"请求参数"
 // @Success	200						{object}	model.StatusResponse				"请求成功"
 func (*batterymodel) Modify(c echo.Context) (err error) {

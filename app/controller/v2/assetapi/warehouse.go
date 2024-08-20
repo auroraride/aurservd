@@ -24,7 +24,7 @@ var Warehouse = new(warehouse)
 // @Tags	仓库 - Warehouse
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string													true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
 // @Param	body					body		definition.WareHouseListReq								true	"desc"
 // @Success	200						{object}	model.PaginationRes{items=[]definition.WarehouseDetail}	"请求成功"
 func (*warehouse) List(c echo.Context) (err error) {
@@ -39,7 +39,7 @@ func (*warehouse) List(c echo.Context) (err error) {
 // @Tags	仓库 - Warehouse
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string						true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
 // @Param	id						path		string						true	"仓库ID"
 // @Success	200						{object}	definition.WarehouseDetail	"请求成功"
 func (*warehouse) Detail(c echo.Context) (err error) {
@@ -54,7 +54,7 @@ func (*warehouse) Detail(c echo.Context) (err error) {
 // @Tags	仓库 - Warehouse
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	body					body		definition.WarehouseCreateReq	true	"desc"
 // @Success	200						{object}	model.StatusResponse			"请求成功"
 func (*warehouse) Create(c echo.Context) (err error) {
@@ -69,7 +69,7 @@ func (*warehouse) Create(c echo.Context) (err error) {
 // @Tags	仓库 - Warehouse
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Param	id						path		string					true	"仓库ID"
 // @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*warehouse) Delete(c echo.Context) (err error) {
@@ -84,7 +84,7 @@ func (*warehouse) Delete(c echo.Context) (err error) {
 // @Tags	仓库 - Warehouse
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	body					body		definition.WarehouseModifyReq	true	"请求参数"
 // @Success	200						{object}	model.StatusResponse			"请求成功"
 func (*warehouse) Modify(c echo.Context) (err error) {
@@ -99,7 +99,7 @@ func (*warehouse) Modify(c echo.Context) (err error) {
 // @Tags	仓库 - Warehouse
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string															true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string															true	"管理员校验token"
 // @Param	body					body		definition.WareHouseAssetListReq								true	"desc"
 // @Success	200						{object}	model.PaginationRes{items=[]definition.WareHouseAssetDetail}	"请求成功"
 func (*warehouse) Assets(c echo.Context) (err error) {

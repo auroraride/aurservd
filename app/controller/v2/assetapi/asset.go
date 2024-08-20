@@ -19,7 +19,7 @@ var Assets = new(assets)
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string											true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string											true	"管理员校验token"
 // @Param	query					query		model.AssetListReq								true	"查询参数"
 // @Success	200						{object}	model.PaginationRes{items=[]model.AssetListRes}	"请求成功"
 func (*assets) List(c echo.Context) (err error) {
@@ -34,7 +34,7 @@ func (*assets) List(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string				true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string				true	"管理员校验token"
 // @Param	id						path		uint64				true	"资产ID"
 // @Success	200						{object}	model.AssetListRes	"请求成功"
 func (*assets) Detail(c echo.Context) (err error) {
@@ -48,7 +48,7 @@ func (*assets) Detail(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Param	body					body		model.AssetCreateReq	true	"创建参数"
 // @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*assets) Create(c echo.Context) (err error) {
@@ -63,7 +63,7 @@ func (*assets) Create(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Param	id						path		uint64					true	"资产ID"
 // @Param	body					body		model.AssetModifyReq	true	"修改参数"
 // @Success	200						{object}	model.StatusResponse	"请求成功"
@@ -79,7 +79,7 @@ func (*assets) Update(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Param	id						path		uint64					true	"资产ID"
 // @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*assets) Delete(c echo.Context) (err error) {
@@ -94,7 +94,7 @@ func (*assets) Delete(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Param	assetType				formData	uint8					true	"资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它"
 // @Param	file					formData	file					true	"文件"
 // @Success	200						{object}	model.StatusResponse	"请求成功"
@@ -110,7 +110,7 @@ func (*assets) BatchCreate(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	query					query		model.AssetExportTemplateReq	true	"查询参数"
 // @Success	200						{object}	model.ExportRes					"成功"
 func (*assets) Template(c echo.Context) (err error) {
@@ -129,7 +129,7 @@ func (*assets) Template(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string				true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string				true	"管理员校验token"
 // @Param	body					body		model.AssetListReq	true	"查询参数"
 // @Success	200						{object}	model.ExportRes		"成功"
 func (*assets) Export(c echo.Context) (err error) {
@@ -144,7 +144,7 @@ func (*assets) Export(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header	string				true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header	string				true	"管理员校验token"
 // @Param	query					query	model.AssetFilter	true	"查询参数"
 // @Success	200						int		model.AssetNumRes	"请求成功"
 func (*assets) Count(c echo.Context) (err error) {

@@ -28,7 +28,7 @@ var AssetPermission = new(assetPermission)
 // @Tags	权限 - AssetPermission
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string				true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string				true	"管理员校验token"
 // @Success	200						{object}	[]permission.Group	"请求成功"
 func (*assetPermission) List(c echo.Context) (err error) {
 	ctx := app.Context(c)
@@ -51,7 +51,7 @@ func (*assetPermission) List(c echo.Context) (err error) {
 // @Tags	权限 - AssetPermission
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string			true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string			true	"管理员校验token"
 // @Success	200						{object}	[]model.Role	"请求成功"
 func (*assetPermission) ListRole(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AssetManagerContext](c)
@@ -65,7 +65,7 @@ func (*assetPermission) ListRole(c echo.Context) (err error) {
 // @Tags	权限 - AssetPermission
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	body					body		definition.AssetRoleCreateReq	true	"角色字段"
 // @Success	200						{object}	definition.AssetRole			"请求成功"
 func (*assetPermission) CreateRole(c echo.Context) (err error) {
@@ -82,7 +82,7 @@ func (*assetPermission) CreateRole(c echo.Context) (err error) {
 // @Tags	权限 - AssetPermission
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	id						path		uint64							true	"角色ID"
 // @Param	body					body		definition.AssetRoleModifyReq	true	"角色详情"
 // @Success	200						{object}	definition.AssetRole			"请求成功"
@@ -98,7 +98,7 @@ func (*assetPermission) ModifyRole(c echo.Context) (err error) {
 // @Tags	权限 - AssetPermission
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Param	id						path		uint64					true	"角色ID"
 // @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*assetPermission) DeleteRole(c echo.Context) (err error) {

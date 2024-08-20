@@ -23,7 +23,7 @@ var Store = new(store)
 // @Tags	门店 - Store
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string														true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string														true	"管理员校验token"
 // @Param	query					query		definition.StoreAssetListReq								true	"查询参数"
 // @Success	200						{object}	model.PaginationRes{items=[]definition.StoreAssetDetail}	"请求成功"
 func (*store) StoreAsset(c echo.Context) (err error) {

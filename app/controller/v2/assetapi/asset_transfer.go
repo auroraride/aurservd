@@ -19,7 +19,7 @@ var AssetTransfer = new(assetTransfer)
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	body					body		model.AssetTransferCreateReq	true	"调拨参数"
 // @Success	200						{object}	model.StatusResponse			"请求成功"
 func (*assetTransfer) Transfer(c echo.Context) (err error) {
@@ -34,7 +34,7 @@ func (*assetTransfer) Transfer(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string													true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
 // @Param	query					query		model.AssetTransferListReq								true	"查询参数"
 // @Success	200						{object}	model.PaginationRes{items=[]model.AssetTransferListRes}	"请求成功"
 func (*assetTransfer) TransferList(c echo.Context) (err error) {
@@ -49,7 +49,7 @@ func (*assetTransfer) TransferList(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string						true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
 // @Param	id						path		uint64						true	"调拨ID"
 // @Success	200						{object}	[]model.AssetTransferDetail	"请求成功"
 func (*assetTransfer) TransferDetail(c echo.Context) (err error) {
@@ -64,7 +64,7 @@ func (*assetTransfer) TransferDetail(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Param	id						path		uint64					true	"调拨ID"
 // @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*assetTransfer) TransferCancel(c echo.Context) (err error) {
@@ -79,7 +79,7 @@ func (*assetTransfer) TransferCancel(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	sn						path		string							true	"调拨单号"
 // @Success	200						{object}	model.AssetTransferDetailReq	"请求成功"
 func (*assetTransfer) GetTransferBySN(c echo.Context) (err error) {
@@ -94,7 +94,7 @@ func (*assetTransfer) GetTransferBySN(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string								true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
 // @Param	body					body		model.AssetTransferReceiveBatchReq	true	"接收参数"
 // @Success	200						{object}	model.StatusResponse				"请求成功"
 func (*assetTransfer) TransferReceive(c echo.Context) (err error) {
@@ -109,7 +109,7 @@ func (*assetTransfer) TransferReceive(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string						true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
 // @Param	query					query		model.AssetTransferFlowReq	true	"查询参数"
 // @Success	200						{object}	[]model.AssetTransferFlow	"请求成功"
 func (*assetTransfer) TransferFlow(c echo.Context) (err error) {
@@ -124,7 +124,7 @@ func (*assetTransfer) TransferFlow(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string															true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string															true	"管理员校验token"
 // @Param	query					query		model.AssetTransferDetailListReq								true	"查询参数"
 // @Success	200						{object}	model.PaginationRes{items=[]model.AssetTransferDetailListRes}	"请求成功"
 func (*assetTransfer) TransferDetailsList(c echo.Context) (err error) {

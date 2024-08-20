@@ -24,7 +24,7 @@ var Material = new(material)
 // @Tags	其他物资 - Material
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string													true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
 // @Param	body					body		definition.MaterialListReq								true	"desc"
 // @Success	200						{object}	model.PaginationRes{items=[]definition.MaterialDetail}	"请求成功"
 func (*material) List(c echo.Context) (err error) {
@@ -39,7 +39,7 @@ func (*material) List(c echo.Context) (err error) {
 // @Tags	其他物资 - Material
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	body					body		definition.MaterialCreateReq	true	"desc"
 // @Success	200						{object}	model.StatusResponse			"请求成功"
 func (*material) Create(c echo.Context) (err error) {
@@ -54,7 +54,7 @@ func (*material) Create(c echo.Context) (err error) {
 // @Tags	其他物资 - Material
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Param	id						path		string					true	"仓库ID"
 // @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*material) Delete(c echo.Context) (err error) {
@@ -69,7 +69,7 @@ func (*material) Delete(c echo.Context) (err error) {
 // @Tags	其他物资 - Material
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	body					body		definition.MaterialModifyReq	true	"请求参数"
 // @Success	200						{object}	model.StatusResponse			"请求成功"
 func (*material) Modify(c echo.Context) (err error) {

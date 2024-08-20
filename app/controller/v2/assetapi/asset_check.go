@@ -19,7 +19,7 @@ var AssetCheck = new(assetCheck)
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string						true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
 // @Param	body					body		model.AssetCheckCreateReq	true	"盘点参数"
 // @Success	200						{object}	model.StatusResponse		"请求成功"
 func (*assetCheck) Create(c echo.Context) (err error) {
@@ -36,7 +36,7 @@ func (*assetCheck) Create(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	sn						path		string							true	"资产SN"
 // @Success	200						{object}	model.AssetCheckByAssetSnRes	"请求成功"
 func (*assetCheck) GetAssetBySN(c echo.Context) (err error) {
@@ -53,7 +53,7 @@ func (*assetCheck) GetAssetBySN(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string													true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
 // @Param	query					query		model.AssetCheckListReq									true	"查询参数"
 // @Success	200						{object}	model.PaginationRes{items=[]model.AssetCheckListRes}	"请求成功"
 func (*assetCheck) List(c echo.Context) (err error) {
@@ -68,7 +68,7 @@ func (*assetCheck) List(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string													true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
 // @Param	id						path		uint64													true	"盘点ID"
 // @Param	query					query		model.AssetCheckListAbnormalReq							true	"查询参数"
 // @Success	200						{object}	model.PaginationRes{items=[]model.AssetCheckAbnormal}	"请求成功"

@@ -32,7 +32,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -237,7 +237,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -278,7 +278,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -341,7 +341,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -387,7 +387,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -482,7 +482,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -595,7 +595,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -636,7 +636,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -690,7 +690,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -729,7 +729,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -909,7 +909,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1010,7 +1010,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1051,7 +1051,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1134,7 +1134,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1205,7 +1205,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1246,7 +1246,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1300,7 +1300,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1341,7 +1341,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1380,7 +1380,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1419,7 +1419,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     }
@@ -1454,7 +1454,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     }
@@ -1487,7 +1487,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1528,7 +1528,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1574,7 +1574,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1613,7 +1613,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1757,7 +1757,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1798,7 +1798,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -1839,7 +1839,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     }
@@ -2083,7 +2083,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2190,7 +2190,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2253,7 +2253,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2448,7 +2448,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2489,7 +2489,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2528,7 +2528,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2752,7 +2752,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2829,7 +2829,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2870,7 +2870,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2909,7 +2909,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -2951,7 +2951,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3014,7 +3014,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3055,7 +3055,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     }
@@ -3121,7 +3121,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3167,7 +3167,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3206,7 +3206,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3260,7 +3260,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3301,7 +3301,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3338,7 +3338,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3377,7 +3377,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3416,7 +3416,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3472,7 +3472,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3509,7 +3509,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3555,7 +3555,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3594,7 +3594,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3636,7 +3636,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3677,7 +3677,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3714,7 +3714,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -3753,7 +3753,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-AssetManager-Token",
+                        "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
                     },

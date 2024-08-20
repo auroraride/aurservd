@@ -19,7 +19,7 @@ var AssetMaintenance = new(assetMaintenance)
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	query					query		model.AssetMaintenanceListReq	true	"查询参数"
 // @Success	200						{object}	model.AssetMaintenanceListRes	"请求成功"
 func (*assetMaintenance) List(c echo.Context) (err error) {
@@ -34,7 +34,7 @@ func (*assetMaintenance) List(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	body					body		model.AssetMaintenanceCreateReq	true	"创建参数"
 // @Success	200						{object}	model.StatusResponse			"请求成功"
 func (*assetMaintenance) Create(c echo.Context) (err error) {

@@ -19,7 +19,7 @@ var AssetScrap = new(assetScrap)
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Param	body					body		model.AssetScrapReq		true	"报废参数"
 // @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*assetScrap) Scrap(c echo.Context) (err error) {
@@ -34,7 +34,7 @@ func (*assetScrap) Scrap(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string													true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
 // @Param	query					query		model.AssetScrapListReq									true	"查询参数"
 // @Success	200						{object}	model.PaginationRes{items=[]model.AssetScrapListRes}	"请求成功"
 func (*assetScrap) ScrapList(c echo.Context) (err error) {
@@ -49,7 +49,7 @@ func (*assetScrap) ScrapList(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	body					body		model.AssetScrapBatchRestoreReq	true	"还原参数"
 // @Success	200						{object}	model.StatusResponse			"请求成功"
 func (*assetScrap) ScrapBatchRestore(c echo.Context) (err error) {
@@ -64,7 +64,7 @@ func (*assetScrap) ScrapBatchRestore(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Success	200						{object}	[]model.SelectOption	"请求成功"
 func (*assetScrap) ScrapReasonSelect(c echo.Context) (err error) {
 	ctx := app.GetManagerContext(c)

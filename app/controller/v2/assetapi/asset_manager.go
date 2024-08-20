@@ -43,7 +43,7 @@ func (*assetManager) Signin(c echo.Context) (err error) {
 // @Tags	管理 - AssetManager
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string								true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
 // @Param	body					body		definition.AssetManagerCreateReq	true	"desc"
 // @Success	200						{object}	model.StatusResponse				"请求成功"
 func (*assetManager) Create(c echo.Context) (err error) {
@@ -62,7 +62,7 @@ func (*assetManager) Create(c echo.Context) (err error) {
 // @Tags	管理 - AssetManager
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string														true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string														true	"管理员校验token"
 // @Param	query					query		definition.AssetManagerListReq								true	"desc"
 // @Success	200						{object}	model.PaginationRes{items=[]definition.AssetManagerListRes}	"请求成功"
 func (*assetManager) List(c echo.Context) (err error) {
@@ -77,7 +77,7 @@ func (*assetManager) List(c echo.Context) (err error) {
 // @Tags	管理 - AssetManager
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string					true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Param	id						path		uint64					true	"管理员ID"
 // @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*assetManager) Delete(c echo.Context) (err error) {
@@ -93,7 +93,7 @@ func (*assetManager) Delete(c echo.Context) (err error) {
 // @Tags	管理 - AssetManager
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string								true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
 // @Param	id						path		uint64								true	"管理员ID"
 // @Param	body					body		definition.AssetManagerModifyReq	true	"编辑属性"
 // @Success	200						{object}	model.StatusResponse				"请求成功"
@@ -110,7 +110,7 @@ func (*assetManager) Modify(c echo.Context) (err error) {
 // @Tags	管理 - AssetManager
 // @Accept	json
 // @Produce	json
-// @Param	X-AssetManager-Token	header		string	true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string	true	"管理员校验token"
 // @Success	200						{object}	model.ManagerSigninRes
 func (*assetManager) Profile(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AssetManagerContext](c)
