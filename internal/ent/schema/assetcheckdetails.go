@@ -66,7 +66,7 @@ func (AssetCheckDetails) Fields() []ent.Field {
 		field.Uint64("locations_id").Optional().Comment("原位置ID"),
 		field.Uint8("locations_type").Optional().Comment("原位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"),
 		field.Uint8("status").Optional().Default(0).Comment("处理状态 0:未处理 1:已入库 2:已出库 3:已报废"),
-		field.Uint8("result").Optional().Default(0).Comment("盘点结果 0:正常 1:亏 2:盈"),
+		field.Uint8("result").Optional().Default(0).Comment("盘点结果 0:未盘点 1:正常 2:亏 3:盈"),
 		field.Uint64("operate_id").Optional().Comment("操作人id"),
 		field.Time("operate_at").Optional().Nillable().Comment("处理时间"),
 	}

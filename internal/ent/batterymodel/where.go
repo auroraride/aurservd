@@ -65,6 +65,21 @@ func CreatedAt(v time.Time) predicate.BatteryModel {
 	return predicate.BatteryModel(sql.FieldEQ(FieldCreatedAt, v))
 }
 
+// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
+func Type(v uint8) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldEQ(FieldType, v))
+}
+
+// Voltage applies equality check predicate on the "voltage" field. It's identical to VoltageEQ.
+func Voltage(v uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldEQ(FieldVoltage, v))
+}
+
+// Capacity applies equality check predicate on the "capacity" field. It's identical to CapacityEQ.
+func Capacity(v uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldEQ(FieldCapacity, v))
+}
+
 // ModelEQ applies the EQ predicate on the "model" field.
 func ModelEQ(v string) predicate.BatteryModel {
 	return predicate.BatteryModel(sql.FieldEQ(FieldModel, v))
@@ -168,6 +183,146 @@ func CreatedAtLT(v time.Time) predicate.BatteryModel {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.BatteryModel {
 	return predicate.BatteryModel(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// TypeEQ applies the EQ predicate on the "type" field.
+func TypeEQ(v uint8) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldEQ(FieldType, v))
+}
+
+// TypeNEQ applies the NEQ predicate on the "type" field.
+func TypeNEQ(v uint8) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldNEQ(FieldType, v))
+}
+
+// TypeIn applies the In predicate on the "type" field.
+func TypeIn(vs ...uint8) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldIn(FieldType, vs...))
+}
+
+// TypeNotIn applies the NotIn predicate on the "type" field.
+func TypeNotIn(vs ...uint8) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldNotIn(FieldType, vs...))
+}
+
+// TypeGT applies the GT predicate on the "type" field.
+func TypeGT(v uint8) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldGT(FieldType, v))
+}
+
+// TypeGTE applies the GTE predicate on the "type" field.
+func TypeGTE(v uint8) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldGTE(FieldType, v))
+}
+
+// TypeLT applies the LT predicate on the "type" field.
+func TypeLT(v uint8) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldLT(FieldType, v))
+}
+
+// TypeLTE applies the LTE predicate on the "type" field.
+func TypeLTE(v uint8) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldLTE(FieldType, v))
+}
+
+// VoltageEQ applies the EQ predicate on the "voltage" field.
+func VoltageEQ(v uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldEQ(FieldVoltage, v))
+}
+
+// VoltageNEQ applies the NEQ predicate on the "voltage" field.
+func VoltageNEQ(v uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldNEQ(FieldVoltage, v))
+}
+
+// VoltageIn applies the In predicate on the "voltage" field.
+func VoltageIn(vs ...uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldIn(FieldVoltage, vs...))
+}
+
+// VoltageNotIn applies the NotIn predicate on the "voltage" field.
+func VoltageNotIn(vs ...uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldNotIn(FieldVoltage, vs...))
+}
+
+// VoltageGT applies the GT predicate on the "voltage" field.
+func VoltageGT(v uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldGT(FieldVoltage, v))
+}
+
+// VoltageGTE applies the GTE predicate on the "voltage" field.
+func VoltageGTE(v uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldGTE(FieldVoltage, v))
+}
+
+// VoltageLT applies the LT predicate on the "voltage" field.
+func VoltageLT(v uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldLT(FieldVoltage, v))
+}
+
+// VoltageLTE applies the LTE predicate on the "voltage" field.
+func VoltageLTE(v uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldLTE(FieldVoltage, v))
+}
+
+// VoltageIsNil applies the IsNil predicate on the "voltage" field.
+func VoltageIsNil() predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldIsNull(FieldVoltage))
+}
+
+// VoltageNotNil applies the NotNil predicate on the "voltage" field.
+func VoltageNotNil() predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldNotNull(FieldVoltage))
+}
+
+// CapacityEQ applies the EQ predicate on the "capacity" field.
+func CapacityEQ(v uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldEQ(FieldCapacity, v))
+}
+
+// CapacityNEQ applies the NEQ predicate on the "capacity" field.
+func CapacityNEQ(v uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldNEQ(FieldCapacity, v))
+}
+
+// CapacityIn applies the In predicate on the "capacity" field.
+func CapacityIn(vs ...uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldIn(FieldCapacity, vs...))
+}
+
+// CapacityNotIn applies the NotIn predicate on the "capacity" field.
+func CapacityNotIn(vs ...uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldNotIn(FieldCapacity, vs...))
+}
+
+// CapacityGT applies the GT predicate on the "capacity" field.
+func CapacityGT(v uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldGT(FieldCapacity, v))
+}
+
+// CapacityGTE applies the GTE predicate on the "capacity" field.
+func CapacityGTE(v uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldGTE(FieldCapacity, v))
+}
+
+// CapacityLT applies the LT predicate on the "capacity" field.
+func CapacityLT(v uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldLT(FieldCapacity, v))
+}
+
+// CapacityLTE applies the LTE predicate on the "capacity" field.
+func CapacityLTE(v uint) predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldLTE(FieldCapacity, v))
+}
+
+// CapacityIsNil applies the IsNil predicate on the "capacity" field.
+func CapacityIsNil() predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldIsNull(FieldCapacity))
+}
+
+// CapacityNotNil applies the NotNil predicate on the "capacity" field.
+func CapacityNotNil() predicate.BatteryModel {
+	return predicate.BatteryModel(sql.FieldNotNull(FieldCapacity))
 }
 
 // HasCabinets applies the HasEdge predicate on the "cabinets" edge.

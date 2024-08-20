@@ -273,18 +273,6 @@ func (f BatteryModelFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BatteryModelMutation", m)
 }
 
-// The BatteryModelNewFunc type is an adapter to allow the use of ordinary
-// function as BatteryModelNew mutator.
-type BatteryModelNewFunc func(context.Context, *ent.BatteryModelNewMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f BatteryModelNewFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.BatteryModelNewMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BatteryModelNewMutation", m)
-}
-
 // The BranchFunc type is an adapter to allow the use of ordinary
 // function as Branch mutator.
 type BranchFunc func(context.Context, *ent.BranchMutation) (ent.Value, error)

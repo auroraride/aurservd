@@ -482,7 +482,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -595,7 +595,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -619,7 +619,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v2/asset/check/abnormal": {
+        "/manager/v2/asset/check/abnormal/{id}": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -636,15 +636,15 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
                     {
                         "type": "integer",
                         "description": "盘点ID",
-                        "name": "assetCheckId",
-                        "in": "query",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -690,7 +690,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-AssetManager-Token",
                         "in": "header",
                         "required": true
                     },
@@ -4959,6 +4959,10 @@ const docTemplate = `{
                     "description": "盘点结束时间",
                     "type": "string"
                 },
+                "id": {
+                    "description": "盘点ID",
+                    "type": "integer"
+                },
                 "locationsId": {
                     "description": "位置ID",
                     "type": "integer"
@@ -4981,6 +4985,10 @@ const docTemplate = `{
                 },
                 "startAt": {
                     "description": "盘点开始时间",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态 1:待处理 2:已处理",
                     "type": "string"
                 }
             }

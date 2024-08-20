@@ -19,11 +19,11 @@ var AssetCheck = new(assetCheck)
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string						true	"管理员校验token"
-// @Param	body			body		model.AssetCheckCreateReq	true	"盘点参数"
-// @Success	200				{object}	model.StatusResponse		"请求成功"
+// @Param	X-AssetManager-Token	header		string						true	"管理员校验token"
+// @Param	body					body		model.AssetCheckCreateReq	true	"盘点参数"
+// @Success	200						{object}	model.StatusResponse		"请求成功"
 func (*assetCheck) Create(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.AssetCheckCreateReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetCheckCreateReq](c)
 	req.OpratorType = model.AssetOperateRoleTypeManager
 	req.OpratorID = ctx.Modifier.ID
 	return ctx.SendResponse(service.NewAssetCheck().CreateAssetCheck(ctx.Request().Context(), req, ctx.Modifier))
@@ -36,11 +36,11 @@ func (*assetCheck) Create(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string							true	"管理员校验token"
-// @Param	sn				path		string							true	"资产SN"
-// @Success	200				{object}	model.AssetCheckByAssetSnRes	"请求成功"
+// @Param	X-AssetManager-Token	header		string							true	"管理员校验token"
+// @Param	sn						path		string							true	"资产SN"
+// @Success	200						{object}	model.AssetCheckByAssetSnRes	"请求成功"
 func (*assetCheck) GetAssetBySN(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.AssetCheckByAssetSnReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetCheckByAssetSnReq](c)
 	req.OpratorType = model.AssetOperateRoleTypeManager
 	req.OpratorID = ctx.Modifier.ID
 	return ctx.SendResponse(service.NewAssetCheck().GetAssetBySN(ctx.Request().Context(), req))
@@ -53,25 +53,26 @@ func (*assetCheck) GetAssetBySN(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string													true	"管理员校验token"
-// @Param	query			query		model.AssetCheckListReq									true	"查询参数"
-// @Success	200				{object}	model.PaginationRes{items=[]model.AssetCheckListRes}	"请求成功"
+// @Param	X-AssetManager-Token	header		string													true	"管理员校验token"
+// @Param	query					query		model.AssetCheckListReq									true	"查询参数"
+// @Success	200						{object}	model.PaginationRes{items=[]model.AssetCheckListRes}	"请求成功"
 func (*assetCheck) List(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.AssetCheckListReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetCheckListReq](c)
 	return ctx.SendResponse(service.NewAssetCheck().List(ctx.Request().Context(), req))
 }
 
 // Abnormal
 // @ID		AssetCheckAbnormal
-// @Router	/manager/v2/asset/check/abnormal [GET]
+// @Router	/manager/v2/asset/check/abnormal/{id} [GET]
 // @Summary	盘点异常
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string													true	"管理员校验token"
-// @Param	query			query		model.AssetCheckListAbnormalReq							true	"查询参数"
-// @Success	200				{object}	model.PaginationRes{items=[]model.AssetCheckAbnormal}	"请求成功"
+// @Param	X-AssetManager-Token	header		string													true	"管理员校验token"
+// @Param	id						path		uint64													true	"盘点ID"
+// @Param	query					query		model.AssetCheckListAbnormalReq							true	"查询参数"
+// @Success	200						{object}	model.PaginationRes{items=[]model.AssetCheckAbnormal}	"请求成功"
 func (*assetCheck) Abnormal(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.AssetCheckListAbnormalReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetCheckListAbnormalReq](c)
 	return ctx.SendResponse(service.NewAssetCheck().ListAbnormal(ctx.Request().Context(), req))
 }

@@ -55,7 +55,7 @@ type AssetCheckDetails struct {
 	LocationsType uint8 `json:"locations_type,omitempty"`
 	// 处理状态 0:未处理 1:已入库 2:已出库 3:已报废
 	Status uint8 `json:"status,omitempty"`
-	// 盘点结果 0:正常 1:亏 2:盈
+	// 盘点结果 0:未盘点 1:正常 2:亏 3:盈
 	Result uint8 `json:"result,omitempty"`
 	// 操作人id
 	OperateID uint64 `json:"operate_id,omitempty"`

@@ -34,7 +34,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
-	"github.com/auroraride/aurservd/internal/ent/batterymodelnew"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/business"
@@ -194,7 +193,6 @@ func checkColumn(table, column string) error {
 			battery.Table:                    battery.ValidColumn,
 			batteryflow.Table:                batteryflow.ValidColumn,
 			batterymodel.Table:               batterymodel.ValidColumn,
-			batterymodelnew.Table:            batterymodelnew.ValidColumn,
 			branch.Table:                     branch.ValidColumn,
 			branchcontract.Table:             branchcontract.ValidColumn,
 			business.Table:                   business.ValidColumn,

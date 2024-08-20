@@ -93,7 +93,9 @@ func loadAssetsRoutes() {
 	asset.POST("/maintenance", assetapi.AssetMaintenance.Create) // 创建维修记录
 
 	// 资产盘点
-	asset.POST("/check", assetapi.AssetCheck.Create)          // 盘点资产
-	asset.GET("/check/:sn", assetapi.AssetCheck.GetAssetBySN) // 通过SN查询资产
+	asset.GET("/check", assetapi.AssetCheck.List)                  // 盘点列表
+	asset.GET("/check/abnormal/:id", assetapi.AssetCheck.Abnormal) // 盘点异常
+	asset.POST("/check", assetapi.AssetCheck.Create)               // 盘点资产
+	asset.GET("/check/:sn", assetapi.AssetCheck.GetAssetBySN)      // 通过SN查询资产
 
 }

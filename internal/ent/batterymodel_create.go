@@ -43,6 +43,48 @@ func (bmc *BatteryModelCreate) SetNillableCreatedAt(t *time.Time) *BatteryModelC
 	return bmc
 }
 
+// SetType sets the "type" field.
+func (bmc *BatteryModelCreate) SetType(u uint8) *BatteryModelCreate {
+	bmc.mutation.SetType(u)
+	return bmc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (bmc *BatteryModelCreate) SetNillableType(u *uint8) *BatteryModelCreate {
+	if u != nil {
+		bmc.SetType(*u)
+	}
+	return bmc
+}
+
+// SetVoltage sets the "voltage" field.
+func (bmc *BatteryModelCreate) SetVoltage(u uint) *BatteryModelCreate {
+	bmc.mutation.SetVoltage(u)
+	return bmc
+}
+
+// SetNillableVoltage sets the "voltage" field if the given value is not nil.
+func (bmc *BatteryModelCreate) SetNillableVoltage(u *uint) *BatteryModelCreate {
+	if u != nil {
+		bmc.SetVoltage(*u)
+	}
+	return bmc
+}
+
+// SetCapacity sets the "capacity" field.
+func (bmc *BatteryModelCreate) SetCapacity(u uint) *BatteryModelCreate {
+	bmc.mutation.SetCapacity(u)
+	return bmc
+}
+
+// SetNillableCapacity sets the "capacity" field if the given value is not nil.
+func (bmc *BatteryModelCreate) SetNillableCapacity(u *uint) *BatteryModelCreate {
+	if u != nil {
+		bmc.SetCapacity(*u)
+	}
+	return bmc
+}
+
 // AddCabinetIDs adds the "cabinets" edge to the Cabinet entity by IDs.
 func (bmc *BatteryModelCreate) AddCabinetIDs(ids ...uint64) *BatteryModelCreate {
 	bmc.mutation.AddCabinetIDs(ids...)
@@ -97,6 +139,10 @@ func (bmc *BatteryModelCreate) defaults() {
 		v := batterymodel.DefaultCreatedAt()
 		bmc.mutation.SetCreatedAt(v)
 	}
+	if _, ok := bmc.mutation.GetType(); !ok {
+		v := batterymodel.DefaultType
+		bmc.mutation.SetType(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -106,6 +152,9 @@ func (bmc *BatteryModelCreate) check() error {
 	}
 	if _, ok := bmc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "BatteryModel.created_at"`)}
+	}
+	if _, ok := bmc.mutation.GetType(); !ok {
+		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "BatteryModel.type"`)}
 	}
 	return nil
 }
@@ -141,6 +190,18 @@ func (bmc *BatteryModelCreate) createSpec() (*BatteryModel, *sqlgraph.CreateSpec
 	if value, ok := bmc.mutation.CreatedAt(); ok {
 		_spec.SetField(batterymodel.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
+	}
+	if value, ok := bmc.mutation.GetType(); ok {
+		_spec.SetField(batterymodel.FieldType, field.TypeUint8, value)
+		_node.Type = value
+	}
+	if value, ok := bmc.mutation.Voltage(); ok {
+		_spec.SetField(batterymodel.FieldVoltage, field.TypeUint, value)
+		_node.Voltage = value
+	}
+	if value, ok := bmc.mutation.Capacity(); ok {
+		_spec.SetField(batterymodel.FieldCapacity, field.TypeUint, value)
+		_node.Capacity = value
 	}
 	if nodes := bmc.mutation.CabinetsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -222,6 +283,72 @@ func (u *BatteryModelUpsert) UpdateModel() *BatteryModelUpsert {
 	return u
 }
 
+// SetType sets the "type" field.
+func (u *BatteryModelUpsert) SetType(v uint8) *BatteryModelUpsert {
+	u.Set(batterymodel.FieldType, v)
+	return u
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *BatteryModelUpsert) UpdateType() *BatteryModelUpsert {
+	u.SetExcluded(batterymodel.FieldType)
+	return u
+}
+
+// AddType adds v to the "type" field.
+func (u *BatteryModelUpsert) AddType(v uint8) *BatteryModelUpsert {
+	u.Add(batterymodel.FieldType, v)
+	return u
+}
+
+// SetVoltage sets the "voltage" field.
+func (u *BatteryModelUpsert) SetVoltage(v uint) *BatteryModelUpsert {
+	u.Set(batterymodel.FieldVoltage, v)
+	return u
+}
+
+// UpdateVoltage sets the "voltage" field to the value that was provided on create.
+func (u *BatteryModelUpsert) UpdateVoltage() *BatteryModelUpsert {
+	u.SetExcluded(batterymodel.FieldVoltage)
+	return u
+}
+
+// AddVoltage adds v to the "voltage" field.
+func (u *BatteryModelUpsert) AddVoltage(v uint) *BatteryModelUpsert {
+	u.Add(batterymodel.FieldVoltage, v)
+	return u
+}
+
+// ClearVoltage clears the value of the "voltage" field.
+func (u *BatteryModelUpsert) ClearVoltage() *BatteryModelUpsert {
+	u.SetNull(batterymodel.FieldVoltage)
+	return u
+}
+
+// SetCapacity sets the "capacity" field.
+func (u *BatteryModelUpsert) SetCapacity(v uint) *BatteryModelUpsert {
+	u.Set(batterymodel.FieldCapacity, v)
+	return u
+}
+
+// UpdateCapacity sets the "capacity" field to the value that was provided on create.
+func (u *BatteryModelUpsert) UpdateCapacity() *BatteryModelUpsert {
+	u.SetExcluded(batterymodel.FieldCapacity)
+	return u
+}
+
+// AddCapacity adds v to the "capacity" field.
+func (u *BatteryModelUpsert) AddCapacity(v uint) *BatteryModelUpsert {
+	u.Add(batterymodel.FieldCapacity, v)
+	return u
+}
+
+// ClearCapacity clears the value of the "capacity" field.
+func (u *BatteryModelUpsert) ClearCapacity() *BatteryModelUpsert {
+	u.SetNull(batterymodel.FieldCapacity)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -278,6 +405,83 @@ func (u *BatteryModelUpsertOne) SetModel(v string) *BatteryModelUpsertOne {
 func (u *BatteryModelUpsertOne) UpdateModel() *BatteryModelUpsertOne {
 	return u.Update(func(s *BatteryModelUpsert) {
 		s.UpdateModel()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *BatteryModelUpsertOne) SetType(v uint8) *BatteryModelUpsertOne {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.SetType(v)
+	})
+}
+
+// AddType adds v to the "type" field.
+func (u *BatteryModelUpsertOne) AddType(v uint8) *BatteryModelUpsertOne {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.AddType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *BatteryModelUpsertOne) UpdateType() *BatteryModelUpsertOne {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.UpdateType()
+	})
+}
+
+// SetVoltage sets the "voltage" field.
+func (u *BatteryModelUpsertOne) SetVoltage(v uint) *BatteryModelUpsertOne {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.SetVoltage(v)
+	})
+}
+
+// AddVoltage adds v to the "voltage" field.
+func (u *BatteryModelUpsertOne) AddVoltage(v uint) *BatteryModelUpsertOne {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.AddVoltage(v)
+	})
+}
+
+// UpdateVoltage sets the "voltage" field to the value that was provided on create.
+func (u *BatteryModelUpsertOne) UpdateVoltage() *BatteryModelUpsertOne {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.UpdateVoltage()
+	})
+}
+
+// ClearVoltage clears the value of the "voltage" field.
+func (u *BatteryModelUpsertOne) ClearVoltage() *BatteryModelUpsertOne {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.ClearVoltage()
+	})
+}
+
+// SetCapacity sets the "capacity" field.
+func (u *BatteryModelUpsertOne) SetCapacity(v uint) *BatteryModelUpsertOne {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.SetCapacity(v)
+	})
+}
+
+// AddCapacity adds v to the "capacity" field.
+func (u *BatteryModelUpsertOne) AddCapacity(v uint) *BatteryModelUpsertOne {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.AddCapacity(v)
+	})
+}
+
+// UpdateCapacity sets the "capacity" field to the value that was provided on create.
+func (u *BatteryModelUpsertOne) UpdateCapacity() *BatteryModelUpsertOne {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.UpdateCapacity()
+	})
+}
+
+// ClearCapacity clears the value of the "capacity" field.
+func (u *BatteryModelUpsertOne) ClearCapacity() *BatteryModelUpsertOne {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.ClearCapacity()
 	})
 }
 
@@ -503,6 +707,83 @@ func (u *BatteryModelUpsertBulk) SetModel(v string) *BatteryModelUpsertBulk {
 func (u *BatteryModelUpsertBulk) UpdateModel() *BatteryModelUpsertBulk {
 	return u.Update(func(s *BatteryModelUpsert) {
 		s.UpdateModel()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *BatteryModelUpsertBulk) SetType(v uint8) *BatteryModelUpsertBulk {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.SetType(v)
+	})
+}
+
+// AddType adds v to the "type" field.
+func (u *BatteryModelUpsertBulk) AddType(v uint8) *BatteryModelUpsertBulk {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.AddType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *BatteryModelUpsertBulk) UpdateType() *BatteryModelUpsertBulk {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.UpdateType()
+	})
+}
+
+// SetVoltage sets the "voltage" field.
+func (u *BatteryModelUpsertBulk) SetVoltage(v uint) *BatteryModelUpsertBulk {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.SetVoltage(v)
+	})
+}
+
+// AddVoltage adds v to the "voltage" field.
+func (u *BatteryModelUpsertBulk) AddVoltage(v uint) *BatteryModelUpsertBulk {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.AddVoltage(v)
+	})
+}
+
+// UpdateVoltage sets the "voltage" field to the value that was provided on create.
+func (u *BatteryModelUpsertBulk) UpdateVoltage() *BatteryModelUpsertBulk {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.UpdateVoltage()
+	})
+}
+
+// ClearVoltage clears the value of the "voltage" field.
+func (u *BatteryModelUpsertBulk) ClearVoltage() *BatteryModelUpsertBulk {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.ClearVoltage()
+	})
+}
+
+// SetCapacity sets the "capacity" field.
+func (u *BatteryModelUpsertBulk) SetCapacity(v uint) *BatteryModelUpsertBulk {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.SetCapacity(v)
+	})
+}
+
+// AddCapacity adds v to the "capacity" field.
+func (u *BatteryModelUpsertBulk) AddCapacity(v uint) *BatteryModelUpsertBulk {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.AddCapacity(v)
+	})
+}
+
+// UpdateCapacity sets the "capacity" field to the value that was provided on create.
+func (u *BatteryModelUpsertBulk) UpdateCapacity() *BatteryModelUpsertBulk {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.UpdateCapacity()
+	})
+}
+
+// ClearCapacity clears the value of the "capacity" field.
+func (u *BatteryModelUpsertBulk) ClearCapacity() *BatteryModelUpsertBulk {
+	return u.Update(func(s *BatteryModelUpsert) {
+		s.ClearCapacity()
 	})
 }
 

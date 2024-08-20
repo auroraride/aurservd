@@ -72,9 +72,6 @@ type BatteryFlow func(*sql.Selector)
 // BatteryModel is the predicate function for batterymodel builders.
 type BatteryModel func(*sql.Selector)
 
-// BatteryModelNew is the predicate function for batterymodelnew builders.
-type BatteryModelNew func(*sql.Selector)
-
 // Branch is the predicate function for branch builders.
 type Branch func(*sql.Selector)
 

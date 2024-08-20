@@ -639,30 +639,6 @@ func (f BatteryModelMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mu
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.BatteryModelMutation", m)
 }
 
-// The BatteryModelNewQueryRuleFunc type is an adapter to allow the use of ordinary
-// functions as a query rule.
-type BatteryModelNewQueryRuleFunc func(context.Context, *ent.BatteryModelNewQuery) error
-
-// EvalQuery return f(ctx, q).
-func (f BatteryModelNewQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.BatteryModelNewQuery); ok {
-		return f(ctx, q)
-	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.BatteryModelNewQuery", q)
-}
-
-// The BatteryModelNewMutationRuleFunc type is an adapter to allow the use of ordinary
-// functions as a mutation rule.
-type BatteryModelNewMutationRuleFunc func(context.Context, *ent.BatteryModelNewMutation) error
-
-// EvalMutation calls f(ctx, m).
-func (f BatteryModelNewMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.BatteryModelNewMutation); ok {
-		return f(ctx, m)
-	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.BatteryModelNewMutation", m)
-}
-
 // The BranchQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type BranchQueryRuleFunc func(context.Context, *ent.BranchQuery) error
@@ -2590,8 +2566,6 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.BatteryModelQuery:
 		return q.Filter(), nil
-	case *ent.BatteryModelNewQuery:
-		return q.Filter(), nil
 	case *ent.BranchQuery:
 		return q.Filter(), nil
 	case *ent.BranchContractQuery:
@@ -2796,8 +2770,6 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.BatteryFlowMutation:
 		return m.Filter(), nil
 	case *ent.BatteryModelMutation:
-		return m.Filter(), nil
-	case *ent.BatteryModelNewMutation:
 		return m.Filter(), nil
 	case *ent.BranchMutation:
 		return m.Filter(), nil

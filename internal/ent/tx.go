@@ -58,8 +58,6 @@ type Tx struct {
 	BatteryFlow *BatteryFlowClient
 	// BatteryModel is the client for interacting with the BatteryModel builders.
 	BatteryModel *BatteryModelClient
-	// BatteryModelNew is the client for interacting with the BatteryModelNew builders.
-	BatteryModelNew *BatteryModelNewClient
 	// Branch is the client for interacting with the Branch builders.
 	Branch *BranchClient
 	// BranchContract is the client for interacting with the BranchContract builders.
@@ -367,7 +365,6 @@ func (tx *Tx) init() {
 	tx.Battery = NewBatteryClient(tx.config)
 	tx.BatteryFlow = NewBatteryFlowClient(tx.config)
 	tx.BatteryModel = NewBatteryModelClient(tx.config)
-	tx.BatteryModelNew = NewBatteryModelNewClient(tx.config)
 	tx.Branch = NewBranchClient(tx.config)
 	tx.BranchContract = NewBranchContractClient(tx.config)
 	tx.Business = NewBusinessClient(tx.config)

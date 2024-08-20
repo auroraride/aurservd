@@ -28,17 +28,42 @@ func (a AssetCheckDetailsStatus) Value() uint8 {
 	return uint8(a)
 }
 
+type AssetCheckStatus uint8
+
+const (
+	AssetCheckStatusPending   AssetCheckStatus = iota // 待处理
+	AssetCheckStatusProcessed                         // 已处理
+)
+
+func (a AssetCheckStatus) String() string {
+	switch a {
+	case AssetCheckStatusPending:
+		return "待处理"
+	case AssetCheckStatusProcessed:
+		return "已处理"
+	default:
+		return ""
+	}
+}
+
+func (a AssetCheckStatus) Value() uint8 {
+	return uint8(a)
+}
+
 // AssetCheckResult 盘点结果
 type AssetCheckResult uint8
 
 const (
-	AssetCheckResultNormal  AssetCheckResult = iota // 正常
-	AssetCheckResultLoss                            // 亏
-	AssetCheckResultSurplus                         // 盈
+	AssetCheckResultUntreated AssetCheckResult = iota // 未盘点
+	AssetCheckResultNormal                            // 正常
+	AssetCheckResultLoss                              // 亏
+	AssetCheckResultSurplus                           // 盈
 )
 
 func (a AssetCheckResult) String() string {
 	switch a {
+	case AssetCheckResultUntreated:
+		return "未盘点"
 	case AssetCheckResultNormal:
 		return "正常"
 	case AssetCheckResultLoss:
@@ -65,24 +90,33 @@ type AssetCheckCreateReq struct {
 	EndAt                  string                   `json:"endAt" validate:"required"`                 // 盘点结束时间
 }
 
-// AssetCheckCreateDetail 资产盘点请求详情
 type AssetCheckCreateDetail struct {
 	AssetID   uint64    `json:"assetId" validate:"required"`   // 资产ID
 	AssetType AssetType `json:"assetType" validate:"required"` // 资产类型 1:电车 2:智能电池
 }
 
+// AssetCheckCreateDetailReq 资产盘点请求详情
+type AssetCheckCreateDetailReq struct {
+	PaginationReq
+	ID        uint64    `json:"id" validate:"required" param:"id"` // 盘点ID
+	AssetType AssetType `json:"assetType" validate:"required"`     // 资产类型 1:电车 2:智能电池
+	RealCheck bool      `json:"realCheck" validate:"required"`     // 是否实际盘点 true:实际盘点 false:应盘点
+	SN        string    `json:"sn"`                                // 资产编号
+}
+
 // AssetCheckListReq 获取资产盘点请求
 type AssetCheckListReq struct {
 	PaginationReq
-	LocationsID   *uint64             `json:"locationsId" validate:"required"`   // 位置ID
-	LocationsType *AssetLocationsType `json:"locationsType" validate:"required"` // 位置类型 1:仓库 2:门店 3:站点
-	Keyword       *string             `json:"keyword" query:"keyword"`           // 关键字
-	StartAt       *string             `json:"startAt" query:"startAt"`           // 开始时间
-	EndAt         *string             `json:"endAt" query:"endAt"`               // 结束时间
+	LocationsID   *uint64             `json:"locationsId" validate:"required" query:"locationsId"`     // 位置ID
+	LocationsType *AssetLocationsType `json:"locationsType" validate:"required" query:"locationsType"` // 位置类型 1:仓库 2:门店 3:站点
+	Keyword       *string             `json:"keyword" query:"keyword"`                                 // 关键字
+	StartAt       *string             `json:"startAt" query:"startAt"`                                 // 开始时间
+	EndAt         *string             `json:"endAt" query:"endAt"`                                     // 结束时间
 }
 
 // AssetCheckListRes 获取资产盘点返回
 type AssetCheckListRes struct {
+	ID             uint64 `json:"id"`             // 盘点ID
 	StartAt        string `json:"startAt"`        // 盘点开始时间
 	EndAt          string `json:"endAt"`          // 盘点结束时间
 	OpratorID      uint64 `json:"opratorId"`      // 操作人ID
@@ -95,21 +129,23 @@ type AssetCheckListRes struct {
 	LocationsType  uint8  `json:"locationsType"`  // 位置类型
 	LocationsName  string `json:"locationsName"`  // 位置名称
 	CheckResult    bool   `json:"checkResult"`    // 盘点结果 true:正常 false:异常
+	Status         string `json:"status"`         // 状态 1:待处理 2:已处理
 }
 
 // AssetCheckAbnormal 异常资产
 type AssetCheckAbnormal struct {
-	AssetID           uint64 `json:"assetId"`           // 资产ID
-	Name              string `json:"name"`              // 名称
-	Model             string `json:"model"`             // 型号
-	Brand             string `json:"brand"`             // 品牌
-	Result            string `json:"result"`            // 盘点结果 0:正常 1:亏 2:盈
-	SN                string `json:"sn"`                // 资产编号
-	LocationsName     string `json:"locationsName"`     // 理论位置名称
-	RealLocationsName string `json:"realLocationsName"` // 实际位置名称
-	Status            string `json:"status"`            // 处理状态 0:未处理 1:已入库 2:已出库 3:已报废
-	OpratorName       string `json:"opratorName"`       // 操作人名称
-	OpratorAt         string `json:"opratorAt"`         // 操作时间
+	AssetID           uint64           `json:"assetId"`           // 资产ID
+	Name              string           `json:"name"`              // 名称
+	Model             string           `json:"model"`             // 型号
+	Brand             string           `json:"brand"`             // 品牌
+	Result            AssetCheckResult `json:"result"`            // 盘点结果 0:正常 1:亏 2:盈
+	SN                string           `json:"sn"`                // 资产编号
+	LocationsName     string           `json:"locationsName"`     // 理论位置名称
+	RealLocationsName string           `json:"realLocationsName"` // 实际位置名称
+	Status            string           `json:"status"`            // 处理状态 0:未处理 1:已入库 2:已出库 3:已报废
+	OpratorName       string           `json:"opratorName"`       // 操作人名称
+	OpratorAt         string           `json:"opratorAt"`         // 操作时间
+	AssetType         AssetType        `json:"assetType"`         // 资产类型 1:电车 2:电池
 }
 
 // AssetCheckDetailLocations 资产明细门店站点信息
@@ -181,5 +217,5 @@ type MarkStartOrEndCheckReq struct {
 
 // AssetCheckListAbnormalReq 获取盘点异常资产请求
 type AssetCheckListAbnormalReq struct {
-	AssetCheckID uint64 `json:"assetCheckId" validate:"required"` // 盘点ID
+	ID uint64 `json:"id" validate:"required" param:"id"` // 盘点ID
 }

@@ -144,6 +144,17 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 	if err != nil {
 		return err
 	}
+	// 其余为正常
+	_, err = ent.Database.AssetCheckDetails.Update().
+		Where(
+			assetcheckdetails.AssetIDNotIn(append(missingIDs, extraIDs...)...),
+			assetcheckdetails.CheckID(c.ID),
+		).
+		SetResult(model.AssetCheckResultNormal.Value()).
+		Save(ctx)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -396,7 +407,16 @@ func (s *assetCheckService) List(ctx context.Context, req *model.AssetCheckListR
 			checkResult = false
 		}
 
+		var status string
+		d, _ := item.QueryCheckDetails().Where(assetcheckdetails.ResultNEQ(model.AssetCheckResultNormal.Value())).All(context.Background())
+		if len(d) > 0 {
+			status = model.AssetCheckStatusPending.String()
+		} else {
+			status = model.AssetCheckStatusProcessed.String()
+		}
+
 		res := &model.AssetCheckListRes{
+			ID:             item.ID,
 			StartAt:        start,
 			EndAt:          end,
 			OpratorID:      item.OperateID,
@@ -409,6 +429,7 @@ func (s *assetCheckService) List(ctx context.Context, req *model.AssetCheckListR
 			LocationsType:  item.LocationsType,
 			LocationsName:  locationsName,
 			CheckResult:    checkResult,
+			Status:         status,
 		}
 		return res
 	}), nil
@@ -420,7 +441,7 @@ func (s *assetCheckService) ListAbnormal(ctx context.Context, req *model.AssetCh
 	abnormalAll, _ := ent.Database.AssetCheckDetails.QueryNotDeleted().
 		Where(
 			assetcheckdetails.ResultNEQ(model.AssetCheckResultNormal.Value()),
-			assetcheckdetails.CheckID(req.AssetCheckID),
+			assetcheckdetails.CheckID(req.ID),
 		).WithAsset(func(query *ent.AssetQuery) {
 		query.WithModel().WithBrand().WithMaterial()
 	}).WithWarehouse().WithStore().WithStation().WithRider().WithCabinet().WithOperator().
@@ -501,20 +522,46 @@ func (s *assetCheckService) ListAbnormal(ctx context.Context, req *model.AssetCh
 		if v.Edges.Maintainer != nil {
 			opratorName = v.Edges.Maintainer.Name
 		}
+		var opratorAt string
+		if v.OperateAt != nil {
+			opratorAt = v.OperateAt.Format("2006-01-02 15:04:05")
+		}
 
 		res = append(res, &model.AssetCheckAbnormal{
 			AssetID:           v.AssetID,
 			Name:              name,
 			Model:             modelName,
 			Brand:             brandName,
-			Result:            model.AssetCheckResult(v.Result).String(),
+			Result:            model.AssetCheckResult(v.Result),
 			SN:                sn,
 			LocationsName:     locationsName,
 			RealLocationsName: realLocationsName,
 			Status:            model.AssetCheckDetailsStatus(v.Status).String(),
 			OpratorName:       opratorName,
-			OpratorAt:         v.OperateAt.Format("2006-01-02 15:04:05"),
+			OpratorAt:         opratorAt,
+			AssetType:         model.AssetType(v.Edges.Asset.Type),
 		})
 	}
 	return res, nil
+}
+
+// Detail 盘点明细列表
+func (s *assetCheckService) Detail(ctx context.Context, req *model.AssetCheckCreateDetailReq) (*model.PaginationRes, error) {
+	q := ent.Database.AssetCheckDetails.QueryNotDeleted().
+		Where(
+			assetcheckdetails.CheckID(req.ID),
+			assetcheckdetails.HasAssetWith(asset.Type(req.AssetType.Value())),
+		).
+		WithAsset(func(query *ent.AssetQuery) {
+			query.WithModel().WithBrand().WithMaterial()
+		}).WithWarehouse().WithStore().WithStation().WithRider().WithCabinet().WithOperator().
+		WithRealWarehouse().WithRealStation().WithRealStore().WithRealCabinet().WithRealRider().WithRealOperator()
+
+	// 实际盘点资产
+	if req.RealCheck {
+		q.Where(assetcheckdetails.ResultNEQ(model.AssetCheckResultUntreated.Value()))
+	}
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetCheckDetails) *model.AssetCheckDetailLocations {
+		return nil
+	}), nil
 }

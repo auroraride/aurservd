@@ -33,7 +33,7 @@ const (
 	// HeaderToastVisible 自动显示toast（APP 2.x+）
 	HeaderToastVisible = "X-Toast-Visible"
 	// HeaderAssetManagerToken 仓库后台token
-	HeaderAssetManagerToken = "X-AssetManager-Token"
+	HeaderAssetManagerToken = "X-Asset-Manager-Token"
 	// HeaderWarehouseToken 资产仓库端token
 	HeaderWarehouseToken = "X-Warehouse-Token"
 	// HeaderStoreToken 资产门店端token

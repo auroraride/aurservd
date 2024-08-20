@@ -29,7 +29,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
-	"github.com/auroraride/aurservd/internal/ent/batterymodelnew"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/business"
@@ -563,23 +562,10 @@ func init() {
 	batterymodelDescCreatedAt := batterymodelFields[1].Descriptor()
 	// batterymodel.DefaultCreatedAt holds the default value on creation for the created_at field.
 	batterymodel.DefaultCreatedAt = batterymodelDescCreatedAt.Default.(func() time.Time)
-	batterymodelnewMixin := schema.BatteryModelNew{}.Mixin()
-	batterymodelnewMixinHooks2 := batterymodelnewMixin[2].Hooks()
-	batterymodelnew.Hooks[0] = batterymodelnewMixinHooks2[0]
-	batterymodelnewMixinFields0 := batterymodelnewMixin[0].Fields()
-	_ = batterymodelnewMixinFields0
-	batterymodelnewFields := schema.BatteryModelNew{}.Fields()
-	_ = batterymodelnewFields
-	// batterymodelnewDescCreatedAt is the schema descriptor for created_at field.
-	batterymodelnewDescCreatedAt := batterymodelnewMixinFields0[0].Descriptor()
-	// batterymodelnew.DefaultCreatedAt holds the default value on creation for the created_at field.
-	batterymodelnew.DefaultCreatedAt = batterymodelnewDescCreatedAt.Default.(func() time.Time)
-	// batterymodelnewDescUpdatedAt is the schema descriptor for updated_at field.
-	batterymodelnewDescUpdatedAt := batterymodelnewMixinFields0[1].Descriptor()
-	// batterymodelnew.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	batterymodelnew.DefaultUpdatedAt = batterymodelnewDescUpdatedAt.Default.(func() time.Time)
-	// batterymodelnew.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	batterymodelnew.UpdateDefaultUpdatedAt = batterymodelnewDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// batterymodelDescType is the schema descriptor for type field.
+	batterymodelDescType := batterymodelFields[2].Descriptor()
+	// batterymodel.DefaultType holds the default value on creation for the type field.
+	batterymodel.DefaultType = batterymodelDescType.Default.(uint8)
 	branchMixin := schema.Branch{}.Mixin()
 	branchMixinHooks2 := branchMixin[2].Hooks()
 	branch.Hooks[0] = branchMixinHooks2[0]

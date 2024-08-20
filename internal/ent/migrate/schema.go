@@ -549,7 +549,7 @@ var (
 		{Name: "real_locations_type", Type: field.TypeUint8, Nullable: true, Comment: "实际位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"},
 		{Name: "locations_type", Type: field.TypeUint8, Nullable: true, Comment: "原位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"},
 		{Name: "status", Type: field.TypeUint8, Nullable: true, Comment: "处理状态 0:未处理 1:已入库 2:已出库 3:已报废", Default: 0},
-		{Name: "result", Type: field.TypeUint8, Nullable: true, Comment: "盘点结果 0:正常 1:亏 2:盈", Default: 0},
+		{Name: "result", Type: field.TypeUint8, Nullable: true, Comment: "盘点结果 0:未盘点 1:正常 2:亏 3:盈", Default: 0},
 		{Name: "operate_id", Type: field.TypeUint64, Nullable: true, Comment: "操作人id"},
 		{Name: "operate_at", Type: field.TypeTime, Nullable: true, Comment: "处理时间"},
 		{Name: "asset_id", Type: field.TypeUint64, Nullable: true, Comment: "资产ID"},
@@ -1606,6 +1606,9 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "model", Type: field.TypeString, Unique: true, Comment: "型号"},
 		{Name: "created_at", Type: field.TypeTime},
+		{Name: "type", Type: field.TypeUint8, Comment: "电池类型 1智能电池 2非智能电池", Default: 1},
+		{Name: "voltage", Type: field.TypeUint, Nullable: true, Comment: "电压"},
+		{Name: "capacity", Type: field.TypeUint, Nullable: true, Comment: "容量"},
 	}
 	// BatteryModelTable holds the schema information for the "battery_model" table.
 	BatteryModelTable = &schema.Table{
@@ -1623,38 +1626,6 @@ var (
 						"postgres": "GIN",
 					},
 				},
-			},
-		},
-	}
-	// BatteryModelNewColumns holds the columns for the "battery_model_new" table.
-	BatteryModelNewColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
-		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
-		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
-		{Name: "type", Type: field.TypeUint8, Comment: "电池类型 1智能电池 2非智能电池"},
-		{Name: "voltage", Type: field.TypeUint, Comment: "电压"},
-		{Name: "capacity", Type: field.TypeUint, Comment: "容量"},
-		{Name: "model", Type: field.TypeString, Unique: true, Comment: "电池型号"},
-	}
-	// BatteryModelNewTable holds the schema information for the "battery_model_new" table.
-	BatteryModelNewTable = &schema.Table{
-		Name:       "battery_model_new",
-		Columns:    BatteryModelNewColumns,
-		PrimaryKey: []*schema.Column{BatteryModelNewColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "batterymodelnew_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{BatteryModelNewColumns[1]},
-			},
-			{
-				Name:    "batterymodelnew_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{BatteryModelNewColumns[3]},
 			},
 		},
 	}
@@ -7427,7 +7398,6 @@ var (
 		BatteryTable,
 		BatteryFlowTable,
 		BatteryModelTable,
-		BatteryModelNewTable,
 		BranchTable,
 		BranchContractTable,
 		BusinessTable,
@@ -7682,9 +7652,6 @@ func init() {
 	}
 	BatteryModelTable.Annotation = &entsql.Annotation{
 		Table: "battery_model",
-	}
-	BatteryModelNewTable.Annotation = &entsql.Annotation{
-		Table: "battery_model_new",
 	}
 	BranchTable.ForeignKeys[0].RefTable = CityTable
 	BranchTable.Annotation = &entsql.Annotation{

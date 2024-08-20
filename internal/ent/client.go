@@ -37,7 +37,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
-	"github.com/auroraride/aurservd/internal/ent/batterymodelnew"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/business"
@@ -168,8 +167,6 @@ type Client struct {
 	BatteryFlow *BatteryFlowClient
 	// BatteryModel is the client for interacting with the BatteryModel builders.
 	BatteryModel *BatteryModelClient
-	// BatteryModelNew is the client for interacting with the BatteryModelNew builders.
-	BatteryModelNew *BatteryModelNewClient
 	// Branch is the client for interacting with the Branch builders.
 	Branch *BranchClient
 	// BranchContract is the client for interacting with the BranchContract builders.
@@ -357,7 +354,6 @@ func (c *Client) init() {
 	c.Battery = NewBatteryClient(c.config)
 	c.BatteryFlow = NewBatteryFlowClient(c.config)
 	c.BatteryModel = NewBatteryModelClient(c.config)
-	c.BatteryModelNew = NewBatteryModelNewClient(c.config)
 	c.Branch = NewBranchClient(c.config)
 	c.BranchContract = NewBranchContractClient(c.config)
 	c.Business = NewBusinessClient(c.config)
@@ -549,7 +545,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Battery:                    NewBatteryClient(cfg),
 		BatteryFlow:                NewBatteryFlowClient(cfg),
 		BatteryModel:               NewBatteryModelClient(cfg),
-		BatteryModelNew:            NewBatteryModelNewClient(cfg),
 		Branch:                     NewBranchClient(cfg),
 		BranchContract:             NewBranchContractClient(cfg),
 		Business:                   NewBusinessClient(cfg),
@@ -668,7 +663,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Battery:                    NewBatteryClient(cfg),
 		BatteryFlow:                NewBatteryFlowClient(cfg),
 		BatteryModel:               NewBatteryModelClient(cfg),
-		BatteryModelNew:            NewBatteryModelNewClient(cfg),
 		Branch:                     NewBranchClient(cfg),
 		BranchContract:             NewBranchContractClient(cfg),
 		Business:                   NewBusinessClient(cfg),
@@ -779,23 +773,23 @@ func (c *Client) Use(hooks ...Hook) {
 		c.AssetAttributes, c.AssetCheck, c.AssetCheckDetails, c.AssetMaintenance,
 		c.AssetMaintenanceDetails, c.AssetManager, c.AssetRole, c.AssetScrap,
 		c.AssetScrapDetails, c.AssetTransfer, c.AssetTransferDetails, c.Assistance,
-		c.Attendance, c.Battery, c.BatteryFlow, c.BatteryModel, c.BatteryModelNew,
-		c.Branch, c.BranchContract, c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault,
-		c.City, c.Commission, c.Contract, c.ContractTemplate, c.Coupon,
-		c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand,
-		c.EbikeBrandAttribute, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
-		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
-		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
-		c.Exchange, c.Export, c.Fault, c.Feedback, c.Goods, c.Instructions,
-		c.Inventory, c.Maintainer, c.Manager, c.Material, c.Order, c.OrderRefund,
-		c.Person, c.Plan, c.PlanIntroduce, c.PointLog, c.PromotionAchievement,
-		c.PromotionBankCard, c.PromotionCommission, c.PromotionCommissionPlan,
-		c.PromotionEarnings, c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask,
-		c.PromotionMember, c.PromotionMemberCommission, c.PromotionPerson,
-		c.PromotionPrivilege, c.PromotionReferrals, c.PromotionReferralsProgress,
-		c.PromotionSetting, c.PromotionWithdrawal, c.Question, c.QuestionCategory,
-		c.Reserve, c.Rider, c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting,
-		c.Stock, c.StockSummary, c.Store, c.StoreGoods, c.Subscribe, c.SubscribeAlter,
+		c.Attendance, c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch,
+		c.BranchContract, c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City,
+		c.Commission, c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly,
+		c.CouponTemplate, c.Ebike, c.EbikeBrand, c.EbikeBrandAttribute, c.Employee,
+		c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
+		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
+		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
+		c.Goods, c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Material,
+		c.Order, c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog,
+		c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
+		c.PromotionCommissionPlan, c.PromotionEarnings, c.PromotionGrowth,
+		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
+		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
+		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
+		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
+		c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting, c.Stock,
+		c.StockSummary, c.Store, c.StoreGoods, c.Subscribe, c.SubscribeAlter,
 		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend, c.Version,
 		c.Warehouse,
 	} {
@@ -811,23 +805,23 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.AssetAttributes, c.AssetCheck, c.AssetCheckDetails, c.AssetMaintenance,
 		c.AssetMaintenanceDetails, c.AssetManager, c.AssetRole, c.AssetScrap,
 		c.AssetScrapDetails, c.AssetTransfer, c.AssetTransferDetails, c.Assistance,
-		c.Attendance, c.Battery, c.BatteryFlow, c.BatteryModel, c.BatteryModelNew,
-		c.Branch, c.BranchContract, c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault,
-		c.City, c.Commission, c.Contract, c.ContractTemplate, c.Coupon,
-		c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand,
-		c.EbikeBrandAttribute, c.Employee, c.Enterprise, c.EnterpriseBatterySwap,
-		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
-		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
-		c.Exchange, c.Export, c.Fault, c.Feedback, c.Goods, c.Instructions,
-		c.Inventory, c.Maintainer, c.Manager, c.Material, c.Order, c.OrderRefund,
-		c.Person, c.Plan, c.PlanIntroduce, c.PointLog, c.PromotionAchievement,
-		c.PromotionBankCard, c.PromotionCommission, c.PromotionCommissionPlan,
-		c.PromotionEarnings, c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask,
-		c.PromotionMember, c.PromotionMemberCommission, c.PromotionPerson,
-		c.PromotionPrivilege, c.PromotionReferrals, c.PromotionReferralsProgress,
-		c.PromotionSetting, c.PromotionWithdrawal, c.Question, c.QuestionCategory,
-		c.Reserve, c.Rider, c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting,
-		c.Stock, c.StockSummary, c.Store, c.StoreGoods, c.Subscribe, c.SubscribeAlter,
+		c.Attendance, c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch,
+		c.BranchContract, c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City,
+		c.Commission, c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly,
+		c.CouponTemplate, c.Ebike, c.EbikeBrand, c.EbikeBrandAttribute, c.Employee,
+		c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
+		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
+		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
+		c.Goods, c.Instructions, c.Inventory, c.Maintainer, c.Manager, c.Material,
+		c.Order, c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog,
+		c.PromotionAchievement, c.PromotionBankCard, c.PromotionCommission,
+		c.PromotionCommissionPlan, c.PromotionEarnings, c.PromotionGrowth,
+		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
+		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
+		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
+		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
+		c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting, c.Stock,
+		c.StockSummary, c.Store, c.StoreGoods, c.Subscribe, c.SubscribeAlter,
 		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend, c.Version,
 		c.Warehouse,
 	} {
@@ -882,8 +876,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.BatteryFlow.mutate(ctx, m)
 	case *BatteryModelMutation:
 		return c.BatteryModel.mutate(ctx, m)
-	case *BatteryModelNewMutation:
-		return c.BatteryModelNew.mutate(ctx, m)
 	case *BranchMutation:
 		return c.Branch.mutate(ctx, m)
 	case *BranchContractMutation:
@@ -5853,140 +5845,6 @@ func (c *BatteryModelClient) mutate(ctx context.Context, m *BatteryModelMutation
 		return (&BatteryModelDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown BatteryModel mutation op: %q", m.Op())
-	}
-}
-
-// BatteryModelNewClient is a client for the BatteryModelNew schema.
-type BatteryModelNewClient struct {
-	config
-}
-
-// NewBatteryModelNewClient returns a client for the BatteryModelNew from the given config.
-func NewBatteryModelNewClient(c config) *BatteryModelNewClient {
-	return &BatteryModelNewClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `batterymodelnew.Hooks(f(g(h())))`.
-func (c *BatteryModelNewClient) Use(hooks ...Hook) {
-	c.hooks.BatteryModelNew = append(c.hooks.BatteryModelNew, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `batterymodelnew.Intercept(f(g(h())))`.
-func (c *BatteryModelNewClient) Intercept(interceptors ...Interceptor) {
-	c.inters.BatteryModelNew = append(c.inters.BatteryModelNew, interceptors...)
-}
-
-// Create returns a builder for creating a BatteryModelNew entity.
-func (c *BatteryModelNewClient) Create() *BatteryModelNewCreate {
-	mutation := newBatteryModelNewMutation(c.config, OpCreate)
-	return &BatteryModelNewCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of BatteryModelNew entities.
-func (c *BatteryModelNewClient) CreateBulk(builders ...*BatteryModelNewCreate) *BatteryModelNewCreateBulk {
-	return &BatteryModelNewCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *BatteryModelNewClient) MapCreateBulk(slice any, setFunc func(*BatteryModelNewCreate, int)) *BatteryModelNewCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &BatteryModelNewCreateBulk{err: fmt.Errorf("calling to BatteryModelNewClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*BatteryModelNewCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &BatteryModelNewCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for BatteryModelNew.
-func (c *BatteryModelNewClient) Update() *BatteryModelNewUpdate {
-	mutation := newBatteryModelNewMutation(c.config, OpUpdate)
-	return &BatteryModelNewUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *BatteryModelNewClient) UpdateOne(bmn *BatteryModelNew) *BatteryModelNewUpdateOne {
-	mutation := newBatteryModelNewMutation(c.config, OpUpdateOne, withBatteryModelNew(bmn))
-	return &BatteryModelNewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *BatteryModelNewClient) UpdateOneID(id uint64) *BatteryModelNewUpdateOne {
-	mutation := newBatteryModelNewMutation(c.config, OpUpdateOne, withBatteryModelNewID(id))
-	return &BatteryModelNewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for BatteryModelNew.
-func (c *BatteryModelNewClient) Delete() *BatteryModelNewDelete {
-	mutation := newBatteryModelNewMutation(c.config, OpDelete)
-	return &BatteryModelNewDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *BatteryModelNewClient) DeleteOne(bmn *BatteryModelNew) *BatteryModelNewDeleteOne {
-	return c.DeleteOneID(bmn.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *BatteryModelNewClient) DeleteOneID(id uint64) *BatteryModelNewDeleteOne {
-	builder := c.Delete().Where(batterymodelnew.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &BatteryModelNewDeleteOne{builder}
-}
-
-// Query returns a query builder for BatteryModelNew.
-func (c *BatteryModelNewClient) Query() *BatteryModelNewQuery {
-	return &BatteryModelNewQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeBatteryModelNew},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a BatteryModelNew entity by its id.
-func (c *BatteryModelNewClient) Get(ctx context.Context, id uint64) (*BatteryModelNew, error) {
-	return c.Query().Where(batterymodelnew.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *BatteryModelNewClient) GetX(ctx context.Context, id uint64) *BatteryModelNew {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *BatteryModelNewClient) Hooks() []Hook {
-	hooks := c.hooks.BatteryModelNew
-	return append(hooks[:len(hooks):len(hooks)], batterymodelnew.Hooks[:]...)
-}
-
-// Interceptors returns the client interceptors.
-func (c *BatteryModelNewClient) Interceptors() []Interceptor {
-	return c.inters.BatteryModelNew
-}
-
-func (c *BatteryModelNewClient) mutate(ctx context.Context, m *BatteryModelNewMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&BatteryModelNewCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&BatteryModelNewUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&BatteryModelNewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&BatteryModelNewDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown BatteryModelNew mutation op: %q", m.Op())
 	}
 }
 
@@ -20988,44 +20846,44 @@ type (
 		AssetAttributes, AssetCheck, AssetCheckDetails, AssetMaintenance,
 		AssetMaintenanceDetails, AssetManager, AssetRole, AssetScrap,
 		AssetScrapDetails, AssetTransfer, AssetTransferDetails, Assistance, Attendance,
-		Battery, BatteryFlow, BatteryModel, BatteryModelNew, Branch, BranchContract,
-		Business, Cabinet, CabinetEc, CabinetFault, City, Commission, Contract,
-		ContractTemplate, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand,
-		EbikeBrandAttribute, Employee, Enterprise, EnterpriseBatterySwap,
-		EnterpriseBill, EnterpriseContract, EnterprisePrepayment, EnterprisePrice,
-		EnterpriseStatement, EnterpriseStation, Exception, Exchange, Export, Fault,
-		Feedback, Goods, Instructions, Inventory, Maintainer, Manager, Material, Order,
-		OrderRefund, Person, Plan, PlanIntroduce, PointLog, PromotionAchievement,
-		PromotionBankCard, PromotionCommission, PromotionCommissionPlan,
-		PromotionEarnings, PromotionGrowth, PromotionLevel, PromotionLevelTask,
-		PromotionMember, PromotionMemberCommission, PromotionPerson,
-		PromotionPrivilege, PromotionReferrals, PromotionReferralsProgress,
-		PromotionSetting, PromotionWithdrawal, Question, QuestionCategory, Reserve,
-		Rider, RiderFollowUp, RiderPhoneDevice, Role, Setting, Stock, StockSummary,
-		Store, StoreGoods, Subscribe, SubscribeAlter, SubscribePause,
-		SubscribeReminder, SubscribeSuspend, Version, Warehouse []ent.Hook
+		Battery, BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
+		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
+		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, EbikeBrandAttribute,
+		Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
+		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
+		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Goods,
+		Instructions, Inventory, Maintainer, Manager, Material, Order, OrderRefund,
+		Person, Plan, PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
+		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
+		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
+		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
+		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
+		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
+		RiderPhoneDevice, Role, Setting, Stock, StockSummary, Store, StoreGoods,
+		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		Version, Warehouse []ent.Hook
 	}
 	inters struct {
 		Activity, Agent, Agreement, Allocate, Asset, AssetAttributeValues,
 		AssetAttributes, AssetCheck, AssetCheckDetails, AssetMaintenance,
 		AssetMaintenanceDetails, AssetManager, AssetRole, AssetScrap,
 		AssetScrapDetails, AssetTransfer, AssetTransferDetails, Assistance, Attendance,
-		Battery, BatteryFlow, BatteryModel, BatteryModelNew, Branch, BranchContract,
-		Business, Cabinet, CabinetEc, CabinetFault, City, Commission, Contract,
-		ContractTemplate, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand,
-		EbikeBrandAttribute, Employee, Enterprise, EnterpriseBatterySwap,
-		EnterpriseBill, EnterpriseContract, EnterprisePrepayment, EnterprisePrice,
-		EnterpriseStatement, EnterpriseStation, Exception, Exchange, Export, Fault,
-		Feedback, Goods, Instructions, Inventory, Maintainer, Manager, Material, Order,
-		OrderRefund, Person, Plan, PlanIntroduce, PointLog, PromotionAchievement,
-		PromotionBankCard, PromotionCommission, PromotionCommissionPlan,
-		PromotionEarnings, PromotionGrowth, PromotionLevel, PromotionLevelTask,
-		PromotionMember, PromotionMemberCommission, PromotionPerson,
-		PromotionPrivilege, PromotionReferrals, PromotionReferralsProgress,
-		PromotionSetting, PromotionWithdrawal, Question, QuestionCategory, Reserve,
-		Rider, RiderFollowUp, RiderPhoneDevice, Role, Setting, Stock, StockSummary,
-		Store, StoreGoods, Subscribe, SubscribeAlter, SubscribePause,
-		SubscribeReminder, SubscribeSuspend, Version, Warehouse []ent.Interceptor
+		Battery, BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
+		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
+		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, EbikeBrandAttribute,
+		Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
+		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
+		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Goods,
+		Instructions, Inventory, Maintainer, Manager, Material, Order, OrderRefund,
+		Person, Plan, PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
+		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
+		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
+		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
+		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
+		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
+		RiderPhoneDevice, Role, Setting, Stock, StockSummary, Store, StoreGoods,
+		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		Version, Warehouse []ent.Interceptor
 	}
 )
 

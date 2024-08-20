@@ -12,18 +12,18 @@ import (
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/batterymodelnew"
+	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 )
 
 type batteryModelBiz struct {
-	orm      *ent.BatteryModelNewClient
+	orm      *ent.BatteryModelClient
 	ctx      context.Context
 	modifier *model.Modifier
 }
 
 func NewBatteryModel() *batteryModelBiz {
 	return &batteryModelBiz{
-		orm: ent.Database.BatteryModelNew,
+		orm: ent.Database.BatteryModel,
 		ctx: context.Background(),
 	}
 }
@@ -41,10 +41,10 @@ func NewBatteryModelWithModifier(m *model.Modifier) *batteryModelBiz {
 func (b *batteryModelBiz) List(req *definition.BatteryModelListReq) (res []*definition.BatteryModelDetail, err error) {
 	res = make([]*definition.BatteryModelDetail, 0)
 
-	q := b.orm.QueryNotDeleted()
+	q := b.orm.Query()
 
 	if req.Type != nil {
-		q.Where(batterymodelnew.Type(req.Type.Value()))
+		q.Where(batterymodel.Type(req.Type.Value()))
 	}
 
 	list, _ := q.All(b.ctx)
@@ -60,7 +60,7 @@ func (b *batteryModelBiz) List(req *definition.BatteryModelListReq) (res []*defi
 }
 
 // detail 详情数据
-func (b *batteryModelBiz) detail(item *ent.BatteryModelNew) (res *definition.BatteryModelDetail) {
+func (b *batteryModelBiz) detail(item *ent.BatteryModel) (res *definition.BatteryModelDetail) {
 	res = &definition.BatteryModelDetail{
 		ID:       item.ID,
 		Model:    fmt.Sprintf("%dV%dAH", item.Voltage, item.Capacity),
@@ -72,18 +72,18 @@ func (b *batteryModelBiz) detail(item *ent.BatteryModelNew) (res *definition.Bat
 }
 
 // queryById 通过ID查询结果
-func (b *batteryModelBiz) queryById(id uint64) (item *ent.BatteryModelNew, err error) {
-	return b.orm.QueryNotDeleted().Where(batterymodelnew.ID(id)).First(b.ctx)
+func (b *batteryModelBiz) queryById(id uint64) (item *ent.BatteryModel, err error) {
+	return b.orm.Query().Where(batterymodel.ID(id)).First(b.ctx)
 }
 
 // queryByModel 通过型号查询结果
-func (b *batteryModelBiz) queryByModel(model string) (item *ent.BatteryModelNew, err error) {
-	return b.orm.QueryNotDeleted().Where(batterymodelnew.Model(model)).First(b.ctx)
+func (b *batteryModelBiz) queryByModel(model string) (item *ent.BatteryModel, err error) {
+	return b.orm.Query().Where(batterymodel.Model(model)).First(b.ctx)
 }
 
 // queryByModelNotSelf 查询非自身同型号结果
-func (b *batteryModelBiz) queryByModelNotSelf(model string, id uint64) (item *ent.BatteryModelNew, err error) {
-	return b.orm.QueryNotDeleted().Where(batterymodelnew.Model(model), batterymodelnew.IDNotIn(id)).First(b.ctx)
+func (b *batteryModelBiz) queryByModelNotSelf(model string, id uint64) (item *ent.BatteryModel, err error) {
+	return b.orm.Query().Where(batterymodel.Model(model), batterymodel.IDNotIn(id)).First(b.ctx)
 }
 
 // Detail 详情
@@ -147,7 +147,7 @@ func (b *batteryModelBiz) Delete(id uint64) (err error) {
 	if bm == nil {
 		return errors.New("数据不存在")
 	}
-	_, err = b.orm.SoftDeleteOne(bm).Save(b.ctx)
+	err = b.orm.DeleteOne(bm).Exec(b.ctx)
 	if err != nil {
 		return err
 	}

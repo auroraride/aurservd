@@ -87,6 +87,8 @@ func Run() {
 		app.HeaderManagerToken,
 		app.HeaderEmployeeToken,
 		app.HeaderToastVisible,
+		app.HeaderAssetManagerToken,
+		app.HeaderWarehouseToken,
 	}...)
 	corsConfig.ExposeHeaders = append(corsConfig.ExposeHeaders, []string{
 		app.HeaderCaptchaID,

@@ -15,7 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributes"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
-	"github.com/auroraride/aurservd/internal/ent/batterymodelnew"
+	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
@@ -74,7 +74,7 @@ func (s *assetService) Create(ctx context.Context, req *model.AssetCreateReq, mo
 		if ab.Model == "" {
 			return fmt.Errorf("电池编号%s解析失败", *req.SN)
 		}
-		modelInfo, _ := ent.Database.BatteryModelNew.QueryNotDeleted().Where(batterymodelnew.Model(ab.Model)).Only(ctx)
+		modelInfo, _ := ent.Database.BatteryModel.Query().Where(batterymodel.Model(ab.Model)).Only(ctx)
 		if modelInfo == nil {
 			return fmt.Errorf("电池型号%s不存在", ab.Model)
 		}
@@ -355,8 +355,7 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 	}
 
 	// 查询型号是否存在
-	// todo 改模型 用老表
-	modelInfo, _ := ent.Database.BatteryModelNew.QueryNotDeleted().Where(batterymodelnew.Type(1)).All(s.ctx)
+	modelInfo, _ := ent.Database.BatteryModel.Query().Where(batterymodel.Type(1)).All(s.ctx)
 	if len(modelInfo) == 0 {
 		return nil, errors.New("电池型号未配置")
 	}

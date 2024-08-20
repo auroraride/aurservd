@@ -250,16 +250,6 @@ func (bm *BatteryModel) GetID() uint64 {
 	return bm.ID
 }
 
-// GetTableName returns table name for BatteryModelNew.
-func (bmn *BatteryModelNew) GetTableName() string {
-	return "battery_model_new"
-}
-
-// GetID returns id for BatteryModelNew.
-func (bmn *BatteryModelNew) GetID() uint64 {
-	return bmn.ID
-}
-
 // GetTableName returns table name for Branch.
 func (b *Branch) GetTableName() string {
 	return "branch"
