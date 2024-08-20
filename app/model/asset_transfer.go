@@ -5,15 +5,12 @@ type AssetTransferStatus uint8
 
 const (
 	AssetTransferStatusDelivering AssetTransferStatus = iota + 1 //  配送中
-	AssetTransferStatusPending                                   //  待入库
 	AssetTransferStatusStock                                     //  已入库
 	AssetTransferStatusCancel                                    //  已取消
 )
 
 func (s AssetTransferStatus) String() string {
 	switch s {
-	case AssetTransferStatusPending:
-		return "待入库"
 	case AssetTransferStatusDelivering:
 		return "配送中"
 	case AssetTransferStatusStock:
@@ -150,7 +147,7 @@ type AssetTransferReceiveReq struct {
 
 // AssetTransferReceiveBatchReq 批量接收资产
 type AssetTransferReceiveBatchReq struct {
-	OperateType          AssetOperateRoleType      `json:"operateType" validate:"required" enums:"1,2,3,4,5,6"` // 操作类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手
+	OperateType          AssetOperateRoleType      `json:"operateType" enums:"1,2,3,4,5,6"` // 操作人角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手
 	AssetTransferReceive []AssetTransferReceiveReq `json:"assetTransferReceive" validate:"required,dive,required"`
 }
 
@@ -222,4 +219,13 @@ type AssetTransferDetailList struct {
 	OperatorName  string `json:"operatorName"`  // 操作人
 	Remark        string `json:"remark"`        // 备注
 	Num           uint   `json:"num"`           // 数量
+}
+
+// AssetTransferModifyReq 编辑调拨
+type AssetTransferModifyReq struct {
+	ID             uint64              `json:"id" param:"id" validate:"required"` // 调拨ID
+	ToLocationType *AssetLocationsType `json:"toLocationType"  enums:"1,2,3,4"`   // 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	ToLocationID   *uint64             `json:"toLocationID"`                      // 调拨后位置ID
+	Reason         string              `json:"reason" validate:"required"`        // 调拨事由
+	Remark         *string             `json:"remark"`
 }

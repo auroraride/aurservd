@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -598,8 +600,17 @@ func (s *assetCheckService) Detail(ctx context.Context, req *model.AssetCheckDet
 	}
 	// 属性查询
 	if req.Attribute != nil {
-		for _, v := range req.Attribute {
-			q.Where(assetcheckdetails.HasAssetWith(asset.HasValuesWith(assetattributevalues.AttributeID(v.AttributeID), assetattributevalues.ValueContains(v.AttributeValue))))
+		var attributeID uint64
+		var attributeValue string
+		// 解析 attribute "id:value,id:value" 格式
+		for _, v := range strings.Split(*req.Attribute, ",") {
+			av := strings.Split(v, ":")
+			if len(av) != 2 {
+				continue
+			}
+			attributeID, _ = strconv.ParseUint(av[0], 10, 64)
+			attributeValue = av[1]
+			q.Where(assetcheckdetails.HasAssetWith(asset.HasValuesWith(assetattributevalues.AttributeID(attributeID), assetattributevalues.ValueContains(attributeValue))))
 		}
 	}
 	if req.SN != "" {

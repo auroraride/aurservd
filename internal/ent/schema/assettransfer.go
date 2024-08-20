@@ -59,7 +59,7 @@ func (AssetTransfer) Annotations() []schema.Annotation {
 // Fields of the AssetTransfer.
 func (AssetTransfer) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint8("status").Default(0).Comment("调拨状态 1:配送中 2:待入库 3:已入库 4:已取消"),
+		field.Uint8("status").Default(0).Comment("调拨状态 1:配送中 2:已入库 3:已取消"),
 		field.String("sn").Unique().Comment("调拨单号"),
 		field.Uint8("from_location_type").Optional().Nillable().Comment("开始位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"),
 		field.Uint64("from_location_id").Optional().Nillable().Comment("开始位置ID"),

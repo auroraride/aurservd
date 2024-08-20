@@ -609,8 +609,8 @@ const docTemplate = `{
                 "AssetTransferStatusStock": "已入库"
             },
             "x-enum-varnames": [
-                "AssetTransferStatusDelivering",
                 "AssetTransferStatusPending",
+                "AssetTransferStatusDelivering",
                 "AssetTransferStatusStock",
                 "AssetTransferStatusCancel"
             ]

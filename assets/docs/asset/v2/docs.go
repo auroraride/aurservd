@@ -67,6 +67,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "属性 id:value",
+                        "name": "attribute",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "电车品牌ID",
                         "name": "brandId",
@@ -816,6 +822,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "属性 id:value",
+                        "name": "attribute",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
@@ -914,6 +926,12 @@ const docTemplate = `{
                         ],
                         "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
                         "name": "assetType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "属性 id:value",
+                        "name": "attribute",
                         "in": "query"
                     },
                     {
@@ -1807,6 +1825,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "属性 id:value",
+                        "name": "attribute",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
@@ -2515,8 +2539,8 @@ const docTemplate = `{
                             "AssetTransferStatusStock": "已入库"
                         },
                         "x-enum-varnames": [
-                            "AssetTransferStatusDelivering",
                             "AssetTransferStatusPending",
+                            "AssetTransferStatusDelivering",
                             "AssetTransferStatusStock",
                             "AssetTransferStatusCancel"
                         ],
@@ -5475,11 +5499,8 @@ const docTemplate = `{
                     ]
                 },
                 "attribute": {
-                    "description": "属性查询",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.AssetAttributeCreate"
-                    }
+                    "description": "属性 id:value",
+                    "type": "string"
                 },
                 "brandId": {
                     "description": "电车品牌ID",
@@ -6429,8 +6450,8 @@ const docTemplate = `{
                 "AssetTransferStatusStock": "已入库"
             },
             "x-enum-varnames": [
-                "AssetTransferStatusDelivering",
                 "AssetTransferStatusPending",
+                "AssetTransferStatusDelivering",
                 "AssetTransferStatusStock",
                 "AssetTransferStatusCancel"
             ]

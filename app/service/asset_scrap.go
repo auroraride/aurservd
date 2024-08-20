@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/golang-module/carbon/v2"
@@ -188,13 +189,21 @@ func (s *assetScrapService) filter(ctx context.Context, q *ent.AssetScrapQuery, 
 	}
 	// 属性查询
 	if req.Attribute != nil {
-		for _, v := range req.Attribute {
+		var attributeID uint64
+		var attributeValue string
+		// 解析 attribute "id:value,id:value" 格式
+		for _, v := range strings.Split(*req.Attribute, ",") {
+			av := strings.Split(v, ":")
+			if len(av) != 2 {
+				continue
+			}
+			attributeID, _ = strconv.ParseUint(av[0], 10, 64)
+			attributeValue = av[1]
 			q.Where(
 				assetscrap.HasScrapDetailsWith(
 					assetscrapdetails.HasAssetWith(
 						asset.HasValuesWith(
-							assetattributevalues.AttributeID(v.AttributeID),
-							assetattributevalues.ValueContains(v.AttributeValue),
+							assetattributevalues.AttributeID(attributeID), assetattributevalues.ValueContains(attributeValue),
 						),
 					),
 				),

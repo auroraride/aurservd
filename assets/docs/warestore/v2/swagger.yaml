@@ -302,8 +302,8 @@ definitions:
       AssetTransferStatusPending: 待入库
       AssetTransferStatusStock: 已入库
     x-enum-varnames:
-    - AssetTransferStatusDelivering
     - AssetTransferStatusPending
+    - AssetTransferStatusDelivering
     - AssetTransferStatusStock
     - AssetTransferStatusCancel
   model.AssetType:

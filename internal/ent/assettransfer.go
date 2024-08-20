@@ -39,7 +39,7 @@ type AssetTransfer struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
-	// 调拨状态 1:配送中 2:待入库 3:已入库 4:已取消
+	// 调拨状态 1:配送中 2:已入库 3:已取消
 	Status uint8 `json:"status,omitempty"`
 	// 调拨单号
 	Sn string `json:"sn,omitempty"`

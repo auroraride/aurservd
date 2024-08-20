@@ -67,6 +67,6 @@ func (*assetScrap) ScrapBatchRestore(c echo.Context) (err error) {
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Success	200						{object}	[]model.SelectOption	"请求成功"
 func (*assetScrap) ScrapReasonSelect(c echo.Context) (err error) {
-	ctx := app.GetManagerContext(c)
+	ctx := app.GetAssetManagerContext(c)
 	return ctx.SendResponse(service.NewAssetScrap().ScrapReasonSelect(ctx.Request().Context()))
 }

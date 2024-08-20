@@ -43,6 +43,7 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 	}
 
 	var assetIDs []uint64
+	var transferStatus model.AssetTransferStatus
 	var newTime = time.Now()
 	// 创建调拨记录
 	q := s.orm.Create()
@@ -65,12 +66,12 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 	}
 	// 初始调拨
 	if req.FromLocationType == nil {
-		assetIDs, failed = s.initialTransfer(ctx, req, modifier)
+		assetIDs, transferStatus, failed = s.initialTransfer(ctx, req, modifier)
 		if len(failed) > 0 {
 			return failed, nil
 		}
 		q.SetInNum(uint(len(assetIDs))).
-			SetStatus(model.AssetTransferStatusStock.Value()).
+			SetStatus(transferStatus.Value()).
 			SetType(model.AssetTransferTypeInitial.Value()).
 			SetRemark("后台初始调拨")
 	}
@@ -292,7 +293,7 @@ func (s *assetTransferService) stockTransfer(ctx context.Context, req *model.Ass
 }
 
 // 初始调拨
-func (s *assetTransferService) initialTransfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (assetIDs []uint64, failed []string) {
+func (s *assetTransferService) initialTransfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (assetIDs []uint64, transferStatus model.AssetTransferStatus, failed []string) {
 	var err error
 	// 创建物资
 	for _, v := range req.Details {
@@ -304,18 +305,20 @@ func (s *assetTransferService) initialTransfer(ctx context.Context, req *model.A
 				failed = append(failed, err.Error())
 				continue
 			}
+			transferStatus = model.AssetTransferStatusStock
 		case model.AssetTypeEbike, model.AssetTypeSmartBattery:
 			iDs, err = s.initialTransferWithSN(ctx, v, req.ToLocationID, req.ToLocationType, modifier)
 			if err != nil {
 				failed = append(failed, err.Error())
 				continue
 			}
+			transferStatus = model.AssetTransferStatusDelivering
 		default:
 			failed = append(failed, v.AssetType.String()+"物资类型不合法,已跳过")
 		}
 		assetIDs = append(assetIDs, iDs...)
 	}
-	return assetIDs, failed
+	return assetIDs, transferStatus, failed
 }
 
 // initialTransferWithoutSN 无编号资产初始化调拨
@@ -1388,3 +1391,12 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 		return res
 	}), nil
 }
+
+// Modify 编辑调拨
+// func (s *assetTransferService) Modify(ctx context.Context, req *model.AssetTransferModifyReq, modifier *model.Modifier) (err error) {
+// 		 s.orm.QueryNotDeleted().
+// 			 Where(
+// 			 assettransfer.ID(req.ID),
+// 			 assettransfer.Status(model.AssetTransferStatusDelivering.Value()),
+// 		 ).
+// }

@@ -993,7 +993,7 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
-		{Name: "status", Type: field.TypeUint8, Comment: "调拨状态 1:配送中 2:待入库 3:已入库 4:已取消", Default: 0},
+		{Name: "status", Type: field.TypeUint8, Comment: "调拨状态 1:配送中 2:已入库 3:已取消", Default: 0},
 		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "调拨单号"},
 		{Name: "from_location_type", Type: field.TypeUint8, Nullable: true, Comment: "开始位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"},
 		{Name: "to_location_type", Type: field.TypeUint8, Nullable: true, Comment: "目标位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"},

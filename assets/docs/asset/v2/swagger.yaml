@@ -1067,10 +1067,8 @@ definitions:
         - 5
         - 6
       attribute:
-        description: 属性查询
-        items:
-          $ref: '#/definitions/model.AssetAttributeCreate'
-        type: array
+        description: 属性 id:value
+        type: string
       brandId:
         description: 电车品牌ID
         type: integer
@@ -1744,8 +1742,8 @@ definitions:
       AssetTransferStatusPending: 待入库
       AssetTransferStatusStock: 已入库
     x-enum-varnames:
-    - AssetTransferStatusDelivering
     - AssetTransferStatusPending
+    - AssetTransferStatusDelivering
     - AssetTransferStatusStock
     - AssetTransferStatusCancel
   model.AssetTransferType:
@@ -2070,6 +2068,10 @@ paths:
         - AssetTypeCabinetAccessory
         - AssetTypeEbikeAccessory
         - AssetTypeOtherAccessory
+      - description: 属性 id:value
+        in: query
+        name: attribute
+        type: string
       - description: 电车品牌ID
         in: query
         name: brandId
@@ -2580,6 +2582,10 @@ paths:
           - AssetTypeCabinetAccessory
           - AssetTypeEbikeAccessory
           - AssetTypeOtherAccessory
+      - description: 属性 id:value
+        in: query
+        name: attribute
+        type: string
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
@@ -2734,6 +2740,10 @@ paths:
         - AssetTypeCabinetAccessory
         - AssetTypeEbikeAccessory
         - AssetTypeOtherAccessory
+      - description: 属性 id:value
+        in: query
+        name: attribute
+        type: string
       - description: 电车品牌ID
         in: query
         name: brandId
@@ -3331,6 +3341,10 @@ paths:
         - AssetTypeCabinetAccessory
         - AssetTypeEbikeAccessory
         - AssetTypeOtherAccessory
+      - description: 属性 id:value
+        in: query
+        name: attribute
+        type: string
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
@@ -3811,8 +3825,8 @@ paths:
           AssetTransferStatusPending: 待入库
           AssetTransferStatusStock: 已入库
         x-enum-varnames:
+          - AssetTransferStatusPending
         - AssetTransferStatusDelivering
-        - AssetTransferStatusPending
         - AssetTransferStatusStock
         - AssetTransferStatusCancel
       - description: 调拨后位置ID

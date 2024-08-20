@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/auroraride/adapter"
@@ -127,24 +128,24 @@ func (s *assetService) Create(ctx context.Context, req *model.AssetCreateReq, mo
 	}
 	// 创建调拨单
 	if req.LocationsType != nil && req.LocationsID != nil {
-		t, _ := ent.Database.AssetTransfer.Create().
-			SetToLocationType(req.LocationsType.Value()).
-			SetToLocationID(*req.LocationsID).
-			SetReason("初始入库").
-			SetCreator(modifier).
-			SetLastModifier(modifier).
-			SetInNum(1).
-			SetSn(tools.NewUnique().NewSN28()).
-			SetStatus(model.AssetTransferStatusDelivering.Value()).
-			SetType(model.AssetTransferTypeInitial.Value()).
-			Save(ctx)
-		if t != nil {
-			_ = ent.Database.AssetTransferDetails.Create().
-				SetAssetID(item.ID).
-				SetCreator(modifier).
-				SetLastModifier(modifier).
-				SetTransferID(t.ID).
-				Exec(ctx)
+		assetTransferType := model.AssetTransferTypeInitial
+		failed, err := NewAssetTransfer().Transfer(ctx, &model.AssetTransferCreateReq{
+			ToLocationType:    *req.LocationsType,
+			ToLocationID:      *req.LocationsID,
+			Reason:            "初始入库",
+			AssetTransferType: &assetTransferType,
+			Details: []model.AssetTransferCreateDetail{
+				{
+					AssetType: req.AssetType,
+					SN:        req.SN,
+				},
+			},
+		}, modifier)
+		if err != nil {
+			return err
+		}
+		if len(failed) > 0 {
+			return errors.New(failed[0])
 		}
 	}
 	return nil
@@ -232,7 +233,7 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 	}
 
 	// 仓库分组
-	groupWarehouse := make(map[uint64][]uint64)
+	groupWarehouse := make(map[uint64][]string)
 
 	// rows 去除标题
 	rows = rows[1:]
@@ -291,33 +292,54 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 			}
 		}
 		// 仓库分组加入物资id
-		groupWarehouse[wID] = append(groupWarehouse[wID], save.ID)
+		groupWarehouse[wID] = append(groupWarehouse[wID], save.Sn)
 	}
 
 	// 创建调拨单
 	for k, v := range groupWarehouse {
-		t, _ := ent.Database.AssetTransfer.Create().
-			SetToLocationType(model.AssetLocationsTypeWarehouse.Value()).
-			SetToLocationID(k).
-			SetReason("初始入库").
-			SetCreator(modifier).
-			SetLastModifier(modifier).
-			SetInNum(uint(len(v))).
-			SetStatus(model.AssetTransferStatusDelivering.Value()).
-			SetType(model.AssetTransferTypeInitial.Value()).
-			SetSn(tools.NewUnique().NewSN28()).
-			Save(ctx.Request().Context())
-		if t != nil {
-			bulk := make([]*ent.AssetTransferDetailsCreate, 0)
-			for _, vl := range v {
-				bulk = append(bulk, ent.Database.AssetTransferDetails.Create().
-					SetAssetID(vl).
-					SetCreator(modifier).
-					SetLastModifier(modifier).
-					SetTransferID(t.ID))
-			}
-			_ = ent.Database.AssetTransferDetails.CreateBulk(bulk...).Exec(ctx.Request().Context())
+		var details []model.AssetTransferCreateDetail
+		for _, vl := range v {
+			details = append(details, model.AssetTransferCreateDetail{
+				AssetType: model.AssetTypeEbike,
+				SN:        &vl,
+			})
 		}
+		assetTransferType := model.AssetTransferTypeInitial
+		failed, err = NewAssetTransfer().Transfer(context.Background(), &model.AssetTransferCreateReq{
+			ToLocationType:    model.AssetLocationsTypeWarehouse,
+			ToLocationID:      k,
+			Reason:            "初始入库",
+			AssetTransferType: &assetTransferType,
+			Details:           details,
+		}, modifier)
+		if err != nil {
+			return failed, err
+		}
+		if len(failed) > 0 {
+			return failed, errors.New(failed[0])
+		}
+		// t, _ := ent.Database.AssetTransfer.Create().
+		// 	SetToLocationType(model.AssetLocationsTypeWarehouse.Value()).
+		// 	SetToLocationID(k).
+		// 	SetReason("初始入库").
+		// 	SetCreator(modifier).
+		// 	SetLastModifier(modifier).
+		// 	SetInNum(uint(len(v))).
+		// 	SetStatus(model.AssetTransferStatusDelivering.Value()).
+		// 	SetType(model.AssetTransferTypeInitial.Value()).
+		// 	SetSn(tools.NewUnique().NewSN28()).
+		// 	Save(ctx.Request().Context())
+		// if t != nil {
+		// 	bulk := make([]*ent.AssetTransferDetailsCreate, 0)
+		// 	for _, vl := range v {
+		// 		bulk = append(bulk, ent.Database.AssetTransferDetails.Create().
+		// 			SetAssetID(vl).
+		// 			SetCreator(modifier).
+		// 			SetLastModifier(modifier).
+		// 			SetTransferID(t.ID))
+		// 	}
+		// 	_ = ent.Database.AssetTransferDetails.CreateBulk(bulk...).Exec(ctx.Request().Context())
+		// }
 	}
 
 	return failed, nil
@@ -372,7 +394,7 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 	}
 
 	// 仓库分组
-	groupWarehouse := make(map[uint64][]uint64)
+	groupWarehouse := make(map[uint64][]string)
 
 	// rows 去除标题
 	rows = rows[1:]
@@ -412,7 +434,7 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 		}
 
 		name := s.getAssetName(model.AssetTypeSmartBattery, nil)
-		err = s.orm.Create().
+		save, err := s.orm.Create().
 			SetBrandName(ab.Brand.String()).
 			SetSn(sn).
 			SetName(name).
@@ -426,39 +448,60 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 			SetRemark("批量导入").
 			SetCreator(modifier).
 			SetLastModifier(modifier).
-			Exec(s.ctx)
+			Save(s.ctx)
 		if err != nil {
 			failed = append(failed, fmt.Sprintf("%s保存失败: %v", sn, err))
 		}
 
 		// 仓库分组加入物资id
-		groupWarehouse[wid] = append(groupWarehouse[wid], wid)
+		groupWarehouse[wid] = append(groupWarehouse[wid], save.Sn)
 	}
 
 	// 创建调拨单
 	for k, v := range groupWarehouse {
-		t, _ := ent.Database.AssetTransfer.Create().
-			SetToLocationType(model.AssetLocationsTypeWarehouse.Value()).
-			SetToLocationID(k).
-			SetReason("初始入库").
-			SetCreator(modifier).
-			SetLastModifier(modifier).
-			SetInNum(uint(len(v))).
-			SetStatus(model.AssetTransferStatusDelivering.Value()).
-			SetType(model.AssetTransferTypeInitial.Value()).
-			SetSn(tools.NewUnique().NewSN28()).
-			Save(ctx.Request().Context())
-		if t != nil {
-			bulk := make([]*ent.AssetTransferDetailsCreate, 0)
-			for _, vl := range v {
-				bulk = append(bulk, ent.Database.AssetTransferDetails.Create().
-					SetAssetID(vl).
-					SetCreator(modifier).
-					SetLastModifier(modifier).
-					SetTransferID(t.ID))
-			}
-			_ = ent.Database.AssetTransferDetails.CreateBulk(bulk...).Exec(ctx.Request().Context())
+		var details []model.AssetTransferCreateDetail
+		for _, vl := range v {
+			details = append(details, model.AssetTransferCreateDetail{
+				AssetType: model.AssetTypeEbike,
+				SN:        &vl,
+			})
 		}
+		assetTransferType := model.AssetTransferTypeInitial
+		failed, err = NewAssetTransfer().Transfer(context.Background(), &model.AssetTransferCreateReq{
+			ToLocationType:    model.AssetLocationsTypeWarehouse,
+			ToLocationID:      k,
+			Reason:            "初始入库",
+			AssetTransferType: &assetTransferType,
+			Details:           details,
+		}, modifier)
+		if err != nil {
+			return failed, err
+		}
+		if len(failed) > 0 {
+			return failed, errors.New(failed[0])
+		}
+		// t, _ := ent.Database.AssetTransfer.Create().
+		// 	SetToLocationType(model.AssetLocationsTypeWarehouse.Value()).
+		// 	SetToLocationID(k).
+		// 	SetReason("初始入库").
+		// 	SetCreator(modifier).
+		// 	SetLastModifier(modifier).
+		// 	SetInNum(uint(len(v))).
+		// 	SetStatus(model.AssetTransferStatusDelivering.Value()).
+		// 	SetType(model.AssetTransferTypeInitial.Value()).
+		// 	SetSn(tools.NewUnique().NewSN28()).
+		// 	Save(ctx.Request().Context())
+		// if t != nil {
+		// 	bulk := make([]*ent.AssetTransferDetailsCreate, 0)
+		// 	for _, vl := range v {
+		// 		bulk = append(bulk, ent.Database.AssetTransferDetails.Create().
+		// 			SetAssetID(vl).
+		// 			SetCreator(modifier).
+		// 			SetLastModifier(modifier).
+		// 			SetTransferID(t.ID))
+		// 	}
+		// 	_ = ent.Database.AssetTransferDetails.CreateBulk(bulk...).Exec(ctx.Request().Context())
+		// }
 	}
 
 	return failed, nil
@@ -966,8 +1009,17 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 
 	// 属性查询
 	if req.Attribute != nil {
-		for _, v := range req.Attribute {
-			q.Where(asset.HasValuesWith(assetattributevalues.AttributeID(v.AttributeID), assetattributevalues.ValueContains(v.AttributeValue)))
+		var attributeID uint64
+		var attributeValue string
+		// 解析 attribute "id:value,id:value" 格式
+		for _, v := range strings.Split(*req.Attribute, ",") {
+			av := strings.Split(v, ":")
+			if len(av) != 2 {
+				continue
+			}
+			attributeID, _ = strconv.ParseUint(av[0], 10, 64)
+			attributeValue = av[1]
+			q.Where(asset.HasValuesWith(assetattributevalues.AttributeID(attributeID), assetattributevalues.ValueContains(attributeValue)))
 		}
 	}
 }
