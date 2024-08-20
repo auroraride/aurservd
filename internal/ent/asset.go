@@ -66,7 +66,7 @@ type Asset struct {
 	// 以租代购骑手ID，生成后禁止修改
 	RtoRiderID *uint64 `json:"rto_rider_id,omitempty"`
 	// 盘点时间
-	CheckAt time.Time `json:"check_at,omitempty"`
+	CheckAt *time.Time `json:"check_at,omitempty"`
 	// 品牌名称
 	BrandName string `json:"brand_name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -425,7 +425,8 @@ func (a *Asset) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field check_at", values[i])
 			} else if value.Valid {
-				a.CheckAt = value.Time
+				a.CheckAt = new(time.Time)
+				*a.CheckAt = value.Time
 			}
 		case asset.FieldBrandName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -610,8 +611,10 @@ func (a *Asset) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("check_at=")
-	builder.WriteString(a.CheckAt.Format(time.ANSIC))
+	if v := a.CheckAt; v != nil {
+		builder.WriteString("check_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("brand_name=")
 	builder.WriteString(a.BrandName)

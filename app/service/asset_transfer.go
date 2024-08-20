@@ -134,6 +134,11 @@ func (s *assetTransferService) transferAssetWithSN(ctx context.Context, assetLoc
 	if item == nil {
 		return nil, errors.New(*req.SN + "物资不存在或不在库存中")
 	}
+	// 在盘点中的物资不能调拨
+	if item.CheckAt != nil {
+		return nil, errors.New(*req.SN + "物资正在盘点中")
+	}
+
 	assetIDs = append(assetIDs, item.ID)
 	return
 }

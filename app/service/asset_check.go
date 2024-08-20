@@ -2,15 +2,23 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
+
+	"entgo.io/ent/dialect/sql"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/warehouse"
+	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
@@ -357,13 +365,40 @@ func (s *assetCheckService) List(ctx context.Context, req *model.AssetCheckListR
 		)
 	}
 
-	if req.LocationsID != nil && req.LocationsType != nil {
+	if req.Keyword != nil {
 		q.Where(
-			assetcheck.LocationsID(*req.LocationsID),
-			assetcheck.LocationsType(req.LocationsType.Value()),
+			assetcheck.Or(
+				assetcheck.HasWarehouseWith(warehouse.NameContains(*req.Keyword)),
+				assetcheck.HasStationWith(enterprisestation.HasAgentsWith(agent.NameContains(*req.Keyword))),
+				assetcheck.HasStoreWith(store.Name(*req.Keyword)),
+			),
 		)
 	}
-
+	if req.CheckResult != nil {
+		// 盘点结果 1:正常
+		if *req.CheckResult == model.AssetCheckResultNormal.Value() {
+			q.Where(
+				func(selector *sql.Selector) {
+					selector.Where(
+						sql.ColumnsEQ(assetcheck.FieldBatteryNum, assetcheck.FieldBatteryNumReal).
+							ColumnsEQ(assetcheck.FieldEbikeNum, assetcheck.FieldEbikeNumReal),
+					)
+				},
+			)
+		} else {
+			// 盘点结果 2:异常
+			q.Where(
+				func(selector *sql.Selector) {
+					selector.Where(
+						sql.Or(
+							sql.ColumnsNEQ(assetcheck.FieldBatteryNum, assetcheck.FieldBatteryNumReal),
+							sql.ColumnsNEQ(assetcheck.FieldEbikeNum, assetcheck.FieldEbikeNumReal),
+						),
+					)
+				},
+			)
+		}
+	}
 	if req.StartAt != nil && req.EndAt != nil {
 		start := tools.NewTime().ParseDateStringX(*req.StartAt)
 		end := tools.NewTime().ParseNextDateStringX(*req.EndAt)
@@ -546,7 +581,7 @@ func (s *assetCheckService) ListAbnormal(ctx context.Context, req *model.AssetCh
 }
 
 // Detail 盘点明细列表
-func (s *assetCheckService) Detail(ctx context.Context, req *model.AssetCheckCreateDetailReq) (*model.PaginationRes, error) {
+func (s *assetCheckService) Detail(ctx context.Context, req *model.AssetCheckDetailReq) (*model.PaginationRes, error) {
 	q := ent.Database.AssetCheckDetails.QueryNotDeleted().
 		Where(
 			assetcheckdetails.CheckID(req.ID),
@@ -561,7 +596,202 @@ func (s *assetCheckService) Detail(ctx context.Context, req *model.AssetCheckCre
 	if req.RealCheck {
 		q.Where(assetcheckdetails.ResultNEQ(model.AssetCheckResultUntreated.Value()))
 	}
-	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetCheckDetails) *model.AssetCheckDetailLocations {
-		return nil
+	// 属性查询
+	if req.Attribute != nil {
+		for _, v := range req.Attribute {
+			q.Where(assetcheckdetails.HasAssetWith(asset.HasValuesWith(assetattributevalues.AttributeID(v.AttributeID), assetattributevalues.ValueContains(v.AttributeValue))))
+		}
+	}
+	if req.SN != "" {
+		q.Where(assetcheckdetails.HasAssetWith(asset.Sn(req.SN)))
+	}
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetCheckDetails) (res *model.AssetCheckDetail) {
+		res = &model.AssetCheckDetail{
+			ID:      item.ID,
+			AssetID: item.AssetID,
+		}
+		if item.Edges.Asset != nil {
+			res.AssetSN = item.Edges.Asset.Sn
+			res.AssetStatus = item.Edges.Asset.Status
+			res.AssetType = item.Edges.Asset.Type
+			attributeValue, _ := item.Edges.Asset.QueryValues().WithAttribute().All(ctx)
+			assetAttributeMap := make(map[uint64]model.AssetAttribute)
+			for _, v := range attributeValue {
+				var attributeName, attributeKey string
+				if v.Edges.Attribute != nil {
+					attributeName = v.Edges.Attribute.Name
+					attributeKey = v.Edges.Attribute.Key
+				}
+				assetAttributeMap[v.AttributeID] = model.AssetAttribute{
+					AttributeID:      v.AttributeID,
+					AttributeValue:   v.Value,
+					AttributeName:    attributeName,
+					AttributeKey:     attributeKey,
+					AttributeValueID: v.ID,
+				}
+			}
+			res.Attribute = assetAttributeMap
+		}
+		if item.Edges.Asset.Edges.Model != nil {
+			res.Model = item.Edges.Asset.Edges.Model.Model
+		}
+		if item.Edges.Asset.Edges.Brand != nil {
+			res.BrandName = item.Edges.Asset.Edges.Brand.Name
+		}
+
+		// 返回实际位置
+		switch model.AssetLocationsType(item.LocationsType) {
+		case model.AssetLocationsTypeStore:
+			if item.Edges.Store != nil {
+				res.LocationsName = "[平台门店]-" + item.Edges.Store.Name
+			}
+		case model.AssetLocationsTypeStation:
+			if item.Edges.Station != nil {
+				res.LocationsName = "[代理站点]-" + item.Edges.Station.Name
+			}
+		case model.AssetLocationsTypeWarehouse:
+			if item.Edges.Warehouse != nil {
+				res.LocationsName = "[平台仓库]-" + item.Edges.Warehouse.Name
+			}
+		case model.AssetLocationsTypeRider:
+			if item.Edges.Rider != nil {
+				res.LocationsName = "[骑手]-" + item.Edges.Rider.Name
+			}
+		case model.AssetLocationsTypeCabinet:
+			if item.Edges.Cabinet != nil {
+				res.LocationsName = "[电柜]-" + item.Edges.Cabinet.Name
+			}
+		case model.AssetLocationsTypeOperation:
+			if item.Edges.Operator != nil {
+				res.LocationsName = "[运维]-" + item.Edges.Operator.Name
+			}
+		default:
+			res.LocationsName = ""
+		}
+
+		// 返回实际位置
+		switch model.AssetLocationsType(item.RealLocationsType) {
+		case model.AssetLocationsTypeStore:
+			if item.Edges.RealStore != nil {
+				res.RealLocationsName = "[平台门店]-" + item.Edges.RealStore.Name
+			}
+		case model.AssetLocationsTypeStation:
+			if item.Edges.RealStation != nil {
+				res.RealLocationsName = "[代理站点]-" + item.Edges.RealStation.Name
+			}
+		case model.AssetLocationsTypeWarehouse:
+			if item.Edges.RealWarehouse != nil {
+				res.RealLocationsName = "[平台仓库]-" + item.Edges.RealWarehouse.Name
+			}
+		case model.AssetLocationsTypeRider:
+			if item.Edges.RealRider != nil {
+				res.RealLocationsName = "[骑手]-" + item.Edges.RealRider.Name
+			}
+		case model.AssetLocationsTypeCabinet:
+			if item.Edges.RealCabinet != nil {
+				res.RealLocationsName = "[电柜]-" + item.Edges.RealCabinet.Name
+			}
+		case model.AssetLocationsTypeOperation:
+			if item.Edges.RealOperator != nil {
+				res.RealLocationsName = "[运维]-" + item.Edges.RealOperator.Name
+			}
+		default:
+			res.RealLocationsName = ""
+		}
+		return res
 	}), nil
+}
+
+// AssetCheckAbnormalOperate 盘点异常资产操作
+func (s *assetCheckService) AssetCheckAbnormalOperate(ctx context.Context, req *model.AssetCheckAbnormalOperateReq, modifier *model.Modifier) error {
+	// 查询异常资产
+	item, _ := ent.Database.AssetCheckDetails.QueryNotDeleted().Where(assetcheckdetails.ID(req.ID)).WithAsset().First(ctx)
+	if item == nil {
+		return fmt.Errorf("未找到对应的异常资产")
+	}
+
+	var status model.AssetCheckDetailsStatus
+
+	// 判定操作类型
+	if item.Result == model.AssetCheckResultSurplus.Value() {
+		// 盘盈操作入库
+		fromLocationType := model.AssetLocationsType(item.LocationsType)
+		assetTransferType := model.AssetTransferTypeTransfer
+		transferCreateReq := &model.AssetTransferCreateReq{
+			FromLocationType:  &fromLocationType,
+			FromLocationID:    &item.LocationsID,
+			ToLocationType:    model.AssetLocationsType(item.RealLocationsType),
+			ToLocationID:      item.RealLocationsID,
+			Details:           make([]model.AssetTransferCreateDetail, 0),
+			Reason:            "盘盈入库",
+			AssetTransferType: &assetTransferType,
+		}
+		if item.Edges.Asset == nil {
+			return fmt.Errorf("未找到对应的资产")
+		}
+		transferCreateReq.Details = append(transferCreateReq.Details, model.AssetTransferCreateDetail{
+			AssetType: model.AssetType(item.Edges.Asset.Type),
+			SN:        &item.Edges.Asset.Sn,
+		})
+
+		failed, err := NewAssetTransfer().Transfer(ctx, transferCreateReq, modifier)
+		if err != nil {
+			return err
+		}
+		if len(failed) > 0 {
+			return errors.New(failed[0])
+		}
+
+		// 修正已经盘点过的数据
+		_, err = ent.Database.AssetCheckDetails.Update().
+			Where(
+				// 盘亏的资产 并未处理的
+				assetcheckdetails.Result(model.AssetCheckResultLoss.Value()),
+				assetcheckdetails.Status(model.AssetCheckDetailsStatusUntreated.Value()),
+				assetcheckdetails.AssetID(item.AssetID),
+			).
+			SetResult(model.AssetCheckResultNormal.Value()).
+			SetLastModifier(modifier).
+			SetOperateAt(time.Now()).
+			SetOperateID(modifier.ID).
+			SetStatus(model.AssetCheckDetailsStatusOut.Value()).
+			Save(ctx)
+		if err != nil {
+			return err
+		}
+		// 处理类型
+		status = model.AssetCheckDetailsStatusIn
+	}
+	// 盘亏操作报废
+	if item.Result == model.AssetCheckResultLoss.Value() {
+		err := NewAssetScrap().Scrap(ctx, &model.AssetScrapReq{
+			ScrapReasonType: model.ScrapReasonLost,
+			Remark:          silk.String("盘亏报废"),
+			Detail: []model.AssetScrapDetail{
+				{
+					AssetType: model.AssetType(item.Edges.Asset.Type),
+					AssetID:   &item.AssetID,
+				},
+			},
+		}, modifier)
+		if err != nil {
+			return err
+		}
+		// 处理类型
+		status = model.AssetCheckDetailsStatusScrap
+	}
+
+	// 更新盘点详情
+	_, err := ent.Database.AssetCheckDetails.Update().
+		Where(assetcheckdetails.ID(req.ID)).
+		SetStatus(status.Value()).
+		SetLastModifier(modifier).
+		SetOperateAt(time.Now()).
+		SetOperateID(modifier.ID).
+		SetResult(model.AssetCheckResultNormal.Value()).
+		Save(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
 }

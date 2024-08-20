@@ -4,7 +4,7 @@ type AssetCheckDetailsStatus uint8
 
 const (
 	AssetCheckDetailsStatusUntreated AssetCheckDetailsStatus = iota // 未处理
-	AssetCheckDetailsStatusStock                                    // 已入库
+	AssetCheckDetailsStatusIn                                       // 已入库
 	AssetCheckDetailsStatusOut                                      // 已出库
 	AssetCheckDetailsStatusScrap                                    // 已报废
 )
@@ -13,7 +13,7 @@ func (a AssetCheckDetailsStatus) String() string {
 	switch a {
 	case AssetCheckDetailsStatusUntreated:
 		return "未处理"
-	case AssetCheckDetailsStatusStock:
+	case AssetCheckDetailsStatusIn:
 		return "已入库"
 	case AssetCheckDetailsStatusOut:
 		return "已出库"
@@ -95,13 +95,14 @@ type AssetCheckCreateDetail struct {
 	AssetType AssetType `json:"assetType" validate:"required"` // 资产类型 1:电车 2:智能电池
 }
 
-// AssetCheckCreateDetailReq 资产盘点请求详情
-type AssetCheckCreateDetailReq struct {
+// AssetCheckDetailReq 资产盘点请求详情
+type AssetCheckDetailReq struct {
 	PaginationReq
-	ID        uint64    `json:"id" validate:"required" param:"id"` // 盘点ID
-	AssetType AssetType `json:"assetType" validate:"required"`     // 资产类型 1:电车 2:智能电池
-	RealCheck bool      `json:"realCheck" validate:"required"`     // 是否实际盘点 true:实际盘点 false:应盘点
-	SN        string    `json:"sn"`                                // 资产编号
+	ID        uint64                 `json:"id" validate:"required" param:"id"` // 盘点ID
+	AssetType AssetType              `json:"assetType" query:"assetType"`       // 资产类型 1:电车 2:智能电池
+	RealCheck bool                   `json:"realCheck" query:"realCheck"`       // 是否实际盘点 true:实际盘点 false:应盘点
+	SN        string                 `json:"sn" query:"sn"`                     // 资产编号
+	Attribute []AssetAttributeCreate `json:"attribute" query:"attribute"`       // 属性查询
 }
 
 // AssetCheckListReq 获取资产盘点请求
@@ -112,6 +113,7 @@ type AssetCheckListReq struct {
 	Keyword       *string             `json:"keyword" query:"keyword"`                                 // 关键字
 	StartAt       *string             `json:"startAt" query:"startAt"`                                 // 开始时间
 	EndAt         *string             `json:"endAt" query:"endAt"`                                     // 结束时间
+	CheckResult   *uint8              `json:"checkResult" query:"checkResult"`                         // 盘点结果 1:正常 2:异常
 }
 
 // AssetCheckListRes 获取资产盘点返回
@@ -148,21 +150,18 @@ type AssetCheckAbnormal struct {
 	AssetType         AssetType        `json:"assetType"`         // 资产类型 1:电车 2:电池
 }
 
-// AssetCheckDetailLocations 资产明细门店站点信息
-type AssetCheckDetailLocations struct {
-	Name    string             `json:"name"`    // 名称
-	Sum     uint               `json:"sum"`     // 数量
-	Details []AssetCheckDetail `json:"details"` // 资产明细
-}
-
 // AssetCheckDetail 资产明细
 type AssetCheckDetail struct {
-	AssetID       uint64 `json:"assetId"`       // 资产ID
-	AssetSN       string `json:"assetSN"`       // 资产编号
-	Model         string `json:"model"`         // 型号
-	BrandName     string `json:"brandName"`     // 品牌
-	LocationsName string `json:"locationsName"` // 位置名称
-	AssetStatus   uint8  `json:"assetStatus"`   // 资产状态
+	ID                uint64                    `json:"id"`                // 盘点详情ID
+	AssetID           uint64                    `json:"assetId"`           // 资产ID
+	AssetSN           string                    `json:"assetSN"`           // 资产编号
+	Model             string                    `json:"model"`             // 型号
+	BrandName         string                    `json:"brandName"`         // 品牌
+	LocationsName     string                    `json:"locationsName"`     // 位置名称
+	RealLocationsName string                    `json:"realLocationsName"` // 实际位置名称
+	AssetStatus       uint8                     `json:"assetStatus"`       // 资产状态  0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
+	Attribute         map[uint64]AssetAttribute `json:"attribute"`         // 属性
+	AssetType         uint8                     `json:"assetType"`         // 资产类型 1:电车 2:电池
 }
 
 // AssetCheckByAssetSnReq 通过sn查询资产请求
@@ -218,4 +217,9 @@ type MarkStartOrEndCheckReq struct {
 // AssetCheckListAbnormalReq 获取盘点异常资产请求
 type AssetCheckListAbnormalReq struct {
 	ID uint64 `json:"id" validate:"required" param:"id"` // 盘点ID
+}
+
+// AssetCheckAbnormalOperateReq 异常资产操作
+type AssetCheckAbnormalOperateReq struct {
+	ID uint64 `json:"id" validate:"required" param:"id"` // 盘点异常id
 }

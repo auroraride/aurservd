@@ -67,7 +67,7 @@ func (Asset) Fields() []ent.Field {
 		field.Uint8("locations_type").Optional().Comment("资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"),
 		field.Uint64("locations_id").Optional().Comment("资产位置ID"),
 		field.Uint64("rto_rider_id").Optional().Nillable().Comment("以租代购骑手ID，生成后禁止修改"),
-		field.Time("check_at").Optional().Comment("盘点时间"),
+		field.Time("check_at").Optional().Nillable().Comment("盘点时间"),
 		field.String("brand_name").Optional().Comment("品牌名称"),
 	}
 }

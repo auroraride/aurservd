@@ -855,6 +855,8 @@ definitions:
         description: 处理状态 0:未处理 1:已入库 2:已出库 3:已报废
         type: string
     type: object
+  model.AssetCheckAbnormalOperateReq:
+    type: object
   model.AssetCheckByAssetSnRes:
     properties:
       assetId:
@@ -920,6 +922,41 @@ definitions:
     - locationsId
     - locationsType
     - startAt
+    type: object
+  model.AssetCheckDetail:
+    properties:
+      assetId:
+        description: 资产ID
+        type: integer
+      assetSN:
+        description: 资产编号
+        type: string
+      assetStatus:
+        description: 资产状态  0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
+        type: integer
+      assetType:
+        description: 资产类型 1:电车 2:电池
+        type: integer
+      attribute:
+        additionalProperties:
+          $ref: '#/definitions/model.AssetAttribute'
+        description: 属性
+        type: object
+      brandName:
+        description: 品牌
+        type: string
+      id:
+        description: 盘点详情ID
+        type: integer
+      locationsName:
+        description: 位置名称
+        type: string
+      model:
+        description: 型号
+        type: string
+      realLocationsName:
+        description: 实际位置名称
+        type: string
     type: object
   model.AssetCheckListRes:
     properties:
@@ -1349,9 +1386,6 @@ definitions:
       num:
         description: 报废数量
         type: integer
-      warehouseId:
-        description: 仓库ID
-        type: integer
     required:
     - assetType
     type: object
@@ -1421,6 +1455,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.ScrapReasonType'
         description: 报废原因
+      warehouseId:
+        description: 仓库ID
+        type: integer
     required:
     - detail
     - scrapReasonType
@@ -2404,6 +2441,10 @@ paths:
         name: X-Asset-Manager-Token
         required: true
         type: string
+      - description: 盘点结果 1:正常 2:异常
+        in: query
+        name: checkResult
+        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
@@ -2498,21 +2539,62 @@ paths:
       summary: 盘点资产
       tags:
       - 资产
-  /manager/v2/asset/check/{sn}:
+  /manager/v2/asset/check/{id}:
     get:
       consumes:
       - application/json
-      operationId: AssetCheckGetAssetBySN
+      operationId: AssetCheckDetail
       parameters:
       - description: 管理员校验token
         in: header
         name: X-Asset-Manager-Token
         required: true
         type: string
-      - description: 资产SN
+      - description: 盘点ID
         in: path
-        name: sn
+        name: id
         required: true
+        type: integer
+      - description: 资产类型 1:电车 2:智能电池
+        enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+        in: query
+        name: assetType
+        type: integer
+        x-enum-comments:
+          AssetTypeCabinetAccessory: 电柜配件
+          AssetTypeEbike: 电车
+          AssetTypeEbikeAccessory: 电车配件
+          AssetTypeNonSmartBattery: 非智能电池
+          AssetTypeOtherAccessory: 其它配件
+          AssetTypeSmartBattery: 智能电池
+        x-enum-varnames:
+          - AssetTypeEbike
+          - AssetTypeSmartBattery
+          - AssetTypeNonSmartBattery
+          - AssetTypeCabinetAccessory
+          - AssetTypeEbikeAccessory
+          - AssetTypeOtherAccessory
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 是否实际盘点 true:实际盘点 false:应盘点
+        in: query
+        name: realCheck
+        type: boolean
+      - description: 资产编号
+        in: query
+        name: sn
         type: string
       produces:
       - application/json
@@ -2520,8 +2602,15 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.AssetCheckByAssetSnRes'
-      summary: 通过SN查询资产
+            allOf:
+              - $ref: '#/definitions/model.PaginationRes'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/model.AssetCheckDetail'
+                    type: array
+                type: object
+      summary: 盘点明细
       tags:
       - 资产
   /manager/v2/asset/check/abnormal/{id}:
@@ -2555,6 +2644,58 @@ paths:
                   type: array
               type: object
       summary: 盘点异常
+      tags:
+        - 资产
+    put:
+      consumes:
+        - application/json
+      operationId: AssetCheckAbnormalOperate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Asset-Manager-Token
+          required: true
+          type: string
+        - description: 操作参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/model.AssetCheckAbnormalOperateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 盘点操作
+      tags:
+        - 资产
+  /manager/v2/asset/check/sn/{sn}:
+    get:
+      consumes:
+        - application/json
+      operationId: AssetCheckGetAssetBySN
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Asset-Manager-Token
+          required: true
+          type: string
+        - description: 资产SN
+          in: path
+          name: sn
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AssetCheckByAssetSnRes'
+      summary: 通过SN查询资产
       tags:
       - 资产
   /manager/v2/asset/count:

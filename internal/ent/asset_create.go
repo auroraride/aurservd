@@ -658,7 +658,7 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := ac.mutation.CheckAt(); ok {
 		_spec.SetField(asset.FieldCheckAt, field.TypeTime, value)
-		_node.CheckAt = value
+		_node.CheckAt = &value
 	}
 	if value, ok := ac.mutation.BrandName(); ok {
 		_spec.SetField(asset.FieldBrandName, field.TypeString, value)

@@ -258,13 +258,13 @@ func (s *assetScrapService) Scrap(ctx context.Context, req *model.AssetScrapReq,
 	for _, v := range req.Detail {
 		switch v.AssetType {
 		case model.AssetTypeEbike, model.AssetTypeSmartBattery:
-			assetId, err := s.transferAssetWithSN(ctx, &v)
+			assetId, err := s.scrapAssetWithSN(ctx, &v)
 			if err != nil {
 				return err
 			}
 			ids = append(ids, assetId...)
 		case model.AssetTypeOtherAccessory, model.AssetTypeCabinetAccessory, model.AssetTypeNonSmartBattery, model.AssetTypeEbikeAccessory:
-			assetId, err := s.transferAssetWithoutSN(ctx, &v)
+			assetId, err := s.scrapAssetWithoutSN(ctx, &v, req.WarehouseID)
 			if err != nil {
 				return err
 			}
@@ -316,7 +316,7 @@ func (s *assetScrapService) Scrap(ctx context.Context, req *model.AssetScrapReq,
 }
 
 // 有编号资产报废
-func (s *assetScrapService) transferAssetWithSN(ctx context.Context, req *model.AssetScrapDetail) ([]uint64, error) {
+func (s *assetScrapService) scrapAssetWithSN(ctx context.Context, req *model.AssetScrapDetail) ([]uint64, error) {
 	ids := make([]uint64, 0)
 	if req.AssetID == nil {
 		return nil, fmt.Errorf("资产ID不能为空")
@@ -342,7 +342,7 @@ func (s *assetScrapService) transferAssetWithSN(ctx context.Context, req *model.
 }
 
 // 无编号资产报废
-func (s *assetScrapService) transferAssetWithoutSN(ctx context.Context, req *model.AssetScrapDetail) ([]uint64, error) {
+func (s *assetScrapService) scrapAssetWithoutSN(ctx context.Context, req *model.AssetScrapDetail, warehouseID *uint64) ([]uint64, error) {
 	ids := make([]uint64, 0)
 	if req.MaterialID == nil {
 		return nil, fmt.Errorf("物资分类ID不能为空")
@@ -350,7 +350,7 @@ func (s *assetScrapService) transferAssetWithoutSN(ctx context.Context, req *mod
 	if req.Num == nil || *req.Num == 0 {
 		return nil, fmt.Errorf("报废数量不能为空")
 	}
-	if req.WarehouseID == nil {
+	if warehouseID == nil {
 		return nil, fmt.Errorf("仓库ID不能为空")
 	}
 	q := ent.Database.Asset.QueryNotDeleted().Where(
@@ -364,7 +364,7 @@ func (s *assetScrapService) transferAssetWithoutSN(ctx context.Context, req *mod
 			model.AssetLocationsTypeRider.Value(),
 			model.AssetLocationsTypeOperation.Value(),
 		),
-		asset.HasWarehouseWith(warehouse.ID(*req.WarehouseID)),
+		asset.HasWarehouseWith(warehouse.ID(*warehouseID)),
 	)
 	all, _ := q.Where(asset.Type(req.AssetType.Value()), asset.MaterialID(*req.MaterialID)).Limit(int(*req.Num)).Order(ent.Asc(asset.FieldCreatedAt)).All(ctx)
 	if len(all) < int(*req.Num) {
