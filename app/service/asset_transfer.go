@@ -71,6 +71,15 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 				SetRemark(req.OpratorType.String() + "调拨")
 			bulk = append(bulk, d)
 		}
+
+		// 修改资产状态 只有已入库的资产才会修改状态
+		_, err = ent.Database.Asset.Update().Where(asset.IDIn(assetIDs...)).
+			SetStatus(model.AssetStatusDelivering.Value()).
+			SetLastModifier(modifier).
+			Save(ctx)
+		if err != nil {
+			return nil, err
+		}
 	}
 	// 初始调拨
 	if req.FromLocationType == nil {
@@ -116,17 +125,6 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 		Exec(ctx)
 	if err != nil {
 		return nil, err
-	}
-
-	// 修改资产状态 只有已入库的资产才会修改状态
-	if req.FromLocationType != nil {
-		_, err = ent.Database.Asset.Update().Where(asset.IDIn(assetIDs...)).
-			SetStatus(model.AssetStatusDelivering.Value()).
-			SetLastModifier(modifier).
-			Save(ctx)
-		if err != nil {
-			return nil, err
-		}
 	}
 	return
 }

@@ -17,7 +17,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
-	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
@@ -42,8 +41,6 @@ type Cabinet struct {
 	CityID *uint64 `json:"city_id,omitempty"`
 	// 门店ID
 	StoreID *uint64 `json:"store_id,omitempty"`
-	// MaintainerID holds the value of the "maintainer_id" field.
-	MaintainerID *uint64 `json:"maintainer_id,omitempty"`
 	// 网点
 	BranchID *uint64 `json:"branch_id,omitempty"`
 	// 团签ID
@@ -92,8 +89,6 @@ type Cabinet struct {
 	EmptyBinNum int `json:"empty_bin_num,omitempty"`
 	// 锁仓数量
 	LockedBinNum int `json:"locked_bin_num,omitempty"`
-	// 维护时间
-	MaintenanceAt time.Time `json:"maintenance_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CabinetQuery when eager-loading is set.
 	Edges        CabinetEdges `json:"edges"`
@@ -106,8 +101,6 @@ type CabinetEdges struct {
 	City *City `json:"city,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
-	// Maintainer holds the value of the maintainer edge.
-	Maintainer *Maintainer `json:"maintainer,omitempty"`
 	// Branch holds the value of the branch edge.
 	Branch *Branch `json:"branch,omitempty"`
 	// Models holds the value of the models edge.
@@ -128,7 +121,7 @@ type CabinetEdges struct {
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [12]bool
+	loadedTypes [11]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -153,23 +146,12 @@ func (e CabinetEdges) StoreOrErr() (*Store, error) {
 	return nil, &NotLoadedError{edge: "store"}
 }
 
-// MaintainerOrErr returns the Maintainer value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e CabinetEdges) MaintainerOrErr() (*Maintainer, error) {
-	if e.Maintainer != nil {
-		return e.Maintainer, nil
-	} else if e.loadedTypes[2] {
-		return nil, &NotFoundError{label: maintainer.Label}
-	}
-	return nil, &NotLoadedError{edge: "maintainer"}
-}
-
 // BranchOrErr returns the Branch value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CabinetEdges) BranchOrErr() (*Branch, error) {
 	if e.Branch != nil {
 		return e.Branch, nil
-	} else if e.loadedTypes[3] {
+	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: branch.Label}
 	}
 	return nil, &NotLoadedError{edge: "branch"}
@@ -178,7 +160,7 @@ func (e CabinetEdges) BranchOrErr() (*Branch, error) {
 // ModelsOrErr returns the Models value or an error if the edge
 // was not loaded in eager-loading.
 func (e CabinetEdges) ModelsOrErr() ([]*BatteryModel, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		return e.Models, nil
 	}
 	return nil, &NotLoadedError{edge: "models"}
@@ -187,7 +169,7 @@ func (e CabinetEdges) ModelsOrErr() ([]*BatteryModel, error) {
 // FaultsOrErr returns the Faults value or an error if the edge
 // was not loaded in eager-loading.
 func (e CabinetEdges) FaultsOrErr() ([]*CabinetFault, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[4] {
 		return e.Faults, nil
 	}
 	return nil, &NotLoadedError{edge: "faults"}
@@ -196,7 +178,7 @@ func (e CabinetEdges) FaultsOrErr() ([]*CabinetFault, error) {
 // ExchangesOrErr returns the Exchanges value or an error if the edge
 // was not loaded in eager-loading.
 func (e CabinetEdges) ExchangesOrErr() ([]*Exchange, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[5] {
 		return e.Exchanges, nil
 	}
 	return nil, &NotLoadedError{edge: "exchanges"}
@@ -205,7 +187,7 @@ func (e CabinetEdges) ExchangesOrErr() ([]*Exchange, error) {
 // StocksOrErr returns the Stocks value or an error if the edge
 // was not loaded in eager-loading.
 func (e CabinetEdges) StocksOrErr() ([]*Stock, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[6] {
 		return e.Stocks, nil
 	}
 	return nil, &NotLoadedError{edge: "stocks"}
@@ -214,7 +196,7 @@ func (e CabinetEdges) StocksOrErr() ([]*Stock, error) {
 // BatteriesOrErr returns the Batteries value or an error if the edge
 // was not loaded in eager-loading.
 func (e CabinetEdges) BatteriesOrErr() ([]*Battery, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[7] {
 		return e.Batteries, nil
 	}
 	return nil, &NotLoadedError{edge: "batteries"}
@@ -223,7 +205,7 @@ func (e CabinetEdges) BatteriesOrErr() ([]*Battery, error) {
 // BatteryFlowsOrErr returns the BatteryFlows value or an error if the edge
 // was not loaded in eager-loading.
 func (e CabinetEdges) BatteryFlowsOrErr() ([]*BatteryFlow, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[8] {
 		return e.BatteryFlows, nil
 	}
 	return nil, &NotLoadedError{edge: "battery_flows"}
@@ -234,7 +216,7 @@ func (e CabinetEdges) BatteryFlowsOrErr() ([]*BatteryFlow, error) {
 func (e CabinetEdges) StationOrErr() (*EnterpriseStation, error) {
 	if e.Station != nil {
 		return e.Station, nil
-	} else if e.loadedTypes[10] {
+	} else if e.loadedTypes[9] {
 		return nil, &NotFoundError{label: enterprisestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "station"}
@@ -245,7 +227,7 @@ func (e CabinetEdges) StationOrErr() (*EnterpriseStation, error) {
 func (e CabinetEdges) EnterpriseOrErr() (*Enterprise, error) {
 	if e.Enterprise != nil {
 		return e.Enterprise, nil
-	} else if e.loadedTypes[11] {
+	} else if e.loadedTypes[10] {
 		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
@@ -266,11 +248,11 @@ func (*Cabinet) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case cabinet.FieldLng, cabinet.FieldLat:
 			values[i] = new(sql.NullFloat64)
-		case cabinet.FieldID, cabinet.FieldCityID, cabinet.FieldStoreID, cabinet.FieldMaintainerID, cabinet.FieldBranchID, cabinet.FieldEnterpriseID, cabinet.FieldStationID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum, cabinet.FieldBatteryChargingNum, cabinet.FieldEmptyBinNum, cabinet.FieldLockedBinNum:
+		case cabinet.FieldID, cabinet.FieldCityID, cabinet.FieldStoreID, cabinet.FieldBranchID, cabinet.FieldEnterpriseID, cabinet.FieldStationID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum, cabinet.FieldBatteryChargingNum, cabinet.FieldEmptyBinNum, cabinet.FieldLockedBinNum:
 			values[i] = new(sql.NullInt64)
 		case cabinet.FieldRemark, cabinet.FieldSn, cabinet.FieldSerial, cabinet.FieldName, cabinet.FieldAddress, cabinet.FieldSimSn:
 			values[i] = new(sql.NullString)
-		case cabinet.FieldCreatedAt, cabinet.FieldUpdatedAt, cabinet.FieldDeletedAt, cabinet.FieldSimDate, cabinet.FieldMaintenanceAt:
+		case cabinet.FieldCreatedAt, cabinet.FieldUpdatedAt, cabinet.FieldDeletedAt, cabinet.FieldSimDate:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -347,13 +329,6 @@ func (c *Cabinet) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.StoreID = new(uint64)
 				*c.StoreID = uint64(value.Int64)
-			}
-		case cabinet.FieldMaintainerID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field maintainer_id", values[i])
-			} else if value.Valid {
-				c.MaintainerID = new(uint64)
-				*c.MaintainerID = uint64(value.Int64)
 			}
 		case cabinet.FieldBranchID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -504,12 +479,6 @@ func (c *Cabinet) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.LockedBinNum = int(value.Int64)
 			}
-		case cabinet.FieldMaintenanceAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field maintenance_at", values[i])
-			} else if value.Valid {
-				c.MaintenanceAt = value.Time
-			}
 		default:
 			c.selectValues.Set(columns[i], values[i])
 		}
@@ -531,11 +500,6 @@ func (c *Cabinet) QueryCity() *CityQuery {
 // QueryStore queries the "store" edge of the Cabinet entity.
 func (c *Cabinet) QueryStore() *StoreQuery {
 	return NewCabinetClient(c.config).QueryStore(c)
-}
-
-// QueryMaintainer queries the "maintainer" edge of the Cabinet entity.
-func (c *Cabinet) QueryMaintainer() *MaintainerQuery {
-	return NewCabinetClient(c.config).QueryMaintainer(c)
 }
 
 // QueryBranch queries the "branch" edge of the Cabinet entity.
@@ -636,11 +600,6 @@ func (c *Cabinet) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := c.MaintainerID; v != nil {
-		builder.WriteString("maintainer_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
 	if v := c.BranchID; v != nil {
 		builder.WriteString("branch_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -718,9 +677,6 @@ func (c *Cabinet) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("locked_bin_num=")
 	builder.WriteString(fmt.Sprintf("%v", c.LockedBinNum))
-	builder.WriteString(", ")
-	builder.WriteString("maintenance_at=")
-	builder.WriteString(c.MaintenanceAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

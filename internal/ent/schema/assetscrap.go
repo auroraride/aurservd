@@ -72,7 +72,7 @@ func (AssetScrap) Fields() []ent.Field {
 func (AssetScrap) Edges() []ent.Edge {
 	return []ent.Edge{
 		// 关联后台管理员
-		edge.To("manager", Manager.Type).Unique().Field("operate_id"),
+		edge.To("manager", AssetManager.Type).Unique().Field("operate_id"),
 		// 关联门店管理员
 		edge.To("employee", Employee.Type).Unique().Field("operate_id"),
 		// 关联运维

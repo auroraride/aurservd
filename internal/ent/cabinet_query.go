@@ -21,7 +21,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
-	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -36,7 +35,6 @@ type CabinetQuery struct {
 	predicates       []predicate.Cabinet
 	withCity         *CityQuery
 	withStore        *StoreQuery
-	withMaintainer   *MaintainerQuery
 	withBranch       *BranchQuery
 	withModels       *BatteryModelQuery
 	withFaults       *CabinetFaultQuery
@@ -120,28 +118,6 @@ func (cq *CabinetQuery) QueryStore() *StoreQuery {
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
 			sqlgraph.To(store.Table, store.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, cabinet.StoreTable, cabinet.StoreColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryMaintainer chains the current query on the "maintainer" edge.
-func (cq *CabinetQuery) QueryMaintainer() *MaintainerQuery {
-	query := (&MaintainerClient{config: cq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := cq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := cq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
-			sqlgraph.To(maintainer.Table, maintainer.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, cabinet.MaintainerTable, cabinet.MaintainerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -541,7 +517,6 @@ func (cq *CabinetQuery) Clone() *CabinetQuery {
 		predicates:       append([]predicate.Cabinet{}, cq.predicates...),
 		withCity:         cq.withCity.Clone(),
 		withStore:        cq.withStore.Clone(),
-		withMaintainer:   cq.withMaintainer.Clone(),
 		withBranch:       cq.withBranch.Clone(),
 		withModels:       cq.withModels.Clone(),
 		withFaults:       cq.withFaults.Clone(),
@@ -576,17 +551,6 @@ func (cq *CabinetQuery) WithStore(opts ...func(*StoreQuery)) *CabinetQuery {
 		opt(query)
 	}
 	cq.withStore = query
-	return cq
-}
-
-// WithMaintainer tells the query-builder to eager-load the nodes that are connected to
-// the "maintainer" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CabinetQuery) WithMaintainer(opts ...func(*MaintainerQuery)) *CabinetQuery {
-	query := (&MaintainerClient{config: cq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	cq.withMaintainer = query
 	return cq
 }
 
@@ -767,10 +731,9 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 	var (
 		nodes       = []*Cabinet{}
 		_spec       = cq.querySpec()
-		loadedTypes = [12]bool{
+		loadedTypes = [11]bool{
 			cq.withCity != nil,
 			cq.withStore != nil,
-			cq.withMaintainer != nil,
 			cq.withBranch != nil,
 			cq.withModels != nil,
 			cq.withFaults != nil,
@@ -812,12 +775,6 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 	if query := cq.withStore; query != nil {
 		if err := cq.loadStore(ctx, query, nodes, nil,
 			func(n *Cabinet, e *Store) { n.Edges.Store = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := cq.withMaintainer; query != nil {
-		if err := cq.loadMaintainer(ctx, query, nodes, nil,
-			func(n *Cabinet, e *Maintainer) { n.Edges.Maintainer = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -941,38 +898,6 @@ func (cq *CabinetQuery) loadStore(ctx context.Context, query *StoreQuery, nodes 
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "store_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (cq *CabinetQuery) loadMaintainer(ctx context.Context, query *MaintainerQuery, nodes []*Cabinet, init func(*Cabinet), assign func(*Cabinet, *Maintainer)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Cabinet)
-	for i := range nodes {
-		if nodes[i].MaintainerID == nil {
-			continue
-		}
-		fk := *nodes[i].MaintainerID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(maintainer.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "maintainer_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -1329,9 +1254,6 @@ func (cq *CabinetQuery) querySpec() *sqlgraph.QuerySpec {
 		if cq.withStore != nil {
 			_spec.Node.AddColumnOnce(cabinet.FieldStoreID)
 		}
-		if cq.withMaintainer != nil {
-			_spec.Node.AddColumnOnce(cabinet.FieldMaintainerID)
-		}
 		if cq.withBranch != nil {
 			_spec.Node.AddColumnOnce(cabinet.FieldBranchID)
 		}
@@ -1411,7 +1333,6 @@ type CabinetQueryWith string
 var (
 	CabinetQueryWithCity         CabinetQueryWith = "City"
 	CabinetQueryWithStore        CabinetQueryWith = "Store"
-	CabinetQueryWithMaintainer   CabinetQueryWith = "Maintainer"
 	CabinetQueryWithBranch       CabinetQueryWith = "Branch"
 	CabinetQueryWithModels       CabinetQueryWith = "Models"
 	CabinetQueryWithFaults       CabinetQueryWith = "Faults"
@@ -1430,8 +1351,6 @@ func (cq *CabinetQuery) With(withEdges ...CabinetQueryWith) *CabinetQuery {
 			cq.WithCity()
 		case CabinetQueryWithStore:
 			cq.WithStore()
-		case CabinetQueryWithMaintainer:
-			cq.WithMaintainer()
 		case CabinetQueryWithBranch:
 			cq.WithBranch()
 		case CabinetQueryWithModels:

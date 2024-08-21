@@ -101,8 +101,10 @@ type AssetCheckDetailListReq struct {
 	ID        uint64    `json:"id" validate:"required" param:"id"` // 盘点ID
 	AssetType AssetType `json:"assetType" query:"assetType"`       // 资产类型 1:电车 2:智能电池
 	RealCheck bool      `json:"realCheck" query:"realCheck"`       // 是否实际盘点 true:实际盘点 false:应盘点
-	SN        string    `json:"sn" query:"sn"`                     // 资产编号
+	SN        *string   `json:"sn" query:"sn"`                     // 资产编号
 	Attribute *string   `json:"attribute" query:"attribute"`       // 属性 id:value
+	BrandID   *uint64   `json:"brandId" query:"brandId"`           // 品牌
+	ModelID   *uint64   `json:"modelId" query:"modelId"`           // 型号ID
 }
 
 // AssetCheckListReq 获取资产盘点请求

@@ -87,11 +87,6 @@ func StoreID(v uint64) predicate.Cabinet {
 	return predicate.Cabinet(sql.FieldEQ(FieldStoreID, v))
 }
 
-// MaintainerID applies equality check predicate on the "maintainer_id" field. It's identical to MaintainerIDEQ.
-func MaintainerID(v uint64) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldEQ(FieldMaintainerID, v))
-}
-
 // BranchID applies equality check predicate on the "branch_id" field. It's identical to BranchIDEQ.
 func BranchID(v uint64) predicate.Cabinet {
 	return predicate.Cabinet(sql.FieldEQ(FieldBranchID, v))
@@ -205,11 +200,6 @@ func EmptyBinNum(v int) predicate.Cabinet {
 // LockedBinNum applies equality check predicate on the "locked_bin_num" field. It's identical to LockedBinNumEQ.
 func LockedBinNum(v int) predicate.Cabinet {
 	return predicate.Cabinet(sql.FieldEQ(FieldLockedBinNum, v))
-}
-
-// MaintenanceAt applies equality check predicate on the "maintenance_at" field. It's identical to MaintenanceAtEQ.
-func MaintenanceAt(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldEQ(FieldMaintenanceAt, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -495,36 +485,6 @@ func StoreIDIsNil() predicate.Cabinet {
 // StoreIDNotNil applies the NotNil predicate on the "store_id" field.
 func StoreIDNotNil() predicate.Cabinet {
 	return predicate.Cabinet(sql.FieldNotNull(FieldStoreID))
-}
-
-// MaintainerIDEQ applies the EQ predicate on the "maintainer_id" field.
-func MaintainerIDEQ(v uint64) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldEQ(FieldMaintainerID, v))
-}
-
-// MaintainerIDNEQ applies the NEQ predicate on the "maintainer_id" field.
-func MaintainerIDNEQ(v uint64) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldNEQ(FieldMaintainerID, v))
-}
-
-// MaintainerIDIn applies the In predicate on the "maintainer_id" field.
-func MaintainerIDIn(vs ...uint64) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldIn(FieldMaintainerID, vs...))
-}
-
-// MaintainerIDNotIn applies the NotIn predicate on the "maintainer_id" field.
-func MaintainerIDNotIn(vs ...uint64) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldNotIn(FieldMaintainerID, vs...))
-}
-
-// MaintainerIDIsNil applies the IsNil predicate on the "maintainer_id" field.
-func MaintainerIDIsNil() predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldIsNull(FieldMaintainerID))
-}
-
-// MaintainerIDNotNil applies the NotNil predicate on the "maintainer_id" field.
-func MaintainerIDNotNil() predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldNotNull(FieldMaintainerID))
 }
 
 // BranchIDEQ applies the EQ predicate on the "branch_id" field.
@@ -1552,56 +1512,6 @@ func LockedBinNumLTE(v int) predicate.Cabinet {
 	return predicate.Cabinet(sql.FieldLTE(FieldLockedBinNum, v))
 }
 
-// MaintenanceAtEQ applies the EQ predicate on the "maintenance_at" field.
-func MaintenanceAtEQ(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldEQ(FieldMaintenanceAt, v))
-}
-
-// MaintenanceAtNEQ applies the NEQ predicate on the "maintenance_at" field.
-func MaintenanceAtNEQ(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldNEQ(FieldMaintenanceAt, v))
-}
-
-// MaintenanceAtIn applies the In predicate on the "maintenance_at" field.
-func MaintenanceAtIn(vs ...time.Time) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldIn(FieldMaintenanceAt, vs...))
-}
-
-// MaintenanceAtNotIn applies the NotIn predicate on the "maintenance_at" field.
-func MaintenanceAtNotIn(vs ...time.Time) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldNotIn(FieldMaintenanceAt, vs...))
-}
-
-// MaintenanceAtGT applies the GT predicate on the "maintenance_at" field.
-func MaintenanceAtGT(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldGT(FieldMaintenanceAt, v))
-}
-
-// MaintenanceAtGTE applies the GTE predicate on the "maintenance_at" field.
-func MaintenanceAtGTE(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldGTE(FieldMaintenanceAt, v))
-}
-
-// MaintenanceAtLT applies the LT predicate on the "maintenance_at" field.
-func MaintenanceAtLT(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldLT(FieldMaintenanceAt, v))
-}
-
-// MaintenanceAtLTE applies the LTE predicate on the "maintenance_at" field.
-func MaintenanceAtLTE(v time.Time) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldLTE(FieldMaintenanceAt, v))
-}
-
-// MaintenanceAtIsNil applies the IsNil predicate on the "maintenance_at" field.
-func MaintenanceAtIsNil() predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldIsNull(FieldMaintenanceAt))
-}
-
-// MaintenanceAtNotNil applies the NotNil predicate on the "maintenance_at" field.
-func MaintenanceAtNotNil() predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldNotNull(FieldMaintenanceAt))
-}
-
 // HasCity applies the HasEdge predicate on the "city" edge.
 func HasCity() predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
@@ -1640,29 +1550,6 @@ func HasStore() predicate.Cabinet {
 func HasStoreWith(preds ...predicate.Store) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		step := newStoreStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasMaintainer applies the HasEdge predicate on the "maintainer" edge.
-func HasMaintainer() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, MaintainerTable, MaintainerColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasMaintainerWith applies the HasEdge predicate on the "maintainer" edge with a given conditions (other predicates).
-func HasMaintainerWith(preds ...predicate.Maintainer) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		step := newMaintainerStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

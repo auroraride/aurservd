@@ -634,9 +634,16 @@ func (s *assetCheckService) AssetDetailList(ctx context.Context, req *model.Asse
 			q.Where(assetcheckdetails.HasAssetWith(asset.HasValuesWith(assetattributevalues.AttributeID(attributeID), assetattributevalues.ValueContains(attributeValue))))
 		}
 	}
-	if req.SN != "" {
-		q.Where(assetcheckdetails.HasAssetWith(asset.Sn(req.SN)))
+	if req.SN != nil {
+		q.Where(assetcheckdetails.HasAssetWith(asset.Sn(*req.SN)))
 	}
+	if req.ModelID != nil {
+		q.Where(assetcheckdetails.HasAssetWith(asset.ModelID(*req.ModelID)))
+	}
+	if req.BrandID != nil {
+		q.Where(assetcheckdetails.HasAssetWith(asset.BrandID(*req.BrandID)))
+	}
+
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetCheckDetails) (res *model.AssetCheckDetail) {
 		res = &model.AssetCheckDetail{
 			ID:      item.ID,
@@ -802,7 +809,7 @@ func (s *assetCheckService) AssetCheckAbnormalOperate(ctx context.Context, req *
 			Details: []model.AssetScrapDetails{
 				{
 					AssetType: model.AssetType(item.Edges.Asset.Type),
-					AssetID:   &item.AssetID,
+					Sn:        &item.Edges.Asset.Sn,
 				},
 			},
 		}, modifier)

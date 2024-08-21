@@ -101,6 +101,23 @@ func (s *maintainerCabinetService) Operate(m *ent.Maintainer, cities []uint64, r
 			ID:       cab.ID,
 			Maintain: silk.Bool(true),
 		})
+		// 创建维护记录
+		err := NewAssetMaintenance().Create(s.ctx, &model.AssetMaintenanceCreateReq{
+			CabinetID:       cab.ID,
+			Reason:          "",
+			Content:         "",
+			OpratorID:       m.ID,
+			OperateRoleType: model.AssetOperateRoleTypeOperation.Value(),
+			Details:         nil,
+			Status:          model.AssetMaintenanceStatusUnder,
+		}, &model.Modifier{
+			ID:    m.ID,
+			Name:  m.Name,
+			Phone: m.Phone,
+		})
+		if err != nil {
+			return
+		}
 	case model.MaintainerCabinetOperateMaintenanceCancel:
 		NewCabinetMgr().Maintain(operator, &model.CabinetMaintainReq{
 			ID:       cab.ID,

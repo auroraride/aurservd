@@ -23,7 +23,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
-	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
@@ -128,20 +127,6 @@ func (cc *CabinetCreate) SetStoreID(u uint64) *CabinetCreate {
 func (cc *CabinetCreate) SetNillableStoreID(u *uint64) *CabinetCreate {
 	if u != nil {
 		cc.SetStoreID(*u)
-	}
-	return cc
-}
-
-// SetMaintainerID sets the "maintainer_id" field.
-func (cc *CabinetCreate) SetMaintainerID(u uint64) *CabinetCreate {
-	cc.mutation.SetMaintainerID(u)
-	return cc
-}
-
-// SetNillableMaintainerID sets the "maintainer_id" field if the given value is not nil.
-func (cc *CabinetCreate) SetNillableMaintainerID(u *uint64) *CabinetCreate {
-	if u != nil {
-		cc.SetMaintainerID(*u)
 	}
 	return cc
 }
@@ -426,20 +411,6 @@ func (cc *CabinetCreate) SetNillableLockedBinNum(i *int) *CabinetCreate {
 	return cc
 }
 
-// SetMaintenanceAt sets the "maintenance_at" field.
-func (cc *CabinetCreate) SetMaintenanceAt(t time.Time) *CabinetCreate {
-	cc.mutation.SetMaintenanceAt(t)
-	return cc
-}
-
-// SetNillableMaintenanceAt sets the "maintenance_at" field if the given value is not nil.
-func (cc *CabinetCreate) SetNillableMaintenanceAt(t *time.Time) *CabinetCreate {
-	if t != nil {
-		cc.SetMaintenanceAt(*t)
-	}
-	return cc
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (cc *CabinetCreate) SetCity(c *City) *CabinetCreate {
 	return cc.SetCityID(c.ID)
@@ -448,11 +419,6 @@ func (cc *CabinetCreate) SetCity(c *City) *CabinetCreate {
 // SetStore sets the "store" edge to the Store entity.
 func (cc *CabinetCreate) SetStore(s *Store) *CabinetCreate {
 	return cc.SetStoreID(s.ID)
-}
-
-// SetMaintainer sets the "maintainer" edge to the Maintainer entity.
-func (cc *CabinetCreate) SetMaintainer(m *Maintainer) *CabinetCreate {
-	return cc.SetMaintainerID(m.ID)
 }
 
 // SetBranch sets the "branch" edge to the Branch entity.
@@ -835,10 +801,6 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		_spec.SetField(cabinet.FieldLockedBinNum, field.TypeInt, value)
 		_node.LockedBinNum = value
 	}
-	if value, ok := cc.mutation.MaintenanceAt(); ok {
-		_spec.SetField(cabinet.FieldMaintenanceAt, field.TypeTime, value)
-		_node.MaintenanceAt = value
-	}
 	if nodes := cc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -871,23 +833,6 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.StoreID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := cc.mutation.MaintainerIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   cabinet.MaintainerTable,
-			Columns: []string{cabinet.MaintainerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.MaintainerID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := cc.mutation.BranchIDs(); len(nodes) > 0 {
@@ -1188,24 +1133,6 @@ func (u *CabinetUpsert) UpdateStoreID() *CabinetUpsert {
 // ClearStoreID clears the value of the "store_id" field.
 func (u *CabinetUpsert) ClearStoreID() *CabinetUpsert {
 	u.SetNull(cabinet.FieldStoreID)
-	return u
-}
-
-// SetMaintainerID sets the "maintainer_id" field.
-func (u *CabinetUpsert) SetMaintainerID(v uint64) *CabinetUpsert {
-	u.Set(cabinet.FieldMaintainerID, v)
-	return u
-}
-
-// UpdateMaintainerID sets the "maintainer_id" field to the value that was provided on create.
-func (u *CabinetUpsert) UpdateMaintainerID() *CabinetUpsert {
-	u.SetExcluded(cabinet.FieldMaintainerID)
-	return u
-}
-
-// ClearMaintainerID clears the value of the "maintainer_id" field.
-func (u *CabinetUpsert) ClearMaintainerID() *CabinetUpsert {
-	u.SetNull(cabinet.FieldMaintainerID)
 	return u
 }
 
@@ -1617,24 +1544,6 @@ func (u *CabinetUpsert) AddLockedBinNum(v int) *CabinetUpsert {
 	return u
 }
 
-// SetMaintenanceAt sets the "maintenance_at" field.
-func (u *CabinetUpsert) SetMaintenanceAt(v time.Time) *CabinetUpsert {
-	u.Set(cabinet.FieldMaintenanceAt, v)
-	return u
-}
-
-// UpdateMaintenanceAt sets the "maintenance_at" field to the value that was provided on create.
-func (u *CabinetUpsert) UpdateMaintenanceAt() *CabinetUpsert {
-	u.SetExcluded(cabinet.FieldMaintenanceAt)
-	return u
-}
-
-// ClearMaintenanceAt clears the value of the "maintenance_at" field.
-func (u *CabinetUpsert) ClearMaintenanceAt() *CabinetUpsert {
-	u.SetNull(cabinet.FieldMaintenanceAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1799,27 +1708,6 @@ func (u *CabinetUpsertOne) UpdateStoreID() *CabinetUpsertOne {
 func (u *CabinetUpsertOne) ClearStoreID() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.ClearStoreID()
-	})
-}
-
-// SetMaintainerID sets the "maintainer_id" field.
-func (u *CabinetUpsertOne) SetMaintainerID(v uint64) *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.SetMaintainerID(v)
-	})
-}
-
-// UpdateMaintainerID sets the "maintainer_id" field to the value that was provided on create.
-func (u *CabinetUpsertOne) UpdateMaintainerID() *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateMaintainerID()
-	})
-}
-
-// ClearMaintainerID clears the value of the "maintainer_id" field.
-func (u *CabinetUpsertOne) ClearMaintainerID() *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.ClearMaintainerID()
 	})
 }
 
@@ -2299,27 +2187,6 @@ func (u *CabinetUpsertOne) UpdateLockedBinNum() *CabinetUpsertOne {
 	})
 }
 
-// SetMaintenanceAt sets the "maintenance_at" field.
-func (u *CabinetUpsertOne) SetMaintenanceAt(v time.Time) *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.SetMaintenanceAt(v)
-	})
-}
-
-// UpdateMaintenanceAt sets the "maintenance_at" field to the value that was provided on create.
-func (u *CabinetUpsertOne) UpdateMaintenanceAt() *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateMaintenanceAt()
-	})
-}
-
-// ClearMaintenanceAt clears the value of the "maintenance_at" field.
-func (u *CabinetUpsertOne) ClearMaintenanceAt() *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.ClearMaintenanceAt()
-	})
-}
-
 // Exec executes the query.
 func (u *CabinetUpsertOne) Exec(ctx context.Context) error {
 	if len(u.create.conflict) == 0 {
@@ -2650,27 +2517,6 @@ func (u *CabinetUpsertBulk) UpdateStoreID() *CabinetUpsertBulk {
 func (u *CabinetUpsertBulk) ClearStoreID() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.ClearStoreID()
-	})
-}
-
-// SetMaintainerID sets the "maintainer_id" field.
-func (u *CabinetUpsertBulk) SetMaintainerID(v uint64) *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.SetMaintainerID(v)
-	})
-}
-
-// UpdateMaintainerID sets the "maintainer_id" field to the value that was provided on create.
-func (u *CabinetUpsertBulk) UpdateMaintainerID() *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateMaintainerID()
-	})
-}
-
-// ClearMaintainerID clears the value of the "maintainer_id" field.
-func (u *CabinetUpsertBulk) ClearMaintainerID() *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.ClearMaintainerID()
 	})
 }
 
@@ -3147,27 +2993,6 @@ func (u *CabinetUpsertBulk) AddLockedBinNum(v int) *CabinetUpsertBulk {
 func (u *CabinetUpsertBulk) UpdateLockedBinNum() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.UpdateLockedBinNum()
-	})
-}
-
-// SetMaintenanceAt sets the "maintenance_at" field.
-func (u *CabinetUpsertBulk) SetMaintenanceAt(v time.Time) *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.SetMaintenanceAt(v)
-	})
-}
-
-// UpdateMaintenanceAt sets the "maintenance_at" field to the value that was provided on create.
-func (u *CabinetUpsertBulk) UpdateMaintenanceAt() *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateMaintenanceAt()
-	})
-}
-
-// ClearMaintenanceAt clears the value of the "maintenance_at" field.
-func (u *CabinetUpsertBulk) ClearMaintenanceAt() *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.ClearMaintenanceAt()
 	})
 }
 

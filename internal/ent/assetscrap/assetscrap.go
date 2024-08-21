@@ -51,9 +51,9 @@ const (
 	Table = "asset_scrap"
 	// ManagerTable is the table that holds the manager relation/edge.
 	ManagerTable = "asset_scrap"
-	// ManagerInverseTable is the table name for the Manager entity.
-	// It exists in this package in order to avoid circular dependency with the "manager" package.
-	ManagerInverseTable = "manager"
+	// ManagerInverseTable is the table name for the AssetManager entity.
+	// It exists in this package in order to avoid circular dependency with the "assetmanager" package.
+	ManagerInverseTable = "asset_manager"
 	// ManagerColumn is the table column denoting the manager relation/edge.
 	ManagerColumn = "operate_id"
 	// EmployeeTable is the table that holds the employee relation/edge.

@@ -328,6 +328,10 @@ func init() {
 	assetmaintenanceDescStatus := assetmaintenanceFields[2].Descriptor()
 	// assetmaintenance.DefaultStatus holds the default value on creation for the status field.
 	assetmaintenance.DefaultStatus = assetmaintenanceDescStatus.Default.(uint8)
+	// assetmaintenanceDescCabinetStatus is the schema descriptor for cabinet_status field.
+	assetmaintenanceDescCabinetStatus := assetmaintenanceFields[3].Descriptor()
+	// assetmaintenance.DefaultCabinetStatus holds the default value on creation for the cabinet_status field.
+	assetmaintenance.DefaultCabinetStatus = assetmaintenanceDescCabinetStatus.Default.(uint8)
 	assetmaintenancedetailsMixin := schema.AssetMaintenanceDetails{}.Mixin()
 	assetmaintenancedetailsMixinHooks2 := assetmaintenancedetailsMixin[2].Hooks()
 	assetmaintenancedetails.Hooks[0] = assetmaintenancedetailsMixinHooks2[0]

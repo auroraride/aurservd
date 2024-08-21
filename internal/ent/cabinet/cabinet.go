@@ -32,8 +32,6 @@ const (
 	FieldCityID = "city_id"
 	// FieldStoreID holds the string denoting the store_id field in the database.
 	FieldStoreID = "store_id"
-	// FieldMaintainerID holds the string denoting the maintainer_id field in the database.
-	FieldMaintainerID = "maintainer_id"
 	// FieldBranchID holds the string denoting the branch_id field in the database.
 	FieldBranchID = "branch_id"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
@@ -82,14 +80,10 @@ const (
 	FieldEmptyBinNum = "empty_bin_num"
 	// FieldLockedBinNum holds the string denoting the locked_bin_num field in the database.
 	FieldLockedBinNum = "locked_bin_num"
-	// FieldMaintenanceAt holds the string denoting the maintenance_at field in the database.
-	FieldMaintenanceAt = "maintenance_at"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
-	// EdgeMaintainer holds the string denoting the maintainer edge name in mutations.
-	EdgeMaintainer = "maintainer"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
 	EdgeBranch = "branch"
 	// EdgeModels holds the string denoting the models edge name in mutations.
@@ -124,13 +118,6 @@ const (
 	StoreInverseTable = "store"
 	// StoreColumn is the table column denoting the store relation/edge.
 	StoreColumn = "store_id"
-	// MaintainerTable is the table that holds the maintainer relation/edge.
-	MaintainerTable = "cabinet"
-	// MaintainerInverseTable is the table name for the Maintainer entity.
-	// It exists in this package in order to avoid circular dependency with the "maintainer" package.
-	MaintainerInverseTable = "maintainer"
-	// MaintainerColumn is the table column denoting the maintainer relation/edge.
-	MaintainerColumn = "maintainer_id"
 	// BranchTable is the table that holds the branch relation/edge.
 	BranchTable = "cabinet"
 	// BranchInverseTable is the table name for the Branch entity.
@@ -205,7 +192,6 @@ var Columns = []string{
 	FieldRemark,
 	FieldCityID,
 	FieldStoreID,
-	FieldMaintainerID,
 	FieldBranchID,
 	FieldEnterpriseID,
 	FieldStationID,
@@ -230,7 +216,6 @@ var Columns = []string{
 	FieldBatteryChargingNum,
 	FieldEmptyBinNum,
 	FieldLockedBinNum,
-	FieldMaintenanceAt,
 }
 
 var (
@@ -318,11 +303,6 @@ func ByCityID(opts ...sql.OrderTermOption) OrderOption {
 // ByStoreID orders the results by the store_id field.
 func ByStoreID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStoreID, opts...).ToFunc()
-}
-
-// ByMaintainerID orders the results by the maintainer_id field.
-func ByMaintainerID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldMaintainerID, opts...).ToFunc()
 }
 
 // ByBranchID orders the results by the branch_id field.
@@ -440,11 +420,6 @@ func ByLockedBinNum(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLockedBinNum, opts...).ToFunc()
 }
 
-// ByMaintenanceAt orders the results by the maintenance_at field.
-func ByMaintenanceAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldMaintenanceAt, opts...).ToFunc()
-}
-
 // ByCityField orders the results by city field.
 func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -456,13 +431,6 @@ func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
 func ByStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newStoreStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByMaintainerField orders the results by maintainer field.
-func ByMaintainerField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newMaintainerStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -582,13 +550,6 @@ func newStoreStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(StoreInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
-	)
-}
-func newMaintainerStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(MaintainerInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, MaintainerTable, MaintainerColumn),
 	)
 }
 func newBranchStep() *sqlgraph.Step {

@@ -107,7 +107,6 @@ func (Cabinet) Fields() []ent.Field {
 		field.Int("battery_charging_num").Default(0).Comment("充电总数"),
 		field.Int("empty_bin_num").Default(0).Comment("空仓数量"),
 		field.Int("locked_bin_num").Default(0).Comment("锁仓数量"),
-		field.Time("maintenance_at").Optional().Comment("维护时间"),
 	}
 }
 
@@ -137,7 +136,6 @@ func (Cabinet) Mixin() []ent.Mixin {
 
 		CityMixin{Optional: true},
 		StoreMixin{Optional: true},
-		MaintainerMixin{Optional: true},
 	}
 }
 

@@ -320,28 +320,6 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 		if len(failed) > 0 {
 			return failed, errors.New(failed[0])
 		}
-		// t, _ := ent.Database.AssetTransfer.Create().
-		// 	SetToLocationType(model.AssetLocationsTypeWarehouse.Value()).
-		// 	SetToLocationID(k).
-		// 	SetReason("初始入库").
-		// 	SetCreator(modifier).
-		// 	SetLastModifier(modifier).
-		// 	SetInNum(uint(len(v))).
-		// 	SetStatus(model.AssetTransferStatusDelivering.Value()).
-		// 	SetType(model.AssetTransferTypeInitial.Value()).
-		// 	SetSn(tools.NewUnique().NewSN28()).
-		// 	Save(ctx.Request().Context())
-		// if t != nil {
-		// 	bulk := make([]*ent.AssetTransferDetailsCreate, 0)
-		// 	for _, vl := range v {
-		// 		bulk = append(bulk, ent.Database.AssetTransferDetails.Create().
-		// 			SetAssetID(vl).
-		// 			SetCreator(modifier).
-		// 			SetLastModifier(modifier).
-		// 			SetTransferID(t.ID))
-		// 	}
-		// 	_ = ent.Database.AssetTransferDetails.CreateBulk(bulk...).Exec(ctx.Request().Context())
-		// }
 	}
 
 	return failed, nil
@@ -482,28 +460,6 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 		if len(failed) > 0 {
 			return failed, errors.New(failed[0])
 		}
-		// t, _ := ent.Database.AssetTransfer.Create().
-		// 	SetToLocationType(model.AssetLocationsTypeWarehouse.Value()).
-		// 	SetToLocationID(k).
-		// 	SetReason("初始入库").
-		// 	SetCreator(modifier).
-		// 	SetLastModifier(modifier).
-		// 	SetInNum(uint(len(v))).
-		// 	SetStatus(model.AssetTransferStatusDelivering.Value()).
-		// 	SetType(model.AssetTransferTypeInitial.Value()).
-		// 	SetSn(tools.NewUnique().NewSN28()).
-		// 	Save(ctx.Request().Context())
-		// if t != nil {
-		// 	bulk := make([]*ent.AssetTransferDetailsCreate, 0)
-		// 	for _, vl := range v {
-		// 		bulk = append(bulk, ent.Database.AssetTransferDetails.Create().
-		// 			SetAssetID(vl).
-		// 			SetCreator(modifier).
-		// 			SetLastModifier(modifier).
-		// 			SetTransferID(t.ID))
-		// 	}
-		// 	_ = ent.Database.AssetTransferDetails.CreateBulk(bulk...).Exec(ctx.Request().Context())
-		// }
 	}
 
 	return failed, nil

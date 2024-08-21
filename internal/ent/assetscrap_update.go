@@ -13,11 +13,11 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -214,13 +214,13 @@ func (asu *AssetScrapUpdate) ClearNum() *AssetScrapUpdate {
 	return asu
 }
 
-// SetManagerID sets the "manager" edge to the Manager entity by ID.
+// SetManagerID sets the "manager" edge to the AssetManager entity by ID.
 func (asu *AssetScrapUpdate) SetManagerID(id uint64) *AssetScrapUpdate {
 	asu.mutation.SetManagerID(id)
 	return asu
 }
 
-// SetNillableManagerID sets the "manager" edge to the Manager entity by ID if the given value is not nil.
+// SetNillableManagerID sets the "manager" edge to the AssetManager entity by ID if the given value is not nil.
 func (asu *AssetScrapUpdate) SetNillableManagerID(id *uint64) *AssetScrapUpdate {
 	if id != nil {
 		asu = asu.SetManagerID(*id)
@@ -228,9 +228,9 @@ func (asu *AssetScrapUpdate) SetNillableManagerID(id *uint64) *AssetScrapUpdate 
 	return asu
 }
 
-// SetManager sets the "manager" edge to the Manager entity.
-func (asu *AssetScrapUpdate) SetManager(m *Manager) *AssetScrapUpdate {
-	return asu.SetManagerID(m.ID)
+// SetManager sets the "manager" edge to the AssetManager entity.
+func (asu *AssetScrapUpdate) SetManager(a *AssetManager) *AssetScrapUpdate {
+	return asu.SetManagerID(a.ID)
 }
 
 // SetEmployeeID sets the "employee" edge to the Employee entity by ID.
@@ -310,7 +310,7 @@ func (asu *AssetScrapUpdate) Mutation() *AssetScrapMutation {
 	return asu.mutation
 }
 
-// ClearManager clears the "manager" edge to the Manager entity.
+// ClearManager clears the "manager" edge to the AssetManager entity.
 func (asu *AssetScrapUpdate) ClearManager() *AssetScrapUpdate {
 	asu.mutation.ClearManager()
 	return asu
@@ -477,7 +477,7 @@ func (asu *AssetScrapUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{assetscrap.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -490,7 +490,7 @@ func (asu *AssetScrapUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{assetscrap.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -831,13 +831,13 @@ func (asuo *AssetScrapUpdateOne) ClearNum() *AssetScrapUpdateOne {
 	return asuo
 }
 
-// SetManagerID sets the "manager" edge to the Manager entity by ID.
+// SetManagerID sets the "manager" edge to the AssetManager entity by ID.
 func (asuo *AssetScrapUpdateOne) SetManagerID(id uint64) *AssetScrapUpdateOne {
 	asuo.mutation.SetManagerID(id)
 	return asuo
 }
 
-// SetNillableManagerID sets the "manager" edge to the Manager entity by ID if the given value is not nil.
+// SetNillableManagerID sets the "manager" edge to the AssetManager entity by ID if the given value is not nil.
 func (asuo *AssetScrapUpdateOne) SetNillableManagerID(id *uint64) *AssetScrapUpdateOne {
 	if id != nil {
 		asuo = asuo.SetManagerID(*id)
@@ -845,9 +845,9 @@ func (asuo *AssetScrapUpdateOne) SetNillableManagerID(id *uint64) *AssetScrapUpd
 	return asuo
 }
 
-// SetManager sets the "manager" edge to the Manager entity.
-func (asuo *AssetScrapUpdateOne) SetManager(m *Manager) *AssetScrapUpdateOne {
-	return asuo.SetManagerID(m.ID)
+// SetManager sets the "manager" edge to the AssetManager entity.
+func (asuo *AssetScrapUpdateOne) SetManager(a *AssetManager) *AssetScrapUpdateOne {
+	return asuo.SetManagerID(a.ID)
 }
 
 // SetEmployeeID sets the "employee" edge to the Employee entity by ID.
@@ -927,7 +927,7 @@ func (asuo *AssetScrapUpdateOne) Mutation() *AssetScrapMutation {
 	return asuo.mutation
 }
 
-// ClearManager clears the "manager" edge to the Manager entity.
+// ClearManager clears the "manager" edge to the AssetManager entity.
 func (asuo *AssetScrapUpdateOne) ClearManager() *AssetScrapUpdateOne {
 	asuo.mutation.ClearManager()
 	return asuo
@@ -1124,7 +1124,7 @@ func (asuo *AssetScrapUpdateOne) sqlSave(ctx context.Context) (_node *AssetScrap
 			Columns: []string{assetscrap.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1137,7 +1137,7 @@ func (asuo *AssetScrapUpdateOne) sqlSave(ctx context.Context) (_node *AssetScrap
 			Columns: []string{assetscrap.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
