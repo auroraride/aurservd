@@ -252,7 +252,7 @@ func (s *assetScrapService) ScrapBatchRestore(ctx context.Context, req *model.As
 				failed = append(failed, "资产"+strconv.FormatUint(v.AssetID, 10)+"还原失败")
 				continue
 			}
-			// 删除报废记录
+			// 删除报废详情记录
 			_, err = ent.Database.AssetScrapDetails.Delete().Where(assetscrapdetails.AssetID(v.AssetID)).Exec(ctx)
 			if err != nil {
 				failed = append(failed, "资产"+strconv.FormatUint(v.AssetID, 10)+"还原失败")

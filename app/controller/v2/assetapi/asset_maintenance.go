@@ -27,17 +27,18 @@ func (*assetMaintenance) List(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewAssetMaintenance().List(ctx.Request().Context(), req))
 }
 
-// Create
-// @ID		AssetMaintenanceCreate
-// @Router	/manager/v2/asset/maintenance [POST]
-// @Summary	创建维修记录
+// Modify 修改维修记录
+// @ID		AssetMaintenanceModify
+// @Router	/manager/v2/asset/maintenance/:id [PUT]
+// @Summary	修改维修记录
 // @Tags	资产
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
-// @Param	body					body		model.AssetMaintenanceCreateReq	true	"创建参数"
+// @Param	id						path		int								true	"维修记录ID"
+// @Param	body					body		model.AssetMaintenanceModifyReq	true	"修改参数"
 // @Success	200						{object}	model.StatusResponse			"请求成功"
-func (*assetMaintenance) Create(c echo.Context) (err error) {
-	ctx, req := app.AssetManagerContextAndBinding[model.AssetMaintenanceCreateReq](c)
-	return ctx.SendResponse(service.NewAssetMaintenance().Create(ctx.Request().Context(), req, ctx.Modifier))
+func (*assetMaintenance) Modify(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetMaintenanceModifyReq](c)
+	return ctx.SendResponse(service.NewAssetMaintenance().Modify(ctx.Request().Context(), req, ctx.Modifier))
 }

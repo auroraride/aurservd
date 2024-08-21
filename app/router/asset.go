@@ -108,8 +108,8 @@ func loadAssetsRoutes() {
 	asset.GET("/transfer/details", assetapi.AssetTransfer.TransferDetailsList) // 调拨详情列表(出入库明细)
 
 	// 资产维修
-	asset.GET("/maintenance", assetapi.AssetMaintenance.List)    // 资产维修列表
-	asset.POST("/maintenance", assetapi.AssetMaintenance.Create) // 创建维修记录
+	asset.GET("/maintenance", assetapi.AssetMaintenance.List)       // 资产维修列表
+	asset.PUT("/maintenance/:id", assetapi.AssetMaintenance.Modify) // 修改维修记录
 
 	// 资产盘点
 	asset.GET("/check", assetapi.AssetCheck.List)                                 // 盘点列表

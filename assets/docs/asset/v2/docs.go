@@ -1790,8 +1790,10 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
+            }
+        },
+        "/manager/v2/asset/maintenance/:id": {
+            "put": {
                 "consumes": [
                     "application/json"
                 ],
@@ -1801,8 +1803,8 @@ const docTemplate = `{
                 "tags": [
                     "资产"
                 ],
-                "summary": "创建维修记录",
-                "operationId": "AssetMaintenanceCreate",
+                "summary": "修改维修记录",
+                "operationId": "AssetMaintenanceModify",
                 "parameters": [
                     {
                         "type": "string",
@@ -1812,12 +1814,19 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "创建参数",
+                        "type": "integer",
+                        "description": "维修记录ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改参数",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.AssetMaintenanceCreateReq"
+                            "$ref": "#/definitions/model.AssetMaintenanceModifyReq"
                         }
                     }
                 ],
@@ -5993,52 +6002,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AssetMaintenanceCreateReq": {
-            "type": "object",
-            "required": [
-                "cabinetId",
-                "content",
-                "reason",
-                "status"
-            ],
-            "properties": {
-                "cabinetId": {
-                    "description": "电柜ID",
-                    "type": "integer"
-                },
-                "content": {
-                    "description": "维护内容",
-                    "type": "string"
-                },
-                "details": {
-                    "description": "维护详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.AssetMaintenanceCreateDetail"
-                    }
-                },
-                "operateRoleType": {
-                    "description": "维护人角色类型",
-                    "type": "integer"
-                },
-                "opratorId": {
-                    "description": "维护人ID",
-                    "type": "integer"
-                },
-                "reason": {
-                    "description": "维护理由",
-                    "type": "string"
-                },
-                "status": {
-                    "description": "维修状态1:维修中 2:已维修 3:维修失败 4:已取消",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.AssetMaintenanceStatus"
-                        }
-                    ]
-                }
-            }
-        },
         "model.AssetMaintenanceDetail": {
             "type": "object",
             "required": [
@@ -6106,6 +6069,39 @@ const docTemplate = `{
                 "status": {
                     "description": "维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消",
                     "type": "string"
+                }
+            }
+        },
+        "model.AssetMaintenanceModifyReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "reason",
+                "status"
+            ],
+            "properties": {
+                "content": {
+                    "description": "维护内容",
+                    "type": "string"
+                },
+                "details": {
+                    "description": "维护详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetMaintenanceCreateDetail"
+                    }
+                },
+                "reason": {
+                    "description": "维护理由",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "维修状态1:维修中 2:已维修 3:维修失败 4:已取消",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetMaintenanceStatus"
+                        }
+                    ]
                 }
             }
         },

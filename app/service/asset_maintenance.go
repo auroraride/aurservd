@@ -29,6 +29,21 @@ func NewAssetMaintenance() *assetMaintenanceService {
 
 // Create 创建资产维护
 func (s *assetMaintenanceService) Create(ctx context.Context, req *model.AssetMaintenanceCreateReq, modifier *model.Modifier) error {
+	err := ent.Database.AssetMaintenance.Create().
+		SetMaintainerID(modifier.ID).
+		SetLastModifier(modifier).
+		SetCreator(modifier).
+		SetCabinetID(req.CabinetID).
+		SetStatus(model.AssetMaintenanceStatusUnder.Value()).
+		Exec(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Modify 修改维护记录
+func (s *assetMaintenanceService) Modify(ctx context.Context, req *model.AssetMaintenanceModifyReq, modifier *model.Modifier) error {
 	bulk := make([]*ent.AssetMaintenanceDetailsCreate, 0)
 	for _, v := range req.Details {
 		item, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(v.MaterialID)).First(ctx)
@@ -62,14 +77,12 @@ func (s *assetMaintenanceService) Create(ctx context.Context, req *model.AssetMa
 	if err != nil {
 		return err
 	}
-	err = ent.Database.AssetMaintenance.Create().
+	err = ent.Database.AssetMaintenance.Update().Where(assetmaintenance.ID(req.ID)).
 		SetReason(req.Reason).
 		SetStatus(req.Status.Value()).
 		SetMaintainerID(modifier.ID).
 		SetLastModifier(modifier).
-		SetCreator(modifier).
 		SetContent(req.Content).
-		SetCabinetID(req.CabinetID).
 		AddMaintenanceDetails(md...).
 		Exec(ctx)
 	if err != nil {

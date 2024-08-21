@@ -1117,38 +1117,6 @@ definitions:
     - materialId
     - num
     type: object
-  model.AssetMaintenanceCreateReq:
-    properties:
-      cabinetId:
-        description: 电柜ID
-        type: integer
-      content:
-        description: 维护内容
-        type: string
-      details:
-        description: 维护详情
-        items:
-          $ref: '#/definitions/model.AssetMaintenanceCreateDetail'
-        type: array
-      operateRoleType:
-        description: 维护人角色类型
-        type: integer
-      opratorId:
-        description: 维护人ID
-        type: integer
-      reason:
-        description: 维护理由
-        type: string
-      status:
-        allOf:
-        - $ref: '#/definitions/model.AssetMaintenanceStatus'
-        description: 维修状态1:维修中 2:已维修 3:维修失败 4:已取消
-    required:
-    - cabinetId
-    - content
-    - reason
-    - status
-    type: object
   model.AssetMaintenanceDetail:
     properties:
       assetName:
@@ -1199,6 +1167,28 @@ definitions:
       status:
         description: 维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消
         type: string
+    type: object
+  model.AssetMaintenanceModifyReq:
+    properties:
+      content:
+        description: 维护内容
+        type: string
+      details:
+        description: 维护详情
+        items:
+          $ref: '#/definitions/model.AssetMaintenanceCreateDetail'
+        type: array
+      reason:
+        description: 维护理由
+        type: string
+      status:
+        allOf:
+          - $ref: '#/definitions/model.AssetMaintenanceStatus'
+        description: 维修状态1:维修中 2:已维修 3:维修失败 4:已取消
+    required:
+      - content
+      - reason
+      - status
     type: object
   model.AssetMaintenanceStatus:
     enum:
@@ -3314,22 +3304,28 @@ paths:
       summary: 维修记录列表
       tags:
       - 资产
-    post:
+  /manager/v2/asset/maintenance/:id:
+    put:
       consumes:
       - application/json
-      operationId: AssetMaintenanceCreate
+      operationId: AssetMaintenanceModify
       parameters:
       - description: 管理员校验token
         in: header
         name: X-Asset-Manager-Token
         required: true
         type: string
-      - description: 创建参数
+      - description: 维修记录ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改参数
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.AssetMaintenanceCreateReq'
+          $ref: '#/definitions/model.AssetMaintenanceModifyReq'
       produces:
       - application/json
       responses:
@@ -3337,7 +3333,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: 创建维修记录
+      summary: 修改维修记录
       tags:
       - 资产
   /manager/v2/asset/material:
