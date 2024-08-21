@@ -69,6 +69,57 @@ definitions:
     required:
     - assetTransferReceive
     type: object
+  definition.CommonAssetDetail:
+    properties:
+      cabinetAccessories:
+        description: 电柜配件物资详情
+        items:
+          $ref: '#/definitions/definition.AssetMaterial'
+        type: array
+      cabinetAccessoryTotal:
+        description: 电柜配件总数
+        type: integer
+      ebikeAccessories:
+        description: 电车配件物资详情
+        items:
+          $ref: '#/definitions/definition.AssetMaterial'
+        type: array
+      ebikeAccessoryTotal:
+        description: 电车配件总数
+        type: integer
+      ebikeTotal:
+        description: 电车总数
+        type: integer
+      ebikes:
+        description: 电车物资详情
+        items:
+          $ref: '#/definitions/definition.AssetMaterial'
+        type: array
+      nonSmartBatteries:
+        description: 非智能电池物资详情
+        items:
+          $ref: '#/definitions/definition.AssetMaterial'
+        type: array
+      nonSmartBatteryTotal:
+        description: 非智能电池总数
+        type: integer
+      otherAssetTotal:
+        description: 其他物资总数
+        type: integer
+      otherAssets:
+        description: 其他物资详情
+        items:
+          $ref: '#/definitions/definition.AssetMaterial'
+        type: array
+      smartBatteries:
+        description: 智能电池物资详情
+        items:
+          $ref: '#/definitions/definition.AssetMaterial'
+        type: array
+      smartBatteryTotal:
+        description: 智能电池总数
+        type: integer
+    type: object
   definition.PlatType:
     enum:
     - 1
@@ -133,57 +184,6 @@ definitions:
         description: 调入目标类型
         type: integer
     type: object
-  definition.WarestoreAssetDetail:
-    properties:
-      cabinetAccessories:
-        description: 电柜配件物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      cabinetAccessoryTotal:
-        description: 电柜配件总数
-        type: integer
-      ebikeAccessories:
-        description: 电车配件物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      ebikeAccessoryTotal:
-        description: 电车配件总数
-        type: integer
-      ebikeTotal:
-        description: 电车总数
-        type: integer
-      ebikes:
-        description: 电车物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      nonSmartBatteries:
-        description: 非智能电池物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      nonSmartBatteryTotal:
-        description: 非智能电池总数
-        type: integer
-      otherAssetTotal:
-        description: 其他物资总数
-        type: integer
-      otherAssets:
-        description: 其他物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      smartBatteries:
-        description: 智能电池物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      smartBatteryTotal:
-        description: 智能电池总数
-        type: integer
-    type: object
   definition.WarestoreAssetRes:
     properties:
       city:
@@ -192,7 +192,7 @@ definitions:
         description: 城市
       detail:
         allOf:
-        - $ref: '#/definitions/definition.WarestoreAssetDetail'
+        - $ref: '#/definitions/definition.CommonAssetDetail'
         description: 资产
       id:
         description: ID

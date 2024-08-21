@@ -72,12 +72,14 @@ func (b *storeAssetBiz) Assets(req *definition.StoreAssetListReq) (res *model.Pa
 
 func (b *storeAssetBiz) AssetForStore(req *definition.StoreAssetListReq, id uint64) definition.StoreAsset {
 	astRes := definition.StoreAsset{
-		Ebikes:             make([]*definition.AssetMaterial, 0),
-		SmartBatteries:     make([]*definition.AssetMaterial, 0),
-		NonSmartBatteries:  make([]*definition.AssetMaterial, 0),
-		CabinetAccessories: make([]*definition.AssetMaterial, 0),
-		EbikeAccessories:   make([]*definition.AssetMaterial, 0),
-		OtherAssets:        make([]*definition.AssetMaterial, 0),
+		CommonAssetDetail: definition.CommonAssetDetail{
+			Ebikes:             make([]*definition.AssetMaterial, 0),
+			SmartBatteries:     make([]*definition.AssetMaterial, 0),
+			NonSmartBatteries:  make([]*definition.AssetMaterial, 0),
+			CabinetAccessories: make([]*definition.AssetMaterial, 0),
+			EbikeAccessories:   make([]*definition.AssetMaterial, 0),
+			OtherAssets:        make([]*definition.AssetMaterial, 0),
+		},
 	}
 	// 查询所属资产数据
 	q := ent.Database.Asset.QueryNotDeleted().

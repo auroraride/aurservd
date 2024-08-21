@@ -92,24 +92,8 @@ type WarestoreAssetsReq struct {
 
 // WarestoreAssetRes 资产信息
 type WarestoreAssetRes struct {
-	ID     uint64               `json:"id"`     // ID
-	Name   string               `json:"name"`   // 名称
-	City   model.City           `json:"city"`   // 城市
-	Detail WarestoreAssetDetail `json:"detail"` // 资产
-}
-
-// WarestoreAssetDetail 资产详情
-type WarestoreAssetDetail struct {
-	EbikeTotal            int              `json:"ebikeTotal"`            // 电车总数
-	Ebikes                []*AssetMaterial `json:"ebikes"`                // 电车物资详情
-	SmartBatteryTotal     int              `json:"smartBatteryTotal"`     // 智能电池总数
-	SmartBatteries        []*AssetMaterial `json:"smartBatteries"`        // 智能电池物资详情
-	NonSmartBatteryTotal  int              `json:"nonSmartBatteryTotal"`  // 非智能电池总数
-	NonSmartBatteries     []*AssetMaterial `json:"nonSmartBatteries"`     // 非智能电池物资详情
-	CabinetAccessoryTotal int              `json:"cabinetAccessoryTotal"` // 电柜配件总数
-	CabinetAccessories    []*AssetMaterial `json:"cabinetAccessories"`    // 电柜配件物资详情
-	EbikeAccessoryTotal   int              `json:"ebikeAccessoryTotal"`   // 电车配件总数
-	EbikeAccessories      []*AssetMaterial `json:"ebikeAccessories"`      // 电车配件物资详情
-	OtherAssetTotal       int              `json:"otherAssetTotal"`       // 其他物资总数
-	OtherAssets           []*AssetMaterial `json:"otherAssets"`           // 其他物资详情
+	ID     uint64            `json:"id"`     // ID
+	Name   string            `json:"name"`   // 名称
+	City   model.City        `json:"city"`   // 城市
+	Detail CommonAssetDetail `json:"detail"` // 资产
 }

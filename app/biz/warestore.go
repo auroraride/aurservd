@@ -284,27 +284,14 @@ func (b *warestoreBiz) assetsForWarehouse(amId uint64, req *definition.Warestore
 
 	for _, item := range whs {
 		// 查询仓库资产详情
-		_ = NewWarehouse().AssetForWarehouse(&definition.WareHouseAssetListReq{
+		detail := NewWarehouse().AssetForWarehouse(&definition.WareHouseAssetListReq{
 			CityID: req.CityID,
 		}, item.ID)
 
 		wa := &definition.WarestoreAssetRes{
 			ID:     item.ID,
 			Name:   item.Name,
-			Detail: definition.WarestoreAssetDetail{
-				// EbikeTotal:            detail.EbikeTotal,
-				// Ebikes:                detail.Ebikes,
-				// SmartBatteryTotal:     detail.SmartBatteryTotal,
-				// SmartBatteries:        detail.SmartBatteries,
-				// NonSmartBatteryTotal:  detail.NonSmartBatteryTotal,
-				// NonSmartBatteries:     detail.NonSmartBatteries,
-				// CabinetAccessoryTotal: detail.CabinetAccessoryTotal,
-				// CabinetAccessories:    detail.CabinetAccessories,
-				// EbikeAccessoryTotal:   detail.EbikeAccessoryTotal,
-				// EbikeAccessories:      detail.EbikeAccessories,
-				// OtherAssetTotal:       detail.OtherAssetTotal,
-				// OtherAssets:           detail.OtherAssets,
-			},
+			Detail: detail.CommonAssetDetail,
 		}
 		if item.Edges.City != nil {
 			wa.City = model.City{
@@ -346,27 +333,14 @@ func (b *warestoreBiz) assetsForStore(epId uint64, req *definition.WarestoreAsse
 
 	for _, item := range sts {
 		// 查询仓库资产详情
-		_ = NewStoreAsset().AssetForStore(&definition.StoreAssetListReq{
+		detail := NewStoreAsset().AssetForStore(&definition.StoreAssetListReq{
 			CityID: req.CityID,
 		}, item.ID)
 
 		wa := &definition.WarestoreAssetRes{
 			ID:     item.ID,
 			Name:   item.Name,
-			Detail: definition.WarestoreAssetDetail{
-				// EbikeTotal:            detail.EbikeTotal,
-				// Ebikes:                detail.Ebikes,
-				// SmartBatteryTotal:     detail.SmartBatteryTotal,
-				// SmartBatteries:        detail.SmartBatteries,
-				// NonSmartBatteryTotal:  detail.NonSmartBatteryTotal,
-				// NonSmartBatteries:     detail.NonSmartBatteries,
-				// CabinetAccessoryTotal: detail.CabinetAccessoryTotal,
-				// CabinetAccessories:    detail.CabinetAccessories,
-				// EbikeAccessoryTotal:   detail.EbikeAccessoryTotal,
-				// EbikeAccessories:      detail.EbikeAccessories,
-				// OtherAssetTotal:       detail.OtherAssetTotal,
-				// OtherAssets:           detail.OtherAssets,
-			},
+			Detail: detail.CommonAssetDetail,
 		}
 		if item.Edges.City != nil {
 			wa.City = model.City{

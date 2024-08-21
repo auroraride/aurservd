@@ -177,12 +177,14 @@ func (b *warehouseBiz) Assets(req *definition.WareHouseAssetListReq) (res *model
 // AssetForWarehouse 仓库物资数据
 func (b *warehouseBiz) AssetForWarehouse(req *definition.WareHouseAssetListReq, wId uint64) definition.WarehouseAsset {
 	astRes := definition.WarehouseAsset{
-		Ebikes:             make([]*definition.AssetMaterial, 0),
-		SmartBatteries:     make([]*definition.AssetMaterial, 0),
-		NonSmartBatteries:  make([]*definition.AssetMaterial, 0),
-		CabinetAccessories: make([]*definition.AssetMaterial, 0),
-		EbikeAccessories:   make([]*definition.AssetMaterial, 0),
-		OtherAssets:        make([]*definition.AssetMaterial, 0),
+		CommonAssetDetail: definition.CommonAssetDetail{
+			Ebikes:             make([]*definition.AssetMaterial, 0),
+			SmartBatteries:     make([]*definition.AssetMaterial, 0),
+			NonSmartBatteries:  make([]*definition.AssetMaterial, 0),
+			CabinetAccessories: make([]*definition.AssetMaterial, 0),
+			EbikeAccessories:   make([]*definition.AssetMaterial, 0),
+			OtherAssets:        make([]*definition.AssetMaterial, 0),
+		},
 	}
 	// 查询仓库所属资产数据
 	q := ent.Database.Asset.QueryNotDeleted().

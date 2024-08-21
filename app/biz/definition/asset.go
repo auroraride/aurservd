@@ -24,3 +24,19 @@ type AssetListReq struct {
 	SN         *string            `json:"sn" query:"sn"`                           // 编号(电池编号或车架号或车牌号)
 	Type       ReqType            `json:"type" query:"type" enums:"1,2"`           // 请求资产类型 1:电池 2:电车
 }
+
+// CommonAssetDetail 资产详情通用
+type CommonAssetDetail struct {
+	EbikeTotal            int              `json:"ebikeTotal"`            // 电车总数
+	Ebikes                []*AssetMaterial `json:"ebikes"`                // 电车物资详情
+	SmartBatteryTotal     int              `json:"smartBatteryTotal"`     // 智能电池总数
+	SmartBatteries        []*AssetMaterial `json:"smartBatteries"`        // 智能电池物资详情
+	NonSmartBatteryTotal  int              `json:"nonSmartBatteryTotal"`  // 非智能电池总数
+	NonSmartBatteries     []*AssetMaterial `json:"nonSmartBatteries"`     // 非智能电池物资详情
+	CabinetAccessoryTotal int              `json:"cabinetAccessoryTotal"` // 电柜配件总数
+	CabinetAccessories    []*AssetMaterial `json:"cabinetAccessories"`    // 电柜配件物资详情
+	EbikeAccessoryTotal   int              `json:"ebikeAccessoryTotal"`   // 电车配件总数
+	EbikeAccessories      []*AssetMaterial `json:"ebikeAccessories"`      // 电车配件物资详情
+	OtherAssetTotal       int              `json:"otherAssetTotal"`       // 其他物资总数
+	OtherAssets           []*AssetMaterial `json:"otherAssets"`           // 其他物资详情
+}
