@@ -12,11 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
@@ -100,7 +100,7 @@ type AssetTransferEdges struct {
 	// ToLocationWarehouse holds the value of the to_location_warehouse edge.
 	ToLocationWarehouse *Warehouse `json:"to_location_warehouse,omitempty"`
 	// OutOperateManager holds the value of the out_operate_manager edge.
-	OutOperateManager *Manager `json:"out_operate_manager,omitempty"`
+	OutOperateManager *AssetManager `json:"out_operate_manager,omitempty"`
 	// OutOperateStore holds the value of the out_operate_store edge.
 	OutOperateStore *Store `json:"out_operate_store,omitempty"`
 	// OutOperateAgent holds the value of the out_operate_agent edge.
@@ -259,11 +259,11 @@ func (e AssetTransferEdges) ToLocationWarehouseOrErr() (*Warehouse, error) {
 
 // OutOperateManagerOrErr returns the OutOperateManager value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AssetTransferEdges) OutOperateManagerOrErr() (*Manager, error) {
+func (e AssetTransferEdges) OutOperateManagerOrErr() (*AssetManager, error) {
 	if e.OutOperateManager != nil {
 		return e.OutOperateManager, nil
 	} else if e.loadedTypes[13] {
-		return nil, &NotFoundError{label: manager.Label}
+		return nil, &NotFoundError{label: assetmanager.Label}
 	}
 	return nil, &NotLoadedError{edge: "out_operate_manager"}
 }
@@ -560,7 +560,7 @@ func (at *AssetTransfer) QueryToLocationWarehouse() *WarehouseQuery {
 }
 
 // QueryOutOperateManager queries the "out_operate_manager" edge of the AssetTransfer entity.
-func (at *AssetTransfer) QueryOutOperateManager() *ManagerQuery {
+func (at *AssetTransfer) QueryOutOperateManager() *AssetManagerQuery {
 	return NewAssetTransferClient(at.config).QueryOutOperateManager(at)
 }
 

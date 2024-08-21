@@ -77,25 +77,25 @@ func (*assetCheck) Abnormal(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewAssetCheck().ListAbnormal(ctx.Request().Context(), req))
 }
 
-// Detail
-// @ID		AssetCheckDetail
-// @Router	/manager/v2/asset/check/{id} [GET]
-// @Summary	盘点明细
+// AssetDetailList
+// @ID		AssetCheckDetailList
+// @Router	/manager/v2/asset/check/asset/{id} [GET]
+// @Summary	盘点资产明细
 // @Tags	资产
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string												true	"管理员校验token"
 // @Param	id						path		uint64												true	"盘点ID"
-// @Param	query					query		model.AssetCheckDetailReq							true	"查询参数"
+// @Param	query					query		model.AssetCheckDetailListReq						true	"查询参数"
 // @Success	200						{object}	model.PaginationRes{items=[]model.AssetCheckDetail}	"请求成功"
-func (*assetCheck) Detail(c echo.Context) (err error) {
-	ctx, req := app.AssetManagerContextAndBinding[model.AssetCheckDetailReq](c)
-	return ctx.SendResponse(service.NewAssetCheck().Detail(ctx.Request().Context(), req))
+func (*assetCheck) AssetDetailList(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetCheckDetailListReq](c)
+	return ctx.SendResponse(service.NewAssetCheck().AssetDetailList(ctx.Request().Context(), req))
 }
 
 // AbnormalOperate
 // @ID		AssetCheckAbnormalOperate
-// @Router	/manager/v2/asset/check/abnormal/{id} [PUT]
+// @Router	/manager/v2/asset/check/abnormal/operate/{id} [PUT]
 // @Summary	盘点操作
 // @Tags	资产
 // @Accept	json
@@ -106,4 +106,19 @@ func (*assetCheck) Detail(c echo.Context) (err error) {
 func (*assetCheck) AbnormalOperate(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.AssetCheckAbnormalOperateReq](c)
 	return ctx.SendResponse(service.NewAssetCheck().AssetCheckAbnormalOperate(ctx.Request().Context(), req, ctx.Modifier))
+}
+
+// Detail
+// @ID		AssetCheckDetail
+// @Router	/manager/v2/asset/check/{id} [GET]
+// @Summary	盘点详情
+// @Tags	资产
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
+// @Param	id						path		uint64					true	"盘点ID"
+// @Success	200						{object}	model.AssetCheckListRes	"请求成功"
+func (*assetCheck) Detail(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
+	return ctx.SendResponse(service.NewAssetCheck().Detail(ctx.Request().Context(), req.ID))
 }

@@ -73,6 +73,9 @@ type AssetTransferCreateReq struct {
 	Details           []AssetTransferCreateDetail `json:"details"`                               // 资产调拨详情
 	Reason            string                      `json:"reason" validate:"required"`            // 调拨事由
 	AssetTransferType *AssetTransferType          `json:"assetTransferType" enums:"1,2,3,4,5,6"` // 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
+	OpratorID         uint64                      `json:"opratorId"`                             // 操作人ID
+	OpratorType       AssetOperateRoleType        `json:"opratorType"`                           // 操作人类型 1:资产后台(仓库) 2:门店 3:代理
+
 }
 
 // AssetTransferCreateDetail 资产调拨详情
@@ -205,11 +208,12 @@ type AssetTransferDetailListReq struct {
 
 // AssetTransferDetailListRes 资产出入库明细
 type AssetTransferDetailListRes struct {
-	CityName         string                   `json:"cityName"`      // 城市
-	AssetName        string                   `json:"assetName"`     // 物资名称
-	Out              *AssetTransferDetailList `json:"out,omitempty"` // 出库
-	In               AssetTransferDetailList  `json:"in"`            // 入库
-	TransferTypeName string                   `json:"transferType"`  // 调拨类型
+	CityName         string                   `json:"cityName"`         // 城市
+	AssetName        string                   `json:"assetName"`        // 物资名称
+	Out              *AssetTransferDetailList `json:"out,omitempty"`    // 出库
+	In               AssetTransferDetailList  `json:"in"`               // 入库
+	TransferTypeName string                   `json:"transferTypeName"` // 调拨类型名称
+	TransferType     AssetTransferType        `json:"transferType"`     // 调拨类型  1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
 }
 
 // AssetTransferDetailList 资产出入库明细
@@ -228,4 +232,9 @@ type AssetTransferModifyReq struct {
 	ToLocationID   *uint64             `json:"toLocationID"`                      // 调拨后位置ID
 	Reason         string              `json:"reason" validate:"required"`        // 调拨事由
 	Remark         *string             `json:"remark"`
+}
+
+type InitialTransferStatusRes struct {
+	AssetTransferStatus AssetTransferStatus `json:"assetTransferStatus"` // 调拨状态 1:配送中 2:已入库 3:已取消
+	IsIn                bool                `json:"isIn"`                // 是否入库 true:已入库 false:未入库
 }

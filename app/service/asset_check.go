@@ -377,18 +377,18 @@ func (s *assetCheckService) List(ctx context.Context, req *model.AssetCheckListR
 		)
 	}
 	if req.CheckResult != nil {
-		// 盘点结果 1:正常
-		if *req.CheckResult == model.AssetCheckResultNormal.Value() {
+		if *req.CheckResult {
 			q.Where(
 				func(selector *sql.Selector) {
 					selector.Where(
-						sql.ColumnsEQ(assetcheck.FieldBatteryNum, assetcheck.FieldBatteryNumReal).
-							ColumnsEQ(assetcheck.FieldEbikeNum, assetcheck.FieldEbikeNumReal),
+						sql.And(
+							sql.ColumnsEQ(assetcheck.FieldBatteryNum, assetcheck.FieldBatteryNumReal),
+							sql.ColumnsEQ(assetcheck.FieldEbikeNum, assetcheck.FieldEbikeNumReal),
+						),
 					)
 				},
 			)
 		} else {
-			// 盘点结果 2:异常
 			q.Where(
 				func(selector *sql.Selector) {
 					selector.Where(
@@ -407,69 +407,85 @@ func (s *assetCheckService) List(ctx context.Context, req *model.AssetCheckListR
 		q.Where(assetcheck.EndAtGTE(start), assetcheck.EndAtLTE(end))
 	}
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetCheck) *model.AssetCheckListRes {
-		var start, end string
-		if item.StartAt != nil {
-			start = item.StartAt.Format("2006-01-02 15:04:05")
-		}
-		if item.EndAt != nil {
-			end = item.EndAt.Format("2006-01-02 15:04:05")
-		}
-		opratorName := ""
-		switch model.AssetOperateRoleType(item.OperateType) {
-		case model.AssetOperateRoleTypeAgent:
-			opratorName = item.Edges.OperateAgent.Name
-		case model.AssetOperateRoleTypeStore:
-			opratorName = item.Edges.OperateStore.Name
-		case model.AssetOperateRoleTypeManager:
-			opratorName = item.Edges.OperateManager.Name
-		default:
-			opratorName = ""
-		}
-		locationsName := ""
-		switch model.AssetLocationsType(item.LocationsType) {
-		case model.AssetLocationsTypeStore:
-			locationsName = "[平台门店]-" + item.Edges.Store.Name
-		case model.AssetLocationsTypeStation:
-			locationsName = "[代理站点]-" + item.Edges.Station.Name
-		case model.AssetLocationsTypeWarehouse:
-			locationsName = "[平台仓库]-" + item.Edges.Warehouse.Name
-		default:
-			locationsName = ""
-		}
-
-		var checkResult bool
-		if item.BatteryNum == item.BatteryNumReal && item.EbikeNum == item.EbikeNumReal {
-			checkResult = true
-		} else {
-			checkResult = false
-		}
-
-		var status string
-		d, _ := item.QueryCheckDetails().Where(assetcheckdetails.ResultNEQ(model.AssetCheckResultNormal.Value())).All(context.Background())
-		if len(d) > 0 {
-			status = model.AssetCheckStatusPending.String()
-		} else {
-			status = model.AssetCheckStatusProcessed.String()
-		}
-
-		res := &model.AssetCheckListRes{
-			ID:             item.ID,
-			StartAt:        start,
-			EndAt:          end,
-			OpratorID:      item.OperateID,
-			OpratorName:    opratorName,
-			BatteryNum:     item.BatteryNum,
-			BatteryNumReal: item.BatteryNumReal,
-			EbikeNum:       item.EbikeNum,
-			EbikeNumReal:   item.EbikeNumReal,
-			LocationsID:    item.LocationsID,
-			LocationsType:  item.LocationsType,
-			LocationsName:  locationsName,
-			CheckResult:    checkResult,
-			Status:         status,
-		}
-		return res
+		return s.detail(item)
 	}), nil
+}
+
+// Detail 盘点明细
+func (s *assetCheckService) Detail(ctx context.Context, id uint64) (*model.AssetCheckListRes, error) {
+	item, _ := ent.Database.AssetCheck.QueryNotDeleted().Where(assetcheck.ID(id)).WithStore().WithStation().WithWarehouse().
+		WithOperateStore().WithOperateManager().WithOperateAgent().WithCheckDetails(func(query *ent.AssetCheckDetailsQuery) {
+		query.WithAsset()
+	}).First(ctx)
+	if item == nil {
+		return nil, errors.New("未找到对应的盘点记录")
+	}
+	return s.detail(item), nil
+}
+
+func (s *assetCheckService) detail(item *ent.AssetCheck) *model.AssetCheckListRes {
+	var start, end string
+	if item.StartAt != nil {
+		start = item.StartAt.Format("2006-01-02 15:04:05")
+	}
+	if item.EndAt != nil {
+		end = item.EndAt.Format("2006-01-02 15:04:05")
+	}
+	opratorName := ""
+	switch model.AssetOperateRoleType(item.OperateType) {
+	case model.AssetOperateRoleTypeAgent:
+		opratorName = item.Edges.OperateAgent.Name
+	case model.AssetOperateRoleTypeStore:
+		opratorName = item.Edges.OperateStore.Name
+	case model.AssetOperateRoleTypeManager:
+		opratorName = item.Edges.OperateManager.Name
+	default:
+		opratorName = ""
+	}
+	locationsName := ""
+	switch model.AssetLocationsType(item.LocationsType) {
+	case model.AssetLocationsTypeStore:
+		locationsName = "[平台门店]-" + item.Edges.Store.Name
+	case model.AssetLocationsTypeStation:
+		locationsName = "[代理站点]-" + item.Edges.Station.Name
+	case model.AssetLocationsTypeWarehouse:
+		locationsName = "[平台仓库]-" + item.Edges.Warehouse.Name
+	default:
+		locationsName = ""
+	}
+
+	var checkResult bool
+	if item.BatteryNum == item.BatteryNumReal && item.EbikeNum == item.EbikeNumReal {
+		checkResult = true
+	} else {
+		checkResult = false
+	}
+
+	var status string
+	d, _ := item.QueryCheckDetails().Where(assetcheckdetails.ResultNEQ(model.AssetCheckResultNormal.Value())).All(context.Background())
+	if len(d) > 0 {
+		status = model.AssetCheckStatusPending.String()
+	} else {
+		status = model.AssetCheckStatusProcessed.String()
+	}
+
+	res := &model.AssetCheckListRes{
+		ID:             item.ID,
+		StartAt:        start,
+		EndAt:          end,
+		OpratorID:      item.OperateID,
+		OpratorName:    opratorName,
+		BatteryNum:     item.BatteryNum,
+		BatteryNumReal: item.BatteryNumReal,
+		EbikeNum:       item.EbikeNum,
+		EbikeNumReal:   item.EbikeNumReal,
+		LocationsID:    item.LocationsID,
+		LocationsType:  item.LocationsType,
+		LocationsName:  locationsName,
+		CheckResult:    checkResult,
+		Status:         status,
+	}
+	return res
 }
 
 // ListAbnormal 查询盘点异常资产
@@ -564,6 +580,11 @@ func (s *assetCheckService) ListAbnormal(ctx context.Context, req *model.AssetCh
 			opratorAt = v.OperateAt.Format("2006-01-02 15:04:05")
 		}
 
+		var assetType model.AssetType
+		if v.Edges.Asset != nil {
+			assetType = model.AssetType(v.Edges.Asset.Type)
+		}
+
 		res = append(res, &model.AssetCheckAbnormal{
 			AssetID:           v.AssetID,
 			Name:              name,
@@ -576,14 +597,14 @@ func (s *assetCheckService) ListAbnormal(ctx context.Context, req *model.AssetCh
 			Status:            model.AssetCheckDetailsStatus(v.Status).String(),
 			OpratorName:       opratorName,
 			OpratorAt:         opratorAt,
-			AssetType:         model.AssetType(v.Edges.Asset.Type),
+			AssetType:         assetType,
 		})
 	}
 	return res, nil
 }
 
-// Detail 盘点明细列表
-func (s *assetCheckService) Detail(ctx context.Context, req *model.AssetCheckDetailReq) (*model.PaginationRes, error) {
+// AssetDetailList 盘点资产明细列表
+func (s *assetCheckService) AssetDetailList(ctx context.Context, req *model.AssetCheckDetailListReq) (*model.PaginationRes, error) {
 	q := ent.Database.AssetCheckDetails.QueryNotDeleted().
 		Where(
 			assetcheckdetails.CheckID(req.ID),
@@ -778,7 +799,7 @@ func (s *assetCheckService) AssetCheckAbnormalOperate(ctx context.Context, req *
 		err := NewAssetScrap().Scrap(ctx, &model.AssetScrapReq{
 			ScrapReasonType: model.ScrapReasonLost,
 			Remark:          silk.String("盘亏报废"),
-			Detail: []model.AssetScrapDetail{
+			Details: []model.AssetScrapDetails{
 				{
 					AssetType: model.AssetType(item.Edges.Asset.Type),
 					AssetID:   &item.AssetID,

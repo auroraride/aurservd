@@ -12,12 +12,12 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -44,7 +44,7 @@ type AssetTransferQuery struct {
 	withToLocationRider       *RiderQuery
 	withToLocationOperator    *MaintainerQuery
 	withToLocationWarehouse   *WarehouseQuery
-	withOutOperateManager     *ManagerQuery
+	withOutOperateManager     *AssetManagerQuery
 	withOutOperateStore       *StoreQuery
 	withOutOperateAgent       *AgentQuery
 	withOutOperateMaintainer  *MaintainerQuery
@@ -374,8 +374,8 @@ func (atq *AssetTransferQuery) QueryToLocationWarehouse() *WarehouseQuery {
 }
 
 // QueryOutOperateManager chains the current query on the "out_operate_manager" edge.
-func (atq *AssetTransferQuery) QueryOutOperateManager() *ManagerQuery {
-	query := (&ManagerClient{config: atq.config}).Query()
+func (atq *AssetTransferQuery) QueryOutOperateManager() *AssetManagerQuery {
+	query := (&AssetManagerClient{config: atq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := atq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -386,7 +386,7 @@ func (atq *AssetTransferQuery) QueryOutOperateManager() *ManagerQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, selector),
-			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateManagerTable, assettransfer.OutOperateManagerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
@@ -867,8 +867,8 @@ func (atq *AssetTransferQuery) WithToLocationWarehouse(opts ...func(*WarehouseQu
 
 // WithOutOperateManager tells the query-builder to eager-load the nodes that are connected to
 // the "out_operate_manager" edge. The optional arguments are used to configure the query builder of the edge.
-func (atq *AssetTransferQuery) WithOutOperateManager(opts ...func(*ManagerQuery)) *AssetTransferQuery {
-	query := (&ManagerClient{config: atq.config}).Query()
+func (atq *AssetTransferQuery) WithOutOperateManager(opts ...func(*AssetManagerQuery)) *AssetTransferQuery {
+	query := (&AssetManagerClient{config: atq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -1135,7 +1135,7 @@ func (atq *AssetTransferQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	}
 	if query := atq.withOutOperateManager; query != nil {
 		if err := atq.loadOutOperateManager(ctx, query, nodes, nil,
-			func(n *AssetTransfer, e *Manager) { n.Edges.OutOperateManager = e }); err != nil {
+			func(n *AssetTransfer, e *AssetManager) { n.Edges.OutOperateManager = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1568,7 +1568,7 @@ func (atq *AssetTransferQuery) loadToLocationWarehouse(ctx context.Context, quer
 	}
 	return nil
 }
-func (atq *AssetTransferQuery) loadOutOperateManager(ctx context.Context, query *ManagerQuery, nodes []*AssetTransfer, init func(*AssetTransfer), assign func(*AssetTransfer, *Manager)) error {
+func (atq *AssetTransferQuery) loadOutOperateManager(ctx context.Context, query *AssetManagerQuery, nodes []*AssetTransfer, init func(*AssetTransfer), assign func(*AssetTransfer, *AssetManager)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetTransfer)
 	for i := range nodes {
@@ -1584,7 +1584,7 @@ func (atq *AssetTransferQuery) loadOutOperateManager(ctx context.Context, query 
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(manager.IDIn(ids...))
+	query.Where(assetmanager.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err

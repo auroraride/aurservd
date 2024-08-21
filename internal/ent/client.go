@@ -4477,13 +4477,13 @@ func (c *AssetTransferClient) QueryToLocationWarehouse(at *AssetTransfer) *Wareh
 }
 
 // QueryOutOperateManager queries the out_operate_manager edge of a AssetTransfer.
-func (c *AssetTransferClient) QueryOutOperateManager(at *AssetTransfer) *ManagerQuery {
-	query := (&ManagerClient{config: c.config}).Query()
+func (c *AssetTransferClient) QueryOutOperateManager(at *AssetTransfer) *AssetManagerQuery {
+	query := (&AssetManagerClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := at.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
-			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateManagerTable, assettransfer.OutOperateManagerColumn),
 		)
 		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)

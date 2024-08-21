@@ -82,7 +82,7 @@ func (s *assetScrapService) ScrapList(ctx context.Context, req *model.AssetScrap
 			ScrapAt:     item.ScrapAt.Format(carbon.DateTimeLayout),
 		}
 
-		res.AssetScrapDetail = make([]model.AssetScrapDetailRes, 0)
+		res.AssetScrapDetails = make([]model.AssetScrapDetailRes, 0)
 		for _, v := range item.Edges.ScrapDetails {
 			if v.Edges.Asset != nil {
 				attributeValue, _ := v.Edges.Asset.QueryValues().WithAttribute().All(ctx)
@@ -132,7 +132,7 @@ func (s *assetScrapService) ScrapList(ctx context.Context, req *model.AssetScrap
 					}
 				}
 
-				res.AssetScrapDetail = append(res.AssetScrapDetail, model.AssetScrapDetailRes{
+				res.AssetScrapDetails = append(res.AssetScrapDetails, model.AssetScrapDetailRes{
 					AssetID:   v.AssetID,
 					SN:        sn,
 					Model:     modelStr,
@@ -264,7 +264,7 @@ func (s *assetScrapService) ScrapBatchRestore(ctx context.Context, req *model.As
 // Scrap 报废资产
 func (s *assetScrapService) Scrap(ctx context.Context, req *model.AssetScrapReq, modifier *model.Modifier) error {
 	var ids []uint64
-	for _, v := range req.Detail {
+	for _, v := range req.Details {
 		switch v.AssetType {
 		case model.AssetTypeEbike, model.AssetTypeSmartBattery:
 			assetId, err := s.scrapAssetWithSN(ctx, &v)
@@ -325,7 +325,7 @@ func (s *assetScrapService) Scrap(ctx context.Context, req *model.AssetScrapReq,
 }
 
 // 有编号资产报废
-func (s *assetScrapService) scrapAssetWithSN(ctx context.Context, req *model.AssetScrapDetail) ([]uint64, error) {
+func (s *assetScrapService) scrapAssetWithSN(ctx context.Context, req *model.AssetScrapDetails) ([]uint64, error) {
 	ids := make([]uint64, 0)
 	if req.AssetID == nil {
 		return nil, fmt.Errorf("资产ID不能为空")
@@ -351,7 +351,7 @@ func (s *assetScrapService) scrapAssetWithSN(ctx context.Context, req *model.Ass
 }
 
 // 无编号资产报废
-func (s *assetScrapService) scrapAssetWithoutSN(ctx context.Context, req *model.AssetScrapDetail, warehouseID *uint64) ([]uint64, error) {
+func (s *assetScrapService) scrapAssetWithoutSN(ctx context.Context, req *model.AssetScrapDetails, warehouseID *uint64) ([]uint64, error) {
 	ids := make([]uint64, 0)
 	if req.MaterialID == nil {
 		return nil, fmt.Errorf("物资分类ID不能为空")

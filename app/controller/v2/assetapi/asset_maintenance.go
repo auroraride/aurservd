@@ -19,9 +19,9 @@ var AssetMaintenance = new(assetMaintenance)
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
-// @Param	query					query		model.AssetMaintenanceListReq	true	"查询参数"
-// @Success	200						{object}	model.AssetMaintenanceListRes	"请求成功"
+// @Param	X-Asset-Manager-Token	header		string														true	"管理员校验token"
+// @Param	query					query		model.AssetMaintenanceListReq								true	"查询参数"
+// @Success	200						{object}	model.PaginationRes{items=[]model.AssetMaintenanceListRes}	"请求成功"
 func (*assetMaintenance) List(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.AssetMaintenanceListReq](c)
 	return ctx.SendResponse(service.NewAssetMaintenance().List(ctx.Request().Context(), req))

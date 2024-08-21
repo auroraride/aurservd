@@ -138,6 +138,7 @@ func (s *assetMaintenanceService) List(ctx context.Context, req *model.AssetMain
 			Reason:    item.Reason,
 			CreatedAt: item.CreatedAt.Format("2006-01-02 15:04:05"),
 			Status:    model.AssetMaintenanceStatus(item.Status).String(),
+			Content:   item.Content,
 		}
 		if item.Edges.Maintainer != nil {
 			res.OpratorName = item.Edges.Maintainer.Name

@@ -1274,6 +1274,9 @@ definitions:
       cabinetSn:
         description: 电柜编号
         type: string
+      content:
+        description: 维护内容
+        type: string
       createdAt:
         description: 维护时间
         type: string
@@ -1380,24 +1383,6 @@ definitions:
     required:
     - ids
     type: object
-  model.AssetScrapDetail:
-    properties:
-      assetId:
-        description: 资产ID
-        type: integer
-      assetType:
-        allOf:
-        - $ref: '#/definitions/model.AssetType'
-        description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-      materialId:
-        description: 其它物资分类ID
-        type: integer
-      num:
-        description: 报废数量
-        type: integer
-    required:
-    - assetType
-    type: object
   model.AssetScrapDetailRes:
     properties:
       assetID:
@@ -1427,9 +1412,27 @@ definitions:
         description: 资产编号
         type: string
     type: object
+  model.AssetScrapDetails:
+    properties:
+      assetId:
+        description: 资产ID
+        type: integer
+      assetType:
+        allOf:
+          - $ref: '#/definitions/model.AssetType'
+        description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+      materialId:
+        description: 其它物资分类ID
+        type: integer
+      num:
+        description: 报废数量
+        type: integer
+    required:
+      - assetType
+    type: object
   model.AssetScrapListRes:
     properties:
-      detail:
+      details:
         description: 报废明细
         items:
           $ref: '#/definitions/model.AssetScrapDetailRes'
@@ -1452,10 +1455,10 @@ definitions:
     type: object
   model.AssetScrapReq:
     properties:
-      detail:
+      details:
         description: 报废明细
         items:
-          $ref: '#/definitions/model.AssetScrapDetail'
+          $ref: '#/definitions/model.AssetScrapDetails'
         type: array
       remark:
         description: 备注
@@ -1468,7 +1471,7 @@ definitions:
         description: 仓库ID
         type: integer
     required:
-    - detail
+      - details
     - scrapReasonType
     type: object
   model.AssetStatus:
@@ -1537,6 +1540,13 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.AssetLocationsType'
         description: 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 (初始调拨此字段不填写)
+      opratorId:
+        description: 操作人ID
+        type: integer
+      opratorType:
+        allOf:
+          - $ref: '#/definitions/model.AssetOperateRoleType'
+        description: 操作人类型 1:资产后台(仓库) 2:门店 3:代理
       reason:
         description: 调拨事由
         type: string
@@ -1606,7 +1616,11 @@ definitions:
         - $ref: '#/definitions/model.AssetTransferDetailList'
         description: 出库
       transferType:
-        description: 调拨类型
+        allOf:
+          - $ref: '#/definitions/model.AssetTransferType'
+        description: 调拨类型  1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
+      transferTypeName:
+        description: 调拨类型名称
         type: string
     type: object
   model.AssetTransferDetailReq:
@@ -2462,10 +2476,10 @@ paths:
         name: X-Asset-Manager-Token
         required: true
         type: string
-      - description: 盘点结果 1:正常 2:异常
+      - description: 盘点结果 true:正常 false:异常
         in: query
         name: checkResult
-        type: integer
+        type: boolean
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
@@ -2481,7 +2495,6 @@ paths:
       - description: 位置ID
         in: query
         name: locationsId
-        required: true
         type: integer
       - description: 位置类型 1:仓库 2:门店 3:站点
         enum:
@@ -2493,7 +2506,6 @@ paths:
         - 6
         in: query
         name: locationsType
-        required: true
         type: integer
         x-enum-comments:
           AssetLocationsTypeCabinet: 电柜
@@ -2576,66 +2588,14 @@ paths:
         name: id
         required: true
         type: integer
-      - description: 资产类型 1:电车 2:智能电池
-        enum:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        in: query
-        name: assetType
-        type: integer
-        x-enum-comments:
-          AssetTypeCabinetAccessory: 电柜配件
-          AssetTypeEbike: 电车
-          AssetTypeEbikeAccessory: 电车配件
-          AssetTypeNonSmartBattery: 非智能电池
-          AssetTypeOtherAccessory: 其它配件
-          AssetTypeSmartBattery: 智能电池
-        x-enum-varnames:
-        - AssetTypeEbike
-        - AssetTypeSmartBattery
-        - AssetTypeNonSmartBattery
-        - AssetTypeCabinetAccessory
-        - AssetTypeEbikeAccessory
-        - AssetTypeOtherAccessory
-      - description: 属性 id:value
-        in: query
-        name: attribute
-        type: string
-      - description: 当前页, 从1开始, 默认1
-        in: query
-        name: current
-        type: integer
-      - description: 每页数据, 默认20
-        in: query
-        name: pageSize
-        type: integer
-      - description: 是否实际盘点 true:实际盘点 false:应盘点
-        in: query
-        name: realCheck
-        type: boolean
-      - description: 资产编号
-        in: query
-        name: sn
-        type: string
       produces:
       - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            allOf:
-            - $ref: '#/definitions/model.PaginationRes'
-            - properties:
-                items:
-                  items:
-                    $ref: '#/definitions/model.AssetCheckDetail'
-                  type: array
-              type: object
-      summary: 盘点明细
+            $ref: '#/definitions/model.AssetCheckListRes'
+      summary: 盘点详情
       tags:
       - 资产
   /manager/v2/asset/check/abnormal/{id}:
@@ -2671,6 +2631,7 @@ paths:
       summary: 盘点异常
       tags:
       - 资产
+  /manager/v2/asset/check/abnormal/operate/{id}:
     put:
       consumes:
       - application/json
@@ -2697,6 +2658,84 @@ paths:
       summary: 盘点操作
       tags:
       - 资产
+  /manager/v2/asset/check/asset/{id}:
+    get:
+      consumes:
+        - application/json
+      operationId: AssetCheckDetailList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Asset-Manager-Token
+          required: true
+          type: string
+        - description: 盘点ID
+          in: path
+          name: id
+          required: true
+          type: integer
+        - description: 资产类型 1:电车 2:智能电池
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+          in: query
+          name: assetType
+          type: integer
+          x-enum-comments:
+            AssetTypeCabinetAccessory: 电柜配件
+            AssetTypeEbike: 电车
+            AssetTypeEbikeAccessory: 电车配件
+            AssetTypeNonSmartBattery: 非智能电池
+            AssetTypeOtherAccessory: 其它配件
+            AssetTypeSmartBattery: 智能电池
+          x-enum-varnames:
+            - AssetTypeEbike
+            - AssetTypeSmartBattery
+            - AssetTypeNonSmartBattery
+            - AssetTypeCabinetAccessory
+            - AssetTypeEbikeAccessory
+            - AssetTypeOtherAccessory
+        - description: 属性 id:value
+          in: query
+          name: attribute
+          type: string
+        - description: 当前页, 从1开始, 默认1
+          in: query
+          name: current
+          type: integer
+        - description: 每页数据, 默认20
+          in: query
+          name: pageSize
+          type: integer
+        - description: 是否实际盘点 true:实际盘点 false:应盘点
+          in: query
+          name: realCheck
+          type: boolean
+        - description: 资产编号
+          in: query
+          name: sn
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+              - $ref: '#/definitions/model.PaginationRes'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/model.AssetCheckDetail'
+                    type: array
+                type: object
+      summary: 盘点资产明细
+      tags:
+        - 资产
   /manager/v2/asset/check/sn/{sn}:
     get:
       consumes:
@@ -3061,7 +3100,14 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.AssetMaintenanceListRes'
+            allOf:
+              - $ref: '#/definitions/model.PaginationRes'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/model.AssetMaintenanceListRes'
+                    type: array
+                type: object
       summary: 维修记录列表
       tags:
       - 资产

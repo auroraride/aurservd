@@ -95,8 +95,8 @@ type AssetCheckCreateDetail struct {
 	AssetType AssetType `json:"assetType" validate:"required"` // 资产类型 1:电车 2:智能电池
 }
 
-// AssetCheckDetailReq 资产盘点请求详情
-type AssetCheckDetailReq struct {
+// AssetCheckDetailListReq 资产盘点请求详情
+type AssetCheckDetailListReq struct {
 	PaginationReq
 	ID        uint64    `json:"id" validate:"required" param:"id"` // 盘点ID
 	AssetType AssetType `json:"assetType" query:"assetType"`       // 资产类型 1:电车 2:智能电池
@@ -108,12 +108,12 @@ type AssetCheckDetailReq struct {
 // AssetCheckListReq 获取资产盘点请求
 type AssetCheckListReq struct {
 	PaginationReq
-	LocationsID   *uint64             `json:"locationsId" validate:"required" query:"locationsId"`     // 位置ID
-	LocationsType *AssetLocationsType `json:"locationsType" validate:"required" query:"locationsType"` // 位置类型 1:仓库 2:门店 3:站点
-	Keyword       *string             `json:"keyword" query:"keyword"`                                 // 关键字
-	StartAt       *string             `json:"startAt" query:"startAt"`                                 // 开始时间
-	EndAt         *string             `json:"endAt" query:"endAt"`                                     // 结束时间
-	CheckResult   *uint8              `json:"checkResult" query:"checkResult"`                         // 盘点结果 1:正常 2:异常
+	LocationsID   *uint64             `json:"locationsId" query:"locationsId"`     // 位置ID
+	LocationsType *AssetLocationsType `json:"locationsType" query:"locationsType"` // 位置类型 1:仓库 2:门店 3:站点
+	Keyword       *string             `json:"keyword" query:"keyword"`             // 关键字
+	StartAt       *string             `json:"startAt" query:"startAt"`             // 开始时间
+	EndAt         *string             `json:"endAt" query:"endAt"`                 // 结束时间
+	CheckResult   *bool               `json:"checkResult" query:"checkResult"`     // 盘点结果 true:正常 false:异常
 }
 
 // AssetCheckListRes 获取资产盘点返回

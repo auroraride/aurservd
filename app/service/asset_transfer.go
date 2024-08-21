@@ -43,8 +43,8 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 	}
 
 	var assetIDs []uint64
-	var transferStatus model.AssetTransferStatus
 	var newTime = time.Now()
+	bulk := make([]*ent.AssetTransferDetailsCreate, 0, len(assetIDs))
 	// 创建调拨记录
 	q := s.orm.Create()
 	// 已经入库资产调拨
@@ -57,40 +57,50 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 			SetFromLocationID(*req.FromLocationID).
 			SetStatus(model.AssetTransferStatusDelivering.Value()).
 			SetOutTimeAt(newTime).
-			SetOutOperateID(modifier.ID).
-			SetOutOperateType(model.AssetOperateRoleTypeManager.Value()).
+			SetOutOperateID(req.OpratorID).
+			SetOutOperateType(req.OpratorType.Value()).
 			SetOutNum(uint(len(assetIDs)))
 		if req.AssetTransferType != nil {
 			q.SetType(req.AssetTransferType.Value())
 		}
+		for _, id := range assetIDs {
+			d := ent.Database.AssetTransferDetails.Create().
+				SetAssetID(id).
+				SetCreator(modifier).
+				SetLastModifier(modifier).
+				SetRemark(req.OpratorType.String() + "调拨")
+			bulk = append(bulk, d)
+		}
 	}
 	// 初始调拨
 	if req.FromLocationType == nil {
-		assetIDs, transferStatus, failed = s.initialTransfer(ctx, req, modifier)
+		var transferStatusRes model.InitialTransferStatusRes
+		assetIDs, transferStatusRes, failed = s.initialTransfer(ctx, req, modifier)
 		if len(failed) > 0 {
 			return failed, nil
 		}
 		q.SetInNum(uint(len(assetIDs))).
-			SetStatus(transferStatus.Value()).
+			SetStatus(transferStatusRes.AssetTransferStatus.Value()).
 			SetType(model.AssetTransferTypeInitial.Value()).
 			SetRemark("后台初始调拨")
+		for _, id := range assetIDs {
+			d := ent.Database.AssetTransferDetails.Create().
+				SetAssetID(id).
+				SetCreator(modifier).
+				SetLastModifier(modifier)
+			if req.FromLocationType == nil {
+				if transferStatusRes.IsIn {
+					d.SetInTimeAt(newTime).
+						SetInOperateID(modifier.ID).
+						SetInOperateType(model.AssetOperateRoleTypeManager.Value())
+				}
+				d.SetIsIn(transferStatusRes.IsIn).
+					SetRemark("后台初始调拨")
+			}
+			bulk = append(bulk, d)
+		}
 	}
 
-	bulk := make([]*ent.AssetTransferDetailsCreate, 0, len(assetIDs))
-	for _, id := range assetIDs {
-		d := ent.Database.AssetTransferDetails.Create().
-			SetAssetID(id).
-			SetCreator(modifier).
-			SetLastModifier(modifier)
-		if req.FromLocationType == nil {
-			d.SetInTimeAt(newTime).
-				SetInOperateID(modifier.ID).
-				SetInOperateType(model.AssetOperateRoleTypeManager.Value()).
-				SetIsIn(true).
-				SetRemark("后台初始调拨")
-		}
-		bulk = append(bulk, d)
-	}
 	details, _ := ent.Database.AssetTransferDetails.CreateBulk(bulk...).Save(ctx)
 	if len(details) == 0 {
 		return nil, errors.New("调拨失败")
@@ -293,8 +303,9 @@ func (s *assetTransferService) stockTransfer(ctx context.Context, req *model.Ass
 }
 
 // 初始调拨
-func (s *assetTransferService) initialTransfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (assetIDs []uint64, transferStatus model.AssetTransferStatus, failed []string) {
+func (s *assetTransferService) initialTransfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (assetIDs []uint64, status model.InitialTransferStatusRes, failed []string) {
 	var err error
+	resStatus := model.InitialTransferStatusRes{}
 	// 创建物资
 	for _, v := range req.Details {
 		var iDs []uint64
@@ -305,20 +316,22 @@ func (s *assetTransferService) initialTransfer(ctx context.Context, req *model.A
 				failed = append(failed, err.Error())
 				continue
 			}
-			transferStatus = model.AssetTransferStatusStock
+			resStatus.AssetTransferStatus = model.AssetTransferStatusStock
+			resStatus.IsIn = true
 		case model.AssetTypeEbike, model.AssetTypeSmartBattery:
 			iDs, err = s.initialTransferWithSN(ctx, v, req.ToLocationID, req.ToLocationType, modifier)
 			if err != nil {
 				failed = append(failed, err.Error())
 				continue
 			}
-			transferStatus = model.AssetTransferStatusDelivering
+			resStatus.AssetTransferStatus = model.AssetTransferStatusDelivering
+			resStatus.IsIn = false
 		default:
 			failed = append(failed, v.AssetType.String()+"物资类型不合法,已跳过")
 		}
 		assetIDs = append(assetIDs, iDs...)
 	}
-	return assetIDs, transferStatus, failed
+	return assetIDs, resStatus, failed
 }
 
 // initialTransferWithoutSN 无编号资产初始化调拨
@@ -373,7 +386,7 @@ func (s *assetTransferService) initialTransferWithSN(ctx context.Context, req mo
 	}
 	// 修改状态
 	_, err = ent.Database.Asset.Update().Where(asset.ID(item.ID)).
-		SetStatus(model.AssetStatusStock.Value()).
+		SetStatus(model.AssetStatusDelivering.Value()).
 		SetLocationsType(toLocationType.Value()).
 		SetLocationsID(toLocationID).
 		SetLastModifier(modifier).
@@ -834,7 +847,7 @@ func (s *assetTransferService) receiveAssetWithSN(ctx context.Context, req model
 	if req.SN == nil || *req.SN == "" {
 		return nil, nil, errors.New("资产编号不能为空")
 	}
-	item, _ := ent.Database.AssetTransferDetails.QueryNotDeleted().
+	item, _ := ent.Database.AssetTransferDetails.QueryNotDeleted().WithAsset().
 		Where(
 			assettransferdetails.TransferID(assetTransferID),
 			assettransferdetails.IsIn(false),
@@ -861,7 +874,7 @@ func (s *assetTransferService) receiveAssetWithoutSN(ctx context.Context, req mo
 	if req.Num == nil {
 		return nil, nil, errors.New("接收数量不能为空")
 	}
-	list, _ := ent.Database.AssetTransferDetails.QueryNotDeleted().
+	list, _ := ent.Database.AssetTransferDetails.QueryNotDeleted().WithAsset().
 		Where(
 			assettransferdetails.IsIn(false),
 			assettransferdetails.TransferID(assetTransferID),
@@ -1227,7 +1240,9 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 			// 其它物资类型有很多记录 所以只取第一条
 			details := item.Edges.TransferDetails[0]
 			if details != nil {
-				inTimeAt = details.InTimeAt.Format("2006-01-02 15:04:05")
+				if details.InTimeAt != nil {
+					inTimeAt = details.InTimeAt.Format("2006-01-02 15:04:05")
+				}
 				switch model.AssetOperateRoleType(details.InOperateType) {
 				case model.AssetOperateRoleTypeManager:
 					if details.Edges.InOperateManager != nil {
@@ -1383,6 +1398,7 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 			AssetName:        assetName,
 			In:               in,
 			TransferTypeName: model.AssetTransferType(item.Type).String(),
+			TransferType:     model.AssetTransferType(item.Type),
 		}
 		if fromLocationName != "" && fromOperateName != "" {
 			res.Out = &model.AssetTransferDetailList{

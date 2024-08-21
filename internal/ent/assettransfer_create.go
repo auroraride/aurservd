@@ -13,12 +13,12 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
@@ -517,13 +517,13 @@ func (atc *AssetTransferCreate) SetToLocationWarehouse(w *Warehouse) *AssetTrans
 	return atc.SetToLocationWarehouseID(w.ID)
 }
 
-// SetOutOperateManagerID sets the "out_operate_manager" edge to the Manager entity by ID.
+// SetOutOperateManagerID sets the "out_operate_manager" edge to the AssetManager entity by ID.
 func (atc *AssetTransferCreate) SetOutOperateManagerID(id uint64) *AssetTransferCreate {
 	atc.mutation.SetOutOperateManagerID(id)
 	return atc
 }
 
-// SetNillableOutOperateManagerID sets the "out_operate_manager" edge to the Manager entity by ID if the given value is not nil.
+// SetNillableOutOperateManagerID sets the "out_operate_manager" edge to the AssetManager entity by ID if the given value is not nil.
 func (atc *AssetTransferCreate) SetNillableOutOperateManagerID(id *uint64) *AssetTransferCreate {
 	if id != nil {
 		atc = atc.SetOutOperateManagerID(*id)
@@ -531,9 +531,9 @@ func (atc *AssetTransferCreate) SetNillableOutOperateManagerID(id *uint64) *Asse
 	return atc
 }
 
-// SetOutOperateManager sets the "out_operate_manager" edge to the Manager entity.
-func (atc *AssetTransferCreate) SetOutOperateManager(m *Manager) *AssetTransferCreate {
-	return atc.SetOutOperateManagerID(m.ID)
+// SetOutOperateManager sets the "out_operate_manager" edge to the AssetManager entity.
+func (atc *AssetTransferCreate) SetOutOperateManager(a *AssetManager) *AssetTransferCreate {
+	return atc.SetOutOperateManagerID(a.ID)
 }
 
 // SetOutOperateStoreID sets the "out_operate_store" edge to the Store entity by ID.
@@ -1022,7 +1022,7 @@ func (atc *AssetTransferCreate) createSpec() (*AssetTransfer, *sqlgraph.CreateSp
 			Columns: []string{assettransfer.OutOperateManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

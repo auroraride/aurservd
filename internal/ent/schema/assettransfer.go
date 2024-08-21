@@ -94,7 +94,7 @@ func (AssetTransfer) Edges() []ent.Edge {
 		edge.To("to_location_operator", Maintainer.Type).Unique().Field("to_location_id"),       // 关联运维
 		edge.To("to_location_warehouse", Warehouse.Type).Unique().Field("to_location_id"),       // 关联仓库
 		// 出库关联操作人员
-		edge.To("out_operate_manager", Manager.Type).Unique().Field("out_operate_id"),       // 资产后台
+		edge.To("out_operate_manager", AssetManager.Type).Unique().Field("out_operate_id"),  // 资产后台
 		edge.To("out_operate_store", Store.Type).Unique().Field("out_operate_id"),           // 门店
 		edge.To("out_operate_agent", Agent.Type).Unique().Field("out_operate_id"),           // 代理
 		edge.To("out_operate_maintainer", Maintainer.Type).Unique().Field("out_operate_id"), // 运维

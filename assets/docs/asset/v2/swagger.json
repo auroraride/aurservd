@@ -504,8 +504,8 @@
                         "required": true
                     },
                     {
-                        "type": "integer",
-                        "description": "盘点结果 1:正常 2:异常",
+                      "type": "boolean",
+                      "description": "盘点结果 true:正常 false:异常",
                         "name": "checkResult",
                         "in": "query"
                     },
@@ -531,8 +531,7 @@
                         "type": "integer",
                         "description": "位置ID",
                         "name": "locationsId",
-                        "in": "query",
-                        "required": true
+                      "in": "query"
                     },
                     {
                         "enum": [
@@ -562,8 +561,7 @@
                         ],
                         "description": "位置类型 1:仓库 2:门店 3:站点",
                         "name": "locationsType",
-                        "in": "query",
-                        "required": true
+                      "in": "query"
                     },
                     {
                         "type": "integer",
@@ -642,59 +640,7 @@
                 }
             }
         },
-        "/manager/v2/asset/check/abnormal/{id}": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产"
-                ],
-                "summary": "盘点异常",
-                "operationId": "AssetCheckAbnormal",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Asset-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "盘点ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/model.PaginationRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.AssetCheckAbnormal"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
+      "/manager/v2/asset/check/abnormal/operate/{id}": {
             "put": {
                 "consumes": [
                     "application/json"
@@ -735,7 +681,7 @@
                 }
             }
         },
-        "/manager/v2/asset/check/sn/{sn}": {
+      "/manager/v2/asset/check/abnormal/{id}": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -746,8 +692,8 @@
                 "tags": [
                     "资产"
                 ],
-                "summary": "通过SN查询资产",
-                "operationId": "AssetCheckGetAssetBySN",
+              "summary": "盘点异常",
+              "operationId": "AssetCheckAbnormal",
                 "parameters": [
                     {
                         "type": "string",
@@ -757,9 +703,9 @@
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "资产SN",
-                        "name": "sn",
+                      "type": "integer",
+                      "description": "盘点ID",
+                      "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -768,13 +714,28 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.AssetCheckByAssetSnRes"
+                          "allOf": [
+                            {
+                              "$ref": "#/definitions/model.PaginationRes"
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "items": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/definitions/model.AssetCheckAbnormal"
+                                  }
+                                }
+                              }
+                            }
+                          ]
                         }
                     }
                 }
             }
         },
-        "/manager/v2/asset/check/{id}": {
+      "/manager/v2/asset/check/asset/{id}": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -785,8 +746,8 @@
                 "tags": [
                     "资产"
                 ],
-                "summary": "盘点明细",
-                "operationId": "AssetCheckDetail",
+              "summary": "盘点资产明细",
+              "operationId": "AssetCheckDetailList",
                 "parameters": [
                     {
                         "type": "string",
@@ -888,6 +849,84 @@
                 }
             }
         },
+      "/manager/v2/asset/check/sn/{sn}": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "资产"
+          ],
+          "summary": "通过SN查询资产",
+          "operationId": "AssetCheckGetAssetBySN",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "管理员校验token",
+              "name": "X-Asset-Manager-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "string",
+              "description": "资产SN",
+              "name": "sn",
+              "in": "path",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/model.AssetCheckByAssetSnRes"
+              }
+            }
+          }
+        }
+      },
+      "/manager/v2/asset/check/{id}": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "资产"
+          ],
+          "summary": "盘点详情",
+          "operationId": "AssetCheckDetail",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "管理员校验token",
+              "name": "X-Asset-Manager-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "integer",
+              "description": "盘点ID",
+              "name": "id",
+              "in": "path",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/model.AssetCheckListRes"
+              }
+            }
+          }
+        }
+      },
         "/manager/v2/asset/count": {
             "get": {
                 "consumes": [
@@ -1384,7 +1423,22 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.AssetMaintenanceListRes"
+                          "allOf": [
+                            {
+                              "$ref": "#/definitions/model.PaginationRes"
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "items": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/definitions/model.AssetMaintenanceListRes"
+                                  }
+                                }
+                              }
+                            }
+                          ]
                         }
                     }
                 }
@@ -5808,6 +5862,10 @@
                     "description": "电柜编号",
                     "type": "string"
                 },
+              "content": {
+                "description": "维护内容",
+                "type": "string"
+                },
                 "createdAt": {
                     "description": "维护时间",
                     "type": "string"
@@ -5949,34 +6007,6 @@
                 }
             }
         },
-        "model.AssetScrapDetail": {
-            "type": "object",
-            "required": [
-                "assetType"
-            ],
-            "properties": {
-                "assetId": {
-                    "description": "资产ID",
-                    "type": "integer"
-                },
-                "assetType": {
-                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.AssetType"
-                        }
-                    ]
-                },
-                "materialId": {
-                    "description": "其它物资分类ID",
-                    "type": "integer"
-                },
-                "num": {
-                    "description": "报废数量",
-                    "type": "integer"
-                }
-            }
-        },
         "model.AssetScrapDetailRes": {
             "type": "object",
             "properties": {
@@ -6017,10 +6047,38 @@
                 }
             }
         },
+      "model.AssetScrapDetails": {
+        "type": "object",
+        "required": [
+          "assetType"
+        ],
+        "properties": {
+          "assetId": {
+            "description": "资产ID",
+            "type": "integer"
+          },
+          "assetType": {
+            "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+            "allOf": [
+              {
+                "$ref": "#/definitions/model.AssetType"
+              }
+            ]
+          },
+          "materialId": {
+            "description": "其它物资分类ID",
+            "type": "integer"
+          },
+          "num": {
+            "description": "报废数量",
+            "type": "integer"
+          }
+        }
+      },
         "model.AssetScrapListRes": {
             "type": "object",
             "properties": {
-                "detail": {
+              "details": {
                     "description": "报废明细",
                     "type": "array",
                     "items": {
@@ -6052,15 +6110,15 @@
         "model.AssetScrapReq": {
             "type": "object",
             "required": [
-                "detail",
+              "details",
                 "scrapReasonType"
             ],
             "properties": {
-                "detail": {
+              "details": {
                     "description": "报废明细",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.AssetScrapDetail"
+                      "$ref": "#/definitions/model.AssetScrapDetails"
                     }
                 },
                 "remark": {
@@ -6179,6 +6237,18 @@
                         }
                     ]
                 },
+              "opratorId": {
+                "description": "操作人ID",
+                "type": "integer"
+              },
+              "opratorType": {
+                "description": "操作人类型 1:资产后台(仓库) 2:门店 3:代理",
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/model.AssetOperateRoleType"
+                  }
+                ]
+              },
                 "reason": {
                     "description": "调拨事由",
                     "type": "string"
@@ -6279,7 +6349,15 @@
                     ]
                 },
                 "transferType": {
-                    "description": "调拨类型",
+                  "description": "调拨类型  1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/model.AssetTransferType"
+                    }
+                  ]
+                },
+              "transferTypeName": {
+                "description": "调拨类型名称",
                     "type": "string"
                 }
             }

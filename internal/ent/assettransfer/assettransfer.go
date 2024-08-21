@@ -186,9 +186,9 @@ const (
 	ToLocationWarehouseColumn = "to_location_id"
 	// OutOperateManagerTable is the table that holds the out_operate_manager relation/edge.
 	OutOperateManagerTable = "asset_transfer"
-	// OutOperateManagerInverseTable is the table name for the Manager entity.
-	// It exists in this package in order to avoid circular dependency with the "manager" package.
-	OutOperateManagerInverseTable = "manager"
+	// OutOperateManagerInverseTable is the table name for the AssetManager entity.
+	// It exists in this package in order to avoid circular dependency with the "assetmanager" package.
+	OutOperateManagerInverseTable = "asset_manager"
 	// OutOperateManagerColumn is the table column denoting the out_operate_manager relation/edge.
 	OutOperateManagerColumn = "out_operate_id"
 	// OutOperateStoreTable is the table that holds the out_operate_store relation/edge.

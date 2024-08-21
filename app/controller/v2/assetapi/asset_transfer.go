@@ -24,6 +24,8 @@ var AssetTransfer = new(assetTransfer)
 // @Success	200						{object}	model.StatusResponse			"请求成功"
 func (*assetTransfer) Transfer(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.AssetTransferCreateReq](c)
+	req.OpratorType = model.AssetOperateRoleTypeManager
+	req.OpratorID = ctx.Modifier.ID
 	return ctx.SendResponse(service.NewAssetTransfer().Transfer(ctx.Request().Context(), req, ctx.Modifier))
 }
 
