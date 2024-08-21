@@ -135,7 +135,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "$ref": "#/definitions/definition.AssetCheckCreateRes"
                         }
                     }
                 }
@@ -168,6 +168,45 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.AssetCheckByAssetSnRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/check/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资产盘点 - AssetCheck"
+                ],
+                "summary": "盘点详情",
+                "operationId": "AssetCheckDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "盘点ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetCheckListRes"
                         }
                     }
                 }
@@ -656,6 +695,15 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.AssetCheckCreateRes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "资产盘点ID",
+                    "type": "integer"
+                }
+            }
+        },
         "definition.AssetCountDetail": {
             "type": "object",
             "properties": {
@@ -1117,6 +1165,67 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.AssetType"
                         }
                     ]
+                }
+            }
+        },
+        "model.AssetCheckListRes": {
+            "type": "object",
+            "properties": {
+                "batteryNum": {
+                    "description": "应盘点电池数量",
+                    "type": "integer"
+                },
+                "batteryNumReal": {
+                    "description": "实盘电池数量",
+                    "type": "integer"
+                },
+                "checkResult": {
+                    "description": "盘点结果 true:正常 false:异常",
+                    "type": "boolean"
+                },
+                "ebikeNum": {
+                    "description": "应盘点电车数量",
+                    "type": "integer"
+                },
+                "ebikeNumReal": {
+                    "description": "实盘电车数量",
+                    "type": "integer"
+                },
+                "endAt": {
+                    "description": "盘点结束时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "盘点ID",
+                    "type": "integer"
+                },
+                "locationsId": {
+                    "description": "位置ID",
+                    "type": "integer"
+                },
+                "locationsName": {
+                    "description": "位置名称",
+                    "type": "string"
+                },
+                "locationsType": {
+                    "description": "位置类型",
+                    "type": "integer"
+                },
+                "opratorId": {
+                    "description": "操作人ID",
+                    "type": "integer"
+                },
+                "opratorName": {
+                    "description": "操作人名称",
+                    "type": "string"
+                },
+                "startAt": {
+                    "description": "盘点开始时间",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态 1:待处理 2:已处理",
+                    "type": "string"
                 }
             }
         },

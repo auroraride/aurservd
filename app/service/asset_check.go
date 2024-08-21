@@ -35,7 +35,7 @@ func NewAssetCheck() *assetCheckService {
 }
 
 // CreateAssetCheck 创建资产盘点
-func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.AssetCheckCreateReq, modifier *model.Modifier) error {
+func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.AssetCheckCreateReq, modifier *model.Modifier) (cID uint64, err error) {
 	// 应盘资产
 	var assetIDs []uint64
 	// 查询应盘电车资产
@@ -47,7 +47,7 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 		AssetType:     model.AssetTypeEbike,
 	})
 	if err != nil {
-		return err
+		return
 	}
 	bulk := make([]*ent.AssetCheckDetailsCreate, 0)
 	for _, v := range allEbike {
@@ -69,7 +69,7 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 		AssetType:     model.AssetTypeSmartBattery,
 	})
 	if err != nil {
-		return err
+		return
 	}
 	for _, v := range allBattery {
 		bulk = append(bulk, ent.Database.AssetCheckDetails.Create().
@@ -94,7 +94,7 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 			LocationsID:   req.LocationsID,
 		})
 		if err != nil {
-			return err
+			return
 		}
 		// 获取实际盘点数量
 		if v.AssetType == model.AssetTypeEbike {
@@ -106,7 +106,7 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 	}
 	b, err := ent.Database.AssetCheckDetails.CreateBulk(bulk...).Save(ctx)
 	if err != nil {
-		return err
+		return
 	}
 
 	start := tools.NewTime().ParseDateStringX(req.StartAt)
@@ -128,7 +128,7 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 		AddCheckDetails(b...).
 		Save(ctx)
 	if err != nil {
-		return err
+		return
 	}
 	// 多出来的资产ID 和 未盘点的资产ID
 	missingIDs, extraIDs := s.findMissingAndExtraIDs(assetIDs, realAssetIDs)
@@ -142,7 +142,7 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 		SetRealLocationsType(req.LocationsType.Value()).
 		Save(ctx)
 	if err != nil {
-		return err
+		return
 	}
 	_, err = ent.Database.AssetCheckDetails.Update().
 		Where(
@@ -152,7 +152,7 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 		SetResult(model.AssetCheckResultSurplus.Value()).
 		Save(ctx)
 	if err != nil {
-		return err
+		return
 	}
 	// 其余为正常
 	_, err = ent.Database.AssetCheckDetails.Update().
@@ -163,9 +163,9 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 		SetResult(model.AssetCheckResultNormal.Value()).
 		Save(ctx)
 	if err != nil {
-		return err
+		return
 	}
-	return nil
+	return c.ID, nil
 }
 
 func (s *assetCheckService) findMissingAndExtraIDs(assetIDs []uint64, realAssetIDs []uint64) ([]uint64, []uint64) {

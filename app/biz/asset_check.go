@@ -46,7 +46,7 @@ func (b *assetCheckBiz) GetAssetBySN(am *ent.AssetManager, ep *ent.Employee, req
 }
 
 // Create 创建资产盘点
-func (b *assetCheckBiz) Create(am *ent.AssetManager, ep *ent.Employee, req *definition.AssetCheckCreateReq) error {
+func (b *assetCheckBiz) Create(am *ent.AssetManager, ep *ent.Employee, req *definition.AssetCheckCreateReq) (res *definition.AssetCheckCreateRes, err error) {
 	var md model.Modifier
 
 	newReq := model.AssetCheckCreateReq{
@@ -82,5 +82,11 @@ func (b *assetCheckBiz) Create(am *ent.AssetManager, ep *ent.Employee, req *defi
 			Phone: ep.Phone,
 		}
 	}
-	return service.NewAssetCheck().CreateAssetCheck(b.ctx, &newReq, &md)
+
+	cId, err := service.NewAssetCheck().CreateAssetCheck(b.ctx, &newReq, &md)
+	if err != nil {
+		return nil, err
+	}
+
+	return &definition.AssetCheckCreateRes{ID: cId}, nil
 }

@@ -1183,12 +1183,12 @@ definitions:
         type: string
       status:
         allOf:
-          - $ref: '#/definitions/model.AssetMaintenanceStatus'
+        - $ref: '#/definitions/model.AssetMaintenanceStatus'
         description: 维修状态1:维修中 2:已维修 3:维修失败 4:已取消
     required:
-      - content
-      - reason
-      - status
+    - content
+    - reason
+    - status
     type: object
   model.AssetMaintenanceStatus:
     enum:
@@ -1273,7 +1273,7 @@ definitions:
     properties:
       assetType:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
       materialId:
         description: 其它物资分类ID
@@ -1285,7 +1285,7 @@ definitions:
         description: 资产Sn
         type: string
     required:
-      - assetType
+    - assetType
     type: object
   model.AssetScrapListRes:
     properties:

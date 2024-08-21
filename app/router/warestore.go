@@ -34,7 +34,8 @@ func loadWarestoreRoutes() {
 	auth.GET("/assets", wapi.Warestore.Assets) // 资产数据
 
 	// 盘点
-	auth.POST("/check", wapi.AssetCheck.Create)             // 创建资产盘点
 	auth.GET("/check/sn/:sn", wapi.AssetCheck.GetAssetBySN) // 通过SN查询资产
+	auth.POST("/check", wapi.AssetCheck.Create)             // 创建资产盘点
+	auth.GET("/check/:id", wapi.AssetCheck.Detail)          // 盘点详情
 
 }
