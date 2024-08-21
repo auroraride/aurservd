@@ -66,9 +66,9 @@ const (
 	TransferColumn = "transfer_id"
 	// InOperateManagerTable is the table that holds the in_operate_manager relation/edge.
 	InOperateManagerTable = "asset_transfer_details"
-	// InOperateManagerInverseTable is the table name for the Manager entity.
-	// It exists in this package in order to avoid circular dependency with the "manager" package.
-	InOperateManagerInverseTable = "manager"
+	// InOperateManagerInverseTable is the table name for the AssetManager entity.
+	// It exists in this package in order to avoid circular dependency with the "assetmanager" package.
+	InOperateManagerInverseTable = "asset_manager"
 	// InOperateManagerColumn is the table column denoting the in_operate_manager relation/edge.
 	InOperateManagerColumn = "in_operate_id"
 	// InOperateStoreTable is the table that holds the in_operate_store relation/edge.

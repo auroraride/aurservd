@@ -1170,9 +1170,9 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_details_manager_in_operate_manager",
+				Symbol:     "asset_transfer_details_asset_manager_in_operate_manager",
 				Columns:    []*schema.Column{AssetTransferDetailsColumns[12]},
-				RefColumns: []*schema.Column{ManagerColumns[0]},
+				RefColumns: []*schema.Column{AssetManagerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
@@ -7612,7 +7612,7 @@ func init() {
 	}
 	AssetTransferDetailsTable.ForeignKeys[0].RefTable = AssetTable
 	AssetTransferDetailsTable.ForeignKeys[1].RefTable = AssetTransferTable
-	AssetTransferDetailsTable.ForeignKeys[2].RefTable = ManagerTable
+	AssetTransferDetailsTable.ForeignKeys[2].RefTable = AssetManagerTable
 	AssetTransferDetailsTable.ForeignKeys[3].RefTable = StoreTable
 	AssetTransferDetailsTable.ForeignKeys[4].RefTable = AgentTable
 	AssetTransferDetailsTable.ForeignKeys[5].RefTable = MaintainerTable

@@ -45,6 +45,21 @@ func (*warestore) AssetCount(c echo.Context) (err error) {
 	return ctx.SendResponse(biz.NewWarestore().AssetCount(ctx.AssetManager, ctx.Employee))
 }
 
+// Transfer
+// @ID		WarestoreTransfer
+// @Router	/warestore/v2/transfer [POST]
+// @Summary	创建调拨
+// @Tags	仓管接口 - Warestore
+// @Accept	json
+// @Produce	json
+// @Param	X-Warestore-Token	header		string								true	"仓管校验token"
+// @Param	body				body		definition.AssetTransferCreateReq	true	"调拨参数"
+// @Success	200					{object}	model.StatusResponse				"请求成功"
+func (*warestore) Transfer(c echo.Context) (err error) {
+	ctx, req := app.WarestoreContextAndBinding[definition.AssetTransferCreateReq](c)
+	return ctx.SendResponse(biz.NewAssetTransfer().Transfer(ctx.AssetManager, ctx.Employee, req))
+}
+
 // TransferList
 // @ID		WarestoreTransferList
 // @Router	/warestore/v2/transfer [GET]
@@ -53,7 +68,7 @@ func (*warestore) AssetCount(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Warestore-Token	header		string													true	"仓管校验token"
-// @Param	query				query		definition.TransferListReq								true	"接收参数"
+// @Param	query				query		definition.TransferListReq								true	"查询参数"
 // @Success	200					{object}	model.PaginationRes{items=[]model.AssetTransferListRes}	"请求成功"
 func (*warestore) TransferList(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[definition.TransferListReq](c)
@@ -78,7 +93,7 @@ func (*warestore) TransferDetail(c echo.Context) (err error) {
 // TransferReceive
 // @ID		WarestoreTransferReceive
 // @Router	/warestore/v2/transfer/receive [POST]
-// @Summary	接收资产调拨
+// @Summary	接收资产调拨/确认入库
 // @Tags	仓管接口 - Warestore
 // @Accept	json
 // @Produce	json
@@ -118,4 +133,19 @@ func (*warestore) TransferFlow(c echo.Context) (err error) {
 func (*warestore) Assets(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[definition.WarestoreAssetsReq](c)
 	return ctx.SendResponse(biz.NewWarestore().Assets(ctx.AssetManager, ctx.Employee, req))
+}
+
+// TransferBySn
+// @ID		WarestoreTransferBySn
+// @Router	/warestore/v2/transfer/sn/{sn} [GET]
+// @Summary	根据调拨单号获取调拨详情
+// @Tags	仓管接口 - Warestore
+// @Accept	json
+// @Produce	json
+// @Param	X-Warestore-Token	header		string						true	"仓管校验token"
+// @Param	query				query		model.GetTransferBySNReq	true	"查询参数"
+// @Success	200					{object}	model.AssetTransferListRes	"请求成功"
+func (*warestore) TransferBySn(c echo.Context) (err error) {
+	ctx, req := app.WarestoreContextAndBinding[model.GetTransferBySNReq](c)
+	return ctx.SendResponse(biz.NewAssetTransfer().GetTransferBySn(req))
 }

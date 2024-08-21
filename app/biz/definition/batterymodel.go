@@ -18,6 +18,7 @@ func (t BatteryModelType) Value() uint8 {
 }
 
 type BatteryModelListReq struct {
+	model.PaginationReq
 	Type *BatteryModelType `json:"type" query:"type"` // 电池类型
 }
 

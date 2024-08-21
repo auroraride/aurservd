@@ -4723,13 +4723,13 @@ func (c *AssetTransferDetailsClient) QueryTransfer(atd *AssetTransferDetails) *A
 }
 
 // QueryInOperateManager queries the in_operate_manager edge of a AssetTransferDetails.
-func (c *AssetTransferDetailsClient) QueryInOperateManager(atd *AssetTransferDetails) *ManagerQuery {
-	query := (&ManagerClient{config: c.config}).Query()
+func (c *AssetTransferDetailsClient) QueryInOperateManager(atd *AssetTransferDetails) *AssetManagerQuery {
+	query := (&AssetManagerClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := atd.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assettransferdetails.Table, assettransferdetails.FieldID, id),
-			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assettransferdetails.InOperateManagerTable, assettransferdetails.InOperateManagerColumn),
 		)
 		fromV = sqlgraph.Neighbors(atd.driver.Dialect(), step)

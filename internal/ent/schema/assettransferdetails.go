@@ -74,7 +74,7 @@ func (AssetTransferDetails) Edges() []ent.Edge {
 		edge.From("transfer", AssetTransfer.Type).Ref("transfer_details").Unique().Field("transfer_id"),
 
 		// 入库关联操作人员
-		edge.To("in_operate_manager", Manager.Type).Unique().Field("in_operate_id"),       // 资产后台
+		edge.To("in_operate_manager", AssetManager.Type).Unique().Field("in_operate_id"),  // 资产后台
 		edge.To("in_operate_store", Store.Type).Unique().Field("in_operate_id"),           // 门店
 		edge.To("in_operate_agent", Agent.Type).Unique().Field("in_operate_id"),           // 代理
 		edge.To("in_operate_maintainer", Maintainer.Type).Unique().Field("in_operate_id"), // 运维

@@ -24,7 +24,7 @@ var Selection = new(selection)
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
-// @Success	200						{object}	[]definition.WarehouseByCityRes	"请求成功"
+// @Success	200						{object}	[]model.CascaderOptionLevel2	"请求成功"
 func (*selection) WarehouseByCity(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AssetManagerContext](c)
 	return ctx.SendResponse(biz.NewWarehouse().ListByCity())
@@ -98,4 +98,46 @@ func (*selection) Enterprise(c echo.Context) (err error) {
 func (*selection) AssetRole(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AssetManagerContext](c)
 	return ctx.SendResponse(biz.NewAssetRole().RoleSelection())
+}
+
+// Model
+// @ID		SelectionModel
+// @Router	/manager/v2/asset/selection/model [GET]
+// @Summary	筛选电池型号
+// @Tags	Selection - 筛选
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string		true	"管理员校验token"
+// @Success	200						{object}	[]string	"请求成功"
+func (*selection) Model(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AssetManagerContext](c)
+	return ctx.SendResponse(service.NewSelection().Models())
+}
+
+// Maintainer
+// @ID		SelectionMaintainer
+// @Router	/manager/v2/asset/selection/maintainer [GET]
+// @Summary	筛选运维人员
+// @Tags	Selection - 筛选
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
+// @Success	200						{object}	[]definition.MaintainerDetail	"请求成功"
+func (*selection) Maintainer(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AssetManagerContext](c)
+	return ctx.SendResponse(biz.NewSelection().MaintainerList())
+}
+
+// Station
+// @ID		SelectionStation
+// @Router	/manager/v2/asset/selection/station [GET]
+// @Summary	筛选站点
+// @Tags	Selection - 筛选
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
+// @Success	200						{object}	[]model.CascaderOptionLevel2	"请求成功"
+func (*selection) Station(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AssetManagerContext](c)
+	return ctx.SendResponse(biz.NewSelection().StationList())
 }

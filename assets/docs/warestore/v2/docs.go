@@ -100,6 +100,79 @@ const docTemplate = `{
                 }
             }
         },
+        "/warestore/v2/check": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资产盘点 - AssetCheck"
+                ],
+                "summary": "创建盘点",
+                "operationId": "AssetCheckCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.AssetCheckCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/check/sn/{sn}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资产盘点 - AssetCheck"
+                ],
+                "summary": "通过SN查询资产",
+                "operationId": "AssetCheckGetAssetBySN",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetCheckByAssetSnRes"
+                        }
+                    }
+                }
+            }
+        },
         "/warestore/v2/signin": {
             "post": {
                 "consumes": [
@@ -326,6 +399,45 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "仓管接口 - Warestore"
+                ],
+                "summary": "创建调拨",
+                "operationId": "WarestoreTransfer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "调拨参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.AssetTransferCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
             }
         },
         "/warestore/v2/transfer/flow": {
@@ -416,7 +528,7 @@ const docTemplate = `{
                 "tags": [
                     "仓管接口 - Warestore"
                 ],
-                "summary": "接收资产调拨",
+                "summary": "接收资产调拨/确认入库",
                 "operationId": "WarestoreTransferReceive",
                 "parameters": [
                     {
@@ -441,6 +553,38 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/transfer/sn/{sn}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "仓管接口 - Warestore"
+                ],
+                "summary": "根据调拨单号获取调拨详情",
+                "operationId": "WarestoreTransferBySn",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetTransferListRes"
                         }
                     }
                 }
@@ -487,6 +631,31 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "definition.AssetCheckCreateReq": {
+            "type": "object",
+            "required": [
+                "details",
+                "endAt",
+                "startAt"
+            ],
+            "properties": {
+                "details": {
+                    "description": "资产盘点请求详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetCheckCreateDetail"
+                    }
+                },
+                "endAt": {
+                    "description": "盘点结束时间",
+                    "type": "string"
+                },
+                "startAt": {
+                    "description": "盘点开始时间",
+                    "type": "string"
+                }
+            }
+        },
         "definition.AssetCountDetail": {
             "type": "object",
             "properties": {
@@ -575,6 +744,43 @@ const docTemplate = `{
                 "surplus": {
                     "description": "剩余",
                     "type": "integer"
+                }
+            }
+        },
+        "definition.AssetTransferCreateReq": {
+            "type": "object",
+            "required": [
+                "reason",
+                "toLocationID",
+                "toLocationType"
+            ],
+            "properties": {
+                "details": {
+                    "description": "资产调拨详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetTransferCreateDetail"
+                    }
+                },
+                "fromLocationID": {
+                    "description": "调出仓库/门店ID",
+                    "type": "integer"
+                },
+                "reason": {
+                    "description": "调拨事由",
+                    "type": "string"
+                },
+                "toLocationID": {
+                    "description": "调拨后位置ID",
+                    "type": "integer"
+                },
+                "toLocationType": {
+                    "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
                 }
             }
         },
@@ -681,6 +887,14 @@ const docTemplate = `{
         "definition.TransferDetailRes": {
             "type": "object",
             "properties": {
+                "assetDetail": {
+                    "description": "调拨资产详情",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferDetail"
+                        }
+                    ]
+                },
                 "assetTransferType": {
                     "description": "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
                     "allOf": [
@@ -856,6 +1070,56 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AssetCheckByAssetSnRes": {
+            "type": "object",
+            "properties": {
+                "assetId": {
+                    "description": "资产ID",
+                    "type": "integer"
+                },
+                "assetSN": {
+                    "description": "资产编号",
+                    "type": "string"
+                },
+                "assetType": {
+                    "description": "资产类型 1:电车 2:智能电池",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                },
+                "brandName": {
+                    "description": "品牌",
+                    "type": "string"
+                },
+                "model": {
+                    "description": "型号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetCheckCreateDetail": {
+            "type": "object",
+            "required": [
+                "assetId",
+                "assetType"
+            ],
+            "properties": {
+                "assetId": {
+                    "description": "资产ID",
+                    "type": "integer"
+                },
+                "assetType": {
+                    "description": "资产类型 1:电车 2:智能电池",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                }
+            }
+        },
         "model.AssetLocationsType": {
             "type": "integer",
             "enum": [
@@ -883,6 +1147,34 @@ const docTemplate = `{
                 "AssetLocationsTypeRider"
             ]
         },
+        "model.AssetTransferCreateDetail": {
+            "type": "object",
+            "required": [
+                "assetType"
+            ],
+            "properties": {
+                "assetType": {
+                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                },
+                "materialId": {
+                    "description": "其它物资分类ID",
+                    "type": "integer"
+                },
+                "num": {
+                    "description": "调拨数量",
+                    "type": "integer"
+                },
+                "sn": {
+                    "description": "资产编号",
+                    "type": "string"
+                }
+            }
+        },
         "model.AssetTransferDetail": {
             "type": "object",
             "properties": {
@@ -897,6 +1189,10 @@ const docTemplate = `{
                 "in": {
                     "description": "入库数量",
                     "type": "integer"
+                },
+                "inOperateName": {
+                    "description": "入库人",
+                    "type": "string"
                 },
                 "name": {
                     "description": "资产名称",
@@ -961,6 +1257,14 @@ const docTemplate = `{
         "model.AssetTransferListRes": {
             "type": "object",
             "properties": {
+                "assetDetail": {
+                    "description": "调拨资产详情",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferDetail"
+                        }
+                    ]
+                },
                 "assetTransferType": {
                     "description": "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
                     "allOf": [

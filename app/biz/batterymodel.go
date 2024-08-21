@@ -38,24 +38,16 @@ func NewBatteryModelWithModifier(m *model.Modifier) *batteryModelBiz {
 }
 
 // List 列表
-func (b *batteryModelBiz) List(req *definition.BatteryModelListReq) (res []*definition.BatteryModelDetail, err error) {
-	res = make([]*definition.BatteryModelDetail, 0)
-
+func (b *batteryModelBiz) List(req *definition.BatteryModelListReq) (res *model.PaginationRes, err error) {
 	q := b.orm.Query()
 
 	if req.Type != nil {
 		q.Where(batterymodel.Type(req.Type.Value()))
 	}
 
-	list, _ := q.All(b.ctx)
-
-	if len(list) == 0 {
-		return res, nil
-	}
-
-	for _, v := range list {
-		res = append(res, b.detail(v))
-	}
+	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.BatteryModel) (result *definition.BatteryModelDetail) {
+		return b.detail(item)
+	})
 	return
 }
 

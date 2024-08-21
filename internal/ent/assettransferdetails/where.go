@@ -565,7 +565,7 @@ func HasInOperateManager() predicate.AssetTransferDetails {
 }
 
 // HasInOperateManagerWith applies the HasEdge predicate on the "in_operate_manager" edge with a given conditions (other predicates).
-func HasInOperateManagerWith(preds ...predicate.Manager) predicate.AssetTransferDetails {
+func HasInOperateManagerWith(preds ...predicate.AssetManager) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(func(s *sql.Selector) {
 		step := newInOperateManagerStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {

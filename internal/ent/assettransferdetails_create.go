@@ -14,11 +14,11 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
@@ -188,13 +188,13 @@ func (atdc *AssetTransferDetailsCreate) SetTransfer(a *AssetTransfer) *AssetTran
 	return atdc.SetTransferID(a.ID)
 }
 
-// SetInOperateManagerID sets the "in_operate_manager" edge to the Manager entity by ID.
+// SetInOperateManagerID sets the "in_operate_manager" edge to the AssetManager entity by ID.
 func (atdc *AssetTransferDetailsCreate) SetInOperateManagerID(id uint64) *AssetTransferDetailsCreate {
 	atdc.mutation.SetInOperateManagerID(id)
 	return atdc
 }
 
-// SetNillableInOperateManagerID sets the "in_operate_manager" edge to the Manager entity by ID if the given value is not nil.
+// SetNillableInOperateManagerID sets the "in_operate_manager" edge to the AssetManager entity by ID if the given value is not nil.
 func (atdc *AssetTransferDetailsCreate) SetNillableInOperateManagerID(id *uint64) *AssetTransferDetailsCreate {
 	if id != nil {
 		atdc = atdc.SetInOperateManagerID(*id)
@@ -202,9 +202,9 @@ func (atdc *AssetTransferDetailsCreate) SetNillableInOperateManagerID(id *uint64
 	return atdc
 }
 
-// SetInOperateManager sets the "in_operate_manager" edge to the Manager entity.
-func (atdc *AssetTransferDetailsCreate) SetInOperateManager(m *Manager) *AssetTransferDetailsCreate {
-	return atdc.SetInOperateManagerID(m.ID)
+// SetInOperateManager sets the "in_operate_manager" edge to the AssetManager entity.
+func (atdc *AssetTransferDetailsCreate) SetInOperateManager(a *AssetManager) *AssetTransferDetailsCreate {
+	return atdc.SetInOperateManagerID(a.ID)
 }
 
 // SetInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID.
@@ -464,7 +464,7 @@ func (atdc *AssetTransferDetailsCreate) createSpec() (*AssetTransferDetails, *sq
 			Columns: []string{assettransferdetails.InOperateManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

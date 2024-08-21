@@ -924,7 +924,7 @@ func (s *assetTransferService) GetTransferBySN(ctx context.Context, req *model.G
 	).WithTransfer(func(query *ent.AssetTransferQuery) {
 		query.WithFromLocationOperator().WithFromLocationStation().WithFromLocationStore().WithFromLocationWarehouse().
 			WithToLocationOperator().WithToLocationStation().WithToLocationStore().WithToLocationWarehouse()
-	}).First(ctx)
+	}).WithAsset().First(ctx)
 	if item == nil {
 		return nil, errors.New("物资不存在或未调拨")
 	}
@@ -991,6 +991,15 @@ func (s *assetTransferService) GetTransferBySN(ctx context.Context, req *model.G
 	}
 	res.ToLocationName = toLocationName
 	res.FromLocationName = fromLocationName
+
+	if item.Edges.Asset != nil {
+		res.AssetDetail = &model.AssetTransferDetail{
+			AssetType: model.AssetType(item.Edges.Asset.Type),
+			SN:        item.Edges.Asset.Sn,
+			Name:      item.Edges.Asset.Name,
+		}
+	}
+
 	return res, nil
 }
 

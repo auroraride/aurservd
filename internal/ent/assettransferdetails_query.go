@@ -12,11 +12,11 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -30,7 +30,7 @@ type AssetTransferDetailsQuery struct {
 	inters                  []Interceptor
 	predicates              []predicate.AssetTransferDetails
 	withTransfer            *AssetTransferQuery
-	withInOperateManager    *ManagerQuery
+	withInOperateManager    *AssetManagerQuery
 	withInOperateStore      *StoreQuery
 	withInOperateAgent      *AgentQuery
 	withInOperateMaintainer *MaintainerQuery
@@ -97,8 +97,8 @@ func (atdq *AssetTransferDetailsQuery) QueryTransfer() *AssetTransferQuery {
 }
 
 // QueryInOperateManager chains the current query on the "in_operate_manager" edge.
-func (atdq *AssetTransferDetailsQuery) QueryInOperateManager() *ManagerQuery {
-	query := (&ManagerClient{config: atdq.config}).Query()
+func (atdq *AssetTransferDetailsQuery) QueryInOperateManager() *AssetManagerQuery {
+	query := (&AssetManagerClient{config: atdq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := atdq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -109,7 +109,7 @@ func (atdq *AssetTransferDetailsQuery) QueryInOperateManager() *ManagerQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assettransferdetails.Table, assettransferdetails.FieldID, selector),
-			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assettransferdetails.InOperateManagerTable, assettransferdetails.InOperateManagerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(atdq.driver.Dialect(), step)
@@ -469,8 +469,8 @@ func (atdq *AssetTransferDetailsQuery) WithTransfer(opts ...func(*AssetTransferQ
 
 // WithInOperateManager tells the query-builder to eager-load the nodes that are connected to
 // the "in_operate_manager" edge. The optional arguments are used to configure the query builder of the edge.
-func (atdq *AssetTransferDetailsQuery) WithInOperateManager(opts ...func(*ManagerQuery)) *AssetTransferDetailsQuery {
-	query := (&ManagerClient{config: atdq.config}).Query()
+func (atdq *AssetTransferDetailsQuery) WithInOperateManager(opts ...func(*AssetManagerQuery)) *AssetTransferDetailsQuery {
+	query := (&AssetManagerClient{config: atdq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -662,7 +662,7 @@ func (atdq *AssetTransferDetailsQuery) sqlAll(ctx context.Context, hooks ...quer
 	}
 	if query := atdq.withInOperateManager; query != nil {
 		if err := atdq.loadInOperateManager(ctx, query, nodes, nil,
-			func(n *AssetTransferDetails, e *Manager) { n.Edges.InOperateManager = e }); err != nil {
+			func(n *AssetTransferDetails, e *AssetManager) { n.Edges.InOperateManager = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -734,7 +734,7 @@ func (atdq *AssetTransferDetailsQuery) loadTransfer(ctx context.Context, query *
 	}
 	return nil
 }
-func (atdq *AssetTransferDetailsQuery) loadInOperateManager(ctx context.Context, query *ManagerQuery, nodes []*AssetTransferDetails, init func(*AssetTransferDetails), assign func(*AssetTransferDetails, *Manager)) error {
+func (atdq *AssetTransferDetailsQuery) loadInOperateManager(ctx context.Context, query *AssetManagerQuery, nodes []*AssetTransferDetails, init func(*AssetTransferDetails), assign func(*AssetTransferDetails, *AssetManager)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetTransferDetails)
 	for i := range nodes {
@@ -747,7 +747,7 @@ func (atdq *AssetTransferDetailsQuery) loadInOperateManager(ctx context.Context,
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(manager.IDIn(ids...))
+	query.Where(assetmanager.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err

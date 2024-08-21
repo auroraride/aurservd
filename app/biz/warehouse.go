@@ -369,30 +369,30 @@ func (b *warehouseBiz) transferInOut(ebikeNameMap, sBNameMap, nSbNameMap,
 }
 
 // ListByCity 城市仓库列表
-func (b *warehouseBiz) ListByCity() (res []*definition.WarehouseByCityRes) {
+func (b *warehouseBiz) ListByCity() (res []*model.CascaderOptionLevel2) {
 	whList, _ := b.orm.QueryNotDeleted().WithCity().Order(ent.Asc(warehouse.FieldID)).All(b.ctx)
 	cityIds := make([]uint64, 0)
 	cityIdMap := make(map[uint64]*ent.City)
-	cityIdListMap := make(map[uint64][]*definition.WarehouseByCityDetail)
+	cityIdListMap := make(map[uint64][]model.SelectOption)
 	for _, wh := range whList {
 		if wh.Edges.City != nil {
 			cityIds = append(cityIds, wh.CityID)
 			cityIdMap[wh.CityID] = wh.Edges.City
-			cityIdListMap[wh.CityID] = append(cityIdListMap[wh.CityID], &definition.WarehouseByCityDetail{
-				ID:   wh.ID,
-				Name: wh.Name,
+			cityIdListMap[wh.CityID] = append(cityIdListMap[wh.CityID], model.SelectOption{
+				Label: wh.Name,
+				Value: wh.ID,
 			})
 		}
 	}
 
 	for _, cityId := range cityIds {
 		if cityIdMap[cityId] != nil && len(cityIdListMap[cityId]) != 0 {
-			res = append(res, &definition.WarehouseByCityRes{
-				City: model.City{
-					ID:   cityIdMap[cityId].ID,
-					Name: cityIdMap[cityId].Name,
+			res = append(res, &model.CascaderOptionLevel2{
+				SelectOption: model.SelectOption{
+					Value: cityIdMap[cityId].ID,
+					Label: cityIdMap[cityId].Name,
 				},
-				WarehouseList: cityIdListMap[cityId],
+				Children: cityIdListMap[cityId],
 			})
 		}
 	}

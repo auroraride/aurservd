@@ -13,11 +13,11 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
@@ -62,7 +62,7 @@ type AssetTransferDetailsEdges struct {
 	// Transfer holds the value of the transfer edge.
 	Transfer *AssetTransfer `json:"transfer,omitempty"`
 	// InOperateManager holds the value of the in_operate_manager edge.
-	InOperateManager *Manager `json:"in_operate_manager,omitempty"`
+	InOperateManager *AssetManager `json:"in_operate_manager,omitempty"`
 	// InOperateStore holds the value of the in_operate_store edge.
 	InOperateStore *Store `json:"in_operate_store,omitempty"`
 	// InOperateAgent holds the value of the in_operate_agent edge.
@@ -93,11 +93,11 @@ func (e AssetTransferDetailsEdges) TransferOrErr() (*AssetTransfer, error) {
 
 // InOperateManagerOrErr returns the InOperateManager value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AssetTransferDetailsEdges) InOperateManagerOrErr() (*Manager, error) {
+func (e AssetTransferDetailsEdges) InOperateManagerOrErr() (*AssetManager, error) {
 	if e.InOperateManager != nil {
 		return e.InOperateManager, nil
 	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: manager.Label}
+		return nil, &NotFoundError{label: assetmanager.Label}
 	}
 	return nil, &NotLoadedError{edge: "in_operate_manager"}
 }
@@ -301,7 +301,7 @@ func (atd *AssetTransferDetails) QueryTransfer() *AssetTransferQuery {
 }
 
 // QueryInOperateManager queries the "in_operate_manager" edge of the AssetTransferDetails entity.
-func (atd *AssetTransferDetails) QueryInOperateManager() *ManagerQuery {
+func (atd *AssetTransferDetails) QueryInOperateManager() *AssetManagerQuery {
 	return NewAssetTransferDetailsClient(atd.config).QueryInOperateManager(atd)
 }
 

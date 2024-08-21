@@ -29,12 +29,15 @@ func loadAssetsRoutes() {
 	asset.DELETE("/permission/role/:id", assetapi.AssetPermission.DeleteRole)
 
 	// 筛选数据
-	asset.GET("/selection/warehouse_city", assetapi.Selection.WarehouseByCity) // 仓库城市筛选
+	asset.GET("/selection/warehouse_city", assetapi.Selection.WarehouseByCity) // 城市仓库筛选
 	asset.GET("/selection/city", assetapi.Selection.City)                      // 城市筛选
 	asset.GET("/selection/ebike/brand", assetapi.Selection.EbikeBrand)         // 电车品牌筛选
-	asset.GET("/selection/store", assetapi.Selection.Store)                    // 门店筛选
+	asset.GET("/selection/store", assetapi.Selection.Store)                    // 城市门店筛选
 	asset.GET("/selection/enterprise", assetapi.Selection.Enterprise)          // 企业筛选
 	asset.GET("/selection/role", assetapi.Selection.AssetRole)                 // 角色筛选
+	asset.GET("/selection/model", assetapi.Selection.Model)                    // 电池型号筛选
+	asset.GET("/selection/maintainer", assetapi.Selection.Maintainer)          // 运维人员筛选
+	asset.GET("/selection/station", assetapi.Selection.Station)                // 站点筛选
 
 	// 基础档案
 	asset.POST("", assetapi.Assets.Create)       // 创建资产
@@ -76,6 +79,17 @@ func loadAssetsRoutes() {
 
 	// 团签物资
 	asset.GET("/enterprise_assets", assetapi.Enterprise.EnterpriseAsset) // 团签物资列表
+
+	// 电池型号
+	asset.POST("/batterymodel", assetapi.BatteryModel.Create)       // 创建电池型号
+	asset.GET("/batterymodel", assetapi.BatteryModel.List)          // 电池型号列表
+	asset.DELETE("/batterymodel/:id", assetapi.BatteryModel.Delete) // 删除电池型号
+
+	// 电车型号
+	asset.GET("/ebike/brand", assetapi.EbikeBrand.List)          // 电池型号列表
+	asset.POST("/ebike/brand", assetapi.EbikeBrand.Create)       // 创建电池型号
+	asset.PUT("/ebike/brand/:id", assetapi.EbikeBrand.Modify)    // 更新电池型号
+	asset.DELETE("/ebike/brand/:id", assetapi.EbikeBrand.Delete) // 删除电池型号
 
 	// 其他物资
 	asset.POST("/material", assetapi.Material.Create)       // 创建其他物资
