@@ -681,6 +681,14 @@ const docTemplate = `{
         "definition.TransferDetailRes": {
             "type": "object",
             "properties": {
+                "assetTransferType": {
+                    "description": "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferType"
+                        }
+                    ]
+                },
                 "detail": {
                     "description": "调拨详情数据",
                     "type": "array",
@@ -953,6 +961,14 @@ const docTemplate = `{
         "model.AssetTransferListRes": {
             "type": "object",
             "properties": {
+                "assetTransferType": {
+                    "description": "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferType"
+                        }
+                    ]
+                },
                 "fromLocationID": {
                     "description": "调出目标ID",
                     "type": "integer"
@@ -1078,6 +1094,36 @@ const docTemplate = `{
                 "AssetTransferStatusDelivering",
                 "AssetTransferStatusStock",
                 "AssetTransferStatusCancel"
+            ]
+        },
+        "model.AssetTransferType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+            ],
+            "x-enum-comments": {
+                "AssetTransferTypeActive": "激活",
+                "AssetTransferTypeContinue": "取消寄存",
+                "AssetTransferTypeExchange": "换电",
+                "AssetTransferTypeInitial": "初始入库",
+                "AssetTransferTypePause": "寄存",
+                "AssetTransferTypeTransfer": "调拨",
+                "AssetTransferTypeUnSubscribe": "退租"
+            },
+            "x-enum-varnames": [
+                "AssetTransferTypeInitial",
+                "AssetTransferTypeTransfer",
+                "AssetTransferTypeActive",
+                "AssetTransferTypePause",
+                "AssetTransferTypeContinue",
+                "AssetTransferTypeUnSubscribe",
+                "AssetTransferTypeExchange"
             ]
         },
         "model.AssetType": {

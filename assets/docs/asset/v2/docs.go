@@ -6421,6 +6421,14 @@ const docTemplate = `{
         "model.AssetTransferListRes": {
             "type": "object",
             "properties": {
+                "assetTransferType": {
+                    "description": "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferType"
+                        }
+                    ]
+                },
                 "fromLocationID": {
                     "description": "调出目标ID",
                     "type": "integer"

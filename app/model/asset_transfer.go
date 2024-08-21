@@ -110,21 +110,22 @@ type AssetTransferFilter struct {
 
 // AssetTransferListRes 资产调拨列表响应
 type AssetTransferListRes struct {
-	ID               uint64 `json:"id"`               // 调拨ID
-	SN               string `json:"sn"`               // 调拨单号
-	Reason           string `json:"reason"`           // 调拨事由
-	FromLocationName string `json:"fromLocationName"` // 调出目标名称
-	FromLocationType uint8  `json:"fromLocationType"` // 调出目标类型
-	FromLocationID   uint64 `json:"fromLocationID"`   // 调出目标ID
-	ToLocationType   uint8  `json:"toLocationType"`   // 调入目标类型
-	ToLocationName   string `json:"toLocationName"`   // 调入目标名称
-	ToLocationID     uint64 `json:"toLocationID"`     // 调入目标ID
-	OutOperateName   string `json:"outOperateName"`   // 出库操作人
-	OutNum           uint   `json:"outNum"`           // 出库数量
-	InNum            uint   `json:"inNum"`            // 入库数量
-	OutTimeAt        string `json:"outTimeAt"`        // 出库时间
-	Status           string `json:"status"`           // 调拨状态
-	Remark           string `json:"remark"`           // 备注
+	ID                uint64            `json:"id"`                // 调拨ID
+	SN                string            `json:"sn"`                // 调拨单号
+	Reason            string            `json:"reason"`            // 调拨事由
+	FromLocationName  string            `json:"fromLocationName"`  // 调出目标名称
+	FromLocationType  uint8             `json:"fromLocationType"`  // 调出目标类型
+	FromLocationID    uint64            `json:"fromLocationID"`    // 调出目标ID
+	ToLocationType    uint8             `json:"toLocationType"`    // 调入目标类型
+	ToLocationName    string            `json:"toLocationName"`    // 调入目标名称
+	ToLocationID      uint64            `json:"toLocationID"`      // 调入目标ID
+	OutOperateName    string            `json:"outOperateName"`    // 出库操作人
+	OutNum            uint              `json:"outNum"`            // 出库数量
+	InNum             uint              `json:"inNum"`             // 入库数量
+	OutTimeAt         string            `json:"outTimeAt"`         // 出库时间
+	Status            string            `json:"status"`            // 调拨状态
+	AssetTransferType AssetTransferType `json:"assetTransferType"` // 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
+	Remark            string            `json:"remark"`            // 备注
 }
 
 // AssetTransferDetailReq 资产调拨详情请求

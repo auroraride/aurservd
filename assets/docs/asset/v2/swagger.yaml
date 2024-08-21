@@ -1656,6 +1656,10 @@ definitions:
     type: object
   model.AssetTransferListRes:
     properties:
+      assetTransferType:
+        allOf:
+          - $ref: '#/definitions/model.AssetTransferType'
+        description: 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
       fromLocationID:
         description: 调出目标ID
         type: integer

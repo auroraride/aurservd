@@ -415,13 +415,14 @@ func (s *assetTransferService) TransferList(ctx context.Context, req *model.Asse
 // TransferInfo 补充完善调拨信息
 func (s *assetTransferService) TransferInfo(item *ent.AssetTransfer) (res *model.AssetTransferListRes) {
 	res = &model.AssetTransferListRes{
-		ID:     item.ID,
-		SN:     item.Sn,
-		Reason: item.Reason,
-		Remark: item.Remark,
-		Status: model.AssetTransferStatus(item.Status).String(),
-		OutNum: item.OutNum,
-		InNum:  item.InNum,
+		ID:                item.ID,
+		SN:                item.Sn,
+		Reason:            item.Reason,
+		Remark:            item.Remark,
+		Status:            model.AssetTransferStatus(item.Status).String(),
+		AssetTransferType: model.AssetTransferType(item.Type),
+		OutNum:            item.OutNum,
+		InNum:             item.InNum,
 	}
 
 	if item.OutTimeAt != nil {
@@ -929,12 +930,13 @@ func (s *assetTransferService) GetTransferBySN(ctx context.Context, req *model.G
 	}
 
 	res = &model.AssetTransferListRes{
-		ID:     item.Edges.Transfer.ID,
-		SN:     item.Edges.Transfer.Sn,
-		Reason: item.Edges.Transfer.Reason,
-		Status: model.AssetTransferStatus(item.Edges.Transfer.Status).String(),
-		OutNum: item.Edges.Transfer.OutNum,
-		InNum:  item.Edges.Transfer.InNum,
+		ID:                item.Edges.Transfer.ID,
+		SN:                item.Edges.Transfer.Sn,
+		Reason:            item.Edges.Transfer.Reason,
+		Status:            model.AssetTransferStatus(item.Edges.Transfer.Status).String(),
+		AssetTransferType: model.AssetTransferType(item.Edges.Transfer.Type),
+		OutNum:            item.Edges.Transfer.OutNum,
+		InNum:             item.Edges.Transfer.InNum,
 	}
 
 	var fromLocationName, toLocationName string
