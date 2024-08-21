@@ -12,11 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -27,7 +27,7 @@ type AssetScrapQuery struct {
 	order            []assetscrap.OrderOption
 	inters           []Interceptor
 	predicates       []predicate.AssetScrap
-	withManager      *ManagerQuery
+	withManager      *AssetManagerQuery
 	withEmployee     *EmployeeQuery
 	withMaintainer   *MaintainerQuery
 	withAgent        *AgentQuery
@@ -70,8 +70,8 @@ func (asq *AssetScrapQuery) Order(o ...assetscrap.OrderOption) *AssetScrapQuery 
 }
 
 // QueryManager chains the current query on the "manager" edge.
-func (asq *AssetScrapQuery) QueryManager() *ManagerQuery {
-	query := (&ManagerClient{config: asq.config}).Query()
+func (asq *AssetScrapQuery) QueryManager() *AssetManagerQuery {
+	query := (&AssetManagerClient{config: asq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := asq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -82,7 +82,7 @@ func (asq *AssetScrapQuery) QueryManager() *ManagerQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetscrap.Table, assetscrap.FieldID, selector),
-			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assetscrap.ManagerTable, assetscrap.ManagerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(asq.driver.Dialect(), step)
@@ -384,8 +384,8 @@ func (asq *AssetScrapQuery) Clone() *AssetScrapQuery {
 
 // WithManager tells the query-builder to eager-load the nodes that are connected to
 // the "manager" edge. The optional arguments are used to configure the query builder of the edge.
-func (asq *AssetScrapQuery) WithManager(opts ...func(*ManagerQuery)) *AssetScrapQuery {
-	query := (&ManagerClient{config: asq.config}).Query()
+func (asq *AssetScrapQuery) WithManager(opts ...func(*AssetManagerQuery)) *AssetScrapQuery {
+	query := (&AssetManagerClient{config: asq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -546,7 +546,7 @@ func (asq *AssetScrapQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	}
 	if query := asq.withManager; query != nil {
 		if err := asq.loadManager(ctx, query, nodes, nil,
-			func(n *AssetScrap, e *Manager) { n.Edges.Manager = e }); err != nil {
+			func(n *AssetScrap, e *AssetManager) { n.Edges.Manager = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -578,7 +578,7 @@ func (asq *AssetScrapQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	return nodes, nil
 }
 
-func (asq *AssetScrapQuery) loadManager(ctx context.Context, query *ManagerQuery, nodes []*AssetScrap, init func(*AssetScrap), assign func(*AssetScrap, *Manager)) error {
+func (asq *AssetScrapQuery) loadManager(ctx context.Context, query *AssetManagerQuery, nodes []*AssetScrap, init func(*AssetScrap), assign func(*AssetScrap, *AssetManager)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetScrap)
 	for i := range nodes {
@@ -594,7 +594,7 @@ func (asq *AssetScrapQuery) loadManager(ctx context.Context, query *ManagerQuery
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(manager.IDIn(ids...))
+	query.Where(assetmanager.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err

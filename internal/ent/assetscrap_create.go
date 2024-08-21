@@ -13,11 +13,11 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 )
 
 // AssetScrapCreate is the builder for creating a AssetScrap entity.
@@ -166,13 +166,13 @@ func (asc *AssetScrapCreate) SetNillableNum(u *uint) *AssetScrapCreate {
 	return asc
 }
 
-// SetManagerID sets the "manager" edge to the Manager entity by ID.
+// SetManagerID sets the "manager" edge to the AssetManager entity by ID.
 func (asc *AssetScrapCreate) SetManagerID(id uint64) *AssetScrapCreate {
 	asc.mutation.SetManagerID(id)
 	return asc
 }
 
-// SetNillableManagerID sets the "manager" edge to the Manager entity by ID if the given value is not nil.
+// SetNillableManagerID sets the "manager" edge to the AssetManager entity by ID if the given value is not nil.
 func (asc *AssetScrapCreate) SetNillableManagerID(id *uint64) *AssetScrapCreate {
 	if id != nil {
 		asc = asc.SetManagerID(*id)
@@ -180,9 +180,9 @@ func (asc *AssetScrapCreate) SetNillableManagerID(id *uint64) *AssetScrapCreate 
 	return asc
 }
 
-// SetManager sets the "manager" edge to the Manager entity.
-func (asc *AssetScrapCreate) SetManager(m *Manager) *AssetScrapCreate {
-	return asc.SetManagerID(m.ID)
+// SetManager sets the "manager" edge to the AssetManager entity.
+func (asc *AssetScrapCreate) SetManager(a *AssetManager) *AssetScrapCreate {
+	return asc.SetManagerID(a.ID)
 }
 
 // SetEmployeeID sets the "employee" edge to the Employee entity by ID.
@@ -394,7 +394,7 @@ func (asc *AssetScrapCreate) createSpec() (*AssetScrap, *sqlgraph.CreateSpec) {
 			Columns: []string{assetscrap.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

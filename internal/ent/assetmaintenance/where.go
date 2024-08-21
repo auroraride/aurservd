@@ -100,6 +100,11 @@ func Status(v uint8) predicate.AssetMaintenance {
 	return predicate.AssetMaintenance(sql.FieldEQ(FieldStatus, v))
 }
 
+// CabinetStatus applies equality check predicate on the "cabinet_status" field. It's identical to CabinetStatusEQ.
+func CabinetStatus(v uint8) predicate.AssetMaintenance {
+	return predicate.AssetMaintenance(sql.FieldEQ(FieldCabinetStatus, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.AssetMaintenance {
 	return predicate.AssetMaintenance(sql.FieldEQ(FieldCreatedAt, v))
@@ -553,6 +558,46 @@ func StatusLT(v uint8) predicate.AssetMaintenance {
 // StatusLTE applies the LTE predicate on the "status" field.
 func StatusLTE(v uint8) predicate.AssetMaintenance {
 	return predicate.AssetMaintenance(sql.FieldLTE(FieldStatus, v))
+}
+
+// CabinetStatusEQ applies the EQ predicate on the "cabinet_status" field.
+func CabinetStatusEQ(v uint8) predicate.AssetMaintenance {
+	return predicate.AssetMaintenance(sql.FieldEQ(FieldCabinetStatus, v))
+}
+
+// CabinetStatusNEQ applies the NEQ predicate on the "cabinet_status" field.
+func CabinetStatusNEQ(v uint8) predicate.AssetMaintenance {
+	return predicate.AssetMaintenance(sql.FieldNEQ(FieldCabinetStatus, v))
+}
+
+// CabinetStatusIn applies the In predicate on the "cabinet_status" field.
+func CabinetStatusIn(vs ...uint8) predicate.AssetMaintenance {
+	return predicate.AssetMaintenance(sql.FieldIn(FieldCabinetStatus, vs...))
+}
+
+// CabinetStatusNotIn applies the NotIn predicate on the "cabinet_status" field.
+func CabinetStatusNotIn(vs ...uint8) predicate.AssetMaintenance {
+	return predicate.AssetMaintenance(sql.FieldNotIn(FieldCabinetStatus, vs...))
+}
+
+// CabinetStatusGT applies the GT predicate on the "cabinet_status" field.
+func CabinetStatusGT(v uint8) predicate.AssetMaintenance {
+	return predicate.AssetMaintenance(sql.FieldGT(FieldCabinetStatus, v))
+}
+
+// CabinetStatusGTE applies the GTE predicate on the "cabinet_status" field.
+func CabinetStatusGTE(v uint8) predicate.AssetMaintenance {
+	return predicate.AssetMaintenance(sql.FieldGTE(FieldCabinetStatus, v))
+}
+
+// CabinetStatusLT applies the LT predicate on the "cabinet_status" field.
+func CabinetStatusLT(v uint8) predicate.AssetMaintenance {
+	return predicate.AssetMaintenance(sql.FieldLT(FieldCabinetStatus, v))
+}
+
+// CabinetStatusLTE applies the LTE predicate on the "cabinet_status" field.
+func CabinetStatusLTE(v uint8) predicate.AssetMaintenance {
+	return predicate.AssetMaintenance(sql.FieldLTE(FieldCabinetStatus, v))
 }
 
 // HasCabinet applies the HasEdge predicate on the "cabinet" edge.

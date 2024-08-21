@@ -1142,11 +1142,10 @@ definitions:
       status:
         allOf:
         - $ref: '#/definitions/model.AssetMaintenanceStatus'
-        description: 维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消
+        description: 维修状态1:维修中 2:已维修 3:维修失败 4:已取消
     required:
     - cabinetId
     - content
-    - details
     - reason
     - status
     type: object
@@ -1207,16 +1206,13 @@ definitions:
     - 1
     - 2
     - 3
-    - 4
     type: integer
     x-enum-comments:
       AssetMaintenanceStatusCancel: 已取消
       AssetMaintenanceStatusFail: 维修失败
       AssetMaintenanceStatusSuccess: 已维修
       AssetMaintenanceStatusUnder: 维修中
-      AssetMaintenanceStatusWait: 待维修
     x-enum-varnames:
-    - AssetMaintenanceStatusWait
     - AssetMaintenanceStatusUnder
     - AssetMaintenanceStatusSuccess
     - AssetMaintenanceStatusFail
@@ -1283,10 +1279,29 @@ definitions:
     required:
     - ids
     type: object
-  model.AssetScrapDetailRes:
+  model.AssetScrapDetails:
+    properties:
+      assetType:
+        allOf:
+          - $ref: '#/definitions/model.AssetType'
+        description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+      materialId:
+        description: 其它物资分类ID
+        type: integer
+      num:
+        description: 报废数量
+        type: integer
+      sn:
+        description: 资产Sn
+        type: string
+    required:
+      - assetType
+    type: object
+  model.AssetScrapListRes:
     properties:
       assetID:
-        description: 资产ID
+        description: AssetScrapDetails []AssetScrapDetailRes `json:"details"`     //
+          报废明细
         type: integer
       assetType:
         description: 资产类型
@@ -1299,6 +1314,9 @@ definitions:
       brand:
         description: 资产品牌
         type: string
+      id:
+        description: 报废ID
+        type: integer
       inTimeAt:
         description: 入库时间
         type: string
@@ -1308,37 +1326,8 @@ definitions:
       name:
         description: 资产名称
         type: string
-      sn:
-        description: 资产编号
-        type: string
-    type: object
-  model.AssetScrapDetails:
-    properties:
-      assetId:
-        description: 资产ID
-        type: integer
-      assetType:
-        allOf:
-        - $ref: '#/definitions/model.AssetType'
-        description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-      materialId:
-        description: 其它物资分类ID
-        type: integer
       num:
         description: 报废数量
-        type: integer
-    required:
-    - assetType
-    type: object
-  model.AssetScrapListRes:
-    properties:
-      details:
-        description: 报废明细
-        items:
-          $ref: '#/definitions/model.AssetScrapDetailRes'
-        type: array
-      id:
-        description: 报废ID
         type: integer
       operateName:
         description: 操作人
@@ -1351,6 +1340,9 @@ definitions:
         type: string
       scrapReason:
         description: 报废原因
+        type: string
+      sn:
+        description: 资产编号
         type: string
     type: object
   model.AssetScrapReq:
@@ -2707,14 +2699,9 @@ paths:
         "200":
           description: 请求成功
           schema:
-            allOf:
-            - $ref: '#/definitions/model.PaginationRes'
-            - properties:
-                items:
-                  items:
-                    $ref: '#/definitions/model.AssetCheckAbnormal'
-                  type: array
-              type: object
+            items:
+              $ref: '#/definitions/model.AssetCheckAbnormal'
+            type: array
       summary: 盘点异常
       tags:
       - 资产
@@ -2790,9 +2777,17 @@ paths:
         in: query
         name: attribute
         type: string
+      - description: 品牌
+        in: query
+        name: brandId
+        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
+        type: integer
+      - description: 型号ID
+        in: query
+        name: modelId
         type: integer
       - description: 每页数据, 默认20
         in: query
@@ -3637,7 +3632,7 @@ paths:
         in: query
         name: assetName
         type: string
-      - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+      - description: 资产类型 1:电车 2:智能电池 3:其它
         enum:
         - 1
         - 2

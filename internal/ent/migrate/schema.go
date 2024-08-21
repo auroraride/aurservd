@@ -684,7 +684,8 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "reason", Type: field.TypeString, Comment: "原因"},
 		{Name: "content", Type: field.TypeString, Comment: "内容"},
-		{Name: "status", Type: field.TypeUint8, Comment: "维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消", Default: 0},
+		{Name: "status", Type: field.TypeUint8, Comment: "维修状态 1:维护中 2:已维修 3:维修失败 4:已取消", Default: 1},
+		{Name: "cabinet_status", Type: field.TypeUint8, Comment: "电柜状态 1:维护中 2:暂停维护", Default: 0},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
 		{Name: "maintainer_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -696,13 +697,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "asset_maintenance_cabinet_cabinet",
-				Columns:    []*schema.Column{AssetMaintenanceColumns[10]},
+				Columns:    []*schema.Column{AssetMaintenanceColumns[11]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_maintenance_maintainer_maintainer",
-				Columns:    []*schema.Column{AssetMaintenanceColumns[11]},
+				Columns:    []*schema.Column{AssetMaintenanceColumns[12]},
 				RefColumns: []*schema.Column{MaintainerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -721,12 +722,12 @@ var (
 			{
 				Name:    "assetmaintenance_cabinet_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetMaintenanceColumns[10]},
+				Columns: []*schema.Column{AssetMaintenanceColumns[11]},
 			},
 			{
 				Name:    "assetmaintenance_maintainer_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetMaintenanceColumns[11]},
+				Columns: []*schema.Column{AssetMaintenanceColumns[12]},
 			},
 		},
 	}
@@ -905,9 +906,9 @@ var (
 		PrimaryKey: []*schema.Column{AssetScrapColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "asset_scrap_manager_manager",
+				Symbol:     "asset_scrap_asset_manager_manager",
 				Columns:    []*schema.Column{AssetScrapColumns[11]},
-				RefColumns: []*schema.Column{ManagerColumns[0]},
+				RefColumns: []*schema.Column{AssetManagerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
@@ -1976,11 +1977,9 @@ var (
 		{Name: "battery_charging_num", Type: field.TypeInt, Comment: "充电总数", Default: 0},
 		{Name: "empty_bin_num", Type: field.TypeInt, Comment: "空仓数量", Default: 0},
 		{Name: "locked_bin_num", Type: field.TypeInt, Comment: "锁仓数量", Default: 0},
-		{Name: "maintenance_at", Type: field.TypeTime, Nullable: true, Comment: "维护时间"},
 		{Name: "branch_id", Type: field.TypeUint64, Nullable: true, Comment: "网点"},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
-		{Name: "maintainer_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "团签ID"},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
 	}
@@ -1992,37 +1991,31 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cabinet_branch_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[29]},
+				Columns:    []*schema.Column{CabinetColumns[28]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_city_city",
-				Columns:    []*schema.Column{CabinetColumns[30]},
+				Columns:    []*schema.Column{CabinetColumns[29]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_store_store",
-				Columns:    []*schema.Column{CabinetColumns[31]},
+				Columns:    []*schema.Column{CabinetColumns[30]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "cabinet_maintainer_maintainer",
-				Columns:    []*schema.Column{CabinetColumns[32]},
-				RefColumns: []*schema.Column{MaintainerColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "cabinet_enterprise_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[33]},
+				Columns:    []*schema.Column{CabinetColumns[31]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_enterprise_station_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[34]},
+				Columns:    []*schema.Column{CabinetColumns[32]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2041,22 +2034,17 @@ var (
 			{
 				Name:    "cabinet_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[30]},
+				Columns: []*schema.Column{CabinetColumns[29]},
 			},
 			{
 				Name:    "cabinet_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[31]},
-			},
-			{
-				Name:    "cabinet_maintainer_id",
-				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[32]},
+				Columns: []*schema.Column{CabinetColumns[30]},
 			},
 			{
 				Name:    "cabinet_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[29]},
+				Columns: []*schema.Column{CabinetColumns[28]},
 			},
 			{
 				Name:    "cabinet_brand",
@@ -7576,7 +7564,7 @@ func init() {
 	AssetRoleTable.Annotation = &entsql.Annotation{
 		Table: "asset_role",
 	}
-	AssetScrapTable.ForeignKeys[0].RefTable = ManagerTable
+	AssetScrapTable.ForeignKeys[0].RefTable = AssetManagerTable
 	AssetScrapTable.ForeignKeys[1].RefTable = EmployeeTable
 	AssetScrapTable.ForeignKeys[2].RefTable = MaintainerTable
 	AssetScrapTable.ForeignKeys[3].RefTable = AgentTable
@@ -7680,9 +7668,8 @@ func init() {
 	CabinetTable.ForeignKeys[0].RefTable = BranchTable
 	CabinetTable.ForeignKeys[1].RefTable = CityTable
 	CabinetTable.ForeignKeys[2].RefTable = StoreTable
-	CabinetTable.ForeignKeys[3].RefTable = MaintainerTable
-	CabinetTable.ForeignKeys[4].RefTable = EnterpriseTable
-	CabinetTable.ForeignKeys[5].RefTable = EnterpriseStationTable
+	CabinetTable.ForeignKeys[3].RefTable = EnterpriseTable
+	CabinetTable.ForeignKeys[4].RefTable = EnterpriseStationTable
 	CabinetTable.Annotation = &entsql.Annotation{
 		Table: "cabinet",
 	}

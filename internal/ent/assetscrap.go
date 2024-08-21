@@ -12,10 +12,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 )
 
 // AssetScrap is the model entity for the AssetScrap schema.
@@ -54,7 +54,7 @@ type AssetScrap struct {
 // AssetScrapEdges holds the relations/edges for other nodes in the graph.
 type AssetScrapEdges struct {
 	// Manager holds the value of the manager edge.
-	Manager *Manager `json:"manager,omitempty"`
+	Manager *AssetManager `json:"manager,omitempty"`
 	// Employee holds the value of the employee edge.
 	Employee *Employee `json:"employee,omitempty"`
 	// Maintainer holds the value of the maintainer edge.
@@ -70,11 +70,11 @@ type AssetScrapEdges struct {
 
 // ManagerOrErr returns the Manager value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AssetScrapEdges) ManagerOrErr() (*Manager, error) {
+func (e AssetScrapEdges) ManagerOrErr() (*AssetManager, error) {
 	if e.Manager != nil {
 		return e.Manager, nil
 	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: manager.Label}
+		return nil, &NotFoundError{label: assetmanager.Label}
 	}
 	return nil, &NotLoadedError{edge: "manager"}
 }
@@ -241,7 +241,7 @@ func (as *AssetScrap) Value(name string) (ent.Value, error) {
 }
 
 // QueryManager queries the "manager" edge of the AssetScrap entity.
-func (as *AssetScrap) QueryManager() *ManagerQuery {
+func (as *AssetScrap) QueryManager() *AssetManagerQuery {
 	return NewAssetScrapClient(as.config).QueryManager(as)
 }
 

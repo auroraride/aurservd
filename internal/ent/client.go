@@ -3874,13 +3874,13 @@ func (c *AssetScrapClient) GetX(ctx context.Context, id uint64) *AssetScrap {
 }
 
 // QueryManager queries the manager edge of a AssetScrap.
-func (c *AssetScrapClient) QueryManager(as *AssetScrap) *ManagerQuery {
-	query := (&ManagerClient{config: c.config}).Query()
+func (c *AssetScrapClient) QueryManager(as *AssetScrap) *AssetManagerQuery {
+	query := (&AssetManagerClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := as.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetscrap.Table, assetscrap.FieldID, id),
-			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assetscrap.ManagerTable, assetscrap.ManagerColumn),
 		)
 		fromV = sqlgraph.Neighbors(as.driver.Dialect(), step)
@@ -6671,22 +6671,6 @@ func (c *CabinetClient) QueryStore(ca *Cabinet) *StoreQuery {
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
 			sqlgraph.To(store.Table, store.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, cabinet.StoreTable, cabinet.StoreColumn),
-		)
-		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryMaintainer queries the maintainer edge of a Cabinet.
-func (c *CabinetClient) QueryMaintainer(ca *Cabinet) *MaintainerQuery {
-	query := (&MaintainerClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := ca.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
-			sqlgraph.To(maintainer.Table, maintainer.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, cabinet.MaintainerTable, cabinet.MaintainerColumn),
 		)
 		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
 		return fromV, nil

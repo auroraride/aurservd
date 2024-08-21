@@ -24,7 +24,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
-	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -139,26 +138,6 @@ func (cu *CabinetUpdate) SetNillableStoreID(u *uint64) *CabinetUpdate {
 // ClearStoreID clears the value of the "store_id" field.
 func (cu *CabinetUpdate) ClearStoreID() *CabinetUpdate {
 	cu.mutation.ClearStoreID()
-	return cu
-}
-
-// SetMaintainerID sets the "maintainer_id" field.
-func (cu *CabinetUpdate) SetMaintainerID(u uint64) *CabinetUpdate {
-	cu.mutation.SetMaintainerID(u)
-	return cu
-}
-
-// SetNillableMaintainerID sets the "maintainer_id" field if the given value is not nil.
-func (cu *CabinetUpdate) SetNillableMaintainerID(u *uint64) *CabinetUpdate {
-	if u != nil {
-		cu.SetMaintainerID(*u)
-	}
-	return cu
-}
-
-// ClearMaintainerID clears the value of the "maintainer_id" field.
-func (cu *CabinetUpdate) ClearMaintainerID() *CabinetUpdate {
-	cu.mutation.ClearMaintainerID()
 	return cu
 }
 
@@ -618,26 +597,6 @@ func (cu *CabinetUpdate) AddLockedBinNum(i int) *CabinetUpdate {
 	return cu
 }
 
-// SetMaintenanceAt sets the "maintenance_at" field.
-func (cu *CabinetUpdate) SetMaintenanceAt(t time.Time) *CabinetUpdate {
-	cu.mutation.SetMaintenanceAt(t)
-	return cu
-}
-
-// SetNillableMaintenanceAt sets the "maintenance_at" field if the given value is not nil.
-func (cu *CabinetUpdate) SetNillableMaintenanceAt(t *time.Time) *CabinetUpdate {
-	if t != nil {
-		cu.SetMaintenanceAt(*t)
-	}
-	return cu
-}
-
-// ClearMaintenanceAt clears the value of the "maintenance_at" field.
-func (cu *CabinetUpdate) ClearMaintenanceAt() *CabinetUpdate {
-	cu.mutation.ClearMaintenanceAt()
-	return cu
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (cu *CabinetUpdate) SetCity(c *City) *CabinetUpdate {
 	return cu.SetCityID(c.ID)
@@ -646,11 +605,6 @@ func (cu *CabinetUpdate) SetCity(c *City) *CabinetUpdate {
 // SetStore sets the "store" edge to the Store entity.
 func (cu *CabinetUpdate) SetStore(s *Store) *CabinetUpdate {
 	return cu.SetStoreID(s.ID)
-}
-
-// SetMaintainer sets the "maintainer" edge to the Maintainer entity.
-func (cu *CabinetUpdate) SetMaintainer(m *Maintainer) *CabinetUpdate {
-	return cu.SetMaintainerID(m.ID)
 }
 
 // SetBranch sets the "branch" edge to the Branch entity.
@@ -772,12 +726,6 @@ func (cu *CabinetUpdate) ClearCity() *CabinetUpdate {
 // ClearStore clears the "store" edge to the Store entity.
 func (cu *CabinetUpdate) ClearStore() *CabinetUpdate {
 	cu.mutation.ClearStore()
-	return cu
-}
-
-// ClearMaintainer clears the "maintainer" edge to the Maintainer entity.
-func (cu *CabinetUpdate) ClearMaintainer() *CabinetUpdate {
-	cu.mutation.ClearMaintainer()
 	return cu
 }
 
@@ -1125,12 +1073,6 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := cu.mutation.AddedLockedBinNum(); ok {
 		_spec.AddField(cabinet.FieldLockedBinNum, field.TypeInt, value)
 	}
-	if value, ok := cu.mutation.MaintenanceAt(); ok {
-		_spec.SetField(cabinet.FieldMaintenanceAt, field.TypeTime, value)
-	}
-	if cu.mutation.MaintenanceAtCleared() {
-		_spec.ClearField(cabinet.FieldMaintenanceAt, field.TypeTime)
-	}
 	if cu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1182,35 +1124,6 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cu.mutation.MaintainerCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   cabinet.MaintainerTable,
-			Columns: []string{cabinet.MaintainerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.MaintainerIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   cabinet.MaintainerTable,
-			Columns: []string{cabinet.MaintainerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1695,26 +1608,6 @@ func (cuo *CabinetUpdateOne) ClearStoreID() *CabinetUpdateOne {
 	return cuo
 }
 
-// SetMaintainerID sets the "maintainer_id" field.
-func (cuo *CabinetUpdateOne) SetMaintainerID(u uint64) *CabinetUpdateOne {
-	cuo.mutation.SetMaintainerID(u)
-	return cuo
-}
-
-// SetNillableMaintainerID sets the "maintainer_id" field if the given value is not nil.
-func (cuo *CabinetUpdateOne) SetNillableMaintainerID(u *uint64) *CabinetUpdateOne {
-	if u != nil {
-		cuo.SetMaintainerID(*u)
-	}
-	return cuo
-}
-
-// ClearMaintainerID clears the value of the "maintainer_id" field.
-func (cuo *CabinetUpdateOne) ClearMaintainerID() *CabinetUpdateOne {
-	cuo.mutation.ClearMaintainerID()
-	return cuo
-}
-
 // SetBranchID sets the "branch_id" field.
 func (cuo *CabinetUpdateOne) SetBranchID(u uint64) *CabinetUpdateOne {
 	cuo.mutation.SetBranchID(u)
@@ -2171,26 +2064,6 @@ func (cuo *CabinetUpdateOne) AddLockedBinNum(i int) *CabinetUpdateOne {
 	return cuo
 }
 
-// SetMaintenanceAt sets the "maintenance_at" field.
-func (cuo *CabinetUpdateOne) SetMaintenanceAt(t time.Time) *CabinetUpdateOne {
-	cuo.mutation.SetMaintenanceAt(t)
-	return cuo
-}
-
-// SetNillableMaintenanceAt sets the "maintenance_at" field if the given value is not nil.
-func (cuo *CabinetUpdateOne) SetNillableMaintenanceAt(t *time.Time) *CabinetUpdateOne {
-	if t != nil {
-		cuo.SetMaintenanceAt(*t)
-	}
-	return cuo
-}
-
-// ClearMaintenanceAt clears the value of the "maintenance_at" field.
-func (cuo *CabinetUpdateOne) ClearMaintenanceAt() *CabinetUpdateOne {
-	cuo.mutation.ClearMaintenanceAt()
-	return cuo
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (cuo *CabinetUpdateOne) SetCity(c *City) *CabinetUpdateOne {
 	return cuo.SetCityID(c.ID)
@@ -2199,11 +2072,6 @@ func (cuo *CabinetUpdateOne) SetCity(c *City) *CabinetUpdateOne {
 // SetStore sets the "store" edge to the Store entity.
 func (cuo *CabinetUpdateOne) SetStore(s *Store) *CabinetUpdateOne {
 	return cuo.SetStoreID(s.ID)
-}
-
-// SetMaintainer sets the "maintainer" edge to the Maintainer entity.
-func (cuo *CabinetUpdateOne) SetMaintainer(m *Maintainer) *CabinetUpdateOne {
-	return cuo.SetMaintainerID(m.ID)
 }
 
 // SetBranch sets the "branch" edge to the Branch entity.
@@ -2325,12 +2193,6 @@ func (cuo *CabinetUpdateOne) ClearCity() *CabinetUpdateOne {
 // ClearStore clears the "store" edge to the Store entity.
 func (cuo *CabinetUpdateOne) ClearStore() *CabinetUpdateOne {
 	cuo.mutation.ClearStore()
-	return cuo
-}
-
-// ClearMaintainer clears the "maintainer" edge to the Maintainer entity.
-func (cuo *CabinetUpdateOne) ClearMaintainer() *CabinetUpdateOne {
-	cuo.mutation.ClearMaintainer()
 	return cuo
 }
 
@@ -2708,12 +2570,6 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 	if value, ok := cuo.mutation.AddedLockedBinNum(); ok {
 		_spec.AddField(cabinet.FieldLockedBinNum, field.TypeInt, value)
 	}
-	if value, ok := cuo.mutation.MaintenanceAt(); ok {
-		_spec.SetField(cabinet.FieldMaintenanceAt, field.TypeTime, value)
-	}
-	if cuo.mutation.MaintenanceAtCleared() {
-		_spec.ClearField(cabinet.FieldMaintenanceAt, field.TypeTime)
-	}
 	if cuo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -2765,35 +2621,6 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cuo.mutation.MaintainerCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   cabinet.MaintainerTable,
-			Columns: []string{cabinet.MaintainerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.MaintainerIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   cabinet.MaintainerTable,
-			Columns: []string{cabinet.MaintainerColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -15,11 +15,11 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -82,9 +82,15 @@ func (s *assetScrapService) ScrapList(ctx context.Context, req *model.AssetScrap
 			ScrapAt:     item.ScrapAt.Format(carbon.DateTimeLayout),
 		}
 
-		res.AssetScrapDetails = make([]model.AssetScrapDetailRes, 0)
-		for _, v := range item.Edges.ScrapDetails {
-			if v.Edges.Asset != nil {
+		if len(item.Edges.ScrapDetails) != 0 {
+			if item.Edges.ScrapDetails[0].Edges.Asset != nil {
+				v := item.Edges.ScrapDetails[0]
+				switch model.AssetType(item.Edges.ScrapDetails[0].Edges.Asset.Type) {
+				case model.AssetTypeEbike, model.AssetTypeSmartBattery:
+					res.Num = 1
+				case model.AssetTypeNonSmartBattery, model.AssetTypeEbikeAccessory, model.AssetTypeCabinetAccessory, model.AssetTypeOtherAccessory:
+					res.Num = uint(len(item.Edges.ScrapDetails))
+				}
 				attributeValue, _ := v.Edges.Asset.QueryValues().WithAttribute().All(ctx)
 				assetAttributeMap := make(map[uint64]model.AssetAttribute)
 
@@ -131,20 +137,16 @@ func (s *assetScrapService) ScrapList(ctx context.Context, req *model.AssetScrap
 						name = v.Edges.Asset.Edges.Material.Name
 					}
 				}
-
-				res.AssetScrapDetails = append(res.AssetScrapDetails, model.AssetScrapDetailRes{
-					AssetID:   v.AssetID,
-					SN:        sn,
-					Model:     modelStr,
-					Brand:     brandName,
-					InTimeAt:  inTimeAt,
-					Attribute: assetAttributeMap,
-					Name:      name,
-					AssetType: model.AssetType(v.Edges.Asset.Type).String(),
-				})
+				res.AssetID = v.AssetID
+				res.SN = sn
+				res.Model = modelStr
+				res.Brand = brandName
+				res.InTimeAt = inTimeAt
+				res.Attribute = assetAttributeMap
+				res.Name = name
+				res.AssetType = model.AssetType(v.Edges.Asset.Type).String()
 			}
 		}
-
 		return res
 	})
 }
@@ -152,7 +154,13 @@ func (s *assetScrapService) ScrapList(ctx context.Context, req *model.AssetScrap
 // 公共筛选条件
 func (s *assetScrapService) filter(ctx context.Context, q *ent.AssetScrapQuery, req *model.AssetScrapListReq) {
 	if req.AssetType != nil {
-		q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.Type(req.AssetType.Value()))))
+		if *req.AssetType == model.AssetTypeEbike || *req.AssetType == model.AssetTypeSmartBattery {
+			q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.Type(req.AssetType.Value()))))
+		} else {
+			// 配件
+			q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.TypeNotIn(model.AssetTypeEbike.Value(), model.AssetTypeSmartBattery.Value()))))
+		}
+
 	}
 	if req.SN != nil {
 		q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.Sn(*req.SN))))
@@ -183,7 +191,7 @@ func (s *assetScrapService) filter(ctx context.Context, q *ent.AssetScrapQuery, 
 				// 运维
 				assetscrap.HasMaintainerWith(maintainer.NameContains(*req.OperateName)),
 				// 后台
-				assetscrap.HasManagerWith(manager.NameContains(*req.OperateName)),
+				assetscrap.HasManagerWith(assetmanager.NameContains(*req.OperateName)),
 			),
 		)
 	}
@@ -263,7 +271,6 @@ func (s *assetScrapService) ScrapBatchRestore(ctx context.Context, req *model.As
 
 // Scrap 报废资产
 func (s *assetScrapService) Scrap(ctx context.Context, req *model.AssetScrapReq, modifier *model.Modifier) error {
-	var ids []uint64
 	for _, v := range req.Details {
 		switch v.AssetType {
 		case model.AssetTypeEbike, model.AssetTypeSmartBattery:
@@ -271,17 +278,28 @@ func (s *assetScrapService) Scrap(ctx context.Context, req *model.AssetScrapReq,
 			if err != nil {
 				return err
 			}
-			ids = append(ids, assetId...)
+			err = s.createScrap(ctx, req, modifier, assetId)
+			if err != nil {
+				return err
+			}
 		case model.AssetTypeOtherAccessory, model.AssetTypeCabinetAccessory, model.AssetTypeNonSmartBattery, model.AssetTypeEbikeAccessory:
 			assetId, err := s.scrapAssetWithoutSN(ctx, &v, req.WarehouseID)
 			if err != nil {
 				return err
 			}
-			ids = append(ids, assetId...)
+			err = s.createScrap(ctx, req, modifier, assetId)
+			if err != nil {
+				return err
+			}
 		default:
 			return errors.New("资产类型错误")
 		}
 	}
+	return nil
+}
+
+// 创建报废
+func (s *assetScrapService) createScrap(ctx context.Context, req *model.AssetScrapReq, modifier *model.Modifier, ids []uint64) error {
 	scrapBluk := make([]*ent.AssetScrapDetailsCreate, 0)
 	scrapBatchSn := tools.NewUnique().NewSN28()
 	scrapAt := time.Now()
@@ -320,14 +338,13 @@ func (s *assetScrapService) Scrap(ctx context.Context, req *model.AssetScrapReq,
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
 // 有编号资产报废
 func (s *assetScrapService) scrapAssetWithSN(ctx context.Context, req *model.AssetScrapDetails) ([]uint64, error) {
 	ids := make([]uint64, 0)
-	if req.AssetID == nil {
+	if req.Sn == nil {
 		return nil, fmt.Errorf("资产ID不能为空")
 	}
 	q := ent.Database.Asset.QueryNotDeleted().Where(
@@ -342,9 +359,9 @@ func (s *assetScrapService) scrapAssetWithSN(ctx context.Context, req *model.Ass
 			model.AssetLocationsTypeOperation.Value(),
 		),
 	)
-	bat, _ := q.Where(asset.Type(req.AssetType.Value()), asset.ID(*req.AssetID)).First(ctx)
+	bat, _ := q.Where(asset.Type(req.AssetType.Value()), asset.Sn(*req.Sn)).First(ctx)
 	if bat == nil {
-		return nil, fmt.Errorf("资产" + strconv.FormatUint(*req.AssetID, 10) + "不存在或状态不正确")
+		return nil, fmt.Errorf("资产" + *req.Sn + "不存在或状态不正确")
 	}
 	ids = append(ids, bat.ID)
 	return ids, nil

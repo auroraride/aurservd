@@ -876,22 +876,10 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/model.PaginationRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.AssetCheckAbnormal"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.AssetCheckAbnormal"
+                            }
                         }
                     }
                 }
@@ -963,8 +951,20 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "品牌",
+                        "name": "brandId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "型号ID",
+                        "name": "modelId",
                         "in": "query"
                     },
                     {
@@ -2297,7 +2297,7 @@ const docTemplate = `{
                             "AssetTypeEbikeAccessory",
                             "AssetTypeOtherAccessory"
                         ],
-                        "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                        "description": "资产类型 1:电车 2:智能电池 3:其它",
                         "name": "assetType",
                         "in": "query"
                     },
@@ -5998,7 +5998,6 @@ const docTemplate = `{
             "required": [
                 "cabinetId",
                 "content",
-                "details",
                 "reason",
                 "status"
             ],
@@ -6031,7 +6030,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "description": "维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消",
+                    "description": "维修状态1:维修中 2:已维修 3:维修失败 4:已取消",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.AssetMaintenanceStatus"
@@ -6116,18 +6115,15 @@ const docTemplate = `{
                 0,
                 1,
                 2,
-                3,
-                4
+                3
             ],
             "x-enum-comments": {
                 "AssetMaintenanceStatusCancel": "已取消",
                 "AssetMaintenanceStatusFail": "维修失败",
                 "AssetMaintenanceStatusSuccess": "已维修",
-                "AssetMaintenanceStatusUnder": "维修中",
-                "AssetMaintenanceStatusWait": "待维修"
+                "AssetMaintenanceStatusUnder": "维修中"
             },
             "x-enum-varnames": [
-                "AssetMaintenanceStatusWait",
                 "AssetMaintenanceStatusUnder",
                 "AssetMaintenanceStatusSuccess",
                 "AssetMaintenanceStatusFail",
@@ -6218,11 +6214,39 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AssetScrapDetailRes": {
+        "model.AssetScrapDetails": {
+            "type": "object",
+            "required": [
+                "assetType"
+            ],
+            "properties": {
+                "assetType": {
+                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                },
+                "materialId": {
+                    "description": "其它物资分类ID",
+                    "type": "integer"
+                },
+                "num": {
+                    "description": "报废数量",
+                    "type": "integer"
+                },
+                "sn": {
+                    "description": "资产Sn",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetScrapListRes": {
             "type": "object",
             "properties": {
                 "assetID": {
-                    "description": "资产ID",
+                    "description": "AssetScrapDetails []AssetScrapDetailRes ` + "`" + `json:\"details\"` + "`" + `     // 报废明细",
                     "type": "integer"
                 },
                 "assetType": {
@@ -6240,6 +6264,10 @@ const docTemplate = `{
                     "description": "资产品牌",
                     "type": "string"
                 },
+                "id": {
+                    "description": "报废ID",
+                    "type": "integer"
+                },
                 "inTimeAt": {
                     "description": "入库时间",
                     "type": "string"
@@ -6252,52 +6280,8 @@ const docTemplate = `{
                     "description": "资产名称",
                     "type": "string"
                 },
-                "sn": {
-                    "description": "资产编号",
-                    "type": "string"
-                }
-            }
-        },
-        "model.AssetScrapDetails": {
-            "type": "object",
-            "required": [
-                "assetType"
-            ],
-            "properties": {
-                "assetId": {
-                    "description": "资产ID",
-                    "type": "integer"
-                },
-                "assetType": {
-                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.AssetType"
-                        }
-                    ]
-                },
-                "materialId": {
-                    "description": "其它物资分类ID",
-                    "type": "integer"
-                },
                 "num": {
                     "description": "报废数量",
-                    "type": "integer"
-                }
-            }
-        },
-        "model.AssetScrapListRes": {
-            "type": "object",
-            "properties": {
-                "details": {
-                    "description": "报废明细",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.AssetScrapDetailRes"
-                    }
-                },
-                "id": {
-                    "description": "报废ID",
                     "type": "integer"
                 },
                 "operateName": {
@@ -6314,6 +6298,10 @@ const docTemplate = `{
                 },
                 "scrapReason": {
                     "description": "报废原因",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "资产编号",
                     "type": "string"
                 }
             }

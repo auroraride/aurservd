@@ -180,6 +180,27 @@ func (amu *AssetMaintenanceUpdate) AddStatus(u int8) *AssetMaintenanceUpdate {
 	return amu
 }
 
+// SetCabinetStatus sets the "cabinet_status" field.
+func (amu *AssetMaintenanceUpdate) SetCabinetStatus(u uint8) *AssetMaintenanceUpdate {
+	amu.mutation.ResetCabinetStatus()
+	amu.mutation.SetCabinetStatus(u)
+	return amu
+}
+
+// SetNillableCabinetStatus sets the "cabinet_status" field if the given value is not nil.
+func (amu *AssetMaintenanceUpdate) SetNillableCabinetStatus(u *uint8) *AssetMaintenanceUpdate {
+	if u != nil {
+		amu.SetCabinetStatus(*u)
+	}
+	return amu
+}
+
+// AddCabinetStatus adds u to the "cabinet_status" field.
+func (amu *AssetMaintenanceUpdate) AddCabinetStatus(u int8) *AssetMaintenanceUpdate {
+	amu.mutation.AddCabinetStatus(u)
+	return amu
+}
+
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
 func (amu *AssetMaintenanceUpdate) SetCabinet(c *Cabinet) *AssetMaintenanceUpdate {
 	return amu.SetCabinetID(c.ID)
@@ -335,6 +356,12 @@ func (amu *AssetMaintenanceUpdate) sqlSave(ctx context.Context) (n int, err erro
 	}
 	if value, ok := amu.mutation.AddedStatus(); ok {
 		_spec.AddField(assetmaintenance.FieldStatus, field.TypeUint8, value)
+	}
+	if value, ok := amu.mutation.CabinetStatus(); ok {
+		_spec.SetField(assetmaintenance.FieldCabinetStatus, field.TypeUint8, value)
+	}
+	if value, ok := amu.mutation.AddedCabinetStatus(); ok {
+		_spec.AddField(assetmaintenance.FieldCabinetStatus, field.TypeUint8, value)
 	}
 	if amu.mutation.CabinetCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -608,6 +635,27 @@ func (amuo *AssetMaintenanceUpdateOne) AddStatus(u int8) *AssetMaintenanceUpdate
 	return amuo
 }
 
+// SetCabinetStatus sets the "cabinet_status" field.
+func (amuo *AssetMaintenanceUpdateOne) SetCabinetStatus(u uint8) *AssetMaintenanceUpdateOne {
+	amuo.mutation.ResetCabinetStatus()
+	amuo.mutation.SetCabinetStatus(u)
+	return amuo
+}
+
+// SetNillableCabinetStatus sets the "cabinet_status" field if the given value is not nil.
+func (amuo *AssetMaintenanceUpdateOne) SetNillableCabinetStatus(u *uint8) *AssetMaintenanceUpdateOne {
+	if u != nil {
+		amuo.SetCabinetStatus(*u)
+	}
+	return amuo
+}
+
+// AddCabinetStatus adds u to the "cabinet_status" field.
+func (amuo *AssetMaintenanceUpdateOne) AddCabinetStatus(u int8) *AssetMaintenanceUpdateOne {
+	amuo.mutation.AddCabinetStatus(u)
+	return amuo
+}
+
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
 func (amuo *AssetMaintenanceUpdateOne) SetCabinet(c *Cabinet) *AssetMaintenanceUpdateOne {
 	return amuo.SetCabinetID(c.ID)
@@ -793,6 +841,12 @@ func (amuo *AssetMaintenanceUpdateOne) sqlSave(ctx context.Context) (_node *Asse
 	}
 	if value, ok := amuo.mutation.AddedStatus(); ok {
 		_spec.AddField(assetmaintenance.FieldStatus, field.TypeUint8, value)
+	}
+	if value, ok := amuo.mutation.CabinetStatus(); ok {
+		_spec.SetField(assetmaintenance.FieldCabinetStatus, field.TypeUint8, value)
+	}
+	if value, ok := amuo.mutation.AddedCabinetStatus(); ok {
+		_spec.AddField(assetmaintenance.FieldCabinetStatus, field.TypeUint8, value)
 	}
 	if amuo.mutation.CabinetCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -592,7 +592,7 @@ func HasManager() predicate.AssetScrap {
 }
 
 // HasManagerWith applies the HasEdge predicate on the "manager" edge with a given conditions (other predicates).
-func HasManagerWith(preds ...predicate.Manager) predicate.AssetScrap {
+func HasManagerWith(preds ...predicate.AssetManager) predicate.AssetScrap {
 	return predicate.AssetScrap(func(s *sql.Selector) {
 		step := newManagerStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
