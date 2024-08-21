@@ -733,7 +733,11 @@ func (s *assetTransferService) TransferDetail(ctx context.Context, req *model.As
 
 // TransferCancel 取消调拨
 func (s *assetTransferService) TransferCancel(ctx context.Context, req *model.AssetTransferDetailReq, modifier *model.Modifier) (err error) {
-	item, err := ent.Database.AssetTransfer.QueryNotDeleted().Where(assettransfer.ID(req.ID)).First(ctx)
+	item, err := ent.Database.AssetTransfer.QueryNotDeleted().WithTransferDetails(
+		func(query *ent.AssetTransferDetailsQuery) {
+			query.WithAsset()
+		},
+	).Where(assettransfer.ID(req.ID)).First(ctx)
 	if err != nil {
 		return err
 	}
@@ -746,6 +750,16 @@ func (s *assetTransferService) TransferCancel(ctx context.Context, req *model.As
 	if item.Status == model.AssetTransferStatusCancel.Value() {
 		return errors.New("调拨单已取消")
 	}
+
+	// 初始调拨删除资产
+	if item.Type == model.AssetTransferTypeInitial.Value() {
+		if item.Edges.TransferDetails != nil {
+			for _, v := range item.Edges.TransferDetails {
+				_ = NewAsset().Delete(ctx, v.AssetID)
+			}
+		}
+	}
+
 	// 修改调拨单状态
 	_, err = item.Update().
 		SetStatus(model.AssetTransferStatusCancel.Value()).
