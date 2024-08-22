@@ -23,12 +23,10 @@ type WarehouseDetail struct {
 
 // WarehouseCreateReq 创建
 type WarehouseCreateReq struct {
-	Name    string  `json:"name" validate:"required,max=30" trans:"仓库名称"` // 商品名称
-	CityID  uint64  `json:"cityId" validate:"required" trans:"城市ID"`      // 城市ID
-	Lat     float64 `json:"lat" validate:"required" trans:"城市纬度"`         // 纬度
-	Lng     float64 `json:"lng" validate:"required" trans:"城市经度"`         // 经度
-	Address string  `json:"address" validate:"max=50"`                    // 详细地址
-	Remark  string  `json:"remark" validate:"max=50"`                     // 备注
+	Name    string `json:"name" validate:"required,max=30" trans:"仓库名称"` // 商品名称
+	CityID  uint64 `json:"cityId" validate:"required" trans:"城市ID"`      // 城市ID
+	Address string `json:"address" validate:"max=50"`                    // 详细地址
+	Remark  string `json:"remark" validate:"max=50"`                     // 备注
 }
 
 // WarehouseModifyReq 修改

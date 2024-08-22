@@ -105,20 +105,20 @@ func assetRoleInitial() *ent.AssetRole {
 	client := ent.Database.AssetRole
 	ctx := context.Background()
 	name := "超级管理员"
-	if e, _ := client.Query().Where(assetrole.Buildin(true), assetrole.Super(true)).First(ctx); e != nil {
-		return e
+	var superRole *ent.AssetRole
+	if superRole, _ = client.Query().Where(assetrole.Buildin(true), assetrole.Super(true)).First(ctx); superRole == nil {
+		superRole = client.Create().SetName(name).SetSuper(true).SetBuildin(true).SaveX(ctx)
 	}
-	superRole := client.Create().SetName(name).SetSuper(true).SetBuildin(true).SaveX(ctx)
 
 	// 仓库人员、门店人员角色初始化
 	warehouseRoleName := "仓库管理员"
 	if e, _ := client.Query().Where(assetrole.Name(warehouseRoleName), assetrole.Buildin(true)).First(ctx); e == nil {
-		_ = client.Create().SetName(name).SetBuildin(true).SaveX(ctx)
+		_ = client.Create().SetName(warehouseRoleName).SetBuildin(true).SaveX(ctx)
 	}
 
 	storeRoleName := "门店店员"
 	if e, _ := client.Query().Where(assetrole.Name(storeRoleName), assetrole.Buildin(true)).First(ctx); e == nil {
-		_ = client.Create().SetName(name).SetBuildin(true).SaveX(ctx)
+		_ = client.Create().SetName(storeRoleName).SetBuildin(true).SaveX(ctx)
 	}
 
 	return superRole

@@ -5484,8 +5484,6 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "cityId",
-                "lat",
-                "lng",
                 "name"
             ],
             "properties": {
@@ -5497,14 +5495,6 @@ const docTemplate = `{
                 "cityId": {
                     "description": "城市ID, 城市ID",
                     "type": "integer"
-                },
-                "lat": {
-                    "description": "城市纬度, 纬度",
-                    "type": "number"
-                },
-                "lng": {
-                    "description": "城市经度, 经度",
-                    "type": "number"
                 },
                 "name": {
                     "description": "仓库名称, 商品名称",
@@ -5567,8 +5557,6 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "cityId",
-                "lat",
-                "lng",
                 "name"
             ],
             "properties": {
@@ -5580,14 +5568,6 @@ const docTemplate = `{
                 "cityId": {
                     "description": "城市ID, 城市ID",
                     "type": "integer"
-                },
-                "lat": {
-                    "description": "城市纬度, 纬度",
-                    "type": "number"
-                },
-                "lng": {
-                    "description": "城市经度, 经度",
-                    "type": "number"
                 },
                 "name": {
                     "description": "仓库名称, 商品名称",
