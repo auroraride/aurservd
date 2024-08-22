@@ -1082,6 +1082,96 @@
                 }
             }
         },
+        "/manager/v2/asset/city": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "City - 城市"
+                ],
+                "summary": "城市列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "maximum": 2,
+                        "minimum": 0,
+                        "type": "integer",
+                        "description": "启用状态 0:全部 1:未启用 2:已启用",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CityItem"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/city/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "City - 城市"
+                ],
+                "summary": "修改城市",
+                "operationId": "CityModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "城市数据",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CityModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/count": {
             "get": {
                 "consumes": [
@@ -2929,6 +3019,119 @@
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/store_group": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StoreGroup - 仓库"
+                ],
+                "summary": "门店集合列表",
+                "operationId": "StoreGroupList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.StoreGroupListRes"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StoreGroup - 仓库"
+                ],
+                "summary": "门店集合创建",
+                "operationId": "StoreGroupCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "创建参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.StoreGroupCreateRep"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/store_group/{id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StoreGroup - 仓库"
+                ],
+                "summary": "门店集合删除",
+                "operationId": "StoreGroupDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "资产ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -5137,6 +5340,31 @@
                 }
             }
         },
+        "definition.StoreGroupCreateRep": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "description": "门店集合名称",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.StoreGroupListRes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "门店集合id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "门店集合名称",
+                    "type": "string"
+                }
+            }
+        },
         "definition.WareHouseAssetDetail": {
             "type": "object",
             "properties": {
@@ -6878,6 +7106,42 @@
                 "name": {
                     "description": "城市",
                     "type": "string"
+                }
+            }
+        },
+        "model.CityItem": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "城市列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CityItem"
+                    }
+                },
+                "id": {
+                    "description": "城市或省份ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "城市/省份",
+                    "type": "string"
+                },
+                "open": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                }
+            }
+        },
+        "model.CityModifyReq": {
+            "type": "object",
+            "required": [
+                "open"
+            ],
+            "properties": {
+                "open": {
+                    "description": "状态",
+                    "type": "boolean"
                 }
             }
         },

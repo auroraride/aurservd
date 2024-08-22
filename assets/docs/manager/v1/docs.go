@@ -2370,6 +2370,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/cabinet/bind/store": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "电柜"
+                ],
+                "summary": "电柜绑定门店",
+                "operationId": "ManagerCabinetBindStore",
+                "parameters": [
+                    {
+                        "description": "绑定电柜请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BindStoreReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/cabinet/data": {
             "get": {
                 "consumes": [
@@ -16226,6 +16260,18 @@ const docTemplate = `{
                 "price": {
                     "description": "单价",
                     "type": "number"
+                }
+            }
+        },
+        "model.BindStoreReq": {
+            "type": "object",
+            "required": [
+                "storeID"
+            ],
+            "properties": {
+                "storeID": {
+                    "description": "门店ID",
+                    "type": "integer"
                 }
             }
         },

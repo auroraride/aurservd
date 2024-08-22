@@ -104,6 +104,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
+	"github.com/auroraride/aurservd/internal/ent/storegroup"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -263,6 +264,7 @@ func checkColumn(table, column string) error {
 			stocksummary.Table:               stocksummary.ValidColumn,
 			store.Table:                      store.ValidColumn,
 			storegoods.Table:                 storegoods.ValidColumn,
+			storegroup.Table:                 storegroup.ValidColumn,
 			subscribe.Table:                  subscribe.ValidColumn,
 			subscribealter.Table:             subscribealter.ValidColumn,
 			subscribepause.Table:             subscribepause.ValidColumn,

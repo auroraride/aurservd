@@ -1626,6 +1626,14 @@ definitions:
         description: 单价
         type: number
     type: object
+  model.BindStoreReq:
+    properties:
+      storeID:
+        description: 门店ID
+        type: integer
+    required:
+    - storeID
+    type: object
   model.BranchContract:
     properties:
       area:
@@ -9358,6 +9366,28 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: 仓位逻辑禁用/启用
+      tags:
+      - 电柜
+  /manager/v1/cabinet/bind/store:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerCabinetBindStore
+      parameters:
+      - description: 绑定电柜请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BindStoreReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 电柜绑定门店
       tags:
       - 电柜
   /manager/v1/cabinet/data:

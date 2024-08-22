@@ -68,6 +68,15 @@ func loadAssetsRoutes() {
 	asset.DELETE("/warehouse/:id", assetapi.Warehouse.Delete) // 删除仓库
 	asset.GET("/warehouse_assets", assetapi.Warehouse.Assets) // 仓库物资
 
+	// 城市
+	asset.GET("/city", assetapi.City.List)       // 城市列表
+	asset.PUT("/city/:id", assetapi.City.Modify) // 启用或关闭城市
+
+	// 门店集合
+	asset.GET("/store_group", assetapi.StoreGroup.List)          // 门店集合列表
+	asset.POST("/store_group", assetapi.StoreGroup.Create)       // 创建门店集合
+	asset.DELETE("/store_group/:id", assetapi.StoreGroup.Delete) // 删除门店集合
+
 	// 门店物资
 	asset.GET("/store_assets", assetapi.Store.StoreAsset) // 门店物资列表
 

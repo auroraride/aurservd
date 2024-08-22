@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
+	"github.com/auroraride/aurservd/internal/ent/storegroup"
 )
 
 // StoreCreate is the builder for creating a Store entity.
@@ -101,6 +102,20 @@ func (sc *StoreCreate) SetNillableRemark(s *string) *StoreCreate {
 // SetCityID sets the "city_id" field.
 func (sc *StoreCreate) SetCityID(u uint64) *StoreCreate {
 	sc.mutation.SetCityID(u)
+	return sc
+}
+
+// SetGroupID sets the "group_id" field.
+func (sc *StoreCreate) SetGroupID(u uint64) *StoreCreate {
+	sc.mutation.SetGroupID(u)
+	return sc
+}
+
+// SetNillableGroupID sets the "group_id" field if the given value is not nil.
+func (sc *StoreCreate) SetNillableGroupID(u *uint64) *StoreCreate {
+	if u != nil {
+		sc.SetGroupID(*u)
+	}
 	return sc
 }
 
@@ -275,6 +290,11 @@ func (sc *StoreCreate) SetNillableHeadPic(s *string) *StoreCreate {
 // SetCity sets the "city" edge to the City entity.
 func (sc *StoreCreate) SetCity(c *City) *StoreCreate {
 	return sc.SetCityID(c.ID)
+}
+
+// SetGroup sets the "group" edge to the StoreGroup entity.
+func (sc *StoreCreate) SetGroup(s *StoreGroup) *StoreCreate {
+	return sc.SetGroupID(s.ID)
 }
 
 // SetBranch sets the "branch" edge to the Branch entity.
@@ -629,6 +649,23 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := sc.mutation.GroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.GroupTable,
+			Columns: []string{store.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegroup.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.GroupID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := sc.mutation.BranchIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -870,6 +907,24 @@ func (u *StoreUpsert) SetCityID(v uint64) *StoreUpsert {
 // UpdateCityID sets the "city_id" field to the value that was provided on create.
 func (u *StoreUpsert) UpdateCityID() *StoreUpsert {
 	u.SetExcluded(store.FieldCityID)
+	return u
+}
+
+// SetGroupID sets the "group_id" field.
+func (u *StoreUpsert) SetGroupID(v uint64) *StoreUpsert {
+	u.Set(store.FieldGroupID, v)
+	return u
+}
+
+// UpdateGroupID sets the "group_id" field to the value that was provided on create.
+func (u *StoreUpsert) UpdateGroupID() *StoreUpsert {
+	u.SetExcluded(store.FieldGroupID)
+	return u
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (u *StoreUpsert) ClearGroupID() *StoreUpsert {
+	u.SetNull(store.FieldGroupID)
 	return u
 }
 
@@ -1228,6 +1283,27 @@ func (u *StoreUpsertOne) SetCityID(v uint64) *StoreUpsertOne {
 func (u *StoreUpsertOne) UpdateCityID() *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// SetGroupID sets the "group_id" field.
+func (u *StoreUpsertOne) SetGroupID(v uint64) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetGroupID(v)
+	})
+}
+
+// UpdateGroupID sets the "group_id" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdateGroupID() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateGroupID()
+	})
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (u *StoreUpsertOne) ClearGroupID() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearGroupID()
 	})
 }
 
@@ -1788,6 +1864,27 @@ func (u *StoreUpsertBulk) SetCityID(v uint64) *StoreUpsertBulk {
 func (u *StoreUpsertBulk) UpdateCityID() *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// SetGroupID sets the "group_id" field.
+func (u *StoreUpsertBulk) SetGroupID(v uint64) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetGroupID(v)
+	})
+}
+
+// UpdateGroupID sets the "group_id" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdateGroupID() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateGroupID()
+	})
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (u *StoreUpsertBulk) ClearGroupID() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearGroupID()
 	})
 }
 

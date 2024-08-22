@@ -509,6 +509,23 @@ definitions:
         - $ref: '#/definitions/definition.StoreAsset'
         description: 门店资产
     type: object
+  definition.StoreGroupCreateRep:
+    properties:
+      name:
+        description: 门店集合名称
+        type: string
+    required:
+    - name
+    type: object
+  definition.StoreGroupListRes:
+    properties:
+      id:
+        description: 门店集合id
+        type: integer
+      name:
+        description: 门店集合名称
+        type: string
+    type: object
   definition.WareHouseAssetDetail:
     properties:
       city:
@@ -1741,6 +1758,31 @@ definitions:
         description: 城市
         type: string
     type: object
+  model.CityItem:
+    properties:
+      children:
+        description: 城市列表
+        items:
+          $ref: '#/definitions/model.CityItem'
+        type: array
+      id:
+        description: 城市或省份ID
+        type: integer
+      name:
+        description: 城市/省份
+        type: string
+      open:
+        description: 是否启用
+        type: boolean
+    type: object
+  model.CityModifyReq:
+    properties:
+      open:
+        description: 状态
+        type: boolean
+    required:
+    - open
+    type: object
   model.EbikeBrand:
     properties:
       brandAttribute:
@@ -2840,6 +2882,66 @@ paths:
       summary: 通过SN查询资产
       tags:
       - 资产
+  /manager/v2/asset/city:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 启用状态 0:全部 1:未启用 2:已启用
+        in: query
+        maximum: 2
+        minimum: 0
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CityItem'
+            type: array
+      summary: 城市列表
+      tags:
+      - City - 城市
+  /manager/v2/asset/city/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: CityModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 城市数据
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CityModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改城市
+      tags:
+      - City - 城市
   /manager/v2/asset/count:
     get:
       consumes:
@@ -4074,6 +4176,81 @@ paths:
       summary: 门店物资
       tags:
       - 门店 - Store
+  /manager/v2/asset/store_group:
+    get:
+      consumes:
+      - application/json
+      operationId: StoreGroupList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.StoreGroupListRes'
+            type: array
+      summary: 门店集合列表
+      tags:
+      - StoreGroup - 仓库
+    post:
+      consumes:
+      - application/json
+      operationId: StoreGroupCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 创建参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.StoreGroupCreateRep'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 门店集合创建
+      tags:
+      - StoreGroup - 仓库
+  /manager/v2/asset/store_group/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: StoreGroupDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 资产ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 门店集合删除
+      tags:
+      - StoreGroup - 仓库
   /manager/v2/asset/template:
     get:
       consumes:

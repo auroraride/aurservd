@@ -112,6 +112,7 @@ func (Store) Mixin() []ent.Mixin {
 		internal.Modifier{},
 
 		CityMixin{},
+		StoreGroupMixin{Optional: true},
 	}
 }
 

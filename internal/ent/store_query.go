@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
+	"github.com/auroraride/aurservd/internal/ent/storegroup"
 )
 
 // StoreQuery is the builder for querying Store entities.
@@ -30,6 +31,7 @@ type StoreQuery struct {
 	inters          []Interceptor
 	predicates      []predicate.Store
 	withCity        *CityQuery
+	withGroup       *StoreGroupQuery
 	withBranch      *BranchQuery
 	withEmployee    *EmployeeQuery
 	withStocks      *StockQuery
@@ -89,6 +91,28 @@ func (sq *StoreQuery) QueryCity() *CityQuery {
 			sqlgraph.From(store.Table, store.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, store.CityTable, store.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryGroup chains the current query on the "group" edge.
+func (sq *StoreQuery) QueryGroup() *StoreGroupQuery {
+	query := (&StoreGroupClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, selector),
+			sqlgraph.To(storegroup.Table, storegroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, store.GroupTable, store.GroupColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -443,6 +467,7 @@ func (sq *StoreQuery) Clone() *StoreQuery {
 		inters:          append([]Interceptor{}, sq.inters...),
 		predicates:      append([]predicate.Store{}, sq.predicates...),
 		withCity:        sq.withCity.Clone(),
+		withGroup:       sq.withGroup.Clone(),
 		withBranch:      sq.withBranch.Clone(),
 		withEmployee:    sq.withEmployee.Clone(),
 		withStocks:      sq.withStocks.Clone(),
@@ -464,6 +489,17 @@ func (sq *StoreQuery) WithCity(opts ...func(*CityQuery)) *StoreQuery {
 		opt(query)
 	}
 	sq.withCity = query
+	return sq
+}
+
+// WithGroup tells the query-builder to eager-load the nodes that are connected to
+// the "group" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StoreQuery) WithGroup(opts ...func(*StoreGroupQuery)) *StoreQuery {
+	query := (&StoreGroupClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withGroup = query
 	return sq
 }
 
@@ -622,8 +658,9 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 	var (
 		nodes       = []*Store{}
 		_spec       = sq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [9]bool{
 			sq.withCity != nil,
+			sq.withGroup != nil,
 			sq.withBranch != nil,
 			sq.withEmployee != nil,
 			sq.withStocks != nil,
@@ -657,6 +694,12 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 	if query := sq.withCity; query != nil {
 		if err := sq.loadCity(ctx, query, nodes, nil,
 			func(n *Store, e *City) { n.Edges.City = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withGroup; query != nil {
+		if err := sq.loadGroup(ctx, query, nodes, nil,
+			func(n *Store, e *StoreGroup) { n.Edges.Group = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -732,6 +775,38 @@ func (sq *StoreQuery) loadCity(ctx context.Context, query *CityQuery, nodes []*S
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (sq *StoreQuery) loadGroup(ctx context.Context, query *StoreGroupQuery, nodes []*Store, init func(*Store), assign func(*Store, *StoreGroup)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Store)
+	for i := range nodes {
+		if nodes[i].GroupID == nil {
+			continue
+		}
+		fk := *nodes[i].GroupID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(storegroup.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "group_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -1017,6 +1092,9 @@ func (sq *StoreQuery) querySpec() *sqlgraph.QuerySpec {
 		if sq.withCity != nil {
 			_spec.Node.AddColumnOnce(store.FieldCityID)
 		}
+		if sq.withGroup != nil {
+			_spec.Node.AddColumnOnce(store.FieldGroupID)
+		}
 		if sq.withBranch != nil {
 			_spec.Node.AddColumnOnce(store.FieldBranchID)
 		}
@@ -1092,6 +1170,7 @@ type StoreQueryWith string
 
 var (
 	StoreQueryWithCity        StoreQueryWith = "City"
+	StoreQueryWithGroup       StoreQueryWith = "Group"
 	StoreQueryWithBranch      StoreQueryWith = "Branch"
 	StoreQueryWithEmployee    StoreQueryWith = "Employee"
 	StoreQueryWithStocks      StoreQueryWith = "Stocks"
@@ -1106,6 +1185,8 @@ func (sq *StoreQuery) With(withEdges ...StoreQueryWith) *StoreQuery {
 		switch v {
 		case StoreQueryWithCity:
 			sq.WithCity()
+		case StoreQueryWithGroup:
+			sq.WithGroup()
 		case StoreQueryWithBranch:
 			sq.WithBranch()
 		case StoreQueryWithEmployee:

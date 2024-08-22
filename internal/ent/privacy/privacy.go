@@ -2319,6 +2319,30 @@ func (f StoreGoodsMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Muta
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.StoreGoodsMutation", m)
 }
 
+// The StoreGroupQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type StoreGroupQueryRuleFunc func(context.Context, *ent.StoreGroupQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f StoreGroupQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.StoreGroupQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.StoreGroupQuery", q)
+}
+
+// The StoreGroupMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type StoreGroupMutationRuleFunc func(context.Context, *ent.StoreGroupMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f StoreGroupMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.StoreGroupMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.StoreGroupMutation", m)
+}
+
 // The SubscribeQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type SubscribeQueryRuleFunc func(context.Context, *ent.SubscribeQuery) error
@@ -2706,6 +2730,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.StoreGoodsQuery:
 		return q.Filter(), nil
+	case *ent.StoreGroupQuery:
+		return q.Filter(), nil
 	case *ent.SubscribeQuery:
 		return q.Filter(), nil
 	case *ent.SubscribeAlterQuery:
@@ -2910,6 +2936,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.StoreMutation:
 		return m.Filter(), nil
 	case *ent.StoreGoodsMutation:
+		return m.Filter(), nil
+	case *ent.StoreGroupMutation:
 		return m.Filter(), nil
 	case *ent.SubscribeMutation:
 		return m.Filter(), nil

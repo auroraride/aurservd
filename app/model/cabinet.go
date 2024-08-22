@@ -450,6 +450,12 @@ type EnterpriseBindCabinetReq struct {
 	EnterpriseID uint64 `json:"enterpriseID" validate:"required"`  // 团签ID
 }
 
+// BindStoreReq 团签绑定电柜请求
+type BindStoreReq struct {
+	ID      uint64 `json:"id" validate:"required" param:"id"` // 电柜ID
+	StoreID uint64 `json:"storeID" validate:"required"`       // 门店ID
+}
+
 // CabinetAgentEditReq 代理商电柜编辑请求
 type CabinetAgentEditReq struct {
 	ID        uint64 `json:"id" validate:"required" param:"id"`      // 电柜ID

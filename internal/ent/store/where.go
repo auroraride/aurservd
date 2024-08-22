@@ -80,6 +80,11 @@ func CityID(v uint64) predicate.Store {
 	return predicate.Store(sql.FieldEQ(FieldCityID, v))
 }
 
+// GroupID applies equality check predicate on the "group_id" field. It's identical to GroupIDEQ.
+func GroupID(v uint64) predicate.Store {
+	return predicate.Store(sql.FieldEQ(FieldGroupID, v))
+}
+
 // EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
 func EmployeeID(v uint64) predicate.Store {
 	return predicate.Store(sql.FieldEQ(FieldEmployeeID, v))
@@ -398,6 +403,36 @@ func CityIDIn(vs ...uint64) predicate.Store {
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Store {
 	return predicate.Store(sql.FieldNotIn(FieldCityID, vs...))
+}
+
+// GroupIDEQ applies the EQ predicate on the "group_id" field.
+func GroupIDEQ(v uint64) predicate.Store {
+	return predicate.Store(sql.FieldEQ(FieldGroupID, v))
+}
+
+// GroupIDNEQ applies the NEQ predicate on the "group_id" field.
+func GroupIDNEQ(v uint64) predicate.Store {
+	return predicate.Store(sql.FieldNEQ(FieldGroupID, v))
+}
+
+// GroupIDIn applies the In predicate on the "group_id" field.
+func GroupIDIn(vs ...uint64) predicate.Store {
+	return predicate.Store(sql.FieldIn(FieldGroupID, vs...))
+}
+
+// GroupIDNotIn applies the NotIn predicate on the "group_id" field.
+func GroupIDNotIn(vs ...uint64) predicate.Store {
+	return predicate.Store(sql.FieldNotIn(FieldGroupID, vs...))
+}
+
+// GroupIDIsNil applies the IsNil predicate on the "group_id" field.
+func GroupIDIsNil() predicate.Store {
+	return predicate.Store(sql.FieldIsNull(FieldGroupID))
+}
+
+// GroupIDNotNil applies the NotNil predicate on the "group_id" field.
+func GroupIDNotNil() predicate.Store {
+	return predicate.Store(sql.FieldNotNull(FieldGroupID))
 }
 
 // EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
@@ -1035,6 +1070,29 @@ func HasCity() predicate.Store {
 func HasCityWith(preds ...predicate.City) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		step := newCityStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasGroup applies the HasEdge predicate on the "group" edge.
+func HasGroup() predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, GroupTable, GroupColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasGroupWith applies the HasEdge predicate on the "group" edge with a given conditions (other predicates).
+func HasGroupWith(preds ...predicate.StoreGroup) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := newGroupStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

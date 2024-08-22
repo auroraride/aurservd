@@ -22,6 +22,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
+	"github.com/auroraride/aurservd/internal/ent/storegroup"
 )
 
 // StoreUpdate is the builder for updating Store entities.
@@ -107,6 +108,26 @@ func (su *StoreUpdate) SetNillableCityID(u *uint64) *StoreUpdate {
 	if u != nil {
 		su.SetCityID(*u)
 	}
+	return su
+}
+
+// SetGroupID sets the "group_id" field.
+func (su *StoreUpdate) SetGroupID(u uint64) *StoreUpdate {
+	su.mutation.SetGroupID(u)
+	return su
+}
+
+// SetNillableGroupID sets the "group_id" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableGroupID(u *uint64) *StoreUpdate {
+	if u != nil {
+		su.SetGroupID(*u)
+	}
+	return su
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (su *StoreUpdate) ClearGroupID() *StoreUpdate {
+	su.mutation.ClearGroupID()
 	return su
 }
 
@@ -362,6 +383,11 @@ func (su *StoreUpdate) SetCity(c *City) *StoreUpdate {
 	return su.SetCityID(c.ID)
 }
 
+// SetGroup sets the "group" edge to the StoreGroup entity.
+func (su *StoreUpdate) SetGroup(s *StoreGroup) *StoreUpdate {
+	return su.SetGroupID(s.ID)
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (su *StoreUpdate) SetBranch(b *Branch) *StoreUpdate {
 	return su.SetBranchID(b.ID)
@@ -455,6 +481,12 @@ func (su *StoreUpdate) Mutation() *StoreMutation {
 // ClearCity clears the "city" edge to the City entity.
 func (su *StoreUpdate) ClearCity() *StoreUpdate {
 	su.mutation.ClearCity()
+	return su
+}
+
+// ClearGroup clears the "group" edge to the StoreGroup entity.
+func (su *StoreUpdate) ClearGroup() *StoreUpdate {
+	su.mutation.ClearGroup()
 	return su
 }
 
@@ -756,6 +788,35 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.GroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.GroupTable,
+			Columns: []string{store.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegroup.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.GroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.GroupTable,
+			Columns: []string{store.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegroup.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1140,6 +1201,26 @@ func (suo *StoreUpdateOne) SetNillableCityID(u *uint64) *StoreUpdateOne {
 	return suo
 }
 
+// SetGroupID sets the "group_id" field.
+func (suo *StoreUpdateOne) SetGroupID(u uint64) *StoreUpdateOne {
+	suo.mutation.SetGroupID(u)
+	return suo
+}
+
+// SetNillableGroupID sets the "group_id" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableGroupID(u *uint64) *StoreUpdateOne {
+	if u != nil {
+		suo.SetGroupID(*u)
+	}
+	return suo
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (suo *StoreUpdateOne) ClearGroupID() *StoreUpdateOne {
+	suo.mutation.ClearGroupID()
+	return suo
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (suo *StoreUpdateOne) SetEmployeeID(u uint64) *StoreUpdateOne {
 	suo.mutation.SetEmployeeID(u)
@@ -1392,6 +1473,11 @@ func (suo *StoreUpdateOne) SetCity(c *City) *StoreUpdateOne {
 	return suo.SetCityID(c.ID)
 }
 
+// SetGroup sets the "group" edge to the StoreGroup entity.
+func (suo *StoreUpdateOne) SetGroup(s *StoreGroup) *StoreUpdateOne {
+	return suo.SetGroupID(s.ID)
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (suo *StoreUpdateOne) SetBranch(b *Branch) *StoreUpdateOne {
 	return suo.SetBranchID(b.ID)
@@ -1485,6 +1571,12 @@ func (suo *StoreUpdateOne) Mutation() *StoreMutation {
 // ClearCity clears the "city" edge to the City entity.
 func (suo *StoreUpdateOne) ClearCity() *StoreUpdateOne {
 	suo.mutation.ClearCity()
+	return suo
+}
+
+// ClearGroup clears the "group" edge to the StoreGroup entity.
+func (suo *StoreUpdateOne) ClearGroup() *StoreUpdateOne {
+	suo.mutation.ClearGroup()
 	return suo
 }
 
@@ -1816,6 +1908,35 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.GroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.GroupTable,
+			Columns: []string{store.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegroup.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.GroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.GroupTable,
+			Columns: []string{store.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegroup.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

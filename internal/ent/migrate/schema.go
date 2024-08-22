@@ -6393,6 +6393,7 @@ var (
 		{Name: "branch_id", Type: field.TypeUint64, Comment: "网点ID"},
 		{Name: "employee_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "上班员工ID"},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
+		{Name: "group_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
 	}
 	// StoreTable holds the schema information for the "store" table.
 	StoreTable = &schema.Table{
@@ -6418,6 +6419,12 @@ var (
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
+			{
+				Symbol:     "store_store_group_group",
+				Columns:    []*schema.Column{StoreColumns[24]},
+				RefColumns: []*schema.Column{StoreGroupColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
 		},
 		Indexes: []*schema.Index{
 			{
@@ -6434,6 +6441,11 @@ var (
 				Name:    "store_city_id",
 				Unique:  false,
 				Columns: []*schema.Column{StoreColumns[23]},
+			},
+			{
+				Name:    "store_group_id",
+				Unique:  false,
+				Columns: []*schema.Column{StoreColumns[24]},
 			},
 			{
 				Name:    "store_branch_id",
@@ -6501,6 +6513,35 @@ var (
 				Name:    "storegoods_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{StoreGoodsColumns[3]},
+			},
+		},
+	}
+	// StoreGroupColumns holds the columns for the "store_group" table.
+	StoreGroupColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "name", Type: field.TypeString, Comment: "名称"},
+	}
+	// StoreGroupTable holds the schema information for the "store_group" table.
+	StoreGroupTable = &schema.Table{
+		Name:       "store_group",
+		Columns:    StoreGroupColumns,
+		PrimaryKey: []*schema.Column{StoreGroupColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "storegroup_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{StoreGroupColumns[1]},
+			},
+			{
+				Name:    "storegroup_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{StoreGroupColumns[3]},
 			},
 		},
 	}
@@ -7457,6 +7498,7 @@ var (
 		StockSummaryTable,
 		StoreTable,
 		StoreGoodsTable,
+		StoreGroupTable,
 		SubscribeTable,
 		SubscribeAlterTable,
 		SubscribePauseTable,
@@ -8015,6 +8057,7 @@ func init() {
 	StoreTable.ForeignKeys[0].RefTable = BranchTable
 	StoreTable.ForeignKeys[1].RefTable = EmployeeTable
 	StoreTable.ForeignKeys[2].RefTable = CityTable
+	StoreTable.ForeignKeys[3].RefTable = StoreGroupTable
 	StoreTable.Annotation = &entsql.Annotation{
 		Table: "store",
 	}
@@ -8022,6 +8065,9 @@ func init() {
 	StoreGoodsTable.ForeignKeys[1].RefTable = StoreTable
 	StoreGoodsTable.Annotation = &entsql.Annotation{
 		Table: "store_goods",
+	}
+	StoreGroupTable.Annotation = &entsql.Annotation{
+		Table: "store_group",
 	}
 	SubscribeTable.ForeignKeys[0].RefTable = EnterpriseTable
 	SubscribeTable.ForeignKeys[1].RefTable = RiderTable

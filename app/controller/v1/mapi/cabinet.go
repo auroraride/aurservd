@@ -263,3 +263,18 @@ func (*cabinet) Interrupt(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CabinetInterruptRequest](c)
 	return ctx.SendResponse(service.NewCabinetWithModifier(ctx.Modifier).Interrupt(logging.GetOperatorX(ctx.Modifier), req))
 }
+
+// BindStore
+// @ID		ManagerCabinetBindStore
+// @Router	/manager/v1/cabinet/bind/store [POST]
+// @Summary	电柜绑定门店
+// @Tags	电柜
+// @Accept	json
+// @Produce	json
+// @Param	body	body		model.BindStoreReq		true	"绑定电柜请求"
+// @Success	200		{object}	model.StatusResponse	"请求成功"
+func (*cabinet) BindStore(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.BindStoreReq](c)
+	service.NewCabinetWithModifier(ctx.Modifier).BindStore(req)
+	return ctx.SendResponse(model.StatusResponse{Status: true})
+}

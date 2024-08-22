@@ -29,6 +29,8 @@ const (
 	FieldRemark = "remark"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
+	// FieldGroupID holds the string denoting the group_id field in the database.
+	FieldGroupID = "group_id"
 	// FieldEmployeeID holds the string denoting the employee_id field in the database.
 	FieldEmployeeID = "employee_id"
 	// FieldBranchID holds the string denoting the branch_id field in the database.
@@ -63,6 +65,8 @@ const (
 	FieldHeadPic = "head_pic"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
+	// EdgeGroup holds the string denoting the group edge name in mutations.
+	EdgeGroup = "group"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
 	EdgeBranch = "branch"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -86,6 +90,13 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
+	// GroupTable is the table that holds the group relation/edge.
+	GroupTable = "store"
+	// GroupInverseTable is the table name for the StoreGroup entity.
+	// It exists in this package in order to avoid circular dependency with the "storegroup" package.
+	GroupInverseTable = "store_group"
+	// GroupColumn is the table column denoting the group relation/edge.
+	GroupColumn = "group_id"
 	// BranchTable is the table that holds the branch relation/edge.
 	BranchTable = "store"
 	// BranchInverseTable is the table name for the Branch entity.
@@ -145,6 +156,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldCityID,
+	FieldGroupID,
 	FieldEmployeeID,
 	FieldBranchID,
 	FieldSn,
@@ -243,6 +255,11 @@ func ByCityID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCityID, opts...).ToFunc()
 }
 
+// ByGroupID orders the results by the group_id field.
+func ByGroupID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGroupID, opts...).ToFunc()
+}
+
 // ByEmployeeID orders the results by the employee_id field.
 func ByEmployeeID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmployeeID, opts...).ToFunc()
@@ -322,6 +339,13 @@ func ByHeadPic(opts ...sql.OrderTermOption) OrderOption {
 func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newCityStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByGroupField orders the results by group field.
+func ByGroupField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newGroupStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -413,6 +437,13 @@ func newCityStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CityInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+	)
+}
+func newGroupStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(GroupInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, GroupTable, GroupColumn),
 	)
 }
 func newBranchStep() *sqlgraph.Step {

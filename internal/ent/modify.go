@@ -695,6 +695,13 @@ func (c *StoreGoodsClient) ModifyOne(old *StoreGoods, data any) *StoreGoodsUpdat
 	return EntitySetAttributes[StoreGoodsUpdateOne, StoreGoods](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for StoreGroup.
+func (c *StoreGroupClient) ModifyOne(old *StoreGroup, data any) *StoreGroupUpdateOne {
+	mutation := newStoreGroupMutation(c.config, OpUpdateOne, withStoreGroup(old))
+	up := &StoreGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[StoreGroupUpdateOne, StoreGroup](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Subscribe.
 func (c *SubscribeClient) ModifyOne(old *Subscribe, data any) *SubscribeUpdateOne {
 	mutation := newSubscribeMutation(c.config, OpUpdateOne, withSubscribe(old))

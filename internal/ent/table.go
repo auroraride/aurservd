@@ -1086,6 +1086,20 @@ func (sg *StoreGoods) GetID() uint64 {
 	return sg.ID
 }
 
+// GetTableName returns table name for StoreGroup.
+func (sg *StoreGroup) GetTableName() string {
+	return "store_group"
+}
+
+// GetID returns id for StoreGroup.
+func (sg *StoreGroup) GetID() uint64 {
+	return sg.ID
+}
+
+func (sg *StoreGroup) GetName() string {
+	return sg.Name
+}
+
 // GetTableName returns table name for Subscribe.
 func (s *Subscribe) GetTableName() string {
 	return "subscribe"

@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegroup"
 )
 
 // Store is the model entity for the Store schema.
@@ -36,6 +37,8 @@ type Store struct {
 	Remark string `json:"remark,omitempty"`
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
+	// 城市ID
+	GroupID *uint64 `json:"group_id,omitempty"`
 	// 上班员工ID
 	EmployeeID *uint64 `json:"employee_id,omitempty"`
 	// 网点ID
@@ -78,6 +81,8 @@ type Store struct {
 type StoreEdges struct {
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
+	// Group holds the value of the group edge.
+	Group *StoreGroup `json:"group,omitempty"`
 	// Branch holds the value of the branch edge.
 	Branch *Branch `json:"branch,omitempty"`
 	// Employee holds the value of the employee edge.
@@ -94,7 +99,7 @@ type StoreEdges struct {
 	Employees []*Employee `json:"employees,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [9]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -108,12 +113,23 @@ func (e StoreEdges) CityOrErr() (*City, error) {
 	return nil, &NotLoadedError{edge: "city"}
 }
 
+// GroupOrErr returns the Group value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StoreEdges) GroupOrErr() (*StoreGroup, error) {
+	if e.Group != nil {
+		return e.Group, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: storegroup.Label}
+	}
+	return nil, &NotLoadedError{edge: "group"}
+}
+
 // BranchOrErr returns the Branch value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StoreEdges) BranchOrErr() (*Branch, error) {
 	if e.Branch != nil {
 		return e.Branch, nil
-	} else if e.loadedTypes[1] {
+	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: branch.Label}
 	}
 	return nil, &NotLoadedError{edge: "branch"}
@@ -124,7 +140,7 @@ func (e StoreEdges) BranchOrErr() (*Branch, error) {
 func (e StoreEdges) EmployeeOrErr() (*Employee, error) {
 	if e.Employee != nil {
 		return e.Employee, nil
-	} else if e.loadedTypes[2] {
+	} else if e.loadedTypes[3] {
 		return nil, &NotFoundError{label: employee.Label}
 	}
 	return nil, &NotLoadedError{edge: "employee"}
@@ -133,7 +149,7 @@ func (e StoreEdges) EmployeeOrErr() (*Employee, error) {
 // StocksOrErr returns the Stocks value or an error if the edge
 // was not loaded in eager-loading.
 func (e StoreEdges) StocksOrErr() ([]*Stock, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.Stocks, nil
 	}
 	return nil, &NotLoadedError{edge: "stocks"}
@@ -142,7 +158,7 @@ func (e StoreEdges) StocksOrErr() ([]*Stock, error) {
 // AttendancesOrErr returns the Attendances value or an error if the edge
 // was not loaded in eager-loading.
 func (e StoreEdges) AttendancesOrErr() ([]*Attendance, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.Attendances, nil
 	}
 	return nil, &NotLoadedError{edge: "attendances"}
@@ -151,7 +167,7 @@ func (e StoreEdges) AttendancesOrErr() ([]*Attendance, error) {
 // ExceptionsOrErr returns the Exceptions value or an error if the edge
 // was not loaded in eager-loading.
 func (e StoreEdges) ExceptionsOrErr() ([]*Exception, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		return e.Exceptions, nil
 	}
 	return nil, &NotLoadedError{edge: "exceptions"}
@@ -160,7 +176,7 @@ func (e StoreEdges) ExceptionsOrErr() ([]*Exception, error) {
 // GoodsOrErr returns the Goods value or an error if the edge
 // was not loaded in eager-loading.
 func (e StoreEdges) GoodsOrErr() ([]*StoreGoods, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		return e.Goods, nil
 	}
 	return nil, &NotLoadedError{edge: "goods"}
@@ -169,7 +185,7 @@ func (e StoreEdges) GoodsOrErr() ([]*StoreGoods, error) {
 // EmployeesOrErr returns the Employees value or an error if the edge
 // was not loaded in eager-loading.
 func (e StoreEdges) EmployeesOrErr() ([]*Employee, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[8] {
 		return e.Employees, nil
 	}
 	return nil, &NotLoadedError{edge: "employees"}
@@ -186,7 +202,7 @@ func (*Store) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case store.FieldLng, store.FieldLat:
 			values[i] = new(sql.NullFloat64)
-		case store.FieldID, store.FieldCityID, store.FieldEmployeeID, store.FieldBranchID, store.FieldStatus:
+		case store.FieldID, store.FieldCityID, store.FieldGroupID, store.FieldEmployeeID, store.FieldBranchID, store.FieldStatus:
 			values[i] = new(sql.NullInt64)
 		case store.FieldRemark, store.FieldSn, store.FieldName, store.FieldAddress, store.FieldBusinessHours, store.FieldPhone, store.FieldHeadPic:
 			values[i] = new(sql.NullString)
@@ -259,6 +275,13 @@ func (s *Store) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field city_id", values[i])
 			} else if value.Valid {
 				s.CityID = uint64(value.Int64)
+			}
+		case store.FieldGroupID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field group_id", values[i])
+			} else if value.Valid {
+				s.GroupID = new(uint64)
+				*s.GroupID = uint64(value.Int64)
 			}
 		case store.FieldEmployeeID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -377,6 +400,11 @@ func (s *Store) QueryCity() *CityQuery {
 	return NewStoreClient(s.config).QueryCity(s)
 }
 
+// QueryGroup queries the "group" edge of the Store entity.
+func (s *Store) QueryGroup() *StoreGroupQuery {
+	return NewStoreClient(s.config).QueryGroup(s)
+}
+
 // QueryBranch queries the "branch" edge of the Store entity.
 func (s *Store) QueryBranch() *BranchQuery {
 	return NewStoreClient(s.config).QueryBranch(s)
@@ -457,6 +485,11 @@ func (s *Store) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("city_id=")
 	builder.WriteString(fmt.Sprintf("%v", s.CityID))
+	builder.WriteString(", ")
+	if v := s.GroupID; v != nil {
+		builder.WriteString("group_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	if v := s.EmployeeID; v != nil {
 		builder.WriteString("employee_id=")

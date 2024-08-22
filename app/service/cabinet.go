@@ -961,6 +961,21 @@ func (s *cabinetService) BindCabinet(req *model.EnterpriseBindCabinetReq) {
 	s.orm.UpdateOneID(req.ID).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SaveX(s.ctx)
 }
 
+// BindStore 电柜绑定门店
+func (s *cabinetService) BindStore(req *model.BindStoreReq) {
+	// 判断电柜是否被绑定
+	cab := s.QueryOne(req.ID)
+	if cab.Status == uint8(model.CabinetStatusNormal) {
+		snag.Panic("运营中的电柜不能绑定")
+	}
+
+	if cab.EnterpriseID != nil || cab.StationID != nil || cab.StoreID != nil {
+		snag.Panic("电柜已被绑定")
+	}
+	// 电柜绑定
+	s.orm.UpdateOneID(req.ID).SetStoreID(req.StoreID).SaveX(s.ctx)
+}
+
 // UnbindCabinet 解绑电柜
 func (s *cabinetService) UnbindCabinet(req *model.IDParamReq) {
 	cab, _ := ent.Database.Cabinet.Query().Where(cabinet.IDEQ(req.ID)).First(s.ctx)
@@ -971,5 +986,5 @@ func (s *cabinetService) UnbindCabinet(req *model.IDParamReq) {
 		snag.Panic("运营中的电柜不能解绑")
 	}
 	// 电柜解绑
-	s.orm.UpdateOneID(req.ID).ClearStationID().ClearEnterpriseID().SaveX(s.ctx)
+	s.orm.UpdateOneID(req.ID).ClearStationID().ClearEnterpriseID().ClearStoreID().SaveX(s.ctx)
 }

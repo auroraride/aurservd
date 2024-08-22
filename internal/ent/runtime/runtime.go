@@ -99,6 +99,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
+	"github.com/auroraride/aurservd/internal/ent/storegroup"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -2253,6 +2254,23 @@ func init() {
 	storegoods.DefaultUpdatedAt = storegoodsDescUpdatedAt.Default.(func() time.Time)
 	// storegoods.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	storegoods.UpdateDefaultUpdatedAt = storegoodsDescUpdatedAt.UpdateDefault.(func() time.Time)
+	storegroupMixin := schema.StoreGroup{}.Mixin()
+	storegroupMixinHooks2 := storegroupMixin[2].Hooks()
+	storegroup.Hooks[0] = storegroupMixinHooks2[0]
+	storegroupMixinFields0 := storegroupMixin[0].Fields()
+	_ = storegroupMixinFields0
+	storegroupFields := schema.StoreGroup{}.Fields()
+	_ = storegroupFields
+	// storegroupDescCreatedAt is the schema descriptor for created_at field.
+	storegroupDescCreatedAt := storegroupMixinFields0[0].Descriptor()
+	// storegroup.DefaultCreatedAt holds the default value on creation for the created_at field.
+	storegroup.DefaultCreatedAt = storegroupDescCreatedAt.Default.(func() time.Time)
+	// storegroupDescUpdatedAt is the schema descriptor for updated_at field.
+	storegroupDescUpdatedAt := storegroupMixinFields0[1].Descriptor()
+	// storegroup.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	storegroup.DefaultUpdatedAt = storegroupDescUpdatedAt.Default.(func() time.Time)
+	// storegroup.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	storegroup.UpdateDefaultUpdatedAt = storegroupDescUpdatedAt.UpdateDefault.(func() time.Time)
 	subscribeMixin := schema.Subscribe{}.Mixin()
 	subscribeMixinHooks2 := subscribeMixin[2].Hooks()
 	subscribeHooks := schema.Subscribe{}.Hooks()
