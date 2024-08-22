@@ -1101,6 +1101,7 @@ const docTemplate = `{
                     "City - 城市"
                 ],
                 "summary": "城市列表",
+                "operationId": "CityList",
                 "parameters": [
                     {
                         "type": "string",
@@ -2622,6 +2623,7 @@ const docTemplate = `{
                     "Selection - 筛选"
                 ],
                 "summary": "筛选启用的城市",
+                "operationId": "SelectionCity",
                 "parameters": [
                     {
                         "type": "string",
@@ -2749,6 +2751,71 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/selection/material": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "物资类型筛选",
+                "operationId": "SelectionMaterialSelect",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetTypeCabinetAccessory": "电柜配件",
+                            "AssetTypeEbike": "电车",
+                            "AssetTypeEbikeAccessory": "电车配件",
+                            "AssetTypeNonSmartBattery": "非智能电池",
+                            "AssetTypeOtherAccessory": "其它配件",
+                            "AssetTypeSmartBattery": "智能电池"
+                        },
+                        "x-enum-varnames": [
+                            "AssetTypeEbike",
+                            "AssetTypeSmartBattery",
+                            "AssetTypeNonSmartBattery",
+                            "AssetTypeCabinetAccessory",
+                            "AssetTypeEbikeAccessory",
+                            "AssetTypeOtherAccessory"
+                        ],
+                        "description": "4:电柜配件 5:电车配件 6:其他",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/selection/model": {
             "get": {
                 "consumes": [
@@ -2769,6 +2836,12 @@ const docTemplate = `{
                         "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "1智能电池 2非智能电池",
+                        "name": "type",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3703,7 +3776,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v2/asset/transfer/flow/{sn}": {
+        "/manager/v2/asset/transfer/flow": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -3759,6 +3832,13 @@ const docTemplate = `{
                         "description": "结束时间",
                         "name": "end",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "资产编号",
+                        "name": "sn",
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "string",
@@ -6160,6 +6240,10 @@ const docTemplate = `{
                     "description": "资产ID",
                     "type": "integer"
                 },
+                "locationsId": {
+                    "description": "资产位置ID",
+                    "type": "integer"
+                },
                 "model": {
                     "description": "资产型号",
                     "type": "string"
@@ -6458,7 +6542,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "assetID": {
-                    "description": "AssetScrapDetails []AssetScrapDetailRes ` + "`" + `json:\"details\"` + "`" + `     // 报废明细",
+                    "description": "资产ID",
                     "type": "integer"
                 },
                 "assetType": {
@@ -6810,7 +6894,7 @@ const docTemplate = `{
                 },
                 "locationsType": {
                     "description": "位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "operatorName": {
                     "description": "操作人",
@@ -6820,8 +6904,12 @@ const docTemplate = `{
                     "description": "时间",
                     "type": "string"
                 },
-                "transferTypeName": {
+                "transferType": {
                     "description": "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
+                    "type": "integer"
+                },
+                "transferTypeName": {
+                    "description": "调拨类型名称",
                     "type": "string"
                 }
             }

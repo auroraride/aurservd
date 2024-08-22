@@ -866,6 +866,7 @@ func (s *assetService) List(ctx context.Context, req *model.AssetListReq) *model
 			CityID:         cityID,
 			Belong:         belong,
 			AssetLocations: assetLocations,
+			LocationsID:    item.LocationsID,
 			Brand:          brandName,
 			BrandID:        brandID,
 			Model:          modelStr,

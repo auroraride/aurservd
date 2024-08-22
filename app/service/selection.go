@@ -615,3 +615,7 @@ func (s *selectionService) EbikeBrandByCity(req *model.SelectionBrandByCityReq) 
 	}
 	return
 }
+
+func (s *selectionService) ModelsByFilter(req *model.SelectModelsReq) []string {
+	return NewBatteryModel().ModelsByFilter(req.Type)
+}

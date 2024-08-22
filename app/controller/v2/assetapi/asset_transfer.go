@@ -106,7 +106,7 @@ func (*assetTransfer) TransferReceive(c echo.Context) (err error) {
 
 // TransferFlow
 // @ID		AssetTransferFlow
-// @Router	/manager/v2/asset/transfer/flow/{sn} [GET]
+// @Router	/manager/v2/asset/transfer/flow [GET]
 // @Summary	资产流转明细
 // @Tags	资产
 // @Accept	json
@@ -132,4 +132,20 @@ func (*assetTransfer) TransferFlow(c echo.Context) (err error) {
 func (*assetTransfer) TransferDetailsList(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.AssetTransferDetailListReq](c)
 	return ctx.SendResponse(service.NewAssetTransfer().TransferDetailsList(ctx.Request().Context(), req))
+}
+
+// Modify
+// @ID		AssetTransferModify
+// @Router	/manager/v2/asset/transfer/{id} [PUT]
+// @Summary	修改资产调拨
+// @Tags	资产
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
+// @Param	id						path		uint64					true	"调拨ID"
+// @Param	body					body		model.AssetTransferModifyReq	true	"修改参数"
+// @Success	200						{object}	model.StatusResponse	"请求成功"
+func (*assetTransfer) Modify(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetTransferModifyReq](c)
+	return ctx.SendResponse(service.NewAssetTransfer().Modify(ctx.Request().Context(), req, ctx.Modifier))
 }

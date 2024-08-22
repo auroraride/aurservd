@@ -59,6 +59,7 @@ type AssetListRes struct {
 	CityID         uint64                    `json:"cityId,omitempty"`   // 城市ID
 	Belong         string                    `json:"belong"`             // 归属
 	AssetLocations string                    `json:"assetLocations"`     // 资产位置
+	LocationsID    uint64                    `json:"locationsId"`        // 资产位置ID
 	Brand          string                    `json:"brand"`              // 品牌
 	BrandID        uint64                    `json:"brandId"`            // 品牌ID
 	Model          string                    `json:"model,omitempty"`    // 资产型号

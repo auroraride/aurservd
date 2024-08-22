@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
+	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -157,8 +158,27 @@ func (s *assetTransferService) transferAssetWithoutSN(ctx context.Context, asset
 	if req.Num == nil || *req.Num == 0 {
 		return nil, errors.New("调拨数量不能为空")
 	}
-	if req.MaterialID == nil || *req.MaterialID == 0 {
-		return nil, errors.New(req.AssetType.String() + "分类ID不能为空")
+	if req.AssetType == model.AssetTypeNonSmartBattery {
+		// 非智能电池调拨
+		if req.ModelID == nil || *req.ModelID == 0 {
+			return nil, errors.New(req.AssetType.String() + "型号ID不能为空")
+		}
+		item, _ := ent.Database.BatteryModel.Query().Where(batterymodel.ID(*req.ModelID)).First(ctx)
+		if item == nil {
+			return nil, errors.New(req.AssetType.String() + "型号不存在")
+		}
+	} else {
+		if req.MaterialID == nil || *req.MaterialID == 0 {
+			return nil, errors.New(req.AssetType.String() + "分类ID不能为空")
+		}
+		// 判定其它物资类型是否存在
+		item, _ := ent.Database.Material.QueryNotDeleted().Where(
+			material.ID(*req.MaterialID),
+			material.Type(req.AssetType.Value()),
+		).First(ctx)
+		if item == nil {
+			return nil, errors.New(req.AssetType.String() + "分类不存在")
+		}
 	}
 	// 判定其它物资类型是否存在
 	item, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(*req.MaterialID), material.Type(req.AssetType.Value())).First(ctx)
@@ -337,14 +357,32 @@ func (s *assetTransferService) initialTransferWithoutSN(ctx context.Context, req
 	if req.Num == nil || *req.Num == 0 {
 		return nil, errors.New("调拨数量不能为空")
 	}
-	if req.MaterialID == nil || *req.MaterialID == 0 {
-		return nil, errors.New(req.AssetType.String() + "分类ID不能为空")
+	var name string
+	if req.AssetType == model.AssetTypeNonSmartBattery {
+		// 非智能电池调拨
+		if req.ModelID == nil || *req.ModelID == 0 {
+			return nil, errors.New(req.AssetType.String() + "型号ID不能为空")
+		}
+		item, _ := ent.Database.BatteryModel.Query().Where(batterymodel.ID(*req.ModelID)).First(ctx)
+		if item == nil {
+			return nil, errors.New(req.AssetType.String() + "型号不存在")
+		}
+		name = item.Model
+	} else {
+		if req.MaterialID == nil || *req.MaterialID == 0 {
+			return nil, errors.New(req.AssetType.String() + "分类ID不能为空")
+		}
+		// 判定其它物资类型是否存在
+		item, _ := ent.Database.Material.QueryNotDeleted().Where(
+			material.ID(*req.MaterialID),
+			material.Type(req.AssetType.Value()),
+		).First(ctx)
+		if item == nil {
+			return nil, errors.New(req.AssetType.String() + "分类不存在")
+		}
+		name = item.Name
 	}
-	// 判定其它物资类型是否存在
-	item, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(*req.MaterialID), material.Type(req.AssetType.Value())).First(ctx)
-	if item == nil {
-		return nil, errors.New(req.AssetType.String() + "分类不存在")
-	}
+
 	// 创建物资
 	bulk := make([]*ent.AssetCreate, 0, int(*req.Num))
 	for i := 0; i < int(*req.Num); i++ {
@@ -357,7 +395,8 @@ func (s *assetTransferService) initialTransferWithoutSN(ctx context.Context, req
 			SetLastModifier(modifier).
 			SetLocationsType(toLocationType.Value()).
 			SetLocationsID(toLocationID).
-			SetName(item.Name))
+			SetNillableModelID(req.ModelID).
+			SetName(name))
 	}
 	assets, _ := ent.Database.Asset.CreateBulk(bulk...).Save(ctx)
 	if len(assets) == 0 {
@@ -1037,7 +1076,9 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 	all, _ := q.Order(ent.Desc(assettransferdetails.FieldCreatedAt)).All(ctx)
 	res := make([]*model.AssetTransferFlow, 0)
 	for _, item := range all {
-		var fromoperateName, toOperateName, fromLocationName, toLocationName, transferTypeName string
+		var fromoperateName, toOperateName, fromLocationName, toLocationName string
+		var transferType model.AssetTransferType
+		var fromLocationType, toLocationType model.AssetLocationsType
 		// 入库操作人
 		switch model.AssetOperateRoleType(item.InOperateType) {
 		case model.AssetOperateRoleTypeManager:
@@ -1071,6 +1112,7 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 
 		if item.Edges.Transfer != nil {
 			if item.Edges.Transfer.FromLocationType != nil && item.Edges.Transfer.FromLocationID != nil {
+				fromLocationType = model.AssetLocationsType(*item.Edges.Transfer.FromLocationType)
 				switch model.AssetLocationsType(*item.Edges.Transfer.FromLocationType) {
 				case model.AssetLocationsTypeWarehouse:
 					if item.Edges.Transfer.Edges.FromLocationWarehouse != nil {
@@ -1101,6 +1143,7 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 			}
 			// 入库位置
 			if item.Edges.Transfer.ToLocationType != 0 && item.Edges.Transfer.ToLocationID != 0 {
+				toLocationType = model.AssetLocationsType(item.Edges.Transfer.ToLocationType)
 				switch model.AssetLocationsType(item.Edges.Transfer.ToLocationType) {
 				case model.AssetLocationsTypeWarehouse:
 					if item.Edges.Transfer.Edges.ToLocationWarehouse != nil {
@@ -1163,7 +1206,7 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 				}
 			}
 			// 调拨类型
-			transferTypeName = model.AssetTransferType(item.Edges.Transfer.Type).String()
+			transferType = model.AssetTransferType(item.Edges.Transfer.Type)
 		}
 		var outTimeAt, inTimeAt string
 		if item.Edges.Transfer.OutTimeAt != nil {
@@ -1177,13 +1220,17 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 			OperatorName:     fromoperateName,
 			LocationsName:    fromLocationName,
 			TimeAt:           outTimeAt,
-			TransferTypeName: "[出库]" + transferTypeName,
+			TransferTypeName: "[出库]" + transferType.String(),
+			TransferType:     transferType.Value(),
+			LocationsType:    fromLocationType.Value(),
 		}
 		in := model.AssetTransferFlowDetail{
 			OperatorName:     toOperateName,
 			LocationsName:    toLocationName,
 			TimeAt:           inTimeAt,
-			TransferTypeName: "[入库]" + transferTypeName,
+			TransferTypeName: "[入库]" + transferType.String(),
+			TransferType:     transferType.Value(),
+			LocationsType:    toLocationType.Value(),
 		}
 		res = append(res, &model.AssetTransferFlow{
 			Out: out,
@@ -1437,10 +1484,72 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 }
 
 // Modify 编辑调拨
-// func (s *assetTransferService) Modify(ctx context.Context, req *model.AssetTransferModifyReq, modifier *model.Modifier) (err error) {
-// 		 s.orm.QueryNotDeleted().
-// 			 Where(
-// 			 assettransfer.ID(req.ID),
-// 			 assettransfer.Status(model.AssetTransferStatusDelivering.Value()),
-// 		 ).
-// }
+func (s *assetTransferService) Modify(ctx context.Context, req *model.AssetTransferModifyReq, modifier *model.Modifier) (err error) {
+	item, _ := s.orm.QueryNotDeleted().
+		Where(
+			assettransfer.ID(req.ID),
+			assettransfer.Status(model.AssetTransferStatusDelivering.Value()),
+		).
+		WithFromLocationStation(func(query *ent.EnterpriseStationQuery) {
+			query.WithAgents()
+		}).WithFromLocationWarehouse(
+		func(query *ent.WarehouseQuery) {
+			query.WithAssetManagers()
+		}).WithFromLocationStore(func(query *ent.StoreQuery) {
+		query.WithEmployees()
+	}).
+		First(ctx)
+	if item == nil {
+		return errors.New("调拨单不存在或已入库")
+	}
+
+	if item.FromLocationType != nil && item.FromLocationID != nil {
+		var isPermission bool
+		// 权限判定 只能由调出方操作
+		switch model.AssetLocationsType(*item.FromLocationType) {
+		case model.AssetLocationsTypeWarehouse:
+			if item.Edges.FromLocationWarehouse != nil && item.Edges.FromLocationWarehouse.Edges.AssetManagers != nil {
+				for _, v := range item.Edges.FromLocationWarehouse.Edges.AssetManagers {
+					if v.ID == *item.OutOperateID {
+						isPermission = true
+						break
+					}
+				}
+			}
+		case model.AssetLocationsTypeStore:
+			if item.Edges.FromLocationStore != nil && item.Edges.FromLocationStore.Edges.Employees != nil {
+				for _, v := range item.Edges.FromLocationStore.Edges.Employees {
+					if v.ID == *item.OutOperateID {
+						isPermission = true
+						break
+					}
+				}
+			}
+		case model.AssetLocationsTypeStation:
+			if item.Edges.FromLocationStation != nil && item.Edges.FromLocationStation.Edges.Agents != nil {
+				for _, v := range item.Edges.FromLocationStation.Edges.Agents {
+					if v.ID == *item.OutOperateID {
+						isPermission = true
+						break
+					}
+				}
+			}
+		default:
+		}
+		if !isPermission {
+			return errors.New("无权限操作")
+		}
+	}
+	// 修改调拨单
+	_, err = item.Update().
+		SetReason(req.Reason).
+		SetNillableRemark(req.Remark).
+		SetToLocationID(req.ToLocationID).
+		SetToLocationType(req.ToLocationType.Value()).
+		SetLastModifier(modifier).
+		Save(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}

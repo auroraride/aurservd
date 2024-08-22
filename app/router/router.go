@@ -37,7 +37,8 @@ func Run() {
 	e.Renderer = assets.Templates
 
 	e.Static("/pages", "public/pages")
-	e.Static("/uploads", "./runtime/uploads")
+	e.Static(""+
+		"/uploads", "./runtime/uploads")
 
 	root = e.Group("/")
 

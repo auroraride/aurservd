@@ -62,7 +62,7 @@ func (AssetMaintenance) Fields() []ent.Field {
 		field.String("reason").Comment("原因"),
 		field.String("content").Comment("内容"),
 		field.Uint8("status").Default(1).Comment("维修状态 1:维护中 2:已维修 3:维修失败 4:已取消"),
-		field.Uint8("cabinet_status").Default(0).Comment("电柜状态 1:维护中 2:暂停维护"),
+		field.Uint8("cabinet_status").Default(0).Comment("电柜状态 1:运营中 2:维护中 3:暂停维护"),
 	}
 }
 

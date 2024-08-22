@@ -9,6 +9,7 @@ import (
 
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/biz"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 )
 
@@ -31,7 +32,7 @@ func (*selection) WarehouseByCity(c echo.Context) (err error) {
 }
 
 // City
-// ID       SelectionCity
+// @ID		SelectionCity
 // @Router	/manager/v2/asset/selection/city [GET]
 // @Summary	筛选启用的城市
 // @Tags	Selection - 筛选
@@ -107,11 +108,12 @@ func (*selection) AssetRole(c echo.Context) (err error) {
 // @Tags	Selection - 筛选
 // @Accept	json
 // @Produce	json
-// @Param	X-Asset-Manager-Token	header		string		true	"管理员校验token"
-// @Success	200						{object}	[]string	"请求成功"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
+// @Param	query					query		model.SelectModelsReq	true	"查询参数"
+// @Success	200						{object}	[]string				"请求成功"
 func (*selection) Model(c echo.Context) (err error) {
-	ctx := app.ContextX[app.AssetManagerContext](c)
-	return ctx.SendResponse(service.NewSelection().Models())
+	ctx, req := app.ContextBinding[model.SelectModelsReq](c)
+	return ctx.SendResponse(service.NewSelection().ModelsByFilter(req))
 }
 
 // Maintainer
@@ -140,4 +142,19 @@ func (*selection) Maintainer(c echo.Context) (err error) {
 func (*selection) Station(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AssetManagerContext](c)
 	return ctx.SendResponse(biz.NewSelection().StationList())
+}
+
+// Material
+// @ID		SelectionMaterialSelect
+// @Router	/manager/v2/asset/selection/material [GET]
+// @Summary	物资类型筛选
+// @Tags	Selection - 筛选
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
+// @Param	query					query		model.SelectMaterialReq	true	"查询参数"
+// @Success	200						{object}	[]model.SelectOption	"请求成功"
+func (*selection) Material(c echo.Context) (err error) {
+	ctx, req := app.ContextBinding[model.SelectMaterialReq](c)
+	return ctx.SendResponse(biz.NewSelection().MaterialSelect(req))
 }

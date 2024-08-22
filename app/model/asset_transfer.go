@@ -81,9 +81,10 @@ type AssetTransferCreateReq struct {
 // AssetTransferCreateDetail 资产调拨详情
 type AssetTransferCreateDetail struct {
 	AssetType  AssetType `json:"assetType" validate:"required"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-	SN         *string   `json:"sn"`                            // 资产编号
-	Num        *uint     `json:"num"`                           // 调拨数量
-	MaterialID *uint64   `json:"materialId"`                    // 其它物资分类ID
+	SN         *string   `json:"sn"`                            // 资产编号（当AssetType = 1:电车 2:智能电池 必传）
+	Num        *uint     `json:"num"`                           // 调拨数量（当AssetType = 4:电柜配件 5:电车配件 6:其它 必传）
+	MaterialID *uint64   `json:"materialId"`                    // 其它物资分类ID（当AssetType = 4:电柜配件 5:电车配件 6:其它 必传）
+	ModelID    *uint64   `json:"modelId"`                       // 电池型号ID（当AssetType = 3:非智能电池  必传）
 }
 
 // AssetTransferListReq 资产调拨列表请求
@@ -172,7 +173,7 @@ type GetTransferBySNReq struct {
 
 // AssetTransferFlowReq 资产流转明细请求
 type AssetTransferFlowReq struct {
-	SN        string     `json:"sn" param:"sn" validate:"required" query:"sn"`    // 资产编号
+	SN        string     `json:"sn" validate:"required" query:"sn"`               // 资产编号
 	Start     *string    `json:"start" query:"start"`                             // 开始时间
 	End       *string    `json:"end" query:"end"`                                 // 结束时间
 	AssetType *AssetType `json:"assetType" query:"assetType" enums:"1,2,3,4,5,6"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
@@ -186,9 +187,10 @@ type AssetTransferFlow struct {
 
 // AssetTransferFlowDetail 资产流转明细详情
 type AssetTransferFlowDetail struct {
-	LocationsType    string `json:"locationsType"`    // 位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	LocationsType    uint8  `json:"locationsType"`    // 位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
 	LocationsName    string `json:"locationsName"`    // 位置名称
-	TransferTypeName string `json:"transferTypeName"` // 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
+	TransferTypeName string `json:"transferTypeName"` // 调拨类型名称
+	TransferType     uint8  `json:"transferType"`     // 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
 	TimeAt           string `json:"timeAt"`           // 时间
 	OperatorName     string `json:"operatorName"`     // 操作人
 }
@@ -230,11 +232,11 @@ type AssetTransferDetailList struct {
 
 // AssetTransferModifyReq 编辑调拨
 type AssetTransferModifyReq struct {
-	ID             uint64              `json:"id" param:"id" validate:"required"` // 调拨ID
-	ToLocationType *AssetLocationsType `json:"toLocationType"  enums:"1,2,3,4"`   // 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
-	ToLocationID   *uint64             `json:"toLocationID"`                      // 调拨后位置ID
-	Reason         string              `json:"reason" validate:"required"`        // 调拨事由
-	Remark         *string             `json:"remark"`
+	ID             uint64             `json:"id" param:"id" validate:"required"` // 调拨ID
+	ToLocationType AssetLocationsType `json:"toLocationType"  enums:"1,2,3,4"`   // 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	ToLocationID   uint64             `json:"toLocationID"`                      // 调拨后位置ID
+	Reason         string             `json:"reason" validate:"required"`        // 调拨事由
+	Remark         *string            `json:"remark"`
 }
 
 type InitialTransferStatusRes struct {

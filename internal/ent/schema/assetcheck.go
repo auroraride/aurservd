@@ -77,12 +77,12 @@ func (AssetCheck) Fields() []ent.Field {
 func (AssetCheck) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("check_details", AssetCheckDetails.Type),
-		edge.To("operate_manager", Manager.Type).Unique().Field("operate_id"),     // 资产后台
-		edge.To("operate_store", Store.Type).Unique().Field("operate_id"),         // 门店
-		edge.To("operate_agent", Agent.Type).Unique().Field("operate_id"),         // 代理
-		edge.To("warehouse", Warehouse.Type).Unique().Field("locations_id"),       // 关联仓库
-		edge.To("store", Store.Type).Unique().Field("locations_id"),               // 关联门店
-		edge.To("station", EnterpriseStation.Type).Unique().Field("locations_id"), // 关联站点
+		edge.To("operate_manager", AssetManager.Type).Unique().Field("operate_id"), // 资产后台
+		edge.To("operate_store", Store.Type).Unique().Field("operate_id"),          // 门店
+		edge.To("operate_agent", Agent.Type).Unique().Field("operate_id"),          // 代理
+		edge.To("warehouse", Warehouse.Type).Unique().Field("locations_id"),        // 关联仓库
+		edge.To("store", Store.Type).Unique().Field("locations_id"),                // 关联门店
+		edge.To("station", EnterpriseStation.Type).Unique().Field("locations_id"),  // 关联站点
 	}
 }
 

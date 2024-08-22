@@ -11,6 +11,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/material"
 )
 
 type selectionBiz struct {
@@ -88,3 +89,19 @@ func (b *selectionBiz) StationList() (res []model.CascaderOptionLevel2) {
 // 	}
 // 	return
 // }
+
+// MaterialSelect 资产分类筛选数据
+func (b *selectionBiz) MaterialSelect(req *model.SelectMaterialReq) (res []model.SelectOption) {
+	q := ent.Database.Material.QueryNotDeleted()
+	if req.Type != nil {
+		q.Where(material.Type(req.Type.Value()))
+	}
+	items, _ := q.All(b.ctx)
+	for _, item := range items {
+		res = append(res, model.SelectOption{
+			Label: item.Name,
+			Value: item.ID,
+		})
+	}
+	return
+}

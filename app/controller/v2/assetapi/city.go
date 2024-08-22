@@ -17,7 +17,7 @@ type city struct{}
 var City = new(city)
 
 // List
-// ID       CityList
+// @ID		CityList
 // @Router	/manager/v2/asset/city [GET]
 // @Summary	城市列表
 // @Tags	City - 城市

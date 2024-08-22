@@ -538,6 +538,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "资产编号",
+                        "name": "sn",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "开始时间",
                         "name": "start",
                         "in": "query"
@@ -1347,7 +1354,7 @@ const docTemplate = `{
                 },
                 "locationsType": {
                     "description": "位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "operatorName": {
                     "description": "操作人",
@@ -1357,8 +1364,12 @@ const docTemplate = `{
                     "description": "时间",
                     "type": "string"
                 },
-                "transferTypeName": {
+                "transferType": {
                     "description": "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
+                    "type": "integer"
+                },
+                "transferTypeName": {
+                    "description": "调拨类型名称",
                     "type": "string"
                 }
             }

@@ -81,8 +81,8 @@ func main() {
 	assetpermission.Save(m)
 
 	addrs := []string{
-		"118.116.4.16:26610",
-		"118.116.4.16:26611",
+		// "118.116.4.16:26610",
+		// "118.116.4.16:26611",
 	}
 
 	for _, addr := range addrs {
