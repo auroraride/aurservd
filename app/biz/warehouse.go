@@ -19,6 +19,7 @@ import (
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
@@ -76,6 +77,8 @@ func (b *warehouseBiz) detail(item *ent.Warehouse) (res *definition.WarehouseDet
 			ID:   item.Edges.City.ID,
 			Name: item.Edges.City.Name,
 		}
+		res.CityID = item.Edges.City.ID
+		res.CityName = item.Edges.City.Name
 	}
 	return
 }
@@ -91,13 +94,21 @@ func (b *warehouseBiz) Detail(id uint64) (*definition.WarehouseDetail, error) {
 
 // Create 创建仓库
 func (b *warehouseBiz) Create(req *definition.WarehouseCreateReq) (err error) {
+	c, err := ent.Database.City.QueryNotDeleted().
+		Where(
+			city.ID(req.CityID),
+		).First(b.ctx)
+	if c == nil || err != nil {
+		return errors.New("城市无效")
+	}
+
 	_, err = b.orm.Create().
 		SetName(req.Name).
 		SetCityID(req.CityID).
 		SetAddress(req.Address).
 		SetRemark(req.Remark).
-		SetLat(req.Lat).
-		SetLng(req.Lng).
+		SetLat(c.Lat).
+		SetLng(c.Lng).
 		SetSn(shortuuid.New()).
 		Save(b.ctx)
 	if err != nil {
@@ -118,14 +129,22 @@ func (b *warehouseBiz) Modify(req *definition.WarehouseModifyReq) (err error) {
 		return errors.New("仓库不存在")
 	}
 
+	c, err := ent.Database.City.QueryNotDeleted().
+		Where(
+			city.ID(req.CityID),
+		).First(b.ctx)
+	if c == nil || err != nil {
+		return errors.New("城市无效")
+	}
+
 	_, err = b.orm.UpdateOneID(req.ID).
 		SetName(req.Name).
 		SetName(req.Name).
 		SetCityID(req.CityID).
 		SetAddress(req.Address).
 		SetRemark(req.Remark).
-		SetLat(req.Lat).
-		SetLng(req.Lng).
+		SetLat(c.Lat).
+		SetLng(c.Lng).
 		Save(b.ctx)
 	if err != nil {
 		return err
@@ -370,6 +389,7 @@ func (b *warehouseBiz) transferInOut(ebikeNameMap, sBNameMap, nSbNameMap,
 
 // ListByCity 城市仓库列表
 func (b *warehouseBiz) ListByCity() (res []*model.CascaderOptionLevel2) {
+	res = make([]*model.CascaderOptionLevel2, 0)
 	whList, _ := b.orm.QueryNotDeleted().WithCity().Order(ent.Asc(warehouse.FieldID)).All(b.ctx)
 	cityIds := make([]uint64, 0)
 	cityIdMap := make(map[uint64]*ent.City)

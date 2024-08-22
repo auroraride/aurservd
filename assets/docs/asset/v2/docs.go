@@ -5305,6 +5305,14 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "cityName": {
+                    "description": "城市名称",
+                    "type": "string"
+                },
                 "id": {
                     "description": "门店ID",
                     "type": "integer"

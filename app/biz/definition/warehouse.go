@@ -10,13 +10,15 @@ type WareHouseListReq struct {
 
 // WarehouseDetail 仓库信息
 type WarehouseDetail struct {
-	ID      uint64     `json:"id"`      // 门店ID
-	Name    string     `json:"name"`    // 门店名称
-	City    model.City `json:"city"`    // 城市
-	Lng     float64    `json:"lng"`     // 经度
-	Lat     float64    `json:"lat"`     // 纬度
-	Address string     `json:"address"` // 地址
-	QRCode  string     `json:"qrcode"`  // 仓库二维码
+	ID       uint64     `json:"id"`       // 门店ID
+	Name     string     `json:"name"`     // 门店名称
+	City     model.City `json:"city"`     // 城市
+	Lng      float64    `json:"lng"`      // 经度
+	Lat      float64    `json:"lat"`      // 纬度
+	Address  string     `json:"address"`  // 地址
+	QRCode   string     `json:"qrcode"`   // 仓库二维码
+	CityID   uint64     `json:"cityId"`   // 城市ID
+	CityName string     `json:"cityName"` // 城市名称
 }
 
 // WarehouseCreateReq 创建
