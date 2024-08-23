@@ -9,6 +9,7 @@ import (
 
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/biz"
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 )
@@ -108,11 +109,12 @@ func (*selection) AssetRole(c echo.Context) (err error) {
 // @Tags	Selection - 筛选
 // @Accept	json
 // @Produce	json
-// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
-// @Success	200						{object}	[]model.SelectOption	"请求成功"
+// @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
+// @Param	query					query		definition.SelectModelsReq	true	"查询参数"
+// @Success	200						{object}	[]model.SelectOption		"请求成功"
 func (*selection) Model(c echo.Context) (err error) {
-	ctx := app.ContextX[app.AssetManagerContext](c)
-	return ctx.SendResponse(biz.NewBatteryModel().SelectionModels())
+	ctx, req := app.AssetManagerContextAndBinding[definition.SelectModelsReq](c)
+	return ctx.SendResponse(biz.NewBatteryModel().SelectionModels(req))
 }
 
 // Maintainer

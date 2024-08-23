@@ -2409,6 +2409,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "电车型号",
+                        "name": "brandID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
                         "in": "query"
@@ -2421,7 +2427,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "资产型号",
+                        "description": "电池型号",
                         "name": "modelId",
                         "in": "query"
                     },
@@ -2836,6 +2842,12 @@ const docTemplate = `{
                         "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "1智能电池 2非智能电池",
+                        "name": "type",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -4072,6 +4084,12 @@ const docTemplate = `{
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
                         "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否仓管人员",
+                        "name": "warestore",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -4772,6 +4790,14 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "miniEnable": {
+                    "description": "仓管是否启用",
+                    "type": "boolean"
+                },
+                "miniLimit": {
+                    "description": "仓管限制范围",
+                    "type": "integer"
+                },
                 "name": {
                     "description": "姓名",
                     "type": "string"
@@ -4787,12 +4813,27 @@ const docTemplate = `{
                             "$ref": "#/definitions/definition.AssetRole"
                         }
                     ]
+                },
+                "warehouses": {
+                    "description": "仓管仓库信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.AssetManagerWarehouse"
+                    }
                 }
             }
         },
         "definition.AssetManagerModifyReq": {
             "type": "object",
             "properties": {
+                "miniEnable": {
+                    "description": "仓管是否启用",
+                    "type": "boolean"
+                },
+                "miniLimit": {
+                    "description": "仓管限制范围",
+                    "type": "integer"
+                },
                 "name": {
                     "description": "姓名",
                     "type": "string"
@@ -4808,6 +4849,13 @@ const docTemplate = `{
                 "roleId": {
                     "description": "角色ID",
                     "type": "integer"
+                },
+                "warehouseIds": {
+                    "description": "仓库IDS",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -4824,6 +4872,23 @@ const docTemplate = `{
                 },
                 "phone": {
                     "description": "手机号",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.AssetManagerWarehouse": {
+            "type": "object",
+            "properties": {
+                "cityName": {
+                    "description": "城市名称",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "门店ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "门店名称",
                     "type": "string"
                 }
             }

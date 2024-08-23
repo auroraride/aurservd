@@ -31,20 +31,33 @@ type AssetManagerCreateReq struct {
 
 type AssetManagerListReq struct {
 	model.PaginationReq
-	Keyword *string `json:"keyword" query:"keyword"` // 搜索关键词 姓名/手机号
+	Keyword   *string `json:"keyword" query:"keyword"`     // 搜索关键词 姓名/手机号
+	Warestore *bool   `json:"warestore" query:"warestore"` // 是否仓管人员
 }
 
 type AssetManagerListRes struct {
-	ID    uint64    `json:"id"`
-	Name  string    `json:"name"`  // 姓名
-	Phone string    `json:"phone"` // 手机号
-	Role  AssetRole `json:"role"`  // 角色
+	ID         uint64                   `json:"id"`
+	Name       string                   `json:"name"`                 // 姓名
+	Phone      string                   `json:"phone"`                // 手机号
+	Role       AssetRole                `json:"role"`                 // 角色
+	MiniEnable bool                     `json:"miniEnable"`           // 仓管是否启用
+	MiniLimit  uint                     `json:"miniLimit"`            // 仓管限制范围
+	Warehouses []*AssetManagerWarehouse `json:"warehouses,omitempty"` // 仓管仓库信息
+}
+
+type AssetManagerWarehouse struct {
+	ID       uint64 `json:"id"`       // 门店ID
+	Name     string `json:"name"`     // 门店名称
+	CityName string `json:"cityName"` // 城市名称
 }
 
 type AssetManagerModifyReq struct {
 	model.IDParamReq
-	Password string `json:"password"` // 密码
-	RoleID   uint64 `json:"roleId"`   // 角色ID
-	Phone    string `json:"phone"`    // 电话
-	Name     string `json:"name"`     // 姓名
+	Password     string   `json:"password"`     // 密码
+	RoleID       uint64   `json:"roleId"`       // 角色ID
+	Phone        string   `json:"phone"`        // 电话
+	Name         string   `json:"name"`         // 姓名
+	WarehouseIDs []uint64 `json:"warehouseIds"` // 仓库IDS
+	MiniEnable   *bool    `json:"miniEnable"`   // 仓管是否启用
+	MiniLimit    *uint    `json:"miniLimit"`    // 仓管限制范围
 }

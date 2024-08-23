@@ -43,3 +43,7 @@ type BatteryModelModifyReq struct {
 	model.IDParamReq
 	BatteryModelCreateReq
 }
+
+type SelectModelsReq struct {
+	Type *uint8 `json:"type" query:"type"` // 1智能电池 2非智能电池
+}

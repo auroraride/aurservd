@@ -147,8 +147,11 @@ func (b *batteryModelBiz) Delete(id uint64) (err error) {
 }
 
 // SelectionModels 电池型号筛选项
-func (b *batteryModelBiz) SelectionModels() (res []model.SelectOption) {
+func (b *batteryModelBiz) SelectionModels(req *definition.SelectModelsReq) (res []model.SelectOption) {
 	q := b.orm.Query()
+	if req.Type != nil {
+		q.Where(batterymodel.Type(*req.Type))
+	}
 	items, _ := q.All(b.ctx)
 	res = make([]model.SelectOption, 0)
 	for _, item := range items {

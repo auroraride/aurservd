@@ -57,7 +57,8 @@ type AssetScrapListReq struct {
 type ScrapFilter struct {
 	AssetType       *AssetType       `json:"assetType" query:"assetType" enums:"1,2,3"`     // 资产类型 1:电车 2:智能电池 3:其它
 	SN              *string          `json:"sn" query:"sn"`                                 // 资产编号
-	ModelID         *uint64          `json:"modelId" query:"modelId"`                       // 资产型号
+	ModelID         *uint64          `json:"modelId" query:"modelId"`                       // 电池型号
+	BrandID         *uint64          `json:"brandID" query:"brandID"`                       // 电车型号
 	ScrapReasonType *ScrapReasonType `json:"scrapReason" query:"scrapReason" enums:"1,2,3"` // 报废原因 1:丢失 2:损坏 3:其他
 	OperateName     *string          `json:"operateName" query:"operateName"`               // 操作人
 	Start           *string          `json:"start" query:"start"`                           // 开始时间

@@ -168,6 +168,9 @@ func (s *assetScrapService) filter(ctx context.Context, q *ent.AssetScrapQuery, 
 	if req.ModelID != nil {
 		q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.ModelID(*req.ModelID))))
 	}
+	if req.BrandID != nil {
+		q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.BrandID(*req.BrandID))))
+	}
 	if req.ScrapReasonType != nil {
 		q.Where(assetscrap.ReasonType((*req.ScrapReasonType).Value()))
 	}

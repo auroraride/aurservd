@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
+	"github.com/auroraride/aurservd/internal/ent/assetrole"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/utils"
@@ -69,6 +70,15 @@ func (b *assetManagerBiz) Modify(req *definition.AssetManagerModifyReq) {
 	if req.Password != "" {
 		password, _ := utils.PasswordGenerate(req.Password)
 		u.SetPassword(password)
+	}
+	if req.MiniEnable != nil {
+		u.SetMiniEnable(*req.MiniEnable)
+	}
+	if req.MiniLimit != nil {
+		u.SetMiniLimit(*req.MiniLimit)
+	}
+	if len(req.WarehouseIDs) != 0 {
+		u.AddWarehouseIDs(req.WarehouseIDs...)
 	}
 
 	err := u.Exec(b.ctx)
@@ -159,6 +169,13 @@ func (b *assetManagerBiz) List(req *definition.AssetManagerListReq) *model.Pagin
 			),
 		)
 	}
+
+	if req.Warestore != nil && *req.Warestore {
+		q.Where(
+			assetmanager.HasRoleWith(assetrole.Name("仓库管理员"), assetrole.Buildin(true)),
+		)
+	}
+
 	return model.ParsePaginationResponse(
 		q,
 		req.PaginationReq,

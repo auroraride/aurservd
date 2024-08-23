@@ -274,10 +274,6 @@ func (s AssetOperateRoleType) Value() uint8 {
 	return uint8(s)
 }
 
-type SelectModelsReq struct {
-	Type *uint8 `json:"type" query:"type"` // 1智能电池 2非智能电池
-}
-
 type SelectMaterialReq struct {
 	Type *AssetType `json:"type" query:"type"` // 4:电柜配件 5:电车配件 6:其他
 }
