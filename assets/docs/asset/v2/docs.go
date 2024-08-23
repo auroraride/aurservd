@@ -4074,6 +4074,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "boolean",
+                        "description": "仓管是否启用",
+                        "name": "enable",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "搜索关键词 姓名/手机号",
                         "name": "keyword",
@@ -4083,6 +4089,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "仓库id",
+                        "name": "warehouseId",
                         "in": "query"
                     },
                     {

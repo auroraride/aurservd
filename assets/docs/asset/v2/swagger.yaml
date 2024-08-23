@@ -4953,6 +4953,10 @@ paths:
         in: query
         name: current
         type: integer
+      - description: 仓管是否启用
+        in: query
+        name: enable
+        type: boolean
       - description: 搜索关键词 姓名/手机号
         in: query
         name: keyword
@@ -4960,6 +4964,10 @@ paths:
       - description: 每页数据, 默认20
         in: query
         name: pageSize
+        type: integer
+      - description: 仓库id
+        in: query
+        name: warehouseId
         type: integer
       - description: 是否仓管人员
         in: query
