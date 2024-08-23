@@ -515,7 +515,7 @@ definitions:
         description: 资产位置
         type: string
       assetStatus:
-        description: 资产状态
+        description: 资产状态(文字)
         type: string
       attribute:
         additionalProperties:
@@ -555,6 +555,10 @@ definitions:
       sn:
         description: 编号
         type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/model.AssetStatus'
+        description: 资产状态
     type: object
   model.AssetLocationsType:
     enum:

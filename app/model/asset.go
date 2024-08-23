@@ -65,10 +65,11 @@ type AssetListRes struct {
 	BrandID        uint64                    `json:"brandId"`            // 品牌ID
 	Model          string                    `json:"model,omitempty"`    // 资产型号
 	SN             string                    `json:"sn"`                 // 编号
-	AssetStatus    string                    `json:"assetStatus"`        // 资产状态
+	AssetStatus    string                    `json:"assetStatus"`        // 资产状态(文字)
 	Enable         bool                      `json:"enable"`             // 是否启用
 	Remark         string                    `json:"remark"`             // 备注
 	Attribute      map[uint64]AssetAttribute `json:"attribute"`          // 属性
+	Status         AssetStatus               `json:"status"`             // 资产状态
 }
 
 // AssetBatchCreateReq 批量创建资产请求

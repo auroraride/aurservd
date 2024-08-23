@@ -51,6 +51,9 @@ func (b *enterpriseAssetBiz) Assets(req *definition.EnterpriseAssetListReq) (res
 	if req.StationID != nil {
 		q.Where(enterprise.HasStationsWith(enterprisestation.ID(*req.StationID)))
 	}
+	if req.EnterpriseID != nil {
+		q.Where(enterprise.ID(*req.EnterpriseID))
+	}
 	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Enterprise) (result *definition.EnterpriseAssetDetail) {
 		result = &definition.EnterpriseAssetDetail{
 			ID:              item.ID,

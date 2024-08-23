@@ -99,8 +99,7 @@ func (*assetManager) Delete(c echo.Context) (err error) {
 // @Success	200						{object}	model.StatusResponse				"请求成功"
 func (*assetManager) Modify(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[definition.AssetManagerModifyReq](c)
-	biz.NewAssetManagerWithModifier(ctx.Modifier).Modify(req)
-	return ctx.SendResponse()
+	return ctx.SendResponse(biz.NewAssetManagerWithModifier(ctx.Modifier).Modify(req))
 }
 
 // Profile

@@ -857,6 +857,7 @@ func (s *assetService) DetailForList(item *ent.Asset) *model.AssetListRes {
 		Model:          modelStr,
 		SN:             item.Sn,
 		AssetStatus:    model.AssetStatus(item.Status).String(),
+		Status:         model.AssetStatus(item.Status),
 		Enable:         item.Enable,
 		Remark:         item.Remark,
 	}

@@ -67,8 +67,8 @@ func (b *employeeBiz) filter(q *ent.EmployeeQuery, req *definition.EmployeeListR
 		q.Where(employee.CityID(*req.CityID))
 	}
 
-	if req.Status != 0 {
-		q.Where(employee.Enable(req.Status == 1))
+	if req.Status != nil {
+		q.Where(employee.Enable(*req.Status))
 	}
 }
 

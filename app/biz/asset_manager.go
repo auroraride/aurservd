@@ -21,7 +21,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetrole"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 	"github.com/auroraride/aurservd/pkg/cache"
-	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/utils"
 )
 
@@ -56,9 +55,8 @@ func (b *assetManagerBiz) Create(req *definition.AssetManagerCreateReq) error {
 	return b.orm.Create().SetName(req.Name).SetPhone(req.Phone).SetPassword(password).SetRoleID(req.RoleID).Exec(b.ctx)
 }
 
-func (b *assetManagerBiz) Modify(req *definition.AssetManagerModifyReq) {
-	m := b.Query(req.ID)
-	u := m.Update()
+func (b *assetManagerBiz) Modify(req *definition.AssetManagerModifyReq) error {
+	u := b.orm.UpdateOneID(req.ID)
 	if req.Phone != nil {
 		u.SetPhone(*req.Phone)
 	}
@@ -84,9 +82,9 @@ func (b *assetManagerBiz) Modify(req *definition.AssetManagerModifyReq) {
 
 	_, err := u.Save(b.ctx)
 	if err != nil {
-		snag.Panic("管理员编辑失败")
-		return
+		return errors.New("管理员编辑失败")
 	}
+	return nil
 }
 
 // Signin 管理员登录
@@ -161,7 +159,9 @@ func (b *assetManagerBiz) ExtendTokenTime(id uint64, token string) {
 
 // List 列举管理员
 func (b *assetManagerBiz) List(req *definition.AssetManagerListReq) *model.PaginationRes {
-	q := b.orm.QueryNotDeleted().Order(ent.Desc(assetmanager.FieldCreatedAt)).WithRole()
+	q := b.orm.QueryNotDeleted().Order(ent.Desc(assetmanager.FieldCreatedAt)).WithRole().WithWarehouses(func(query *ent.WarehouseQuery) {
+		query.WithCity()
+	})
 	if req.Keyword != nil {
 		q.Where(
 			assetmanager.Or(
@@ -203,6 +203,8 @@ func (b *assetManagerBiz) List(req *definition.AssetManagerListReq) *model.Pagin
 					ID:   1,
 					Name: "无角色",
 				},
+				MiniEnable: item.MiniEnable,
+				MiniLimit:  item.MiniLimit,
 			}
 			r := item.Edges.Role
 			if r != nil {
@@ -211,22 +213,42 @@ func (b *assetManagerBiz) List(req *definition.AssetManagerListReq) *model.Pagin
 					Name: r.Name,
 				}
 			}
+			whs := item.Edges.Warehouses
+			wRes := make([]*definition.AssetManagerWarehouse, 0)
+			for _, wh := range whs {
+				var cityName string
+				if wh.Edges.City != nil {
+					cityName = wh.Edges.City.Name
+				}
+				wRes = append(wRes, &definition.AssetManagerWarehouse{
+					ID:       wh.ID,
+					Name:     wh.Name,
+					CityName: cityName,
+				})
+
+			}
+			res.Warehouses = wRes
 			return res
 		},
 	)
 }
 
-func (b *assetManagerBiz) Query(id uint64) *ent.AssetManager {
+func (b *assetManagerBiz) Query(id uint64) (*ent.AssetManager, error) {
 	mgr, _ := b.GetAssetManagerById(id)
 	if mgr == nil {
-		snag.Panic("未找到有效的管理员")
+		return nil, errors.New("未找到有效的管理员")
 	}
-	return mgr
+	return mgr, nil
 }
 
 // Delete 删除管理员
-func (b *assetManagerBiz) Delete(req *model.IDParamReq) {
-	b.orm.SoftDeleteOne(b.Query(req.ID)).SaveX(b.ctx)
+func (b *assetManagerBiz) Delete(req *model.IDParamReq) error {
+	am, err := b.Query(req.ID)
+	if err != nil {
+		return err
+	}
+	b.orm.SoftDeleteOne(am).SaveX(b.ctx)
+	return nil
 }
 
 // Profile 管理员信息

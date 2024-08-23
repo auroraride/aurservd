@@ -1893,7 +1893,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "assetStatus": {
-                    "description": "资产状态",
+                    "description": "资产状态(文字)",
                     "type": "string"
                 },
                 "attribute": {
@@ -1946,6 +1946,14 @@ const docTemplate = `{
                 "sn": {
                     "description": "编号",
                     "type": "string"
+                },
+                "status": {
+                    "description": "资产状态",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetStatus"
+                        }
+                    ]
                 }
             }
         },

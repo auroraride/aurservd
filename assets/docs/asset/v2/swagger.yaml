@@ -316,7 +316,6 @@ definitions:
   definition.EmployeeModifyReq:
     properties:
       cityId:
-        description: 城市ID
         type: integer
       enable:
         description: 是否启用
@@ -325,26 +324,19 @@ definitions:
         description: 门店集合ID
         type: integer
       limit:
-        description: 限制范围
         type: integer
       name:
-        description: 姓名
         type: string
       password:
         description: 密码
         type: string
       phone:
-        description: 手机号
         type: string
       storeIDs:
         description: 门店IDS
         items:
           type: integer
         type: array
-    required:
-    - cityId
-    - name
-    - phone
     type: object
   definition.EnterpriseAsset:
     properties:
@@ -1200,7 +1192,7 @@ definitions:
         description: 资产位置
         type: string
       assetStatus:
-        description: 资产状态
+        description: 资产状态(文字)
         type: string
       attribute:
         additionalProperties:
@@ -1240,6 +1232,10 @@ definitions:
       sn:
         description: 编号
         type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/model.AssetStatus'
+        description: 资产状态
     type: object
   model.AssetLocationsType:
     enum:
@@ -3382,14 +3378,10 @@ paths:
         in: query
         name: pageSize
         type: integer
-      - description: 启用状态筛选 0:全部 1:启用 2:禁用
-        enum:
-        - 0
-        - 1
-        - 2
+      - description: 启用状态
         in: query
         name: status
-        type: integer
+        type: boolean
       produces:
       - application/json
       responses:
@@ -3517,6 +3509,10 @@ paths:
         in: query
         name: end
         type: string
+      - description: 团签ID
+        in: query
+        name: enterpriseID
+        type: integer
       - description: 电池型号ID
         in: query
         name: modelID

@@ -1622,13 +1622,8 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "enum": [
-                            0,
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "description": "启用状态筛选 0:全部 1:启用 2:禁用",
+                        "type": "boolean",
+                        "description": "启用状态",
                         "name": "status",
                         "in": "query"
                     }
@@ -1825,6 +1820,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "结束时间",
                         "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterpriseID",
                         "in": "query"
                     },
                     {
@@ -5340,14 +5341,8 @@ const docTemplate = `{
         },
         "definition.EmployeeModifyReq": {
             "type": "object",
-            "required": [
-                "cityId",
-                "name",
-                "phone"
-            ],
             "properties": {
                 "cityId": {
-                    "description": "城市ID",
                     "type": "integer"
                 },
                 "enable": {
@@ -5359,11 +5354,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "limit": {
-                    "description": "限制范围",
                     "type": "integer"
                 },
                 "name": {
-                    "description": "姓名",
                     "type": "string"
                 },
                 "password": {
@@ -5371,7 +5364,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone": {
-                    "description": "手机号",
                     "type": "string"
                 },
                 "storeIDs": {
@@ -6612,7 +6604,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "assetStatus": {
-                    "description": "资产状态",
+                    "description": "资产状态(文字)",
                     "type": "string"
                 },
                 "attribute": {
@@ -6665,6 +6657,14 @@ const docTemplate = `{
                 "sn": {
                     "description": "编号",
                     "type": "string"
+                },
+                "status": {
+                    "description": "资产状态",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetStatus"
+                        }
+                    ]
                 }
             }
         },

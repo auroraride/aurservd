@@ -9,13 +9,14 @@ import "github.com/auroraride/aurservd/app/model"
 // EnterpriseAssetListReq 团签资产列表请求
 type EnterpriseAssetListReq struct {
 	model.PaginationReq
-	CityID    *uint64 `json:"cityId" query:"cityId"`       // 城市ID
-	StationID *uint64 `json:"stationId" query:"stationId"` // 站点ID
-	ModelID   *uint64 `json:"modelID" query:"modelID"`     // 电池型号ID
-	BrandId   *uint64 `json:"brandId" query:"brandId"`     // 电车型号ID
-	OtherName *string `json:"otherName" query:"otherName"` // 其他物资名称
-	Start     *string `json:"start" query:"start"`         // 开始时间
-	End       *string `json:"end" query:"end"`             // 结束时间
+	CityID       *uint64 `json:"cityId" query:"cityId"`             // 城市ID
+	StationID    *uint64 `json:"stationId" query:"stationId"`       // 站点ID
+	ModelID      *uint64 `json:"modelID" query:"modelID"`           // 电池型号ID
+	BrandId      *uint64 `json:"brandId" query:"brandId"`           // 电车型号ID
+	OtherName    *string `json:"otherName" query:"otherName"`       // 其他物资名称
+	Start        *string `json:"start" query:"start"`               // 开始时间
+	End          *string `json:"end" query:"end"`                   // 结束时间
+	EnterpriseID *uint64 `json:"enterpriseID" query:"enterpriseID"` // 团签ID
 }
 
 // EnterpriseAssetDetail 团签资产信息

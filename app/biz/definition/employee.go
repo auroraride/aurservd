@@ -8,9 +8,9 @@ import "github.com/auroraride/aurservd/app/model"
 
 type EmployeeListReq struct {
 	model.PaginationReq
-	Status  uint8   `json:"status" query:"status" enums:"0,1,2"` // 启用状态筛选 0:全部 1:启用 2:禁用
-	Keyword *string `json:"keyword" query:"keyword"`             // 搜索关键词, 门店、手机号或姓名
-	CityID  *uint64 `json:"cityId" query:"cityId"`               // 城市ID
+	Status  *bool   `json:"status" query:"status"`   // 启用状态
+	Keyword *string `json:"keyword" query:"keyword"` // 搜索关键词, 门店、手机号或姓名
+	CityID  *uint64 `json:"cityId" query:"cityId"`   // 城市ID
 }
 
 type EmployeeListRes struct {
@@ -46,12 +46,12 @@ type EmployeeCreateReq struct {
 
 type EmployeeModifyReq struct {
 	ID       *uint64  `json:"id" validate:"required" param:"id" trans:"店员ID"`
-	CityID   *uint64  `json:"cityId" validate:"required" trans:"城市ID"`
-	Name     *string  `json:"name" validate:"required" trans:"姓名"`
-	Phone    *string  `json:"phone" validate:"required,phone" trans:"手机号"`
+	CityID   *uint64  `json:"cityId"`
+	Name     *string  `json:"name"`
+	Phone    *string  `json:"phone"`
 	Password *string  `json:"password"` // 密码
 	GroupID  *uint64  `json:"groupID"`  // 门店集合ID
 	StoreIDs []uint64 `json:"storeIDs"` //  门店IDS
-	Limit    *uint    `json:"limit" trans:"限制范围"`
+	Limit    *uint    `json:"limit"`
 	Enable   *bool    `json:"enable"` // 是否启用
 }
