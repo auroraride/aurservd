@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegroup"
 	"github.com/google/uuid"
 )
 
@@ -105,6 +106,20 @@ func (ec *EmployeeCreate) SetCityID(u uint64) *EmployeeCreate {
 	return ec
 }
 
+// SetGroupID sets the "group_id" field.
+func (ec *EmployeeCreate) SetGroupID(u uint64) *EmployeeCreate {
+	ec.mutation.SetGroupID(u)
+	return ec
+}
+
+// SetNillableGroupID sets the "group_id" field if the given value is not nil.
+func (ec *EmployeeCreate) SetNillableGroupID(u *uint64) *EmployeeCreate {
+	if u != nil {
+		ec.SetGroupID(*u)
+	}
+	return ec
+}
+
 // SetSn sets the "sn" field.
 func (ec *EmployeeCreate) SetSn(u uuid.UUID) *EmployeeCreate {
 	ec.mutation.SetSn(u)
@@ -159,9 +174,28 @@ func (ec *EmployeeCreate) SetNillablePassword(s *string) *EmployeeCreate {
 	return ec
 }
 
+// SetLimit sets the "limit" field.
+func (ec *EmployeeCreate) SetLimit(u uint) *EmployeeCreate {
+	ec.mutation.SetLimit(u)
+	return ec
+}
+
+// SetNillableLimit sets the "limit" field if the given value is not nil.
+func (ec *EmployeeCreate) SetNillableLimit(u *uint) *EmployeeCreate {
+	if u != nil {
+		ec.SetLimit(*u)
+	}
+	return ec
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (ec *EmployeeCreate) SetCity(c *City) *EmployeeCreate {
 	return ec.SetCityID(c.ID)
+}
+
+// SetGroup sets the "group" edge to the StoreGroup entity.
+func (ec *EmployeeCreate) SetGroup(s *StoreGroup) *EmployeeCreate {
+	return ec.SetGroupID(s.ID)
 }
 
 // SetStoreID sets the "store" edge to the Store entity by ID.
@@ -328,6 +362,10 @@ func (ec *EmployeeCreate) defaults() error {
 		v := employee.DefaultEnable
 		ec.mutation.SetEnable(v)
 	}
+	if _, ok := ec.mutation.Limit(); !ok {
+		v := employee.DefaultLimit
+		ec.mutation.SetLimit(v)
+	}
 	return nil
 }
 
@@ -350,6 +388,9 @@ func (ec *EmployeeCreate) check() error {
 	}
 	if _, ok := ec.mutation.Enable(); !ok {
 		return &ValidationError{Name: "enable", err: errors.New(`ent: missing required field "Employee.enable"`)}
+	}
+	if _, ok := ec.mutation.Limit(); !ok {
+		return &ValidationError{Name: "limit", err: errors.New(`ent: missing required field "Employee.limit"`)}
 	}
 	if _, ok := ec.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Employee.city"`)}
@@ -425,6 +466,10 @@ func (ec *EmployeeCreate) createSpec() (*Employee, *sqlgraph.CreateSpec) {
 		_spec.SetField(employee.FieldPassword, field.TypeString, value)
 		_node.Password = value
 	}
+	if value, ok := ec.mutation.Limit(); ok {
+		_spec.SetField(employee.FieldLimit, field.TypeUint, value)
+		_node.Limit = value
+	}
 	if nodes := ec.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -440,6 +485,23 @@ func (ec *EmployeeCreate) createSpec() (*Employee, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.CityID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.GroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   employee.GroupTable,
+			Columns: []string{employee.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegroup.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.GroupID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ec.mutation.StoreIDs(); len(nodes) > 0 {
@@ -684,6 +746,24 @@ func (u *EmployeeUpsert) UpdateCityID() *EmployeeUpsert {
 	return u
 }
 
+// SetGroupID sets the "group_id" field.
+func (u *EmployeeUpsert) SetGroupID(v uint64) *EmployeeUpsert {
+	u.Set(employee.FieldGroupID, v)
+	return u
+}
+
+// UpdateGroupID sets the "group_id" field to the value that was provided on create.
+func (u *EmployeeUpsert) UpdateGroupID() *EmployeeUpsert {
+	u.SetExcluded(employee.FieldGroupID)
+	return u
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (u *EmployeeUpsert) ClearGroupID() *EmployeeUpsert {
+	u.SetNull(employee.FieldGroupID)
+	return u
+}
+
 // SetSn sets the "sn" field.
 func (u *EmployeeUpsert) SetSn(v uuid.UUID) *EmployeeUpsert {
 	u.Set(employee.FieldSn, v)
@@ -753,6 +833,24 @@ func (u *EmployeeUpsert) UpdatePassword() *EmployeeUpsert {
 // ClearPassword clears the value of the "password" field.
 func (u *EmployeeUpsert) ClearPassword() *EmployeeUpsert {
 	u.SetNull(employee.FieldPassword)
+	return u
+}
+
+// SetLimit sets the "limit" field.
+func (u *EmployeeUpsert) SetLimit(v uint) *EmployeeUpsert {
+	u.Set(employee.FieldLimit, v)
+	return u
+}
+
+// UpdateLimit sets the "limit" field to the value that was provided on create.
+func (u *EmployeeUpsert) UpdateLimit() *EmployeeUpsert {
+	u.SetExcluded(employee.FieldLimit)
+	return u
+}
+
+// AddLimit adds v to the "limit" field.
+func (u *EmployeeUpsert) AddLimit(v uint) *EmployeeUpsert {
+	u.Add(employee.FieldLimit, v)
 	return u
 }
 
@@ -895,6 +993,27 @@ func (u *EmployeeUpsertOne) UpdateCityID() *EmployeeUpsertOne {
 	})
 }
 
+// SetGroupID sets the "group_id" field.
+func (u *EmployeeUpsertOne) SetGroupID(v uint64) *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetGroupID(v)
+	})
+}
+
+// UpdateGroupID sets the "group_id" field to the value that was provided on create.
+func (u *EmployeeUpsertOne) UpdateGroupID() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateGroupID()
+	})
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (u *EmployeeUpsertOne) ClearGroupID() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.ClearGroupID()
+	})
+}
+
 // SetSn sets the "sn" field.
 func (u *EmployeeUpsertOne) SetSn(v uuid.UUID) *EmployeeUpsertOne {
 	return u.Update(func(s *EmployeeUpsert) {
@@ -976,6 +1095,27 @@ func (u *EmployeeUpsertOne) UpdatePassword() *EmployeeUpsertOne {
 func (u *EmployeeUpsertOne) ClearPassword() *EmployeeUpsertOne {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.ClearPassword()
+	})
+}
+
+// SetLimit sets the "limit" field.
+func (u *EmployeeUpsertOne) SetLimit(v uint) *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetLimit(v)
+	})
+}
+
+// AddLimit adds v to the "limit" field.
+func (u *EmployeeUpsertOne) AddLimit(v uint) *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.AddLimit(v)
+	})
+}
+
+// UpdateLimit sets the "limit" field to the value that was provided on create.
+func (u *EmployeeUpsertOne) UpdateLimit() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateLimit()
 	})
 }
 
@@ -1284,6 +1424,27 @@ func (u *EmployeeUpsertBulk) UpdateCityID() *EmployeeUpsertBulk {
 	})
 }
 
+// SetGroupID sets the "group_id" field.
+func (u *EmployeeUpsertBulk) SetGroupID(v uint64) *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetGroupID(v)
+	})
+}
+
+// UpdateGroupID sets the "group_id" field to the value that was provided on create.
+func (u *EmployeeUpsertBulk) UpdateGroupID() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateGroupID()
+	})
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (u *EmployeeUpsertBulk) ClearGroupID() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.ClearGroupID()
+	})
+}
+
 // SetSn sets the "sn" field.
 func (u *EmployeeUpsertBulk) SetSn(v uuid.UUID) *EmployeeUpsertBulk {
 	return u.Update(func(s *EmployeeUpsert) {
@@ -1365,6 +1526,27 @@ func (u *EmployeeUpsertBulk) UpdatePassword() *EmployeeUpsertBulk {
 func (u *EmployeeUpsertBulk) ClearPassword() *EmployeeUpsertBulk {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.ClearPassword()
+	})
+}
+
+// SetLimit sets the "limit" field.
+func (u *EmployeeUpsertBulk) SetLimit(v uint) *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetLimit(v)
+	})
+}
+
+// AddLimit adds v to the "limit" field.
+func (u *EmployeeUpsertBulk) AddLimit(v uint) *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.AddLimit(v)
+	})
+}
+
+// UpdateLimit sets the "limit" field to the value that was provided on create.
+func (u *EmployeeUpsertBulk) UpdateLimit() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateLimit()
 	})
 }
 

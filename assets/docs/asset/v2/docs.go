@@ -1576,6 +1576,212 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/employee": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "门店店员 - Employee"
+                ],
+                "summary": "列表",
+                "operationId": "EmployeeList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索关键词, 门店、手机号或姓名",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "启用状态筛选 0:全部 1:启用 2:禁用",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/definition.EmployeeListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "门店店员 - Employee"
+                ],
+                "summary": "创建",
+                "operationId": "EmployeeCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.EmployeeCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/employee/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "门店店员 - Employee"
+                ],
+                "summary": "修改",
+                "operationId": "EmployeeModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.EmployeeModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "门店店员 - Employee"
+                ],
+                "summary": "删除",
+                "operationId": "EmployeeDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "仓库ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/enterprise_assets": {
             "get": {
                 "consumes": [
@@ -5065,6 +5271,148 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.EmployeeCreateReq": {
+            "type": "object",
+            "required": [
+                "cityId",
+                "name",
+                "password",
+                "phone"
+            ],
+            "properties": {
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "groupID": {
+                    "description": "门店集合ID",
+                    "type": "integer"
+                },
+                "limit": {
+                    "description": "限制范围",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "storeIDs": {
+                    "description": "门店IDS",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "definition.EmployeeListRes": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "employeeStore": {
+                    "description": "当前上班门店",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.StoreInfo"
+                        }
+                    ]
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "group": {
+                    "description": "门店集合",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.StoreGroup"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "limit": {
+                    "description": "限制范围(m)",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "stores": {
+                    "description": "门店数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.StoreInfo"
+                    }
+                }
+            }
+        },
+        "definition.EmployeeModifyReq": {
+            "type": "object",
+            "required": [
+                "cityId",
+                "name",
+                "phone"
+            ],
+            "properties": {
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "groupID": {
+                    "description": "门店集合ID",
+                    "type": "integer"
+                },
+                "limit": {
+                    "description": "限制范围",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "storeIDs": {
+                    "description": "门店IDS",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
         "definition.EnterpriseAsset": {
             "type": "object",
             "properties": {
@@ -5482,6 +5830,19 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.StoreGroup": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "集合ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "集合名称",
+                    "type": "string"
+                }
+            }
+        },
         "definition.StoreGroupCreateRep": {
             "type": "object",
             "required": [
@@ -5503,6 +5864,19 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "门店集合名称",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.StoreInfo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "门店ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "门店名称",
                     "type": "string"
                 }
             }

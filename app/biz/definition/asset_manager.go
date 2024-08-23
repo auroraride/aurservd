@@ -55,10 +55,10 @@ type AssetManagerWarehouse struct {
 
 type AssetManagerModifyReq struct {
 	model.IDParamReq
-	Password     string   `json:"password"`     // 密码
-	RoleID       uint64   `json:"roleId"`       // 角色ID
-	Phone        string   `json:"phone"`        // 电话
-	Name         string   `json:"name"`         // 姓名
+	Password     *string  `json:"password"`     // 密码
+	RoleID       *uint64  `json:"roleId"`       // 角色ID
+	Phone        *string  `json:"phone"`        // 电话
+	Name         *string  `json:"name"`         // 姓名
 	WarehouseIDs []uint64 `json:"warehouseIds"` // 仓库IDS
 	MiniEnable   *bool    `json:"miniEnable"`   // 仓管是否启用
 	MiniLimit    *uint    `json:"miniLimit"`    // 仓管限制范围

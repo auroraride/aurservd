@@ -65,6 +65,7 @@ func (Employee) Fields() []ent.Field {
 		field.String("phone").Comment("电话"),
 		field.Bool("enable").Default(true).Comment("启用状态"),
 		field.String("password").Optional().Comment("密码"),
+		field.Uint("limit").Default(0).Comment("限制范围(m)"),
 	}
 }
 
@@ -89,6 +90,7 @@ func (Employee) Mixin() []ent.Mixin {
 		internal.Modifier{},
 
 		CityMixin{Optional: false},
+		StoreGroupMixin{Optional: true},
 	}
 }
 

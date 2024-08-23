@@ -59,17 +59,17 @@ func (b *assetManagerBiz) Create(req *definition.AssetManagerCreateReq) error {
 func (b *assetManagerBiz) Modify(req *definition.AssetManagerModifyReq) {
 	m := b.Query(req.ID)
 	u := m.Update()
-	if req.Phone != "" {
-		u.SetPhone(req.Phone)
+	if req.Phone != nil {
+		u.SetPhone(*req.Phone)
 	}
-	if req.Name != "" {
-		u.SetName(req.Name)
+	if req.Name != nil {
+		u.SetName(*req.Name)
 	}
-	if req.RoleID != 0 {
-		u.SetRoleID(req.RoleID)
+	if req.RoleID != nil {
+		u.SetRoleID(*req.RoleID)
 	}
-	if req.Password != "" {
-		password, _ := utils.PasswordGenerate(req.Password)
+	if req.Password != nil {
+		password, _ := utils.PasswordGenerate(*req.Password)
 		u.SetPassword(password)
 	}
 	if req.MiniEnable != nil {
@@ -82,7 +82,7 @@ func (b *assetManagerBiz) Modify(req *definition.AssetManagerModifyReq) {
 		u.AddWarehouseIDs(req.WarehouseIDs...)
 	}
 
-	err := u.Exec(b.ctx)
+	_, err := u.Save(b.ctx)
 	if err != nil {
 		snag.Panic("管理员编辑失败")
 		return

@@ -41,6 +41,7 @@ func (*assetCheck) Create(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Warestore-Token	header		string								true	"仓管校验token"
+// @Param	sn					path		string								true	"sn"
 // @Param	query				query		definition.AssetCheckByAssetSnReq	true	"查询参数"
 // @Success	200					{object}	model.AssetCheckByAssetSnRes		"请求成功"
 func (*assetCheck) GetAssetBySN(c echo.Context) (err error) {

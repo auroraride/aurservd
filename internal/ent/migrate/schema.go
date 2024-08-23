@@ -800,7 +800,7 @@ var (
 		{Name: "phone", Type: field.TypeString, Size: 30, Comment: "账户/手机号"},
 		{Name: "password", Type: field.TypeString, Comment: "密码"},
 		{Name: "mini_enable", Type: field.TypeBool, Comment: "仓管小程序人员是否启用", Default: false},
-		{Name: "mini_limit", Type: field.TypeUint, Comment: "仓管小程序人员限制范围(km)", Default: 0},
+		{Name: "mini_limit", Type: field.TypeUint, Comment: "仓管小程序人员限制范围(m)", Default: 0},
 		{Name: "last_signin_at", Type: field.TypeTime, Nullable: true, Comment: "最后登录时间"},
 		{Name: "role_id", Type: field.TypeUint64, Nullable: true, Comment: "角色ID"},
 	}
@@ -2894,7 +2894,9 @@ var (
 		{Name: "phone", Type: field.TypeString, Comment: "电话"},
 		{Name: "enable", Type: field.TypeBool, Comment: "启用状态", Default: true},
 		{Name: "password", Type: field.TypeString, Nullable: true, Comment: "密码"},
+		{Name: "limit", Type: field.TypeUint, Comment: "限制范围(m)", Default: 0},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
+		{Name: "group_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
 	}
 	// EmployeeTable holds the schema information for the "employee" table.
 	EmployeeTable = &schema.Table{
@@ -2904,9 +2906,15 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "employee_city_city",
-				Columns:    []*schema.Column{EmployeeColumns[12]},
+				Columns:    []*schema.Column{EmployeeColumns[13]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "employee_store_group_group",
+				Columns:    []*schema.Column{EmployeeColumns[14]},
+				RefColumns: []*schema.Column{StoreGroupColumns[0]},
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -2923,7 +2931,12 @@ var (
 			{
 				Name:    "employee_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{EmployeeColumns[12]},
+				Columns: []*schema.Column{EmployeeColumns[13]},
+			},
+			{
+				Name:    "employee_group_id",
+				Unique:  false,
+				Columns: []*schema.Column{EmployeeColumns[14]},
 			},
 			{
 				Name:    "employee_enable",
@@ -7781,6 +7794,7 @@ func init() {
 		Table: "ebike_brand_attribute",
 	}
 	EmployeeTable.ForeignKeys[0].RefTable = CityTable
+	EmployeeTable.ForeignKeys[1].RefTable = StoreGroupTable
 	EmployeeTable.Annotation = &entsql.Annotation{
 		Table: "employee",
 	}

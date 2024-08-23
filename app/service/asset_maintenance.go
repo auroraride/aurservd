@@ -168,6 +168,9 @@ func (s *assetMaintenanceService) List(ctx context.Context, req *model.AssetMain
 		}
 		for _, v := range result {
 			m, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(v.MaterialID)).First(ctx)
+			if m == nil {
+				continue
+			}
 			res.Details = append(res.Details, model.AssetMaintenanceDetail{
 				AssetName: m.Name,
 				Num:       uint8(v.Count),

@@ -509,6 +509,13 @@ const docTemplate = `{
                         "name": "X-Warestore-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "sn",
+                        "name": "sn",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {

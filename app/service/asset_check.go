@@ -440,11 +440,17 @@ func (s *assetCheckService) detail(item *ent.AssetCheck) *model.AssetCheckListRe
 	opratorName := ""
 	switch model.AssetOperateRoleType(item.OperateType) {
 	case model.AssetOperateRoleTypeAgent:
-		opratorName = item.Edges.OperateAgent.Name
+		if item.Edges.OperateAgent != nil {
+			opratorName = item.Edges.OperateAgent.Name
+		}
 	case model.AssetOperateRoleTypeStore:
-		opratorName = item.Edges.OperateStore.Name
+		if item.Edges.OperateStore != nil {
+			opratorName = item.Edges.OperateStore.Name
+		}
 	case model.AssetOperateRoleTypeManager:
-		opratorName = item.Edges.OperateManager.Name
+		if item.Edges.OperateManager != nil {
+			opratorName = item.Edges.OperateManager.Name
+		}
 	default:
 		opratorName = ""
 	}

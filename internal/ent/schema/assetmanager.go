@@ -63,7 +63,7 @@ func (AssetManager) Fields() []ent.Field {
 		field.String("password").Comment("密码"),
 		field.Uint64("role_id").Optional().Nillable().Comment("角色ID"),
 		field.Bool("mini_enable").Default(false).Comment("仓管小程序人员是否启用"),
-		field.Uint("mini_limit").Default(0).Comment("仓管小程序人员限制范围(km)"),
+		field.Uint("mini_limit").Default(0).Comment("仓管小程序人员限制范围(m)"),
 		field.Time("last_signin_at").Nillable().Optional().Comment("最后登录时间"),
 	}
 }

@@ -992,6 +992,10 @@ func init() {
 	employeeDescEnable := employeeFields[3].Descriptor()
 	// employee.DefaultEnable holds the default value on creation for the enable field.
 	employee.DefaultEnable = employeeDescEnable.Default.(bool)
+	// employeeDescLimit is the schema descriptor for limit field.
+	employeeDescLimit := employeeFields[5].Descriptor()
+	// employee.DefaultLimit holds the default value on creation for the limit field.
+	employee.DefaultLimit = employeeDescLimit.Default.(uint)
 	enterpriseMixin := schema.Enterprise{}.Mixin()
 	enterpriseMixinHooks2 := enterpriseMixin[2].Hooks()
 	enterprise.Hooks[0] = enterpriseMixinHooks2[0]

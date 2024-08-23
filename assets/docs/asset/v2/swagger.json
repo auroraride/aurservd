@@ -108,15 +108,15 @@
                         "in": "query"
                     },
                     {
-                      "type": "integer",
-                      "description": "资产位置ID",
-                      "name": "locationsId",
-                      "in": "query"
+                        "type": "integer",
+                        "description": "资产位置ID",
+                        "name": "locationsId",
+                        "in": "query"
                     },
-                  {
+                    {
                         "type": "string",
-                    "description": "资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
-                    "name": "locationsKeyword",
+                        "description": "资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
+                        "name": "locationsKeyword",
                         "in": "query"
                     },
                     {
@@ -152,7 +152,7 @@
                     {
                         "type": "integer",
                         "description": "型号ID",
-                      "name": "modelId",
+                        "name": "modelId",
                         "in": "query"
                     },
                     {
@@ -1269,16 +1269,16 @@
                         "name": "enable",
                         "in": "query"
                     },
-                  {
-                    "type": "integer",
-                    "description": "资产位置ID",
-                    "name": "locationsId",
-                    "in": "query"
+                    {
+                        "type": "integer",
+                        "description": "资产位置ID",
+                        "name": "locationsId",
+                        "in": "query"
                     },
                     {
                         "type": "string",
-                      "description": "资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
-                      "name": "locationsKeyword",
+                        "description": "资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
+                        "name": "locationsKeyword",
                         "in": "query"
                     },
                     {
@@ -1314,7 +1314,7 @@
                     {
                         "type": "integer",
                         "description": "型号ID",
-                      "name": "modelId",
+                        "name": "modelId",
                         "in": "query"
                     },
                     {
@@ -1554,6 +1554,212 @@
                     {
                         "type": "integer",
                         "description": "品牌ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/employee": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "门店店员 - Employee"
+                ],
+                "summary": "列表",
+                "operationId": "EmployeeList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索关键词, 门店、手机号或姓名",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "启用状态筛选 0:全部 1:启用 2:禁用",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/definition.EmployeeListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "门店店员 - Employee"
+                ],
+                "summary": "创建",
+                "operationId": "EmployeeCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.EmployeeCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/employee/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "门店店员 - Employee"
+                ],
+                "summary": "修改",
+                "operationId": "EmployeeModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.EmployeeModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "门店店员 - Employee"
+                ],
+                "summary": "删除",
+                "operationId": "EmployeeDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "仓库ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -3324,34 +3530,34 @@
                         "name": "employeeID",
                         "in": "query"
                     },
-                  {
-                    "type": "string",
-                    "description": "入库结束时间",
-                    "name": "inEnd",
-                    "in": "query"
-                  },
-                  {
-                    "type": "string",
-                    "description": "入库开始时间",
-                    "name": "inStart",
-                    "in": "query"
-                  },
-                  {
-                    "type": "string",
-                    "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
-                    "name": "keyword",
-                    "in": "query"
+                    {
+                        "type": "string",
+                        "description": "入库结束时间",
+                        "name": "inEnd",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "入库开始时间",
+                        "name": "inStart",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
+                        "name": "keyword",
+                        "in": "query"
                     },
                     {
                         "type": "integer",
-                      "description": "调拨位置ID",
-                      "name": "locationsId",
-                      "in": "query"
+                        "description": "调拨位置ID",
+                        "name": "locationsId",
+                        "in": "query"
                     },
-                  {
-                    "type": "string",
-                    "description": "调拨位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
-                    "name": "locationsKeyword",
+                    {
+                        "type": "string",
+                        "description": "调拨位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
+                        "name": "locationsKeyword",
                         "in": "query"
                     },
                     {
@@ -3380,8 +3586,8 @@
                             "AssetLocationsTypeCabinet",
                             "AssetLocationsTypeRider"
                         ],
-                      "description": "调拨位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-                      "name": "locationsType",
+                        "description": "调拨位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                        "name": "locationsType",
                         "in": "query"
                     },
                     {
@@ -5058,6 +5264,148 @@
                 }
             }
         },
+        "definition.EmployeeCreateReq": {
+            "type": "object",
+            "required": [
+                "cityId",
+                "name",
+                "password",
+                "phone"
+            ],
+            "properties": {
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "groupID": {
+                    "description": "门店集合ID",
+                    "type": "integer"
+                },
+                "limit": {
+                    "description": "限制范围",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "storeIDs": {
+                    "description": "门店IDS",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "definition.EmployeeListRes": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "employeeStore": {
+                    "description": "当前上班门店",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.StoreInfo"
+                        }
+                    ]
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "group": {
+                    "description": "门店集合",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.StoreGroup"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "limit": {
+                    "description": "限制范围(m)",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "stores": {
+                    "description": "门店数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.StoreInfo"
+                    }
+                }
+            }
+        },
+        "definition.EmployeeModifyReq": {
+            "type": "object",
+            "required": [
+                "cityId",
+                "name",
+                "phone"
+            ],
+            "properties": {
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "groupID": {
+                    "description": "门店集合ID",
+                    "type": "integer"
+                },
+                "limit": {
+                    "description": "限制范围",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "storeIDs": {
+                    "description": "门店IDS",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
         "definition.EnterpriseAsset": {
             "type": "object",
             "properties": {
@@ -5475,6 +5823,19 @@
                 }
             }
         },
+        "definition.StoreGroup": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "集合ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "集合名称",
+                    "type": "string"
+                }
+            }
+        },
         "definition.StoreGroupCreateRep": {
             "type": "object",
             "required": [
@@ -5496,6 +5857,19 @@
                 },
                 "name": {
                     "description": "门店集合名称",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.StoreInfo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "门店ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "门店名称",
                     "type": "string"
                 }
             }
@@ -6184,12 +6558,12 @@
                     "description": "是否启用",
                     "type": "boolean"
                 },
-              "locationsId": {
-                "description": "资产位置ID",
-                "type": "integer"
-              },
-              "locationsKeyword": {
-                "description": "资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
+                "locationsId": {
+                    "description": "资产位置ID",
+                    "type": "integer"
+                },
+                "locationsKeyword": {
+                    "description": "资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
                     "type": "string"
                 },
                 "locationsType": {
@@ -6208,7 +6582,7 @@
                         }
                     ]
                 },
-              "modelId": {
+                "modelId": {
                     "description": "型号ID",
                     "type": "integer"
                 },
@@ -6584,19 +6958,19 @@
                     ]
                 },
                 "materialId": {
-                  "description": "其它物资分类ID （当AssetType = 4:电柜配件 5:电车配件 6:其它  必传）",
-                  "type": "integer"
+                    "description": "其它物资分类ID （当AssetType = 4:电柜配件 5:电车配件 6:其它  必传）",
+                    "type": "integer"
                 },
-              "modelId": {
-                "description": "电池型号ID（当AssetType = 3:非智能电池  必传）",
+                "modelId": {
+                    "description": "电池型号ID（当AssetType = 3:非智能电池  必传）",
                     "type": "integer"
                 },
                 "num": {
-                  "description": "报废数量  （当AssetType = 3:非智能电池 4:电柜配件 5:电车配件 6:其它  必传）",
+                    "description": "报废数量  （当AssetType = 3:非智能电池 4:电柜配件 5:电车配件 6:其它  必传）",
                     "type": "integer"
                 },
                 "sn": {
-                  "description": "资产Sn (当AssetType = 1:电车 2:智能电池  必传)",
+                    "description": "资产Sn (当AssetType = 1:电车 2:智能电池  必传)",
                     "type": "string"
                 }
             }

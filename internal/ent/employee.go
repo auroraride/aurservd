@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegroup"
 	"github.com/google/uuid"
 )
 
@@ -36,6 +37,8 @@ type Employee struct {
 	Remark string `json:"remark,omitempty"`
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
+	// 城市ID
+	GroupID *uint64 `json:"group_id,omitempty"`
 	// Sn holds the value of the "sn" field.
 	Sn uuid.UUID `json:"sn,omitempty"`
 	// 姓名
@@ -46,6 +49,8 @@ type Employee struct {
 	Enable bool `json:"enable,omitempty"`
 	// 密码
 	Password string `json:"password,omitempty"`
+	// 限制范围(m)
+	Limit uint `json:"limit,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EmployeeQuery when eager-loading is set.
 	Edges        EmployeeEdges `json:"edges"`
@@ -56,6 +61,8 @@ type Employee struct {
 type EmployeeEdges struct {
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
+	// Group holds the value of the group edge.
+	Group *StoreGroup `json:"group,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
 	// Attendances holds the value of the attendances edge.
@@ -72,7 +79,7 @@ type EmployeeEdges struct {
 	Stores []*Store `json:"stores,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [9]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -86,12 +93,23 @@ func (e EmployeeEdges) CityOrErr() (*City, error) {
 	return nil, &NotLoadedError{edge: "city"}
 }
 
+// GroupOrErr returns the Group value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EmployeeEdges) GroupOrErr() (*StoreGroup, error) {
+	if e.Group != nil {
+		return e.Group, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: storegroup.Label}
+	}
+	return nil, &NotLoadedError{edge: "group"}
+}
+
 // StoreOrErr returns the Store value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EmployeeEdges) StoreOrErr() (*Store, error) {
 	if e.Store != nil {
 		return e.Store, nil
-	} else if e.loadedTypes[1] {
+	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: store.Label}
 	}
 	return nil, &NotLoadedError{edge: "store"}
@@ -100,7 +118,7 @@ func (e EmployeeEdges) StoreOrErr() (*Store, error) {
 // AttendancesOrErr returns the Attendances value or an error if the edge
 // was not loaded in eager-loading.
 func (e EmployeeEdges) AttendancesOrErr() ([]*Attendance, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.Attendances, nil
 	}
 	return nil, &NotLoadedError{edge: "attendances"}
@@ -109,7 +127,7 @@ func (e EmployeeEdges) AttendancesOrErr() ([]*Attendance, error) {
 // StocksOrErr returns the Stocks value or an error if the edge
 // was not loaded in eager-loading.
 func (e EmployeeEdges) StocksOrErr() ([]*Stock, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.Stocks, nil
 	}
 	return nil, &NotLoadedError{edge: "stocks"}
@@ -118,7 +136,7 @@ func (e EmployeeEdges) StocksOrErr() ([]*Stock, error) {
 // ExchangesOrErr returns the Exchanges value or an error if the edge
 // was not loaded in eager-loading.
 func (e EmployeeEdges) ExchangesOrErr() ([]*Exchange, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.Exchanges, nil
 	}
 	return nil, &NotLoadedError{edge: "exchanges"}
@@ -127,7 +145,7 @@ func (e EmployeeEdges) ExchangesOrErr() ([]*Exchange, error) {
 // CommissionsOrErr returns the Commissions value or an error if the edge
 // was not loaded in eager-loading.
 func (e EmployeeEdges) CommissionsOrErr() ([]*Commission, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		return e.Commissions, nil
 	}
 	return nil, &NotLoadedError{edge: "commissions"}
@@ -136,7 +154,7 @@ func (e EmployeeEdges) CommissionsOrErr() ([]*Commission, error) {
 // AssistancesOrErr returns the Assistances value or an error if the edge
 // was not loaded in eager-loading.
 func (e EmployeeEdges) AssistancesOrErr() ([]*Assistance, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		return e.Assistances, nil
 	}
 	return nil, &NotLoadedError{edge: "assistances"}
@@ -145,7 +163,7 @@ func (e EmployeeEdges) AssistancesOrErr() ([]*Assistance, error) {
 // StoresOrErr returns the Stores value or an error if the edge
 // was not loaded in eager-loading.
 func (e EmployeeEdges) StoresOrErr() ([]*Store, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[8] {
 		return e.Stores, nil
 	}
 	return nil, &NotLoadedError{edge: "stores"}
@@ -160,7 +178,7 @@ func (*Employee) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case employee.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case employee.FieldID, employee.FieldCityID:
+		case employee.FieldID, employee.FieldCityID, employee.FieldGroupID, employee.FieldLimit:
 			values[i] = new(sql.NullInt64)
 		case employee.FieldRemark, employee.FieldName, employee.FieldPhone, employee.FieldPassword:
 			values[i] = new(sql.NullString)
@@ -236,6 +254,13 @@ func (e *Employee) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.CityID = uint64(value.Int64)
 			}
+		case employee.FieldGroupID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field group_id", values[i])
+			} else if value.Valid {
+				e.GroupID = new(uint64)
+				*e.GroupID = uint64(value.Int64)
+			}
 		case employee.FieldSn:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field sn", values[i])
@@ -266,6 +291,12 @@ func (e *Employee) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.Password = value.String
 			}
+		case employee.FieldLimit:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field limit", values[i])
+			} else if value.Valid {
+				e.Limit = uint(value.Int64)
+			}
 		default:
 			e.selectValues.Set(columns[i], values[i])
 		}
@@ -282,6 +313,11 @@ func (e *Employee) Value(name string) (ent.Value, error) {
 // QueryCity queries the "city" edge of the Employee entity.
 func (e *Employee) QueryCity() *CityQuery {
 	return NewEmployeeClient(e.config).QueryCity(e)
+}
+
+// QueryGroup queries the "group" edge of the Employee entity.
+func (e *Employee) QueryGroup() *StoreGroupQuery {
+	return NewEmployeeClient(e.config).QueryGroup(e)
 }
 
 // QueryStore queries the "store" edge of the Employee entity.
@@ -365,6 +401,11 @@ func (e *Employee) String() string {
 	builder.WriteString("city_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.CityID))
 	builder.WriteString(", ")
+	if v := e.GroupID; v != nil {
+		builder.WriteString("group_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("sn=")
 	builder.WriteString(fmt.Sprintf("%v", e.Sn))
 	builder.WriteString(", ")
@@ -379,6 +420,9 @@ func (e *Employee) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("password=")
 	builder.WriteString(e.Password)
+	builder.WriteString(", ")
+	builder.WriteString("limit=")
+	builder.WriteString(fmt.Sprintf("%v", e.Limit))
 	builder.WriteByte(')')
 	return builder.String()
 }

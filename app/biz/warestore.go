@@ -146,7 +146,8 @@ func (b *warestoreBiz) TokenVerify(token string) (am *ent.AssetManager, ep *ent.
 	// 获取token对应ID
 	tokenVal := ar.Redis.HGet(b.ctx, b.warestoreTokenCacheKey, token).Val()
 	vals := strings.Split(tokenVal, "-")
-	if len(vals) == 0 {
+	// 解析的数据不为两组数据则直接返回
+	if len(vals) != 2 {
 		return
 	}
 	platType := vals[0]

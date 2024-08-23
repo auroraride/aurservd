@@ -42,7 +42,7 @@ type AssetManager struct {
 	RoleID *uint64 `json:"role_id,omitempty"`
 	// 仓管小程序人员是否启用
 	MiniEnable bool `json:"mini_enable,omitempty"`
-	// 仓管小程序人员限制范围(km)
+	// 仓管小程序人员限制范围(m)
 	MiniLimit uint `json:"mini_limit,omitempty"`
 	// 最后登录时间
 	LastSigninAt *time.Time `json:"last_signin_at,omitempty"`

@@ -402,8 +402,6 @@ func (b *warehouseBiz) ListByCity() (res []*model.CascaderOptionLevel2) {
 				cityIdMap[cId] = wh.Edges.City
 			}
 
-			cityIds = append(cityIds, cId)
-			cityIdMap[cId] = wh.Edges.City
 			cityIdListMap[cId] = append(cityIdListMap[cId], model.SelectOption{
 				Label: wh.Name,
 				Value: wh.ID,

@@ -248,6 +248,104 @@ definitions:
         - $ref: '#/definitions/definition.CabinetAsset'
         description: 电柜资产
     type: object
+  definition.EmployeeCreateReq:
+    properties:
+      cityId:
+        description: 城市ID
+        type: integer
+      groupID:
+        description: 门店集合ID
+        type: integer
+      limit:
+        description: 限制范围
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      password:
+        description: 密码
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      storeIDs:
+        description: 门店IDS
+        items:
+          type: integer
+        type: array
+    required:
+    - cityId
+    - name
+    - password
+    - phone
+    type: object
+  definition.EmployeeListRes:
+    properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      employeeStore:
+        allOf:
+        - $ref: '#/definitions/definition.StoreInfo'
+        description: 当前上班门店
+      enable:
+        description: 是否启用
+        type: boolean
+      group:
+        allOf:
+        - $ref: '#/definitions/definition.StoreGroup'
+        description: 门店集合
+      id:
+        type: integer
+      limit:
+        description: 限制范围(m)
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+      stores:
+        description: 门店数据
+        items:
+          $ref: '#/definitions/definition.StoreInfo'
+        type: array
+    type: object
+  definition.EmployeeModifyReq:
+    properties:
+      cityId:
+        description: 城市ID
+        type: integer
+      enable:
+        description: 是否启用
+        type: boolean
+      groupID:
+        description: 门店集合ID
+        type: integer
+      limit:
+        description: 限制范围
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      password:
+        description: 密码
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      storeIDs:
+        description: 门店IDS
+        items:
+          type: integer
+        type: array
+    required:
+    - cityId
+    - name
+    - phone
+    type: object
   definition.EnterpriseAsset:
     properties:
       cabinetAccessories:
@@ -534,6 +632,15 @@ definitions:
         - $ref: '#/definitions/definition.StoreAsset'
         description: 门店资产
     type: object
+  definition.StoreGroup:
+    properties:
+      id:
+        description: 集合ID
+        type: integer
+      name:
+        description: 集合名称
+        type: string
+    type: object
   definition.StoreGroupCreateRep:
     properties:
       name:
@@ -549,6 +656,15 @@ definitions:
         type: integer
       name:
         description: 门店集合名称
+        type: string
+    type: object
+  definition.StoreInfo:
+    properties:
+      id:
+        description: 门店ID
+        type: integer
+      name:
+        description: 门店名称
         type: string
     type: object
   definition.WareHouseAssetDetail:
@@ -3239,6 +3355,141 @@ paths:
       summary: 修改品牌
       tags:
       - 电车型号 - EbikeBrand
+  /manager/v2/asset/employee:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 搜索关键词, 门店、手机号或姓名
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 启用状态筛选 0:全部 1:启用 2:禁用
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/definition.EmployeeListRes'
+                  type: array
+              type: object
+      summary: 列表
+      tags:
+      - 门店店员 - Employee
+    post:
+      consumes:
+      - application/json
+      operationId: EmployeeCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.EmployeeCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建
+      tags:
+      - 门店店员 - Employee
+  /manager/v2/asset/employee/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: EmployeeDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 仓库ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 删除
+      tags:
+      - 门店店员 - Employee
+    put:
+      consumes:
+      - application/json
+      operationId: EmployeeModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.EmployeeModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改
+      tags:
+      - 门店店员 - Employee
   /manager/v2/asset/enterprise_assets:
     get:
       consumes:

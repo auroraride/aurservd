@@ -81,6 +81,11 @@ func CityID(v uint64) predicate.Employee {
 	return predicate.Employee(sql.FieldEQ(FieldCityID, v))
 }
 
+// GroupID applies equality check predicate on the "group_id" field. It's identical to GroupIDEQ.
+func GroupID(v uint64) predicate.Employee {
+	return predicate.Employee(sql.FieldEQ(FieldGroupID, v))
+}
+
 // Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
 func Sn(v uuid.UUID) predicate.Employee {
 	return predicate.Employee(sql.FieldEQ(FieldSn, v))
@@ -104,6 +109,11 @@ func Enable(v bool) predicate.Employee {
 // Password applies equality check predicate on the "password" field. It's identical to PasswordEQ.
 func Password(v string) predicate.Employee {
 	return predicate.Employee(sql.FieldEQ(FieldPassword, v))
+}
+
+// Limit applies equality check predicate on the "limit" field. It's identical to LimitEQ.
+func Limit(v uint) predicate.Employee {
+	return predicate.Employee(sql.FieldEQ(FieldLimit, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -349,6 +359,36 @@ func CityIDIn(vs ...uint64) predicate.Employee {
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Employee {
 	return predicate.Employee(sql.FieldNotIn(FieldCityID, vs...))
+}
+
+// GroupIDEQ applies the EQ predicate on the "group_id" field.
+func GroupIDEQ(v uint64) predicate.Employee {
+	return predicate.Employee(sql.FieldEQ(FieldGroupID, v))
+}
+
+// GroupIDNEQ applies the NEQ predicate on the "group_id" field.
+func GroupIDNEQ(v uint64) predicate.Employee {
+	return predicate.Employee(sql.FieldNEQ(FieldGroupID, v))
+}
+
+// GroupIDIn applies the In predicate on the "group_id" field.
+func GroupIDIn(vs ...uint64) predicate.Employee {
+	return predicate.Employee(sql.FieldIn(FieldGroupID, vs...))
+}
+
+// GroupIDNotIn applies the NotIn predicate on the "group_id" field.
+func GroupIDNotIn(vs ...uint64) predicate.Employee {
+	return predicate.Employee(sql.FieldNotIn(FieldGroupID, vs...))
+}
+
+// GroupIDIsNil applies the IsNil predicate on the "group_id" field.
+func GroupIDIsNil() predicate.Employee {
+	return predicate.Employee(sql.FieldIsNull(FieldGroupID))
+}
+
+// GroupIDNotNil applies the NotNil predicate on the "group_id" field.
+func GroupIDNotNil() predicate.Employee {
+	return predicate.Employee(sql.FieldNotNull(FieldGroupID))
 }
 
 // SnEQ applies the EQ predicate on the "sn" field.
@@ -616,6 +656,46 @@ func PasswordContainsFold(v string) predicate.Employee {
 	return predicate.Employee(sql.FieldContainsFold(FieldPassword, v))
 }
 
+// LimitEQ applies the EQ predicate on the "limit" field.
+func LimitEQ(v uint) predicate.Employee {
+	return predicate.Employee(sql.FieldEQ(FieldLimit, v))
+}
+
+// LimitNEQ applies the NEQ predicate on the "limit" field.
+func LimitNEQ(v uint) predicate.Employee {
+	return predicate.Employee(sql.FieldNEQ(FieldLimit, v))
+}
+
+// LimitIn applies the In predicate on the "limit" field.
+func LimitIn(vs ...uint) predicate.Employee {
+	return predicate.Employee(sql.FieldIn(FieldLimit, vs...))
+}
+
+// LimitNotIn applies the NotIn predicate on the "limit" field.
+func LimitNotIn(vs ...uint) predicate.Employee {
+	return predicate.Employee(sql.FieldNotIn(FieldLimit, vs...))
+}
+
+// LimitGT applies the GT predicate on the "limit" field.
+func LimitGT(v uint) predicate.Employee {
+	return predicate.Employee(sql.FieldGT(FieldLimit, v))
+}
+
+// LimitGTE applies the GTE predicate on the "limit" field.
+func LimitGTE(v uint) predicate.Employee {
+	return predicate.Employee(sql.FieldGTE(FieldLimit, v))
+}
+
+// LimitLT applies the LT predicate on the "limit" field.
+func LimitLT(v uint) predicate.Employee {
+	return predicate.Employee(sql.FieldLT(FieldLimit, v))
+}
+
+// LimitLTE applies the LTE predicate on the "limit" field.
+func LimitLTE(v uint) predicate.Employee {
+	return predicate.Employee(sql.FieldLTE(FieldLimit, v))
+}
+
 // HasCity applies the HasEdge predicate on the "city" edge.
 func HasCity() predicate.Employee {
 	return predicate.Employee(func(s *sql.Selector) {
@@ -631,6 +711,29 @@ func HasCity() predicate.Employee {
 func HasCityWith(preds ...predicate.City) predicate.Employee {
 	return predicate.Employee(func(s *sql.Selector) {
 		step := newCityStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasGroup applies the HasEdge predicate on the "group" edge.
+func HasGroup() predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, GroupTable, GroupColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasGroupWith applies the HasEdge predicate on the "group" edge with a given conditions (other predicates).
+func HasGroupWith(preds ...predicate.StoreGroup) predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		step := newGroupStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

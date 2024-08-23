@@ -9163,6 +9163,22 @@ func (c *EmployeeClient) QueryCity(e *Employee) *CityQuery {
 	return query
 }
 
+// QueryGroup queries the group edge of a Employee.
+func (c *EmployeeClient) QueryGroup(e *Employee) *StoreGroupQuery {
+	query := (&StoreGroupClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, id),
+			sqlgraph.To(storegroup.Table, storegroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, employee.GroupTable, employee.GroupColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryStore queries the store edge of a Employee.
 func (c *EmployeeClient) QueryStore(e *Employee) *StoreQuery {
 	query := (&StoreClient{config: c.config}).Query()

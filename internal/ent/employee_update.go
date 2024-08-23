@@ -21,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegroup"
 	"github.com/google/uuid"
 )
 
@@ -110,6 +111,26 @@ func (eu *EmployeeUpdate) SetNillableCityID(u *uint64) *EmployeeUpdate {
 	return eu
 }
 
+// SetGroupID sets the "group_id" field.
+func (eu *EmployeeUpdate) SetGroupID(u uint64) *EmployeeUpdate {
+	eu.mutation.SetGroupID(u)
+	return eu
+}
+
+// SetNillableGroupID sets the "group_id" field if the given value is not nil.
+func (eu *EmployeeUpdate) SetNillableGroupID(u *uint64) *EmployeeUpdate {
+	if u != nil {
+		eu.SetGroupID(*u)
+	}
+	return eu
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (eu *EmployeeUpdate) ClearGroupID() *EmployeeUpdate {
+	eu.mutation.ClearGroupID()
+	return eu
+}
+
 // SetSn sets the "sn" field.
 func (eu *EmployeeUpdate) SetSn(u uuid.UUID) *EmployeeUpdate {
 	eu.mutation.SetSn(u)
@@ -192,9 +213,35 @@ func (eu *EmployeeUpdate) ClearPassword() *EmployeeUpdate {
 	return eu
 }
 
+// SetLimit sets the "limit" field.
+func (eu *EmployeeUpdate) SetLimit(u uint) *EmployeeUpdate {
+	eu.mutation.ResetLimit()
+	eu.mutation.SetLimit(u)
+	return eu
+}
+
+// SetNillableLimit sets the "limit" field if the given value is not nil.
+func (eu *EmployeeUpdate) SetNillableLimit(u *uint) *EmployeeUpdate {
+	if u != nil {
+		eu.SetLimit(*u)
+	}
+	return eu
+}
+
+// AddLimit adds u to the "limit" field.
+func (eu *EmployeeUpdate) AddLimit(u int) *EmployeeUpdate {
+	eu.mutation.AddLimit(u)
+	return eu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (eu *EmployeeUpdate) SetCity(c *City) *EmployeeUpdate {
 	return eu.SetCityID(c.ID)
+}
+
+// SetGroup sets the "group" edge to the StoreGroup entity.
+func (eu *EmployeeUpdate) SetGroup(s *StoreGroup) *EmployeeUpdate {
+	return eu.SetGroupID(s.ID)
 }
 
 // SetStoreID sets the "store" edge to the Store entity by ID.
@@ -314,6 +361,12 @@ func (eu *EmployeeUpdate) Mutation() *EmployeeMutation {
 // ClearCity clears the "city" edge to the City entity.
 func (eu *EmployeeUpdate) ClearCity() *EmployeeUpdate {
 	eu.mutation.ClearCity()
+	return eu
+}
+
+// ClearGroup clears the "group" edge to the StoreGroup entity.
+func (eu *EmployeeUpdate) ClearGroup() *EmployeeUpdate {
+	eu.mutation.ClearGroup()
 	return eu
 }
 
@@ -562,6 +615,12 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if eu.mutation.PasswordCleared() {
 		_spec.ClearField(employee.FieldPassword, field.TypeString)
 	}
+	if value, ok := eu.mutation.Limit(); ok {
+		_spec.SetField(employee.FieldLimit, field.TypeUint, value)
+	}
+	if value, ok := eu.mutation.AddedLimit(); ok {
+		_spec.AddField(employee.FieldLimit, field.TypeUint, value)
+	}
 	if eu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -584,6 +643,35 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.GroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   employee.GroupTable,
+			Columns: []string{employee.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegroup.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.GroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   employee.GroupTable,
+			Columns: []string{employee.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegroup.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -984,6 +1072,26 @@ func (euo *EmployeeUpdateOne) SetNillableCityID(u *uint64) *EmployeeUpdateOne {
 	return euo
 }
 
+// SetGroupID sets the "group_id" field.
+func (euo *EmployeeUpdateOne) SetGroupID(u uint64) *EmployeeUpdateOne {
+	euo.mutation.SetGroupID(u)
+	return euo
+}
+
+// SetNillableGroupID sets the "group_id" field if the given value is not nil.
+func (euo *EmployeeUpdateOne) SetNillableGroupID(u *uint64) *EmployeeUpdateOne {
+	if u != nil {
+		euo.SetGroupID(*u)
+	}
+	return euo
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (euo *EmployeeUpdateOne) ClearGroupID() *EmployeeUpdateOne {
+	euo.mutation.ClearGroupID()
+	return euo
+}
+
 // SetSn sets the "sn" field.
 func (euo *EmployeeUpdateOne) SetSn(u uuid.UUID) *EmployeeUpdateOne {
 	euo.mutation.SetSn(u)
@@ -1066,9 +1174,35 @@ func (euo *EmployeeUpdateOne) ClearPassword() *EmployeeUpdateOne {
 	return euo
 }
 
+// SetLimit sets the "limit" field.
+func (euo *EmployeeUpdateOne) SetLimit(u uint) *EmployeeUpdateOne {
+	euo.mutation.ResetLimit()
+	euo.mutation.SetLimit(u)
+	return euo
+}
+
+// SetNillableLimit sets the "limit" field if the given value is not nil.
+func (euo *EmployeeUpdateOne) SetNillableLimit(u *uint) *EmployeeUpdateOne {
+	if u != nil {
+		euo.SetLimit(*u)
+	}
+	return euo
+}
+
+// AddLimit adds u to the "limit" field.
+func (euo *EmployeeUpdateOne) AddLimit(u int) *EmployeeUpdateOne {
+	euo.mutation.AddLimit(u)
+	return euo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (euo *EmployeeUpdateOne) SetCity(c *City) *EmployeeUpdateOne {
 	return euo.SetCityID(c.ID)
+}
+
+// SetGroup sets the "group" edge to the StoreGroup entity.
+func (euo *EmployeeUpdateOne) SetGroup(s *StoreGroup) *EmployeeUpdateOne {
+	return euo.SetGroupID(s.ID)
 }
 
 // SetStoreID sets the "store" edge to the Store entity by ID.
@@ -1188,6 +1322,12 @@ func (euo *EmployeeUpdateOne) Mutation() *EmployeeMutation {
 // ClearCity clears the "city" edge to the City entity.
 func (euo *EmployeeUpdateOne) ClearCity() *EmployeeUpdateOne {
 	euo.mutation.ClearCity()
+	return euo
+}
+
+// ClearGroup clears the "group" edge to the StoreGroup entity.
+func (euo *EmployeeUpdateOne) ClearGroup() *EmployeeUpdateOne {
+	euo.mutation.ClearGroup()
 	return euo
 }
 
@@ -1466,6 +1606,12 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 	if euo.mutation.PasswordCleared() {
 		_spec.ClearField(employee.FieldPassword, field.TypeString)
 	}
+	if value, ok := euo.mutation.Limit(); ok {
+		_spec.SetField(employee.FieldLimit, field.TypeUint, value)
+	}
+	if value, ok := euo.mutation.AddedLimit(); ok {
+		_spec.AddField(employee.FieldLimit, field.TypeUint, value)
+	}
 	if euo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1488,6 +1634,35 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.GroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   employee.GroupTable,
+			Columns: []string{employee.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegroup.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.GroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   employee.GroupTable,
+			Columns: []string{employee.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegroup.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

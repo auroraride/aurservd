@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegroup"
 )
 
 // EmployeeQuery is the builder for querying Employee entities.
@@ -30,6 +31,7 @@ type EmployeeQuery struct {
 	inters          []Interceptor
 	predicates      []predicate.Employee
 	withCity        *CityQuery
+	withGroup       *StoreGroupQuery
 	withStore       *StoreQuery
 	withAttendances *AttendanceQuery
 	withStocks      *StockQuery
@@ -89,6 +91,28 @@ func (eq *EmployeeQuery) QueryCity() *CityQuery {
 			sqlgraph.From(employee.Table, employee.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, employee.CityTable, employee.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryGroup chains the current query on the "group" edge.
+func (eq *EmployeeQuery) QueryGroup() *StoreGroupQuery {
+	query := (&StoreGroupClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, selector),
+			sqlgraph.To(storegroup.Table, storegroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, employee.GroupTable, employee.GroupColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -443,6 +467,7 @@ func (eq *EmployeeQuery) Clone() *EmployeeQuery {
 		inters:          append([]Interceptor{}, eq.inters...),
 		predicates:      append([]predicate.Employee{}, eq.predicates...),
 		withCity:        eq.withCity.Clone(),
+		withGroup:       eq.withGroup.Clone(),
 		withStore:       eq.withStore.Clone(),
 		withAttendances: eq.withAttendances.Clone(),
 		withStocks:      eq.withStocks.Clone(),
@@ -464,6 +489,17 @@ func (eq *EmployeeQuery) WithCity(opts ...func(*CityQuery)) *EmployeeQuery {
 		opt(query)
 	}
 	eq.withCity = query
+	return eq
+}
+
+// WithGroup tells the query-builder to eager-load the nodes that are connected to
+// the "group" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EmployeeQuery) WithGroup(opts ...func(*StoreGroupQuery)) *EmployeeQuery {
+	query := (&StoreGroupClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withGroup = query
 	return eq
 }
 
@@ -622,8 +658,9 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 	var (
 		nodes       = []*Employee{}
 		_spec       = eq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [9]bool{
 			eq.withCity != nil,
+			eq.withGroup != nil,
 			eq.withStore != nil,
 			eq.withAttendances != nil,
 			eq.withStocks != nil,
@@ -657,6 +694,12 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 	if query := eq.withCity; query != nil {
 		if err := eq.loadCity(ctx, query, nodes, nil,
 			func(n *Employee, e *City) { n.Edges.City = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withGroup; query != nil {
+		if err := eq.loadGroup(ctx, query, nodes, nil,
+			func(n *Employee, e *StoreGroup) { n.Edges.Group = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -733,6 +776,38 @@ func (eq *EmployeeQuery) loadCity(ctx context.Context, query *CityQuery, nodes [
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (eq *EmployeeQuery) loadGroup(ctx context.Context, query *StoreGroupQuery, nodes []*Employee, init func(*Employee), assign func(*Employee, *StoreGroup)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Employee)
+	for i := range nodes {
+		if nodes[i].GroupID == nil {
+			continue
+		}
+		fk := *nodes[i].GroupID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(storegroup.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "group_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -1026,6 +1101,9 @@ func (eq *EmployeeQuery) querySpec() *sqlgraph.QuerySpec {
 		if eq.withCity != nil {
 			_spec.Node.AddColumnOnce(employee.FieldCityID)
 		}
+		if eq.withGroup != nil {
+			_spec.Node.AddColumnOnce(employee.FieldGroupID)
+		}
 	}
 	if ps := eq.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -1095,6 +1173,7 @@ type EmployeeQueryWith string
 
 var (
 	EmployeeQueryWithCity        EmployeeQueryWith = "City"
+	EmployeeQueryWithGroup       EmployeeQueryWith = "Group"
 	EmployeeQueryWithStore       EmployeeQueryWith = "Store"
 	EmployeeQueryWithAttendances EmployeeQueryWith = "Attendances"
 	EmployeeQueryWithStocks      EmployeeQueryWith = "Stocks"
@@ -1109,6 +1188,8 @@ func (eq *EmployeeQuery) With(withEdges ...EmployeeQueryWith) *EmployeeQuery {
 		switch v {
 		case EmployeeQueryWithCity:
 			eq.WithCity()
+		case EmployeeQueryWithGroup:
+			eq.WithGroup()
 		case EmployeeQueryWithStore:
 			eq.WithStore()
 		case EmployeeQueryWithAttendances:

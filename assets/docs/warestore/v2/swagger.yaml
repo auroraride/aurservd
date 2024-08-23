@@ -1340,6 +1340,11 @@ paths:
         name: X-Warestore-Token
         required: true
         type: string
+      - description: sn
+        in: path
+        name: sn
+        required: true
+        type: string
       produces:
       - application/json
       responses:

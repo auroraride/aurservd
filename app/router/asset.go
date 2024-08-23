@@ -21,6 +21,12 @@ func loadAssetsRoutes() {
 	asset.PUT("/user/:id", assetapi.AssetManager.Modify)
 	asset.GET("/user/profile", assetapi.AssetManager.Profile)
 
+	// 店员
+	asset.POST("/employee", assetapi.Employee.Create)       // 创建店员
+	asset.GET("/employee", assetapi.Employee.List)          // 店员列表
+	asset.PUT("/employee/:id", assetapi.Employee.Modify)    // 更新店员
+	asset.DELETE("/employee/:id", assetapi.Employee.Delete) // 删除店员
+
 	// 角色权限
 	asset.GET("/permission", assetapi.AssetPermission.List)
 	asset.GET("/permission/role", assetapi.AssetPermission.ListRole)

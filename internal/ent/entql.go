@@ -1160,11 +1160,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 			employee.FieldLastModifier: {Type: field.TypeJSON, Column: employee.FieldLastModifier},
 			employee.FieldRemark:       {Type: field.TypeString, Column: employee.FieldRemark},
 			employee.FieldCityID:       {Type: field.TypeUint64, Column: employee.FieldCityID},
+			employee.FieldGroupID:      {Type: field.TypeUint64, Column: employee.FieldGroupID},
 			employee.FieldSn:           {Type: field.TypeUUID, Column: employee.FieldSn},
 			employee.FieldName:         {Type: field.TypeString, Column: employee.FieldName},
 			employee.FieldPhone:        {Type: field.TypeString, Column: employee.FieldPhone},
 			employee.FieldEnable:       {Type: field.TypeBool, Column: employee.FieldEnable},
 			employee.FieldPassword:     {Type: field.TypeString, Column: employee.FieldPassword},
+			employee.FieldLimit:        {Type: field.TypeUint, Column: employee.FieldLimit},
 		},
 	}
 	graph.Nodes[39] = &sqlgraph.Node{
@@ -4989,6 +4991,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Employee",
 		"City",
+	)
+	graph.MustAddE(
+		"group",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   employee.GroupTable,
+			Columns: []string{employee.GroupColumn},
+			Bidi:    false,
+		},
+		"Employee",
+		"StoreGroup",
 	)
 	graph.MustAddE(
 		"store",
@@ -14536,6 +14550,11 @@ func (f *EmployeeFilter) WhereCityID(p entql.Uint64P) {
 	f.Where(p.Field(employee.FieldCityID))
 }
 
+// WhereGroupID applies the entql uint64 predicate on the group_id field.
+func (f *EmployeeFilter) WhereGroupID(p entql.Uint64P) {
+	f.Where(p.Field(employee.FieldGroupID))
+}
+
 // WhereSn applies the entql [16]byte predicate on the sn field.
 func (f *EmployeeFilter) WhereSn(p entql.ValueP) {
 	f.Where(p.Field(employee.FieldSn))
@@ -14561,6 +14580,11 @@ func (f *EmployeeFilter) WherePassword(p entql.StringP) {
 	f.Where(p.Field(employee.FieldPassword))
 }
 
+// WhereLimit applies the entql uint predicate on the limit field.
+func (f *EmployeeFilter) WhereLimit(p entql.UintP) {
+	f.Where(p.Field(employee.FieldLimit))
+}
+
 // WhereHasCity applies a predicate to check if query has an edge city.
 func (f *EmployeeFilter) WhereHasCity() {
 	f.Where(entql.HasEdge("city"))
@@ -14569,6 +14593,20 @@ func (f *EmployeeFilter) WhereHasCity() {
 // WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
 func (f *EmployeeFilter) WhereHasCityWith(preds ...predicate.City) {
 	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasGroup applies a predicate to check if query has an edge group.
+func (f *EmployeeFilter) WhereHasGroup() {
+	f.Where(entql.HasEdge("group"))
+}
+
+// WhereHasGroupWith applies a predicate to check if query has an edge group with a given conditions (other predicates).
+func (f *EmployeeFilter) WhereHasGroupWith(preds ...predicate.StoreGroup) {
+	f.Where(entql.HasEdgeWith("group", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
