@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assetrole"
+	"github.com/auroraride/aurservd/internal/ent/warehouse"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/utils"
@@ -173,6 +174,20 @@ func (b *assetManagerBiz) List(req *definition.AssetManagerListReq) *model.Pagin
 	if req.Warestore != nil && *req.Warestore {
 		q.Where(
 			assetmanager.HasRoleWith(assetrole.Name("仓库管理员"), assetrole.Buildin(true)),
+		)
+	}
+
+	if req.WarehouseID != nil {
+		q.Where(
+			assetmanager.HasWarehousesWith(
+				warehouse.ID(*req.WarehouseID),
+			),
+		)
+	}
+
+	if req.Enable != nil {
+		q.Where(
+			assetmanager.MiniEnable(*req.Enable),
 		)
 	}
 

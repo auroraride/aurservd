@@ -31,8 +31,10 @@ type AssetManagerCreateReq struct {
 
 type AssetManagerListReq struct {
 	model.PaginationReq
-	Keyword   *string `json:"keyword" query:"keyword"`     // 搜索关键词 姓名/手机号
-	Warestore *bool   `json:"warestore" query:"warestore"` // 是否仓管人员
+	Keyword     *string `json:"keyword" query:"keyword"`         // 搜索关键词 姓名/手机号
+	Warestore   *bool   `json:"warestore" query:"warestore"`     // 是否仓管人员
+	WarehouseID *uint64 `json:"warehouseId" query:"warehouseId"` // 仓库id
+	Enable      *bool   `json:"enable" query:"enable"`           // 仓管是否启用
 }
 
 type AssetManagerListRes struct {
