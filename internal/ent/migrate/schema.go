@@ -945,7 +945,6 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "asset_id", Type: field.TypeUint64, Comment: "资产ID"},
 		{Name: "scrap_id", Type: field.TypeUint64, Nullable: true, Comment: "报废ID"},
-		{Name: "material_id", Type: field.TypeUint64, Nullable: true, Comment: "物资ID"},
 	}
 	// AssetScrapDetailsTable holds the schema information for the "asset_scrap_details" table.
 	AssetScrapDetailsTable = &schema.Table{
@@ -965,23 +964,12 @@ var (
 				RefColumns: []*schema.Column{AssetScrapColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
-			{
-				Symbol:     "asset_scrap_details_material_material",
-				Columns:    []*schema.Column{AssetScrapDetailsColumns[5]},
-				RefColumns: []*schema.Column{MaterialColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
 		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "assetscrapdetails_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{AssetScrapDetailsColumns[1]},
-			},
-			{
-				Name:    "assetscrapdetails_material_id",
-				Unique:  false,
-				Columns: []*schema.Column{AssetScrapDetailsColumns[5]},
 			},
 		},
 	}
@@ -7628,7 +7616,6 @@ func init() {
 	}
 	AssetScrapDetailsTable.ForeignKeys[0].RefTable = AssetTable
 	AssetScrapDetailsTable.ForeignKeys[1].RefTable = AssetScrapTable
-	AssetScrapDetailsTable.ForeignKeys[2].RefTable = MaterialTable
 	AssetScrapDetailsTable.Annotation = &entsql.Annotation{
 		Table: "asset_scrap_details",
 	}

@@ -13,21 +13,19 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
-	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
 // AssetScrapDetailsQuery is the builder for querying AssetScrapDetails entities.
 type AssetScrapDetailsQuery struct {
 	config
-	ctx          *QueryContext
-	order        []assetscrapdetails.OrderOption
-	inters       []Interceptor
-	predicates   []predicate.AssetScrapDetails
-	withMaterial *MaterialQuery
-	withAsset    *AssetQuery
-	withScrap    *AssetScrapQuery
-	modifiers    []func(*sql.Selector)
+	ctx        *QueryContext
+	order      []assetscrapdetails.OrderOption
+	inters     []Interceptor
+	predicates []predicate.AssetScrapDetails
+	withAsset  *AssetQuery
+	withScrap  *AssetScrapQuery
+	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -62,28 +60,6 @@ func (asdq *AssetScrapDetailsQuery) Unique(unique bool) *AssetScrapDetailsQuery 
 func (asdq *AssetScrapDetailsQuery) Order(o ...assetscrapdetails.OrderOption) *AssetScrapDetailsQuery {
 	asdq.order = append(asdq.order, o...)
 	return asdq
-}
-
-// QueryMaterial chains the current query on the "material" edge.
-func (asdq *AssetScrapDetailsQuery) QueryMaterial() *MaterialQuery {
-	query := (&MaterialClient{config: asdq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := asdq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := asdq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(assetscrapdetails.Table, assetscrapdetails.FieldID, selector),
-			sqlgraph.To(material.Table, material.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assetscrapdetails.MaterialTable, assetscrapdetails.MaterialColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(asdq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // QueryAsset chains the current query on the "asset" edge.
@@ -317,29 +293,17 @@ func (asdq *AssetScrapDetailsQuery) Clone() *AssetScrapDetailsQuery {
 		return nil
 	}
 	return &AssetScrapDetailsQuery{
-		config:       asdq.config,
-		ctx:          asdq.ctx.Clone(),
-		order:        append([]assetscrapdetails.OrderOption{}, asdq.order...),
-		inters:       append([]Interceptor{}, asdq.inters...),
-		predicates:   append([]predicate.AssetScrapDetails{}, asdq.predicates...),
-		withMaterial: asdq.withMaterial.Clone(),
-		withAsset:    asdq.withAsset.Clone(),
-		withScrap:    asdq.withScrap.Clone(),
+		config:     asdq.config,
+		ctx:        asdq.ctx.Clone(),
+		order:      append([]assetscrapdetails.OrderOption{}, asdq.order...),
+		inters:     append([]Interceptor{}, asdq.inters...),
+		predicates: append([]predicate.AssetScrapDetails{}, asdq.predicates...),
+		withAsset:  asdq.withAsset.Clone(),
+		withScrap:  asdq.withScrap.Clone(),
 		// clone intermediate query.
 		sql:  asdq.sql.Clone(),
 		path: asdq.path,
 	}
-}
-
-// WithMaterial tells the query-builder to eager-load the nodes that are connected to
-// the "material" edge. The optional arguments are used to configure the query builder of the edge.
-func (asdq *AssetScrapDetailsQuery) WithMaterial(opts ...func(*MaterialQuery)) *AssetScrapDetailsQuery {
-	query := (&MaterialClient{config: asdq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	asdq.withMaterial = query
-	return asdq
 }
 
 // WithAsset tells the query-builder to eager-load the nodes that are connected to
@@ -442,8 +406,7 @@ func (asdq *AssetScrapDetailsQuery) sqlAll(ctx context.Context, hooks ...queryHo
 	var (
 		nodes       = []*AssetScrapDetails{}
 		_spec       = asdq.querySpec()
-		loadedTypes = [3]bool{
-			asdq.withMaterial != nil,
+		loadedTypes = [2]bool{
 			asdq.withAsset != nil,
 			asdq.withScrap != nil,
 		}
@@ -469,12 +432,6 @@ func (asdq *AssetScrapDetailsQuery) sqlAll(ctx context.Context, hooks ...queryHo
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := asdq.withMaterial; query != nil {
-		if err := asdq.loadMaterial(ctx, query, nodes, nil,
-			func(n *AssetScrapDetails, e *Material) { n.Edges.Material = e }); err != nil {
-			return nil, err
-		}
-	}
 	if query := asdq.withAsset; query != nil {
 		if err := asdq.loadAsset(ctx, query, nodes, nil,
 			func(n *AssetScrapDetails, e *Asset) { n.Edges.Asset = e }); err != nil {
@@ -490,38 +447,6 @@ func (asdq *AssetScrapDetailsQuery) sqlAll(ctx context.Context, hooks ...queryHo
 	return nodes, nil
 }
 
-func (asdq *AssetScrapDetailsQuery) loadMaterial(ctx context.Context, query *MaterialQuery, nodes []*AssetScrapDetails, init func(*AssetScrapDetails), assign func(*AssetScrapDetails, *Material)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*AssetScrapDetails)
-	for i := range nodes {
-		if nodes[i].MaterialID == nil {
-			continue
-		}
-		fk := *nodes[i].MaterialID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(material.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "material_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
 func (asdq *AssetScrapDetailsQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []*AssetScrapDetails, init func(*AssetScrapDetails), assign func(*AssetScrapDetails, *Asset)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetScrapDetails)
@@ -609,9 +534,6 @@ func (asdq *AssetScrapDetailsQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if asdq.withMaterial != nil {
-			_spec.Node.AddColumnOnce(assetscrapdetails.FieldMaterialID)
-		}
 		if asdq.withAsset != nil {
 			_spec.Node.AddColumnOnce(assetscrapdetails.FieldAssetID)
 		}
@@ -686,16 +608,13 @@ func (asdq *AssetScrapDetailsQuery) Modify(modifiers ...func(s *sql.Selector)) *
 type AssetScrapDetailsQueryWith string
 
 var (
-	AssetScrapDetailsQueryWithMaterial AssetScrapDetailsQueryWith = "Material"
-	AssetScrapDetailsQueryWithAsset    AssetScrapDetailsQueryWith = "Asset"
-	AssetScrapDetailsQueryWithScrap    AssetScrapDetailsQueryWith = "Scrap"
+	AssetScrapDetailsQueryWithAsset AssetScrapDetailsQueryWith = "Asset"
+	AssetScrapDetailsQueryWithScrap AssetScrapDetailsQueryWith = "Scrap"
 )
 
 func (asdq *AssetScrapDetailsQuery) With(withEdges ...AssetScrapDetailsQueryWith) *AssetScrapDetailsQuery {
 	for _, v := range withEdges {
 		switch v {
-		case AssetScrapDetailsQueryWithMaterial:
-			asdq.WithMaterial()
 		case AssetScrapDetailsQueryWithAsset:
 			asdq.WithAsset()
 		case AssetScrapDetailsQueryWithScrap:

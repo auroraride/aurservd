@@ -4095,22 +4095,6 @@ func (c *AssetScrapDetailsClient) GetX(ctx context.Context, id uint64) *AssetScr
 	return obj
 }
 
-// QueryMaterial queries the material edge of a AssetScrapDetails.
-func (c *AssetScrapDetailsClient) QueryMaterial(asd *AssetScrapDetails) *MaterialQuery {
-	query := (&MaterialClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := asd.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(assetscrapdetails.Table, assetscrapdetails.FieldID, id),
-			sqlgraph.To(material.Table, material.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assetscrapdetails.MaterialTable, assetscrapdetails.MaterialColumn),
-		)
-		fromV = sqlgraph.Neighbors(asd.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryAsset queries the asset edge of a AssetScrapDetails.
 func (c *AssetScrapDetailsClient) QueryAsset(asd *AssetScrapDetails) *AssetQuery {
 	query := (&AssetClient{config: c.config}).Query()

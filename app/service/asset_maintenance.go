@@ -121,26 +121,26 @@ func (s *assetMaintenanceService) List(ctx context.Context, req *model.AssetMain
 	}
 
 	q.Modify(func(sel *sql.Selector) {
-		t1, t2 := sql.Table("asset_maintenance_details"), sql.Table("asset_maintenance")
 		if req.IsUseAccessory != nil {
 			if *req.IsUseAccessory {
 				sel.Where(
 					sql.Exists(
-						sel.Select().From(t1).Where(sql.ColumnsEQ(t1.C("maintenance_id"), t2.C("id"))),
+						sql.Select(assetmaintenancedetails.FieldID).
+							From(sql.Table("asset_maintenance_details")).
+							Where(sql.ColumnsEQ(sql.Table("asset_maintenance_details").C("maintenance_id"), sql.Table("asset_maintenance").C("id"))),
 					),
 				)
 			} else {
 				sel.Where(
 					sql.NotExists(
-						sel.Select().From(t1).Where(sql.ColumnsEQ(t1.C("maintenance_id"), t2.C("id"))),
+						sql.Select(assetmaintenancedetails.FieldID).
+							From(sql.Table("asset_maintenance_details")).
+							Where(sql.ColumnsEQ(sql.Table("asset_maintenance_details").C("maintenance_id"), sql.Table("asset_maintenance").C("id"))),
 					),
 				)
 			}
 		}
-		sel.AppendSelectExprAs(sql.Select(sql.Count(t1.C(assetmaintenance.FieldID))).From(t1).Where(sql.ColumnsEQ(t1.C("maintenance_id"), t2.C("id"))), "details_count")
 	})
-	q.Order(ent.Desc(asset.FieldCreatedAt))
-
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetMaintenance) (res *model.AssetMaintenanceListRes) {
 		var result []struct {
 			Count      float64 `json:"count"`
@@ -152,6 +152,7 @@ func (s *assetMaintenanceService) List(ctx context.Context, req *model.AssetMain
 			CreatedAt: item.CreatedAt.Format("2006-01-02 15:04:05"),
 			Status:    model.AssetMaintenanceStatus(item.Status).String(),
 			Content:   item.Content,
+			Details:   make([]model.AssetMaintenanceDetail, 0),
 		}
 		if item.Edges.Maintainer != nil {
 			res.OpratorName = item.Edges.Maintainer.Name
@@ -162,12 +163,12 @@ func (s *assetMaintenanceService) List(ctx context.Context, req *model.AssetMain
 			res.CabinetSn = item.Edges.Cabinet.Sn
 		}
 		err := ent.Database.AssetMaintenanceDetails.QueryNotDeleted().Select(assetmaintenancedetails.FieldMaterialID).Where(assetmaintenancedetails.MaintenanceID(item.ID)).GroupBy(assetmaintenancedetails.FieldMaterialID).Aggregate(ent.Count()).
-			Scan(ctx, &result)
+			Scan(context.Background(), &result)
 		if err != nil {
 			return
 		}
 		for _, v := range result {
-			m, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(v.MaterialID)).First(ctx)
+			m, _ := ent.Database.Material.Query().Where(material.ID(v.MaterialID)).First(ctx)
 			if m == nil {
 				continue
 			}

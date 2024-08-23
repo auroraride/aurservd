@@ -18,27 +18,16 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldMaterialID holds the string denoting the material_id field in the database.
-	FieldMaterialID = "material_id"
 	// FieldAssetID holds the string denoting the asset_id field in the database.
 	FieldAssetID = "asset_id"
 	// FieldScrapID holds the string denoting the scrap_id field in the database.
 	FieldScrapID = "scrap_id"
-	// EdgeMaterial holds the string denoting the material edge name in mutations.
-	EdgeMaterial = "material"
 	// EdgeAsset holds the string denoting the asset edge name in mutations.
 	EdgeAsset = "asset"
 	// EdgeScrap holds the string denoting the scrap edge name in mutations.
 	EdgeScrap = "scrap"
 	// Table holds the table name of the assetscrapdetails in the database.
 	Table = "asset_scrap_details"
-	// MaterialTable is the table that holds the material relation/edge.
-	MaterialTable = "asset_scrap_details"
-	// MaterialInverseTable is the table name for the Material entity.
-	// It exists in this package in order to avoid circular dependency with the "material" package.
-	MaterialInverseTable = "material"
-	// MaterialColumn is the table column denoting the material relation/edge.
-	MaterialColumn = "material_id"
 	// AssetTable is the table that holds the asset relation/edge.
 	AssetTable = "asset_scrap_details"
 	// AssetInverseTable is the table name for the Asset entity.
@@ -60,7 +49,6 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldMaterialID,
 	FieldAssetID,
 	FieldScrapID,
 }
@@ -102,11 +90,6 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
-// ByMaterialID orders the results by the material_id field.
-func ByMaterialID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldMaterialID, opts...).ToFunc()
-}
-
 // ByAssetID orders the results by the asset_id field.
 func ByAssetID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAssetID, opts...).ToFunc()
@@ -115,13 +98,6 @@ func ByAssetID(opts ...sql.OrderTermOption) OrderOption {
 // ByScrapID orders the results by the scrap_id field.
 func ByScrapID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldScrapID, opts...).ToFunc()
-}
-
-// ByMaterialField orders the results by material field.
-func ByMaterialField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newMaterialStep(), sql.OrderByField(field, opts...))
-	}
 }
 
 // ByAssetField orders the results by asset field.
@@ -136,13 +112,6 @@ func ByScrapField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newScrapStep(), sql.OrderByField(field, opts...))
 	}
-}
-func newMaterialStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(MaterialInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, MaterialTable, MaterialColumn),
-	)
 }
 func newAssetStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

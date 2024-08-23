@@ -475,11 +475,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "AssetScrapDetails",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			assetscrapdetails.FieldCreatedAt:  {Type: field.TypeTime, Column: assetscrapdetails.FieldCreatedAt},
-			assetscrapdetails.FieldUpdatedAt:  {Type: field.TypeTime, Column: assetscrapdetails.FieldUpdatedAt},
-			assetscrapdetails.FieldMaterialID: {Type: field.TypeUint64, Column: assetscrapdetails.FieldMaterialID},
-			assetscrapdetails.FieldAssetID:    {Type: field.TypeUint64, Column: assetscrapdetails.FieldAssetID},
-			assetscrapdetails.FieldScrapID:    {Type: field.TypeUint64, Column: assetscrapdetails.FieldScrapID},
+			assetscrapdetails.FieldCreatedAt: {Type: field.TypeTime, Column: assetscrapdetails.FieldCreatedAt},
+			assetscrapdetails.FieldUpdatedAt: {Type: field.TypeTime, Column: assetscrapdetails.FieldUpdatedAt},
+			assetscrapdetails.FieldAssetID:   {Type: field.TypeUint64, Column: assetscrapdetails.FieldAssetID},
+			assetscrapdetails.FieldScrapID:   {Type: field.TypeUint64, Column: assetscrapdetails.FieldScrapID},
 		},
 	}
 	graph.Nodes[15] = &sqlgraph.Node{
@@ -3599,18 +3598,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"AssetScrap",
 		"AssetScrapDetails",
-	)
-	graph.MustAddE(
-		"material",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assetscrapdetails.MaterialTable,
-			Columns: []string{assetscrapdetails.MaterialColumn},
-			Bidi:    false,
-		},
-		"AssetScrapDetails",
-		"Material",
 	)
 	graph.MustAddE(
 		"asset",
@@ -10125,11 +10112,6 @@ func (f *AssetScrapDetailsFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(assetscrapdetails.FieldUpdatedAt))
 }
 
-// WhereMaterialID applies the entql uint64 predicate on the material_id field.
-func (f *AssetScrapDetailsFilter) WhereMaterialID(p entql.Uint64P) {
-	f.Where(p.Field(assetscrapdetails.FieldMaterialID))
-}
-
 // WhereAssetID applies the entql uint64 predicate on the asset_id field.
 func (f *AssetScrapDetailsFilter) WhereAssetID(p entql.Uint64P) {
 	f.Where(p.Field(assetscrapdetails.FieldAssetID))
@@ -10138,20 +10120,6 @@ func (f *AssetScrapDetailsFilter) WhereAssetID(p entql.Uint64P) {
 // WhereScrapID applies the entql uint64 predicate on the scrap_id field.
 func (f *AssetScrapDetailsFilter) WhereScrapID(p entql.Uint64P) {
 	f.Where(p.Field(assetscrapdetails.FieldScrapID))
-}
-
-// WhereHasMaterial applies a predicate to check if query has an edge material.
-func (f *AssetScrapDetailsFilter) WhereHasMaterial() {
-	f.Where(entql.HasEdge("material"))
-}
-
-// WhereHasMaterialWith applies a predicate to check if query has an edge material with a given conditions (other predicates).
-func (f *AssetScrapDetailsFilter) WhereHasMaterialWith(preds ...predicate.Material) {
-	f.Where(entql.HasEdgeWith("material", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
 }
 
 // WhereHasAsset applies a predicate to check if query has an edge asset.

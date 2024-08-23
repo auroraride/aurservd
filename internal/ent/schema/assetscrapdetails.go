@@ -75,7 +75,7 @@ func (AssetScrapDetails) Edges() []ent.Edge {
 func (AssetScrapDetails) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
-		MaterialMixin{Optional: true},
+		// MaterialMixin{Optional: true},
 	}
 }
 

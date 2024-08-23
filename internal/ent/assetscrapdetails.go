@@ -12,7 +12,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
-	"github.com/auroraride/aurservd/internal/ent/material"
 )
 
 // AssetScrapDetails is the model entity for the AssetScrapDetails schema.
@@ -24,8 +23,6 @@ type AssetScrapDetails struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// 物资ID
-	MaterialID *uint64 `json:"material_id,omitempty"`
 	// 资产ID
 	AssetID uint64 `json:"asset_id,omitempty"`
 	// 报废ID
@@ -38,26 +35,13 @@ type AssetScrapDetails struct {
 
 // AssetScrapDetailsEdges holds the relations/edges for other nodes in the graph.
 type AssetScrapDetailsEdges struct {
-	// Material holds the value of the material edge.
-	Material *Material `json:"material,omitempty"`
 	// Asset holds the value of the asset edge.
 	Asset *Asset `json:"asset,omitempty"`
 	// Scrap holds the value of the scrap edge.
 	Scrap *AssetScrap `json:"scrap,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
-}
-
-// MaterialOrErr returns the Material value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e AssetScrapDetailsEdges) MaterialOrErr() (*Material, error) {
-	if e.Material != nil {
-		return e.Material, nil
-	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: material.Label}
-	}
-	return nil, &NotLoadedError{edge: "material"}
+	loadedTypes [2]bool
 }
 
 // AssetOrErr returns the Asset value or an error if the edge
@@ -65,7 +49,7 @@ func (e AssetScrapDetailsEdges) MaterialOrErr() (*Material, error) {
 func (e AssetScrapDetailsEdges) AssetOrErr() (*Asset, error) {
 	if e.Asset != nil {
 		return e.Asset, nil
-	} else if e.loadedTypes[1] {
+	} else if e.loadedTypes[0] {
 		return nil, &NotFoundError{label: asset.Label}
 	}
 	return nil, &NotLoadedError{edge: "asset"}
@@ -76,7 +60,7 @@ func (e AssetScrapDetailsEdges) AssetOrErr() (*Asset, error) {
 func (e AssetScrapDetailsEdges) ScrapOrErr() (*AssetScrap, error) {
 	if e.Scrap != nil {
 		return e.Scrap, nil
-	} else if e.loadedTypes[2] {
+	} else if e.loadedTypes[1] {
 		return nil, &NotFoundError{label: assetscrap.Label}
 	}
 	return nil, &NotLoadedError{edge: "scrap"}
@@ -87,7 +71,7 @@ func (*AssetScrapDetails) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case assetscrapdetails.FieldID, assetscrapdetails.FieldMaterialID, assetscrapdetails.FieldAssetID, assetscrapdetails.FieldScrapID:
+		case assetscrapdetails.FieldID, assetscrapdetails.FieldAssetID, assetscrapdetails.FieldScrapID:
 			values[i] = new(sql.NullInt64)
 		case assetscrapdetails.FieldCreatedAt, assetscrapdetails.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -124,13 +108,6 @@ func (asd *AssetScrapDetails) assignValues(columns []string, values []any) error
 			} else if value.Valid {
 				asd.UpdatedAt = value.Time
 			}
-		case assetscrapdetails.FieldMaterialID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field material_id", values[i])
-			} else if value.Valid {
-				asd.MaterialID = new(uint64)
-				*asd.MaterialID = uint64(value.Int64)
-			}
 		case assetscrapdetails.FieldAssetID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field asset_id", values[i])
@@ -154,11 +131,6 @@ func (asd *AssetScrapDetails) assignValues(columns []string, values []any) error
 // This includes values selected through modifiers, order, etc.
 func (asd *AssetScrapDetails) Value(name string) (ent.Value, error) {
 	return asd.selectValues.Get(name)
-}
-
-// QueryMaterial queries the "material" edge of the AssetScrapDetails entity.
-func (asd *AssetScrapDetails) QueryMaterial() *MaterialQuery {
-	return NewAssetScrapDetailsClient(asd.config).QueryMaterial(asd)
 }
 
 // QueryAsset queries the "asset" edge of the AssetScrapDetails entity.
@@ -199,11 +171,6 @@ func (asd *AssetScrapDetails) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(asd.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	if v := asd.MaterialID; v != nil {
-		builder.WriteString("material_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	builder.WriteString(", ")
 	builder.WriteString("asset_id=")
 	builder.WriteString(fmt.Sprintf("%v", asd.AssetID))

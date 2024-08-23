@@ -65,11 +65,6 @@ func UpdatedAt(v time.Time) predicate.AssetScrapDetails {
 	return predicate.AssetScrapDetails(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
-// MaterialID applies equality check predicate on the "material_id" field. It's identical to MaterialIDEQ.
-func MaterialID(v uint64) predicate.AssetScrapDetails {
-	return predicate.AssetScrapDetails(sql.FieldEQ(FieldMaterialID, v))
-}
-
 // AssetID applies equality check predicate on the "asset_id" field. It's identical to AssetIDEQ.
 func AssetID(v uint64) predicate.AssetScrapDetails {
 	return predicate.AssetScrapDetails(sql.FieldEQ(FieldAssetID, v))
@@ -160,36 +155,6 @@ func UpdatedAtLTE(v time.Time) predicate.AssetScrapDetails {
 	return predicate.AssetScrapDetails(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// MaterialIDEQ applies the EQ predicate on the "material_id" field.
-func MaterialIDEQ(v uint64) predicate.AssetScrapDetails {
-	return predicate.AssetScrapDetails(sql.FieldEQ(FieldMaterialID, v))
-}
-
-// MaterialIDNEQ applies the NEQ predicate on the "material_id" field.
-func MaterialIDNEQ(v uint64) predicate.AssetScrapDetails {
-	return predicate.AssetScrapDetails(sql.FieldNEQ(FieldMaterialID, v))
-}
-
-// MaterialIDIn applies the In predicate on the "material_id" field.
-func MaterialIDIn(vs ...uint64) predicate.AssetScrapDetails {
-	return predicate.AssetScrapDetails(sql.FieldIn(FieldMaterialID, vs...))
-}
-
-// MaterialIDNotIn applies the NotIn predicate on the "material_id" field.
-func MaterialIDNotIn(vs ...uint64) predicate.AssetScrapDetails {
-	return predicate.AssetScrapDetails(sql.FieldNotIn(FieldMaterialID, vs...))
-}
-
-// MaterialIDIsNil applies the IsNil predicate on the "material_id" field.
-func MaterialIDIsNil() predicate.AssetScrapDetails {
-	return predicate.AssetScrapDetails(sql.FieldIsNull(FieldMaterialID))
-}
-
-// MaterialIDNotNil applies the NotNil predicate on the "material_id" field.
-func MaterialIDNotNil() predicate.AssetScrapDetails {
-	return predicate.AssetScrapDetails(sql.FieldNotNull(FieldMaterialID))
-}
-
 // AssetIDEQ applies the EQ predicate on the "asset_id" field.
 func AssetIDEQ(v uint64) predicate.AssetScrapDetails {
 	return predicate.AssetScrapDetails(sql.FieldEQ(FieldAssetID, v))
@@ -238,29 +203,6 @@ func ScrapIDIsNil() predicate.AssetScrapDetails {
 // ScrapIDNotNil applies the NotNil predicate on the "scrap_id" field.
 func ScrapIDNotNil() predicate.AssetScrapDetails {
 	return predicate.AssetScrapDetails(sql.FieldNotNull(FieldScrapID))
-}
-
-// HasMaterial applies the HasEdge predicate on the "material" edge.
-func HasMaterial() predicate.AssetScrapDetails {
-	return predicate.AssetScrapDetails(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, MaterialTable, MaterialColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasMaterialWith applies the HasEdge predicate on the "material" edge with a given conditions (other predicates).
-func HasMaterialWith(preds ...predicate.Material) predicate.AssetScrapDetails {
-	return predicate.AssetScrapDetails(func(s *sql.Selector) {
-		step := newMaterialStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
 }
 
 // HasAsset applies the HasEdge predicate on the "asset" edge.

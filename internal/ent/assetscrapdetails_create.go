@@ -14,7 +14,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
-	"github.com/auroraride/aurservd/internal/ent/material"
 )
 
 // AssetScrapDetailsCreate is the builder for creating a AssetScrapDetails entity.
@@ -53,20 +52,6 @@ func (asdc *AssetScrapDetailsCreate) SetNillableUpdatedAt(t *time.Time) *AssetSc
 	return asdc
 }
 
-// SetMaterialID sets the "material_id" field.
-func (asdc *AssetScrapDetailsCreate) SetMaterialID(u uint64) *AssetScrapDetailsCreate {
-	asdc.mutation.SetMaterialID(u)
-	return asdc
-}
-
-// SetNillableMaterialID sets the "material_id" field if the given value is not nil.
-func (asdc *AssetScrapDetailsCreate) SetNillableMaterialID(u *uint64) *AssetScrapDetailsCreate {
-	if u != nil {
-		asdc.SetMaterialID(*u)
-	}
-	return asdc
-}
-
 // SetAssetID sets the "asset_id" field.
 func (asdc *AssetScrapDetailsCreate) SetAssetID(u uint64) *AssetScrapDetailsCreate {
 	asdc.mutation.SetAssetID(u)
@@ -85,11 +70,6 @@ func (asdc *AssetScrapDetailsCreate) SetNillableScrapID(u *uint64) *AssetScrapDe
 		asdc.SetScrapID(*u)
 	}
 	return asdc
-}
-
-// SetMaterial sets the "material" edge to the Material entity.
-func (asdc *AssetScrapDetailsCreate) SetMaterial(m *Material) *AssetScrapDetailsCreate {
-	return asdc.SetMaterialID(m.ID)
 }
 
 // SetAsset sets the "asset" edge to the Asset entity.
@@ -196,23 +176,6 @@ func (asdc *AssetScrapDetailsCreate) createSpec() (*AssetScrapDetails, *sqlgraph
 		_spec.SetField(assetscrapdetails.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if nodes := asdc.mutation.MaterialIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assetscrapdetails.MaterialTable,
-			Columns: []string{assetscrapdetails.MaterialColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(material.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.MaterialID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := asdc.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -311,24 +274,6 @@ func (u *AssetScrapDetailsUpsert) UpdateUpdatedAt() *AssetScrapDetailsUpsert {
 	return u
 }
 
-// SetMaterialID sets the "material_id" field.
-func (u *AssetScrapDetailsUpsert) SetMaterialID(v uint64) *AssetScrapDetailsUpsert {
-	u.Set(assetscrapdetails.FieldMaterialID, v)
-	return u
-}
-
-// UpdateMaterialID sets the "material_id" field to the value that was provided on create.
-func (u *AssetScrapDetailsUpsert) UpdateMaterialID() *AssetScrapDetailsUpsert {
-	u.SetExcluded(assetscrapdetails.FieldMaterialID)
-	return u
-}
-
-// ClearMaterialID clears the value of the "material_id" field.
-func (u *AssetScrapDetailsUpsert) ClearMaterialID() *AssetScrapDetailsUpsert {
-	u.SetNull(assetscrapdetails.FieldMaterialID)
-	return u
-}
-
 // SetAssetID sets the "asset_id" field.
 func (u *AssetScrapDetailsUpsert) SetAssetID(v uint64) *AssetScrapDetailsUpsert {
 	u.Set(assetscrapdetails.FieldAssetID, v)
@@ -415,27 +360,6 @@ func (u *AssetScrapDetailsUpsertOne) SetUpdatedAt(v time.Time) *AssetScrapDetail
 func (u *AssetScrapDetailsUpsertOne) UpdateUpdatedAt() *AssetScrapDetailsUpsertOne {
 	return u.Update(func(s *AssetScrapDetailsUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetMaterialID sets the "material_id" field.
-func (u *AssetScrapDetailsUpsertOne) SetMaterialID(v uint64) *AssetScrapDetailsUpsertOne {
-	return u.Update(func(s *AssetScrapDetailsUpsert) {
-		s.SetMaterialID(v)
-	})
-}
-
-// UpdateMaterialID sets the "material_id" field to the value that was provided on create.
-func (u *AssetScrapDetailsUpsertOne) UpdateMaterialID() *AssetScrapDetailsUpsertOne {
-	return u.Update(func(s *AssetScrapDetailsUpsert) {
-		s.UpdateMaterialID()
-	})
-}
-
-// ClearMaterialID clears the value of the "material_id" field.
-func (u *AssetScrapDetailsUpsertOne) ClearMaterialID() *AssetScrapDetailsUpsertOne {
-	return u.Update(func(s *AssetScrapDetailsUpsert) {
-		s.ClearMaterialID()
 	})
 }
 
@@ -696,27 +620,6 @@ func (u *AssetScrapDetailsUpsertBulk) SetUpdatedAt(v time.Time) *AssetScrapDetai
 func (u *AssetScrapDetailsUpsertBulk) UpdateUpdatedAt() *AssetScrapDetailsUpsertBulk {
 	return u.Update(func(s *AssetScrapDetailsUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetMaterialID sets the "material_id" field.
-func (u *AssetScrapDetailsUpsertBulk) SetMaterialID(v uint64) *AssetScrapDetailsUpsertBulk {
-	return u.Update(func(s *AssetScrapDetailsUpsert) {
-		s.SetMaterialID(v)
-	})
-}
-
-// UpdateMaterialID sets the "material_id" field to the value that was provided on create.
-func (u *AssetScrapDetailsUpsertBulk) UpdateMaterialID() *AssetScrapDetailsUpsertBulk {
-	return u.Update(func(s *AssetScrapDetailsUpsert) {
-		s.UpdateMaterialID()
-	})
-}
-
-// ClearMaterialID clears the value of the "material_id" field.
-func (u *AssetScrapDetailsUpsertBulk) ClearMaterialID() *AssetScrapDetailsUpsertBulk {
-	return u.Update(func(s *AssetScrapDetailsUpsert) {
-		s.ClearMaterialID()
 	})
 }
 

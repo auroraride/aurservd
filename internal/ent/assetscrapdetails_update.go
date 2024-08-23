@@ -14,7 +14,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
-	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -35,26 +34,6 @@ func (asdu *AssetScrapDetailsUpdate) Where(ps ...predicate.AssetScrapDetails) *A
 // SetUpdatedAt sets the "updated_at" field.
 func (asdu *AssetScrapDetailsUpdate) SetUpdatedAt(t time.Time) *AssetScrapDetailsUpdate {
 	asdu.mutation.SetUpdatedAt(t)
-	return asdu
-}
-
-// SetMaterialID sets the "material_id" field.
-func (asdu *AssetScrapDetailsUpdate) SetMaterialID(u uint64) *AssetScrapDetailsUpdate {
-	asdu.mutation.SetMaterialID(u)
-	return asdu
-}
-
-// SetNillableMaterialID sets the "material_id" field if the given value is not nil.
-func (asdu *AssetScrapDetailsUpdate) SetNillableMaterialID(u *uint64) *AssetScrapDetailsUpdate {
-	if u != nil {
-		asdu.SetMaterialID(*u)
-	}
-	return asdu
-}
-
-// ClearMaterialID clears the value of the "material_id" field.
-func (asdu *AssetScrapDetailsUpdate) ClearMaterialID() *AssetScrapDetailsUpdate {
-	asdu.mutation.ClearMaterialID()
 	return asdu
 }
 
@@ -92,11 +71,6 @@ func (asdu *AssetScrapDetailsUpdate) ClearScrapID() *AssetScrapDetailsUpdate {
 	return asdu
 }
 
-// SetMaterial sets the "material" edge to the Material entity.
-func (asdu *AssetScrapDetailsUpdate) SetMaterial(m *Material) *AssetScrapDetailsUpdate {
-	return asdu.SetMaterialID(m.ID)
-}
-
 // SetAsset sets the "asset" edge to the Asset entity.
 func (asdu *AssetScrapDetailsUpdate) SetAsset(a *Asset) *AssetScrapDetailsUpdate {
 	return asdu.SetAssetID(a.ID)
@@ -110,12 +84,6 @@ func (asdu *AssetScrapDetailsUpdate) SetScrap(a *AssetScrap) *AssetScrapDetailsU
 // Mutation returns the AssetScrapDetailsMutation object of the builder.
 func (asdu *AssetScrapDetailsUpdate) Mutation() *AssetScrapDetailsMutation {
 	return asdu.mutation
-}
-
-// ClearMaterial clears the "material" edge to the Material entity.
-func (asdu *AssetScrapDetailsUpdate) ClearMaterial() *AssetScrapDetailsUpdate {
-	asdu.mutation.ClearMaterial()
-	return asdu
 }
 
 // ClearAsset clears the "asset" edge to the Asset entity.
@@ -194,35 +162,6 @@ func (asdu *AssetScrapDetailsUpdate) sqlSave(ctx context.Context) (n int, err er
 	}
 	if value, ok := asdu.mutation.UpdatedAt(); ok {
 		_spec.SetField(assetscrapdetails.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if asdu.mutation.MaterialCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assetscrapdetails.MaterialTable,
-			Columns: []string{assetscrapdetails.MaterialColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(material.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := asdu.mutation.MaterialIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assetscrapdetails.MaterialTable,
-			Columns: []string{assetscrapdetails.MaterialColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(material.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if asdu.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -310,26 +249,6 @@ func (asduo *AssetScrapDetailsUpdateOne) SetUpdatedAt(t time.Time) *AssetScrapDe
 	return asduo
 }
 
-// SetMaterialID sets the "material_id" field.
-func (asduo *AssetScrapDetailsUpdateOne) SetMaterialID(u uint64) *AssetScrapDetailsUpdateOne {
-	asduo.mutation.SetMaterialID(u)
-	return asduo
-}
-
-// SetNillableMaterialID sets the "material_id" field if the given value is not nil.
-func (asduo *AssetScrapDetailsUpdateOne) SetNillableMaterialID(u *uint64) *AssetScrapDetailsUpdateOne {
-	if u != nil {
-		asduo.SetMaterialID(*u)
-	}
-	return asduo
-}
-
-// ClearMaterialID clears the value of the "material_id" field.
-func (asduo *AssetScrapDetailsUpdateOne) ClearMaterialID() *AssetScrapDetailsUpdateOne {
-	asduo.mutation.ClearMaterialID()
-	return asduo
-}
-
 // SetAssetID sets the "asset_id" field.
 func (asduo *AssetScrapDetailsUpdateOne) SetAssetID(u uint64) *AssetScrapDetailsUpdateOne {
 	asduo.mutation.SetAssetID(u)
@@ -364,11 +283,6 @@ func (asduo *AssetScrapDetailsUpdateOne) ClearScrapID() *AssetScrapDetailsUpdate
 	return asduo
 }
 
-// SetMaterial sets the "material" edge to the Material entity.
-func (asduo *AssetScrapDetailsUpdateOne) SetMaterial(m *Material) *AssetScrapDetailsUpdateOne {
-	return asduo.SetMaterialID(m.ID)
-}
-
 // SetAsset sets the "asset" edge to the Asset entity.
 func (asduo *AssetScrapDetailsUpdateOne) SetAsset(a *Asset) *AssetScrapDetailsUpdateOne {
 	return asduo.SetAssetID(a.ID)
@@ -382,12 +296,6 @@ func (asduo *AssetScrapDetailsUpdateOne) SetScrap(a *AssetScrap) *AssetScrapDeta
 // Mutation returns the AssetScrapDetailsMutation object of the builder.
 func (asduo *AssetScrapDetailsUpdateOne) Mutation() *AssetScrapDetailsMutation {
 	return asduo.mutation
-}
-
-// ClearMaterial clears the "material" edge to the Material entity.
-func (asduo *AssetScrapDetailsUpdateOne) ClearMaterial() *AssetScrapDetailsUpdateOne {
-	asduo.mutation.ClearMaterial()
-	return asduo
 }
 
 // ClearAsset clears the "asset" edge to the Asset entity.
@@ -496,35 +404,6 @@ func (asduo *AssetScrapDetailsUpdateOne) sqlSave(ctx context.Context) (_node *As
 	}
 	if value, ok := asduo.mutation.UpdatedAt(); ok {
 		_spec.SetField(assetscrapdetails.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if asduo.mutation.MaterialCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assetscrapdetails.MaterialTable,
-			Columns: []string{assetscrapdetails.MaterialColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(material.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := asduo.mutation.MaterialIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   assetscrapdetails.MaterialTable,
-			Columns: []string{assetscrapdetails.MaterialColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(material.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if asduo.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
