@@ -7,7 +7,6 @@ package biz
 import (
 	"context"
 
-	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
@@ -25,70 +24,53 @@ func NewSelection() *selectionBiz {
 }
 
 // MaintainerList 维护人员筛选数据
-func (b *selectionBiz) MaintainerList() (res []*definition.MaintainerDetail) {
+func (b *selectionBiz) MaintainerList() (res []model.SelectOption) {
 	ms, _ := ent.Database.Maintainer.Query().Where(
 		maintainer.Enable(true),
 	).All(b.ctx)
 	for _, m := range ms {
-		res = append(res, &definition.MaintainerDetail{
-			ID:   m.ID,
-			Name: m.Name,
+		res = append(res, model.SelectOption{
+			Value: m.ID,
+			Label: m.Name,
 		})
 	}
 	return
 }
 
-// StationList 站点筛选数据
+// StationList 团签站点筛选数据
 func (b *selectionBiz) StationList() (res []model.CascaderOptionLevel2) {
-	stList, _ := ent.Database.EnterpriseStation.QueryNotDeleted().WithCity().All(b.ctx)
-	cityIds := make([]uint64, 0)
-	cityIdMap := make(map[uint64]*ent.City)
-	cityIdListMap := make(map[uint64][]model.SelectOption)
+	stList, _ := ent.Database.EnterpriseStation.QueryNotDeleted().WithEnterprise().All(b.ctx)
+	eIds := make([]uint64, 0)
+	eIdMap := make(map[uint64]*ent.Enterprise)
+	eIdListMap := make(map[uint64][]model.SelectOption)
 	for _, st := range stList {
-		if st.Edges.City != nil {
-			cityID := st.Edges.City.ID
-			cityIds = append(cityIds, cityID)
-			cityIdMap[cityID] = st.Edges.City
-			cityIdListMap[cityID] = append(cityIdListMap[cityID], model.SelectOption{
+		if st.Edges.Enterprise != nil {
+			eId := st.Edges.Enterprise.ID
+			if eIdMap[eId] == nil {
+				eIds = append(eIds, eId)
+				eIdMap[eId] = st.Edges.Enterprise
+			}
+			eIdListMap[eId] = append(eIdListMap[eId], model.SelectOption{
 				Label: st.Name,
 				Value: st.ID,
 			})
 		}
 	}
 
-	for _, cityId := range cityIds {
-		if cityIdMap[cityId] != nil && len(cityIdListMap[cityId]) != 0 {
+	for _, eId := range eIds {
+		if eIdMap[eId] != nil && len(eIdListMap[eId]) != 0 {
 			res = append(res, model.CascaderOptionLevel2{
 				SelectOption: model.SelectOption{
-					Value: cityIdMap[cityId].ID,
-					Label: cityIdMap[cityId].Name,
+					Value: eIdMap[eId].ID,
+					Label: eIdMap[eId].Name,
 				},
-				Children: cityIdListMap[cityId],
+				Children: eIdListMap[eId],
 			})
 		}
 	}
 
 	return
 }
-
-// // StationList 站点筛选数据
-// func (b *selectionBiz) StationList() (res []model.EnterpriseStationListRes) {
-// 	res = make([]model.EnterpriseStationListRes, 0)
-// 	items, _ := s.orm.QueryNotDeleted().Where(enterprisestation.EnterpriseID(req.EnterpriseID)).WithCity().All(s.ctx)
-// 	for _, item := range items {
-// 		res = append(res, model.EnterpriseStationListRes{
-// 			EnterpriseStation: model.EnterpriseStation{
-// 				ID:   item.ID,
-// 				Name: item.Name,
-// 			},
-// 			City: model.City{
-// 				ID:   item.Edges.City.ID,
-// 				Name: item.Edges.City.Name,
-// 			},
-// 		})
-// 	}
-// 	return
-// }
 
 // MaterialSelect 资产分类筛选数据
 func (b *selectionBiz) MaterialSelect(req *model.SelectMaterialReq) (res []model.SelectOption) {

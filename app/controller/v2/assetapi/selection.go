@@ -109,11 +109,10 @@ func (*selection) AssetRole(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
-// @Param	query					query		model.SelectModelsReq	true	"查询参数"
-// @Success	200						{object}	[]string				"请求成功"
+// @Success	200						{object}	[]model.SelectOption	"请求成功"
 func (*selection) Model(c echo.Context) (err error) {
-	ctx, req := app.ContextBinding[model.SelectModelsReq](c)
-	return ctx.SendResponse(service.NewSelection().ModelsByFilter(req))
+	ctx := app.ContextX[app.AssetManagerContext](c)
+	return ctx.SendResponse(biz.NewBatteryModel().SelectionModels())
 }
 
 // Maintainer
@@ -123,8 +122,8 @@ func (*selection) Model(c echo.Context) (err error) {
 // @Tags	Selection - 筛选
 // @Accept	json
 // @Produce	json
-// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
-// @Success	200						{object}	[]definition.MaintainerDetail	"请求成功"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
+// @Success	200						{object}	[]model.SelectOption	"请求成功"
 func (*selection) Maintainer(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AssetManagerContext](c)
 	return ctx.SendResponse(biz.NewSelection().MaintainerList())

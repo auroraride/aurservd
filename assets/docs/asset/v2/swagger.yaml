@@ -363,15 +363,6 @@ definitions:
         - $ref: '#/definitions/definition.MaintainerAsset'
         description: 运维资产
     type: object
-  definition.MaintainerDetail:
-    properties:
-      ID:
-        description: id
-        type: integer
-      name:
-        description: 名称
-        type: string
-    type: object
   definition.MaterialCreateReq:
     properties:
       name:
@@ -4009,7 +4000,7 @@ paths:
           description: 请求成功
           schema:
             items:
-              $ref: '#/definitions/definition.MaintainerDetail'
+              $ref: '#/definitions/model.SelectOption'
             type: array
       summary: 筛选运维人员
       tags:
@@ -4073,10 +4064,6 @@ paths:
         name: X-Asset-Manager-Token
         required: true
         type: string
-      - description: 1智能电池 2非智能电池
-        in: query
-        name: type
-        type: integer
       produces:
       - application/json
       responses:
@@ -4084,7 +4071,7 @@ paths:
           description: 请求成功
           schema:
             items:
-              type: string
+              $ref: '#/definitions/model.SelectOption'
             type: array
       summary: 筛选电池型号
       tags:

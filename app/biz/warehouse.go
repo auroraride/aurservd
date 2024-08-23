@@ -396,9 +396,15 @@ func (b *warehouseBiz) ListByCity() (res []*model.CascaderOptionLevel2) {
 	cityIdListMap := make(map[uint64][]model.SelectOption)
 	for _, wh := range whList {
 		if wh.Edges.City != nil {
-			cityIds = append(cityIds, wh.CityID)
-			cityIdMap[wh.CityID] = wh.Edges.City
-			cityIdListMap[wh.CityID] = append(cityIdListMap[wh.CityID], model.SelectOption{
+			cId := wh.Edges.City.ID
+			if cityIdMap[cId] == nil {
+				cityIds = append(cityIds, cId)
+				cityIdMap[cId] = wh.Edges.City
+			}
+
+			cityIds = append(cityIds, cId)
+			cityIdMap[cId] = wh.Edges.City
+			cityIdListMap[cId] = append(cityIdListMap[cId], model.SelectOption{
 				Label: wh.Name,
 				Value: wh.ID,
 			})

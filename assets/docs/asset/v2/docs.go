@@ -2744,7 +2744,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/definition.MaintainerDetail"
+                                "$ref": "#/definitions/model.SelectOption"
                             }
                         }
                     }
@@ -2836,12 +2836,6 @@ const docTemplate = `{
                         "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "1智能电池 2非智能电池",
-                        "name": "type",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2850,7 +2844,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "string"
+                                "$ref": "#/definitions/model.SelectOption"
                             }
                         }
                     }
@@ -5268,19 +5262,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/definition.MaintainerAsset"
                         }
                     ]
-                }
-            }
-        },
-        "definition.MaintainerDetail": {
-            "type": "object",
-            "properties": {
-                "ID": {
-                    "description": "id",
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "名称",
-                    "type": "string"
                 }
             }
         },
