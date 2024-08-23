@@ -62,7 +62,7 @@ func (Asset) Fields() []ent.Field {
 		field.Uint8("type").Comment("资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它"),
 		field.String("name").Comment("资产名称"),
 		field.String("sn").Optional().Comment("资产编号"),
-		field.Uint8("status").Default(0).Comment("资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废"),
+		field.Uint8("status").Default(0).Comment("资产状态 1:库存中 2:配送中 3:使用中 4:故障 5:报废"),
 		field.Bool("enable").Default(false).Comment("是否启用"),
 		field.Uint8("locations_type").Optional().Comment("资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"),
 		field.Uint64("locations_id").Optional().Comment("资产位置ID"),

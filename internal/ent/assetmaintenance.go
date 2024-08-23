@@ -43,7 +43,7 @@ type AssetMaintenance struct {
 	Content string `json:"content,omitempty"`
 	// 维修状态 1:维护中 2:已维修 3:维修失败 4:已取消
 	Status uint8 `json:"status,omitempty"`
-	// 电柜状态 1:维护中 2:暂停维护
+	// 电柜状态 1:运营中 2:维护中 3:暂停维护
 	CabinetStatus uint8 `json:"cabinet_status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetMaintenanceQuery when eager-loading is set.

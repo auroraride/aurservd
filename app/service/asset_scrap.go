@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assetscrap"
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
+	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/material"
@@ -373,8 +374,27 @@ func (s *assetScrapService) scrapAssetWithSN(ctx context.Context, req *model.Ass
 // 无编号资产报废
 func (s *assetScrapService) scrapAssetWithoutSN(ctx context.Context, req *model.AssetScrapDetails, warehouseID *uint64) ([]uint64, error) {
 	ids := make([]uint64, 0)
-	if req.MaterialID == nil {
-		return nil, fmt.Errorf("物资分类ID不能为空")
+	if req.AssetType == model.AssetTypeNonSmartBattery {
+		// 非智能电池调拨
+		if req.ModelID == nil || *req.ModelID == 0 {
+			return nil, errors.New(req.AssetType.String() + "型号ID不能为空")
+		}
+		item, _ := ent.Database.BatteryModel.Query().Where(batterymodel.ID(*req.ModelID)).First(ctx)
+		if item == nil {
+			return nil, errors.New(req.AssetType.String() + "型号不存在")
+		}
+	} else {
+		if req.MaterialID == nil || *req.MaterialID == 0 {
+			return nil, errors.New(req.AssetType.String() + "分类ID不能为空")
+		}
+		// 判定其它物资类型是否存在
+		item, _ := ent.Database.Material.QueryNotDeleted().Where(
+			material.ID(*req.MaterialID),
+			material.Type(req.AssetType.Value()),
+		).First(ctx)
+		if item == nil {
+			return nil, errors.New(req.AssetType.String() + "分类不存在")
+		}
 	}
 	if req.Num == nil || *req.Num == 0 {
 		return nil, fmt.Errorf("报废数量不能为空")

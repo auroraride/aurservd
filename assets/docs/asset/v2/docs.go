@@ -115,9 +115,15 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "资产位置ID",
+                        "name": "locationsId",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
-                        "description": "资产位置关键词",
-                        "name": "keywork",
+                        "description": "资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
+                        "name": "locationsKeyword",
                         "in": "query"
                     },
                     {
@@ -153,7 +159,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "型号ID",
-                        "name": "model",
+                        "name": "modelId",
                         "in": "query"
                     },
                     {
@@ -192,7 +198,6 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
-                            0,
                             1,
                             2,
                             3,
@@ -203,13 +208,11 @@ const docTemplate = `{
                         "x-enum-comments": {
                             "AssetStatusDelivering": "配送中",
                             "AssetStatusFault": "故障",
-                            "AssetStatusPending": "待入库",
                             "AssetStatusScrap": "报废",
                             "AssetStatusStock": "库存中",
                             "AssetStatusUsing": "使用中"
                         },
                         "x-enum-varnames": [
-                            "AssetStatusPending",
                             "AssetStatusStock",
                             "AssetStatusDelivering",
                             "AssetStatusUsing",
@@ -1274,9 +1277,15 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "资产位置ID",
+                        "name": "locationsId",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
-                        "description": "资产位置关键词",
-                        "name": "keywork",
+                        "description": "资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
+                        "name": "locationsKeyword",
                         "in": "query"
                     },
                     {
@@ -1312,7 +1321,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "型号ID",
-                        "name": "model",
+                        "name": "modelId",
                         "in": "query"
                     },
                     {
@@ -1345,7 +1354,6 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
-                            0,
                             1,
                             2,
                             3,
@@ -1356,13 +1364,11 @@ const docTemplate = `{
                         "x-enum-comments": {
                             "AssetStatusDelivering": "配送中",
                             "AssetStatusFault": "故障",
-                            "AssetStatusPending": "待入库",
                             "AssetStatusScrap": "报废",
                             "AssetStatusStock": "库存中",
                             "AssetStatusUsing": "使用中"
                         },
                         "x-enum-varnames": [
-                            "AssetStatusPending",
                             "AssetStatusStock",
                             "AssetStatusDelivering",
                             "AssetStatusUsing",
@@ -3326,9 +3332,33 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "入库结束时间",
+                        "name": "inEnd",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "入库开始时间",
+                        "name": "inStart",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
-                        "description": "调拨前位置ID",
-                        "name": "fromLocationID",
+                        "description": "调拨位置ID",
+                        "name": "locationsId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "调拨位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
+                        "name": "locationsKeyword",
                         "in": "query"
                     },
                     {
@@ -3357,26 +3387,8 @@ const docTemplate = `{
                             "AssetLocationsTypeCabinet",
                             "AssetLocationsTypeRider"
                         ],
-                        "description": "调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-                        "name": "fromLocationType",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "入库结束时间",
-                        "name": "inEnd",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "入库开始时间",
-                        "name": "inStart",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
-                        "name": "keyword",
+                        "description": "调拨位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                        "name": "locationsType",
                         "in": "query"
                     },
                     {
@@ -3416,42 +3428,6 @@ const docTemplate = `{
                         ],
                         "description": "调拨状态 1:配送中 2:待入库 3:已入库 4:已取消",
                         "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "调拨后位置ID",
-                        "name": "toLocationID",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2,
-                            3,
-                            4,
-                            5,
-                            6
-                        ],
-                        "type": "integer",
-                        "x-enum-comments": {
-                            "AssetLocationsTypeCabinet": "电柜",
-                            "AssetLocationsTypeOperation": "运维",
-                            "AssetLocationsTypeRider": "骑手",
-                            "AssetLocationsTypeStation": "站点",
-                            "AssetLocationsTypeStore": "门店",
-                            "AssetLocationsTypeWarehouse": "仓库"
-                        },
-                        "x-enum-varnames": [
-                            "AssetLocationsTypeWarehouse",
-                            "AssetLocationsTypeStore",
-                            "AssetLocationsTypeStation",
-                            "AssetLocationsTypeOperation",
-                            "AssetLocationsTypeCabinet",
-                            "AssetLocationsTypeRider"
-                        ],
-                        "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-                        "name": "toLocationType",
                         "in": "query"
                     }
                 ],
@@ -4718,43 +4694,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/model.AssetModifyReq"
                         }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产"
-                ],
-                "summary": "删除资产",
-                "operationId": "AssetDelete",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Asset-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "资产ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -6252,8 +6191,12 @@ const docTemplate = `{
                     "description": "是否启用",
                     "type": "boolean"
                 },
-                "keywork": {
-                    "description": "资产位置关键词",
+                "locationsId": {
+                    "description": "资产位置ID",
+                    "type": "integer"
+                },
+                "locationsKeyword": {
+                    "description": "资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
                     "type": "string"
                 },
                 "locationsType": {
@@ -6272,7 +6215,7 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "model": {
+                "modelId": {
                     "description": "型号ID",
                     "type": "integer"
                 },
@@ -6648,15 +6591,19 @@ const docTemplate = `{
                     ]
                 },
                 "materialId": {
-                    "description": "其它物资分类ID",
+                    "description": "其它物资分类ID （当AssetType = 4:电柜配件 5:电车配件 6:其它  必传）",
+                    "type": "integer"
+                },
+                "modelId": {
+                    "description": "电池型号ID（当AssetType = 3:非智能电池  必传）",
                     "type": "integer"
                 },
                 "num": {
-                    "description": "报废数量",
+                    "description": "报废数量  （当AssetType = 3:非智能电池 4:电柜配件 5:电车配件 6:其它  必传）",
                     "type": "integer"
                 },
                 "sn": {
-                    "description": "资产Sn",
+                    "description": "资产Sn (当AssetType = 1:电车 2:智能电池  必传)",
                     "type": "string"
                 }
             }
@@ -6760,7 +6707,6 @@ const docTemplate = `{
         "model.AssetStatus": {
             "type": "integer",
             "enum": [
-                0,
                 1,
                 2,
                 3,
@@ -6770,13 +6716,11 @@ const docTemplate = `{
             "x-enum-comments": {
                 "AssetStatusDelivering": "配送中",
                 "AssetStatusFault": "故障",
-                "AssetStatusPending": "待入库",
                 "AssetStatusScrap": "报废",
                 "AssetStatusStock": "库存中",
                 "AssetStatusUsing": "使用中"
             },
             "x-enum-varnames": [
-                "AssetStatusPending",
                 "AssetStatusStock",
                 "AssetStatusDelivering",
                 "AssetStatusUsing",

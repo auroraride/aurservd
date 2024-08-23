@@ -41,12 +41,11 @@ func loadAssetsRoutes() {
 	asset.GET("/selection/material", assetapi.Selection.Material)              // 物资类型筛选
 
 	// 基础档案
-	asset.POST("", assetapi.Assets.Create)       // 创建资产
-	asset.GET("", assetapi.Assets.List)          // 资产列表
-	asset.GET("/:id", assetapi.Assets.Detail)    // 资产详情
-	asset.PUT("/:id", assetapi.Assets.Update)    // 更新资产
-	asset.DELETE("/:id", assetapi.Assets.Delete) // 删除资产
-	asset.GET("/count", assetapi.Assets.Count)   // 资产数量
+	asset.POST("", assetapi.Assets.Create)     // 创建资产
+	asset.GET("", assetapi.Assets.List)        // 资产列表
+	asset.GET("/:id", assetapi.Assets.Detail)  // 资产详情
+	asset.PUT("/:id", assetapi.Assets.Update)  // 更新资产
+	asset.GET("/count", assetapi.Assets.Count) // 资产数量
 
 	// 资产属性
 	asset.GET("/attributes", assetapi.AssetAttributes.List) // 资产属性列表

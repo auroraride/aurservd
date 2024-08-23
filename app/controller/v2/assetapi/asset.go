@@ -72,21 +72,6 @@ func (*assets) Update(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewAsset().Modify(ctx.Request().Context(), req, ctx.Modifier))
 }
 
-// Delete
-// @ID		AssetDelete
-// @Router	/manager/v2/asset/{id} [DELETE]
-// @Summary	删除资产
-// @Tags	资产
-// @Accept	json
-// @Produce	json
-// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
-// @Param	id						path		uint64					true	"资产ID"
-// @Success	200						{object}	model.StatusResponse	"请求成功"
-func (*assets) Delete(c echo.Context) (err error) {
-	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
-	return ctx.SendResponse(service.NewAsset().Delete(ctx.Request().Context(), req.ID))
-}
-
 // BatchCreate
 // @ID		AssetBatchCreate
 // @Router	/manager/v2/asset/batch [POST]

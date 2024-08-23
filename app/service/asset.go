@@ -23,7 +23,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
-	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -56,8 +55,8 @@ func (s *assetService) Create(ctx context.Context, req *model.AssetCreateReq, mo
 	if req.Enable != nil {
 		enable = *req.Enable
 	}
-	// 入库状态默认为待入库
-	assetStatus := model.AssetStatusPending.Value()
+	// 入库状态默认为配送中
+	assetStatus := model.AssetStatusDelivering.Value()
 
 	q := s.orm.Create()
 	switch req.AssetType {
@@ -264,7 +263,7 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 			SetType(model.AssetTypeEbike.Value()).
 			SetName(name).
 			SetEnable(true).
-			SetStatus(model.AssetStatusPending.Value()).
+			SetStatus(model.AssetStatusDelivering.Value()).
 			SetRemark("批量导入").
 			SetBrandID(bid).
 			SetBrandName(columns[0]).
@@ -422,7 +421,7 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 			SetCityID(cid).
 			SetLocationsType(model.AssetLocationsTypeWarehouse.Value()).
 			SetLocationsID(wid).
-			SetStatus(model.AssetStatusPending.Value()).
+			SetStatus(model.AssetStatusDelivering.Value()).
 			SetType(model.AssetTypeSmartBattery.Value()).
 			SetEnable(true).
 			SetRemark("批量导入").
@@ -483,10 +482,10 @@ func (s *assetService) Modify(ctx context.Context, req *model.AssetModifyReq, mo
 	}
 
 	if req.BrandID != nil {
-		q.Where(asset.StatusIn(model.AssetStatusStock.Value(), model.AssetStatusPending.Value()))
+		q.Where(asset.StatusIn(model.AssetStatusStock.Value()))
 		assets, _ := q.First(ctx)
 		if assets == nil {
-			return errors.New("电车状态须为待入库或库存中才允许修改")
+			return errors.New("电车状态库存中才允许修改")
 		}
 		only, _ := ent.Database.EbikeBrand.QueryNotDeleted().Where(ebikebrand.ID(*req.BrandID)).Only(ctx)
 		if only == nil {
@@ -509,25 +508,6 @@ func (s *assetService) Modify(ctx context.Context, req *model.AssetModifyReq, mo
 				return fmt.Errorf("资产属性修改失败: %w", err)
 			}
 		}
-	}
-	return nil
-}
-
-// Delete 删除资产
-func (s *assetService) Delete(ctx context.Context, id uint64) error {
-	bat, _ := s.orm.QueryNotDeleted().
-		Where(
-			asset.ID(id),
-			asset.Status(model.AssetStatusPending.Value()),
-		).
-		First(ctx)
-	if bat == nil {
-		return fmt.Errorf("资产不存在或状态不正确")
-	}
-	// 待入库资产直接删除
-	err := s.orm.DeleteOneID(id).Exec(ctx)
-	if err != nil {
-		return fmt.Errorf("资产删除失败: %w", err)
 	}
 	return nil
 }
@@ -922,43 +902,25 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 			)
 		}
 	}
-	if req.LocationsType != nil && req.LocationsKeywork != nil {
+	if req.LocationsType != nil && req.LocationsKeyword != nil {
 		q.Where(asset.LocationsType(req.LocationsType.Value()))
 		switch *req.LocationsType {
-		case model.AssetLocationsTypeWarehouse:
-			q.Where(
-				asset.HasWarehouseWith(
-					warehouse.NameContains(*req.LocationsKeywork),
-				),
-			)
-		case model.AssetLocationsTypeStore:
-			q.Where(
-				asset.HasStoreWith(
-					store.NameContains(*req.LocationsKeywork),
-				),
-			)
+		case model.AssetLocationsTypeWarehouse, model.AssetLocationsTypeStore, model.AssetLocationsTypeStation, model.AssetLocationsTypeOperation:
+			if req.LocationsID != nil {
+				q.Where(
+					asset.LocationsID(*req.LocationsID),
+				)
+			}
 		case model.AssetLocationsTypeCabinet:
 			q.Where(
 				asset.HasCabinetWith(
-					cabinet.NameContains(*req.LocationsKeywork),
-				),
-			)
-		case model.AssetLocationsTypeStation:
-			q.Where(
-				asset.HasStationWith(
-					enterprisestation.NameContains(*req.LocationsKeywork),
+					cabinet.NameContains(*req.LocationsKeyword),
 				),
 			)
 		case model.AssetLocationsTypeRider:
 			q.Where(
 				asset.HasRiderWith(
-					rider.NameContains(*req.LocationsKeywork),
-				),
-			)
-		case model.AssetLocationsTypeOperation:
-			q.Where(
-				asset.HasOperatorWith(
-					maintainer.NameContains(*req.LocationsKeywork),
+					rider.NameContains(*req.LocationsKeyword),
 				),
 			)
 		}

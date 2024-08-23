@@ -207,18 +207,15 @@ func (s AssetLocationsType) Value() uint8 {
 type AssetStatus uint8
 
 const (
-	AssetStatusPending    AssetStatus = iota // 待入库
-	AssetStatusStock                         // 库存中
-	AssetStatusDelivering                    // 配送中
-	AssetStatusUsing                         // 使用中
-	AssetStatusFault                         // 故障
-	AssetStatusScrap                         // 报废
+	AssetStatusStock      AssetStatus = iota + 1 // 库存中
+	AssetStatusDelivering                        // 配送中
+	AssetStatusUsing                             // 使用中
+	AssetStatusFault                             // 故障
+	AssetStatusScrap                             // 报废
 )
 
 func (s AssetStatus) String() string {
 	switch s {
-	case AssetStatusPending:
-		return "待入库"
 	case AssetStatusStock:
 		return "库存中"
 	case AssetStatusDelivering:

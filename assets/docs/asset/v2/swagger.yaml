@@ -1029,8 +1029,11 @@ definitions:
       enable:
         description: 是否启用
         type: boolean
-      keywork:
-        description: 资产位置关键词
+      locationsId:
+        description: 资产位置ID
+        type: integer
+      locationsKeyword:
+        description: 资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效
         type: string
       locationsType:
         allOf:
@@ -1043,7 +1046,7 @@ definitions:
         - 4
         - 5
         - 6
-      model:
+      modelId:
         description: 型号ID
         type: integer
       ownerType:
@@ -1316,13 +1319,16 @@ definitions:
         - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
       materialId:
-        description: 其它物资分类ID
+        description: 其它物资分类ID （当AssetType = 4:电柜配件 5:电车配件 6:其它  必传）
+        type: integer
+      modelId:
+        description: 电池型号ID（当AssetType = 3:非智能电池  必传）
         type: integer
       num:
-        description: 报废数量
+        description: 报废数量  （当AssetType = 3:非智能电池 4:电柜配件 5:电车配件 6:其它  必传）
         type: integer
       sn:
-        description: 资产Sn
+        description: 资产Sn (当AssetType = 1:电车 2:智能电池  必传)
         type: string
     required:
     - assetType
@@ -1397,7 +1403,6 @@ definitions:
     type: object
   model.AssetStatus:
     enum:
-    - 0
     - 1
     - 2
     - 3
@@ -1407,12 +1412,10 @@ definitions:
     x-enum-comments:
       AssetStatusDelivering: 配送中
       AssetStatusFault: 故障
-      AssetStatusPending: 待入库
       AssetStatusScrap: 报废
       AssetStatusStock: 库存中
       AssetStatusUsing: 使用中
     x-enum-varnames:
-    - AssetStatusPending
     - AssetStatusStock
     - AssetStatusDelivering
     - AssetStatusUsing
@@ -2181,9 +2184,13 @@ paths:
         in: query
         name: enable
         type: boolean
-      - description: 资产位置关键词
+      - description: 资产位置ID
         in: query
-        name: keywork
+        name: locationsId
+        type: integer
+      - description: 资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效
+        in: query
+        name: locationsKeyword
         type: string
       - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
         enum:
@@ -2212,7 +2219,7 @@ paths:
         - AssetLocationsTypeRider
       - description: 型号ID
         in: query
-        name: model
+        name: modelId
         type: integer
       - description: 归属类型   1:平台 2:代理商
         enum:
@@ -2239,7 +2246,6 @@ paths:
         type: integer
       - description: 资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
         enum:
-        - 0
         - 1
         - 2
         - 3
@@ -2251,12 +2257,10 @@ paths:
         x-enum-comments:
           AssetStatusDelivering: 配送中
           AssetStatusFault: 故障
-          AssetStatusPending: 待入库
           AssetStatusScrap: 报废
           AssetStatusStock: 库存中
           AssetStatusUsing: 使用中
         x-enum-varnames:
-        - AssetStatusPending
         - AssetStatusStock
         - AssetStatusDelivering
         - AssetStatusUsing
@@ -2306,31 +2310,6 @@ paths:
       tags:
       - 资产
   /manager/v2/asset/{id}:
-    delete:
-      consumes:
-      - application/json
-      operationId: AssetDelete
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Asset-Manager-Token
-        required: true
-        type: string
-      - description: 资产ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 删除资产
-      tags:
-      - 资产
     get:
       consumes:
       - application/json
@@ -3051,9 +3030,13 @@ paths:
         in: query
         name: enable
         type: boolean
-      - description: 资产位置关键词
+      - description: 资产位置ID
         in: query
-        name: keywork
+        name: locationsId
+        type: integer
+      - description: 资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效
+        in: query
+        name: locationsKeyword
         type: string
       - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
         enum:
@@ -3082,7 +3065,7 @@ paths:
         - AssetLocationsTypeRider
       - description: 型号ID
         in: query
-        name: model
+        name: modelId
         type: integer
       - description: 归属类型   1:平台 2:代理商
         enum:
@@ -3105,7 +3088,6 @@ paths:
         type: integer
       - description: 资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
         enum:
-        - 0
         - 1
         - 2
         - 3
@@ -3117,12 +3099,10 @@ paths:
         x-enum-comments:
           AssetStatusDelivering: 配送中
           AssetStatusFault: 故障
-          AssetStatusPending: 待入库
           AssetStatusScrap: 报废
           AssetStatusStock: 库存中
           AssetStatusUsing: 使用中
         x-enum-varnames:
-        - AssetStatusPending
         - AssetStatusStock
         - AssetStatusDelivering
         - AssetStatusUsing
@@ -4423,11 +4403,27 @@ paths:
         in: query
         name: employeeID
         type: integer
-      - description: 调拨前位置ID
+      - description: 入库结束时间
         in: query
-        name: fromLocationID
+        name: inEnd
+        type: string
+      - description: 入库开始时间
+        in: query
+        name: inStart
+        type: string
+      - description: 关键字 (调拨单号，调拨事由、出库人、接收人)
+        in: query
+        name: keyword
+        type: string
+      - description: 调拨位置ID
+        in: query
+        name: locationsId
         type: integer
-      - description: 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+      - description: 调拨位置关键词 只有LocationsType =（5:电柜 6:骑手）有效
+        in: query
+        name: locationsKeyword
+        type: string
+      - description: 调拨位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
         enum:
         - 1
         - 2
@@ -4436,7 +4432,7 @@ paths:
         - 5
         - 6
         in: query
-        name: fromLocationType
+        name: locationsType
         type: integer
         x-enum-comments:
           AssetLocationsTypeCabinet: 电柜
@@ -4452,18 +4448,6 @@ paths:
         - AssetLocationsTypeOperation
         - AssetLocationsTypeCabinet
         - AssetLocationsTypeRider
-      - description: 入库结束时间
-        in: query
-        name: inEnd
-        type: string
-      - description: 入库开始时间
-        in: query
-        name: inStart
-        type: string
-      - description: 关键字 (调拨单号，调拨事由、出库人、接收人)
-        in: query
-        name: keyword
-        type: string
       - description: 出库结束时间
         in: query
         name: outEnd
@@ -4492,35 +4476,6 @@ paths:
         - AssetTransferStatusDelivering
         - AssetTransferStatusStock
         - AssetTransferStatusCancel
-      - description: 调拨后位置ID
-        in: query
-        name: toLocationID
-        type: integer
-      - description: 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
-        enum:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        in: query
-        name: toLocationType
-        type: integer
-        x-enum-comments:
-          AssetLocationsTypeCabinet: 电柜
-          AssetLocationsTypeOperation: 运维
-          AssetLocationsTypeRider: 骑手
-          AssetLocationsTypeStation: 站点
-          AssetLocationsTypeStore: 门店
-          AssetLocationsTypeWarehouse: 仓库
-        x-enum-varnames:
-        - AssetLocationsTypeWarehouse
-        - AssetLocationsTypeStore
-        - AssetLocationsTypeStation
-        - AssetLocationsTypeOperation
-        - AssetLocationsTypeCabinet
-        - AssetLocationsTypeRider
       produces:
       - application/json
       responses:

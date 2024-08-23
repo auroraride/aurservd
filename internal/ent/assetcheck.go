@@ -13,8 +13,8 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
@@ -69,7 +69,7 @@ type AssetCheckEdges struct {
 	// CheckDetails holds the value of the check_details edge.
 	CheckDetails []*AssetCheckDetails `json:"check_details,omitempty"`
 	// OperateManager holds the value of the operate_manager edge.
-	OperateManager *Manager `json:"operate_manager,omitempty"`
+	OperateManager *AssetManager `json:"operate_manager,omitempty"`
 	// OperateStore holds the value of the operate_store edge.
 	OperateStore *Store `json:"operate_store,omitempty"`
 	// OperateAgent holds the value of the operate_agent edge.
@@ -96,11 +96,11 @@ func (e AssetCheckEdges) CheckDetailsOrErr() ([]*AssetCheckDetails, error) {
 
 // OperateManagerOrErr returns the OperateManager value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AssetCheckEdges) OperateManagerOrErr() (*Manager, error) {
+func (e AssetCheckEdges) OperateManagerOrErr() (*AssetManager, error) {
 	if e.OperateManager != nil {
 		return e.OperateManager, nil
 	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: manager.Label}
+		return nil, &NotFoundError{label: assetmanager.Label}
 	}
 	return nil, &NotLoadedError{edge: "operate_manager"}
 }
@@ -322,7 +322,7 @@ func (ac *AssetCheck) QueryCheckDetails() *AssetCheckDetailsQuery {
 }
 
 // QueryOperateManager queries the "operate_manager" edge of the AssetCheck entity.
-func (ac *AssetCheck) QueryOperateManager() *ManagerQuery {
+func (ac *AssetCheck) QueryOperateManager() *AssetManagerQuery {
 	return NewAssetCheckClient(ac.config).QueryOperateManager(ac)
 }
 

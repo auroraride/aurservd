@@ -3188,7 +3188,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"AssetCheck",
-		"Manager",
+		"AssetManager",
 	)
 	graph.MustAddE(
 		"operate_store",
@@ -9002,7 +9002,7 @@ func (f *AssetCheckFilter) WhereHasOperateManager() {
 }
 
 // WhereHasOperateManagerWith applies a predicate to check if query has an edge operate_manager with a given conditions (other predicates).
-func (f *AssetCheckFilter) WhereHasOperateManagerWith(preds ...predicate.Manager) {
+func (f *AssetCheckFilter) WhereHasOperateManagerWith(preds ...predicate.AssetManager) {
 	f.Where(entql.HasEdgeWith("operate_manager", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)

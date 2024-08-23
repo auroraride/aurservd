@@ -159,7 +159,6 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
-                            0,
                             1,
                             2,
                             3,
@@ -170,13 +169,11 @@ const docTemplate = `{
                         "x-enum-comments": {
                             "AssetStatusDelivering": "配送中",
                             "AssetStatusFault": "故障",
-                            "AssetStatusPending": "待入库",
                             "AssetStatusScrap": "报废",
                             "AssetStatusStock": "库存中",
                             "AssetStatusUsing": "使用中"
                         },
                         "x-enum-varnames": [
-                            "AssetStatusPending",
                             "AssetStatusStock",
                             "AssetStatusDelivering",
                             "AssetStatusUsing",
@@ -637,9 +634,33 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "入库结束时间",
+                        "name": "inEnd",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "入库开始时间",
+                        "name": "inStart",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
-                        "description": "调拨前位置ID",
-                        "name": "fromLocationID",
+                        "description": "调拨位置ID",
+                        "name": "locationsId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "调拨位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
+                        "name": "locationsKeyword",
                         "in": "query"
                     },
                     {
@@ -668,26 +689,8 @@ const docTemplate = `{
                             "AssetLocationsTypeCabinet",
                             "AssetLocationsTypeRider"
                         ],
-                        "description": "调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-                        "name": "fromLocationType",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "入库结束时间",
-                        "name": "inEnd",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "入库开始时间",
-                        "name": "inStart",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
-                        "name": "keyword",
+                        "description": "调拨位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                        "name": "locationsType",
                         "in": "query"
                     },
                     {
@@ -727,42 +730,6 @@ const docTemplate = `{
                         ],
                         "description": "调拨状态 1:配送中 2:待入库 3:已入库 4:已取消",
                         "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "调拨后位置ID",
-                        "name": "toLocationID",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2,
-                            3,
-                            4,
-                            5,
-                            6
-                        ],
-                        "type": "integer",
-                        "x-enum-comments": {
-                            "AssetLocationsTypeCabinet": "电柜",
-                            "AssetLocationsTypeOperation": "运维",
-                            "AssetLocationsTypeRider": "骑手",
-                            "AssetLocationsTypeStation": "站点",
-                            "AssetLocationsTypeStore": "门店",
-                            "AssetLocationsTypeWarehouse": "仓库"
-                        },
-                        "x-enum-varnames": [
-                            "AssetLocationsTypeWarehouse",
-                            "AssetLocationsTypeStore",
-                            "AssetLocationsTypeStation",
-                            "AssetLocationsTypeOperation",
-                            "AssetLocationsTypeCabinet",
-                            "AssetLocationsTypeRider"
-                        ],
-                        "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-                        "name": "toLocationType",
                         "in": "query"
                     }
                 ],
@@ -2005,7 +1972,6 @@ const docTemplate = `{
         "model.AssetStatus": {
             "type": "integer",
             "enum": [
-                0,
                 1,
                 2,
                 3,
@@ -2015,13 +1981,11 @@ const docTemplate = `{
             "x-enum-comments": {
                 "AssetStatusDelivering": "配送中",
                 "AssetStatusFault": "故障",
-                "AssetStatusPending": "待入库",
                 "AssetStatusScrap": "报废",
                 "AssetStatusStock": "库存中",
                 "AssetStatusUsing": "使用中"
             },
             "x-enum-varnames": [
-                "AssetStatusPending",
                 "AssetStatusStock",
                 "AssetStatusDelivering",
                 "AssetStatusUsing",

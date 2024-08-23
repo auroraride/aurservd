@@ -14,8 +14,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
@@ -29,7 +29,7 @@ type AssetCheckQuery struct {
 	inters             []Interceptor
 	predicates         []predicate.AssetCheck
 	withCheckDetails   *AssetCheckDetailsQuery
-	withOperateManager *ManagerQuery
+	withOperateManager *AssetManagerQuery
 	withOperateStore   *StoreQuery
 	withOperateAgent   *AgentQuery
 	withWarehouse      *WarehouseQuery
@@ -95,8 +95,8 @@ func (acq *AssetCheckQuery) QueryCheckDetails() *AssetCheckDetailsQuery {
 }
 
 // QueryOperateManager chains the current query on the "operate_manager" edge.
-func (acq *AssetCheckQuery) QueryOperateManager() *ManagerQuery {
-	query := (&ManagerClient{config: acq.config}).Query()
+func (acq *AssetCheckQuery) QueryOperateManager() *AssetManagerQuery {
+	query := (&AssetManagerClient{config: acq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := acq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -107,7 +107,7 @@ func (acq *AssetCheckQuery) QueryOperateManager() *ManagerQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetcheck.Table, assetcheck.FieldID, selector),
-			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.OperateManagerTable, assetcheck.OperateManagerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(acq.driver.Dialect(), step)
@@ -444,8 +444,8 @@ func (acq *AssetCheckQuery) WithCheckDetails(opts ...func(*AssetCheckDetailsQuer
 
 // WithOperateManager tells the query-builder to eager-load the nodes that are connected to
 // the "operate_manager" edge. The optional arguments are used to configure the query builder of the edge.
-func (acq *AssetCheckQuery) WithOperateManager(opts ...func(*ManagerQuery)) *AssetCheckQuery {
-	query := (&ManagerClient{config: acq.config}).Query()
+func (acq *AssetCheckQuery) WithOperateManager(opts ...func(*AssetManagerQuery)) *AssetCheckQuery {
+	query := (&AssetManagerClient{config: acq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -626,7 +626,7 @@ func (acq *AssetCheckQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	}
 	if query := acq.withOperateManager; query != nil {
 		if err := acq.loadOperateManager(ctx, query, nodes, nil,
-			func(n *AssetCheck, e *Manager) { n.Edges.OperateManager = e }); err != nil {
+			func(n *AssetCheck, e *AssetManager) { n.Edges.OperateManager = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -693,7 +693,7 @@ func (acq *AssetCheckQuery) loadCheckDetails(ctx context.Context, query *AssetCh
 	}
 	return nil
 }
-func (acq *AssetCheckQuery) loadOperateManager(ctx context.Context, query *ManagerQuery, nodes []*AssetCheck, init func(*AssetCheck), assign func(*AssetCheck, *Manager)) error {
+func (acq *AssetCheckQuery) loadOperateManager(ctx context.Context, query *AssetManagerQuery, nodes []*AssetCheck, init func(*AssetCheck), assign func(*AssetCheck, *AssetManager)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetCheck)
 	for i := range nodes {
@@ -706,7 +706,7 @@ func (acq *AssetCheckQuery) loadOperateManager(ctx context.Context, query *Manag
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(manager.IDIn(ids...))
+	query.Where(assetmanager.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err

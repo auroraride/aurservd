@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
@@ -20,6 +22,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/material"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -84,13 +87,12 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 	}
 	// 初始调拨
 	if req.FromLocationType == nil {
-		var transferStatusRes model.InitialTransferStatusRes
-		assetIDs, transferStatusRes, failed = s.initialTransfer(ctx, req, modifier)
+		assetIDs, failed = s.initialTransfer(ctx, req, modifier)
 		if len(failed) > 0 {
 			return failed, nil
 		}
 		q.SetInNum(uint(len(assetIDs))).
-			SetStatus(transferStatusRes.AssetTransferStatus.Value()).
+			SetStatus(model.AssetStatusStock.Value()).
 			SetType(model.AssetTransferTypeInitial.Value()).
 			SetRemark("后台初始调拨")
 		for _, id := range assetIDs {
@@ -99,12 +101,10 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 				SetCreator(modifier).
 				SetLastModifier(modifier)
 			if req.FromLocationType == nil {
-				if transferStatusRes.IsIn {
-					d.SetInTimeAt(newTime).
-						SetInOperateID(modifier.ID).
-						SetInOperateType(model.AssetOperateRoleTypeManager.Value())
-				}
-				d.SetIsIn(transferStatusRes.IsIn).
+				d.SetInTimeAt(newTime).
+					SetInOperateID(modifier.ID).
+					SetInOperateType(model.AssetOperateRoleTypeManager.Value()).
+					SetIsIn(true).
 					SetRemark("后台初始调拨")
 			}
 			bulk = append(bulk, d)
@@ -179,11 +179,6 @@ func (s *assetTransferService) transferAssetWithoutSN(ctx context.Context, asset
 		if item == nil {
 			return nil, errors.New(req.AssetType.String() + "分类不存在")
 		}
-	}
-	// 判定其它物资类型是否存在
-	item, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(*req.MaterialID), material.Type(req.AssetType.Value())).First(ctx)
-	if item == nil {
-		return nil, errors.New(req.AssetType.String() + "分类不存在")
 	}
 	q := ent.Database.Asset.QueryNotDeleted().Where(
 		asset.LocationsType((assetLocationsType).Value()),
@@ -321,9 +316,8 @@ func (s *assetTransferService) stockTransfer(ctx context.Context, req *model.Ass
 }
 
 // 初始调拨
-func (s *assetTransferService) initialTransfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (assetIDs []uint64, status model.InitialTransferStatusRes, failed []string) {
+func (s *assetTransferService) initialTransfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (assetIDs []uint64, failed []string) {
 	var err error
-	resStatus := model.InitialTransferStatusRes{}
 	// 创建物资
 	for _, v := range req.Details {
 		var iDs []uint64
@@ -334,22 +328,18 @@ func (s *assetTransferService) initialTransfer(ctx context.Context, req *model.A
 				failed = append(failed, err.Error())
 				continue
 			}
-			resStatus.AssetTransferStatus = model.AssetTransferStatusStock
-			resStatus.IsIn = true
 		case model.AssetTypeEbike, model.AssetTypeSmartBattery:
 			iDs, err = s.initialTransferWithSN(ctx, v, req.ToLocationID, req.ToLocationType, modifier)
 			if err != nil {
 				failed = append(failed, err.Error())
 				continue
 			}
-			resStatus.AssetTransferStatus = model.AssetTransferStatusDelivering
-			resStatus.IsIn = false
 		default:
 			failed = append(failed, v.AssetType.String()+"物资类型不合法,已跳过")
 		}
 		assetIDs = append(assetIDs, iDs...)
 	}
-	return assetIDs, resStatus, failed
+	return assetIDs, failed
 }
 
 // initialTransferWithoutSN 无编号资产初始化调拨
@@ -415,7 +405,7 @@ func (s *assetTransferService) initialTransferWithSN(ctx context.Context, req mo
 	}
 	// 查询物资是否存在
 	item, _ := ent.Database.Asset.QueryNotDeleted().Where(
-		asset.Status(model.AssetStatusPending.Value()),
+		asset.Status(model.AssetStatusDelivering.Value()),
 		asset.Sn(*req.SN),
 	).First(ctx)
 	if item == nil {
@@ -423,10 +413,10 @@ func (s *assetTransferService) initialTransferWithSN(ctx context.Context, req mo
 	}
 	// 修改状态
 	_, err = ent.Database.Asset.Update().Where(asset.ID(item.ID)).
-		SetStatus(model.AssetStatusDelivering.Value()).
 		SetLocationsType(toLocationType.Value()).
 		SetLocationsID(toLocationID).
 		SetLastModifier(modifier).
+		SetStatus(model.AssetStatusStock.Value()).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -442,7 +432,7 @@ func (s *assetTransferService) TransferList(ctx context.Context, req *model.Asse
 		WithFromLocationWarehouse().WithFromLocationStore().WithFromLocationStation().WithFromLocationOperator().
 		WithToLocationWarehouse().WithToLocationStore().WithToLocationStation().WithToLocationOperator()
 	s.filter(ctx, q, &req.AssetTransferFilter)
-
+	q.Order(ent.Desc(assettransfer.FieldCreatedAt))
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetTransfer) (res *model.AssetTransferListRes) {
 		return s.TransferInfo(item)
 	}), nil
@@ -545,17 +535,44 @@ func (s *assetTransferService) TransferInfo(item *ent.AssetTransfer) (res *model
 
 // 筛选
 func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQuery, req *model.AssetTransferFilter) {
-	if req.FromLocationType != nil {
-		q.Where(assettransfer.FromLocationType((*req.FromLocationType).Value()))
-	}
-	if req.FromLocationID != nil {
-		q.Where(assettransfer.FromLocationID(*req.FromLocationID))
-	}
-	if req.ToLocationType != nil {
-		q.Where(assettransfer.ToLocationType((*req.ToLocationType).Value()))
-	}
-	if req.ToLocationID != nil {
-		q.Where(assettransfer.ToLocationID(*req.ToLocationID))
+	// 查询调拨
+	if req.LocationsID != nil && req.LocationsType != nil {
+		q.Where(
+			func(selector *sql.Selector) {
+				switch *req.LocationsType {
+				case model.AssetLocationsTypeRider, model.AssetLocationsTypeCabinet:
+					if req.LocationsKeyword != nil && *req.LocationsType == model.AssetLocationsTypeCabinet {
+						q.Where(
+							assettransfer.Or(
+								assettransfer.HasFromLocationCabinetWith(cabinet.SnContains(*req.LocationsKeyword)),
+								assettransfer.HasToLocationCabinetWith(cabinet.SnContains(*req.LocationsKeyword)),
+							),
+						)
+					}
+					if req.LocationsKeyword != nil && *req.LocationsType == model.AssetLocationsTypeRider {
+						q.Where(
+							assettransfer.Or(
+								assettransfer.HasFromLocationRiderWith(rider.NameContains(*req.LocationsKeyword)),
+								assettransfer.HasToLocationRiderWith(rider.NameContains(*req.LocationsKeyword)),
+							),
+						)
+					}
+				case model.AssetLocationsTypeWarehouse, model.AssetLocationsTypeStore, model.AssetLocationsTypeStation, model.AssetLocationsTypeOperation:
+					selector.Where(
+						sql.Or(
+							sql.And(
+								sql.EQ(assettransfer.FieldFromLocationID, *req.LocationsID),
+								sql.EQ(assettransfer.FieldFromLocationType, req.LocationsType.Value()),
+							),
+							sql.And(
+								sql.EQ(assettransfer.FieldToLocationID, *req.LocationsID),
+								sql.EQ(assettransfer.FieldToLocationType, req.LocationsType.Value()),
+							),
+						),
+					)
+				}
+			},
+		)
 	}
 	if req.Status != nil {
 		q.Where(assettransfer.Status((*req.Status).Value()))
@@ -790,13 +807,13 @@ func (s *assetTransferService) TransferCancel(ctx context.Context, req *model.As
 	}
 
 	// 初始调拨删除资产
-	if item.Type == model.AssetTransferTypeInitial.Value() {
-		if item.Edges.TransferDetails != nil {
-			for _, v := range item.Edges.TransferDetails {
-				_ = NewAsset().Delete(ctx, v.AssetID)
-			}
-		}
-	}
+	// if item.Type == model.AssetTransferTypeInitial.Value() {
+	// 	if item.Edges.TransferDetails != nil {
+	// 		for _, v := range item.Edges.TransferDetails {
+	// 			_ = NewAsset().Delete(ctx, v.AssetID)
+	// 		}
+	// 	}
+	// }
 
 	// 修改调拨单状态
 	_, err = item.Update().

@@ -290,7 +290,7 @@ var (
 		{Name: "type", Type: field.TypeUint8, Comment: "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它"},
 		{Name: "name", Type: field.TypeString, Comment: "资产名称"},
 		{Name: "sn", Type: field.TypeString, Nullable: true, Comment: "资产编号"},
-		{Name: "status", Type: field.TypeUint8, Comment: "资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废", Default: 0},
+		{Name: "status", Type: field.TypeUint8, Comment: "资产状态 1:库存中 2:配送中 3:使用中 4:故障 5:报废", Default: 0},
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: false},
 		{Name: "locations_type", Type: field.TypeUint8, Nullable: true, Comment: "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"},
 		{Name: "rto_rider_id", Type: field.TypeUint64, Nullable: true, Comment: "以租代购骑手ID，生成后禁止修改"},
@@ -488,9 +488,9 @@ var (
 		PrimaryKey: []*schema.Column{AssetCheckColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "asset_check_manager_operate_manager",
+				Symbol:     "asset_check_asset_manager_operate_manager",
 				Columns:    []*schema.Column{AssetCheckColumns[16]},
-				RefColumns: []*schema.Column{ManagerColumns[0]},
+				RefColumns: []*schema.Column{AssetManagerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
@@ -685,7 +685,7 @@ var (
 		{Name: "reason", Type: field.TypeString, Comment: "原因"},
 		{Name: "content", Type: field.TypeString, Comment: "内容"},
 		{Name: "status", Type: field.TypeUint8, Comment: "维修状态 1:维护中 2:已维修 3:维修失败 4:已取消", Default: 1},
-		{Name: "cabinet_status", Type: field.TypeUint8, Comment: "电柜状态 1:维护中 2:暂停维护", Default: 0},
+		{Name: "cabinet_status", Type: field.TypeUint8, Comment: "电柜状态 1:运营中 2:维护中 3:暂停维护", Default: 0},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
 		{Name: "maintainer_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -7561,7 +7561,7 @@ func init() {
 	AssetAttributesTable.Annotation = &entsql.Annotation{
 		Table: "asset_attributes",
 	}
-	AssetCheckTable.ForeignKeys[0].RefTable = ManagerTable
+	AssetCheckTable.ForeignKeys[0].RefTable = AssetManagerTable
 	AssetCheckTable.ForeignKeys[1].RefTable = StoreTable
 	AssetCheckTable.ForeignKeys[2].RefTable = AgentTable
 	AssetCheckTable.ForeignKeys[3].RefTable = WarehouseTable

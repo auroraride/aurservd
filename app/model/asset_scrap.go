@@ -42,9 +42,10 @@ type AssetScrapReq struct {
 
 type AssetScrapDetails struct {
 	AssetType  AssetType `json:"assetType" validate:"required"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-	Sn         *string   `json:"sn"`                            // 资产Sn
-	Num        *uint     `json:"num"`                           // 报废数量
-	MaterialID *uint64   `json:"materialId"`                    // 其它物资分类ID
+	Sn         *string   `json:"sn"`                            // 资产Sn (当AssetType = 1:电车 2:智能电池  必传)
+	Num        *uint     `json:"num"`                           // 报废数量  （当AssetType = 3:非智能电池 4:电柜配件 5:电车配件 6:其它  必传）
+	MaterialID *uint64   `json:"materialId"`                    // 其它物资分类ID （当AssetType = 4:电柜配件 5:电车配件 6:其它  必传）
+	ModelID    *uint64   `json:"modelId"`                       // 电池型号ID（当AssetType = 3:非智能电池  必传）
 }
 
 // AssetScrapListReq 资产报废列表请求

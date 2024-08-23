@@ -74,9 +74,9 @@ const (
 	CheckDetailsColumn = "check_id"
 	// OperateManagerTable is the table that holds the operate_manager relation/edge.
 	OperateManagerTable = "asset_check"
-	// OperateManagerInverseTable is the table name for the Manager entity.
-	// It exists in this package in order to avoid circular dependency with the "manager" package.
-	OperateManagerInverseTable = "manager"
+	// OperateManagerInverseTable is the table name for the AssetManager entity.
+	// It exists in this package in order to avoid circular dependency with the "assetmanager" package.
+	OperateManagerInverseTable = "asset_manager"
 	// OperateManagerColumn is the table column denoting the operate_manager relation/edge.
 	OperateManagerColumn = "operate_id"
 	// OperateStoreTable is the table that holds the operate_store relation/edge.

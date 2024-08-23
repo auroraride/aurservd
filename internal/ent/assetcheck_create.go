@@ -15,8 +15,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
-	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
@@ -266,13 +266,13 @@ func (acc *AssetCheckCreate) AddCheckDetails(a ...*AssetCheckDetails) *AssetChec
 	return acc.AddCheckDetailIDs(ids...)
 }
 
-// SetOperateManagerID sets the "operate_manager" edge to the Manager entity by ID.
+// SetOperateManagerID sets the "operate_manager" edge to the AssetManager entity by ID.
 func (acc *AssetCheckCreate) SetOperateManagerID(id uint64) *AssetCheckCreate {
 	acc.mutation.SetOperateManagerID(id)
 	return acc
 }
 
-// SetNillableOperateManagerID sets the "operate_manager" edge to the Manager entity by ID if the given value is not nil.
+// SetNillableOperateManagerID sets the "operate_manager" edge to the AssetManager entity by ID if the given value is not nil.
 func (acc *AssetCheckCreate) SetNillableOperateManagerID(id *uint64) *AssetCheckCreate {
 	if id != nil {
 		acc = acc.SetOperateManagerID(*id)
@@ -280,9 +280,9 @@ func (acc *AssetCheckCreate) SetNillableOperateManagerID(id *uint64) *AssetCheck
 	return acc
 }
 
-// SetOperateManager sets the "operate_manager" edge to the Manager entity.
-func (acc *AssetCheckCreate) SetOperateManager(m *Manager) *AssetCheckCreate {
-	return acc.SetOperateManagerID(m.ID)
+// SetOperateManager sets the "operate_manager" edge to the AssetManager entity.
+func (acc *AssetCheckCreate) SetOperateManager(a *AssetManager) *AssetCheckCreate {
+	return acc.SetOperateManagerID(a.ID)
 }
 
 // SetOperateStoreID sets the "operate_store" edge to the Store entity by ID.
@@ -553,7 +553,7 @@ func (acc *AssetCheckCreate) createSpec() (*AssetCheck, *sqlgraph.CreateSpec) {
 			Columns: []string{assetcheck.OperateManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

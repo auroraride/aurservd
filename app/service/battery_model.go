@@ -143,3 +143,20 @@ func (s *batteryModelService) Models() []string {
 func (s *batteryModelService) Delete(req *model.BatteryModelReq) {
 	s.orm.DeleteOne(s.QueryX(req.Model)).ExecX(s.ctx)
 }
+
+// ModelsByFilter 根据筛选列出电池型号
+func (s *batteryModelService) ModelsByFilter(t *uint8) []model.SelectOption {
+	q := s.orm.Query()
+	if t != nil {
+		q.Where(batterymodel.Type(*t))
+	}
+	items, _ := q.All(s.ctx)
+	out := make([]model.SelectOption, len(items))
+	for i, item := range items {
+		out[i] = model.SelectOption{
+			Label: item.Model,
+			Value: item.ID,
+		}
+	}
+	return out
+}

@@ -55,7 +55,7 @@ type Asset struct {
 	Name string `json:"name,omitempty"`
 	// 资产编号
 	Sn string `json:"sn,omitempty"`
-	// 资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
+	// 资产状态 1:库存中 2:配送中 3:使用中 4:故障 5:报废
 	Status uint8 `json:"status,omitempty"`
 	// 是否启用
 	Enable bool `json:"enable,omitempty"`

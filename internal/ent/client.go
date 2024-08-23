@@ -2599,13 +2599,13 @@ func (c *AssetCheckClient) QueryCheckDetails(ac *AssetCheck) *AssetCheckDetailsQ
 }
 
 // QueryOperateManager queries the operate_manager edge of a AssetCheck.
-func (c *AssetCheckClient) QueryOperateManager(ac *AssetCheck) *ManagerQuery {
-	query := (&ManagerClient{config: c.config}).Query()
+func (c *AssetCheckClient) QueryOperateManager(ac *AssetCheck) *AssetManagerQuery {
+	query := (&AssetManagerClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ac.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetcheck.Table, assetcheck.FieldID, id),
-			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.OperateManagerTable, assetcheck.OperateManagerColumn),
 		)
 		fromV = sqlgraph.Neighbors(ac.driver.Dialect(), step)

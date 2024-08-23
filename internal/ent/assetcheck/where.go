@@ -900,7 +900,7 @@ func HasOperateManager() predicate.AssetCheck {
 }
 
 // HasOperateManagerWith applies the HasEdge predicate on the "operate_manager" edge with a given conditions (other predicates).
-func HasOperateManagerWith(preds ...predicate.Manager) predicate.AssetCheck {
+func HasOperateManagerWith(preds ...predicate.AssetManager) predicate.AssetCheck {
 	return predicate.AssetCheck(func(s *sql.Selector) {
 		step := newOperateManagerStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
