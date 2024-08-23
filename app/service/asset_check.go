@@ -360,6 +360,15 @@ func (s *assetCheckService) List(ctx context.Context, req *model.AssetCheckListR
 		WithOperateStore().WithOperateManager().WithOperateAgent().WithCheckDetails(func(query *ent.AssetCheckDetailsQuery) {
 		query.WithAsset()
 	})
+
+	s.listFilter(q, req)
+
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetCheck) *model.AssetCheckListRes {
+		return s.detail(item)
+	}), nil
+}
+
+func (s *assetCheckService) listFilter(q *ent.AssetCheckQuery, req *model.AssetCheckListReq) {
 	if req.LocationsID != nil && req.LocationsType != nil {
 		q.Where(
 			assetcheck.LocationsID(*req.LocationsID),
@@ -406,9 +415,6 @@ func (s *assetCheckService) List(ctx context.Context, req *model.AssetCheckListR
 		end := tools.NewTime().ParseNextDateStringX(*req.EndAt)
 		q.Where(assetcheck.EndAtGTE(start), assetcheck.EndAtLTE(end))
 	}
-	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetCheck) *model.AssetCheckListRes {
-		return s.detail(item)
-	}), nil
 }
 
 // Detail 盘点明细
@@ -469,6 +475,8 @@ func (s *assetCheckService) detail(item *ent.AssetCheck) *model.AssetCheckListRe
 		status = model.AssetCheckStatusProcessed.String()
 	}
 
+	abs, _ := s.ListAbnormal(context.Background(), &model.AssetCheckListAbnormalReq{ID: item.ID})
+
 	res := &model.AssetCheckListRes{
 		ID:             item.ID,
 		StartAt:        start,
@@ -484,6 +492,7 @@ func (s *assetCheckService) detail(item *ent.AssetCheck) *model.AssetCheckListRe
 		LocationsName:  locationsName,
 		CheckResult:    checkResult,
 		Status:         status,
+		Abnormals:      abs,
 	}
 	return res
 }

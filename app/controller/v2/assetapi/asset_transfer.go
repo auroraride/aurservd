@@ -141,10 +141,10 @@ func (*assetTransfer) TransferDetailsList(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
-// @Param	id						path		uint64					true	"调拨ID"
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
+// @Param	id						path		uint64							true	"调拨ID"
 // @Param	body					body		model.AssetTransferModifyReq	true	"修改参数"
-// @Success	200						{object}	model.StatusResponse	"请求成功"
+// @Success	200						{object}	model.StatusResponse			"请求成功"
 func (*assetTransfer) Modify(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.AssetTransferModifyReq](c)
 	return ctx.SendResponse(service.NewAssetTransfer().Modify(ctx.Request().Context(), req, ctx.Modifier))

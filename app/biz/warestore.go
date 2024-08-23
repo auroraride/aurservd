@@ -15,8 +15,8 @@ import (
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
-	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
@@ -173,72 +173,6 @@ func (b *warestoreBiz) TokenVerify(token string) (am *ent.AssetManager, ep *ent.
 	return
 }
 
-// TransferList 调拨记录列表
-func (b *warestoreBiz) TransferList(am *ent.AssetManager, ep *ent.Employee, req *definition.TransferListReq) (res *model.PaginationRes, err error) {
-	newReq := model.AssetTransferListReq{
-		PaginationReq:       req.PaginationReq,
-		AssetTransferFilter: req.AssetTransferFilter,
-	}
-
-	if am != nil {
-		newReq.AssetManagerID = am.ID
-	}
-
-	if ep != nil {
-		newReq.EmployeeID = ep.ID
-	}
-
-	return service.NewAssetTransfer().TransferList(context.Background(), &newReq)
-}
-
-// TransferDetail 调拨记录详情
-func (b *warestoreBiz) TransferDetail(ctx context.Context, req *model.AssetTransferDetailReq) (res *definition.TransferDetailRes, err error) {
-	var t *ent.AssetTransfer
-	t, err = ent.Database.AssetTransfer.QueryNotDeleted().Where(assettransfer.ID(req.ID)).First(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	details, err := service.NewAssetTransfer().TransferDetail(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-	atr := service.NewAssetTransfer().TransferInfo(t)
-	res = &definition.TransferDetailRes{
-		AssetTransferListRes: *atr,
-		Detail:               details,
-	}
-	return
-}
-
-// TransferReceive 接收资产
-func (b *warestoreBiz) TransferReceive(am *ent.AssetManager, ep *ent.Employee, req *definition.AssetTransferReceiveBatchReq) (err error) {
-	var md model.Modifier
-
-	newReq := model.AssetTransferReceiveBatchReq{
-		AssetTransferReceive: req.AssetTransferReceive,
-	}
-
-	if am != nil {
-		newReq.OperateType = model.AssetOperateRoleTypeManager
-		md = model.Modifier{
-			ID:    am.ID,
-			Name:  am.Name,
-			Phone: am.Phone,
-		}
-	}
-	if ep != nil {
-		newReq.OperateType = model.AssetOperateRoleTypeStore
-		md = model.Modifier{
-			ID:    ep.ID,
-			Name:  ep.Name,
-			Phone: ep.Phone,
-		}
-	}
-
-	return service.NewAssetTransfer().TransferReceive(b.ctx, &newReq, &md)
-}
-
 // Assets 物资数据
 func (b *warestoreBiz) Assets(am *ent.AssetManager, ep *ent.Employee, req *definition.WarestoreAssetsReq) (res []*definition.WarestoreAssetRes, err error) {
 	switch {
@@ -352,4 +286,102 @@ func (b *warestoreBiz) assetsForStore(epId uint64, req *definition.WarestoreAsse
 	}
 
 	return
+}
+
+// AssetsCommon 物资数据
+func (b *warestoreBiz) AssetsCommon(am *ent.AssetManager, ep *ent.Employee, req *definition.WarestoreAssetsCommonReq) *model.PaginationRes {
+	q := ent.Database.Asset.QueryNotDeleted().WithCabinet().WithCity().WithStation().WithModel().WithOperator().WithValues().WithStore().WithWarehouse().WithBrand().WithValues()
+
+	b.assetsCommonFilter(am, ep, q, req)
+
+	q.Order(ent.Desc(asset.FieldCreatedAt))
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Asset) *model.AssetListRes {
+		return service.NewAsset().DetailForList(item)
+	})
+}
+
+// assetsCommonFilter 物资数据
+func (b *warestoreBiz) assetsCommonFilter(am *ent.AssetManager, ep *ent.Employee, q *ent.AssetQuery, req *definition.WarestoreAssetsCommonReq) {
+	switch req.Type {
+	case definition.CommonAssetTypeEbike:
+		q.Where(asset.Type(model.AssetTypeEbike.Value()))
+	case definition.CommonAssetTypeBattery:
+		q.Where(asset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value()))
+	}
+
+	if req.WarehouseID != nil {
+		q.Where(
+			asset.LocationsType(model.AssetLocationsTypeWarehouse.Value()),
+			asset.LocationsID(*req.WarehouseID),
+		)
+	}
+
+	if req.StoreID != nil {
+		q.Where(asset.Status(req.Status.Value()))
+	}
+
+	if req.Status != nil {
+		q.Where(asset.Status(req.Status.Value()))
+	}
+
+	if req.ModelID != nil {
+		q.Where(asset.ModelID(*req.ModelID))
+	}
+
+	if req.BrandID != nil {
+		q.Where(asset.BrandID(*req.BrandID))
+	}
+
+	if req.BatteryKeyword != nil {
+		q.Where(asset.SnContains(*req.BatteryKeyword))
+	}
+
+	if req.EbikeKeyword != nil {
+		q.Where(asset.SnContains(*req.EbikeKeyword))
+	}
+
+	switch {
+	case am != nil && ep == nil:
+		// 仓库管理查询
+
+		// 查询库管人员配置的仓库数据
+		wIds := make([]uint64, 0)
+		am, _ = ent.Database.AssetManager.QueryNotDeleted().WithWarehouses().
+			Where(
+				assetmanager.ID(am.ID),
+				assetmanager.HasWarehousesWith(warehouse.DeletedAtIsNil()),
+			).First(context.Background())
+		if am != nil {
+			for _, wh := range am.Edges.Warehouses {
+				wIds = append(wIds, wh.ID)
+			}
+		}
+		q.Where(
+			asset.LocationsType(model.AssetLocationsTypeWarehouse.Value()),
+			asset.LocationsIDIn(wIds...),
+		)
+
+	case am == nil && ep != nil:
+		// 门店管理查询
+
+		// 查询门店人员配置的门店数据
+		sIds := make([]uint64, 0)
+		ep, _ = ent.Database.Employee.QueryNotDeleted().WithStores().
+			Where(
+				employee.ID(ep.ID),
+				employee.HasStoresWith(store.DeletedAtIsNil()),
+			).First(context.Background())
+		if ep != nil {
+			for _, st := range ep.Edges.Stores {
+				sIds = append(sIds, st.ID)
+			}
+		}
+		q.Where(
+			asset.LocationsType(model.AssetLocationsTypeStore.Value()),
+			asset.LocationsIDIn(sIds...),
+		)
+
+	default:
+
+	}
 }

@@ -120,20 +120,21 @@ type AssetCheckListReq struct {
 
 // AssetCheckListRes 获取资产盘点返回
 type AssetCheckListRes struct {
-	ID             uint64 `json:"id"`             // 盘点ID
-	StartAt        string `json:"startAt"`        // 盘点开始时间
-	EndAt          string `json:"endAt"`          // 盘点结束时间
-	OpratorID      uint64 `json:"opratorId"`      // 操作人ID
-	OpratorName    string `json:"opratorName"`    // 操作人名称
-	BatteryNum     uint   `json:"batteryNum"`     // 应盘点电池数量
-	BatteryNumReal uint   `json:"batteryNumReal"` // 实盘电池数量
-	EbikeNum       uint   `json:"ebikeNum"`       // 应盘点电车数量
-	EbikeNumReal   uint   `json:"ebikeNumReal"`   // 实盘电车数量
-	LocationsID    uint64 `json:"locationsId"`    // 位置ID
-	LocationsType  uint8  `json:"locationsType"`  // 位置类型
-	LocationsName  string `json:"locationsName"`  // 位置名称
-	CheckResult    bool   `json:"checkResult"`    // 盘点结果 true:正常 false:异常
-	Status         string `json:"status"`         // 状态 1:待处理 2:已处理
+	ID             uint64                `json:"id"`             // 盘点ID
+	StartAt        string                `json:"startAt"`        // 盘点开始时间
+	EndAt          string                `json:"endAt"`          // 盘点结束时间
+	OpratorID      uint64                `json:"opratorId"`      // 操作人ID
+	OpratorName    string                `json:"opratorName"`    // 操作人名称
+	BatteryNum     uint                  `json:"batteryNum"`     // 应盘点电池数量
+	BatteryNumReal uint                  `json:"batteryNumReal"` // 实盘电池数量
+	EbikeNum       uint                  `json:"ebikeNum"`       // 应盘点电车数量
+	EbikeNumReal   uint                  `json:"ebikeNumReal"`   // 实盘电车数量
+	LocationsID    uint64                `json:"locationsId"`    // 位置ID
+	LocationsType  uint8                 `json:"locationsType"`  // 位置类型
+	LocationsName  string                `json:"locationsName"`  // 位置名称
+	CheckResult    bool                  `json:"checkResult"`    // 盘点结果 true:正常 false:异常
+	Status         string                `json:"status"`         // 状态 1:待处理 2:已处理
+	Abnormals      []*AssetCheckAbnormal `json:"abnormals"`      // 盘点异常资产
 }
 
 // AssetCheckAbnormal 异常资产

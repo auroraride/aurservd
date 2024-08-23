@@ -209,6 +209,8 @@ type AssetTransferDetailListReq struct {
 	ToLocationID      *uint64             `json:"toLocationID" query:"toLocationID"`                               // 调拨后位置ID
 	CabinetSN         *string             `json:"cabinetSN" query:"cabinetSN"`                                     // 电柜SN
 	SN                *string             `json:"sn" query:"sn"`                                                   // 资产SN
+	AssetManagerID    uint64              `json:"assetManagerID" query:"assetManagerID"`                           // 仓库管理员ID
+	EmployeeID        uint64              `json:"employeeID" query:"employeeID"`                                   // 门店管理员ID
 }
 
 // AssetTransferDetailListRes 资产出入库明细

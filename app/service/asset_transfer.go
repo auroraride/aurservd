@@ -1300,6 +1300,46 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 			),
 		)
 	}
+	if req.AssetManagerID != 0 {
+		// 查询库管人员配置的仓库数据
+		wIds := make([]uint64, 0)
+		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithWarehouses().
+			Where(
+				assetmanager.ID(req.AssetManagerID),
+				assetmanager.HasWarehousesWith(warehouse.DeletedAtIsNil()),
+			).First(context.Background())
+		if am != nil {
+			for _, wh := range am.Edges.Warehouses {
+				wIds = append(wIds, wh.ID)
+			}
+		}
+		q.Where(
+			assettransfer.Or(
+				assettransfer.HasFromLocationWarehouseWith(warehouse.IDIn(wIds...)),
+				assettransfer.HasToLocationWarehouseWith(warehouse.IDIn(wIds...)),
+			),
+		)
+	}
+	if req.EmployeeID != 0 {
+		// 查询门店人员配置的门店数据
+		sIds := make([]uint64, 0)
+		ep, _ := ent.Database.Employee.QueryNotDeleted().WithStores().
+			Where(
+				employee.ID(req.EmployeeID),
+				employee.HasStoresWith(store.DeletedAtIsNil()),
+			).First(context.Background())
+		if ep != nil {
+			for _, st := range ep.Edges.Stores {
+				sIds = append(sIds, st.ID)
+			}
+		}
+		q.Where(
+			assettransfer.Or(
+				assettransfer.HasFromLocationStoreWith(store.IDIn(sIds...)),
+				assettransfer.HasToLocationStoreWith(store.IDIn(sIds...)),
+			),
+		)
+	}
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetTransfer) (res *model.AssetTransferDetailListRes) {
 		var fromOperateName, toOperateName, fromLocationName, toLocationName, outTimeAt, inTimeAt, cityName, assetName, inRemark string
 		if item.OutTimeAt != nil {

@@ -11,6 +11,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/pkg/silk"
 )
 
 type assetCheckBiz struct {
@@ -89,4 +90,28 @@ func (b *assetCheckBiz) Create(am *ent.AssetManager, ep *ent.Employee, req *defi
 	}
 
 	return &definition.AssetCheckCreateRes{ID: cId}, nil
+}
+
+// List 盘点记录
+func (b *assetCheckBiz) List(am *ent.AssetManager, ep *ent.Employee, req *definition.AssetCheckListReq) (res *model.PaginationRes, err error) {
+	newReq := model.AssetCheckListReq{
+		PaginationReq: req.PaginationReq,
+		Keyword:       req.Keyword,
+		StartAt:       req.StartAt,
+		EndAt:         req.EndAt,
+		CheckResult:   req.CheckResult,
+	}
+
+	if am != nil {
+		wType := model.AssetLocationsTypeWarehouse
+		newReq.LocationsType = &wType
+		newReq.LocationsID = silk.UInt64(am.ID)
+	}
+	if ep != nil {
+		sType := model.AssetLocationsTypeStore
+		newReq.LocationsType = &sType
+		newReq.LocationsID = silk.UInt64(ep.ID)
+	}
+
+	return service.NewAssetCheck().List(b.ctx, &newReq)
 }

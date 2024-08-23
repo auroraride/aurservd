@@ -802,99 +802,103 @@ func (s *assetService) List(ctx context.Context, req *model.AssetListReq) *model
 	}
 	q.Order(ent.Desc(asset.FieldCreatedAt))
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Asset) *model.AssetListRes {
-		var cityName, belong, assetLocations string
-		var cityID uint64
-		if item.Edges.City != nil {
-			cityName = item.Edges.City.Name
-			cityID = item.Edges.City.ID
-		}
-		belong = "平台"
-		if item.LocationsType == model.AssetLocationsTypeStation.Value() {
-			belong = "代理商"
-		}
-		switch item.LocationsType {
-		case model.AssetLocationsTypeWarehouse.Value():
-			assetLocations = "[仓库]"
-			if item.Edges.Warehouse != nil {
-				assetLocations += item.Edges.Warehouse.Name
-			}
-		case model.AssetLocationsTypeStore.Value():
-			assetLocations = "[门店]"
-			if item.Edges.Store != nil {
-				assetLocations += item.Edges.Store.Name
-			}
-		case model.AssetLocationsTypeCabinet.Value():
-			assetLocations = "[电柜]"
-			if item.Edges.Cabinet != nil {
-				assetLocations += item.Edges.Cabinet.Name
-			}
-		case model.AssetLocationsTypeStation.Value():
-			assetLocations = "[站点]"
-			if item.Edges.Station != nil {
-				assetLocations += item.Edges.Station.Name
-			}
-		case model.AssetLocationsTypeRider.Value():
-			assetLocations = "[骑手]"
-			if item.Edges.Rider != nil {
-				assetLocations += item.Edges.Rider.Name
-			}
-		case model.AssetLocationsTypeOperation.Value():
-			assetLocations = "[运维]"
-			if item.Edges.Operator != nil {
-				assetLocations += item.Edges.Operator.Name
-			}
-		}
-
-		var modelStr string
-		if item.Edges.Model != nil {
-			modelStr = item.Edges.Model.Model
-		}
-
-		var brandName string
-		var brandID uint64
-		if item.Edges.Brand != nil {
-			brandName = item.Edges.Brand.Name
-			brandID = item.Edges.Brand.ID
-		}
-		if item.Type == model.AssetTypeNonSmartBattery.Value() || item.Type == model.AssetTypeSmartBattery.Value() {
-			brandName = item.BrandName
-		}
-
-		res := &model.AssetListRes{
-			ID:             item.ID,
-			CityName:       cityName,
-			CityID:         cityID,
-			Belong:         belong,
-			AssetLocations: assetLocations,
-			LocationsID:    item.LocationsID,
-			Brand:          brandName,
-			BrandID:        brandID,
-			Model:          modelStr,
-			SN:             item.Sn,
-			AssetStatus:    model.AssetStatus(item.Status).String(),
-			Enable:         item.Enable,
-			Remark:         item.Remark,
-		}
-
-		attributeValue, _ := item.QueryValues().WithAttribute().All(ctx)
-		assetAttributeMap := make(map[uint64]model.AssetAttribute)
-		for _, v := range attributeValue {
-			var attributeName, attributeKey string
-			if v.Edges.Attribute != nil {
-				attributeName = v.Edges.Attribute.Name
-				attributeKey = v.Edges.Attribute.Key
-			}
-			assetAttributeMap[v.AttributeID] = model.AssetAttribute{
-				AttributeID:      v.AttributeID,
-				AttributeValue:   v.Value,
-				AttributeName:    attributeName,
-				AttributeKey:     attributeKey,
-				AttributeValueID: v.ID,
-			}
-		}
-		res.Attribute = assetAttributeMap
-		return res
+		return s.DetailForList(item)
 	})
+}
+
+func (s *assetService) DetailForList(item *ent.Asset) *model.AssetListRes {
+	var cityName, belong, assetLocations string
+	var cityID uint64
+	if item.Edges.City != nil {
+		cityName = item.Edges.City.Name
+		cityID = item.Edges.City.ID
+	}
+	belong = "平台"
+	if item.LocationsType == model.AssetLocationsTypeStation.Value() {
+		belong = "代理商"
+	}
+	switch item.LocationsType {
+	case model.AssetLocationsTypeWarehouse.Value():
+		assetLocations = "[仓库]"
+		if item.Edges.Warehouse != nil {
+			assetLocations += item.Edges.Warehouse.Name
+		}
+	case model.AssetLocationsTypeStore.Value():
+		assetLocations = "[门店]"
+		if item.Edges.Store != nil {
+			assetLocations += item.Edges.Store.Name
+		}
+	case model.AssetLocationsTypeCabinet.Value():
+		assetLocations = "[电柜]"
+		if item.Edges.Cabinet != nil {
+			assetLocations += item.Edges.Cabinet.Name
+		}
+	case model.AssetLocationsTypeStation.Value():
+		assetLocations = "[站点]"
+		if item.Edges.Station != nil {
+			assetLocations += item.Edges.Station.Name
+		}
+	case model.AssetLocationsTypeRider.Value():
+		assetLocations = "[骑手]"
+		if item.Edges.Rider != nil {
+			assetLocations += item.Edges.Rider.Name
+		}
+	case model.AssetLocationsTypeOperation.Value():
+		assetLocations = "[运维]"
+		if item.Edges.Operator != nil {
+			assetLocations += item.Edges.Operator.Name
+		}
+	}
+
+	var modelStr string
+	if item.Edges.Model != nil {
+		modelStr = item.Edges.Model.Model
+	}
+
+	var brandName string
+	var brandID uint64
+	if item.Edges.Brand != nil {
+		brandName = item.Edges.Brand.Name
+		brandID = item.Edges.Brand.ID
+	}
+	if item.Type == model.AssetTypeNonSmartBattery.Value() || item.Type == model.AssetTypeSmartBattery.Value() {
+		brandName = item.BrandName
+	}
+
+	res := &model.AssetListRes{
+		ID:             item.ID,
+		CityName:       cityName,
+		CityID:         cityID,
+		Belong:         belong,
+		AssetLocations: assetLocations,
+		LocationsID:    item.LocationsID,
+		Brand:          brandName,
+		BrandID:        brandID,
+		Model:          modelStr,
+		SN:             item.Sn,
+		AssetStatus:    model.AssetStatus(item.Status).String(),
+		Enable:         item.Enable,
+		Remark:         item.Remark,
+	}
+
+	attributeValue, _ := item.QueryValues().WithAttribute().All(context.Background())
+	assetAttributeMap := make(map[uint64]model.AssetAttribute)
+	for _, v := range attributeValue {
+		var attributeName, attributeKey string
+		if v.Edges.Attribute != nil {
+			attributeName = v.Edges.Attribute.Name
+			attributeKey = v.Edges.Attribute.Key
+		}
+		assetAttributeMap[v.AttributeID] = model.AssetAttribute{
+			AttributeID:      v.AttributeID,
+			AttributeValue:   v.Value,
+			AttributeName:    attributeName,
+			AttributeKey:     attributeKey,
+			AttributeValueID: v.ID,
+		}
+	}
+	res.Attribute = assetAttributeMap
+	return res
 }
 
 // 资产公共筛选

@@ -867,6 +867,11 @@ definitions:
     type: object
   model.AssetCheckListRes:
     properties:
+      abnormals:
+        description: 盘点异常资产
+        items:
+          $ref: '#/definitions/model.AssetCheckAbnormal'
+        type: array
       batteryNum:
         description: 应盘点电池数量
         type: integer
@@ -1395,13 +1400,16 @@ definitions:
         - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
       materialId:
-        description: 其它物资分类ID
+        description: 其它物资分类ID（当AssetType = 4:电柜配件 5:电车配件 6:其它 必传）
+        type: integer
+      modelId:
+        description: 电池型号ID（当AssetType = 3:非智能电池  必传）
         type: integer
       num:
-        description: 调拨数量
+        description: 调拨数量（当AssetType = 4:电柜配件 5:电车配件 6:其它 必传）
         type: integer
       sn:
-        description: 资产编号
+        description: 资产编号（当AssetType = 1:电车 2:智能电池 必传）
         type: string
     required:
     - assetType
@@ -1606,6 +1614,28 @@ definitions:
       toLocationType:
         description: 调入目标类型
         type: integer
+    type: object
+  model.AssetTransferModifyReq:
+    properties:
+      reason:
+        description: 调拨事由
+        type: string
+      remark:
+        type: string
+      toLocationID:
+        description: 调拨后位置ID
+        type: integer
+      toLocationType:
+        allOf:
+        - $ref: '#/definitions/model.AssetLocationsType'
+        description: 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+    required:
+    - reason
     type: object
   model.AssetTransferReceiveBatchReq:
     properties:
@@ -3987,41 +4017,41 @@ paths:
   /manager/v2/asset/selection/material:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: SelectionMaterialSelect
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Asset-Manager-Token
-          required: true
-          type: string
-        - description: 4:电柜配件 5:电车配件 6:其他
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          in: query
-          name: type
-          type: integer
-          x-enum-comments:
-            AssetTypeCabinetAccessory: 电柜配件
-            AssetTypeEbike: 电车
-            AssetTypeEbikeAccessory: 电车配件
-            AssetTypeNonSmartBattery: 非智能电池
-            AssetTypeOtherAccessory: 其它配件
-            AssetTypeSmartBattery: 智能电池
-          x-enum-varnames:
-            - AssetTypeEbike
-            - AssetTypeSmartBattery
-            - AssetTypeNonSmartBattery
-            - AssetTypeCabinetAccessory
-            - AssetTypeEbikeAccessory
-            - AssetTypeOtherAccessory
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 4:电柜配件 5:电车配件 6:其他
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: type
+        type: integer
+        x-enum-comments:
+          AssetTypeCabinetAccessory: 电柜配件
+          AssetTypeEbike: 电车
+          AssetTypeEbikeAccessory: 电车配件
+          AssetTypeNonSmartBattery: 非智能电池
+          AssetTypeOtherAccessory: 其它配件
+          AssetTypeSmartBattery: 智能电池
+        x-enum-varnames:
+        - AssetTypeEbike
+        - AssetTypeSmartBattery
+        - AssetTypeNonSmartBattery
+        - AssetTypeCabinetAccessory
+        - AssetTypeEbikeAccessory
+        - AssetTypeOtherAccessory
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4031,7 +4061,7 @@ paths:
             type: array
       summary: 物资类型筛选
       tags:
-        - Selection - 筛选
+      - Selection - 筛选
   /manager/v2/asset/selection/model:
     get:
       consumes:
@@ -4533,6 +4563,37 @@ paths:
       summary: 资产调拨详情
       tags:
       - 资产
+    put:
+      consumes:
+      - application/json
+      operationId: AssetTransferModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 调拨ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetTransferModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改资产调拨
+      tags:
+      - 资产
   /manager/v2/asset/transfer/cancel/{id}:
     put:
       consumes:
@@ -4570,6 +4631,10 @@ paths:
         name: X-Asset-Manager-Token
         required: true
         type: string
+      - description: 仓库管理员ID
+        in: query
+        name: assetManagerID
+        type: integer
       - description: 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
         enum:
         - 1
@@ -4634,6 +4699,10 @@ paths:
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
+        type: integer
+      - description: 门店管理员ID
+        in: query
+        name: employeeID
         type: integer
       - description: 结束时间
         in: query

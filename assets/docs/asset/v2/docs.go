@@ -3574,6 +3574,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "仓库管理员ID",
+                        "name": "assetManagerID",
+                        "in": "query"
+                    },
+                    {
                         "enum": [
                             1,
                             2,
@@ -3652,6 +3658,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店管理员ID",
+                        "name": "employeeID",
                         "in": "query"
                     },
                     {
@@ -3977,6 +3989,52 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.AssetTransferDetail"
                             }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "资产"
+                ],
+                "summary": "修改资产调拨",
+                "operationId": "AssetTransferModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "调拨ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetTransferModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -5945,6 +6003,13 @@ const docTemplate = `{
         "model.AssetCheckListRes": {
             "type": "object",
             "properties": {
+                "abnormals": {
+                    "description": "盘点异常资产",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetCheckAbnormal"
+                    }
+                },
                 "batteryNum": {
                     "description": "应盘点电池数量",
                     "type": "integer"
@@ -6676,15 +6741,19 @@ const docTemplate = `{
                     ]
                 },
                 "materialId": {
-                    "description": "其它物资分类ID",
+                    "description": "其它物资分类ID（当AssetType = 4:电柜配件 5:电车配件 6:其它 必传）",
+                    "type": "integer"
+                },
+                "modelId": {
+                    "description": "电池型号ID（当AssetType = 3:非智能电池  必传）",
                     "type": "integer"
                 },
                 "num": {
-                    "description": "调拨数量",
+                    "description": "调拨数量（当AssetType = 4:电柜配件 5:电车配件 6:其它 必传）",
                     "type": "integer"
                 },
                 "sn": {
-                    "description": "资产编号",
+                    "description": "资产编号（当AssetType = 1:电车 2:智能电池 必传）",
                     "type": "string"
                 }
             }
@@ -6992,6 +7061,39 @@ const docTemplate = `{
                 "toLocationType": {
                     "description": "调入目标类型",
                     "type": "integer"
+                }
+            }
+        },
+        "model.AssetTransferModifyReq": {
+            "type": "object",
+            "required": [
+                "reason"
+            ],
+            "properties": {
+                "reason": {
+                    "description": "调拨事由",
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "toLocationID": {
+                    "description": "调拨后位置ID",
+                    "type": "integer"
+                },
+                "toLocationType": {
+                    "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
                 }
             }
         },
