@@ -3855,8 +3855,14 @@
                     },
                     {
                         "type": "integer",
-                        "description": "调拨前位置ID",
-                        "name": "fromLocationID",
+                      "description": "资产位置ID",
+                      "name": "locationsId",
+                      "in": "query"
+                    },
+                  {
+                    "type": "string",
+                    "description": "资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
+                    "name": "locationsKeyword",
                         "in": "query"
                     },
                     {
@@ -3885,8 +3891,8 @@
                             "AssetLocationsTypeCabinet",
                             "AssetLocationsTypeRider"
                         ],
-                        "description": "调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-                        "name": "fromLocationType",
+                      "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                      "name": "locationsType",
                         "in": "query"
                     },
                     {
@@ -3905,42 +3911,6 @@
                         "type": "string",
                         "description": "开始时间",
                         "name": "start",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "调拨后位置ID",
-                        "name": "toLocationID",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2,
-                            3,
-                            4,
-                            5,
-                            6
-                        ],
-                        "type": "integer",
-                        "x-enum-comments": {
-                            "AssetLocationsTypeCabinet": "电柜",
-                            "AssetLocationsTypeOperation": "运维",
-                            "AssetLocationsTypeRider": "骑手",
-                            "AssetLocationsTypeStation": "站点",
-                            "AssetLocationsTypeStore": "门店",
-                            "AssetLocationsTypeWarehouse": "仓库"
-                        },
-                        "x-enum-varnames": [
-                            "AssetLocationsTypeWarehouse",
-                            "AssetLocationsTypeStore",
-                            "AssetLocationsTypeStation",
-                            "AssetLocationsTypeOperation",
-                            "AssetLocationsTypeCabinet",
-                            "AssetLocationsTypeRider"
-                        ],
-                        "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-                        "name": "toLocationType",
                         "in": "query"
                     }
                 ],

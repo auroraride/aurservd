@@ -415,7 +415,13 @@ func (s *assetScrapService) scrapAssetWithoutSN(ctx context.Context, req *model.
 		),
 		asset.HasWarehouseWith(warehouse.ID(*warehouseID)),
 	)
-	all, _ := q.Where(asset.Type(req.AssetType.Value()), asset.MaterialID(*req.MaterialID)).Limit(int(*req.Num)).Order(ent.Asc(asset.FieldCreatedAt)).All(ctx)
+	if req.ModelID != nil {
+		q.Where(asset.ModelID(*req.ModelID))
+	}
+	if req.MaterialID != nil {
+		q.Where(asset.MaterialID(*req.MaterialID))
+	}
+	all, _ := q.Where(asset.Type(req.AssetType.Value())).Limit(int(*req.Num)).Order(ent.Asc(asset.FieldCreatedAt)).All(ctx)
 	if len(all) < int(*req.Num) {
 		return nil, fmt.Errorf(strconv.FormatUint(*req.MaterialID, 10) + "物资数量不足")
 	}

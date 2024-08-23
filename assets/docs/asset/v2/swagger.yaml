@@ -4943,11 +4943,15 @@ paths:
         in: query
         name: end
         type: string
-      - description: 调拨前位置ID
+      - description: 资产位置ID
         in: query
-        name: fromLocationID
+        name: locationsId
         type: integer
-      - description: 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+      - description: 资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效
+        in: query
+        name: locationsKeyword
+        type: string
+      - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
         enum:
         - 1
         - 2
@@ -4956,7 +4960,7 @@ paths:
         - 5
         - 6
         in: query
-        name: fromLocationType
+        name: locationsType
         type: integer
         x-enum-comments:
           AssetLocationsTypeCabinet: 电柜
@@ -4984,35 +4988,6 @@ paths:
         in: query
         name: start
         type: string
-      - description: 调拨后位置ID
-        in: query
-        name: toLocationID
-        type: integer
-      - description: 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
-        enum:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        in: query
-        name: toLocationType
-        type: integer
-        x-enum-comments:
-          AssetLocationsTypeCabinet: 电柜
-          AssetLocationsTypeOperation: 运维
-          AssetLocationsTypeRider: 骑手
-          AssetLocationsTypeStation: 站点
-          AssetLocationsTypeStore: 门店
-          AssetLocationsTypeWarehouse: 仓库
-        x-enum-varnames:
-        - AssetLocationsTypeWarehouse
-        - AssetLocationsTypeStore
-        - AssetLocationsTypeStation
-        - AssetLocationsTypeOperation
-        - AssetLocationsTypeCabinet
-        - AssetLocationsTypeRider
       produces:
       - application/json
       responses:

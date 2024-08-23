@@ -184,8 +184,14 @@ func (s *assetTransferService) transferAssetWithoutSN(ctx context.Context, asset
 		asset.LocationsType((assetLocationsType).Value()),
 		asset.StatusIn(model.AssetStatusStock.Value(), model.AssetStatusFault.Value()),
 	)
+	if req.ModelID != nil {
+		q = q.Where(asset.ModelID(*req.ModelID))
+	}
+	if req.MaterialID != nil {
+		q = q.Where(asset.MaterialID(*req.MaterialID))
+	}
 	// 查询其它物资是否充足
-	all, _ := q.Where(asset.MaterialID(*req.MaterialID)).Limit(int(*req.Num)).All(ctx)
+	all, _ := q.Limit(int(*req.Num)).All(ctx)
 	// 查询出的物资数量小于调拨数量 则调拨失败
 	if len(all) < int(*req.Num) {
 		return nil, errors.New(req.AssetType.String() + "物资不足或不在库存中")
@@ -378,7 +384,8 @@ func (s *assetTransferService) initialTransferWithoutSN(ctx context.Context, req
 	for i := 0; i < int(*req.Num); i++ {
 		bulk = append(bulk, ent.Database.Asset.Create().
 			SetType(req.AssetType.Value()).
-			SetMaterialID(*req.MaterialID).
+			SetNillableMaterialID(req.MaterialID).
+			SetNillableModelID(req.ModelID).
 			SetStatus(model.AssetStatusStock.Value()).
 			SetEnable(true).
 			SetCreator(modifier).
@@ -1294,16 +1301,42 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 	if req.SN != nil {
 		q.Where(assettransfer.HasTransferDetailsWith(assettransferdetails.HasAssetWith(asset.Sn(*req.SN))))
 	}
-	if req.FromLocationType != nil && req.FromLocationID != nil {
+	if req.LocationsID != nil && req.LocationsType != nil {
 		q.Where(
-			assettransfer.FromLocationType(req.FromLocationType.Value()),
-			assettransfer.FromLocationID(*req.FromLocationID),
-		)
-	}
-	if req.ToLocationType != nil && req.ToLocationID != nil {
-		q.Where(
-			assettransfer.ToLocationType(req.ToLocationType.Value()),
-			assettransfer.ToLocationID(*req.ToLocationID),
+			func(selector *sql.Selector) {
+				switch *req.LocationsType {
+				case model.AssetLocationsTypeRider, model.AssetLocationsTypeCabinet:
+					if req.LocationsKeyword != nil && *req.LocationsType == model.AssetLocationsTypeCabinet {
+						q.Where(
+							assettransfer.Or(
+								assettransfer.HasFromLocationCabinetWith(cabinet.SnContains(*req.LocationsKeyword)),
+								assettransfer.HasToLocationCabinetWith(cabinet.SnContains(*req.LocationsKeyword)),
+							),
+						)
+					}
+					if req.LocationsKeyword != nil && *req.LocationsType == model.AssetLocationsTypeRider {
+						q.Where(
+							assettransfer.Or(
+								assettransfer.HasFromLocationRiderWith(rider.NameContains(*req.LocationsKeyword)),
+								assettransfer.HasToLocationRiderWith(rider.NameContains(*req.LocationsKeyword)),
+							),
+						)
+					}
+				case model.AssetLocationsTypeWarehouse, model.AssetLocationsTypeStore, model.AssetLocationsTypeStation, model.AssetLocationsTypeOperation:
+					selector.Where(
+						sql.Or(
+							sql.And(
+								sql.EQ(assettransfer.FieldFromLocationID, *req.LocationsID),
+								sql.EQ(assettransfer.FieldFromLocationType, req.LocationsType.Value()),
+							),
+							sql.And(
+								sql.EQ(assettransfer.FieldToLocationID, *req.LocationsID),
+								sql.EQ(assettransfer.FieldToLocationType, req.LocationsType.Value()),
+							),
+						),
+					)
+				}
+			},
 		)
 	}
 	if req.AssetTransferType != nil {

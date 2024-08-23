@@ -202,10 +202,9 @@ type AssetTransferDetailListReq struct {
 	Start             *string             `json:"start" query:"start"`                                             // 开始时间
 	End               *string             `json:"end" query:"end"`                                                 // 结束时间
 	AssetType         *AssetType          `json:"assetType" query:"assetType" enums:"1,2,3,4,5,6"`                 // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-	FromLocationType  *AssetLocationsType `json:"fromLocationType" query:"fromLocationType" enums:"1,2,3,4"`       // 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
-	FromLocationID    *uint64             `json:"fromLocationID" query:"fromLocationID"`                           // 调拨前位置ID
-	ToLocationType    *AssetLocationsType `json:"toLocationType" query:"toLocationType" enums:"1,2,3,4"`           // 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
-	ToLocationID      *uint64             `json:"toLocationID" query:"toLocationID"`                               // 调拨后位置ID
+	LocationsType     *AssetLocationsType `json:"locationsType" query:"locationsType" enums:"1,2,3,4,5,6"`         // 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	LocationsID       *uint64             `json:"locationsId" query:"locationsId"`                                 // 资产位置ID
+	LocationsKeyword  *string             `json:"locationsKeyword" query:"locationsKeyword"`                       // 资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效
 	CabinetSN         *string             `json:"cabinetSN" query:"cabinetSN"`                                     // 电柜SN
 	SN                *string             `json:"sn" query:"sn"`                                                   // 资产SN
 	AssetManagerID    uint64              `json:"assetManagerID" query:"assetManagerID"`                           // 仓库管理员ID

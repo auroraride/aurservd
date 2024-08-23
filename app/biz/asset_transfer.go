@@ -152,7 +152,6 @@ func (b *assetTransferBiz) GetTransferBySn(req *model.GetTransferBySNReq) (res *
 
 // TransferDetailsList 出入库明细列表
 func (b *assetTransferBiz) TransferDetailsList(am *ent.AssetManager, ep *ent.Employee, req *definition.AssetTransferDetailListReq) (res *model.PaginationRes, err error) {
-
 	newReq := model.AssetTransferDetailListReq{
 		PaginationReq:     req.PaginationReq,
 		AssetTransferType: req.AssetTransferType,
@@ -162,7 +161,6 @@ func (b *assetTransferBiz) TransferDetailsList(am *ent.AssetManager, ep *ent.Emp
 		CabinetSN:         req.Keyword,
 		SN:                req.Keyword,
 	}
-
 	if am != nil {
 		newReq.AssetManagerID = am.ID
 	}
