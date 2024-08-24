@@ -155,17 +155,27 @@ func (b *employeeBiz) QueryByPhone(phone string) *ent.Employee {
 
 // Modify 修改店员
 func (b *employeeBiz) Modify(req *definition.EmployeeModifyReq) error {
-	// 判断重复
-	em := b.QueryByPhone(*req.Phone)
-	if em != nil && em.ID != *req.ID {
-		return errors.New("店员已存在")
+	emu := b.orm.UpdateOneID(req.ID)
+
+	if req.CityID != nil {
+		emu.SetCityID(*req.CityID)
 	}
 
-	emu := b.orm.UpdateOneID(*req.ID).
-		SetCityID(*req.CityID).
-		SetName(*req.Name).
-		SetPhone(*req.Phone).
-		SetLimit(*req.Limit)
+	if req.Name != nil {
+		emu.SetName(*req.Name)
+	}
+
+	if req.Phone != nil {
+		em := b.QueryByPhone(*req.Phone)
+		if em != nil && em.ID != req.ID {
+			return errors.New("手机号已存在")
+		}
+		emu.SetPhone(*req.Phone)
+	}
+
+	if req.Limit != nil {
+		emu.SetLimit(*req.Limit)
+	}
 
 	if req.Password != nil {
 		password, _ := utils.PasswordGenerate(*req.Password)
@@ -181,8 +191,8 @@ func (b *employeeBiz) Modify(req *definition.EmployeeModifyReq) error {
 		emu.SetEnable(*req.Enable)
 	}
 
-	em, _ = emu.Save(b.ctx)
-	if em == nil {
+	nem, _ := emu.Save(b.ctx)
+	if nem == nil {
 		return errors.New("店员更新失败")
 	}
 	return nil

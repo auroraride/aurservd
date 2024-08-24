@@ -45,7 +45,7 @@ type EmployeeCreateReq struct {
 }
 
 type EmployeeModifyReq struct {
-	ID       *uint64  `json:"id" validate:"required" param:"id" trans:"店员ID"`
+	ID       uint64   `json:"id" validate:"required" param:"id" trans:"店员ID"`
 	CityID   *uint64  `json:"cityId"`
 	Name     *string  `json:"name"`
 	Phone    *string  `json:"phone"`
