@@ -19,6 +19,17 @@ func loadWarestoreRoutes() {
 	// 需校验
 	auth := g.Group("", middleware.Warestore(), middleware.WarestoreAuth())
 
+	// 筛选项
+	auth.GET("/selection/warehouse", wapi.Selection.Warehouse)                // 城市仓库
+	auth.GET("/selection/manager_warehouse", wapi.Selection.ManagerWarehouse) // 仓管仓库
+	auth.GET("/selection/store", wapi.Selection.Store)                        // 城市门店
+	auth.GET("/selection/employee_store", wapi.Selection.EmployeeStore)       // 店员门店
+	auth.GET("/selection/enterprise", wapi.Selection.Enterprise)              // 城市团签企业
+	auth.GET("/selection/maintainer", wapi.Selection.Maintainer)              // 运维
+	auth.GET("/selection/station", wapi.Selection.Station)                    // 企业站点
+	auth.GET("/selection/model", wapi.Selection.Model)                        // 电池型号筛选
+	auth.GET("/selection/ebike/brand", wapi.Selection.EbikeBrand)             // 电车品牌筛选
+
 	// 资产统计
 	auth.GET("/asset/count", wapi.Assets.AssetCount) // 资产统计
 

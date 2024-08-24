@@ -3648,7 +3648,7 @@ paths:
         in: query
         name: end
         type: string
-      - description: 是否使用配件
+      - description: 是否使用配件 true:已使用  false:未使用
         in: query
         name: isUseAccessory
         type: boolean

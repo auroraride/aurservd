@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -391,6 +392,72 @@ func (b *warehouseBiz) transferInOut(ebikeNameMap, sBNameMap, nSbNameMap,
 func (b *warehouseBiz) ListByCity() (res []*model.CascaderOptionLevel2) {
 	res = make([]*model.CascaderOptionLevel2, 0)
 	whList, _ := b.orm.QueryNotDeleted().WithCity().Order(ent.Asc(warehouse.FieldID)).All(b.ctx)
+	cityIds := make([]uint64, 0)
+	cityIdMap := make(map[uint64]*ent.City)
+	cityIdListMap := make(map[uint64][]model.SelectOption)
+	for _, wh := range whList {
+		if wh.Edges.City != nil {
+			cId := wh.Edges.City.ID
+			if cityIdMap[cId] == nil {
+				cityIds = append(cityIds, cId)
+				cityIdMap[cId] = wh.Edges.City
+			}
+
+			cityIdListMap[cId] = append(cityIdListMap[cId], model.SelectOption{
+				Label: wh.Name,
+				Value: wh.ID,
+			})
+		}
+	}
+
+	for _, cityId := range cityIds {
+		if cityIdMap[cityId] != nil && len(cityIdListMap[cityId]) != 0 {
+			res = append(res, &model.CascaderOptionLevel2{
+				SelectOption: model.SelectOption{
+					Value: cityIdMap[cityId].ID,
+					Label: cityIdMap[cityId].Name,
+				},
+				Children: cityIdListMap[cityId],
+			})
+		}
+	}
+
+	return
+}
+
+// SelectionList 仓库列表筛选项
+func (b *warehouseBiz) SelectionList() (res []*model.SelectOption) {
+	res = make([]*model.SelectOption, 0)
+	whList, _ := b.orm.QueryNotDeleted().Order(ent.Asc(warehouse.FieldID)).All(b.ctx)
+
+	for _, wh := range whList {
+		res = append(res, &model.SelectOption{
+			Value: wh.ID,
+			Label: wh.Name,
+		})
+	}
+	return
+}
+
+// ListByManager 仓管已配置仓库列表
+func (b *warehouseBiz) ListByManager(am *ent.AssetManager) (res []*model.CascaderOptionLevel2) {
+	res = make([]*model.CascaderOptionLevel2, 0)
+	if am == nil {
+		return
+	}
+
+	// 查询人员配置的仓库城市信息
+	eam, err := ent.Database.AssetManager.QueryNotDeleted().
+		Where(assetmanager.ID(am.ID)).
+		WithWarehouses(func(query *ent.WarehouseQuery) {
+			query.Where(warehouse.DeletedAtIsNil()).WithCity()
+		}).First(b.ctx)
+	if err != nil && eam == nil {
+		return
+	}
+
+	// 数据组合
+	whList := am.Edges.Warehouses
 	cityIds := make([]uint64, 0)
 	cityIdMap := make(map[uint64]*ent.City)
 	cityIdListMap := make(map[uint64][]model.SelectOption)

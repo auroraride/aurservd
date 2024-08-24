@@ -567,6 +567,327 @@ const docTemplate = `{
                 }
             }
         },
+        "/warestore/v2/selection/ebike/brand": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "车辆型号列表",
+                "operationId": "SelectionEbikeBrand",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/selection/employee_store": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "店员所属门店列表",
+                "operationId": "SelectionEmployeeStores",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/selection/enterprise": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "城市-团签企业(代理筛选)",
+                "operationId": "SelectionEnterprise",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/selection/maintainer": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "运维人员",
+                "operationId": "SelectionMaintainer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/selection/manager_warehouse": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "仓管所属仓库列表",
+                "operationId": "SelectionManagerWarehouse",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/selection/model": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "电池型号",
+                "operationId": "SelectionModel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "1智能电池 2非智能电池",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/selection/station": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "企业-站点",
+                "operationId": "SelectionStation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/selection/store": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "城市-门店",
+                "operationId": "SelectionStore",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/selection/warehouse": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "城市-仓库",
+                "operationId": "SelectionWarehouse",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/warestore/v2/signin": {
             "post": {
                 "consumes": [
@@ -2392,6 +2713,30 @@ const docTemplate = `{
                 "AssetTypeOtherAccessory"
             ]
         },
+        "model.CascaderOptionLevel2": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "级联选择子项目",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SelectOption"
+                    }
+                },
+                "desc": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "label": {
+                    "description": "选择项名称",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "选择项值 (ID)",
+                    "type": "integer"
+                }
+            }
+        },
         "model.City": {
             "type": "object",
             "properties": {
@@ -2435,6 +2780,23 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Pagination"
                         }
                     ]
+                }
+            }
+        },
+        "model.SelectOption": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "label": {
+                    "description": "选择项名称",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "选择项值 (ID)",
+                    "type": "integer"
                 }
             }
         },

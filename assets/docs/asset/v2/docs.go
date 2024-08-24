@@ -2043,7 +2043,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "boolean",
-                        "description": "是否使用配件",
+                        "description": "是否使用配件 true:已使用  false:未使用",
                         "name": "isUseAccessory",
                         "in": "query"
                     },

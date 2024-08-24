@@ -2036,7 +2036,7 @@
                     },
                     {
                         "type": "boolean",
-                        "description": "是否使用配件",
+                        "description": "是否使用配件 true:已使用  false:未使用",
                         "name": "isUseAccessory",
                         "in": "query"
                     },
@@ -3856,14 +3856,14 @@
                     },
                     {
                         "type": "integer",
-                      "description": "资产位置ID",
-                      "name": "locationsId",
-                      "in": "query"
+                        "description": "资产位置ID",
+                        "name": "locationsId",
+                        "in": "query"
                     },
-                  {
-                    "type": "string",
-                    "description": "资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
-                    "name": "locationsKeyword",
+                    {
+                        "type": "string",
+                        "description": "资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
+                        "name": "locationsKeyword",
                         "in": "query"
                     },
                     {
@@ -3892,8 +3892,8 @@
                             "AssetLocationsTypeCabinet",
                             "AssetLocationsTypeRider"
                         ],
-                      "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-                      "name": "locationsType",
+                        "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                        "name": "locationsType",
                         "in": "query"
                     },
                     {

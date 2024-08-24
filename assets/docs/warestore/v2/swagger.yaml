@@ -870,6 +870,23 @@ definitions:
     - AssetTypeCabinetAccessory
     - AssetTypeEbikeAccessory
     - AssetTypeOtherAccessory
+  model.CascaderOptionLevel2:
+    properties:
+      children:
+        description: 级联选择子项目
+        items:
+          $ref: '#/definitions/model.SelectOption'
+        type: array
+      desc:
+        description: 描述
+        type: string
+      label:
+        description: 选择项名称
+        type: string
+      value:
+        description: 选择项值 (ID)
+        type: integer
+    type: object
   model.City:
     properties:
       id:
@@ -899,6 +916,18 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Pagination'
         description: 分页属性
+    type: object
+  model.SelectOption:
+    properties:
+      desc:
+        description: 描述
+        type: string
+      label:
+        description: 选择项名称
+        type: string
+      value:
+        description: 选择项值 (ID)
+        type: integer
     type: object
   model.StatusResponse:
     properties:
@@ -1359,6 +1388,217 @@ paths:
       summary: 通过SN查询资产
       tags:
       - AssetCheck - 资产盘点
+  /warestore/v2/selection/ebike/brand:
+    get:
+      consumes:
+      - application/json
+      operationId: SelectionEbikeBrand
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: 车辆型号列表
+      tags:
+      - Selection - 筛选
+  /warestore/v2/selection/employee_store:
+    get:
+      consumes:
+      - application/json
+      operationId: SelectionEmployeeStores
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: 店员所属门店列表
+      tags:
+      - Selection - 筛选
+  /warestore/v2/selection/enterprise:
+    get:
+      consumes:
+      - application/json
+      operationId: SelectionEnterprise
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: 城市-团签企业(代理筛选)
+      tags:
+      - Selection - 筛选
+  /warestore/v2/selection/maintainer:
+    get:
+      consumes:
+      - application/json
+      operationId: SelectionMaintainer
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: 运维人员
+      tags:
+      - Selection - 筛选
+  /warestore/v2/selection/manager_warehouse:
+    get:
+      consumes:
+      - application/json
+      operationId: SelectionManagerWarehouse
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: 仓管所属仓库列表
+      tags:
+      - Selection - 筛选
+  /warestore/v2/selection/model:
+    get:
+      consumes:
+      - application/json
+      operationId: SelectionModel
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      - description: 1智能电池 2非智能电池
+        in: query
+        name: type
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: 电池型号
+      tags:
+      - Selection - 筛选
+  /warestore/v2/selection/station:
+    get:
+      consumes:
+      - application/json
+      operationId: SelectionStation
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: 企业-站点
+      tags:
+      - Selection - 筛选
+  /warestore/v2/selection/store:
+    get:
+      consumes:
+      - application/json
+      operationId: SelectionStore
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: 城市-门店
+      tags:
+      - Selection - 筛选
+  /warestore/v2/selection/warehouse:
+    get:
+      consumes:
+      - application/json
+      operationId: SelectionWarehouse
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: 城市-仓库
+      tags:
+      - Selection - 筛选
   /warestore/v2/signin:
     post:
       consumes:

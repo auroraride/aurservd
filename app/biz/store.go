@@ -12,6 +12,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
@@ -335,4 +336,70 @@ func (b *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail)
 
 	return
 
+}
+
+// SelectionList 门店列表筛选项
+func (b *storeBiz) SelectionList() (res []*model.SelectOption) {
+	res = make([]*model.SelectOption, 0)
+	list, _ := b.orm.QueryNotDeleted().Order(ent.Asc(store.FieldID)).All(b.ctx)
+
+	for _, item := range list {
+		res = append(res, &model.SelectOption{
+			Value: item.ID,
+			Label: item.Name,
+		})
+	}
+	return
+}
+
+// ListByEmployee 店员已配置门店列表
+func (b *storeBiz) ListByEmployee(ep *ent.Employee) (res []*model.CascaderOptionLevel2) {
+	res = make([]*model.CascaderOptionLevel2, 0)
+	if ep == nil {
+		return
+	}
+
+	// 查询人员配置的仓库门店信息
+	eep, err := ent.Database.Employee.QueryNotDeleted().
+		Where(employee.ID(ep.ID)).
+		WithStores(func(query *ent.StoreQuery) {
+			query.Where(store.DeletedAtIsNil()).WithCity()
+		}).First(b.ctx)
+	if err != nil && eep == nil {
+		return
+	}
+
+	// 数据组合
+	stList := eep.Edges.Stores
+	cityIds := make([]uint64, 0)
+	cityIdMap := make(map[uint64]*ent.City)
+	cityIdListMap := make(map[uint64][]model.SelectOption)
+	for _, st := range stList {
+		if st.Edges.City != nil {
+			cId := st.Edges.City.ID
+			if cityIdMap[cId] == nil {
+				cityIds = append(cityIds, cId)
+				cityIdMap[cId] = st.Edges.City
+			}
+
+			cityIdListMap[cId] = append(cityIdListMap[cId], model.SelectOption{
+				Label: st.Name,
+				Value: st.ID,
+			})
+		}
+	}
+
+	for _, cityId := range cityIds {
+		if cityIdMap[cityId] != nil && len(cityIdListMap[cityId]) != 0 {
+			res = append(res, &model.CascaderOptionLevel2{
+				SelectOption: model.SelectOption{
+					Value: cityIdMap[cityId].ID,
+					Label: cityIdMap[cityId].Name,
+				},
+				Children: cityIdListMap[cityId],
+			})
+		}
+	}
+
+	return
 }
