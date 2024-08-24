@@ -647,6 +647,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/cabinet_assets/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "运维 - Maintainer"
+                ],
+                "summary": "物资详情",
+                "operationId": "CabinetAssetDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.CabinetTotalDetail"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/check": {
             "get": {
                 "consumes": [
@@ -1884,6 +1926,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/enterprise_assets/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "团签 - Enterprise"
+                ],
+                "summary": "团签物资详情",
+                "operationId": "EnterpriseAssetDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.CommonAssetDetail"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/export": {
             "post": {
                 "consumes": [
@@ -2003,6 +2087,48 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/maintainer_assets/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "运维 - Maintainer"
+                ],
+                "summary": "物资详情",
+                "operationId": "MaintainerAssetDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.CommonAssetDetail"
+                            }
                         }
                     }
                 }
@@ -3318,6 +3444,48 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/store_assets/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "门店 - Store"
+                ],
+                "summary": "仓库物资详情",
+                "operationId": "StoreAssetDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.CommonAssetDetail"
+                            }
                         }
                     }
                 }
@@ -4798,6 +4966,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/warehouse_assets/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "仓库 - Warehouse"
+                ],
+                "summary": "仓库物资详情",
+                "operationId": "WarehouseAssetDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.CommonAssetDetail"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/{id}": {
             "get": {
                 "consumes": [
@@ -5182,33 +5392,6 @@ const docTemplate = `{
                 "BatteryModelTypeNonIntelligent"
             ]
         },
-        "definition.CabinetAsset": {
-            "type": "object",
-            "properties": {
-                "nonSmartBatteries": {
-                    "description": "非智能电池物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "nonSmartBatteryTotal": {
-                    "description": "非智能电池总数",
-                    "type": "integer"
-                },
-                "smartBatteries": {
-                    "description": "智能电池物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "smartBatteryTotal": {
-                    "description": "智能电池总数",
-                    "type": "integer"
-                }
-            }
-        },
         "definition.CabinetAssetDetail": {
             "type": "object",
             "properties": {
@@ -5232,13 +5415,121 @@ const docTemplate = `{
                     "description": "电柜编号",
                     "type": "string"
                 },
-                "warehouseAsset": {
-                    "description": "电柜资产",
+                "total": {
+                    "description": "电柜资产总计",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.CabinetAsset"
+                            "$ref": "#/definitions/definition.CabinetTotal"
                         }
                     ]
+                }
+            }
+        },
+        "definition.CabinetTotal": {
+            "type": "object",
+            "properties": {
+                "nonSmartBatteryTotal": {
+                    "description": "非智能电池总数",
+                    "type": "integer"
+                },
+                "smartBatteryTotal": {
+                    "description": "智能电池总数",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.CabinetTotalDetail": {
+            "type": "object",
+            "properties": {
+                "nonSmartBatteries": {
+                    "description": "非智能电池物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.AssetMaterial"
+                    }
+                },
+                "smartBatteries": {
+                    "description": "智能电池物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.AssetMaterial"
+                    }
+                }
+            }
+        },
+        "definition.CommonAssetDetail": {
+            "type": "object",
+            "properties": {
+                "cabinetAccessories": {
+                    "description": "CabinetAccessoryTotal int              ` + "`" + `json:\"cabinetAccessoryTotal\"` + "`" + ` // 电柜配件总数",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.AssetMaterial"
+                    }
+                },
+                "ebikeAccessories": {
+                    "description": "EbikeAccessoryTotal   int              ` + "`" + `json:\"ebikeAccessoryTotal\"` + "`" + `   // 电车配件总数",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.AssetMaterial"
+                    }
+                },
+                "ebikes": {
+                    "description": "EbikeTotal            int              ` + "`" + `json:\"ebikeTotal\"` + "`" + `            // 电车总数",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.AssetMaterial"
+                    }
+                },
+                "nonSmartBatteries": {
+                    "description": "NonSmartBatteryTotal  int              ` + "`" + `json:\"nonSmartBatteryTotal\"` + "`" + `  // 非智能电池总数",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.AssetMaterial"
+                    }
+                },
+                "otherAssets": {
+                    "description": "OtherAssetTotal       int              ` + "`" + `json:\"otherAssetTotal\"` + "`" + `       // 其他物资总数",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.AssetMaterial"
+                    }
+                },
+                "smartBatteries": {
+                    "description": "SmartBatteryTotal     int              ` + "`" + `json:\"smartBatteryTotal\"` + "`" + `     // 智能电池总数",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.AssetMaterial"
+                    }
+                }
+            }
+        },
+        "definition.CommonAssetTotal": {
+            "type": "object",
+            "properties": {
+                "cabinetAccessoryTotal": {
+                    "description": "电柜配件总数",
+                    "type": "integer"
+                },
+                "ebikeAccessoryTotal": {
+                    "description": "电车配件总数",
+                    "type": "integer"
+                },
+                "ebikeTotal": {
+                    "description": "电车总数",
+                    "type": "integer"
+                },
+                "nonSmartBatteryTotal": {
+                    "description": "非智能电池总数",
+                    "type": "integer"
+                },
+                "otherAssetTotal": {
+                    "description": "其他物资总数",
+                    "type": "integer"
+                },
+                "smartBatteryTotal": {
+                    "description": "智能电池总数",
+                    "type": "integer"
                 }
             }
         },
@@ -5375,77 +5666,6 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.EnterpriseAsset": {
-            "type": "object",
-            "properties": {
-                "cabinetAccessories": {
-                    "description": "电柜配件物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "cabinetAccessoryTotal": {
-                    "description": "电柜配件总数",
-                    "type": "integer"
-                },
-                "ebikeAccessories": {
-                    "description": "电车配件物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "ebikeAccessoryTotal": {
-                    "description": "电车配件总数",
-                    "type": "integer"
-                },
-                "ebikeTotal": {
-                    "description": "电车总数",
-                    "type": "integer"
-                },
-                "ebikes": {
-                    "description": "电车物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "nonSmartBatteries": {
-                    "description": "非智能电池物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "nonSmartBatteryTotal": {
-                    "description": "非智能电池总数",
-                    "type": "integer"
-                },
-                "otherAssetTotal": {
-                    "description": "其他物资总数",
-                    "type": "integer"
-                },
-                "otherAssets": {
-                    "description": "其他物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "smartBatteries": {
-                    "description": "智能电池物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "smartBatteryTotal": {
-                    "description": "智能电池总数",
-                    "type": "integer"
-                }
-            }
-        },
         "definition.EnterpriseAssetDetail": {
             "type": "object",
             "properties": {
@@ -5472,11 +5692,11 @@ const docTemplate = `{
                         "$ref": "#/definitions/definition.EnterpriseStation"
                     }
                 },
-                "warehouseAsset": {
-                    "description": "团签资产",
+                "total": {
+                    "description": "资产统计",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.EnterpriseAsset"
+                            "$ref": "#/definitions/definition.CommonAssetTotal"
                         }
                     ]
                 }
@@ -5495,77 +5715,6 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.MaintainerAsset": {
-            "type": "object",
-            "properties": {
-                "cabinetAccessories": {
-                    "description": "电柜配件物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "cabinetAccessoryTotal": {
-                    "description": "电柜配件总数",
-                    "type": "integer"
-                },
-                "ebikeAccessories": {
-                    "description": "电车配件物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "ebikeAccessoryTotal": {
-                    "description": "电车配件总数",
-                    "type": "integer"
-                },
-                "ebikeTotal": {
-                    "description": "电车总数",
-                    "type": "integer"
-                },
-                "ebikes": {
-                    "description": "电车物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "nonSmartBatteries": {
-                    "description": "非智能电池物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "nonSmartBatteryTotal": {
-                    "description": "非智能电池总数",
-                    "type": "integer"
-                },
-                "otherAssetTotal": {
-                    "description": "其他物资总数",
-                    "type": "integer"
-                },
-                "otherAssets": {
-                    "description": "其他物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "smartBatteries": {
-                    "description": "智能电池物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "smartBatteryTotal": {
-                    "description": "智能电池总数",
-                    "type": "integer"
-                }
-            }
-        },
         "definition.MaintainerAssetDetail": {
             "type": "object",
             "properties": {
@@ -5581,11 +5730,11 @@ const docTemplate = `{
                     "description": "运维电话",
                     "type": "string"
                 },
-                "warehouseAsset": {
-                    "description": "运维资产",
+                "total": {
+                    "description": "资产统计",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.MaintainerAsset"
+                            "$ref": "#/definitions/definition.CommonAssetTotal"
                         }
                     ]
                 }
@@ -5680,77 +5829,6 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.StoreAsset": {
-            "type": "object",
-            "properties": {
-                "cabinetAccessories": {
-                    "description": "电柜配件物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "cabinetAccessoryTotal": {
-                    "description": "电柜配件总数",
-                    "type": "integer"
-                },
-                "ebikeAccessories": {
-                    "description": "电车配件物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "ebikeAccessoryTotal": {
-                    "description": "电车配件总数",
-                    "type": "integer"
-                },
-                "ebikeTotal": {
-                    "description": "电车总数",
-                    "type": "integer"
-                },
-                "ebikes": {
-                    "description": "电车物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "nonSmartBatteries": {
-                    "description": "非智能电池物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "nonSmartBatteryTotal": {
-                    "description": "非智能电池总数",
-                    "type": "integer"
-                },
-                "otherAssetTotal": {
-                    "description": "其他物资总数",
-                    "type": "integer"
-                },
-                "otherAssets": {
-                    "description": "其他物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "smartBatteries": {
-                    "description": "智能电池物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "smartBatteryTotal": {
-                    "description": "智能电池总数",
-                    "type": "integer"
-                }
-            }
-        },
         "definition.StoreAssetDetail": {
             "type": "object",
             "properties": {
@@ -5782,11 +5860,11 @@ const docTemplate = `{
                     "description": "门店名称",
                     "type": "string"
                 },
-                "warehouseAsset": {
-                    "description": "门店资产",
+                "total": {
+                    "description": "资产统计",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.StoreAsset"
+                            "$ref": "#/definitions/definition.CommonAssetTotal"
                         }
                     ]
                 }
@@ -5870,84 +5948,13 @@ const docTemplate = `{
                     "description": "仓库名称",
                     "type": "string"
                 },
-                "warehouseAsset": {
-                    "description": "仓库资产",
+                "total": {
+                    "description": "资产统计",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.WarehouseAsset"
+                            "$ref": "#/definitions/definition.CommonAssetTotal"
                         }
                     ]
-                }
-            }
-        },
-        "definition.WarehouseAsset": {
-            "type": "object",
-            "properties": {
-                "cabinetAccessories": {
-                    "description": "电柜配件物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "cabinetAccessoryTotal": {
-                    "description": "电柜配件总数",
-                    "type": "integer"
-                },
-                "ebikeAccessories": {
-                    "description": "电车配件物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "ebikeAccessoryTotal": {
-                    "description": "电车配件总数",
-                    "type": "integer"
-                },
-                "ebikeTotal": {
-                    "description": "电车总数",
-                    "type": "integer"
-                },
-                "ebikes": {
-                    "description": "电车物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "nonSmartBatteries": {
-                    "description": "非智能电池物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "nonSmartBatteryTotal": {
-                    "description": "非智能电池总数",
-                    "type": "integer"
-                },
-                "otherAssetTotal": {
-                    "description": "其他物资总数",
-                    "type": "integer"
-                },
-                "otherAssets": {
-                    "description": "其他物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "smartBatteries": {
-                    "description": "智能电池物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "smartBatteryTotal": {
-                    "description": "智能电池总数",
-                    "type": "integer"
                 }
             }
         },

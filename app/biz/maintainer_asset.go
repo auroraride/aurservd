@@ -50,10 +50,10 @@ func (b *maintainerAssetBiz) Assets(req *definition.MaintainerAssetListReq) (res
 
 	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Maintainer) (result *definition.MaintainerAssetDetail) {
 		result = &definition.MaintainerAssetDetail{
-			ID:              item.ID,
-			Name:            item.Name,
-			Phone:           item.Phone,
-			MaintainerAsset: b.assetForMaintainer(req, item.ID),
+			ID:    item.ID,
+			Name:  item.Name,
+			Phone: item.Phone,
+			Total: b.AssetTotal(req, item.ID),
 		}
 		return result
 	})
@@ -61,17 +61,8 @@ func (b *maintainerAssetBiz) Assets(req *definition.MaintainerAssetListReq) (res
 	return res
 }
 
-func (b *maintainerAssetBiz) assetForMaintainer(req *definition.MaintainerAssetListReq, id uint64) definition.MaintainerAsset {
-	astRes := definition.MaintainerAsset{
-		CommonAssetDetail: definition.CommonAssetDetail{
-			Ebikes:             make([]*definition.AssetMaterial, 0),
-			SmartBatteries:     make([]*definition.AssetMaterial, 0),
-			NonSmartBatteries:  make([]*definition.AssetMaterial, 0),
-			CabinetAccessories: make([]*definition.AssetMaterial, 0),
-			EbikeAccessories:   make([]*definition.AssetMaterial, 0),
-			OtherAssets:        make([]*definition.AssetMaterial, 0),
-		},
-	}
+// AssetTotal 仓库物资数据统计
+func (b *maintainerAssetBiz) AssetTotal(req *definition.MaintainerAssetListReq, id uint64) (res definition.CommonAssetTotal) {
 	// 查询所属资产数据
 	q := ent.Database.Asset.QueryNotDeleted().
 		Where(
@@ -98,20 +89,37 @@ func (b *maintainerAssetBiz) assetForMaintainer(req *definition.MaintainerAssetL
 		)
 	}
 	list, _ := q.All(b.ctx)
-
-	astIds := make([]uint64, 0)
 	for _, v := range list {
-		astIds = append(astIds, v.ID)
+		switch v.Type {
+		case model.AssetTypeEbike.Value():
+			res.EbikeTotal += 1
+		case model.AssetTypeSmartBattery.Value():
+			res.SmartBatteryTotal += 1
+		case model.AssetTypeNonSmartBattery.Value():
+			res.NonSmartBatteryTotal += 1
+		case model.AssetTypeEbikeAccessory.Value():
+			res.EbikeAccessoryTotal += 1
+		case model.AssetTypeCabinetAccessory.Value():
+			res.CabinetAccessoryTotal += 1
+		case model.AssetTypeOtherAccessory.Value():
+			res.OtherAssetTotal += 1
+		}
 	}
 
-	// 物资调拨详情
-	b.assetTransferDetail(id, astIds, &astRes)
-
-	return astRes
+	return
 }
 
-// assetTransferDetail 物资调拨详情
-func (b *maintainerAssetBiz) assetTransferDetail(wId uint64, astIds []uint64, ast *definition.MaintainerAsset) {
+// AssetDetail 物资详情
+func (b *maintainerAssetBiz) AssetDetail(id uint64) (ast *definition.CommonAssetDetail) {
+	ast = &definition.CommonAssetDetail{
+		Ebikes:             make([]*definition.AssetMaterial, 0),
+		SmartBatteries:     make([]*definition.AssetMaterial, 0),
+		NonSmartBatteries:  make([]*definition.AssetMaterial, 0),
+		CabinetAccessories: make([]*definition.AssetMaterial, 0),
+		EbikeAccessories:   make([]*definition.AssetMaterial, 0),
+		OtherAssets:        make([]*definition.AssetMaterial, 0),
+	}
+
 	ebikeNameMap := make(map[string]*definition.AssetMaterial)
 	sBNameMap := make(map[string]*definition.AssetMaterial)
 	nSbNameMap := make(map[string]*definition.AssetMaterial)
@@ -126,12 +134,8 @@ func (b *maintainerAssetBiz) assetTransferDetail(wId uint64, astIds []uint64, as
 			assettransferdetails.HasTransferWith(
 				assettransfer.Status(model.AssetTransferStatusStock.Value()),
 				assettransfer.ToLocationType(model.AssetLocationsTypeOperation.Value()),
-				assettransfer.ToLocationID(wId),
+				assettransfer.ToLocationID(id),
 				assettransfer.DeletedAtIsNil(),
-			),
-			assettransferdetails.HasAssetWith(
-				entasset.IDIn(astIds...),
-				entasset.DeletedAtIsNil(),
 			),
 		).
 		WithAsset(func(query *ent.AssetQuery) {
@@ -146,12 +150,8 @@ func (b *maintainerAssetBiz) assetTransferDetail(wId uint64, astIds []uint64, as
 			assettransferdetails.HasTransferWith(
 				assettransfer.StatusIn(model.AssetTransferStatusDelivering.Value(), model.AssetTransferStatusStock.Value()),
 				assettransfer.FromLocationType(model.AssetLocationsTypeOperation.Value()),
-				assettransfer.FromLocationID(wId),
+				assettransfer.FromLocationID(id),
 				assettransfer.DeletedAtIsNil(),
-			),
-			assettransferdetails.HasAssetWith(
-				entasset.IDIn(astIds...),
-				entasset.DeletedAtIsNil(),
 			),
 		).
 		WithAsset(func(query *ent.AssetQuery) {
@@ -163,27 +163,21 @@ func (b *maintainerAssetBiz) assetTransferDetail(wId uint64, astIds []uint64, as
 	// 组装出入库数据
 	for _, v := range ebikeNameMap {
 		ast.Ebikes = append(ast.Ebikes, v)
-		ast.EbikeTotal += v.Surplus
 	}
 	for _, v := range sBNameMap {
 		ast.SmartBatteries = append(ast.SmartBatteries, v)
-		ast.SmartBatteryTotal += v.Surplus
 	}
 	for _, v := range nSbNameMap {
 		ast.NonSmartBatteries = append(ast.NonSmartBatteries, v)
-		ast.NonSmartBatteryTotal += v.Surplus
 	}
 	for _, v := range cabAccNameMap {
 		ast.CabinetAccessories = append(ast.CabinetAccessories, v)
-		ast.CabinetAccessoryTotal += v.Surplus
 	}
 	for _, v := range ebikeAccNameMap {
 		ast.EbikeAccessories = append(ast.EbikeAccessories, v)
-		ast.EbikeAccessoryTotal += v.Surplus
 	}
 	for _, v := range otherAccNameMap {
 		ast.OtherAssets = append(ast.OtherAssets, v)
-		ast.OtherAssetTotal += v.Surplus
 	}
 
 	// 排序
@@ -205,7 +199,7 @@ func (b *maintainerAssetBiz) assetTransferDetail(wId uint64, astIds []uint64, as
 	sort.Slice(ast.OtherAssets, func(i, j int) bool {
 		return strings.Compare(ast.OtherAssets[i].Name, ast.OtherAssets[j].Name) < 0
 	})
-
+	return
 }
 
 // transferInOut 物资出入库统计

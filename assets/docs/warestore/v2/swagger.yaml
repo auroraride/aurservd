@@ -121,53 +121,41 @@ definitions:
   definition.CommonAssetDetail:
     properties:
       cabinetAccessories:
-        description: 电柜配件物资详情
+        description: CabinetAccessoryTotal int              `json:"cabinetAccessoryTotal"`
+          // 电柜配件总数
         items:
           $ref: '#/definitions/definition.AssetMaterial'
         type: array
-      cabinetAccessoryTotal:
-        description: 电柜配件总数
-        type: integer
       ebikeAccessories:
-        description: 电车配件物资详情
+        description: EbikeAccessoryTotal   int              `json:"ebikeAccessoryTotal"`   //
+          电车配件总数
         items:
           $ref: '#/definitions/definition.AssetMaterial'
         type: array
-      ebikeAccessoryTotal:
-        description: 电车配件总数
-        type: integer
-      ebikeTotal:
-        description: 电车总数
-        type: integer
       ebikes:
-        description: 电车物资详情
+        description: EbikeTotal            int              `json:"ebikeTotal"`            //
+          电车总数
         items:
           $ref: '#/definitions/definition.AssetMaterial'
         type: array
       nonSmartBatteries:
-        description: 非智能电池物资详情
+        description: NonSmartBatteryTotal  int              `json:"nonSmartBatteryTotal"`  //
+          非智能电池总数
         items:
           $ref: '#/definitions/definition.AssetMaterial'
         type: array
-      nonSmartBatteryTotal:
-        description: 非智能电池总数
-        type: integer
-      otherAssetTotal:
-        description: 其他物资总数
-        type: integer
       otherAssets:
-        description: 其他物资详情
+        description: OtherAssetTotal       int              `json:"otherAssetTotal"`       //
+          其他物资总数
         items:
           $ref: '#/definitions/definition.AssetMaterial'
         type: array
       smartBatteries:
-        description: 智能电池物资详情
+        description: SmartBatteryTotal     int              `json:"smartBatteryTotal"`     //
+          智能电池总数
         items:
           $ref: '#/definitions/definition.AssetMaterial'
         type: array
-      smartBatteryTotal:
-        description: 智能电池总数
-        type: integer
     type: object
   definition.CommonAssetType:
     enum:

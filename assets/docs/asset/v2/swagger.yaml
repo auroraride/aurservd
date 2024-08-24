@@ -209,25 +209,6 @@ definitions:
     x-enum-varnames:
     - BatteryModelTypeIntelligent
     - BatteryModelTypeNonIntelligent
-  definition.CabinetAsset:
-    properties:
-      nonSmartBatteries:
-        description: 非智能电池物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      nonSmartBatteryTotal:
-        description: 非智能电池总数
-        type: integer
-      smartBatteries:
-        description: 智能电池物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      smartBatteryTotal:
-        description: 智能电池总数
-        type: integer
-    type: object
   definition.CabinetAssetDetail:
     properties:
       city:
@@ -243,10 +224,92 @@ definitions:
       sn:
         description: 电柜编号
         type: string
-      warehouseAsset:
+      total:
         allOf:
-        - $ref: '#/definitions/definition.CabinetAsset'
-        description: 电柜资产
+        - $ref: '#/definitions/definition.CabinetTotal'
+        description: 电柜资产总计
+    type: object
+  definition.CabinetTotal:
+    properties:
+      nonSmartBatteryTotal:
+        description: 非智能电池总数
+        type: integer
+      smartBatteryTotal:
+        description: 智能电池总数
+        type: integer
+    type: object
+  definition.CabinetTotalDetail:
+    properties:
+      nonSmartBatteries:
+        description: 非智能电池物资详情
+        items:
+          $ref: '#/definitions/definition.AssetMaterial'
+        type: array
+      smartBatteries:
+        description: 智能电池物资详情
+        items:
+          $ref: '#/definitions/definition.AssetMaterial'
+        type: array
+    type: object
+  definition.CommonAssetDetail:
+    properties:
+      cabinetAccessories:
+        description: CabinetAccessoryTotal int              `json:"cabinetAccessoryTotal"`
+          // 电柜配件总数
+        items:
+          $ref: '#/definitions/definition.AssetMaterial'
+        type: array
+      ebikeAccessories:
+        description: EbikeAccessoryTotal   int              `json:"ebikeAccessoryTotal"`   //
+          电车配件总数
+        items:
+          $ref: '#/definitions/definition.AssetMaterial'
+        type: array
+      ebikes:
+        description: EbikeTotal            int              `json:"ebikeTotal"`            //
+          电车总数
+        items:
+          $ref: '#/definitions/definition.AssetMaterial'
+        type: array
+      nonSmartBatteries:
+        description: NonSmartBatteryTotal  int              `json:"nonSmartBatteryTotal"`  //
+          非智能电池总数
+        items:
+          $ref: '#/definitions/definition.AssetMaterial'
+        type: array
+      otherAssets:
+        description: OtherAssetTotal       int              `json:"otherAssetTotal"`       //
+          其他物资总数
+        items:
+          $ref: '#/definitions/definition.AssetMaterial'
+        type: array
+      smartBatteries:
+        description: SmartBatteryTotal     int              `json:"smartBatteryTotal"`     //
+          智能电池总数
+        items:
+          $ref: '#/definitions/definition.AssetMaterial'
+        type: array
+    type: object
+  definition.CommonAssetTotal:
+    properties:
+      cabinetAccessoryTotal:
+        description: 电柜配件总数
+        type: integer
+      ebikeAccessoryTotal:
+        description: 电车配件总数
+        type: integer
+      ebikeTotal:
+        description: 电车总数
+        type: integer
+      nonSmartBatteryTotal:
+        description: 非智能电池总数
+        type: integer
+      otherAssetTotal:
+        description: 其他物资总数
+        type: integer
+      smartBatteryTotal:
+        description: 智能电池总数
+        type: integer
     type: object
   definition.EmployeeCreateReq:
     properties:
@@ -338,57 +401,6 @@ definitions:
           type: integer
         type: array
     type: object
-  definition.EnterpriseAsset:
-    properties:
-      cabinetAccessories:
-        description: 电柜配件物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      cabinetAccessoryTotal:
-        description: 电柜配件总数
-        type: integer
-      ebikeAccessories:
-        description: 电车配件物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      ebikeAccessoryTotal:
-        description: 电车配件总数
-        type: integer
-      ebikeTotal:
-        description: 电车总数
-        type: integer
-      ebikes:
-        description: 电车物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      nonSmartBatteries:
-        description: 非智能电池物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      nonSmartBatteryTotal:
-        description: 非智能电池总数
-        type: integer
-      otherAssetTotal:
-        description: 其他物资总数
-        type: integer
-      otherAssets:
-        description: 其他物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      smartBatteries:
-        description: 智能电池物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      smartBatteryTotal:
-        description: 智能电池总数
-        type: integer
-    type: object
   definition.EnterpriseAssetDetail:
     properties:
       city:
@@ -406,10 +418,10 @@ definitions:
         items:
           $ref: '#/definitions/definition.EnterpriseStation'
         type: array
-      warehouseAsset:
+      total:
         allOf:
-        - $ref: '#/definitions/definition.EnterpriseAsset'
-        description: 团签资产
+        - $ref: '#/definitions/definition.CommonAssetTotal'
+        description: 资产统计
     type: object
   definition.EnterpriseStation:
     properties:
@@ -419,57 +431,6 @@ definitions:
       name:
         description: 站点名称
         type: string
-    type: object
-  definition.MaintainerAsset:
-    properties:
-      cabinetAccessories:
-        description: 电柜配件物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      cabinetAccessoryTotal:
-        description: 电柜配件总数
-        type: integer
-      ebikeAccessories:
-        description: 电车配件物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      ebikeAccessoryTotal:
-        description: 电车配件总数
-        type: integer
-      ebikeTotal:
-        description: 电车总数
-        type: integer
-      ebikes:
-        description: 电车物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      nonSmartBatteries:
-        description: 非智能电池物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      nonSmartBatteryTotal:
-        description: 非智能电池总数
-        type: integer
-      otherAssetTotal:
-        description: 其他物资总数
-        type: integer
-      otherAssets:
-        description: 其他物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      smartBatteries:
-        description: 智能电池物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      smartBatteryTotal:
-        description: 智能电池总数
-        type: integer
     type: object
   definition.MaintainerAssetDetail:
     properties:
@@ -482,10 +443,10 @@ definitions:
       phone:
         description: 运维电话
         type: string
-      warehouseAsset:
+      total:
         allOf:
-        - $ref: '#/definitions/definition.MaintainerAsset'
-        description: 运维资产
+        - $ref: '#/definitions/definition.CommonAssetTotal'
+        description: 资产统计
     type: object
   definition.MaterialCreateReq:
     properties:
@@ -547,57 +508,6 @@ definitions:
     - name
     - type
     type: object
-  definition.StoreAsset:
-    properties:
-      cabinetAccessories:
-        description: 电柜配件物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      cabinetAccessoryTotal:
-        description: 电柜配件总数
-        type: integer
-      ebikeAccessories:
-        description: 电车配件物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      ebikeAccessoryTotal:
-        description: 电车配件总数
-        type: integer
-      ebikeTotal:
-        description: 电车总数
-        type: integer
-      ebikes:
-        description: 电车物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      nonSmartBatteries:
-        description: 非智能电池物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      nonSmartBatteryTotal:
-        description: 非智能电池总数
-        type: integer
-      otherAssetTotal:
-        description: 其他物资总数
-        type: integer
-      otherAssets:
-        description: 其他物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      smartBatteries:
-        description: 智能电池物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      smartBatteryTotal:
-        description: 智能电池总数
-        type: integer
-    type: object
   definition.StoreAssetDetail:
     properties:
       city:
@@ -619,10 +529,10 @@ definitions:
       name:
         description: 门店名称
         type: string
-      warehouseAsset:
+      total:
         allOf:
-        - $ref: '#/definitions/definition.StoreAsset'
-        description: 门店资产
+        - $ref: '#/definitions/definition.CommonAssetTotal'
+        description: 资产统计
     type: object
   definition.StoreGroup:
     properties:
@@ -677,61 +587,10 @@ definitions:
       name:
         description: 仓库名称
         type: string
-      warehouseAsset:
+      total:
         allOf:
-        - $ref: '#/definitions/definition.WarehouseAsset'
-        description: 仓库资产
-    type: object
-  definition.WarehouseAsset:
-    properties:
-      cabinetAccessories:
-        description: 电柜配件物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      cabinetAccessoryTotal:
-        description: 电柜配件总数
-        type: integer
-      ebikeAccessories:
-        description: 电车配件物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      ebikeAccessoryTotal:
-        description: 电车配件总数
-        type: integer
-      ebikeTotal:
-        description: 电车总数
-        type: integer
-      ebikes:
-        description: 电车物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      nonSmartBatteries:
-        description: 非智能电池物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      nonSmartBatteryTotal:
-        description: 非智能电池总数
-        type: integer
-      otherAssetTotal:
-        description: 其他物资总数
-        type: integer
-      otherAssets:
-        description: 其他物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      smartBatteries:
-        description: 智能电池物资详情
-        items:
-          $ref: '#/definitions/definition.AssetMaterial'
-        type: array
-      smartBatteryTotal:
-        description: 智能电池总数
-        type: integer
+        - $ref: '#/definitions/definition.CommonAssetTotal'
+        description: 资产统计
     type: object
   definition.WarehouseCreateReq:
     properties:
@@ -2717,6 +2576,34 @@ paths:
       summary: 电柜物资
       tags:
       - 电柜 - Cabinet
+  /manager/v2/asset/cabinet_assets/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: CabinetAssetDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.CabinetTotalDetail'
+            type: array
+      summary: 物资详情
+      tags:
+      - 运维 - Maintainer
   /manager/v2/asset/check:
     get:
       consumes:
@@ -3550,6 +3437,34 @@ paths:
       summary: 团签物资
       tags:
       - 团签 - Enterprise
+  /manager/v2/asset/enterprise_assets/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: EnterpriseAssetDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.CommonAssetDetail'
+            type: array
+      summary: 团签物资详情
+      tags:
+      - 团签 - Enterprise
   /manager/v2/asset/export:
     post:
       consumes:
@@ -3627,6 +3542,34 @@ paths:
                   type: array
               type: object
       summary: 运维物资
+      tags:
+      - 运维 - Maintainer
+  /manager/v2/asset/maintainer_assets/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: MaintainerAssetDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.CommonAssetDetail'
+            type: array
+      summary: 物资详情
       tags:
       - 运维 - Maintainer
   /manager/v2/asset/maintenance:
@@ -4503,6 +4446,34 @@ paths:
                   type: array
               type: object
       summary: 门店物资
+      tags:
+      - 门店 - Store
+  /manager/v2/asset/store_assets/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: StoreAssetDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.CommonAssetDetail'
+            type: array
+      summary: 仓库物资详情
       tags:
       - 门店 - Store
   /manager/v2/asset/store_group:
@@ -5502,6 +5473,34 @@ paths:
                   type: array
               type: object
       summary: 仓库物资
+      tags:
+      - 仓库 - Warehouse
+  /manager/v2/asset/warehouse_assets/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: WarehouseAssetDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.CommonAssetDetail'
+            type: array
+      summary: 仓库物资详情
       tags:
       - 仓库 - Warehouse
 swagger: "2.0"

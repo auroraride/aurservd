@@ -49,17 +49,12 @@ type WareHouseAssetListReq struct {
 
 // WareHouseAssetDetail 仓库资产信息
 type WareHouseAssetDetail struct {
-	ID             uint64         `json:"id"`             // 仓库ID
-	Name           string         `json:"name"`           // 仓库名称
-	City           model.City     `json:"city"`           // 城市
-	Lng            float64        `json:"lng"`            // 经度
-	Lat            float64        `json:"lat"`            // 纬度
-	WarehouseAsset WarehouseAsset `json:"warehouseAsset"` // 仓库资产
-}
-
-// WarehouseAsset 仓库资产
-type WarehouseAsset struct {
-	CommonAssetDetail
+	ID    uint64           `json:"id"`    // 仓库ID
+	Name  string           `json:"name"`  // 仓库名称
+	City  model.City       `json:"city"`  // 城市
+	Lng   float64          `json:"lng"`   // 经度
+	Lat   float64          `json:"lat"`   // 纬度
+	Total CommonAssetTotal `json:"total"` // 资产统计
 }
 
 // WarehouseByCityRes 城市仓库信息

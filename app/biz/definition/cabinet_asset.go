@@ -19,17 +19,21 @@ type CabinetAssetListReq struct {
 
 // CabinetAssetDetail 电柜资产信息
 type CabinetAssetDetail struct {
-	ID           uint64       `json:"id"`             // 电柜ID
-	City         model.City   `json:"city"`           // 城市
-	Sn           string       `json:"sn"`             // 电柜编号
-	Name         string       `json:"name"`           // 电柜名称
-	CabinetAsset CabinetAsset `json:"warehouseAsset"` // 电柜资产
+	ID    uint64       `json:"id"`    // 电柜ID
+	City  model.City   `json:"city"`  // 城市
+	Sn    string       `json:"sn"`    // 电柜编号
+	Name  string       `json:"name"`  // 电柜名称
+	Total CabinetTotal `json:"total"` // 电柜资产总计
 }
 
-// CabinetAsset 电柜资产
-type CabinetAsset struct {
-	SmartBatteryTotal    int              `json:"smartBatteryTotal"`    // 智能电池总数
-	SmartBatteries       []*AssetMaterial `json:"smartBatteries"`       // 智能电池物资详情
-	NonSmartBatteryTotal int              `json:"nonSmartBatteryTotal"` // 非智能电池总数
-	NonSmartBatteries    []*AssetMaterial `json:"nonSmartBatteries"`    // 非智能电池物资详情
+// CabinetTotal 电柜资产总计
+type CabinetTotal struct {
+	SmartBatteryTotal    int `json:"smartBatteryTotal"`    // 智能电池总数
+	NonSmartBatteryTotal int `json:"nonSmartBatteryTotal"` // 非智能电池总数
+}
+
+// CabinetTotalDetail 电柜资产详情
+type CabinetTotalDetail struct {
+	SmartBatteries    []*AssetMaterial `json:"smartBatteries"`    // 智能电池物资详情
+	NonSmartBatteries []*AssetMaterial `json:"nonSmartBatteries"` // 非智能电池物资详情
 }
