@@ -168,7 +168,7 @@ const docTemplate = `{
                             2
                         ],
                         "type": "integer",
-                        "description": "归属类型   1:平台 2:代理商",
+                        "description": "归属类型   1:平台 2:团签",
                         "name": "ownerType",
                         "in": "query"
                     },
@@ -1330,7 +1330,7 @@ const docTemplate = `{
                             2
                         ],
                         "type": "integer",
-                        "description": "归属类型   1:平台 2:代理商",
+                        "description": "归属类型   1:平台 2:团签",
                         "name": "ownerType",
                         "in": "query"
                     },
@@ -6556,7 +6556,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "ownerType": {
-                    "description": "归属类型   1:平台 2:代理商",
+                    "description": "归属类型   1:平台 2:团签",
                     "type": "integer",
                     "enum": [
                         1,

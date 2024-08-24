@@ -1593,6 +1593,7 @@ func (s *assetTransferService) Modify(ctx context.Context, req *model.AssetTrans
 		return errors.New("调拨单不存在或已入库")
 	}
 
+	// todo 超级管理员不受限？？
 	if item.FromLocationType != nil && item.FromLocationID != nil {
 		var isPermission bool
 		// 权限判定 只能由调出方操作
@@ -1600,7 +1601,7 @@ func (s *assetTransferService) Modify(ctx context.Context, req *model.AssetTrans
 		case model.AssetLocationsTypeWarehouse:
 			if item.Edges.FromLocationWarehouse != nil && item.Edges.FromLocationWarehouse.Edges.AssetManagers != nil {
 				for _, v := range item.Edges.FromLocationWarehouse.Edges.AssetManagers {
-					if v.ID == *item.OutOperateID {
+					if modifier.ID == v.ID {
 						isPermission = true
 						break
 					}
@@ -1609,7 +1610,7 @@ func (s *assetTransferService) Modify(ctx context.Context, req *model.AssetTrans
 		case model.AssetLocationsTypeStore:
 			if item.Edges.FromLocationStore != nil && item.Edges.FromLocationStore.Edges.Employees != nil {
 				for _, v := range item.Edges.FromLocationStore.Edges.Employees {
-					if v.ID == *item.OutOperateID {
+					if modifier.ID == v.ID {
 						isPermission = true
 						break
 					}
@@ -1618,7 +1619,7 @@ func (s *assetTransferService) Modify(ctx context.Context, req *model.AssetTrans
 		case model.AssetLocationsTypeStation:
 			if item.Edges.FromLocationStation != nil && item.Edges.FromLocationStation.Edges.Agents != nil {
 				for _, v := range item.Edges.FromLocationStation.Edges.Agents {
-					if v.ID == *item.OutOperateID {
+					if modifier.ID == v.ID {
 						isPermission = true
 						break
 					}

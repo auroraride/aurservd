@@ -31,7 +31,7 @@ type AssetFilter struct {
 	SN               *string             `json:"sn" query:"sn"`                                           // 编号
 	ModelID          *uint64             `json:"modelId" query:"modelId"`                                 // 型号ID
 	CityID           *uint64             `json:"cityId" query:"cityId"`                                   // 城市
-	OwnerType        *uint8              `json:"ownerType" query:"ownerType" enums:"1,2"`                 // 归属类型   1:平台 2:代理商
+	OwnerType        *uint8              `json:"ownerType" query:"ownerType" enums:"1,2"`                 // 归属类型   1:平台 2:团签
 	StationID        *uint64             `json:"stationId" query:"stationId"`                             // 站点ID
 	LocationsType    *AssetLocationsType `json:"locationsType" query:"locationsType" enums:"1,2,3,4,5,6"` // 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
 	LocationsID      *uint64             `json:"locationsId" query:"locationsId"`                         // 资产位置ID
