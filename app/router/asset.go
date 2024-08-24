@@ -67,12 +67,13 @@ func loadAssetsRoutes() {
 	asset.GET("/template", assetapi.Assets.Template)  // 导出模版
 
 	// 仓库
-	asset.POST("/warehouse", assetapi.Warehouse.Create)       // 创建仓库
-	asset.GET("/warehouse", assetapi.Warehouse.List)          // 仓库列表
-	asset.GET("/warehouse/:id", assetapi.Warehouse.Detail)    // 仓库详情
-	asset.PUT("/warehouse/:id", assetapi.Warehouse.Modify)    // 更新仓库
-	asset.DELETE("/warehouse/:id", assetapi.Warehouse.Delete) // 删除仓库
-	asset.GET("/warehouse_assets", assetapi.Warehouse.Assets) // 仓库物资
+	asset.POST("/warehouse", assetapi.Warehouse.Create)                // 创建仓库
+	asset.GET("/warehouse", assetapi.Warehouse.List)                   // 仓库列表
+	asset.GET("/warehouse/:id", assetapi.Warehouse.Detail)             // 仓库详情
+	asset.PUT("/warehouse/:id", assetapi.Warehouse.Modify)             // 更新仓库
+	asset.DELETE("/warehouse/:id", assetapi.Warehouse.Delete)          // 删除仓库
+	asset.GET("/warehouse_assets", assetapi.Warehouse.Assets)          // 仓库物资
+	asset.GET("/warehouse_assets/:id", assetapi.Warehouse.AssetDetail) // 仓库物资详情
 
 	// 城市
 	asset.GET("/city", assetapi.City.List)       // 城市列表
@@ -84,16 +85,20 @@ func loadAssetsRoutes() {
 	asset.DELETE("/store_group/:id", assetapi.StoreGroup.Delete) // 删除门店集合
 
 	// 门店物资
-	asset.GET("/store_assets", assetapi.Store.StoreAsset) // 门店物资列表
+	asset.GET("/store_assets", assetapi.Store.Asset)           // 门店物资列表
+	asset.GET("/store_assets/:id", assetapi.Store.AssetDetail) // 门店物资详情
 
 	// 运维物资
-	asset.GET("/maintainer_assets", assetapi.Maintainer.MaintainerAsset) // 运维物资列表
+	asset.GET("/maintainer_assets", assetapi.Maintainer.Asset)           // 运维物资列表
+	asset.GET("/maintainer_assets/:id", assetapi.Maintainer.AssetDetail) // 运维物资详情
 
 	// 电柜物资
-	asset.GET("/cabinet_assets", assetapi.Cabinet.CabinetAsset) // 电柜物资列表
+	asset.GET("/cabinet_assets", assetapi.Cabinet.Asset)           // 电柜物资列表
+	asset.GET("/cabinet_assets/:id", assetapi.Cabinet.AssetDetail) // 电柜物资详情
 
 	// 团签物资
-	asset.GET("/enterprise_assets", assetapi.Enterprise.EnterpriseAsset) // 团签物资列表
+	asset.GET("/enterprise_assets", assetapi.Enterprise.Asset)           // 团签物资列表
+	asset.GET("/enterprise_assets/:id", assetapi.Enterprise.AssetDetail) // 团签物资详情
 
 	// 电池型号
 	asset.POST("/batterymodel", assetapi.BatteryModel.Create)       // 创建电池型号

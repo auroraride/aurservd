@@ -17,13 +17,8 @@ type MaintainerAssetListReq struct {
 
 // MaintainerAssetDetail 运维资产信息
 type MaintainerAssetDetail struct {
-	ID              uint64          `json:"id"`             // 运维ID
-	Name            string          `json:"name"`           // 运维名称
-	Phone           string          `json:"phone"`          // 运维电话
-	MaintainerAsset MaintainerAsset `json:"warehouseAsset"` // 运维资产
-}
-
-// MaintainerAsset 运维资产
-type MaintainerAsset struct {
-	CommonAssetDetail
+	ID    uint64           `json:"id"`    // 运维ID
+	Name  string           `json:"name"`  // 运维名称
+	Phone string           `json:"phone"` // 运维电话
+	Total CommonAssetTotal `json:"total"` // 资产统计
 }

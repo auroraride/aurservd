@@ -106,3 +106,18 @@ func (*warehouse) Assets(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[definition.WareHouseAssetListReq](c)
 	return ctx.SendResponse(biz.NewWarehouse().Assets(req))
 }
+
+// AssetDetail
+// @ID		WarehouseAssetDetail
+// @Router	/manager/v2/asset/warehouse_assets/{id} [GET]
+// @Summary	仓库物资详情
+// @Tags	仓库 - Warehouse
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
+// @Param	id						path		string							true	"ID"
+// @Success	200						{object}	[]definition.CommonAssetDetail	"请求成功"
+func (*warehouse) AssetDetail(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
+	return ctx.SendResponse(biz.NewWarehouse().AssetsDetail(req.ID))
+}

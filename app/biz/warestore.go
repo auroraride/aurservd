@@ -219,14 +219,12 @@ func (b *warestoreBiz) assetsForWarehouse(amId uint64, req *definition.Warestore
 
 	for _, item := range whs {
 		// 查询仓库资产详情
-		detail := NewWarehouse().AssetForWarehouse(&definition.WareHouseAssetListReq{
-			CityID: req.CityID,
-		}, item.ID)
+		detail := NewWarehouse().AssetsDetail(item.ID)
 
 		wa := &definition.WarestoreAssetRes{
 			ID:     item.ID,
 			Name:   item.Name,
-			Detail: detail.CommonAssetDetail,
+			Detail: *detail,
 		}
 		if item.Edges.City != nil {
 			wa.City = model.City{
@@ -268,14 +266,12 @@ func (b *warestoreBiz) assetsForStore(epId uint64, req *definition.WarestoreAsse
 
 	for _, item := range sts {
 		// 查询仓库资产详情
-		detail := NewStoreAsset().AssetForStore(&definition.StoreAssetListReq{
-			CityID: req.CityID,
-		}, item.ID)
+		detail := NewStoreAsset().AssetDetail(item.ID)
 
 		wa := &definition.WarestoreAssetRes{
 			ID:     item.ID,
 			Name:   item.Name,
-			Detail: detail.CommonAssetDetail,
+			Detail: *detail,
 		}
 		if item.Edges.City != nil {
 			wa.City = model.City{

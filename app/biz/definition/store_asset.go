@@ -21,16 +21,11 @@ type StoreAssetListReq struct {
 
 // StoreAssetDetail 门店资产信息
 type StoreAssetDetail struct {
-	ID         uint64     `json:"id"`             // 门店ID
-	Name       string     `json:"name"`           // 门店名称
-	GroupName  string     `json:"groupName"`      // 门店集合名称
-	City       model.City `json:"city"`           // 城市
-	Lng        float64    `json:"lng"`            // 经度
-	Lat        float64    `json:"lat"`            // 纬度
-	StoreAsset StoreAsset `json:"warehouseAsset"` // 门店资产
-}
-
-// StoreAsset 门店资产
-type StoreAsset struct {
-	CommonAssetDetail
+	ID        uint64           `json:"id"`        // 门店ID
+	Name      string           `json:"name"`      // 门店名称
+	GroupName string           `json:"groupName"` // 门店集合名称
+	City      model.City       `json:"city"`      // 城市
+	Lng       float64          `json:"lng"`       // 经度
+	Lat       float64          `json:"lat"`       // 纬度
+	Total     CommonAssetTotal `json:"total"`     // 资产统计
 }

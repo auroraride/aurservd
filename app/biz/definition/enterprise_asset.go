@@ -21,19 +21,14 @@ type EnterpriseAssetListReq struct {
 
 // EnterpriseAssetDetail 团签资产信息
 type EnterpriseAssetDetail struct {
-	ID              uint64               `json:"id"`             // 团签ID
-	Name            string               `json:"name"`           // 团签名称
-	Stations        []*EnterpriseStation `json:"stations"`       // 团签站点
-	City            model.City           `json:"city"`           // 城市
-	EnterpriseAsset EnterpriseAsset      `json:"warehouseAsset"` // 团签资产
+	ID       uint64               `json:"id"`       // 团签ID
+	Name     string               `json:"name"`     // 团签名称
+	Stations []*EnterpriseStation `json:"stations"` // 团签站点
+	City     model.City           `json:"city"`     // 城市
+	Total    CommonAssetTotal     `json:"total"`    // 资产统计
 }
 
 type EnterpriseStation struct {
 	ID   uint64 `json:"id"`   // 站点ID
 	Name string `json:"name"` // 站点名称
-}
-
-// EnterpriseAsset 团签资产
-type EnterpriseAsset struct {
-	CommonAssetDetail
 }

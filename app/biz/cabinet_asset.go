@@ -55,10 +55,10 @@ func (b *cabinetAssetBiz) Assets(req *definition.CabinetAssetListReq) (res *mode
 	}
 	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) (result *definition.CabinetAssetDetail) {
 		result = &definition.CabinetAssetDetail{
-			ID:           item.ID,
-			Name:         item.Name,
-			Sn:           item.Sn,
-			CabinetAsset: b.assetForCabinet(req, item.ID),
+			ID:    item.ID,
+			Name:  item.Name,
+			Sn:    item.Sn,
+			Total: b.AssetTotal(req, item.ID),
 		}
 		if item.Edges.City != nil {
 			result.City = model.City{
@@ -72,12 +72,8 @@ func (b *cabinetAssetBiz) Assets(req *definition.CabinetAssetListReq) (res *mode
 	return res
 }
 
-func (b *cabinetAssetBiz) assetForCabinet(req *definition.CabinetAssetListReq, id uint64) definition.CabinetAsset {
-	astRes := definition.CabinetAsset{
-		SmartBatteries:    make([]*definition.AssetMaterial, 0),
-		NonSmartBatteries: make([]*definition.AssetMaterial, 0),
-	}
-
+// AssetTotal 物资数据统计
+func (b *cabinetAssetBiz) AssetTotal(req *definition.CabinetAssetListReq, id uint64) (res definition.CabinetTotal) {
 	// 查询所属资产数据
 	q := ent.Database.Asset.QueryNotDeleted().
 		Where(
@@ -97,20 +93,24 @@ func (b *cabinetAssetBiz) assetForCabinet(req *definition.CabinetAssetListReq, i
 	}
 
 	list, _ := q.All(b.ctx)
-
-	astIds := make([]uint64, 0)
 	for _, v := range list {
-		astIds = append(astIds, v.ID)
+		switch v.Type {
+		case model.AssetTypeSmartBattery.Value():
+			res.SmartBatteryTotal += 1
+		case model.AssetTypeNonSmartBattery.Value():
+			res.NonSmartBatteryTotal += 1
+		}
 	}
-
-	// 物资调拨详情
-	b.assetTransferDetail(id, astIds, &astRes)
-
-	return astRes
+	return
 }
 
-// assetTransferDetail 物资调拨详情
-func (b *cabinetAssetBiz) assetTransferDetail(wId uint64, astIds []uint64, ast *definition.CabinetAsset) {
+// AssetDetail 物资详情
+func (b *cabinetAssetBiz) AssetDetail(id uint64) (ast *definition.CabinetTotalDetail) {
+	ast = &definition.CabinetTotalDetail{
+		SmartBatteries:    make([]*definition.AssetMaterial, 0),
+		NonSmartBatteries: make([]*definition.AssetMaterial, 0),
+	}
+
 	sBNameMap := make(map[string]*definition.AssetMaterial)
 	nSbNameMap := make(map[string]*definition.AssetMaterial)
 
@@ -121,12 +121,8 @@ func (b *cabinetAssetBiz) assetTransferDetail(wId uint64, astIds []uint64, ast *
 			assettransferdetails.HasTransferWith(
 				assettransfer.Status(model.AssetTransferStatusStock.Value()),
 				assettransfer.ToLocationType(model.AssetLocationsTypeCabinet.Value()),
-				assettransfer.ToLocationID(wId),
+				assettransfer.ToLocationID(id),
 				assettransfer.DeletedAtIsNil(),
-			),
-			assettransferdetails.HasAssetWith(
-				entasset.IDIn(astIds...),
-				entasset.DeletedAtIsNil(),
 			),
 		).
 		WithAsset(func(query *ent.AssetQuery) {
@@ -141,12 +137,8 @@ func (b *cabinetAssetBiz) assetTransferDetail(wId uint64, astIds []uint64, ast *
 			assettransferdetails.HasTransferWith(
 				assettransfer.StatusIn(model.AssetTransferStatusDelivering.Value(), model.AssetTransferStatusStock.Value()),
 				assettransfer.FromLocationType(model.AssetLocationsTypeCabinet.Value()),
-				assettransfer.FromLocationID(wId),
+				assettransfer.FromLocationID(id),
 				assettransfer.DeletedAtIsNil(),
-			),
-			assettransferdetails.HasAssetWith(
-				entasset.IDIn(astIds...),
-				entasset.DeletedAtIsNil(),
 			),
 		).
 		WithAsset(func(query *ent.AssetQuery) {
@@ -159,11 +151,9 @@ func (b *cabinetAssetBiz) assetTransferDetail(wId uint64, astIds []uint64, ast *
 
 	for _, v := range sBNameMap {
 		ast.SmartBatteries = append(ast.SmartBatteries, v)
-		ast.SmartBatteryTotal += v.Surplus
 	}
 	for _, v := range nSbNameMap {
 		ast.NonSmartBatteries = append(ast.NonSmartBatteries, v)
-		ast.NonSmartBatteryTotal += v.Surplus
 	}
 
 	// 排序
@@ -173,7 +163,7 @@ func (b *cabinetAssetBiz) assetTransferDetail(wId uint64, astIds []uint64, ast *
 	sort.Slice(ast.NonSmartBatteries, func(i, j int) bool {
 		return strings.Compare(ast.NonSmartBatteries[i].Name, ast.NonSmartBatteries[j].Name) < 0
 	})
-
+	return
 }
 
 // transferInOut 物资出入库统计
