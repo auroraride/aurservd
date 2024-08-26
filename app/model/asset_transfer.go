@@ -95,17 +95,18 @@ type AssetTransferListReq struct {
 
 // AssetTransferFilter 资产调拨筛选条件
 type AssetTransferFilter struct {
-	LocationsType    *AssetLocationsType  `json:"locationsType" query:"locationsType" enums:"1,2,3,4,5,6"` // 调拨位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
-	LocationsID      *uint64              `json:"locationsId" query:"locationsId"`                         // 调拨位置ID
-	LocationsKeyword *string              `json:"locationsKeyword" query:"locationsKeyword"`               // 调拨位置关键词 只有LocationsType =（5:电柜 6:骑手）有效
-	Status           *AssetTransferStatus `json:"status" query:"status" enums:"1,2,3,4"`                   // 调拨状态 1:配送中 2:待入库 3:已入库 4:已取消
-	OutStart         *string              `json:"outStart" query:"outStart"`                               // 出库开始时间
-	OutEnd           *string              `json:"outEnd" query:"outEnd"`                                   // 出库结束时间
-	InStart          *string              `json:"inStart" query:"inStart"`                                 // 入库开始时间
-	InEnd            *string              `json:"inEnd" query:"inEnd"`                                     // 入库结束时间
-	Keyword          *string              `json:"keyword" query:"keyword"`                                 // 关键字 (调拨单号，调拨事由、出库人、接收人)
-	AssetManagerID   uint64               `json:"assetManagerID" query:"assetManagerID"`                   // 仓库管理员ID
-	EmployeeID       uint64               `json:"employeeID" query:"employeeID"`                           // 门店管理员ID
+	FromLocationsType *AssetLocationsType  `json:"fromLocationsType" query:"fromLocationsType" enums:"1,2,3,4,5,6"` // 调出位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	FromLocationsID   *uint64              `json:"fromLocationsId" query:"fromLocationsId"`                         // 调出位置ID
+	ToLocationsType   *AssetLocationsType  `json:"toLocationsType" query:"toLocationsType" enums:"1,2,3,4,5,6"`     // 调入位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	ToLocationsID     *uint64              `json:"toLocationsId" query:"toLocationsId"`                             // 调入位置ID
+	Status            *AssetTransferStatus `json:"status" query:"status" enums:"1,2,3,4"`                           // 调拨状态 1:配送中 2:待入库 3:已入库 4:已取消
+	OutStart          *string              `json:"outStart" query:"outStart"`                                       // 出库开始时间
+	OutEnd            *string              `json:"outEnd" query:"outEnd"`                                           // 出库结束时间
+	InStart           *string              `json:"inStart" query:"inStart"`                                         // 入库开始时间
+	InEnd             *string              `json:"inEnd" query:"inEnd"`                                             // 入库结束时间
+	Keyword           *string              `json:"keyword" query:"keyword"`                                         // 关键字 (调拨单号，调拨事由、出库人、接收人)
+	AssetManagerID    uint64               `json:"assetManagerID" query:"assetManagerID"`                           // 仓库管理员ID
+	EmployeeID        uint64               `json:"employeeID" query:"employeeID"`                                   // 门店管理员ID
 }
 
 // AssetTransferListRes 资产调拨列表响应
