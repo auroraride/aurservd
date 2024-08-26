@@ -7,6 +7,7 @@ package biz
 import (
 	"context"
 	"errors"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -175,7 +176,7 @@ func (b *warestoreBiz) TokenVerify(token string) (am *ent.AssetManager, ep *ent.
 }
 
 // Assets 物资数据
-func (b *warestoreBiz) Assets(am *ent.AssetManager, ep *ent.Employee, req *definition.WarestoreAssetsReq) (res []*definition.WarestoreAssetRes, err error) {
+func (b *warestoreBiz) Assets(am *ent.AssetManager, ep *ent.Employee, req *definition.WarestoreAssetsReq) *model.PaginationRes {
 	switch {
 	case am != nil && ep == nil:
 		// 确认为仓库管理员
@@ -184,12 +185,12 @@ func (b *warestoreBiz) Assets(am *ent.AssetManager, ep *ent.Employee, req *defin
 		// 确认为门店管理员
 		return b.assetsForStore(ep.ID, req)
 	default:
-		return nil, errors.New(ar.UserNotFound)
+		return nil
 	}
 }
 
 // assetsForWarehouse 仓库物资数据
-func (b *warestoreBiz) assetsForWarehouse(amId uint64, req *definition.WarestoreAssetsReq) (res []*definition.WarestoreAssetRes, err error) {
+func (b *warestoreBiz) assetsForWarehouse(amId uint64, req *definition.WarestoreAssetsReq) *model.PaginationRes {
 	// 查询仓库数据
 	q := ent.Database.Warehouse.QueryNotDeleted().WithCity()
 
@@ -212,76 +213,233 @@ func (b *warestoreBiz) assetsForWarehouse(amId uint64, req *definition.Warestore
 		q.Where(warehouse.IDIn(wIds...))
 	}
 
-	whs, err := q.All(b.ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range whs {
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Asset) *definition.WarestoreAssetRes {
 		// 查询仓库资产详情
-		detail := NewWarehouse().AssetsDetail(item.ID)
-
-		wa := &definition.WarestoreAssetRes{
+		res := &definition.WarestoreAssetRes{
 			ID:     item.ID,
 			Name:   item.Name,
-			Detail: *detail,
+			Detail: b.wAssetTotal(item.ID),
 		}
 		if item.Edges.City != nil {
-			wa.City = model.City{
+			res.City = model.City{
 				ID:   item.Edges.City.ID,
 				Name: item.Edges.City.Name,
 			}
 		}
-		res = append(res, wa)
-	}
+		return res
+	})
 
-	return
 }
 
 // assetsForStore 门店物资数据
-func (b *warestoreBiz) assetsForStore(epId uint64, req *definition.WarestoreAssetsReq) (res []*definition.WarestoreAssetRes, err error) {
+func (b *warestoreBiz) assetsForStore(epId uint64, req *definition.WarestoreAssetsReq) *model.PaginationRes {
 	// 门店数据
 	q := ent.Database.Store.QueryNotDeleted().WithCity()
 	if req.StoreID != nil {
 		q.Where(store.ID(*req.StoreID))
 	}
-	// 查询门店人员负责的门店信息 todo 门店集合筛选
-	ep, _ := ent.Database.Employee.QueryNotDeleted().WithStores().
+
+	ep, _ := ent.Database.Employee.QueryNotDeleted().WithStores().WithGroup().
 		Where(
 			employee.ID(epId),
 			employee.HasStoresWith(store.DeletedAtIsNil()),
 		).First(b.ctx)
-	if ep != nil && len(ep.Edges.Stores) != 0 {
-		sIds := make([]uint64, 0)
-		for _, st := range ep.Edges.Stores {
-			sIds = append(sIds, st.ID)
+	if ep != nil {
+		// 判断是配置的门店集合还是门店数据
+		if ep.Edges.Group != nil {
+			q.Where(store.GroupID(ep.Edges.Group.ID))
+		} else {
+			sIds := make([]uint64, 0)
+			for _, st := range ep.Edges.Stores {
+				sIds = append(sIds, st.ID)
+			}
+			q.Where(store.IDIn(sIds...))
 		}
-		q.Where(store.IDIn(sIds...))
+
 	}
 
-	sts, err := q.All(b.ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range sts {
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Asset) *definition.WarestoreAssetRes {
 		// 查询仓库资产详情
-		detail := NewStoreAsset().AssetDetail(item.ID)
-
-		wa := &definition.WarestoreAssetRes{
+		res := &definition.WarestoreAssetRes{
 			ID:     item.ID,
 			Name:   item.Name,
-			Detail: *detail,
+			Detail: b.sAssetTotal(item.ID),
 		}
 		if item.Edges.City != nil {
-			wa.City = model.City{
+			res.City = model.City{
 				ID:   item.Edges.City.ID,
 				Name: item.Edges.City.Name,
 			}
 		}
-		res = append(res, wa)
+		return res
+	})
+
+}
+
+// wAssetTotal 仓库物资数据统计
+func (b *warestoreBiz) wAssetTotal(id uint64) (res definition.WarestoreAssetDetail) {
+	// 查询仓库所属资产数据
+	q := ent.Database.Asset.QueryNotDeleted().
+		Where(
+			asset.LocationsType(model.AssetLocationsTypeWarehouse.Value()),
+			asset.LocationsIDIn(id),
+			asset.Status(model.AssetStatusStock.Value()),
+		).WithModel().WithBrand().WithMaterial()
+
+	list, _ := q.All(b.ctx)
+
+	res = b.commonAssetTotalDetail(list)
+
+	return
+}
+
+// sAssetTotal 门店物资数据统计
+func (b *warestoreBiz) sAssetTotal(id uint64) (res definition.WarestoreAssetDetail) {
+	// 查询仓库所属资产数据
+	q := ent.Database.Asset.QueryNotDeleted().
+		Where(
+			asset.LocationsType(model.AssetLocationsTypeWarehouse.Value()),
+			asset.LocationsIDIn(id),
+			asset.Status(model.AssetStatusStock.Value()),
+		).WithModel().WithBrand().WithMaterial()
+
+	list, _ := q.All(b.ctx)
+
+	res = b.commonAssetTotalDetail(list)
+
+	return
+}
+
+// wAssetTotal 仓库物资数据统计
+func (b *warestoreBiz) commonAssetTotalDetail(list []*ent.Asset) (res definition.WarestoreAssetDetail) {
+	// 查询统计资产数据
+	res = definition.WarestoreAssetDetail{
+		Ebikes:             make([]*definition.WarestoreMaterial, 0),
+		SmartBatteries:     make([]*definition.WarestoreMaterial, 0),
+		NonSmartBatteries:  make([]*definition.WarestoreMaterial, 0),
+		CabinetAccessories: make([]*definition.WarestoreMaterial, 0),
+		EbikeAccessories:   make([]*definition.WarestoreMaterial, 0),
+		OtherAssets:        make([]*definition.WarestoreMaterial, 0),
 	}
 
+	ebikeBrandMap := make(map[string]*definition.WarestoreMaterial)
+	sBatModelMap := make(map[string]*definition.WarestoreMaterial)
+	nSBatModelMap := make(map[string]*definition.WarestoreMaterial)
+	cabAccNameMap := make(map[string]*definition.WarestoreMaterial)
+	ebikeAccNameMap := make(map[string]*definition.WarestoreMaterial)
+	otherNameMap := make(map[string]*definition.WarestoreMaterial)
+
+	for _, v := range list {
+		switch {
+		case v.Type == model.AssetTypeEbike.Value() && v.Edges.Brand != nil:
+			res.EbikeTotal += 1
+			if ebikeBrandMap[v.Edges.Brand.Name] != nil {
+				ebikeBrandMap[v.Edges.Brand.Name].Num += 1
+			} else {
+				ebikeBrandMap[v.Edges.Brand.Name] = &definition.WarestoreMaterial{
+					ID:   v.Edges.Brand.ID,
+					Name: v.Edges.Brand.Name,
+					Num:  1,
+				}
+			}
+
+		case v.Type == model.AssetTypeSmartBattery.Value() && v.Edges.Model != nil:
+			res.SmartBatteryTotal += 1
+			if sBatModelMap[v.Edges.Model.Model] != nil {
+				sBatModelMap[v.Edges.Model.Model].Num += 1
+			} else {
+				sBatModelMap[v.Edges.Model.Model] = &definition.WarestoreMaterial{
+					ID:   v.Edges.Model.ID,
+					Name: v.Edges.Model.Model,
+					Num:  1,
+				}
+			}
+		case v.Type == model.AssetTypeNonSmartBattery.Value() && v.Edges.Model != nil:
+			res.NonSmartBatteryTotal += 1
+			if nSBatModelMap[v.Edges.Model.Model] != nil {
+				nSBatModelMap[v.Edges.Model.Model].Num += 1
+			} else {
+				nSBatModelMap[v.Edges.Model.Model] = &definition.WarestoreMaterial{
+					ID:   v.Edges.Model.ID,
+					Name: v.Edges.Model.Model,
+					Num:  1,
+				}
+			}
+		case v.Type == model.AssetTypeCabinetAccessory.Value() && v.Edges.Material != nil:
+			res.CabinetAccessoryTotal += 1
+			if cabAccNameMap[v.Edges.Material.Name] != nil {
+				cabAccNameMap[v.Edges.Material.Name].Num += 1
+			} else {
+				cabAccNameMap[v.Edges.Material.Name] = &definition.WarestoreMaterial{
+					ID:   v.Edges.Material.ID,
+					Name: v.Edges.Material.Name,
+					Num:  1,
+				}
+			}
+		case v.Type == model.AssetTypeEbikeAccessory.Value() && v.Edges.Material != nil:
+			res.EbikeAccessoryTotal += 1
+			if ebikeAccNameMap[v.Edges.Material.Name] != nil {
+				ebikeAccNameMap[v.Edges.Material.Name].Num += 1
+			} else {
+				ebikeAccNameMap[v.Edges.Material.Name] = &definition.WarestoreMaterial{
+					ID:   v.Edges.Material.ID,
+					Name: v.Edges.Material.Name,
+					Num:  1,
+				}
+			}
+		case v.Type == model.AssetTypeOtherAccessory.Value() && v.Edges.Material != nil:
+			res.OtherAssetTotal += 1
+			if otherNameMap[v.Edges.Material.Name] != nil {
+				otherNameMap[v.Edges.Material.Name].Num += 1
+			} else {
+				otherNameMap[v.Edges.Material.Name] = &definition.WarestoreMaterial{
+					ID:   v.Edges.Material.ID,
+					Name: v.Edges.Material.Name,
+					Num:  1,
+				}
+			}
+		}
+	}
+
+	// 组装数据
+	for _, v := range ebikeBrandMap {
+		res.Ebikes = append(res.Ebikes, v)
+	}
+	for _, v := range sBatModelMap {
+		res.SmartBatteries = append(res.SmartBatteries, v)
+	}
+	for _, v := range nSBatModelMap {
+		res.NonSmartBatteries = append(res.NonSmartBatteries, v)
+	}
+	for _, v := range cabAccNameMap {
+		res.CabinetAccessories = append(res.CabinetAccessories, v)
+	}
+	for _, v := range ebikeAccNameMap {
+		res.EbikeAccessories = append(res.EbikeAccessories, v)
+	}
+	for _, v := range otherNameMap {
+		res.OtherAssets = append(res.OtherAssets, v)
+	}
+
+	// 排序
+	sort.Slice(res.Ebikes, func(i, j int) bool {
+		return strings.Compare(res.Ebikes[i].Name, res.Ebikes[j].Name) < 0
+	})
+	sort.Slice(res.SmartBatteries, func(i, j int) bool {
+		return strings.Compare(res.SmartBatteries[i].Name, res.SmartBatteries[j].Name) < 0
+	})
+	sort.Slice(res.NonSmartBatteries, func(i, j int) bool {
+		return strings.Compare(res.NonSmartBatteries[i].Name, res.NonSmartBatteries[j].Name) < 0
+	})
+	sort.Slice(res.CabinetAccessories, func(i, j int) bool {
+		return strings.Compare(res.CabinetAccessories[i].Name, res.CabinetAccessories[j].Name) < 0
+	})
+	sort.Slice(res.EbikeAccessories, func(i, j int) bool {
+		return strings.Compare(res.EbikeAccessories[i].Name, res.EbikeAccessories[j].Name) < 0
+	})
+	sort.Slice(res.OtherAssets, func(i, j int) bool {
+		return strings.Compare(res.OtherAssets[i].Name, res.OtherAssets[j].Name) < 0
+	})
 	return
 }
 

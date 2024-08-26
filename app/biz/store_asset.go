@@ -6,8 +6,6 @@ package biz
 
 import (
 	"context"
-	"sort"
-	"strings"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
@@ -153,7 +151,7 @@ func (b *storeAssetBiz) AssetDetail(id uint64) (ast *definition.CommonAssetDetai
 			query.WithBrand().WithModel().WithMaterial()
 		}).All(b.ctx)
 
-	b.transferInOut(ebikeNameMap, sBNameMap, nSbNameMap, cabAccNameMap, ebikeAccNameMap, otherAccNameMap, inAts, false)
+	NewAssetTransferDetails().TransferInOut(ebikeNameMap, sBNameMap, nSbNameMap, cabAccNameMap, ebikeAccNameMap, otherAccNameMap, inAts, false)
 
 	// 出库物资调拨详情
 	outAts, _ := ent.Database.AssetTransferDetails.QueryNotDeleted().
@@ -169,89 +167,9 @@ func (b *storeAssetBiz) AssetDetail(id uint64) (ast *definition.CommonAssetDetai
 			query.WithBrand().WithModel().WithMaterial()
 		}).All(b.ctx)
 
-	b.transferInOut(ebikeNameMap, sBNameMap, nSbNameMap, cabAccNameMap, ebikeAccNameMap, otherAccNameMap, outAts, true)
+	NewAssetTransferDetails().TransferInOut(ebikeNameMap, sBNameMap, nSbNameMap, cabAccNameMap, ebikeAccNameMap, otherAccNameMap, outAts, true)
 
-	// 组装出入库数据
-	for _, v := range ebikeNameMap {
-		ast.Ebikes = append(ast.Ebikes, v)
-	}
-	for _, v := range sBNameMap {
-		ast.SmartBatteries = append(ast.SmartBatteries, v)
-	}
-	for _, v := range nSbNameMap {
-		ast.NonSmartBatteries = append(ast.NonSmartBatteries, v)
-	}
-	for _, v := range cabAccNameMap {
-		ast.CabinetAccessories = append(ast.CabinetAccessories, v)
-	}
-	for _, v := range ebikeAccNameMap {
-		ast.EbikeAccessories = append(ast.EbikeAccessories, v)
-	}
-	for _, v := range otherAccNameMap {
-		ast.OtherAssets = append(ast.OtherAssets, v)
-	}
+	NewAssetTransferDetails().GetCommonAssetDetail(ebikeNameMap, sBNameMap, nSbNameMap, cabAccNameMap, ebikeAccNameMap, otherAccNameMap, ast)
 
-	// 排序
-	sort.Slice(ast.Ebikes, func(i, j int) bool {
-		return strings.Compare(ast.Ebikes[i].Name, ast.Ebikes[j].Name) < 0
-	})
-	sort.Slice(ast.SmartBatteries, func(i, j int) bool {
-		return strings.Compare(ast.SmartBatteries[i].Name, ast.SmartBatteries[j].Name) < 0
-	})
-	sort.Slice(ast.NonSmartBatteries, func(i, j int) bool {
-		return strings.Compare(ast.NonSmartBatteries[i].Name, ast.NonSmartBatteries[j].Name) < 0
-	})
-	sort.Slice(ast.CabinetAccessories, func(i, j int) bool {
-		return strings.Compare(ast.CabinetAccessories[i].Name, ast.CabinetAccessories[j].Name) < 0
-	})
-	sort.Slice(ast.EbikeAccessories, func(i, j int) bool {
-		return strings.Compare(ast.EbikeAccessories[i].Name, ast.EbikeAccessories[j].Name) < 0
-	})
-	sort.Slice(ast.OtherAssets, func(i, j int) bool {
-		return strings.Compare(ast.OtherAssets[i].Name, ast.OtherAssets[j].Name) < 0
-	})
 	return
-}
-
-// transferInOut 物资出入库统计
-func (b *storeAssetBiz) transferInOut(ebikeNameMap, sBNameMap, nSbNameMap,
-	cabAccNameMap, ebikeAccNameMap, otherAccNameMap map[string]*definition.AssetMaterial,
-	ats []*ent.AssetTransferDetails, outTrans bool) {
-	for _, inAt := range ats {
-		ws := inAt.Edges.Asset
-		if ws != nil {
-			switch ws.Type {
-			case model.AssetTypeEbike.Value():
-				if ws.Edges.Brand != nil {
-					brandName := ws.Edges.Brand.Name
-					NewAssetTransferDetails().InOutCount(ebikeNameMap, brandName, outTrans)
-				}
-			case model.AssetTypeSmartBattery.Value():
-				if ws.Edges.Model != nil {
-					modelName := ws.Edges.Model.Model
-					NewAssetTransferDetails().InOutCount(sBNameMap, modelName, outTrans)
-				}
-			case model.AssetTypeNonSmartBattery.Value():
-				if ws.Edges.Model != nil {
-					modelName := ws.Edges.Model.Model
-					NewAssetTransferDetails().InOutCount(nSbNameMap, modelName, outTrans)
-				}
-			case model.AssetTypeCabinetAccessory.Value():
-				if ws.Edges.Material != nil {
-					materialName := ws.Edges.Material.Name
-					NewAssetTransferDetails().InOutCount(cabAccNameMap, materialName, outTrans)
-				}
-			case model.AssetTypeEbikeAccessory.Value():
-				if ws.Edges.Material != nil {
-					materialName := ws.Edges.Material.Name
-					NewAssetTransferDetails().InOutCount(ebikeAccNameMap, materialName, outTrans)
-				}
-			case model.AssetTypeOtherAccessory.Value():
-				if ws.Edges.Material != nil {
-					materialName := ws.Edges.Material.Name
-					NewAssetTransferDetails().InOutCount(otherAccNameMap, materialName, outTrans)
-				}
-			}
-		}
-	}
 }

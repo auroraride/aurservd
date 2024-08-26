@@ -6,7 +6,7 @@ package definition
 
 type AssetMaterial struct {
 	// Type      model.AssetType `json:"type"`                // 物资类别
-	// ID        uint64          `json:"id"`                  // 物资ID
+	ID        uint64 `json:"id"`                  // 物资ID
 	Name      string `json:"name"`                // 物资名称
 	Outbound  int    `json:"outbound"`            // 出库数量
 	Inbound   int    `json:"inbound"`             // 入库数量

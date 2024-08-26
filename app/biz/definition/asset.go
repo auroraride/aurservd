@@ -37,16 +37,33 @@ type CommonAssetTotal struct {
 
 // CommonAssetDetail 资产详情通用
 type CommonAssetDetail struct {
-	// EbikeTotal            int              `json:"ebikeTotal"`            // 电车总数
-	Ebikes []*AssetMaterial `json:"ebikes"` // 电车物资详情
-	// SmartBatteryTotal     int              `json:"smartBatteryTotal"`     // 智能电池总数
-	SmartBatteries []*AssetMaterial `json:"smartBatteries"` // 智能电池物资详情
-	// NonSmartBatteryTotal  int              `json:"nonSmartBatteryTotal"`  // 非智能电池总数
-	NonSmartBatteries []*AssetMaterial `json:"nonSmartBatteries"` // 非智能电池物资详情
-	// CabinetAccessoryTotal int              `json:"cabinetAccessoryTotal"` // 电柜配件总数
+	Ebikes             []*AssetMaterial `json:"ebikes"`             // 电车物资详情
+	SmartBatteries     []*AssetMaterial `json:"smartBatteries"`     // 智能电池物资详情
+	NonSmartBatteries  []*AssetMaterial `json:"nonSmartBatteries"`  // 非智能电池物资详情
 	CabinetAccessories []*AssetMaterial `json:"cabinetAccessories"` // 电柜配件物资详情
-	// EbikeAccessoryTotal   int              `json:"ebikeAccessoryTotal"`   // 电车配件总数
-	EbikeAccessories []*AssetMaterial `json:"ebikeAccessories"` // 电车配件物资详情
-	// OtherAssetTotal       int              `json:"otherAssetTotal"`       // 其他物资总数
-	OtherAssets []*AssetMaterial `json:"otherAssets"` // 其他物资详情
+	EbikeAccessories   []*AssetMaterial `json:"ebikeAccessories"`   // 电车配件物资详情
+	OtherAssets        []*AssetMaterial `json:"otherAssets"`        // 其他物资详情
+}
+
+// WarestoreAssetDetail 小程序资产统计数据
+type WarestoreAssetDetail struct {
+	EbikeTotal            int                  `json:"ebikeTotal"`            // 电车总数
+	Ebikes                []*WarestoreMaterial `json:"ebikes"`                // 电车物资详情
+	SmartBatteryTotal     int                  `json:"smartBatteryTotal"`     // 智能电池总数
+	SmartBatteries        []*WarestoreMaterial `json:"smartBatteries"`        // 智能电池物资详情
+	NonSmartBatteryTotal  int                  `json:"nonSmartBatteryTotal"`  // 非智能电池总数
+	NonSmartBatteries     []*WarestoreMaterial `json:"nonSmartBatteries"`     // 非智能电池物资详情
+	CabinetAccessoryTotal int                  `json:"cabinetAccessoryTotal"` // 电柜配件总数
+	CabinetAccessories    []*WarestoreMaterial `json:"cabinetAccessories"`    // 电柜配件物资详情
+	EbikeAccessoryTotal   int                  `json:"ebikeAccessoryTotal"`   // 电车配件总数
+	EbikeAccessories      []*WarestoreMaterial `json:"ebikeAccessories"`      // 电车配件物资详情
+	OtherAssetTotal       int                  `json:"otherAssetTotal"`       // 其他物资总数
+	OtherAssets           []*WarestoreMaterial `json:"otherAssets"`           // 其他物资详情
+}
+
+// WarestoreMaterial 小程序资产明细数据
+type WarestoreMaterial struct {
+	ID   uint64 `json:"id"`   // 电池类型ID、电车品牌ID、其他物资ID
+	Name string `json:"name"` // 物资名称
+	Num  int    `json:"num"`  // 物资数量
 }

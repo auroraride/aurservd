@@ -116,7 +116,7 @@ func (*warehouse) Assets(c echo.Context) (err error) {
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	id						path		string							true	"ID"
-// @Success	200						{object}	[]definition.CommonAssetDetail	"请求成功"
+// @Success	200						{object}	definition.CommonAssetDetail	"请求成功"
 func (*warehouse) AssetDetail(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewWarehouse().AssetsDetail(req.ID))

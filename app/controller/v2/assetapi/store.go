@@ -35,13 +35,13 @@ func (*store) Asset(c echo.Context) (err error) {
 // AssetDetail
 // @ID		StoreAssetDetail
 // @Router	/manager/v2/asset/store_assets/{id} [GET]
-// @Summary	仓库物资详情
+// @Summary	门店物资详情
 // @Tags	Store - 门店
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
 // @Param	id						path		string							true	"ID"
-// @Success	200						{object}	[]definition.CommonAssetDetail	"请求成功"
+// @Success	200						{object}	definition.CommonAssetDetail	"请求成功"
 func (*store) AssetDetail(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewStoreAsset().AssetDetail(req.ID))

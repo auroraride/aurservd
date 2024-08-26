@@ -129,7 +129,7 @@ func (b *cabinetAssetBiz) AssetDetail(id uint64) (ast *definition.CabinetTotalDe
 			query.WithBrand().WithModel().WithMaterial()
 		}).All(b.ctx)
 
-	b.transferInOut(sBNameMap, nSbNameMap, inAts, false)
+	NewAssetTransferDetails().TransferInOut(nil, sBNameMap, nSbNameMap, nil, nil, nil, inAts, false)
 
 	// 出库物资调拨详情
 	outAts, _ := ent.Database.AssetTransferDetails.QueryNotDeleted().
@@ -145,7 +145,7 @@ func (b *cabinetAssetBiz) AssetDetail(id uint64) (ast *definition.CabinetTotalDe
 			query.WithBrand().WithModel().WithMaterial()
 		}).All(b.ctx)
 
-	b.transferInOut(sBNameMap, nSbNameMap, outAts, true)
+	NewAssetTransferDetails().TransferInOut(nil, sBNameMap, nSbNameMap, nil, nil, nil, outAts, true)
 
 	// 组装出入库数据
 
@@ -164,25 +164,4 @@ func (b *cabinetAssetBiz) AssetDetail(id uint64) (ast *definition.CabinetTotalDe
 		return strings.Compare(ast.NonSmartBatteries[i].Name, ast.NonSmartBatteries[j].Name) < 0
 	})
 	return
-}
-
-// transferInOut 物资出入库统计
-func (b *cabinetAssetBiz) transferInOut(sBNameMap, nSbNameMap map[string]*definition.AssetMaterial, ats []*ent.AssetTransferDetails, outTrans bool) {
-	for _, inAt := range ats {
-		ws := inAt.Edges.Asset
-		if ws != nil {
-			switch ws.Type {
-			case model.AssetTypeSmartBattery.Value():
-				if ws.Edges.Model != nil {
-					modelName := ws.Edges.Model.Model
-					NewAssetTransferDetails().InOutCount(sBNameMap, modelName, outTrans)
-				}
-			case model.AssetTypeNonSmartBattery.Value():
-				if ws.Edges.Model != nil {
-					modelName := ws.Edges.Model.Model
-					NewAssetTransferDetails().InOutCount(nSbNameMap, modelName, outTrans)
-				}
-			}
-		}
-	}
 }

@@ -76,6 +76,18 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "门店ID",
                         "name": "storeID",
                         "in": "query"
@@ -962,33 +974,9 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "string",
-                        "description": "入库结束时间",
-                        "name": "inEnd",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "入库开始时间",
-                        "name": "inStart",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
-                        "name": "keyword",
-                        "in": "query"
-                    },
-                    {
                         "type": "integer",
-                        "description": "调拨位置ID",
-                        "name": "locationsId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "调拨位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
-                        "name": "locationsKeyword",
+                        "description": "调出位置ID",
+                        "name": "fromLocationsId",
                         "in": "query"
                     },
                     {
@@ -1017,8 +1005,26 @@ const docTemplate = `{
                             "AssetLocationsTypeCabinet",
                             "AssetLocationsTypeRider"
                         ],
-                        "description": "调拨位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-                        "name": "locationsType",
+                        "description": "调出位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                        "name": "fromLocationsType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "入库结束时间",
+                        "name": "inEnd",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "入库开始时间",
+                        "name": "inStart",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
+                        "name": "keyword",
                         "in": "query"
                     },
                     {
@@ -1058,6 +1064,42 @@ const docTemplate = `{
                         ],
                         "description": "调拨状态 1:配送中 2:待入库 3:已入库 4:已取消",
                         "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "调入位置ID",
+                        "name": "toLocationsId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetLocationsTypeCabinet": "电柜",
+                            "AssetLocationsTypeOperation": "运维",
+                            "AssetLocationsTypeRider": "骑手",
+                            "AssetLocationsTypeStation": "站点",
+                            "AssetLocationsTypeStore": "门店",
+                            "AssetLocationsTypeWarehouse": "仓库"
+                        },
+                        "x-enum-varnames": [
+                            "AssetLocationsTypeWarehouse",
+                            "AssetLocationsTypeStore",
+                            "AssetLocationsTypeStation",
+                            "AssetLocationsTypeOperation",
+                            "AssetLocationsTypeCabinet",
+                            "AssetLocationsTypeRider"
+                        ],
+                        "description": "调入位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                        "name": "toLocationsType",
                         "in": "query"
                     }
                 ],
@@ -1570,31 +1612,6 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.AssetMaterial": {
-            "type": "object",
-            "properties": {
-                "exception": {
-                    "description": "异常数量(电柜无)",
-                    "type": "integer"
-                },
-                "inbound": {
-                    "description": "入库数量",
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "Type      model.AssetType ` + "`" + `json:\"type\"` + "`" + `                // 物资类别\nID        uint64          ` + "`" + `json:\"id\"` + "`" + `                  // 物资ID",
-                    "type": "string"
-                },
-                "outbound": {
-                    "description": "出库数量",
-                    "type": "integer"
-                },
-                "surplus": {
-                    "description": "剩余",
-                    "type": "integer"
-                }
-            }
-        },
         "definition.AssetTransferCreateReq": {
             "type": "object",
             "required": [
@@ -1642,53 +1659,6 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.AssetTransferReceiveReq"
-                    }
-                }
-            }
-        },
-        "definition.CommonAssetDetail": {
-            "type": "object",
-            "properties": {
-                "cabinetAccessories": {
-                    "description": "CabinetAccessoryTotal int              ` + "`" + `json:\"cabinetAccessoryTotal\"` + "`" + ` // 电柜配件总数",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "ebikeAccessories": {
-                    "description": "EbikeAccessoryTotal   int              ` + "`" + `json:\"ebikeAccessoryTotal\"` + "`" + `   // 电车配件总数",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "ebikes": {
-                    "description": "EbikeTotal            int              ` + "`" + `json:\"ebikeTotal\"` + "`" + `            // 电车总数",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "nonSmartBatteries": {
-                    "description": "NonSmartBatteryTotal  int              ` + "`" + `json:\"nonSmartBatteryTotal\"` + "`" + `  // 非智能电池总数",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "otherAssets": {
-                    "description": "OtherAssetTotal       int              ` + "`" + `json:\"otherAssetTotal\"` + "`" + `       // 其他物资总数",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
-                    }
-                },
-                "smartBatteries": {
-                    "description": "SmartBatteryTotal     int              ` + "`" + `json:\"smartBatteryTotal\"` + "`" + `     // 智能电池总数",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.AssetMaterial"
                     }
                 }
             }
@@ -1811,6 +1781,77 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.WarestoreAssetDetail": {
+            "type": "object",
+            "properties": {
+                "cabinetAccessories": {
+                    "description": "电柜配件物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.WarestoreMaterial"
+                    }
+                },
+                "cabinetAccessoryTotal": {
+                    "description": "电柜配件总数",
+                    "type": "integer"
+                },
+                "ebikeAccessories": {
+                    "description": "电车配件物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.WarestoreMaterial"
+                    }
+                },
+                "ebikeAccessoryTotal": {
+                    "description": "电车配件总数",
+                    "type": "integer"
+                },
+                "ebikeTotal": {
+                    "description": "电车总数",
+                    "type": "integer"
+                },
+                "ebikes": {
+                    "description": "电车物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.WarestoreMaterial"
+                    }
+                },
+                "nonSmartBatteries": {
+                    "description": "非智能电池物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.WarestoreMaterial"
+                    }
+                },
+                "nonSmartBatteryTotal": {
+                    "description": "非智能电池总数",
+                    "type": "integer"
+                },
+                "otherAssetTotal": {
+                    "description": "其他物资总数",
+                    "type": "integer"
+                },
+                "otherAssets": {
+                    "description": "其他物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.WarestoreMaterial"
+                    }
+                },
+                "smartBatteries": {
+                    "description": "智能电池物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.WarestoreMaterial"
+                    }
+                },
+                "smartBatteryTotal": {
+                    "description": "智能电池总数",
+                    "type": "integer"
+                }
+            }
+        },
         "definition.WarestoreAssetRes": {
             "type": "object",
             "properties": {
@@ -1826,7 +1867,7 @@ const docTemplate = `{
                     "description": "资产",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.CommonAssetDetail"
+                            "$ref": "#/definitions/definition.WarestoreAssetDetail"
                         }
                     ]
                 },
@@ -1837,6 +1878,23 @@ const docTemplate = `{
                 "name": {
                     "description": "名称",
                     "type": "string"
+                }
+            }
+        },
+        "definition.WarestoreMaterial": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "电池类型ID、电车品牌ID、其他物资ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "物资名称",
+                    "type": "string"
+                },
+                "num": {
+                    "description": "物资数量",
+                    "type": "integer"
                 }
             }
         },

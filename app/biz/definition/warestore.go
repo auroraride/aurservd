@@ -85,6 +85,7 @@ type AssetTransferReceiveBatchReq struct {
 
 // WarestoreAssetsReq 资产数据请求
 type WarestoreAssetsReq struct {
+	model.PaginationReq
 	CityID      *uint64 `json:"cityId" query:"cityId"`           // 城市ID
 	WarehouseID *uint64 `json:"warehouseID" query:"warehouseID"` // 仓库ID
 	StoreID     *uint64 `json:"storeID" query:"storeID"`         // 门店ID
@@ -92,10 +93,10 @@ type WarestoreAssetsReq struct {
 
 // WarestoreAssetRes 资产信息
 type WarestoreAssetRes struct {
-	ID     uint64            `json:"id"`     // ID
-	Name   string            `json:"name"`   // 名称
-	City   model.City        `json:"city"`   // 城市
-	Detail CommonAssetDetail `json:"detail"` // 资产
+	ID     uint64               `json:"id"`     // ID
+	Name   string               `json:"name"`   // 名称
+	City   model.City           `json:"city"`   // 城市
+	Detail WarestoreAssetDetail `json:"detail"` // 资产
 }
 
 type CommonAssetType uint8
