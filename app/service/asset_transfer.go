@@ -543,42 +543,16 @@ func (s *assetTransferService) TransferInfo(item *ent.AssetTransfer) (res *model
 // 筛选
 func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQuery, req *model.AssetTransferFilter) {
 	// 查询调拨
-	if req.LocationsID != nil && req.LocationsType != nil {
+	if req.FromLocationsType != nil && req.FromLocationsID != nil {
 		q.Where(
-			func(selector *sql.Selector) {
-				switch *req.LocationsType {
-				case model.AssetLocationsTypeRider, model.AssetLocationsTypeCabinet:
-					if req.LocationsKeyword != nil && *req.LocationsType == model.AssetLocationsTypeCabinet {
-						q.Where(
-							assettransfer.Or(
-								assettransfer.HasFromLocationCabinetWith(cabinet.SnContains(*req.LocationsKeyword)),
-								assettransfer.HasToLocationCabinetWith(cabinet.SnContains(*req.LocationsKeyword)),
-							),
-						)
-					}
-					if req.LocationsKeyword != nil && *req.LocationsType == model.AssetLocationsTypeRider {
-						q.Where(
-							assettransfer.Or(
-								assettransfer.HasFromLocationRiderWith(rider.NameContains(*req.LocationsKeyword)),
-								assettransfer.HasToLocationRiderWith(rider.NameContains(*req.LocationsKeyword)),
-							),
-						)
-					}
-				case model.AssetLocationsTypeWarehouse, model.AssetLocationsTypeStore, model.AssetLocationsTypeStation, model.AssetLocationsTypeOperation:
-					selector.Where(
-						sql.Or(
-							sql.And(
-								sql.EQ(assettransfer.FieldFromLocationID, *req.LocationsID),
-								sql.EQ(assettransfer.FieldFromLocationType, req.LocationsType.Value()),
-							),
-							sql.And(
-								sql.EQ(assettransfer.FieldToLocationID, *req.LocationsID),
-								sql.EQ(assettransfer.FieldToLocationType, req.LocationsType.Value()),
-							),
-						),
-					)
-				}
-			},
+			assettransfer.FromLocationType((*req.FromLocationsType).Value()),
+			assettransfer.FromLocationID(*req.FromLocationsID),
+		)
+	}
+	if req.ToLocationsType != nil && req.ToLocationsID != nil {
+		q.Where(
+			assettransfer.ToLocationType((*req.ToLocationsType).Value()),
+			assettransfer.ToLocationID(*req.ToLocationsID),
 		)
 	}
 	if req.Status != nil {
