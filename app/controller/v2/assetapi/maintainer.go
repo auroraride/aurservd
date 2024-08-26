@@ -21,7 +21,7 @@ var Maintainer = new(maintainer)
 // @ID		MaintainerAsset
 // @Router	/manager/v2/asset/maintainer_assets [GET]
 // @Summary	运维物资
-// @Tags	运维 - Maintainer
+// @Tags	Maintainer - 运维
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string															true	"管理员校验token"
@@ -36,7 +36,7 @@ func (*maintainer) Asset(c echo.Context) (err error) {
 // @ID		MaintainerAssetDetail
 // @Router	/manager/v2/asset/maintainer_assets/{id} [GET]
 // @Summary	物资详情
-// @Tags	运维 - Maintainer
+// @Tags	Maintainer - 运维
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"

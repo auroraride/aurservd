@@ -15,6 +15,7 @@ import (
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 )
@@ -43,18 +44,18 @@ func NewEnterpriseAssetWithModifier(m *model.Modifier) *enterpriseAssetBiz {
 
 // Assets 资产列表
 func (b *enterpriseAssetBiz) Assets(req *definition.EnterpriseAssetListReq) (res *model.PaginationRes) {
-	// 查询分页的门店数据
-	q := b.orm.QueryNotDeleted().WithCity().WithStations()
+	// 查询分页数据
+	q := ent.Database.EnterpriseStation.QueryNotDeleted().WithCity().WithEnterprise()
 	if req.CityID != nil {
-		q.Where(enterprise.CityID(*req.CityID))
+		q.Where(enterprisestation.HasCityWith(city.ID(*req.CityID)))
 	}
 	if req.StationID != nil {
-		q.Where(enterprise.HasStationsWith(enterprisestation.ID(*req.StationID)))
+		q.Where(enterprisestation.ID(*req.StationID))
 	}
 	if req.EnterpriseID != nil {
-		q.Where(enterprise.ID(*req.EnterpriseID))
+		q.Where(enterprisestation.HasEnterpriseWith(enterprise.ID((*req.EnterpriseID))))
 	}
-	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Enterprise) (result *definition.EnterpriseAssetDetail) {
+	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.EnterpriseStation) (result *definition.EnterpriseAssetDetail) {
 		result = &definition.EnterpriseAssetDetail{
 			ID:    item.ID,
 			Name:  item.Name,
@@ -66,15 +67,14 @@ func (b *enterpriseAssetBiz) Assets(req *definition.EnterpriseAssetListReq) (res
 				Name: item.Edges.City.Name,
 			}
 		}
-		stations := make([]*definition.EnterpriseStation, 0)
-		for _, s := range item.Edges.Stations {
-			stations = append(stations, &definition.EnterpriseStation{
-				ID:   s.ID,
-				Name: s.Name,
-			})
+
+		if item.Edges.Enterprise != nil {
+			result.Enterprise = definition.EnterpriseDetail{
+				ID:   item.Edges.Enterprise.ID,
+				Name: item.Edges.Enterprise.Name,
+			}
 		}
 
-		result.Stations = stations
 		return result
 	})
 

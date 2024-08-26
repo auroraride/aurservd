@@ -21,7 +21,7 @@ var Store = new(store)
 // @ID		StoreAsset
 // @Router	/manager/v2/asset/store_assets [GET]
 // @Summary	门店物资
-// @Tags	门店 - Store
+// @Tags	Store - 门店
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string														true	"管理员校验token"
@@ -36,7 +36,7 @@ func (*store) Asset(c echo.Context) (err error) {
 // @ID		StoreAssetDetail
 // @Router	/manager/v2/asset/store_assets/{id} [GET]
 // @Summary	仓库物资详情
-// @Tags	门店 - Store
+// @Tags	Store - 门店
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"

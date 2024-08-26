@@ -21,7 +21,7 @@ var Cabinet = new(cabinet)
 // @ID		CabinetAsset
 // @Router	/manager/v2/asset/cabinet_assets [GET]
 // @Summary	电柜物资
-// @Tags	电柜 - Cabinet
+// @Tags	Cabinet - 电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string														true	"管理员校验token"
@@ -36,7 +36,7 @@ func (*cabinet) Asset(c echo.Context) (err error) {
 // @ID		CabinetAssetDetail
 // @Router	/manager/v2/asset/cabinet_assets/{id} [GET]
 // @Summary	物资详情
-// @Tags	运维 - Maintainer
+// @Tags	Cabinet - 电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"

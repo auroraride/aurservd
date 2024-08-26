@@ -407,29 +407,28 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.City'
         description: 城市
+      enterprise:
+        allOf:
+        - $ref: '#/definitions/definition.EnterpriseDetail'
+        description: 团签企业
       id:
         description: 团签ID
         type: integer
       name:
         description: 团签名称
         type: string
-      stations:
-        description: 团签站点
-        items:
-          $ref: '#/definitions/definition.EnterpriseStation'
-        type: array
       total:
         allOf:
         - $ref: '#/definitions/definition.CommonAssetTotal'
         description: 资产统计
     type: object
-  definition.EnterpriseStation:
+  definition.EnterpriseDetail:
     properties:
       id:
-        description: 站点ID
+        description: 企业ID
         type: integer
       name:
-        description: 站点名称
+        description: 企业名称
         type: string
     type: object
   definition.MaintainerAssetDetail:
@@ -2575,7 +2574,7 @@ paths:
               type: object
       summary: 电柜物资
       tags:
-      - 电柜 - Cabinet
+      - Cabinet - 电柜
   /manager/v2/asset/cabinet_assets/{id}:
     get:
       consumes:
@@ -2603,7 +2602,7 @@ paths:
             type: array
       summary: 物资详情
       tags:
-      - 运维 - Maintainer
+      - Cabinet - 电柜
   /manager/v2/asset/check:
     get:
       consumes:
@@ -3436,7 +3435,7 @@ paths:
               type: object
       summary: 团签物资
       tags:
-      - 团签 - Enterprise
+      - Enterprise - 团签
   /manager/v2/asset/enterprise_assets/{id}:
     get:
       consumes:
@@ -3464,7 +3463,7 @@ paths:
             type: array
       summary: 团签物资详情
       tags:
-      - 团签 - Enterprise
+      - Enterprise - 团签
   /manager/v2/asset/export:
     post:
       consumes:
@@ -3543,7 +3542,7 @@ paths:
               type: object
       summary: 运维物资
       tags:
-      - 运维 - Maintainer
+      - Maintainer - 运维
   /manager/v2/asset/maintainer_assets/{id}:
     get:
       consumes:
@@ -3571,7 +3570,7 @@ paths:
             type: array
       summary: 物资详情
       tags:
-      - 运维 - Maintainer
+      - Maintainer - 运维
   /manager/v2/asset/maintenance:
     get:
       consumes:
@@ -4447,7 +4446,7 @@ paths:
               type: object
       summary: 门店物资
       tags:
-      - 门店 - Store
+      - Store - 门店
   /manager/v2/asset/store_assets/{id}:
     get:
       consumes:
@@ -4475,7 +4474,7 @@ paths:
             type: array
       summary: 仓库物资详情
       tags:
-      - 门店 - Store
+      - Store - 门店
   /manager/v2/asset/store_group:
     get:
       consumes:
@@ -4498,7 +4497,7 @@ paths:
             type: array
       summary: 门店集合列表
       tags:
-      - StoreGroup - 仓库
+      - StoreGroup - 门店集合
     post:
       consumes:
       - application/json
@@ -4524,7 +4523,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 门店集合创建
       tags:
-      - StoreGroup - 仓库
+      - StoreGroup - 门店集合
   /manager/v2/asset/store_group/{id}:
     delete:
       consumes:
@@ -4550,7 +4549,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 门店集合删除
       tags:
-      - StoreGroup - 仓库
+      - StoreGroup - 门店集合
   /manager/v2/asset/template:
     get:
       consumes:
@@ -5307,7 +5306,7 @@ paths:
               type: object
       summary: 仓库列表
       tags:
-      - 仓库 - Warehouse
+      - Warehouse - 仓库
     post:
       consumes:
       - application/json
@@ -5333,7 +5332,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建仓库
       tags:
-      - 仓库 - Warehouse
+      - Warehouse - 仓库
   /manager/v2/asset/warehouse/{id}:
     delete:
       consumes:
@@ -5359,7 +5358,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除仓库
       tags:
-      - 仓库 - Warehouse
+      - Warehouse - 仓库
     get:
       consumes:
       - application/json
@@ -5384,7 +5383,7 @@ paths:
             $ref: '#/definitions/definition.WarehouseDetail'
       summary: 仓库详情
       tags:
-      - 仓库 - Warehouse
+      - Warehouse - 仓库
     put:
       consumes:
       - application/json
@@ -5410,7 +5409,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改仓库
       tags:
-      - 仓库 - Warehouse
+      - Warehouse - 仓库
   /manager/v2/asset/warehouse_assets:
     get:
       consumes:
@@ -5474,7 +5473,7 @@ paths:
               type: object
       summary: 仓库物资
       tags:
-      - 仓库 - Warehouse
+      - Warehouse - 仓库
   /manager/v2/asset/warehouse_assets/{id}:
     get:
       consumes:
@@ -5502,5 +5501,5 @@ paths:
             type: array
       summary: 仓库物资详情
       tags:
-      - 仓库 - Warehouse
+      - Warehouse - 仓库
 swagger: "2.0"

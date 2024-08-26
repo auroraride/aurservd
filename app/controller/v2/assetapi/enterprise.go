@@ -21,7 +21,7 @@ var Enterprise = new(enterprise)
 // @ID		EnterpriseAsset
 // @Router	/manager/v2/asset/enterprise_assets [GET]
 // @Summary	团签物资
-// @Tags	团签 - Enterprise
+// @Tags	Enterprise - 团签
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string															true	"管理员校验token"
@@ -36,7 +36,7 @@ func (*enterprise) Asset(c echo.Context) (err error) {
 // @ID		EnterpriseAssetDetail
 // @Router	/manager/v2/asset/enterprise_assets/{id} [GET]
 // @Summary	团签物资详情
-// @Tags	团签 - Enterprise
+// @Tags	Enterprise - 团签
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"

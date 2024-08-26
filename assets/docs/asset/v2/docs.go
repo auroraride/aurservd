@@ -561,7 +561,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "电柜 - Cabinet"
+                    "Cabinet - 电柜"
                 ],
                 "summary": "电柜物资",
                 "operationId": "CabinetAsset",
@@ -656,7 +656,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "运维 - Maintainer"
+                    "Cabinet - 电柜"
                 ],
                 "summary": "物资详情",
                 "operationId": "CabinetAssetDetail",
@@ -1828,7 +1828,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "团签 - Enterprise"
+                    "Enterprise - 团签"
                 ],
                 "summary": "团签物资",
                 "operationId": "EnterpriseAsset",
@@ -1935,7 +1935,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "团签 - Enterprise"
+                    "Enterprise - 团签"
                 ],
                 "summary": "团签物资详情",
                 "operationId": "EnterpriseAssetDetail",
@@ -2018,7 +2018,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "运维 - Maintainer"
+                    "Maintainer - 运维"
                 ],
                 "summary": "运维物资",
                 "operationId": "MaintainerAsset",
@@ -2101,7 +2101,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "运维 - Maintainer"
+                    "Maintainer - 运维"
                 ],
                 "summary": "物资详情",
                 "operationId": "MaintainerAssetDetail",
@@ -3351,7 +3351,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "门店 - Store"
+                    "Store - 门店"
                 ],
                 "summary": "门店物资",
                 "operationId": "StoreAsset",
@@ -3458,7 +3458,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "门店 - Store"
+                    "Store - 门店"
                 ],
                 "summary": "仓库物资详情",
                 "operationId": "StoreAssetDetail",
@@ -3500,7 +3500,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "StoreGroup - 仓库"
+                    "StoreGroup - 门店集合"
                 ],
                 "summary": "门店集合列表",
                 "operationId": "StoreGroupList",
@@ -3533,7 +3533,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "StoreGroup - 仓库"
+                    "StoreGroup - 门店集合"
                 ],
                 "summary": "门店集合创建",
                 "operationId": "StoreGroupCreate",
@@ -3574,7 +3574,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "StoreGroup - 仓库"
+                    "StoreGroup - 门店集合"
                 ],
                 "summary": "门店集合删除",
                 "operationId": "StoreGroupDelete",
@@ -4649,7 +4649,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "仓库 - Warehouse"
+                    "Warehouse - 仓库"
                 ],
                 "summary": "仓库列表",
                 "operationId": "WarehouseList",
@@ -4718,7 +4718,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "仓库 - Warehouse"
+                    "Warehouse - 仓库"
                 ],
                 "summary": "创建仓库",
                 "operationId": "WarehouseCreate",
@@ -4759,7 +4759,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "仓库 - Warehouse"
+                    "Warehouse - 仓库"
                 ],
                 "summary": "仓库详情",
                 "operationId": "WarehouseDetail",
@@ -4796,7 +4796,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "仓库 - Warehouse"
+                    "Warehouse - 仓库"
                 ],
                 "summary": "修改仓库",
                 "operationId": "WarehouseModify",
@@ -4835,7 +4835,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "仓库 - Warehouse"
+                    "Warehouse - 仓库"
                 ],
                 "summary": "删除仓库",
                 "operationId": "WarehouseDelete",
@@ -4874,7 +4874,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "仓库 - Warehouse"
+                    "Warehouse - 仓库"
                 ],
                 "summary": "仓库物资",
                 "operationId": "WarehouseAssets",
@@ -4975,7 +4975,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "仓库 - Warehouse"
+                    "Warehouse - 仓库"
                 ],
                 "summary": "仓库物资详情",
                 "operationId": "WarehouseAssetDetail",
@@ -5677,6 +5677,14 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "enterprise": {
+                    "description": "团签企业",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.EnterpriseDetail"
+                        }
+                    ]
+                },
                 "id": {
                     "description": "团签ID",
                     "type": "integer"
@@ -5684,13 +5692,6 @@ const docTemplate = `{
                 "name": {
                     "description": "团签名称",
                     "type": "string"
-                },
-                "stations": {
-                    "description": "团签站点",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/definition.EnterpriseStation"
-                    }
                 },
                 "total": {
                     "description": "资产统计",
@@ -5702,15 +5703,15 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.EnterpriseStation": {
+        "definition.EnterpriseDetail": {
             "type": "object",
             "properties": {
                 "id": {
-                    "description": "站点ID",
+                    "description": "企业ID",
                     "type": "integer"
                 },
                 "name": {
-                    "description": "站点名称",
+                    "description": "企业名称",
                     "type": "string"
                 }
             }

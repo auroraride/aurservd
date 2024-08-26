@@ -21,7 +21,7 @@ var StoreGroup = new(storeGroup)
 // @ID		StoreGroupList
 // @Router	/manager/v2/asset/store_group [GET]
 // @Summary	门店集合列表
-// @Tags	StoreGroup - 仓库
+// @Tags	StoreGroup - 门店集合
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
@@ -35,7 +35,7 @@ func (*storeGroup) List(c echo.Context) (err error) {
 // @ID		StoreGroupCreate
 // @Router	/manager/v2/asset/store_group [POST]
 // @Summary	门店集合创建
-// @Tags	StoreGroup - 仓库
+// @Tags	StoreGroup - 门店集合
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
@@ -50,7 +50,7 @@ func (*storeGroup) Create(c echo.Context) (err error) {
 // @ID		StoreGroupDelete
 // @Router	/manager/v2/asset/store_group/{id} [DELETE]
 // @Summary	门店集合删除
-// @Tags	StoreGroup - 仓库
+// @Tags	StoreGroup - 门店集合
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
