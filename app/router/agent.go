@@ -85,4 +85,23 @@ func loadAgentRoutes() {
 	// AZ 杂项
 	auth.POST("/misc/feedback", aapi.Misc.Feedback)            // 意见反馈
 	auth.POST("/misc/feedback/image", aapi.Misc.FeedbackImage) // 意见反馈 - 上传图片
+
+	// 资产调拨
+	auth.POST("/transfer", aapi.AssetTransfer.Transfer)                // 创建调拨
+	auth.GET("/transfer", aapi.AssetTransfer.TransferList)             // 调拨列表
+	auth.GET("/transfer/:id", aapi.AssetTransfer.TransferDetail)       // 调拨详情
+	auth.POST("/transfer/receive", aapi.AssetTransfer.TransferReceive) // 调拨批量入库
+	auth.GET("/transfer/sn/:sn", aapi.AssetTransfer.TransferBySn)      // 根据sn查询调拨信息
+
+	// 物资管理
+	auth.GET("/assets", aapi.Asset.Assets)              // 资产数据
+	auth.GET("/assets/common", aapi.Asset.AssetsCommon) // 电池/电车资产数据
+
+	// 盘点
+	auth.GET("/check/sn/:sn", aapi.AssetCheck.GetAssetBySN)      // 通过SN查询资产
+	auth.GET("/check", aapi.AssetCheck.List)                     // 盘点记录
+	auth.POST("/check", aapi.AssetCheck.Create)                  // 创建资产盘点
+	auth.GET("/check/:id", aapi.AssetCheck.Detail)               // 盘点详情
+	auth.GET("/check/asset:id", aapi.AssetCheck.AssetDetailList) // 盘点资产明细
+
 }

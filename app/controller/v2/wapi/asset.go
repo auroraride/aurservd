@@ -42,7 +42,10 @@ func (*assets) AssetCount(c echo.Context) (err error) {
 // @Success	200					{object}	[]definition.WarestoreAssetRes	"请求成功"
 func (*assets) Assets(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[definition.WarestoreAssetsReq](c)
-	return ctx.SendResponse(biz.NewWarestore().Assets(ctx.AssetManager, ctx.Employee, req))
+	return ctx.SendResponse(biz.NewWarestore().Assets(definition.AssetSignInfo{
+		AssetManager: ctx.AssetManager,
+		Employee:     ctx.Employee,
+	}, req))
 }
 
 // AssetsCommon
@@ -57,5 +60,8 @@ func (*assets) Assets(c echo.Context) (err error) {
 // @Success	200					{object}	model.PaginationRes{items=[]model.AssetListRes}	"请求成功"
 func (*assets) AssetsCommon(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[definition.WarestoreAssetsCommonReq](c)
-	return ctx.SendResponse(biz.NewWarestore().AssetsCommon(ctx.AssetManager, ctx.Employee, req))
+	return ctx.SendResponse(biz.NewWarestore().AssetsCommon(definition.AssetSignInfo{
+		AssetManager: ctx.AssetManager,
+		Employee:     ctx.Employee,
+	}, req))
 }

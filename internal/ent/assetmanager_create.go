@@ -187,6 +187,25 @@ func (amc *AssetManagerCreate) AddWarehouses(w ...*Warehouse) *AssetManagerCreat
 	return amc.AddWarehouseIDs(ids...)
 }
 
+// SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
+func (amc *AssetManagerCreate) SetWarehouseID(id uint64) *AssetManagerCreate {
+	amc.mutation.SetWarehouseID(id)
+	return amc
+}
+
+// SetNillableWarehouseID sets the "warehouse" edge to the Warehouse entity by ID if the given value is not nil.
+func (amc *AssetManagerCreate) SetNillableWarehouseID(id *uint64) *AssetManagerCreate {
+	if id != nil {
+		amc = amc.SetWarehouseID(*id)
+	}
+	return amc
+}
+
+// SetWarehouse sets the "warehouse" edge to the Warehouse entity.
+func (amc *AssetManagerCreate) SetWarehouse(w *Warehouse) *AssetManagerCreate {
+	return amc.SetWarehouseID(w.ID)
+}
+
 // Mutation returns the AssetManagerMutation object of the builder.
 func (amc *AssetManagerCreate) Mutation() *AssetManagerMutation {
 	return amc.mutation
@@ -380,6 +399,22 @@ func (amc *AssetManagerCreate) createSpec() (*AssetManager, *sqlgraph.CreateSpec
 			Inverse: true,
 			Table:   assetmanager.WarehousesTable,
 			Columns: assetmanager.WarehousesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := amc.mutation.WarehouseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   assetmanager.WarehouseTable,
+			Columns: []string{assetmanager.WarehouseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),

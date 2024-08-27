@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
@@ -44,6 +45,8 @@ type Warehouse struct {
 	Address string `json:"address,omitempty"`
 	// 仓库编号
 	Sn string `json:"sn,omitempty"`
+	// 上班仓管员ID
+	AssetManagerID *uint64 `json:"asset_manager_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WarehouseQuery when eager-loading is set.
 	Edges        WarehouseEdges `json:"edges"`
@@ -54,11 +57,13 @@ type Warehouse struct {
 type WarehouseEdges struct {
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
+	// AssetManager holds the value of the asset_manager edge.
+	AssetManager *AssetManager `json:"asset_manager,omitempty"`
 	// AssetManagers holds the value of the asset_managers edge.
 	AssetManagers []*AssetManager `json:"asset_managers,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -72,10 +77,21 @@ func (e WarehouseEdges) CityOrErr() (*City, error) {
 	return nil, &NotLoadedError{edge: "city"}
 }
 
+// AssetManagerOrErr returns the AssetManager value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e WarehouseEdges) AssetManagerOrErr() (*AssetManager, error) {
+	if e.AssetManager != nil {
+		return e.AssetManager, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: assetmanager.Label}
+	}
+	return nil, &NotLoadedError{edge: "asset_manager"}
+}
+
 // AssetManagersOrErr returns the AssetManagers value or an error if the edge
 // was not loaded in eager-loading.
 func (e WarehouseEdges) AssetManagersOrErr() ([]*AssetManager, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.AssetManagers, nil
 	}
 	return nil, &NotLoadedError{edge: "asset_managers"}
@@ -90,7 +106,7 @@ func (*Warehouse) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case warehouse.FieldLng, warehouse.FieldLat:
 			values[i] = new(sql.NullFloat64)
-		case warehouse.FieldID, warehouse.FieldCityID:
+		case warehouse.FieldID, warehouse.FieldCityID, warehouse.FieldAssetManagerID:
 			values[i] = new(sql.NullInt64)
 		case warehouse.FieldRemark, warehouse.FieldName, warehouse.FieldAddress, warehouse.FieldSn:
 			values[i] = new(sql.NullString)
@@ -194,6 +210,13 @@ func (w *Warehouse) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				w.Sn = value.String
 			}
+		case warehouse.FieldAssetManagerID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field asset_manager_id", values[i])
+			} else if value.Valid {
+				w.AssetManagerID = new(uint64)
+				*w.AssetManagerID = uint64(value.Int64)
+			}
 		default:
 			w.selectValues.Set(columns[i], values[i])
 		}
@@ -210,6 +233,11 @@ func (w *Warehouse) Value(name string) (ent.Value, error) {
 // QueryCity queries the "city" edge of the Warehouse entity.
 func (w *Warehouse) QueryCity() *CityQuery {
 	return NewWarehouseClient(w.config).QueryCity(w)
+}
+
+// QueryAssetManager queries the "asset_manager" edge of the Warehouse entity.
+func (w *Warehouse) QueryAssetManager() *AssetManagerQuery {
+	return NewWarehouseClient(w.config).QueryAssetManager(w)
 }
 
 // QueryAssetManagers queries the "asset_managers" edge of the Warehouse entity.
@@ -277,6 +305,11 @@ func (w *Warehouse) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("sn=")
 	builder.WriteString(w.Sn)
+	builder.WriteString(", ")
+	if v := w.AssetManagerID; v != nil {
+		builder.WriteString("asset_manager_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

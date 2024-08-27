@@ -7,10 +7,16 @@ package biz
 import (
 	"context"
 
+	"github.com/pkg/errors"
+
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
+	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/pkg/silk"
 )
 
@@ -27,27 +33,32 @@ func NewAssetCheck() *assetCheckBiz {
 }
 
 // GetAssetBySN 通过sn查询资产
-func (b *assetCheckBiz) GetAssetBySN(am *ent.AssetManager, ep *ent.Employee, req *definition.AssetCheckByAssetSnReq) (res *model.AssetCheckByAssetSnRes, err error) {
+func (b *assetCheckBiz) GetAssetBySN(assetSignInfo definition.AssetSignInfo, req *definition.AssetCheckByAssetSnReq) (res *model.AssetCheckByAssetSnRes, err error) {
 	newReq := model.AssetCheckByAssetSnReq{
 		SN: req.SN,
 	}
 
-	if am != nil {
+	if assetSignInfo.AssetManager != nil {
 		wType := model.AssetOperateRoleTypeManager
 		newReq.OpratorType = wType
-		newReq.OpratorID = am.ID
+		newReq.OpratorID = assetSignInfo.AssetManager.ID
 	}
-	if ep != nil {
+	if assetSignInfo.Employee != nil {
 		sType := model.AssetOperateRoleTypeStore
 		newReq.OpratorType = sType
-		newReq.OpratorID = ep.ID
+		newReq.OpratorID = assetSignInfo.Employee.ID
+	}
+	if assetSignInfo.Agent != nil {
+		sType := model.AssetOperateRoleTypeAgent
+		newReq.OpratorType = sType
+		newReq.OpratorID = assetSignInfo.Agent.ID
 	}
 
 	return service.NewAssetCheck().GetAssetBySN(b.ctx, &newReq)
 }
 
 // Create 创建资产盘点
-func (b *assetCheckBiz) Create(am *ent.AssetManager, ep *ent.Employee, req *definition.AssetCheckCreateReq) (res *definition.AssetCheckCreateRes, err error) {
+func (b *assetCheckBiz) Create(assetSignInfo definition.AssetSignInfo, req *definition.AssetCheckCreateReq) (res *definition.AssetCheckCreateRes, err error) {
 	var md model.Modifier
 
 	newReq := model.AssetCheckCreateReq{
@@ -56,31 +67,68 @@ func (b *assetCheckBiz) Create(am *ent.AssetManager, ep *ent.Employee, req *defi
 		EndAt:                  req.EndAt,
 	}
 
-	if am != nil {
+	if assetSignInfo.AssetManager != nil {
 		wType := model.AssetLocationsTypeWarehouse
 		newReq.LocationsType = wType
-		// todo 查询上班所属位置
-		// newReq.LocationsID = 1
-		newReq.OpratorID = am.ID
+		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithWarehouse().
+			Where(
+				assetmanager.ID(assetSignInfo.AssetManager.ID),
+			).First(b.ctx)
+		if am == nil {
+			return nil, errors.New("无效仓管员")
+		}
+
+		if am.Edges.Warehouse == nil {
+			return nil, errors.New("未找到仓管员上班信息")
+		}
+		newReq.LocationsID = am.Edges.Warehouse.ID
+		newReq.OpratorID = assetSignInfo.AssetManager.ID
 		newReq.OpratorType = model.AssetOperateRoleTypeManager
 
 		md = model.Modifier{
-			ID:    am.ID,
-			Name:  am.Name,
-			Phone: am.Phone,
+			ID:    assetSignInfo.AssetManager.ID,
+			Name:  assetSignInfo.AssetManager.Name,
+			Phone: assetSignInfo.AssetManager.Phone,
 		}
 	}
-	if ep != nil {
+	if assetSignInfo.Employee != nil {
 		sType := model.AssetLocationsTypeStore
 		newReq.LocationsType = sType
-		// todo 查询上班所属位置
-		// newReq.LocationsID = 1
-		newReq.OpratorID = ep.ID
+		ep, _ := ent.Database.Employee.QueryNotDeleted().WithStore().
+			Where(
+				employee.ID(assetSignInfo.Employee.ID),
+			).First(b.ctx)
+		if ep == nil {
+			return nil, errors.New("无效店员")
+		}
+
+		if ep.Edges.Store == nil {
+			return nil, errors.New("未找到店员上班信息")
+		}
+
+		newReq.LocationsID = ep.Edges.Store.ID
+		newReq.OpratorID = assetSignInfo.Employee.ID
 		newReq.OpratorType = model.AssetOperateRoleTypeStore
 		md = model.Modifier{
-			ID:    ep.ID,
-			Name:  ep.Name,
-			Phone: ep.Phone,
+			ID:    assetSignInfo.Employee.ID,
+			Name:  assetSignInfo.Employee.Name,
+			Phone: assetSignInfo.Employee.Phone,
+		}
+	}
+	if assetSignInfo.Agent != nil {
+		if req.StationID == nil {
+			return nil, errors.New("站点ID数据有误")
+		}
+
+		sType := model.AssetLocationsTypeStation
+		newReq.LocationsType = sType
+		newReq.LocationsID = *req.StationID
+		newReq.OpratorID = assetSignInfo.Agent.ID
+		newReq.OpratorType = model.AssetOperateRoleTypeAgent
+		md = model.Modifier{
+			ID:    assetSignInfo.Agent.ID,
+			Name:  assetSignInfo.Agent.Name,
+			Phone: assetSignInfo.Agent.Phone,
 		}
 	}
 
@@ -93,7 +141,7 @@ func (b *assetCheckBiz) Create(am *ent.AssetManager, ep *ent.Employee, req *defi
 }
 
 // List 盘点记录
-func (b *assetCheckBiz) List(am *ent.AssetManager, ep *ent.Employee, req *definition.AssetCheckListReq) (res *model.PaginationRes, err error) {
+func (b *assetCheckBiz) List(assetSignInfo definition.AssetSignInfo, req *definition.AssetCheckListReq) (res *model.PaginationRes, err error) {
 	newReq := model.AssetCheckListReq{
 		PaginationReq: req.PaginationReq,
 		Keyword:       req.Keyword,
@@ -102,15 +150,56 @@ func (b *assetCheckBiz) List(am *ent.AssetManager, ep *ent.Employee, req *defini
 		CheckResult:   req.CheckResult,
 	}
 
-	if am != nil {
+	if assetSignInfo.AssetManager != nil {
 		wType := model.AssetLocationsTypeWarehouse
 		newReq.LocationsType = &wType
-		newReq.LocationsID = silk.UInt64(am.ID)
+
+		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithWarehouse().
+			Where(
+				assetmanager.ID(assetSignInfo.AssetManager.ID),
+			).First(b.ctx)
+		if am == nil {
+			return nil, errors.New("无效仓管员")
+		}
+
+		if am.Edges.Warehouse == nil {
+			return nil, errors.New("未找到仓管员上班信息")
+		}
+
+		newReq.LocationsID = silk.UInt64(am.Edges.Warehouse.ID)
 	}
-	if ep != nil {
+	if assetSignInfo.Employee != nil {
 		sType := model.AssetLocationsTypeStore
 		newReq.LocationsType = &sType
-		newReq.LocationsID = silk.UInt64(ep.ID)
+
+		ep, _ := ent.Database.Employee.QueryNotDeleted().WithStore().
+			Where(
+				employee.ID(assetSignInfo.Employee.ID),
+			).First(b.ctx)
+		if ep == nil {
+			return nil, errors.New("无效店员")
+		}
+
+		if ep.Edges.Store == nil {
+			return nil, errors.New("未找到店员上班信息")
+		}
+
+		newReq.LocationsID = silk.UInt64(ep.Edges.Store.ID)
+	}
+	if assetSignInfo.Agent != nil {
+		sType := model.AssetLocationsTypeStation
+		newReq.LocationsType = &sType
+
+		list, _ := ent.Database.EnterpriseStation.QueryNotDeleted().
+			Where(
+				enterprisestation.HasAgentsWith(agent.ID(assetSignInfo.Agent.ID)),
+			).All(b.ctx)
+		ids := make([]uint64, 0)
+		for _, v := range list {
+			ids = append(ids, v.ID)
+		}
+
+		newReq.LocationsIds = ids
 	}
 
 	return service.NewAssetCheck().List(b.ctx, &newReq)

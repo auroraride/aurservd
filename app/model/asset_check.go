@@ -116,6 +116,7 @@ type AssetCheckListReq struct {
 	StartAt       *string             `json:"startAt" query:"startAt"`             // 开始时间
 	EndAt         *string             `json:"endAt" query:"endAt"`                 // 结束时间
 	CheckResult   *bool               `json:"checkResult" query:"checkResult"`     // 盘点结果 true:正常 false:异常
+	LocationsIds  []uint64            `json:"locationsIds" query:"locationsIds"`   // 位置IDs
 }
 
 // AssetCheckListRes 获取资产盘点返回

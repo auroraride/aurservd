@@ -47,7 +47,7 @@ definitions:
         type: boolean
       image:
         allOf:
-        - $ref: '#/definitions/definition.ActivityImage'
+        - $ref: '#/definitions/model.ActivityImage'
         description: 图片, 图片
       introduction:
         description: 活动简介
@@ -87,7 +87,7 @@ definitions:
         type: integer
       image:
         allOf:
-        - $ref: '#/definitions/definition.ActivityImage'
+        - $ref: '#/definitions/model.ActivityImage'
         description: 图片
       introduction:
         description: 活动简介
@@ -111,18 +111,6 @@ definitions:
         description: 更新时间
         type: string
     type: object
-  definition.ActivityImage:
-    properties:
-      home:
-        description: 首页icon图片
-        type: string
-      list:
-        description: 列表图片
-        type: string
-      popup:
-        description: 弹窗图片
-        type: string
-    type: object
   definition.ActivityModifyReq:
     properties:
       enable:
@@ -133,7 +121,7 @@ definitions:
         type: boolean
       image:
         allOf:
-        - $ref: '#/definitions/definition.ActivityImage'
+        - $ref: '#/definitions/model.ActivityImage'
         description: 图片, 图片
       introduction:
         description: 活动简介
@@ -838,6 +826,18 @@ definitions:
     - appPlatform
     - content
     - version
+    type: object
+  model.ActivityImage:
+    properties:
+      home:
+        description: 首页icon图片
+        type: string
+      list:
+        description: 列表图片
+        type: string
+      popup:
+        description: 弹窗图片
+        type: string
     type: object
   model.AgentCreateReq:
     properties:

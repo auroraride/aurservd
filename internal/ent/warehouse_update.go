@@ -180,9 +180,34 @@ func (wu *WarehouseUpdate) ClearAddress() *WarehouseUpdate {
 	return wu
 }
 
+// SetAssetManagerID sets the "asset_manager_id" field.
+func (wu *WarehouseUpdate) SetAssetManagerID(u uint64) *WarehouseUpdate {
+	wu.mutation.SetAssetManagerID(u)
+	return wu
+}
+
+// SetNillableAssetManagerID sets the "asset_manager_id" field if the given value is not nil.
+func (wu *WarehouseUpdate) SetNillableAssetManagerID(u *uint64) *WarehouseUpdate {
+	if u != nil {
+		wu.SetAssetManagerID(*u)
+	}
+	return wu
+}
+
+// ClearAssetManagerID clears the value of the "asset_manager_id" field.
+func (wu *WarehouseUpdate) ClearAssetManagerID() *WarehouseUpdate {
+	wu.mutation.ClearAssetManagerID()
+	return wu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (wu *WarehouseUpdate) SetCity(c *City) *WarehouseUpdate {
 	return wu.SetCityID(c.ID)
+}
+
+// SetAssetManager sets the "asset_manager" edge to the AssetManager entity.
+func (wu *WarehouseUpdate) SetAssetManager(a *AssetManager) *WarehouseUpdate {
+	return wu.SetAssetManagerID(a.ID)
 }
 
 // AddAssetManagerIDs adds the "asset_managers" edge to the AssetManager entity by IDs.
@@ -208,6 +233,12 @@ func (wu *WarehouseUpdate) Mutation() *WarehouseMutation {
 // ClearCity clears the "city" edge to the City entity.
 func (wu *WarehouseUpdate) ClearCity() *WarehouseUpdate {
 	wu.mutation.ClearCity()
+	return wu
+}
+
+// ClearAssetManager clears the "asset_manager" edge to the AssetManager entity.
+func (wu *WarehouseUpdate) ClearAssetManager() *WarehouseUpdate {
+	wu.mutation.ClearAssetManager()
 	return wu
 }
 
@@ -367,6 +398,35 @@ func (wu *WarehouseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if wu.mutation.AssetManagerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   warehouse.AssetManagerTable,
+			Columns: []string{warehouse.AssetManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.AssetManagerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   warehouse.AssetManagerTable,
+			Columns: []string{warehouse.AssetManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -589,9 +649,34 @@ func (wuo *WarehouseUpdateOne) ClearAddress() *WarehouseUpdateOne {
 	return wuo
 }
 
+// SetAssetManagerID sets the "asset_manager_id" field.
+func (wuo *WarehouseUpdateOne) SetAssetManagerID(u uint64) *WarehouseUpdateOne {
+	wuo.mutation.SetAssetManagerID(u)
+	return wuo
+}
+
+// SetNillableAssetManagerID sets the "asset_manager_id" field if the given value is not nil.
+func (wuo *WarehouseUpdateOne) SetNillableAssetManagerID(u *uint64) *WarehouseUpdateOne {
+	if u != nil {
+		wuo.SetAssetManagerID(*u)
+	}
+	return wuo
+}
+
+// ClearAssetManagerID clears the value of the "asset_manager_id" field.
+func (wuo *WarehouseUpdateOne) ClearAssetManagerID() *WarehouseUpdateOne {
+	wuo.mutation.ClearAssetManagerID()
+	return wuo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (wuo *WarehouseUpdateOne) SetCity(c *City) *WarehouseUpdateOne {
 	return wuo.SetCityID(c.ID)
+}
+
+// SetAssetManager sets the "asset_manager" edge to the AssetManager entity.
+func (wuo *WarehouseUpdateOne) SetAssetManager(a *AssetManager) *WarehouseUpdateOne {
+	return wuo.SetAssetManagerID(a.ID)
 }
 
 // AddAssetManagerIDs adds the "asset_managers" edge to the AssetManager entity by IDs.
@@ -617,6 +702,12 @@ func (wuo *WarehouseUpdateOne) Mutation() *WarehouseMutation {
 // ClearCity clears the "city" edge to the City entity.
 func (wuo *WarehouseUpdateOne) ClearCity() *WarehouseUpdateOne {
 	wuo.mutation.ClearCity()
+	return wuo
+}
+
+// ClearAssetManager clears the "asset_manager" edge to the AssetManager entity.
+func (wuo *WarehouseUpdateOne) ClearAssetManager() *WarehouseUpdateOne {
+	wuo.mutation.ClearAssetManager()
 	return wuo
 }
 
@@ -806,6 +897,35 @@ func (wuo *WarehouseUpdateOne) sqlSave(ctx context.Context) (_node *Warehouse, e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if wuo.mutation.AssetManagerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   warehouse.AssetManagerTable,
+			Columns: []string{warehouse.AssetManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.AssetManagerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   warehouse.AssetManagerTable,
+			Columns: []string{warehouse.AssetManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

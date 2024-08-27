@@ -73,6 +73,7 @@ func (AssetManager) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("role", AssetRole.Type).Unique().Ref("asset_managers").Field("role_id"),
 		edge.From("warehouses", Warehouse.Type).Ref("asset_managers"),
+		edge.To("warehouse", Warehouse.Type).Unique(),
 	}
 }
 

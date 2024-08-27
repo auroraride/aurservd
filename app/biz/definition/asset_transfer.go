@@ -1,6 +1,8 @@
 package definition
 
-import "github.com/auroraride/aurservd/app/model"
+import (
+	"github.com/auroraride/aurservd/app/model"
+)
 
 // AssetTransferCreateReq 资产调拨请求
 type AssetTransferCreateReq struct {

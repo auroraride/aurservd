@@ -2781,18 +2781,19 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Warehouse",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			warehouse.FieldCreatedAt:    {Type: field.TypeTime, Column: warehouse.FieldCreatedAt},
-			warehouse.FieldUpdatedAt:    {Type: field.TypeTime, Column: warehouse.FieldUpdatedAt},
-			warehouse.FieldDeletedAt:    {Type: field.TypeTime, Column: warehouse.FieldDeletedAt},
-			warehouse.FieldCreator:      {Type: field.TypeJSON, Column: warehouse.FieldCreator},
-			warehouse.FieldLastModifier: {Type: field.TypeJSON, Column: warehouse.FieldLastModifier},
-			warehouse.FieldRemark:       {Type: field.TypeString, Column: warehouse.FieldRemark},
-			warehouse.FieldCityID:       {Type: field.TypeUint64, Column: warehouse.FieldCityID},
-			warehouse.FieldName:         {Type: field.TypeString, Column: warehouse.FieldName},
-			warehouse.FieldLng:          {Type: field.TypeFloat64, Column: warehouse.FieldLng},
-			warehouse.FieldLat:          {Type: field.TypeFloat64, Column: warehouse.FieldLat},
-			warehouse.FieldAddress:      {Type: field.TypeString, Column: warehouse.FieldAddress},
-			warehouse.FieldSn:           {Type: field.TypeString, Column: warehouse.FieldSn},
+			warehouse.FieldCreatedAt:      {Type: field.TypeTime, Column: warehouse.FieldCreatedAt},
+			warehouse.FieldUpdatedAt:      {Type: field.TypeTime, Column: warehouse.FieldUpdatedAt},
+			warehouse.FieldDeletedAt:      {Type: field.TypeTime, Column: warehouse.FieldDeletedAt},
+			warehouse.FieldCreator:        {Type: field.TypeJSON, Column: warehouse.FieldCreator},
+			warehouse.FieldLastModifier:   {Type: field.TypeJSON, Column: warehouse.FieldLastModifier},
+			warehouse.FieldRemark:         {Type: field.TypeString, Column: warehouse.FieldRemark},
+			warehouse.FieldCityID:         {Type: field.TypeUint64, Column: warehouse.FieldCityID},
+			warehouse.FieldName:           {Type: field.TypeString, Column: warehouse.FieldName},
+			warehouse.FieldLng:            {Type: field.TypeFloat64, Column: warehouse.FieldLng},
+			warehouse.FieldLat:            {Type: field.TypeFloat64, Column: warehouse.FieldLat},
+			warehouse.FieldAddress:        {Type: field.TypeString, Column: warehouse.FieldAddress},
+			warehouse.FieldSn:             {Type: field.TypeString, Column: warehouse.FieldSn},
+			warehouse.FieldAssetManagerID: {Type: field.TypeUint64, Column: warehouse.FieldAssetManagerID},
 		},
 	}
 	graph.MustAddE(
@@ -3522,6 +3523,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Inverse: true,
 			Table:   assetmanager.WarehousesTable,
 			Columns: assetmanager.WarehousesPrimaryKey,
+			Bidi:    false,
+		},
+		"AssetManager",
+		"Warehouse",
+	)
+	graph.MustAddE(
+		"warehouse",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   assetmanager.WarehouseTable,
+			Columns: []string{assetmanager.WarehouseColumn},
 			Bidi:    false,
 		},
 		"AssetManager",
@@ -7704,6 +7717,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"City",
 	)
 	graph.MustAddE(
+		"asset_manager",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   warehouse.AssetManagerTable,
+			Columns: []string{warehouse.AssetManagerColumn},
+			Bidi:    false,
+		},
+		"Warehouse",
+		"AssetManager",
+	)
+	graph.MustAddE(
 		"asset_managers",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -9812,6 +9837,20 @@ func (f *AssetManagerFilter) WhereHasWarehouses() {
 // WhereHasWarehousesWith applies a predicate to check if query has an edge warehouses with a given conditions (other predicates).
 func (f *AssetManagerFilter) WhereHasWarehousesWith(preds ...predicate.Warehouse) {
 	f.Where(entql.HasEdgeWith("warehouses", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasWarehouse applies a predicate to check if query has an edge warehouse.
+func (f *AssetManagerFilter) WhereHasWarehouse() {
+	f.Where(entql.HasEdge("warehouse"))
+}
+
+// WhereHasWarehouseWith applies a predicate to check if query has an edge warehouse with a given conditions (other predicates).
+func (f *AssetManagerFilter) WhereHasWarehouseWith(preds ...predicate.Warehouse) {
+	f.Where(entql.HasEdgeWith("warehouse", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -24341,6 +24380,11 @@ func (f *WarehouseFilter) WhereSn(p entql.StringP) {
 	f.Where(p.Field(warehouse.FieldSn))
 }
 
+// WhereAssetManagerID applies the entql uint64 predicate on the asset_manager_id field.
+func (f *WarehouseFilter) WhereAssetManagerID(p entql.Uint64P) {
+	f.Where(p.Field(warehouse.FieldAssetManagerID))
+}
+
 // WhereHasCity applies a predicate to check if query has an edge city.
 func (f *WarehouseFilter) WhereHasCity() {
 	f.Where(entql.HasEdge("city"))
@@ -24349,6 +24393,20 @@ func (f *WarehouseFilter) WhereHasCity() {
 // WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
 func (f *WarehouseFilter) WhereHasCityWith(preds ...predicate.City) {
 	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAssetManager applies a predicate to check if query has an edge asset_manager.
+func (f *WarehouseFilter) WhereHasAssetManager() {
+	f.Where(entql.HasEdge("asset_manager"))
+}
+
+// WhereHasAssetManagerWith applies a predicate to check if query has an edge asset_manager with a given conditions (other predicates).
+func (f *WarehouseFilter) WhereHasAssetManagerWith(preds ...predicate.AssetManager) {
+	f.Where(entql.HasEdgeWith("asset_manager", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

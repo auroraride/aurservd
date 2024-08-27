@@ -64,6 +64,12 @@ func (s AssetTransferType) Value() uint8 {
 	return uint8(s)
 }
 
+const (
+	AssetTransferBoundTypeALl = "all" //  出入库方
+	AssetTransferBoundTypeIn  = "in"  //  入库方
+	AssetTransferBoundTypeOut = "out" //  出库方
+)
+
 // AssetTransferCreateReq 资产调拨请求
 type AssetTransferCreateReq struct {
 	FromLocationType  *AssetLocationsType         `json:"fromLocationType"`                      // 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 (初始调拨此字段不填写)
@@ -107,6 +113,8 @@ type AssetTransferFilter struct {
 	Keyword           *string              `json:"keyword" query:"keyword"`                                         // 关键字 (调拨单号，调拨事由、出库人、接收人)
 	AssetManagerID    uint64               `json:"assetManagerID" query:"assetManagerID"`                           // 仓库管理员ID
 	EmployeeID        uint64               `json:"employeeID" query:"employeeID"`                                   // 门店管理员ID
+	AgentID           uint64               `json:"agentID" query:"agentID"`                                         // 代理员ID
+	MaintainerID      uint64               `json:"maintainerID" query:"maintainerID"`                               // 运维ID
 }
 
 // AssetTransferListRes 资产调拨列表响应
@@ -128,6 +136,15 @@ type AssetTransferListRes struct {
 	AssetTransferType AssetTransferType    `json:"assetTransferType"`     // 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
 	Remark            string               `json:"remark"`                // 备注
 	AssetDetail       *AssetTransferDetail `json:"assetDetail,omitempty"` // 调拨资产详情
+	InOut             string               `json:"inOut"`                 // in:入库方、out:出库方、all:出入库方
+}
+
+// AssetTransferUserId 当前调拨小程序登录用户信息
+type AssetTransferUserId struct {
+	AssetManagerID uint64 `json:"assetManagerID"` // 仓管员ID
+	EmployeeID     uint64 `json:"employeeID"`     // 门店店员ID
+	AgentID        uint64 `json:"agentID"`        // 代理员ID
+	MaintainerID   uint64 `json:"maintainerID"`   // 运维员ID
 }
 
 // AssetTransferDetailReq 资产调拨详情请求

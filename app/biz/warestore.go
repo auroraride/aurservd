@@ -16,9 +16,12 @@ import (
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 	"github.com/auroraride/aurservd/pkg/utils"
@@ -85,7 +88,7 @@ func (b *warestoreBiz) Signin(req *definition.WarestorePeopleSigninReq) (res *de
 	ep := new(ent.Employee)
 	switch req.PlatType {
 	case definition.PlatTypeWarehouse:
-		am, err = ent.Database.AssetManager.QueryNotDeleted().
+		am, err = ent.Database.AssetManager.QueryNotDeleted().WithRole().
 			Where(
 				assetmanager.Phone(req.Phone),
 				assetmanager.MiniEnable(true),
@@ -176,17 +179,23 @@ func (b *warestoreBiz) TokenVerify(token string) (am *ent.AssetManager, ep *ent.
 }
 
 // Assets 物资数据
-func (b *warestoreBiz) Assets(am *ent.AssetManager, ep *ent.Employee, req *definition.WarestoreAssetsReq) *model.PaginationRes {
+func (b *warestoreBiz) Assets(assetSignInfo definition.AssetSignInfo, req *definition.WarestoreAssetsReq) *model.PaginationRes {
 	switch {
-	case am != nil && ep == nil:
+	case assetSignInfo.AssetManager != nil:
 		// 确认为仓库管理员
-		return b.assetsForWarehouse(am.ID, req)
-	case am == nil && ep != nil:
+		return b.assetsForWarehouse(assetSignInfo.AssetManager.ID, req)
+	case assetSignInfo.Employee != nil:
 		// 确认为门店管理员
-		return b.assetsForStore(ep.ID, req)
-	default:
-		return nil
+		return b.assetsForStore(assetSignInfo.Employee.ID, req)
+	case assetSignInfo.Agent != nil:
+		// 确认为代理员
+		return b.assetsForAgent(assetSignInfo.Agent.ID, req)
+	case assetSignInfo.Maintainer != nil:
+		// 确认为运维
+		return b.assetsForMaintainer(assetSignInfo.Maintainer.ID, req)
 	}
+
+	return nil
 }
 
 // assetsForWarehouse 仓库物资数据
@@ -213,12 +222,12 @@ func (b *warestoreBiz) assetsForWarehouse(amId uint64, req *definition.Warestore
 		q.Where(warehouse.IDIn(wIds...))
 	}
 
-	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Asset) *definition.WarestoreAssetRes {
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Warehouse) *definition.WarestoreAssetRes {
 		// 查询仓库资产详情
 		res := &definition.WarestoreAssetRes{
 			ID:     item.ID,
 			Name:   item.Name,
-			Detail: b.wAssetTotal(item.ID),
+			Detail: b.assetTotal(item.ID, model.AssetLocationsTypeWarehouse),
 		}
 		if item.Edges.City != nil {
 			res.City = model.City{
@@ -258,12 +267,12 @@ func (b *warestoreBiz) assetsForStore(epId uint64, req *definition.WarestoreAsse
 
 	}
 
-	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Asset) *definition.WarestoreAssetRes {
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Store) *definition.WarestoreAssetRes {
 		// 查询仓库资产详情
 		res := &definition.WarestoreAssetRes{
 			ID:     item.ID,
 			Name:   item.Name,
-			Detail: b.sAssetTotal(item.ID),
+			Detail: b.assetTotal(item.ID, model.AssetLocationsTypeStore),
 		}
 		if item.Edges.City != nil {
 			res.City = model.City{
@@ -276,29 +285,69 @@ func (b *warestoreBiz) assetsForStore(epId uint64, req *definition.WarestoreAsse
 
 }
 
-// wAssetTotal 仓库物资数据统计
-func (b *warestoreBiz) wAssetTotal(id uint64) (res definition.WarestoreAssetDetail) {
-	// 查询仓库所属资产数据
-	q := ent.Database.Asset.QueryNotDeleted().
+// assetsForAgent 代理物资数据
+func (b *warestoreBiz) assetsForAgent(agId uint64, req *definition.WarestoreAssetsReq) *model.PaginationRes {
+	// 门店数据
+	q := ent.Database.EnterpriseStation.QueryNotDeleted().WithCity()
+	if req.StationID != nil {
+		q.Where(enterprisestation.ID(*req.StoreID))
+	}
+
+	ag, _ := ent.Database.Agent.QueryNotDeleted().WithStations().
 		Where(
-			asset.LocationsType(model.AssetLocationsTypeWarehouse.Value()),
-			asset.LocationsIDIn(id),
-			asset.Status(model.AssetStatusStock.Value()),
-		).WithModel().WithBrand().WithMaterial()
+			agent.ID(agId),
+			agent.HasStationsWith(enterprisestation.DeletedAtIsNil()),
+		).First(b.ctx)
+	if ag != nil {
+		// 判断是配置的站点数据
+		sIds := make([]uint64, 0)
+		for _, st := range ag.Edges.Stations {
+			sIds = append(sIds, st.ID)
+		}
+		q.Where(enterprisestation.IDIn(sIds...))
+	}
 
-	list, _ := q.All(b.ctx)
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.EnterpriseStation) *definition.WarestoreAssetRes {
+		// 查询仓库资产详情
+		res := &definition.WarestoreAssetRes{
+			ID:     item.ID,
+			Name:   item.Name,
+			Detail: b.assetTotal(item.ID, model.AssetLocationsTypeStation),
+		}
+		if item.Edges.City != nil {
+			res.City = model.City{
+				ID:   item.Edges.City.ID,
+				Name: item.Edges.City.Name,
+			}
+		}
+		return res
+	})
 
-	res = b.commonAssetTotalDetail(list)
-
-	return
 }
 
-// sAssetTotal 门店物资数据统计
-func (b *warestoreBiz) sAssetTotal(id uint64) (res definition.WarestoreAssetDetail) {
+// assetsForAgent 代理物资数据
+func (b *warestoreBiz) assetsForMaintainer(mtId uint64, req *definition.WarestoreAssetsReq) *model.PaginationRes {
+	// 数据
+	q := ent.Database.Maintainer.Query().Where(maintainer.ID(mtId))
+
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Maintainer) *definition.WarestoreAssetRes {
+		// 查询仓库资产详情
+		res := &definition.WarestoreAssetRes{
+			ID:     item.ID,
+			Name:   item.Name,
+			Detail: b.assetTotal(item.ID, model.AssetLocationsTypeOperation),
+		}
+		return res
+	})
+
+}
+
+// assetTotal 物资数据统计
+func (b *warestoreBiz) assetTotal(id uint64, aType model.AssetLocationsType) (res definition.WarestoreAssetDetail) {
 	// 查询仓库所属资产数据
 	q := ent.Database.Asset.QueryNotDeleted().
 		Where(
-			asset.LocationsType(model.AssetLocationsTypeWarehouse.Value()),
+			asset.LocationsType(aType.Value()),
 			asset.LocationsIDIn(id),
 			asset.Status(model.AssetStatusStock.Value()),
 		).WithModel().WithBrand().WithMaterial()
@@ -444,10 +493,10 @@ func (b *warestoreBiz) commonAssetTotalDetail(list []*ent.Asset) (res definition
 }
 
 // AssetsCommon 物资数据
-func (b *warestoreBiz) AssetsCommon(am *ent.AssetManager, ep *ent.Employee, req *definition.WarestoreAssetsCommonReq) *model.PaginationRes {
+func (b *warestoreBiz) AssetsCommon(assetSignInfo definition.AssetSignInfo, req *definition.WarestoreAssetsCommonReq) *model.PaginationRes {
 	q := ent.Database.Asset.QueryNotDeleted().WithCabinet().WithCity().WithStation().WithModel().WithOperator().WithValues().WithStore().WithWarehouse().WithBrand().WithValues()
 
-	b.assetsCommonFilter(am, ep, q, req)
+	b.assetsCommonFilter(assetSignInfo, q, req)
 
 	q.Order(ent.Desc(asset.FieldCreatedAt))
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Asset) *model.AssetListRes {
@@ -456,7 +505,7 @@ func (b *warestoreBiz) AssetsCommon(am *ent.AssetManager, ep *ent.Employee, req 
 }
 
 // assetsCommonFilter 物资数据
-func (b *warestoreBiz) assetsCommonFilter(am *ent.AssetManager, ep *ent.Employee, q *ent.AssetQuery, req *definition.WarestoreAssetsCommonReq) {
+func (b *warestoreBiz) assetsCommonFilter(assetSignInfo definition.AssetSignInfo, q *ent.AssetQuery, req *definition.WarestoreAssetsCommonReq) {
 	switch req.Type {
 	case definition.CommonAssetTypeEbike:
 		q.Where(asset.Type(model.AssetTypeEbike.Value()))
@@ -496,14 +545,14 @@ func (b *warestoreBiz) assetsCommonFilter(am *ent.AssetManager, ep *ent.Employee
 	}
 
 	switch {
-	case am != nil && ep == nil:
+	case assetSignInfo.AssetManager != nil:
 		// 仓库管理查询
 
 		// 查询库管人员配置的仓库数据
 		wIds := make([]uint64, 0)
-		am, _ = ent.Database.AssetManager.QueryNotDeleted().WithWarehouses().
+		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithWarehouses().
 			Where(
-				assetmanager.ID(am.ID),
+				assetmanager.ID(assetSignInfo.AssetManager.ID),
 				assetmanager.HasWarehousesWith(warehouse.DeletedAtIsNil()),
 			).First(context.Background())
 		if am != nil {
@@ -516,14 +565,14 @@ func (b *warestoreBiz) assetsCommonFilter(am *ent.AssetManager, ep *ent.Employee
 			asset.LocationsIDIn(wIds...),
 		)
 
-	case am == nil && ep != nil:
+	case assetSignInfo.Employee != nil:
 		// 门店管理查询
 
 		// 查询门店人员配置的门店数据
 		sIds := make([]uint64, 0)
-		ep, _ = ent.Database.Employee.QueryNotDeleted().WithStores().
+		ep, _ := ent.Database.Employee.QueryNotDeleted().WithStores().
 			Where(
-				employee.ID(ep.ID),
+				employee.ID(assetSignInfo.Employee.ID),
 				employee.HasStoresWith(store.DeletedAtIsNil()),
 			).First(context.Background())
 		if ep != nil {
@@ -534,6 +583,29 @@ func (b *warestoreBiz) assetsCommonFilter(am *ent.AssetManager, ep *ent.Employee
 		q.Where(
 			asset.LocationsType(model.AssetLocationsTypeStore.Value()),
 			asset.LocationsIDIn(sIds...),
+		)
+	case assetSignInfo.Agent != nil:
+		// 查询代理人员配置的代理站点
+		ids := make([]uint64, 0)
+		ag, _ := ent.Database.Agent.QueryNotDeleted().WithStations().
+			Where(
+				agent.ID(assetSignInfo.Agent.ID),
+				agent.HasStationsWith(enterprisestation.DeletedAtIsNil()),
+			).First(context.Background())
+		if ag != nil {
+			for _, v := range ag.Edges.Stations {
+				ids = append(ids, v.ID)
+			}
+		}
+		q.Where(
+			asset.LocationsType(model.AssetLocationsTypeStation.Value()),
+			asset.LocationsIDIn(ids...),
+		)
+
+	case assetSignInfo.Maintainer != nil:
+		q.Where(
+			asset.LocationsType(model.AssetLocationsTypeOperation.Value()),
+			asset.LocationsID(assetSignInfo.Maintainer.ID),
 		)
 
 	default:

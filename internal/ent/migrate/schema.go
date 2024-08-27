@@ -7211,6 +7211,7 @@ var (
 		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度"},
 		{Name: "address", Type: field.TypeString, Nullable: true, Comment: "详细地址"},
 		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "仓库编号"},
+		{Name: "asset_manager_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "上班仓管员ID"},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 	}
 	// WarehouseTable holds the schema information for the "warehouse" table.
@@ -7220,8 +7221,14 @@ var (
 		PrimaryKey: []*schema.Column{WarehouseColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "warehouse_city_city",
+				Symbol:     "warehouse_asset_manager_warehouse",
 				Columns:    []*schema.Column{WarehouseColumns[12]},
+				RefColumns: []*schema.Column{AssetManagerColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "warehouse_city_city",
+				Columns:    []*schema.Column{WarehouseColumns[13]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -7240,7 +7247,7 @@ var (
 			{
 				Name:    "warehouse_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{WarehouseColumns[12]},
+				Columns: []*schema.Column{WarehouseColumns[13]},
 			},
 			{
 				Name:    "warehouse_name",
@@ -8121,7 +8128,8 @@ func init() {
 	VersionTable.Annotation = &entsql.Annotation{
 		Table: "version",
 	}
-	WarehouseTable.ForeignKeys[0].RefTable = CityTable
+	WarehouseTable.ForeignKeys[0].RefTable = AssetManagerTable
+	WarehouseTable.ForeignKeys[1].RefTable = CityTable
 	WarehouseTable.Annotation = &entsql.Annotation{
 		Table: "warehouse",
 	}

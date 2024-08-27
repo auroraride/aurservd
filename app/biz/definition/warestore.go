@@ -4,7 +4,10 @@
 
 package definition
 
-import "github.com/auroraride/aurservd/app/model"
+import (
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent"
+)
 
 const (
 	SignTokenWarehouse = "WAREHOUSE" // 仓库平台
@@ -89,6 +92,7 @@ type WarestoreAssetsReq struct {
 	CityID      *uint64 `json:"cityId" query:"cityId"`           // 城市ID
 	WarehouseID *uint64 `json:"warehouseID" query:"warehouseID"` // 仓库ID
 	StoreID     *uint64 `json:"storeID" query:"storeID"`         // 门店ID
+	StationID   *uint64 `json:"stationID" query:"stationID"`     // 站点ID
 }
 
 // WarestoreAssetRes 资产信息
@@ -121,4 +125,12 @@ type WarestoreAssetsCommonReq struct {
 	BrandID        *uint64            `json:"brandID" query:"brandID"`                           // 电车型号ID
 	BatteryKeyword *string            `json:"batteryKeyword" query:"batteryKeyword"`             // 电池编号关键字
 	EbikeKeyword   *string            `json:"ebikeKeyword" query:"ebikeKeyword"`                 // 电车车牌/车架号关键字
+}
+
+// AssetSignInfo 小程序用户登录信息
+type AssetSignInfo struct {
+	AssetManager *ent.AssetManager
+	Employee     *ent.Employee
+	Agent        *ent.Agent
+	Maintainer   *ent.Maintainer
 }

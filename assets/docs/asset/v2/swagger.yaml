@@ -1577,6 +1577,9 @@ definitions:
       inNum:
         description: 入库数量
         type: integer
+      inOut:
+        description: in:入库方、out:出库方、all:出入库方
+        type: string
       outNum:
         description: 出库数量
         type: integer
@@ -2627,6 +2630,13 @@ paths:
         in: query
         name: locationsId
         type: integer
+      - collectionFormat: csv
+        description: 位置IDs
+        in: query
+        items:
+          type: integer
+        name: locationsIds
+        type: array
       - description: 位置类型 1:仓库 2:门店 3:站点
         enum:
         - 1
@@ -4595,6 +4605,10 @@ paths:
         name: X-Asset-Manager-Token
         required: true
         type: string
+      - description: 代理员ID
+        in: query
+        name: agentID
+        type: integer
       - description: 仓库管理员ID
         in: query
         name: assetManagerID
@@ -4648,6 +4662,10 @@ paths:
         in: query
         name: keyword
         type: string
+      - description: 运维ID
+        in: query
+        name: maintainerID
+        type: integer
       - description: 出库结束时间
         in: query
         name: outEnd

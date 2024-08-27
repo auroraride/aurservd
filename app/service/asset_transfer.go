@@ -12,6 +12,7 @@ import (
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
@@ -441,13 +442,13 @@ func (s *assetTransferService) TransferList(ctx context.Context, req *model.Asse
 	s.filter(ctx, q, &req.AssetTransferFilter)
 	q.Order(ent.Desc(assettransfer.FieldCreatedAt))
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetTransfer) (res *model.AssetTransferListRes) {
-		return s.TransferInfo(item)
+		return s.TransferInfo(nil, item)
 	}), nil
 
 }
 
 // TransferInfo 补充完善调拨信息
-func (s *assetTransferService) TransferInfo(item *ent.AssetTransfer) (res *model.AssetTransferListRes) {
+func (s *assetTransferService) TransferInfo(atu *model.AssetTransferUserId, item *ent.AssetTransfer) (res *model.AssetTransferListRes) {
 	res = &model.AssetTransferListRes{
 		ID:                item.ID,
 		SN:                item.Sn,
@@ -537,7 +538,123 @@ func (s *assetTransferService) TransferInfo(item *ent.AssetTransfer) (res *model
 		default:
 		}
 	}
+
+	res.InOut = s.checkInOutType(atu, item)
 	return res
+}
+
+// 筛选
+func (s *assetTransferService) checkInOutType(atu *model.AssetTransferUserId, item *ent.AssetTransfer) string {
+	if atu == nil {
+		return ""
+	}
+	var in, out bool
+
+	if item.FromLocationType != nil && item.FromLocationID != nil {
+		switch model.AssetLocationsType(*item.FromLocationType) {
+		case model.AssetLocationsTypeWarehouse:
+			if item.Edges.FromLocationWarehouse != nil {
+				if data, _ := ent.Database.Warehouse.QueryNotDeleted().
+					Where(
+						warehouse.ID(*item.FromLocationID),
+						warehouse.HasAssetManagerWith(assetmanager.ID(atu.AssetManagerID)),
+					).First(context.Background()); data != nil {
+					out = true
+				}
+			}
+		case model.AssetLocationsTypeStore:
+			if item.Edges.FromLocationStore != nil {
+				if data, _ := ent.Database.Store.QueryNotDeleted().
+					Where(
+						store.ID(*item.FromLocationID),
+						store.HasEmployeeWith(employee.ID(atu.EmployeeID)),
+					).First(context.Background()); data != nil {
+					out = true
+				}
+			}
+		case model.AssetLocationsTypeStation:
+			if item.Edges.FromLocationStation != nil {
+				if data, _ := ent.Database.EnterpriseStation.QueryNotDeleted().
+					Where(
+						enterprisestation.ID(*item.FromLocationID),
+						enterprisestation.HasAgentsWith(agent.ID(atu.AgentID)),
+					).First(context.Background()); data != nil {
+					out = true
+				}
+			}
+		case model.AssetLocationsTypeOperation:
+			if item.Edges.FromLocationOperator != nil {
+				if data, _ := ent.Database.Maintainer.Query().
+					Where(
+						maintainer.ID(*item.FromLocationID),
+						maintainer.ID(atu.AgentID),
+					).First(context.Background()); data != nil {
+					out = true
+				}
+			}
+		default:
+		}
+
+	}
+
+	if item.ToLocationType != 0 && item.ToLocationID != 0 {
+		switch model.AssetLocationsType(item.ToLocationType) {
+		case model.AssetLocationsTypeWarehouse:
+			if item.Edges.ToLocationWarehouse != nil {
+				if data, _ := ent.Database.Warehouse.QueryNotDeleted().
+					Where(
+						warehouse.ID(item.ToLocationID),
+						warehouse.HasAssetManagerWith(assetmanager.ID(atu.AssetManagerID)),
+					).First(context.Background()); data != nil {
+					in = true
+				}
+			}
+		case model.AssetLocationsTypeStore:
+			if item.Edges.ToLocationStore != nil {
+				if data, _ := ent.Database.Store.QueryNotDeleted().
+					Where(
+						store.ID(item.ToLocationID),
+						store.HasEmployeeWith(employee.ID(atu.EmployeeID)),
+					).First(context.Background()); data != nil {
+					in = true
+				}
+			}
+		case model.AssetLocationsTypeStation:
+			if item.Edges.ToLocationStation != nil {
+				if data, _ := ent.Database.EnterpriseStation.QueryNotDeleted().
+					Where(
+						enterprisestation.ID(item.ToLocationID),
+						enterprisestation.HasAgentsWith(agent.ID(atu.AgentID)),
+					).First(context.Background()); data != nil {
+					in = true
+				}
+			}
+		case model.AssetLocationsTypeOperation:
+			if item.Edges.ToLocationOperator != nil {
+				if data, _ := ent.Database.Maintainer.Query().
+					Where(
+						maintainer.ID(item.ToLocationID),
+						maintainer.ID(atu.AgentID),
+					).First(context.Background()); data != nil {
+					in = true
+				}
+			}
+		default:
+		}
+
+	}
+
+	switch {
+	case in && out:
+		return model.AssetTransferBoundTypeALl
+	case !in && out:
+		return model.AssetTransferBoundTypeOut
+	case in && !out:
+		return model.AssetTransferBoundTypeIn
+	default:
+		return ""
+
+	}
 }
 
 // 筛选
@@ -612,6 +729,37 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 			),
 		)
 	}
+
+	if req.AgentID != 0 {
+		// 查询代理人员配置的代理站点
+		ids := make([]uint64, 0)
+		ag, _ := ent.Database.Agent.QueryNotDeleted().WithStations().
+			Where(
+				agent.ID(req.AgentID),
+				agent.HasStationsWith(enterprisestation.DeletedAtIsNil()),
+			).First(context.Background())
+		if ag != nil {
+			for _, v := range ag.Edges.Stations {
+				ids = append(ids, v.ID)
+			}
+		}
+		q.Where(
+			assettransfer.Or(
+				assettransfer.HasFromLocationStationWith(enterprisestation.IDIn(ids...)),
+				assettransfer.HasToLocationStationWith(enterprisestation.IDIn(ids...)),
+			),
+		)
+
+	}
+	if req.MaintainerID != 0 {
+		q.Where(
+			assettransfer.Or(
+				assettransfer.HasFromLocationOperatorWith(maintainer.ID(req.MaintainerID)),
+				assettransfer.HasToLocationOperatorWith(maintainer.ID(req.MaintainerID)),
+			),
+		)
+	}
+
 }
 
 // TransferDetail 调拨详情

@@ -14004,7 +14004,7 @@ const docTemplate = `{
                     "description": "图片, 图片",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.ActivityImage"
+                            "$ref": "#/definitions/model.ActivityImage"
                         }
                     ]
                 },
@@ -14052,7 +14052,7 @@ const docTemplate = `{
                     "description": "图片",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.ActivityImage"
+                            "$ref": "#/definitions/model.ActivityImage"
                         }
                     ]
                 },
@@ -14086,23 +14086,6 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.ActivityImage": {
-            "type": "object",
-            "properties": {
-                "home": {
-                    "description": "首页icon图片",
-                    "type": "string"
-                },
-                "list": {
-                    "description": "列表图片",
-                    "type": "string"
-                },
-                "popup": {
-                    "description": "弹窗图片",
-                    "type": "string"
-                }
-            }
-        },
         "definition.ActivityModifyReq": {
             "type": "object",
             "required": [
@@ -14126,7 +14109,7 @@ const docTemplate = `{
                     "description": "图片, 图片",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.ActivityImage"
+                            "$ref": "#/definitions/model.ActivityImage"
                         }
                     ]
                 },
@@ -15124,6 +15107,23 @@ const docTemplate = `{
                 },
                 "version": {
                     "description": "版本号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ActivityImage": {
+            "type": "object",
+            "properties": {
+                "home": {
+                    "description": "首页icon图片",
+                    "type": "string"
+                },
+                "list": {
+                    "description": "列表图片",
+                    "type": "string"
+                },
+                "popup": {
+                    "description": "弹窗图片",
                     "type": "string"
                 }
             }

@@ -26,6 +26,7 @@ type AssetManagerQuery struct {
 	predicates     []predicate.AssetManager
 	withRole       *AssetRoleQuery
 	withWarehouses *WarehouseQuery
+	withWarehouse  *WarehouseQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -100,6 +101,28 @@ func (amq *AssetManagerQuery) QueryWarehouses() *WarehouseQuery {
 			sqlgraph.From(assetmanager.Table, assetmanager.FieldID, selector),
 			sqlgraph.To(warehouse.Table, warehouse.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, assetmanager.WarehousesTable, assetmanager.WarehousesPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(amq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryWarehouse chains the current query on the "warehouse" edge.
+func (amq *AssetManagerQuery) QueryWarehouse() *WarehouseQuery {
+	query := (&WarehouseClient{config: amq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := amq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := amq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetmanager.Table, assetmanager.FieldID, selector),
+			sqlgraph.To(warehouse.Table, warehouse.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, assetmanager.WarehouseTable, assetmanager.WarehouseColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(amq.driver.Dialect(), step)
 		return fromU, nil
@@ -301,6 +324,7 @@ func (amq *AssetManagerQuery) Clone() *AssetManagerQuery {
 		predicates:     append([]predicate.AssetManager{}, amq.predicates...),
 		withRole:       amq.withRole.Clone(),
 		withWarehouses: amq.withWarehouses.Clone(),
+		withWarehouse:  amq.withWarehouse.Clone(),
 		// clone intermediate query.
 		sql:  amq.sql.Clone(),
 		path: amq.path,
@@ -326,6 +350,17 @@ func (amq *AssetManagerQuery) WithWarehouses(opts ...func(*WarehouseQuery)) *Ass
 		opt(query)
 	}
 	amq.withWarehouses = query
+	return amq
+}
+
+// WithWarehouse tells the query-builder to eager-load the nodes that are connected to
+// the "warehouse" edge. The optional arguments are used to configure the query builder of the edge.
+func (amq *AssetManagerQuery) WithWarehouse(opts ...func(*WarehouseQuery)) *AssetManagerQuery {
+	query := (&WarehouseClient{config: amq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	amq.withWarehouse = query
 	return amq
 }
 
@@ -407,9 +442,10 @@ func (amq *AssetManagerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	var (
 		nodes       = []*AssetManager{}
 		_spec       = amq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			amq.withRole != nil,
 			amq.withWarehouses != nil,
+			amq.withWarehouse != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -443,6 +479,12 @@ func (amq *AssetManagerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		if err := amq.loadWarehouses(ctx, query, nodes,
 			func(n *AssetManager) { n.Edges.Warehouses = []*Warehouse{} },
 			func(n *AssetManager, e *Warehouse) { n.Edges.Warehouses = append(n.Edges.Warehouses, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := amq.withWarehouse; query != nil {
+		if err := amq.loadWarehouse(ctx, query, nodes, nil,
+			func(n *AssetManager, e *Warehouse) { n.Edges.Warehouse = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -539,6 +581,36 @@ func (amq *AssetManagerQuery) loadWarehouses(ctx context.Context, query *Warehou
 		for kn := range nodes {
 			assign(kn, n)
 		}
+	}
+	return nil
+}
+func (amq *AssetManagerQuery) loadWarehouse(ctx context.Context, query *WarehouseQuery, nodes []*AssetManager, init func(*AssetManager), assign func(*AssetManager, *Warehouse)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*AssetManager)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(warehouse.FieldAssetManagerID)
+	}
+	query.Where(predicate.Warehouse(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(assetmanager.WarehouseColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AssetManagerID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "asset_manager_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "asset_manager_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }
@@ -644,6 +716,7 @@ type AssetManagerQueryWith string
 var (
 	AssetManagerQueryWithRole       AssetManagerQueryWith = "Role"
 	AssetManagerQueryWithWarehouses AssetManagerQueryWith = "Warehouses"
+	AssetManagerQueryWithWarehouse  AssetManagerQueryWith = "Warehouse"
 )
 
 func (amq *AssetManagerQuery) With(withEdges ...AssetManagerQueryWith) *AssetManagerQuery {
@@ -653,6 +726,8 @@ func (amq *AssetManagerQuery) With(withEdges ...AssetManagerQueryWith) *AssetMan
 			amq.WithRole()
 		case AssetManagerQueryWithWarehouses:
 			amq.WithWarehouses()
+		case AssetManagerQueryWithWarehouse:
+			amq.WithWarehouse()
 		}
 	}
 	return amq

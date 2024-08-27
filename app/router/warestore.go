@@ -38,12 +38,12 @@ func loadWarestoreRoutes() {
 	auth.GET("/assets/common", wapi.Assets.AssetsCommon) // 电池/电车资产数据
 
 	// 资产调拨
-	auth.POST("/transfer", wapi.Warestore.Transfer)                       // 创建调拨
-	auth.GET("/transfer", wapi.Warestore.TransferList)                    // 调拨列表
-	auth.GET("/transfer/:id", wapi.Warestore.TransferDetail)              // 调拨详情
-	auth.POST("/transfer/receive", wapi.Warestore.TransferReceive)        // 调拨批量入库
-	auth.GET("/transfer/flow", wapi.Warestore.TransferFlow)               // 资产流转明细
-	auth.GET("/transfer/sn/:sn", wapi.Warestore.TransferBySn)             // 根据sn查询调拨信息
+	auth.POST("/transfer", wapi.AssetTransfer.Transfer)                   // 创建调拨
+	auth.GET("/transfer", wapi.AssetTransfer.TransferList)                // 调拨列表
+	auth.GET("/transfer/:id", wapi.AssetTransfer.TransferDetail)          // 调拨详情
+	auth.POST("/transfer/receive", wapi.AssetTransfer.TransferReceive)    // 调拨批量入库
+	auth.GET("/transfer/flow", wapi.AssetTransfer.TransferFlow)           // 资产流转明细
+	auth.GET("/transfer/sn/:sn", wapi.AssetTransfer.TransferBySn)         // 根据sn查询调拨信息
 	auth.GET("/transfer/details", wapi.AssetTransfer.TransferDetailsList) // 出入库明细
 
 	// 盘点

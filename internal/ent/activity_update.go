@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/biz/definition"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -162,15 +162,15 @@ func (au *ActivityUpdate) SetNillableHome(b *bool) *ActivityUpdate {
 }
 
 // SetImage sets the "image" field.
-func (au *ActivityUpdate) SetImage(di definition.ActivityImage) *ActivityUpdate {
-	au.mutation.SetImage(di)
+func (au *ActivityUpdate) SetImage(mi model.ActivityImage) *ActivityUpdate {
+	au.mutation.SetImage(mi)
 	return au
 }
 
 // SetNillableImage sets the "image" field if the given value is not nil.
-func (au *ActivityUpdate) SetNillableImage(di *definition.ActivityImage) *ActivityUpdate {
-	if di != nil {
-		au.SetImage(*di)
+func (au *ActivityUpdate) SetNillableImage(mi *model.ActivityImage) *ActivityUpdate {
+	if mi != nil {
+		au.SetImage(*mi)
 	}
 	return au
 }
@@ -447,15 +447,15 @@ func (auo *ActivityUpdateOne) SetNillableHome(b *bool) *ActivityUpdateOne {
 }
 
 // SetImage sets the "image" field.
-func (auo *ActivityUpdateOne) SetImage(di definition.ActivityImage) *ActivityUpdateOne {
-	auo.mutation.SetImage(di)
+func (auo *ActivityUpdateOne) SetImage(mi model.ActivityImage) *ActivityUpdateOne {
+	auo.mutation.SetImage(mi)
 	return auo
 }
 
 // SetNillableImage sets the "image" field if the given value is not nil.
-func (auo *ActivityUpdateOne) SetNillableImage(di *definition.ActivityImage) *ActivityUpdateOne {
-	if di != nil {
-		auo.SetImage(*di)
+func (auo *ActivityUpdateOne) SetNillableImage(mi *model.ActivityImage) *ActivityUpdateOne {
+	if mi != nil {
+		auo.SetImage(*mi)
 	}
 	return auo
 }

@@ -25,6 +25,7 @@ type WarehouseQuery struct {
 	inters            []Interceptor
 	predicates        []predicate.Warehouse
 	withCity          *CityQuery
+	withAssetManager  *AssetManagerQuery
 	withAssetManagers *AssetManagerQuery
 	modifiers         []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -78,6 +79,28 @@ func (wq *WarehouseQuery) QueryCity() *CityQuery {
 			sqlgraph.From(warehouse.Table, warehouse.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, warehouse.CityTable, warehouse.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAssetManager chains the current query on the "asset_manager" edge.
+func (wq *WarehouseQuery) QueryAssetManager() *AssetManagerQuery {
+	query := (&AssetManagerClient{config: wq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := wq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := wq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(warehouse.Table, warehouse.FieldID, selector),
+			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, warehouse.AssetManagerTable, warehouse.AssetManagerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
 		return fromU, nil
@@ -300,6 +323,7 @@ func (wq *WarehouseQuery) Clone() *WarehouseQuery {
 		inters:            append([]Interceptor{}, wq.inters...),
 		predicates:        append([]predicate.Warehouse{}, wq.predicates...),
 		withCity:          wq.withCity.Clone(),
+		withAssetManager:  wq.withAssetManager.Clone(),
 		withAssetManagers: wq.withAssetManagers.Clone(),
 		// clone intermediate query.
 		sql:  wq.sql.Clone(),
@@ -315,6 +339,17 @@ func (wq *WarehouseQuery) WithCity(opts ...func(*CityQuery)) *WarehouseQuery {
 		opt(query)
 	}
 	wq.withCity = query
+	return wq
+}
+
+// WithAssetManager tells the query-builder to eager-load the nodes that are connected to
+// the "asset_manager" edge. The optional arguments are used to configure the query builder of the edge.
+func (wq *WarehouseQuery) WithAssetManager(opts ...func(*AssetManagerQuery)) *WarehouseQuery {
+	query := (&AssetManagerClient{config: wq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	wq.withAssetManager = query
 	return wq
 }
 
@@ -407,8 +442,9 @@ func (wq *WarehouseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Wa
 	var (
 		nodes       = []*Warehouse{}
 		_spec       = wq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			wq.withCity != nil,
+			wq.withAssetManager != nil,
 			wq.withAssetManagers != nil,
 		}
 	)
@@ -436,6 +472,12 @@ func (wq *WarehouseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Wa
 	if query := wq.withCity; query != nil {
 		if err := wq.loadCity(ctx, query, nodes, nil,
 			func(n *Warehouse, e *City) { n.Edges.City = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := wq.withAssetManager; query != nil {
+		if err := wq.loadAssetManager(ctx, query, nodes, nil,
+			func(n *Warehouse, e *AssetManager) { n.Edges.AssetManager = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -471,6 +513,38 @@ func (wq *WarehouseQuery) loadCity(ctx context.Context, query *CityQuery, nodes 
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (wq *WarehouseQuery) loadAssetManager(ctx context.Context, query *AssetManagerQuery, nodes []*Warehouse, init func(*Warehouse), assign func(*Warehouse, *AssetManager)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Warehouse)
+	for i := range nodes {
+		if nodes[i].AssetManagerID == nil {
+			continue
+		}
+		fk := *nodes[i].AssetManagerID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(assetmanager.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "asset_manager_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -571,6 +645,9 @@ func (wq *WarehouseQuery) querySpec() *sqlgraph.QuerySpec {
 		if wq.withCity != nil {
 			_spec.Node.AddColumnOnce(warehouse.FieldCityID)
 		}
+		if wq.withAssetManager != nil {
+			_spec.Node.AddColumnOnce(warehouse.FieldAssetManagerID)
+		}
 	}
 	if ps := wq.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -640,6 +717,7 @@ type WarehouseQueryWith string
 
 var (
 	WarehouseQueryWithCity          WarehouseQueryWith = "City"
+	WarehouseQueryWithAssetManager  WarehouseQueryWith = "AssetManager"
 	WarehouseQueryWithAssetManagers WarehouseQueryWith = "AssetManagers"
 )
 
@@ -648,6 +726,8 @@ func (wq *WarehouseQuery) With(withEdges ...WarehouseQueryWith) *WarehouseQuery 
 		switch v {
 		case WarehouseQueryWithCity:
 			wq.WithCity()
+		case WarehouseQueryWithAssetManager:
+			wq.WithAssetManager()
 		case WarehouseQueryWithAssetManagers:
 			wq.WithAssetManagers()
 		}

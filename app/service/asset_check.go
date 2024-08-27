@@ -415,6 +415,13 @@ func (s *assetCheckService) listFilter(q *ent.AssetCheckQuery, req *model.AssetC
 		end := tools.NewTime().ParseNextDateStringX(*req.EndAt)
 		q.Where(assetcheck.EndAtGTE(start), assetcheck.EndAtLTE(end))
 	}
+
+	if len(req.LocationsIds) != 0 && req.LocationsType != nil {
+		q.Where(
+			assetcheck.LocationsIDIn(req.LocationsIds...),
+			assetcheck.LocationsType(req.LocationsType.Value()),
+		)
+	}
 }
 
 // Detail 盘点明细

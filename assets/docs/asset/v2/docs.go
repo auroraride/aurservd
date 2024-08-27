@@ -738,6 +738,16 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "位置IDs",
+                        "name": "locationsIds",
+                        "in": "query"
+                    },
+                    {
                         "enum": [
                             1,
                             2,
@@ -3678,6 +3688,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "代理员ID",
+                        "name": "agentID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "仓库管理员ID",
                         "name": "assetManagerID",
                         "in": "query"
@@ -3746,6 +3762,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
                         "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "运维ID",
+                        "name": "maintainerID",
                         "in": "query"
                     },
                     {
@@ -7394,6 +7416,10 @@ const docTemplate = `{
                 "inNum": {
                     "description": "入库数量",
                     "type": "integer"
+                },
+                "inOut": {
+                    "description": "in:入库方、out:出库方、all:出入库方",
+                    "type": "string"
                 },
                 "outNum": {
                     "description": "出库数量",

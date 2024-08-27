@@ -39,8 +39,12 @@ const (
 	FieldAddress = "address"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
+	// FieldAssetManagerID holds the string denoting the asset_manager_id field in the database.
+	FieldAssetManagerID = "asset_manager_id"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
+	// EdgeAssetManager holds the string denoting the asset_manager edge name in mutations.
+	EdgeAssetManager = "asset_manager"
 	// EdgeAssetManagers holds the string denoting the asset_managers edge name in mutations.
 	EdgeAssetManagers = "asset_managers"
 	// Table holds the table name of the warehouse in the database.
@@ -52,6 +56,13 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
+	// AssetManagerTable is the table that holds the asset_manager relation/edge.
+	AssetManagerTable = "warehouse"
+	// AssetManagerInverseTable is the table name for the AssetManager entity.
+	// It exists in this package in order to avoid circular dependency with the "assetmanager" package.
+	AssetManagerInverseTable = "asset_manager"
+	// AssetManagerColumn is the table column denoting the asset_manager relation/edge.
+	AssetManagerColumn = "asset_manager_id"
 	// AssetManagersTable is the table that holds the asset_managers relation/edge. The primary key declared below.
 	AssetManagersTable = "warehouse_asset_managers"
 	// AssetManagersInverseTable is the table name for the AssetManager entity.
@@ -74,6 +85,7 @@ var Columns = []string{
 	FieldLat,
 	FieldAddress,
 	FieldSn,
+	FieldAssetManagerID,
 }
 
 var (
@@ -165,10 +177,22 @@ func BySn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSn, opts...).ToFunc()
 }
 
+// ByAssetManagerID orders the results by the asset_manager_id field.
+func ByAssetManagerID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAssetManagerID, opts...).ToFunc()
+}
+
 // ByCityField orders the results by city field.
 func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newCityStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByAssetManagerField orders the results by asset_manager field.
+func ByAssetManagerField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAssetManagerStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -190,6 +214,13 @@ func newCityStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CityInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+	)
+}
+func newAssetManagerStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AssetManagerInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, true, AssetManagerTable, AssetManagerColumn),
 	)
 }
 func newAssetManagersStep() *sqlgraph.Step {

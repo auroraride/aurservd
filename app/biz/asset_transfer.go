@@ -28,18 +28,26 @@ func NewAssetTransfer() *assetTransferBiz {
 }
 
 // TransferList 调拨记录列表
-func (b *assetTransferBiz) TransferList(am *ent.AssetManager, ep *ent.Employee, req *definition.TransferListReq) (res *model.PaginationRes, err error) {
+func (b *assetTransferBiz) TransferList(assetSignInfo definition.AssetSignInfo, req *definition.TransferListReq) (res *model.PaginationRes, err error) {
 	newReq := model.AssetTransferListReq{
 		PaginationReq:       req.PaginationReq,
 		AssetTransferFilter: req.AssetTransferFilter,
 	}
 
-	if am != nil {
-		newReq.AssetManagerID = am.ID
+	if assetSignInfo.AssetManager != nil {
+		newReq.AssetManagerID = assetSignInfo.AssetManager.ID
 	}
 
-	if ep != nil {
-		newReq.EmployeeID = ep.ID
+	if assetSignInfo.Employee != nil {
+		newReq.EmployeeID = assetSignInfo.Employee.ID
+	}
+
+	if assetSignInfo.Agent != nil {
+		newReq.AgentID = assetSignInfo.Agent.ID
+	}
+
+	if assetSignInfo.Maintainer != nil {
+		newReq.MaintainerID = assetSignInfo.Maintainer.ID
 	}
 
 	return service.NewAssetTransfer().TransferList(context.Background(), &newReq)
@@ -57,7 +65,7 @@ func (b *assetTransferBiz) TransferDetail(ctx context.Context, req *model.AssetT
 	if err != nil {
 		return nil, err
 	}
-	atr := service.NewAssetTransfer().TransferInfo(t)
+	atr := service.NewAssetTransfer().TransferInfo(nil, t)
 	res = &definition.TransferDetailRes{
 		AssetTransferListRes: *atr,
 		Detail:               details,
@@ -66,27 +74,27 @@ func (b *assetTransferBiz) TransferDetail(ctx context.Context, req *model.AssetT
 }
 
 // TransferReceive 接收资产
-func (b *assetTransferBiz) TransferReceive(am *ent.AssetManager, ep *ent.Employee, req *definition.AssetTransferReceiveBatchReq) (err error) {
+func (b *assetTransferBiz) TransferReceive(assetSignInfo definition.AssetSignInfo, req *definition.AssetTransferReceiveBatchReq) (err error) {
 	var md model.Modifier
 
 	newReq := model.AssetTransferReceiveBatchReq{
 		AssetTransferReceive: req.AssetTransferReceive,
 	}
 
-	if am != nil {
+	if assetSignInfo.AssetManager != nil {
 		newReq.OperateType = model.AssetOperateRoleTypeManager
 		md = model.Modifier{
-			ID:    am.ID,
-			Name:  am.Name,
-			Phone: am.Phone,
+			ID:    assetSignInfo.AssetManager.ID,
+			Name:  assetSignInfo.AssetManager.Name,
+			Phone: assetSignInfo.AssetManager.Phone,
 		}
 	}
-	if ep != nil {
+	if assetSignInfo.Employee != nil {
 		newReq.OperateType = model.AssetOperateRoleTypeStore
 		md = model.Modifier{
-			ID:    ep.ID,
-			Name:  ep.Name,
-			Phone: ep.Phone,
+			ID:    assetSignInfo.Employee.ID,
+			Name:  assetSignInfo.Employee.Name,
+			Phone: assetSignInfo.Employee.Phone,
 		}
 	}
 
@@ -94,7 +102,7 @@ func (b *assetTransferBiz) TransferReceive(am *ent.AssetManager, ep *ent.Employe
 }
 
 // Transfer 创建资产调拨
-func (b *assetTransferBiz) Transfer(am *ent.AssetManager, ep *ent.Employee, req *definition.AssetTransferCreateReq) (failed []string, err error) {
+func (b *assetTransferBiz) Transfer(assetSignInfo definition.AssetSignInfo, req *definition.AssetTransferCreateReq) (failed []string, err error) {
 
 	var md model.Modifier
 
@@ -107,33 +115,63 @@ func (b *assetTransferBiz) Transfer(am *ent.AssetManager, ep *ent.Employee, req 
 		AssetTransferType: &aType,
 	}
 
-	if am != nil {
+	if assetSignInfo.AssetManager != nil {
 		wType := model.AssetLocationsTypeWarehouse
 		newReq.FromLocationType = &wType
 		if req.FromLocationID == nil {
-			req.FromLocationID = silk.UInt64(am.ID)
+			req.FromLocationID = silk.UInt64(assetSignInfo.AssetManager.ID)
 		} else {
 			newReq.FromLocationID = req.FromLocationID
 		}
 
 		md = model.Modifier{
-			ID:    am.ID,
-			Name:  am.Name,
-			Phone: am.Phone,
+			ID:    assetSignInfo.AssetManager.ID,
+			Name:  assetSignInfo.AssetManager.Name,
+			Phone: assetSignInfo.AssetManager.Phone,
 		}
 	}
-	if ep != nil {
+	if assetSignInfo.Employee != nil {
 		sType := model.AssetLocationsTypeStore
 		newReq.FromLocationType = &sType
 		if req.FromLocationID == nil {
-			req.FromLocationID = silk.UInt64(ep.ID)
+			req.FromLocationID = silk.UInt64(assetSignInfo.Employee.ID)
 		} else {
 			newReq.FromLocationID = req.FromLocationID
 		}
 		md = model.Modifier{
-			ID:    ep.ID,
-			Name:  ep.Name,
-			Phone: ep.Phone,
+			ID:    assetSignInfo.Employee.ID,
+			Name:  assetSignInfo.Employee.Name,
+			Phone: assetSignInfo.Employee.Phone,
+		}
+	}
+
+	if assetSignInfo.Agent != nil {
+		sType := model.AssetLocationsTypeStation
+		newReq.FromLocationType = &sType
+		if req.FromLocationID == nil {
+			req.FromLocationID = silk.UInt64(assetSignInfo.Agent.ID)
+		} else {
+			newReq.FromLocationID = req.FromLocationID
+		}
+		md = model.Modifier{
+			ID:    assetSignInfo.Agent.ID,
+			Name:  assetSignInfo.Agent.Name,
+			Phone: assetSignInfo.Agent.Phone,
+		}
+	}
+
+	if assetSignInfo.Maintainer != nil {
+		sType := model.AssetLocationsTypeOperation
+		newReq.FromLocationType = &sType
+		if req.FromLocationID == nil {
+			req.FromLocationID = silk.UInt64(assetSignInfo.Maintainer.ID)
+		} else {
+			newReq.FromLocationID = req.FromLocationID
+		}
+		md = model.Modifier{
+			ID:    assetSignInfo.Maintainer.ID,
+			Name:  assetSignInfo.Maintainer.Name,
+			Phone: assetSignInfo.Maintainer.Phone,
 		}
 	}
 

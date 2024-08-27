@@ -3598,6 +3598,22 @@ func (c *AssetManagerClient) QueryWarehouses(am *AssetManager) *WarehouseQuery {
 	return query
 }
 
+// QueryWarehouse queries the warehouse edge of a AssetManager.
+func (c *AssetManagerClient) QueryWarehouse(am *AssetManager) *WarehouseQuery {
+	query := (&WarehouseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := am.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetmanager.Table, assetmanager.FieldID, id),
+			sqlgraph.To(warehouse.Table, warehouse.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, assetmanager.WarehouseTable, assetmanager.WarehouseColumn),
+		)
+		fromV = sqlgraph.Neighbors(am.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *AssetManagerClient) Hooks() []Hook {
 	hooks := c.hooks.AssetManager
@@ -20932,6 +20948,22 @@ func (c *WarehouseClient) QueryCity(w *Warehouse) *CityQuery {
 			sqlgraph.From(warehouse.Table, warehouse.FieldID, id),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, warehouse.CityTable, warehouse.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAssetManager queries the asset_manager edge of a Warehouse.
+func (c *WarehouseClient) QueryAssetManager(w *Warehouse) *AssetManagerQuery {
+	query := (&AssetManagerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(warehouse.Table, warehouse.FieldID, id),
+			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, warehouse.AssetManagerTable, warehouse.AssetManagerColumn),
 		)
 		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
 		return fromV, nil

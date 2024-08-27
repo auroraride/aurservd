@@ -13,6 +13,9 @@ definitions:
       startAt:
         description: 盘点开始时间
         type: string
+      stationId:
+        description: 盘点站点ID
+        type: integer
     required:
     - details
     - endAt
@@ -150,6 +153,9 @@ definitions:
       inNum:
         description: 入库数量
         type: integer
+      inOut:
+        description: in:入库方、out:出库方、all:出入库方
+        type: string
       outNum:
         description: 出库数量
         type: integer
@@ -737,6 +743,9 @@ definitions:
       inNum:
         description: 入库数量
         type: integer
+      inOut:
+        description: in:入库方、out:出库方、all:出入库方
+        type: string
       outNum:
         description: 出库数量
         type: integer
@@ -1055,6 +1064,10 @@ paths:
       - description: 每页数据, 默认20
         in: query
         name: pageSize
+        type: integer
+      - description: 站点ID
+        in: query
+        name: stationID
         type: integer
       - description: 门店ID
         in: query
@@ -1632,6 +1645,10 @@ paths:
         name: X-Warestore-Token
         required: true
         type: string
+      - description: 代理员ID
+        in: query
+        name: agentID
+        type: integer
       - description: 仓库管理员ID
         in: query
         name: assetManagerID
@@ -1685,6 +1702,10 @@ paths:
         in: query
         name: keyword
         type: string
+      - description: 运维ID
+        in: query
+        name: maintainerID
+        type: integer
       - description: 出库结束时间
         in: query
         name: outEnd

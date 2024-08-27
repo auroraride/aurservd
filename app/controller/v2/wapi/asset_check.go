@@ -30,7 +30,10 @@ var AssetCheck = new(assetCheck)
 // @Success	200					{object}	definition.AssetCheckCreateRes	"请求成功"
 func (*assetCheck) Create(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[definition.AssetCheckCreateReq](c)
-	return ctx.SendResponse(biz.NewAssetCheck().Create(ctx.AssetManager, ctx.Employee, req))
+	return ctx.SendResponse(biz.NewAssetCheck().Create(definition.AssetSignInfo{
+		AssetManager: ctx.AssetManager,
+		Employee:     ctx.Employee,
+	}, req))
 }
 
 // GetAssetBySN
@@ -46,7 +49,10 @@ func (*assetCheck) Create(c echo.Context) (err error) {
 // @Success	200					{object}	model.AssetCheckByAssetSnRes		"请求成功"
 func (*assetCheck) GetAssetBySN(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[definition.AssetCheckByAssetSnReq](c)
-	return ctx.SendResponse(biz.NewAssetCheck().GetAssetBySN(ctx.AssetManager, ctx.Employee, req))
+	return ctx.SendResponse(biz.NewAssetCheck().GetAssetBySN(definition.AssetSignInfo{
+		AssetManager: ctx.AssetManager,
+		Employee:     ctx.Employee,
+	}, req))
 }
 
 // Detail
@@ -76,7 +82,10 @@ func (*assetCheck) Detail(c echo.Context) (err error) {
 // @Success	200					{object}	model.PaginationRes{items=[]model.AssetCheckListRes}	"请求成功"
 func (*assetCheck) List(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[definition.AssetCheckListReq](c)
-	return ctx.SendResponse(biz.NewAssetCheck().List(ctx.AssetManager, ctx.Employee, req))
+	return ctx.SendResponse(biz.NewAssetCheck().List(definition.AssetSignInfo{
+		AssetManager: ctx.AssetManager,
+		Employee:     ctx.Employee,
+	}, req))
 }
 
 // AssetDetailList

@@ -105,6 +105,11 @@ func Sn(v string) predicate.Warehouse {
 	return predicate.Warehouse(sql.FieldEQ(FieldSn, v))
 }
 
+// AssetManagerID applies equality check predicate on the "asset_manager_id" field. It's identical to AssetManagerIDEQ.
+func AssetManagerID(v uint64) predicate.Warehouse {
+	return predicate.Warehouse(sql.FieldEQ(FieldAssetManagerID, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Warehouse {
 	return predicate.Warehouse(sql.FieldEQ(FieldCreatedAt, v))
@@ -635,6 +640,36 @@ func SnContainsFold(v string) predicate.Warehouse {
 	return predicate.Warehouse(sql.FieldContainsFold(FieldSn, v))
 }
 
+// AssetManagerIDEQ applies the EQ predicate on the "asset_manager_id" field.
+func AssetManagerIDEQ(v uint64) predicate.Warehouse {
+	return predicate.Warehouse(sql.FieldEQ(FieldAssetManagerID, v))
+}
+
+// AssetManagerIDNEQ applies the NEQ predicate on the "asset_manager_id" field.
+func AssetManagerIDNEQ(v uint64) predicate.Warehouse {
+	return predicate.Warehouse(sql.FieldNEQ(FieldAssetManagerID, v))
+}
+
+// AssetManagerIDIn applies the In predicate on the "asset_manager_id" field.
+func AssetManagerIDIn(vs ...uint64) predicate.Warehouse {
+	return predicate.Warehouse(sql.FieldIn(FieldAssetManagerID, vs...))
+}
+
+// AssetManagerIDNotIn applies the NotIn predicate on the "asset_manager_id" field.
+func AssetManagerIDNotIn(vs ...uint64) predicate.Warehouse {
+	return predicate.Warehouse(sql.FieldNotIn(FieldAssetManagerID, vs...))
+}
+
+// AssetManagerIDIsNil applies the IsNil predicate on the "asset_manager_id" field.
+func AssetManagerIDIsNil() predicate.Warehouse {
+	return predicate.Warehouse(sql.FieldIsNull(FieldAssetManagerID))
+}
+
+// AssetManagerIDNotNil applies the NotNil predicate on the "asset_manager_id" field.
+func AssetManagerIDNotNil() predicate.Warehouse {
+	return predicate.Warehouse(sql.FieldNotNull(FieldAssetManagerID))
+}
+
 // HasCity applies the HasEdge predicate on the "city" edge.
 func HasCity() predicate.Warehouse {
 	return predicate.Warehouse(func(s *sql.Selector) {
@@ -650,6 +685,29 @@ func HasCity() predicate.Warehouse {
 func HasCityWith(preds ...predicate.City) predicate.Warehouse {
 	return predicate.Warehouse(func(s *sql.Selector) {
 		step := newCityStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAssetManager applies the HasEdge predicate on the "asset_manager" edge.
+func HasAssetManager() predicate.Warehouse {
+	return predicate.Warehouse(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, AssetManagerTable, AssetManagerColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAssetManagerWith applies the HasEdge predicate on the "asset_manager" edge with a given conditions (other predicates).
+func HasAssetManagerWith(preds ...predicate.AssetManager) predicate.Warehouse {
+	return predicate.Warehouse(func(s *sql.Selector) {
+		step := newAssetManagerStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

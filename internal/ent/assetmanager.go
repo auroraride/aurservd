@@ -13,6 +13,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assetrole"
+	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
 // AssetManager is the model entity for the AssetManager schema.
@@ -58,9 +59,11 @@ type AssetManagerEdges struct {
 	Role *AssetRole `json:"role,omitempty"`
 	// Warehouses holds the value of the warehouses edge.
 	Warehouses []*Warehouse `json:"warehouses,omitempty"`
+	// Warehouse holds the value of the warehouse edge.
+	Warehouse *Warehouse `json:"warehouse,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // RoleOrErr returns the Role value or an error if the edge
@@ -81,6 +84,17 @@ func (e AssetManagerEdges) WarehousesOrErr() ([]*Warehouse, error) {
 		return e.Warehouses, nil
 	}
 	return nil, &NotLoadedError{edge: "warehouses"}
+}
+
+// WarehouseOrErr returns the Warehouse value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetManagerEdges) WarehouseOrErr() (*Warehouse, error) {
+	if e.Warehouse != nil {
+		return e.Warehouse, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: warehouse.Label}
+	}
+	return nil, &NotLoadedError{edge: "warehouse"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -225,6 +239,11 @@ func (am *AssetManager) QueryRole() *AssetRoleQuery {
 // QueryWarehouses queries the "warehouses" edge of the AssetManager entity.
 func (am *AssetManager) QueryWarehouses() *WarehouseQuery {
 	return NewAssetManagerClient(am.config).QueryWarehouses(am)
+}
+
+// QueryWarehouse queries the "warehouse" edge of the AssetManager entity.
+func (am *AssetManager) QueryWarehouse() *WarehouseQuery {
+	return NewAssetManagerClient(am.config).QueryWarehouse(am)
 }
 
 // Update returns a builder for updating this AssetManager.

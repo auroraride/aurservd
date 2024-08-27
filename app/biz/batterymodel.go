@@ -69,8 +69,11 @@ func (b *batteryModelBiz) queryById(id uint64) (item *ent.BatteryModel, err erro
 }
 
 // queryByModel 通过型号查询结果
-func (b *batteryModelBiz) queryByModel(model string) (item *ent.BatteryModel, err error) {
-	return b.orm.Query().Where(batterymodel.Model(model)).First(b.ctx)
+func (b *batteryModelBiz) queryByModelAndType(model string, bt definition.BatteryModelType) (item *ent.BatteryModel, err error) {
+	return b.orm.Query().Where(
+		batterymodel.Model(model),
+		batterymodel.Type(bt.Value()),
+	).First(b.ctx)
 }
 
 // queryByModelNotSelf 查询非自身同型号结果
@@ -90,7 +93,7 @@ func (b *batteryModelBiz) Detail(id uint64) (*definition.BatteryModelDetail, err
 // Create 创建
 func (b *batteryModelBiz) Create(req *definition.BatteryModelCreateReq) (err error) {
 	batModel := fmt.Sprintf("%dV%dAH", req.Voltage, req.Capacity)
-	bm, _ := b.queryByModel(batModel)
+	bm, _ := b.queryByModelAndType(batModel, req.Type)
 	if bm != nil {
 		return errors.New("电池型号已存在")
 	}

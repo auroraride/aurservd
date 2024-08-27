@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/biz/definition"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/activity"
 )
 
@@ -132,8 +132,8 @@ func (ac *ActivityCreate) SetNillableHome(b *bool) *ActivityCreate {
 }
 
 // SetImage sets the "image" field.
-func (ac *ActivityCreate) SetImage(di definition.ActivityImage) *ActivityCreate {
-	ac.mutation.SetImage(di)
+func (ac *ActivityCreate) SetImage(mi model.ActivityImage) *ActivityCreate {
+	ac.mutation.SetImage(mi)
 	return ac
 }
 
@@ -488,7 +488,7 @@ func (u *ActivityUpsert) UpdateHome() *ActivityUpsert {
 }
 
 // SetImage sets the "image" field.
-func (u *ActivityUpsert) SetImage(v definition.ActivityImage) *ActivityUpsert {
+func (u *ActivityUpsert) SetImage(v model.ActivityImage) *ActivityUpsert {
 	u.Set(activity.FieldImage, v)
 	return u
 }
@@ -703,7 +703,7 @@ func (u *ActivityUpsertOne) UpdateHome() *ActivityUpsertOne {
 }
 
 // SetImage sets the "image" field.
-func (u *ActivityUpsertOne) SetImage(v definition.ActivityImage) *ActivityUpsertOne {
+func (u *ActivityUpsertOne) SetImage(v model.ActivityImage) *ActivityUpsertOne {
 	return u.Update(func(s *ActivityUpsert) {
 		s.SetImage(v)
 	})
@@ -1089,7 +1089,7 @@ func (u *ActivityUpsertBulk) UpdateHome() *ActivityUpsertBulk {
 }
 
 // SetImage sets the "image" field.
-func (u *ActivityUpsertBulk) SetImage(v definition.ActivityImage) *ActivityUpsertBulk {
+func (u *ActivityUpsertBulk) SetImage(v model.ActivityImage) *ActivityUpsertBulk {
 	return u.Update(func(s *ActivityUpsert) {
 		s.SetImage(v)
 	})

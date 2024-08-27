@@ -27,9 +27,12 @@ var AssetTransfer = new(assetTransfer)
 // @Param	X-Warestore-Token	header		string								true	"仓管校验token"
 // @Param	body				body		definition.AssetTransferCreateReq	true	"调拨参数"
 // @Success	200					{object}	model.StatusResponse				"请求成功"
-func (*warestore) Transfer(c echo.Context) (err error) {
+func (*assetTransfer) Transfer(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[definition.AssetTransferCreateReq](c)
-	return ctx.SendResponse(biz.NewAssetTransfer().Transfer(ctx.AssetManager, ctx.Employee, req))
+	return ctx.SendResponse(biz.NewAssetTransfer().Transfer(definition.AssetSignInfo{
+		AssetManager: ctx.AssetManager,
+		Employee:     ctx.Employee,
+	}, req))
 }
 
 // TransferList
@@ -42,9 +45,12 @@ func (*warestore) Transfer(c echo.Context) (err error) {
 // @Param	X-Warestore-Token	header		string													true	"仓管校验token"
 // @Param	query				query		definition.TransferListReq								true	"查询参数"
 // @Success	200					{object}	model.PaginationRes{items=[]model.AssetTransferListRes}	"请求成功"
-func (*warestore) TransferList(c echo.Context) (err error) {
+func (*assetTransfer) TransferList(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[definition.TransferListReq](c)
-	return ctx.SendResponse(biz.NewAssetTransfer().TransferList(ctx.AssetManager, ctx.Employee, req))
+	return ctx.SendResponse(biz.NewAssetTransfer().TransferList(definition.AssetSignInfo{
+		AssetManager: ctx.AssetManager,
+		Employee:     ctx.Employee,
+	}, req))
 }
 
 // TransferDetail
@@ -57,7 +63,7 @@ func (*warestore) TransferList(c echo.Context) (err error) {
 // @Param	X-Warestore-Token	header		string							true	"仓管校验token"
 // @Param	id					path		uint64							true	"调拨ID"
 // @Success	200					{object}	definition.TransferDetailRes	"请求成功"
-func (*warestore) TransferDetail(c echo.Context) (err error) {
+func (*assetTransfer) TransferDetail(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[model.AssetTransferDetailReq](c)
 	return ctx.SendResponse(biz.NewAssetTransfer().TransferDetail(ctx.Request().Context(), req))
 }
@@ -72,9 +78,12 @@ func (*warestore) TransferDetail(c echo.Context) (err error) {
 // @Param	X-Warestore-Token	header		string									true	"仓管校验token"
 // @Param	body				body		definition.AssetTransferReceiveBatchReq	true	"接收参数"
 // @Success	200					{object}	model.StatusResponse					"请求成功"
-func (*warestore) TransferReceive(c echo.Context) (err error) {
+func (*assetTransfer) TransferReceive(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[definition.AssetTransferReceiveBatchReq](c)
-	return ctx.SendResponse(biz.NewAssetTransfer().TransferReceive(ctx.AssetManager, ctx.Employee, req))
+	return ctx.SendResponse(biz.NewAssetTransfer().TransferReceive(definition.AssetSignInfo{
+		AssetManager: ctx.AssetManager,
+		Employee:     ctx.Employee,
+	}, req))
 }
 
 // TransferFlow
@@ -87,7 +96,7 @@ func (*warestore) TransferReceive(c echo.Context) (err error) {
 // @Param	X-Warestore-Token	header		string						true	"仓管校验token"
 // @Param	query				query		model.AssetTransferFlowReq	true	"查询参数"
 // @Success	200					{object}	[]model.AssetTransferFlow	"请求成功"
-func (*warestore) TransferFlow(c echo.Context) (err error) {
+func (*assetTransfer) TransferFlow(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[model.AssetTransferFlowReq](c)
 	return ctx.SendResponse(biz.NewAssetTransfer().Flow(req))
 }
@@ -102,7 +111,7 @@ func (*warestore) TransferFlow(c echo.Context) (err error) {
 // @Param	X-Warestore-Token	header		string						true	"仓管校验token"
 // @Param	sn					path		string						true	"资产SN"
 // @Success	200					{object}	model.AssetTransferListRes	"请求成功"
-func (*warestore) TransferBySn(c echo.Context) (err error) {
+func (*assetTransfer) TransferBySn(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[model.GetTransferBySNReq](c)
 	return ctx.SendResponse(biz.NewAssetTransfer().GetTransferBySn(req))
 }
