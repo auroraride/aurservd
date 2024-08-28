@@ -235,42 +235,6 @@ func (s AssetStatus) Value() uint8 {
 	return uint8(s)
 }
 
-// AssetOperateRoleType 操作资产角色类型
-type AssetOperateRoleType uint8
-
-const (
-	AssetOperateRoleTypeManager         AssetOperateRoleType = iota + 1 // 资产后台(仓库)
-	AssetOperateRoleTypeStore                                           // 门店
-	AssetOperateRoleTypeAgent                                           // 代理
-	AssetOperateRoleTypeOperation                                       // 运维
-	AssetOperateRoleTypeCabinet                                         // 电柜
-	AssetOperateRoleTypeRider                                           // 骑手
-	AssetOperateRoleTypeBusinessManager                                 // 业务后台
-)
-
-func (s AssetOperateRoleType) String() string {
-	switch s {
-	case AssetOperateRoleTypeManager:
-		return "资产后台"
-	case AssetOperateRoleTypeStore:
-		return "门店"
-	case AssetOperateRoleTypeAgent:
-		return "代理"
-	case AssetOperateRoleTypeOperation:
-		return "运维"
-	case AssetOperateRoleTypeCabinet:
-		return "电柜"
-	case AssetOperateRoleTypeRider:
-		return "骑手"
-	default:
-		return "未知"
-	}
-}
-
-func (s AssetOperateRoleType) Value() uint8 {
-	return uint8(s)
-}
-
 type SelectMaterialReq struct {
 	Type *AssetType `json:"type" query:"type"` // 4:电柜配件 5:电车配件 6:其他
 }
