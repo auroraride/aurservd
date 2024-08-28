@@ -6,9 +6,8 @@
 package model
 
 const (
-	IntelligentBatteryFullSoc  float64 = 95.0 // 智能电池定义满电soc TODO: 具体数值待定义
-	CabinetBusinessScanExpires int64   = 30   // 电柜业务 - 扫码有效期(s)
-	CabinetBusinessStepTimeout int64   = 200  // 电柜业务 - 操作超时(s)
+	CabinetBusinessScanExpires int64   = 30  // 电柜业务 - 扫码有效期(s)
+	CabinetBusinessStepTimeout int64   = 200 // 电柜业务 - 操作超时(s)
 	DailyRentDefault           float64 = 99999.0
 )
 
@@ -19,7 +18,7 @@ const (
 	SettingRescueReasonKey           = "RESCUE_REASON"            // 救援原因
 	SettingRescueFeeKey              = "RESCUE_FEE"               // 救援费用
 	SettingReminderKey               = "REMINDER"                 // 催费通知
-	SettingBatteryFullKey            = "BATTERY_FULL"             // 非智能电池满电电量
+	SettingBatteryFullKey            = "BATTERY_FULL"             // 电池满电电量判定
 	SettingExceptionKey              = "EXCEPTION"                // 物资异常
 	SettingPauseMaxDaysKey           = "PAUSE_MAX_DAYS"           // 最大寄存时间
 	SettingExchangeIntervalKey       = "EXCHANGE_INTERVAL"        // 限制换电间隔
@@ -139,7 +138,7 @@ var Settings = map[string]SettingItem{
 	},
 	SettingBatteryFullKey: {
 		Desc:    "满电电量百分比",
-		Default: "80",
+		Default: "90",
 	},
 	// SettingPauseMaxDaysKey: {
 	//     Desc:    "最大寄存时间",

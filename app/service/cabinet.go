@@ -684,10 +684,7 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
 
 func (s *cabinetService) Sync(cab *ent.Cabinet) {
 	// 满电电量
-	fs := model.IntelligentBatteryFullSoc
-	if !cab.Intelligent {
-		fs = cache.Float64(model.SettingBatteryFullKey)
-	}
+	fs := cache.Float64(model.SettingBatteryFullKey)
 	res := rpc.CabinetSync(rpc.CabinetKey(cab.Brand, cab.Intelligent), &pb.CabinetSyncRequest{
 		Serial:  []string{cab.Serial},
 		FullSoc: fs,
@@ -709,11 +706,7 @@ func (s *cabinetService) SyncCabinets(cabs []*ent.Cabinet) {
 		indexes[cab.Serial] = i
 		// 满电电量
 		if _, ok := fsm[k]; !ok {
-			if cab.Intelligent {
-				fsm[k] = model.IntelligentBatteryFullSoc
-			} else {
-				fsm[k] = cache.Float64(model.SettingBatteryFullKey)
-			}
+			fsm[k] = cache.Float64(model.SettingBatteryFullKey)
 		}
 	}
 

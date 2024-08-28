@@ -68,7 +68,7 @@ func (s *intelligentCabinetService) ExchangeUsable(bm string, cab *ent.Cabinet) 
 		Electricity: model.BatterySoc(v.Fully.Soc),
 	}
 
-	if v.Fully.Soc >= model.IntelligentBatteryFullSoc {
+	if v.Fully.Soc >= cache.Float64(model.SettingBatteryFullKey) {
 		info.FullBin = fully
 	} else {
 		info.Alternative = fully
