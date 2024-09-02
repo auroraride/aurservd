@@ -17,7 +17,6 @@ type AssetCreateReq struct {
 
 // AssetModifyReq 修改资产请求
 type AssetModifyReq struct {
-	AssetType AssetType              `json:"assetType" validate:"required"`     // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
 	ID        uint64                 `json:"id" param:"id" validate:"required"` // 资产ID
 	Enable    *bool                  `json:"enable"`                            // 是否启用
 	CityID    *uint64                `json:"cityId"`                            // 城市ID
@@ -55,21 +54,21 @@ type AssetListReq struct {
 
 // AssetListRes 资产列表返回
 type AssetListRes struct {
-	ID             uint64                    `json:"id"`                 // 资产ID
-	CityName       string                    `json:"cityName,omitempty"` // 城市
-	CityID         uint64                    `json:"cityId,omitempty"`   // 城市ID
-	Belong         string                    `json:"belong"`             // 归属
-	AssetLocations string                    `json:"assetLocations"`     // 资产位置
-	LocationsID    uint64                    `json:"locationsId"`        // 资产位置ID
-	Brand          string                    `json:"brand"`              // 品牌
-	BrandID        uint64                    `json:"brandId"`            // 品牌ID
-	Model          string                    `json:"model,omitempty"`    // 资产型号
-	SN             string                    `json:"sn"`                 // 编号
-	AssetStatus    string                    `json:"assetStatus"`        // 资产状态(文字)
-	Enable         bool                      `json:"enable"`             // 是否启用
-	Remark         string                    `json:"remark"`             // 备注
-	Attribute      map[uint64]AssetAttribute `json:"attribute"`          // 属性
-	Status         AssetStatus               `json:"status"`             // 资产状态
+	ID             uint64                    `json:"id"`             // 资产ID
+	CityName       string                    `json:"cityName"`       // 城市
+	CityID         uint64                    `json:"cityId"`         // 城市ID
+	Belong         string                    `json:"belong"`         // 归属
+	AssetLocations string                    `json:"assetLocations"` // 资产位置
+	LocationsID    uint64                    `json:"locationsId"`    // 资产位置ID
+	Brand          string                    `json:"brand"`          // 品牌
+	BrandID        uint64                    `json:"brandId"`        // 品牌ID
+	Model          string                    `json:"model"`          // 资产型号
+	SN             string                    `json:"sn"`             // 编号
+	AssetStatus    string                    `json:"assetStatus"`    // 资产状态(文字)
+	Enable         bool                      `json:"enable"`         // 是否启用
+	Remark         string                    `json:"remark"`         // 备注
+	Attribute      map[uint64]AssetAttribute `json:"attribute"`      // 属性
+	Status         AssetStatus               `json:"status"`         // 资产状态
 }
 
 // AssetBatchCreateReq 批量创建资产请求

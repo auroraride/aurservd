@@ -50,7 +50,7 @@ func (s *assetScrapService) ScrapList(ctx context.Context, req *model.AssetScrap
 		operateName := ""
 		if item.OperateID != nil && item.OperateRoleType != nil {
 			switch *item.OperateRoleType {
-			case model.AssetOperateRoleTypeManager.Value():
+			case model.OperatorTypeAssetManager.Value():
 				if item.Edges.Manager != nil {
 					// 查询角色
 					var roleName string
@@ -59,15 +59,15 @@ func (s *assetScrapService) ScrapList(ctx context.Context, req *model.AssetScrap
 					}
 					operateName = "[" + roleName + "]-" + item.Edges.Manager.Name
 				}
-			case model.AssetOperateRoleTypeStore.Value():
+			case model.OperatorTypeEmployee.Value():
 				if item.Edges.Employee != nil {
 					operateName = "[门店]-" + item.Edges.Employee.Name
 				}
-			case model.AssetOperateRoleTypeOperation.Value():
+			case model.OperatorTypeMaintainer.Value():
 				if item.Edges.Maintainer != nil {
 					operateName = "[运维]-" + item.Edges.Maintainer.Name
 				}
-			case model.AssetOperateRoleTypeAgent.Value():
+			case model.OperatorTypeAgent.Value():
 				if item.Edges.Agent != nil {
 					operateName = "[代理]-" + item.Edges.Agent.Name
 				}
@@ -332,7 +332,7 @@ func (s *assetScrapService) createScrap(ctx context.Context, req *model.AssetScr
 		SetLastModifier(modifier).
 		SetScrapAt(scrapAt).
 		SetOperateID(modifier.ID).
-		SetOperateRoleType(model.AssetOperateRoleTypeManager.Value()).
+		SetOperateRoleType(model.OperatorTypeAssetManager.Value()).
 		SetNillableRemark(req.Remark).
 		SetCreator(modifier).
 		SetLastModifier(modifier).

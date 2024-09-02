@@ -365,7 +365,7 @@ func (b *storeBiz) ListByEmployee(ep *ent.Employee) (res []*model.CascaderOption
 		WithStores(func(query *ent.StoreQuery) {
 			query.Where(store.DeletedAtIsNil()).WithCity()
 		}).First(b.ctx)
-	if err != nil && eep == nil {
+	if err != nil || eep == nil {
 		return
 	}
 

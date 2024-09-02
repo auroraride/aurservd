@@ -363,12 +363,12 @@ func (b *warehouseBiz) ListByManager(am *ent.AssetManager) (res []*model.Cascade
 		WithWarehouses(func(query *ent.WarehouseQuery) {
 			query.Where(warehouse.DeletedAtIsNil()).WithCity()
 		}).First(b.ctx)
-	if err != nil && eam == nil {
+	if err != nil || eam == nil {
 		return
 	}
 
 	// 数据组合
-	whList := am.Edges.Warehouses
+	whList := eam.Edges.Warehouses
 	cityIds := make([]uint64, 0)
 	cityIdMap := make(map[uint64]*ent.City)
 	cityIdListMap := make(map[uint64][]model.SelectOption)

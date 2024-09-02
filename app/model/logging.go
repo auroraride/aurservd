@@ -23,6 +23,10 @@ func (ot OperatorType) String() string {
 	return []string{"业务管理员", "店员", "电柜", "代理", "运维", "骑手", "资产管理员"}[int(ot)]
 }
 
+func (t OperatorType) Value() uint8 {
+	return uint8(t)
+}
+
 const (
 	OperatePersonBan            Operate = iota // 封禁身份
 	OperatePersonUnBan                         // 解封身份

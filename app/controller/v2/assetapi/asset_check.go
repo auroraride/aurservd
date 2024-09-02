@@ -24,7 +24,7 @@ var AssetCheck = new(assetCheck)
 // @Success	200						{object}	model.StatusResponse		"请求成功"
 func (*assetCheck) Create(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.AssetCheckCreateReq](c)
-	req.OpratorType = model.AssetOperateRoleTypeManager
+	req.OpratorType = model.OperatorTypeAssetManager
 	req.OpratorID = ctx.Modifier.ID
 	return ctx.SendResponse(service.NewAssetCheck().CreateAssetCheck(ctx.Request().Context(), req, ctx.Modifier))
 }
@@ -41,7 +41,7 @@ func (*assetCheck) Create(c echo.Context) (err error) {
 // @Success	200						{object}	model.AssetCheckByAssetSnRes	"请求成功"
 func (*assetCheck) GetAssetBySN(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.AssetCheckByAssetSnReq](c)
-	req.OpratorType = model.AssetOperateRoleTypeManager
+	req.OpratorType = model.OperatorTypeAssetManager
 	req.OpratorID = ctx.Modifier.ID
 	return ctx.SendResponse(service.NewAssetCheck().GetAssetBySN(ctx.Request().Context(), req))
 }

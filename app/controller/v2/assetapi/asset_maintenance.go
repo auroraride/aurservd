@@ -29,7 +29,7 @@ func (*assetMaintenance) List(c echo.Context) (err error) {
 
 // Modify 修改维修记录
 // @ID		AssetMaintenanceModify
-// @Router	/manager/v2/asset/maintenance/:id [PUT]
+// @Router	/manager/v2/asset/maintenance/{id} [PUT]
 // @Summary	修改维修记录
 // @Tags	资产
 // @Accept	json

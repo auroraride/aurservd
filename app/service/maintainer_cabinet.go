@@ -105,7 +105,7 @@ func (s *maintainerCabinetService) Operate(m *ent.Maintainer, cities []uint64, r
 		err := NewAssetMaintenance().Create(s.ctx, &model.AssetMaintenanceCreateReq{
 			CabinetID:       cab.ID,
 			OpratorID:       m.ID,
-			OperateRoleType: model.AssetOperateRoleTypeOperation.Value(),
+			OperateRoleType: model.OperatorTypeMaintainer.Value(),
 		}, &model.Modifier{
 			ID:    m.ID,
 			Name:  m.Name,

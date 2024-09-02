@@ -1,5 +1,21 @@
 basePath: /
 definitions:
+  adapter.CabinetBrand:
+    enum:
+    - UNKNOWN
+    - KAIXIN
+    - YUNDONG
+    - TUOBANG
+    - XILIULOUSERV
+    type: string
+    x-enum-comments:
+      CabinetBrandXiliulouServer: 西六楼服务器版
+    x-enum-varnames:
+    - CabinetBrandUnknown
+    - CabinetBrandKaixin
+    - CabinetBrandYundong
+    - CabinetBrandTuobang
+    - CabinetBrandXiliulouServer
   definition.AssetCheckCreateReq:
     properties:
       details:
@@ -29,6 +45,9 @@ definitions:
     type: object
   definition.AssetCountDetail:
     properties:
+      deliverCount:
+        description: 配送数量
+        type: integer
       faultCount:
         description: 故障数量
         type: integer
@@ -91,6 +110,28 @@ definitions:
     - reason
     - toLocationID
     - toLocationType
+    type: object
+  definition.AssetTransferModifyReq:
+    properties:
+      reason:
+        description: 调拨事由
+        type: string
+      remark:
+        type: string
+      toLocationID:
+        description: 调拨后位置ID
+        type: integer
+      toLocationType:
+        allOf:
+        - $ref: '#/definitions/model.AssetLocationsType'
+        description: 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+    required:
+    - reason
     type: object
   definition.AssetTransferReceiveBatchReq:
     properties:
@@ -275,6 +316,9 @@ definitions:
       dutyLocation:
         description: 上班位置
         type: string
+      dutyLocationID:
+        description: 上班位置ID
+        type: integer
       id:
         type: integer
       name:
@@ -283,6 +327,10 @@ definitions:
       phone:
         description: 手机号
         type: string
+      platType:
+        allOf:
+        - $ref: '#/definitions/definition.PlatType'
+        description: 1-仓库平台 2-门店平台
       roleName:
         description: 角色名称
         type: string
@@ -298,7 +346,7 @@ definitions:
       platType:
         allOf:
         - $ref: '#/definitions/definition.PlatType'
-        description: 登录平台类型
+        description: 登录平台类型, 1-仓库平台 2-门店平台
         enum:
         - 1
         - 2
@@ -331,6 +379,15 @@ definitions:
       attributeValueId:
         description: 属性值ID
         type: integer
+    type: object
+  model.AssetAttributeUpdate:
+    properties:
+      attributeId:
+        description: 属性ID
+        type: integer
+      attributeValue:
+        description: 属性值
+        type: string
     type: object
   model.AssetCheckAbnormal:
     properties:
@@ -581,6 +638,26 @@ definitions:
     - AssetLocationsTypeOperation
     - AssetLocationsTypeCabinet
     - AssetLocationsTypeRider
+  model.AssetModifyReq:
+    properties:
+      attribute:
+        description: 属性
+        items:
+          $ref: '#/definitions/model.AssetAttributeUpdate'
+        type: array
+      brandId:
+        description: 品牌ID
+        type: integer
+      cityId:
+        description: 城市ID
+        type: integer
+      enable:
+        description: 是否启用
+        type: boolean
+      remark:
+        description: 备注
+        type: string
+    type: object
   model.AssetStatus:
     enum:
     - 1
@@ -634,6 +711,15 @@ definitions:
       inOperateName:
         description: 入库人
         type: string
+      inTimeAt:
+        description: 入库时间
+        type: string
+      materialId:
+        description: 其他物资ID
+        type: integer
+      modelId:
+        description: 电池型号ID
+        type: integer
       name:
         description: 资产名称
         type: string
@@ -777,6 +863,17 @@ definitions:
         description: 调入目标类型
         type: integer
     type: object
+  model.AssetTransferMainPage:
+    enum:
+    - 1
+    - 2
+    type: integer
+    x-enum-comments:
+      AssetTransferMainPageDeliver: 配送中跳转
+      AssetTransferMainPageReceive: 待接收跳转
+    x-enum-varnames:
+    - AssetTransferMainPageReceive
+    - AssetTransferMainPageDeliver
   model.AssetTransferReceiveDetail:
     properties:
       assetType:
@@ -785,6 +882,9 @@ definitions:
         description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
       materialId:
         description: 其它物资分类ID
+        type: integer
+      modelId:
+        description: 电池型号ID
         type: integer
       num:
         description: 调拨数量
@@ -802,11 +902,15 @@ definitions:
         items:
           $ref: '#/definitions/model.AssetTransferReceiveDetail'
         type: array
+      id:
+        description: 调拨ID
+        type: integer
       remark:
         description: 备注
         type: string
     required:
     - detail
+    - id
     type: object
   model.AssetTransferStatus:
     enum:
@@ -871,6 +975,78 @@ definitions:
     - AssetTypeCabinetAccessory
     - AssetTypeEbikeAccessory
     - AssetTypeOtherAccessory
+  model.Branch:
+    properties:
+      id:
+        type: integer
+      name:
+        description: 网点名称
+        type: string
+    type: object
+  model.CabinetBin:
+    properties:
+      battery:
+        description: 是否有电池
+        type: boolean
+      batterySN:
+        description: 电池序列号
+        type: string
+      chargerErrors:
+        description: 故障信息
+        items:
+          type: string
+        type: array
+      current:
+        description: 充电电流(A)
+        type: number
+      deactivate:
+        description: 是否禁用
+        type: boolean
+      deactivateReason:
+        description: 禁用原因
+        type: string
+      doorHealth:
+        description: 是否锁仓 (柜门是否正常)
+        type: boolean
+      electricity:
+        description: 当前电量
+        type: number
+      full:
+        description: 是否满电
+        type: boolean
+      index:
+        description: 仓位index (从0开始)
+        type: integer
+      name:
+        description: 柜门名称
+        type: string
+      openStatus:
+        description: 是否开门
+        type: boolean
+      ordinal:
+        description: 仓位序号 (从1开始)
+        type: integer
+      remark:
+        description: 备注
+        type: string
+      voltage:
+        description: 电压(V)
+        type: number
+    type: object
+  model.CabinetStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-comments:
+      CabinetStatusMaintenance: 维护中
+      CabinetStatusNormal: 运营中
+      CabinetStatusPending: 未投放
+    x-enum-varnames:
+    - CabinetStatusPending
+    - CabinetStatusNormal
+    - CabinetStatusMaintenance
   model.CascaderOptionLevel2:
     properties:
       children:
@@ -897,6 +1073,200 @@ definitions:
         description: 城市
         type: string
     type: object
+  model.MaintainerBinOperate:
+    enum:
+    - open
+    - lock
+    - unlock
+    - disable
+    - enable
+    type: string
+    x-enum-comments:
+      MaintainerBinOperateDisable: 禁用
+      MaintainerBinOperateEnable: 启用
+      MaintainerBinOperateLock: 锁定
+      MaintainerBinOperateOpen: 开仓
+      MaintainerBinOperateUnlock: 解锁
+    x-enum-varnames:
+    - MaintainerBinOperateOpen
+    - MaintainerBinOperateLock
+    - MaintainerBinOperateUnlock
+    - MaintainerBinOperateDisable
+    - MaintainerBinOperateEnable
+  model.MaintainerBinOperateReq:
+    properties:
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      operate:
+        allOf:
+        - $ref: '#/definitions/model.MaintainerBinOperate'
+        description: 操作, 所有操作均需要提前设电柜为维护状态。open:开仓, lock:锁定, unlock:解锁, disable:禁用,
+          enable:启用
+      reason:
+        description: 操作原因
+        type: string
+    required:
+    - lat
+    - lng
+    - operate
+    - reason
+    type: object
+  model.MaintainerCabinetDetailRes:
+    properties:
+      batteryNum:
+        description: 电池数量
+        type: integer
+      bins:
+        description: 仓位信息
+        items:
+          $ref: '#/definitions/model.CabinetBin'
+        type: array
+      biz:
+        description: 电柜当前业务
+        items:
+          $ref: '#/definitions/pb.CabinetBiz'
+        type: array
+      branch:
+        allOf:
+        - $ref: '#/definitions/model.Branch'
+        description: 所属网点
+      branchId:
+        description: 网点
+        type: integer
+      brand:
+        allOf:
+        - $ref: '#/definitions/adapter.CabinetBrand'
+        description: '品牌, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      createdAt:
+        description: 创建时间
+        type: string
+      doors:
+        description: 柜门数量
+        type: integer
+      enterpriseId:
+        description: 团签ID
+        type: integer
+      enterpriseName:
+        description: 团签名称
+        type: string
+      health:
+        description: 在线状态 0离线 1在线 2故障
+        type: integer
+      id:
+        description: 电柜ID
+        type: integer
+      intelligent:
+        description: 是否智能柜
+        type: boolean
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      models:
+        description: 电池型号
+        items:
+          type: string
+        type: array
+      name:
+        description: 电柜名称
+        type: string
+      remark:
+        description: 备注
+        type: string
+      reserves:
+        description: 当前预约
+        items:
+          $ref: '#/definitions/model.ReserveCabinetItem'
+        type: array
+      serial:
+        description: 电柜编码
+        type: string
+      simDate:
+        description: 'SIM卡到期日期, 例: 2022-06-01'
+        type: string
+      simSn:
+        description: SIM卡号
+        type: string
+      sn:
+        description: 平台编码
+        type: string
+      stationId:
+        description: 站点id
+        type: integer
+      stationName:
+        description: 所属站点名称
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/model.CabinetStatus'
+        description: 电柜状态 0未投放 1运营中 2维护中
+        enum:
+        - 0
+        - 1
+        - 2
+      stockNum:
+        description: 库存电池
+        type: integer
+      transferred:
+        description: 是否初始化过调拨
+        type: boolean
+    required:
+    - brand
+    - name
+    - serial
+    type: object
+  model.MaintainerCabinetOperate:
+    enum:
+    - open-all
+    - maintenance
+    - maintenance-cancel
+    - interrupt
+    - reboot
+    type: string
+    x-enum-comments:
+      MaintainerCabinetOperateInterrupt: 中断维护
+      MaintainerCabinetOperateMaintenance: 维护
+      MaintainerCabinetOperateMaintenanceCancel: 取消维护
+      MaintainerCabinetOperateOpenAll: 全部开仓
+      MaintainerCabinetOperateReboot: 重启
+    x-enum-varnames:
+    - MaintainerCabinetOperateOpenAll
+    - MaintainerCabinetOperateMaintenance
+    - MaintainerCabinetOperateMaintenanceCancel
+    - MaintainerCabinetOperateInterrupt
+    - MaintainerCabinetOperateReboot
+  model.MaintainerCabinetOperateReq:
+    properties:
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      operate:
+        allOf:
+        - $ref: '#/definitions/model.MaintainerCabinetOperate'
+        description: 操作, 除`maintenance`之外所有操作均需要提前设电柜为维护状态。 open:开仓, open-all:全部开仓（暂时不做）,
+          maintenance:电柜维护, maintenance-cancel:取消维护, interrupt:中断业务, reboot:重启（暂时不做）
+      reason:
+        description: 操作原因
+        type: string
+    required:
+    - lat
+    - lng
+    - operate
+    - reason
+    type: object
   model.Pagination:
     properties:
       current:
@@ -918,6 +1288,26 @@ definitions:
         - $ref: '#/definitions/model.Pagination'
         description: 分页属性
     type: object
+  model.ReserveCabinetItem:
+    properties:
+      business:
+        description: 业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        enum:
+        - active
+        - pause
+        - continue
+        - unsubscribe
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+      time:
+        description: 预约时间
+        type: string
+    type: object
   model.SelectOption:
     properties:
       desc:
@@ -934,6 +1324,19 @@ definitions:
     properties:
       status:
         type: boolean
+    type: object
+  pb.CabinetBiz:
+    properties:
+      desc:
+        description: 业务描述
+        type: string
+      ordinal:
+        type: integer
+      serial:
+        type: string
+      user:
+        description: 业务人员
+        type: string
     type: object
 info:
   contact: {}
@@ -1021,27 +1424,6 @@ info:
   title: 极光出行API - 仓管api
   version: "2.0"
 paths:
-  /warestore/v2/asset/count:
-    get:
-      consumes:
-      - application/json
-      operationId: WarestoreAssetCount
-      parameters:
-      - description: 仓管校验token
-        in: header
-        name: X-Warestore-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/definition.AssetCountRes'
-      summary: 资产统计
-      tags:
-      - Assets - 资产管理
   /warestore/v2/assets:
     get:
       consumes:
@@ -1083,10 +1465,47 @@ paths:
         "200":
           description: 请求成功
           schema:
-            items:
-              $ref: '#/definitions/definition.WarestoreAssetRes'
-            type: array
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/definition.WarestoreAssetRes'
+                  type: array
+              type: object
       summary: 资产数据
+      tags:
+      - Assets - 资产管理
+  /warestore/v2/assets/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: WarestoreAssetsUpdate
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      - description: 资产ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改资产
       tags:
       - Assets - 资产管理
   /warestore/v2/assets/common:
@@ -1185,6 +1604,121 @@ paths:
       summary: 资产电车、电池等数据
       tags:
       - Assets - 资产管理
+  /warestore/v2/assets/count:
+    get:
+      consumes:
+      - application/json
+      operationId: WarestoreAssetCount
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.AssetCountRes'
+      summary: 资产统计
+      tags:
+      - Assets - 资产管理
+  /warestore/v2/cabinet/{serial}:
+    get:
+      consumes:
+      - application/json
+      operationId: CabinetDetail
+      parameters:
+      - description: 电柜编号
+        in: path
+        name: serial
+        required: true
+        type: string
+      - description: 运维校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.MaintainerCabinetDetailRes'
+      summary: O2002 获取电柜详情
+      tags:
+      - '[O]运维接口'
+    post:
+      consumes:
+      - application/json
+      operationId: CabinetOperate
+      parameters:
+      - description: 运维校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      - description: 电柜编号
+        in: path
+        name: serial
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.MaintainerCabinetOperateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: O2003 电柜操作
+      tags:
+      - '[O]运维接口'
+  /warestore/v2/cabinet/{serial}/{ordinal}:
+    post:
+      consumes:
+      - application/json
+      operationId: CabinetBinOperate
+      parameters:
+      - description: 运维校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      - description: 电柜编号
+        in: path
+        name: serial
+        required: true
+        type: string
+      - description: 仓位序号，从1开始
+        in: path
+        name: ordinal
+        required: true
+        type: integer
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.MaintainerBinOperateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: O2004 仓位操作
+      tags:
+      - '[O]运维接口'
   /warestore/v2/check:
     get:
       consumes:
@@ -1401,6 +1935,29 @@ paths:
       summary: 通过SN查询资产
       tags:
       - AssetCheck - 资产盘点
+  /warestore/v2/selection/city_station:
+    get:
+      consumes:
+      - application/json
+      operationId: SelectionCityStation
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: 企业-站点
+      tags:
+      - Selection - 筛选
   /warestore/v2/selection/ebike/brand:
     get:
       consumes:
@@ -1702,6 +2259,19 @@ paths:
         in: query
         name: keyword
         type: string
+      - description: 是否首页跳转查询
+        enum:
+        - 1
+        - 2
+        in: query
+        name: mainPage
+        type: integer
+        x-enum-comments:
+          AssetTransferMainPageDeliver: 配送中跳转
+          AssetTransferMainPageReceive: 待接收跳转
+        x-enum-varnames:
+        - AssetTransferMainPageReceive
+        - AssetTransferMainPageDeliver
       - description: 运维ID
         in: query
         name: maintainerID
@@ -1830,6 +2400,63 @@ paths:
           schema:
             $ref: '#/definitions/definition.TransferDetailRes'
       summary: 调拨记录详情
+      tags:
+      - AssetTransfer - 资产调拨
+    put:
+      consumes:
+      - application/json
+      operationId: AssetTransferModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      - description: 调拨ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.AssetTransferModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 修改资产调拨
+      tags:
+      - AssetTransfer - 资产调拨
+  /warestore/v2/transfer/cancel/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: AssetTransferCancel
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      - description: 调拨ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 取消资产调拨
       tags:
       - AssetTransfer - 资产调拨
   /warestore/v2/transfer/details:

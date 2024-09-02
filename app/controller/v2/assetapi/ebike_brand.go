@@ -49,7 +49,7 @@ func (*ebikeBrand) Create(c echo.Context) (err error) {
 
 // Modify
 // @ID		EbikeBrandModify
-// @Router	/manager/v2/asset/ebike/brand/:id [PUT]
+// @Router	/manager/v2/asset/ebike/brand/{id} [PUT]
 // @Summary	修改品牌
 // @Tags	电车型号 - EbikeBrand
 // @Accept	json
@@ -65,7 +65,7 @@ func (*ebikeBrand) Modify(c echo.Context) (err error) {
 
 // Delete
 // @ID		EbikeBrandDelete
-// @Router	/manager/v2/asset/ebike/brand/:id [DELETE]
+// @Router	/manager/v2/asset/ebike/brand/{id} [DELETE]
 // @Summary	删除品牌
 // @Tags	电车型号 - EbikeBrand
 // @Produce	json

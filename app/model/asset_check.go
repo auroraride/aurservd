@@ -84,7 +84,7 @@ type AssetCheckCreateReq struct {
 	LocationsType          AssetLocationsType       `json:"locationsType" validate:"required"`         // 位置类型 1:仓库 2:门店 3:站点
 	LocationsID            uint64                   `json:"locationsId" validate:"required"`           // 位置ID
 	OpratorID              uint64                   `json:"opratorId"`                                 // 操作人ID
-	OpratorType            AssetOperateRoleType     `json:"opratorType"`                               // 操作人类型 1:资产后台(仓库) 2:门店 3:代理
+	OpratorType            OperatorType             `json:"opratorType"`                               // 操作人类型 0:业务管理员 1:门店 2:电柜 3:代理 4:运维 5:骑手 6:资产管理员
 	AssetCheckCreateDetail []AssetCheckCreateDetail `json:"details" validate:"required,dive,required"` // 资产盘点请求详情
 	StartAt                string                   `json:"startAt" validate:"required"`               // 盘点开始时间
 	EndAt                  string                   `json:"endAt" validate:"required"`                 // 盘点结束时间
@@ -170,11 +170,11 @@ type AssetCheckDetail struct {
 
 // AssetCheckByAssetSnReq 通过sn查询资产请求
 type AssetCheckByAssetSnReq struct {
-	SN            string               `json:"sn" query:"sn" param:"sn"` // 资产编号
-	OpratorID     uint64               `json:"opratorId"`                // 操作人ID
-	OpratorType   AssetOperateRoleType `json:"opratorType"`              // 操作人类型 1:资产后台(仓库) 2:门店 3:代理
-	LocationsType AssetLocationsType   `json:"locationsType"`            // 位置类型 1:仓库 2:门店 3:站点
-	LocationsID   uint64               `json:"locationsId"`              // 位置ID
+	SN            string             `json:"sn" query:"sn" param:"sn"` // 资产编号
+	OpratorID     uint64             `json:"opratorId"`                // 操作人ID
+	OpratorType   OperatorType       `json:"opratorType"`              // 操作人类型 0:业务管理员 1:门店 2:电柜 3:代理 4:运维 5:骑手 6:资产管理员
+	LocationsType AssetLocationsType `json:"locationsType"`            // 位置类型 1:仓库 2:门店 3:站点
+	LocationsID   uint64             `json:"locationsId"`              // 位置ID
 }
 
 // AssetCheckByAssetSnRes 通过sn查询资产返回
@@ -187,35 +187,35 @@ type AssetCheckByAssetSnRes struct {
 }
 
 type CheckAssetCheckOwnerReq struct {
-	AssetID       uint64               `json:"assetId"`       // 资产ID
-	AssetType     AssetType            `json:"assetType"`     // 资产类型
-	OpratorType   AssetOperateRoleType `json:"opratorType"`   // 操作人类型
-	OpratorID     uint64               `json:"opratorId"`     // 操作人ID
-	LocationsType AssetLocationsType   `json:"locationsType"` // 位置类型 1:仓库 2:门店 3:站点
-	LocationsID   uint64               `json:"locationsId"`   // 位置ID
+	AssetID       uint64             `json:"assetId"`       // 资产ID
+	AssetType     AssetType          `json:"assetType"`     // 资产类型
+	OpratorType   OperatorType       `json:"opratorType"`   // 0:业务管理员 1:门店 2:电柜 3:代理 4:运维 5:骑手 6:资产管理员
+	OpratorID     uint64             `json:"opratorId"`     // 操作人ID
+	LocationsType AssetLocationsType `json:"locationsType"` // 位置类型 1:仓库 2:门店 3:站点
+	LocationsID   uint64             `json:"locationsId"`   // 位置ID
 }
 
 type GetCheckAssetReq struct {
-	OpratorType   AssetOperateRoleType `json:"opratorType"`   // 操作人类型
-	OpratorID     uint64               `json:"opratorId"`     // 操作人ID
-	LocationsType AssetLocationsType   `json:"locationsType"` // 位置类型 1:仓库 2:门店 3:站点
-	LocationsID   uint64               `json:"locationsId"`   // 位置ID
-	AssetType     AssetType            `json:"assetType"`     // 资产类型 1:电车 2:电池
+	OpratorType   OperatorType       `json:"opratorType"`   // 操作人类型 0:业务管理员 1:门店 2:电柜 3:代理 4:运维 5:骑手 6:资产管理员
+	OpratorID     uint64             `json:"opratorId"`     // 操作人ID
+	LocationsType AssetLocationsType `json:"locationsType"` // 位置类型 1:仓库 2:门店 3:站点
+	LocationsID   uint64             `json:"locationsId"`   // 位置ID
+	AssetType     AssetType          `json:"assetType"`     // 资产类型 1:电车 2:电池
 }
 
 type GetAssetByOperateRole struct {
-	OpratorType   AssetOperateRoleType `json:"opratorType"`   // 操作人类型
-	OpratorID     uint64               `json:"opratorId"`     // 操作人ID
-	LocationsType AssetLocationsType   `json:"locationsType"` // 位置类型 1:仓库 2:门店 3:站点
-	LocationsID   uint64               `json:"locationsId"`   // 位置ID
+	OpratorType   OperatorType       `json:"opratorType"`   // 操作人类型 0:业务管理员 1:门店 2:电柜 3:代理 4:运维 5:骑手 6:资产管理员
+	OpratorID     uint64             `json:"opratorId"`     // 操作人ID
+	LocationsType AssetLocationsType `json:"locationsType"` // 位置类型 1:仓库 2:门店 3:站点
+	LocationsID   uint64             `json:"locationsId"`   // 位置ID
 }
 
 type MarkStartOrEndCheckReq struct {
-	OpratorType   AssetOperateRoleType `json:"opratorType"`   // 操作人类型
-	OpratorID     uint64               `json:"opratorId"`     // 操作人ID
-	LocationsType AssetLocationsType   `json:"locationsType"` // 位置类型 1:仓库 2:门店 3:站点
-	LocationsID   uint64               `json:"locationsId"`   // 位置ID
-	Enable        bool                 `json:"enable"`        // 是否开始盘点 true:开始 false:结束
+	OpratorType   OperatorType       `json:"opratorType"`   // 操作人类型 0:业务管理员 1:门店 2:电柜 3:代理 4:运维 5:骑手 6:资产管理员
+	OpratorID     uint64             `json:"opratorId"`     // 操作人ID
+	LocationsType AssetLocationsType `json:"locationsType"` // 位置类型 1:仓库 2:门店 3:站点
+	LocationsID   uint64             `json:"locationsId"`   // 位置ID
+	Enable        bool               `json:"enable"`        // 是否开始盘点 true:开始 false:结束
 }
 
 // AssetCheckListAbnormalReq 获取盘点异常资产请求

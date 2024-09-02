@@ -16,12 +16,15 @@ func NewAssetTransferDetail() *assetTransferDetailService {
 }
 
 // TransferDetailCount 调拨记录详情的资产统计
-func (s *assetTransferDetailService) TransferDetailCount(items map[string]*model.TransferAssetDetail, key string, isIn bool) {
+func (s *assetTransferDetailService) TransferDetailCount(items map[string]*model.TransferAssetDetail, key string, isIn bool, id uint64, inOpName, inAt string) {
 	if _, ok := items[key]; !ok {
 		items[key] = &model.TransferAssetDetail{
-			Name:     key,
-			Outbound: 0,
-			Inbound:  0,
+			ID:            id,
+			Name:          key,
+			Outbound:      0,
+			Inbound:       0,
+			InTimeAt:      inAt,
+			InOperateName: inOpName,
 		}
 	}
 

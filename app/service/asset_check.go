@@ -228,7 +228,7 @@ func (s *assetCheckService) getAssetByOperateRole(ctx context.Context, req model
 	b = false
 
 	switch req.OpratorType {
-	case model.AssetOperateRoleTypeAgent:
+	case model.OperatorTypeAgent:
 		item, _ := ent.Database.Agent.QueryNotDeleted().Where(agent.ID(req.OpratorID)).WithStations().First(ctx)
 		if item == nil {
 			return b, nil, fmt.Errorf("未找到对应的代理商")
@@ -242,11 +242,11 @@ func (s *assetCheckService) getAssetByOperateRole(ctx context.Context, req model
 			}
 			ids = append(ids, v.ID)
 		}
-	case model.AssetOperateRoleTypeStore:
+	case model.OperatorTypeEmployee:
 		// 查询能操作哪些门店的资产
 		// todo 门店集合没写！还有上班限制
 		b = true
-	case model.AssetOperateRoleTypeManager:
+	case model.OperatorTypeAssetManager:
 		// 查询能操作哪些仓库的资产
 		// todo 仓库集合没写！还有上班限制
 		b = true
@@ -445,16 +445,16 @@ func (s *assetCheckService) detail(item *ent.AssetCheck) *model.AssetCheckListRe
 		end = item.EndAt.Format("2006-01-02 15:04:05")
 	}
 	opratorName := ""
-	switch model.AssetOperateRoleType(item.OperateType) {
-	case model.AssetOperateRoleTypeAgent:
+	switch model.OperatorType(item.OperateType) {
+	case model.OperatorTypeAgent:
 		if item.Edges.OperateAgent != nil {
 			opratorName = item.Edges.OperateAgent.Name
 		}
-	case model.AssetOperateRoleTypeStore:
+	case model.OperatorTypeEmployee:
 		if item.Edges.OperateStore != nil {
 			opratorName = item.Edges.OperateStore.Name
 		}
-	case model.AssetOperateRoleTypeManager:
+	case model.OperatorTypeAssetManager:
 		if item.Edges.OperateManager != nil {
 			opratorName = item.Edges.OperateManager.Name
 		}

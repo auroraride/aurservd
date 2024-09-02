@@ -23,9 +23,9 @@ var Asset = new(asset)
 // @Tags	Assets - 资产管理
 // @Accept	json
 // @Produce	json
-// @Param	X-Agent-Token	header		string							true	"仓管校验token"
-// @Param	query			query		definition.WarestoreAssetsReq	true	"查询参数"
-// @Success	200				{object}	[]definition.WarestoreAssetRes	"请求成功"
+// @Param	X-Agent-Token	header		string														true	"仓管校验token"
+// @Param	query			query		definition.WarestoreAssetsReq								true	"查询参数"
+// @Success	200				{object}	model.PaginationRes{items=[]definition.WarestoreAssetRes}	"请求成功"
 func (*asset) Assets(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[definition.WarestoreAssetsReq](c)
 	return ctx.SendResponse(biz.NewWarestore().Assets(definition.AssetSignInfo{Agent: ctx.Agent}, req))

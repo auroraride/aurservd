@@ -39,19 +39,25 @@ func (b *assetCheckBiz) GetAssetBySN(assetSignInfo definition.AssetSignInfo, req
 	}
 
 	if assetSignInfo.AssetManager != nil {
-		wType := model.AssetOperateRoleTypeManager
+		wType := model.OperatorTypeAssetManager
 		newReq.OpratorType = wType
 		newReq.OpratorID = assetSignInfo.AssetManager.ID
 	}
 	if assetSignInfo.Employee != nil {
-		sType := model.AssetOperateRoleTypeStore
+		sType := model.OperatorTypeEmployee
 		newReq.OpratorType = sType
 		newReq.OpratorID = assetSignInfo.Employee.ID
 	}
 	if assetSignInfo.Agent != nil {
-		sType := model.AssetOperateRoleTypeAgent
+		sType := model.OperatorTypeAgent
 		newReq.OpratorType = sType
 		newReq.OpratorID = assetSignInfo.Agent.ID
+	}
+
+	if assetSignInfo.Maintainer != nil {
+		sType := model.OperatorTypeAgent
+		newReq.OpratorType = sType
+		newReq.OpratorID = assetSignInfo.Maintainer.ID
 	}
 
 	return service.NewAssetCheck().GetAssetBySN(b.ctx, &newReq)
@@ -83,7 +89,7 @@ func (b *assetCheckBiz) Create(assetSignInfo definition.AssetSignInfo, req *defi
 		}
 		newReq.LocationsID = am.Edges.Warehouse.ID
 		newReq.OpratorID = assetSignInfo.AssetManager.ID
-		newReq.OpratorType = model.AssetOperateRoleTypeManager
+		newReq.OpratorType = model.OperatorTypeAssetManager
 
 		md = model.Modifier{
 			ID:    assetSignInfo.AssetManager.ID,
@@ -108,7 +114,7 @@ func (b *assetCheckBiz) Create(assetSignInfo definition.AssetSignInfo, req *defi
 
 		newReq.LocationsID = ep.Edges.Store.ID
 		newReq.OpratorID = assetSignInfo.Employee.ID
-		newReq.OpratorType = model.AssetOperateRoleTypeStore
+		newReq.OpratorType = model.OperatorTypeEmployee
 		md = model.Modifier{
 			ID:    assetSignInfo.Employee.ID,
 			Name:  assetSignInfo.Employee.Name,
@@ -124,7 +130,7 @@ func (b *assetCheckBiz) Create(assetSignInfo definition.AssetSignInfo, req *defi
 		newReq.LocationsType = sType
 		newReq.LocationsID = *req.StationID
 		newReq.OpratorID = assetSignInfo.Agent.ID
-		newReq.OpratorType = model.AssetOperateRoleTypeAgent
+		newReq.OpratorType = model.OperatorTypeAgent
 		md = model.Modifier{
 			ID:    assetSignInfo.Agent.ID,
 			Name:  assetSignInfo.Agent.Name,

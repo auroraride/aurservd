@@ -77,10 +77,22 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/definition.WarestoreAssetRes"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/definition.WarestoreAssetRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -2393,6 +2405,257 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/selection/city_station": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "企业-站点",
+                "operationId": "SelectionCityStation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/selection/ebike/brand": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "车辆型号列表",
+                "operationId": "SelectionEbikeBrand",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/selection/maintainer": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "运维人员",
+                "operationId": "SelectionMaintainer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/selection/model": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "电池型号",
+                "operationId": "SelectionModel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "1智能电池 2非智能电池",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/selection/station": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "企业-站点",
+                "operationId": "SelectionStation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/selection/store": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "城市-门店",
+                "operationId": "SelectionStore",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/selection/warehouse": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "城市-仓库",
+                "operationId": "SelectionWarehouse",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/signin": {
             "post": {
                 "consumes": [
@@ -2903,7 +3166,7 @@ const docTemplate = `{
                     "AssetTransfer - 资产调拨"
                 ],
                 "summary": "调拨记录列表",
-                "operationId": "AgentTransferList",
+                "operationId": "AssetTransferList",
                 "parameters": [
                     {
                         "type": "string",
@@ -2988,6 +3251,24 @@ const docTemplate = `{
                         "type": "string",
                         "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
                         "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetTransferMainPageDeliver": "配送中跳转",
+                            "AssetTransferMainPageReceive": "待接收跳转"
+                        },
+                        "x-enum-varnames": [
+                            "AssetTransferMainPageReceive",
+                            "AssetTransferMainPageDeliver"
+                        ],
+                        "description": "是否首页跳转查询",
+                        "name": "mainPage",
                         "in": "query"
                     },
                     {
@@ -3107,7 +3388,7 @@ const docTemplate = `{
                     "AssetTransfer - 资产调拨"
                 ],
                 "summary": "创建调拨",
-                "operationId": "AgentTransfer",
+                "operationId": "AssetTransfer",
                 "parameters": [
                     {
                         "type": "string",
@@ -3136,6 +3417,269 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/transfer/cancel/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetTransfer - 资产调拨"
+                ],
+                "summary": "取消资产调拨",
+                "operationId": "AssetTransferCancel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "调拨ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/transfer/details": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetTransfer - 资产调拨"
+                ],
+                "summary": "出入库明细",
+                "operationId": "AssetTransferDetailsList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetTransferTypeActive": "激活",
+                            "AssetTransferTypeContinue": "取消寄存",
+                            "AssetTransferTypeExchange": "换电",
+                            "AssetTransferTypeInitial": "初始入库",
+                            "AssetTransferTypePause": "寄存",
+                            "AssetTransferTypeTransfer": "调拨",
+                            "AssetTransferTypeUnSubscribe": "退租"
+                        },
+                        "x-enum-varnames": [
+                            "AssetTransferTypeInitial",
+                            "AssetTransferTypeTransfer",
+                            "AssetTransferTypeActive",
+                            "AssetTransferTypePause",
+                            "AssetTransferTypeContinue",
+                            "AssetTransferTypeUnSubscribe",
+                            "AssetTransferTypeExchange"
+                        ],
+                        "description": "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
+                        "name": "assetTransferType",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetTypeCabinetAccessory": "电柜配件",
+                            "AssetTypeEbike": "电车",
+                            "AssetTypeEbikeAccessory": "电车配件",
+                            "AssetTypeNonSmartBattery": "非智能电池",
+                            "AssetTypeOtherAccessory": "其它配件",
+                            "AssetTypeSmartBattery": "智能电池"
+                        },
+                        "x-enum-varnames": [
+                            "AssetTypeEbike",
+                            "AssetTypeSmartBattery",
+                            "AssetTypeNonSmartBattery",
+                            "AssetTypeCabinetAccessory",
+                            "AssetTypeEbikeAccessory",
+                            "AssetTypeOtherAccessory"
+                        ],
+                        "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                        "name": "assetType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AssetTransferDetailListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/transfer/flow": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetTransfer - 资产调拨"
+                ],
+                "summary": "资产流转明细",
+                "operationId": "AssetTransferFlow",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetTypeCabinetAccessory": "电柜配件",
+                            "AssetTypeEbike": "电车",
+                            "AssetTypeEbikeAccessory": "电车配件",
+                            "AssetTypeNonSmartBattery": "非智能电池",
+                            "AssetTypeOtherAccessory": "其它配件",
+                            "AssetTypeSmartBattery": "智能电池"
+                        },
+                        "x-enum-varnames": [
+                            "AssetTypeEbike",
+                            "AssetTypeSmartBattery",
+                            "AssetTypeNonSmartBattery",
+                            "AssetTypeCabinetAccessory",
+                            "AssetTypeEbikeAccessory",
+                            "AssetTypeOtherAccessory"
+                        ],
+                        "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                        "name": "assetType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "资产编号",
+                        "name": "sn",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.AssetTransferFlow"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/transfer/receive": {
             "post": {
                 "consumes": [
@@ -3148,7 +3692,7 @@ const docTemplate = `{
                     "AssetTransfer - 资产调拨"
                 ],
                 "summary": "接收资产调拨/确认入库",
-                "operationId": "AgentTransferReceive",
+                "operationId": "AssetTransferReceive",
                 "parameters": [
                     {
                         "type": "string",
@@ -3189,7 +3733,7 @@ const docTemplate = `{
                     "AssetTransfer - 资产调拨"
                 ],
                 "summary": "根据调拨单号获取调拨详情",
-                "operationId": "AgentTransferBySn",
+                "operationId": "AssetTransferBySn",
                 "parameters": [
                     {
                         "type": "string",
@@ -3250,6 +3794,52 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/definition.TransferDetailRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetTransfer - 资产调拨"
+                ],
+                "summary": "修改资产调拨",
+                "operationId": "AssetTransferModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "调拨ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.AssetTransferModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -3490,6 +4080,39 @@ const docTemplate = `{
                 },
                 "toLocationType": {
                     "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
+                }
+            }
+        },
+        "definition.AssetTransferModifyReq": {
+            "type": "object",
+            "required": [
+                "reason"
+            ],
+            "properties": {
+                "reason": {
+                    "description": "调拨事由",
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "toLocationID": {
+                    "description": "调拨后位置ID",
+                    "type": "integer"
+                },
+                "toLocationType": {
+                    "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4
+                    ],
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.AssetLocationsType"
@@ -4712,6 +5335,18 @@ const docTemplate = `{
                     "description": "入库人",
                     "type": "string"
                 },
+                "inTimeAt": {
+                    "description": "入库时间",
+                    "type": "string"
+                },
+                "materialId": {
+                    "description": "其他物资ID",
+                    "type": "integer"
+                },
+                "modelId": {
+                    "description": "电池型号ID",
+                    "type": "integer"
+                },
                 "name": {
                     "description": "资产名称",
                     "type": "string"
@@ -4722,6 +5357,122 @@ const docTemplate = `{
                 },
                 "sn": {
                     "description": "资产编号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetTransferDetailList": {
+            "type": "object",
+            "properties": {
+                "locationsName": {
+                    "description": "位置名称",
+                    "type": "string"
+                },
+                "num": {
+                    "description": "数量",
+                    "type": "integer"
+                },
+                "operatorName": {
+                    "description": "操作人",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "timeAt": {
+                    "description": "时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetTransferDetailListRes": {
+            "type": "object",
+            "properties": {
+                "assetName": {
+                    "description": "物资名称",
+                    "type": "string"
+                },
+                "cityName": {
+                    "description": "城市",
+                    "type": "string"
+                },
+                "in": {
+                    "description": "入库",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferDetailList"
+                        }
+                    ]
+                },
+                "out": {
+                    "description": "出库",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferDetailList"
+                        }
+                    ]
+                },
+                "transferType": {
+                    "description": "调拨类型  1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferType"
+                        }
+                    ]
+                },
+                "transferTypeName": {
+                    "description": "调拨类型名称",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetTransferFlow": {
+            "type": "object",
+            "properties": {
+                "in": {
+                    "description": "入库",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferFlowDetail"
+                        }
+                    ]
+                },
+                "out": {
+                    "description": "出库",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferFlowDetail"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.AssetTransferFlowDetail": {
+            "type": "object",
+            "properties": {
+                "locationsName": {
+                    "description": "位置名称",
+                    "type": "string"
+                },
+                "locationsType": {
+                    "description": "位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                    "type": "integer"
+                },
+                "operatorName": {
+                    "description": "操作人",
+                    "type": "string"
+                },
+                "timeAt": {
+                    "description": "时间",
+                    "type": "string"
+                },
+                "transferType": {
+                    "description": "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
+                    "type": "integer"
+                },
+                "transferTypeName": {
+                    "description": "调拨类型名称",
                     "type": "string"
                 }
             }
@@ -4811,6 +5562,21 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AssetTransferMainPage": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "AssetTransferMainPageDeliver": "配送中跳转",
+                "AssetTransferMainPageReceive": "待接收跳转"
+            },
+            "x-enum-varnames": [
+                "AssetTransferMainPageReceive",
+                "AssetTransferMainPageDeliver"
+            ]
+        },
         "model.AssetTransferReceiveDetail": {
             "type": "object",
             "required": [
@@ -4829,6 +5595,10 @@ const docTemplate = `{
                     "description": "其它物资分类ID",
                     "type": "integer"
                 },
+                "modelId": {
+                    "description": "电池型号ID",
+                    "type": "integer"
+                },
                 "num": {
                     "description": "调拨数量",
                     "type": "integer"
@@ -4842,7 +5612,8 @@ const docTemplate = `{
         "model.AssetTransferReceiveReq": {
             "type": "object",
             "required": [
-                "detail"
+                "detail",
+                "id"
             ],
             "properties": {
                 "detail": {
@@ -4851,6 +5622,10 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.AssetTransferReceiveDetail"
                     }
+                },
+                "id": {
+                    "description": "调拨ID",
+                    "type": "integer"
                 },
                 "remark": {
                     "description": "备注",

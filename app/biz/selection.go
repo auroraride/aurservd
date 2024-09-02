@@ -72,6 +72,41 @@ func (b *selectionBiz) StationList() (res []model.CascaderOptionLevel2) {
 	return
 }
 
+// CityStationList 城市站点筛选数据
+func (b *selectionBiz) CityStationList() (res []model.CascaderOptionLevel2) {
+	stList, _ := ent.Database.EnterpriseStation.QueryNotDeleted().WithCity().All(b.ctx)
+	cIds := make([]uint64, 0)
+	cIdMap := make(map[uint64]*ent.City)
+	cIdListMap := make(map[uint64][]model.SelectOption)
+	for _, st := range stList {
+		if st.Edges.City != nil {
+			cId := st.Edges.City.ID
+			if cIdMap[cId] == nil {
+				cIds = append(cIds, cId)
+				cIdMap[cId] = st.Edges.City
+			}
+			cIdListMap[cId] = append(cIdListMap[cId], model.SelectOption{
+				Label: st.Name,
+				Value: st.ID,
+			})
+		}
+	}
+
+	for _, cId := range cIds {
+		if cIdMap[cId] != nil && len(cIdListMap[cId]) != 0 {
+			res = append(res, model.CascaderOptionLevel2{
+				SelectOption: model.SelectOption{
+					Value: cIdMap[cId].ID,
+					Label: cIdMap[cId].Name,
+				},
+				Children: cIdListMap[cId],
+			})
+		}
+	}
+
+	return
+}
+
 // MaterialSelect 资产分类筛选数据
 func (b *selectionBiz) MaterialSelect(req *model.SelectMaterialReq) (res []model.SelectOption) {
 	q := ent.Database.Material.QueryNotDeleted()

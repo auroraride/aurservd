@@ -143,3 +143,17 @@ func (*selection) EbikeBrand(c echo.Context) (err error) {
 	ctx := app.ContextX[app.WarestoreContext](c)
 	return ctx.SendResponse(service.NewSelection().EbikeBrand())
 }
+
+// CityStation
+// @ID		SelectionCityStation
+// @Router	/warestore/v2/selection/city_station [GET]
+// @Summary	企业-站点
+// @Tags	Selection - 筛选
+// @Accept	json
+// @Produce	json
+// @Param	X-Warestore-Token	header		string							true	"仓管校验token"
+// @Success	200					{object}	[]model.CascaderOptionLevel2	"请求成功"
+func (*selection) CityStation(c echo.Context) (err error) {
+	ctx := app.ContextX[app.WarestoreContext](c)
+	return ctx.SendResponse(biz.NewSelection().CityStationList())
+}

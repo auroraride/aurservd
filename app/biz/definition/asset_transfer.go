@@ -22,3 +22,12 @@ type AssetTransferDetailListReq struct {
 	AssetType         *model.AssetType         `json:"assetType" query:"assetType" enums:"1,2,3,4,5,6"`                 // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
 	Keyword           *string                  `json:"keyword" query:"keyword"`                                         // 关键字
 }
+
+// AssetTransferModifyReq 编辑调拨
+type AssetTransferModifyReq struct {
+	ID             uint64                   `json:"id" param:"id" validate:"required"` // 调拨ID
+	ToLocationType model.AssetLocationsType `json:"toLocationType"  enums:"1,2,3,4"`   // 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	ToLocationID   uint64                   `json:"toLocationID"`                      // 调拨后位置ID
+	Reason         string                   `json:"reason" validate:"required"`        // 调拨事由
+	Remark         *string                  `json:"remark"`
+}

@@ -28,7 +28,7 @@ func (f PlatType) Value() uint8 {
 type WarestorePeopleSigninReq struct {
 	Phone    string   `json:"phone" validate:"required" trans:"电话"`
 	Password string   `json:"password" validate:"required" trans:"密码"`
-	PlatType PlatType `json:"platType" validate:"required,oneof=1 2" trans:"登录平台类型"`
+	PlatType PlatType `json:"platType" validate:"required,oneof=1 2" trans:"登录平台类型"` // 1-仓库平台 2-门店平台
 }
 
 type WarestorePeopleSigninRes struct {
@@ -45,12 +45,14 @@ type OpenidRes struct {
 }
 
 type WarestorePeopleProfile struct {
-	ID           uint64 `json:"id"`
-	Phone        string `json:"phone"`        // 手机号
-	Name         string `json:"name"`         // 姓名
-	RoleName     string `json:"roleName"`     // 角色名称
-	Duty         bool   `json:"duty"`         // 上下班 `true`上班 `false`下班
-	DutyLocation string `json:"dutyLocation"` // 上班位置
+	ID             uint64   `json:"id"`
+	Phone          string   `json:"phone"`          // 手机号
+	Name           string   `json:"name"`           // 姓名
+	PlatType       PlatType `json:"platType"`       // 1-仓库平台 2-门店平台
+	RoleName       string   `json:"roleName"`       // 角色名称
+	Duty           bool     `json:"duty"`           // 上下班 `true`上班 `false`下班
+	DutyLocation   string   `json:"dutyLocation"`   // 上班位置
+	DutyLocationID uint64   `json:"dutyLocationID"` // 上班位置ID
 }
 
 // TransferListReq 调拨记录筛选条件
@@ -76,9 +78,10 @@ type AssetCountRes struct {
 }
 
 type AssetCountDetail struct {
-	StockCount int `json:"stockCount"` // 库存中数量
-	FaultCount int `json:"faultCount"` // 故障数量
-	TotalCount int `json:"totalCount"` // 合计数量
+	StockCount   int `json:"stockCount"`   // 库存中数量
+	FaultCount   int `json:"faultCount"`   // 故障数量
+	TotalCount   int `json:"totalCount"`   // 合计数量
+	DeliverCount int `json:"deliverCount"` // 配送数量
 }
 
 // AssetTransferReceiveBatchReq 批量接收资产

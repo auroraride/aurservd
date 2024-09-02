@@ -8,38 +8,6 @@
     },
     "basePath": "/",
     "paths": {
-        "/warestore/v2/asset/count": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Assets - 资产管理"
-                ],
-                "summary": "资产统计",
-                "operationId": "WarestoreAssetCount",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "仓管校验token",
-                        "name": "X-Warestore-Token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/definition.AssetCountRes"
-                        }
-                    }
-                }
-            }
-        },
         "/warestore/v2/assets": {
             "get": {
                 "consumes": [
@@ -102,10 +70,22 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/definition.WarestoreAssetRes"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/definition.WarestoreAssetRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -247,6 +227,226 @@
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/assets/count": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assets - 资产管理"
+                ],
+                "summary": "资产统计",
+                "operationId": "WarestoreAssetCount",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.AssetCountRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/assets/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assets - 资产管理"
+                ],
+                "summary": "修改资产",
+                "operationId": "WarestoreAssetsUpdate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "资产ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/cabinet/{serial}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[O]运维接口"
+                ],
+                "summary": "O2002 获取电柜详情",
+                "operationId": "CabinetDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "运维校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.MaintainerCabinetDetailRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[O]运维接口"
+                ],
+                "summary": "O2003 电柜操作",
+                "operationId": "CabinetOperate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "运维校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MaintainerCabinetOperateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/cabinet/{serial}/{ordinal}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[O]运维接口"
+                ],
+                "summary": "O2004 仓位操作",
+                "operationId": "CabinetBinOperate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "运维校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "仓位序号，从1开始",
+                        "name": "ordinal",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MaintainerBinOperateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -573,6 +773,41 @@
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.AssetCheckListRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/selection/city_station": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "企业-站点",
+                "operationId": "SelectionCityStation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
                         }
                     }
                 }
@@ -1033,6 +1268,24 @@
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetTransferMainPageDeliver": "配送中跳转",
+                            "AssetTransferMainPageReceive": "待接收跳转"
+                        },
+                        "x-enum-varnames": [
+                            "AssetTransferMainPageReceive",
+                            "AssetTransferMainPageDeliver"
+                        ],
+                        "description": "是否首页跳转查询",
+                        "name": "mainPage",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "运维ID",
                         "name": "maintainerID",
@@ -1166,6 +1419,45 @@
                         "schema": {
                             "$ref": "#/definitions/definition.AssetTransferCreateReq"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/transfer/cancel/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetTransfer - 资产调拨"
+                ],
+                "summary": "取消资产调拨",
+                "operationId": "AssetTransferCancel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "调拨ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1519,10 +1811,76 @@
                         }
                     }
                 }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetTransfer - 资产调拨"
+                ],
+                "summary": "修改资产调拨",
+                "operationId": "AssetTransferModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "调拨ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.AssetTransferModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
             }
         }
     },
     "definitions": {
+        "adapter.CabinetBrand": {
+            "type": "string",
+            "enum": [
+                "UNKNOWN",
+                "KAIXIN",
+                "YUNDONG",
+                "TUOBANG",
+                "XILIULOUSERV"
+            ],
+            "x-enum-comments": {
+                "CabinetBrandXiliulouServer": "西六楼服务器版"
+            },
+            "x-enum-varnames": [
+                "CabinetBrandUnknown",
+                "CabinetBrandKaixin",
+                "CabinetBrandYundong",
+                "CabinetBrandTuobang",
+                "CabinetBrandXiliulouServer"
+            ]
+        },
         "definition.AssetCheckCreateReq": {
             "type": "object",
             "required": [
@@ -1564,6 +1922,10 @@
         "definition.AssetCountDetail": {
             "type": "object",
             "properties": {
+                "deliverCount": {
+                    "description": "配送数量",
+                    "type": "integer"
+                },
                 "faultCount": {
                     "description": "故障数量",
                     "type": "integer"
@@ -1656,6 +2018,39 @@
                 },
                 "toLocationType": {
                     "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
+                }
+            }
+        },
+        "definition.AssetTransferModifyReq": {
+            "type": "object",
+            "required": [
+                "reason"
+            ],
+            "properties": {
+                "reason": {
+                    "description": "调拨事由",
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "toLocationID": {
+                    "description": "调拨后位置ID",
+                    "type": "integer"
+                },
+                "toLocationType": {
+                    "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4
+                    ],
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.AssetLocationsType"
@@ -1928,6 +2323,10 @@
                     "description": "上班位置",
                     "type": "string"
                 },
+                "dutyLocationID": {
+                    "description": "上班位置ID",
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -1938,6 +2337,14 @@
                 "phone": {
                     "description": "手机号",
                     "type": "string"
+                },
+                "platType": {
+                    "description": "1-仓库平台 2-门店平台",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/definition.PlatType"
+                        }
+                    ]
                 },
                 "roleName": {
                     "description": "角色名称",
@@ -1962,7 +2369,7 @@
                     "type": "string"
                 },
                 "platType": {
-                    "description": "登录平台类型",
+                    "description": "登录平台类型, 1-仓库平台 2-门店平台",
                     "enum": [
                         1,
                         2
@@ -2008,6 +2415,19 @@
                 "attributeValueId": {
                     "description": "属性值ID",
                     "type": "integer"
+                }
+            }
+        },
+        "model.AssetAttributeUpdate": {
+            "type": "object",
+            "properties": {
+                "attributeId": {
+                    "description": "属性ID",
+                    "type": "integer"
+                },
+                "attributeValue": {
+                    "description": "属性值",
+                    "type": "string"
                 }
             }
         },
@@ -2358,6 +2778,34 @@
                 "AssetLocationsTypeRider"
             ]
         },
+        "model.AssetModifyReq": {
+            "type": "object",
+            "properties": {
+                "attribute": {
+                    "description": "属性",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetAttributeUpdate"
+                    }
+                },
+                "brandId": {
+                    "description": "品牌ID",
+                    "type": "integer"
+                },
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                }
+            }
+        },
         "model.AssetStatus": {
             "type": "integer",
             "enum": [
@@ -2432,6 +2880,18 @@
                 "inOperateName": {
                     "description": "入库人",
                     "type": "string"
+                },
+                "inTimeAt": {
+                    "description": "入库时间",
+                    "type": "string"
+                },
+                "materialId": {
+                    "description": "其他物资ID",
+                    "type": "integer"
+                },
+                "modelId": {
+                    "description": "电池型号ID",
+                    "type": "integer"
                 },
                 "name": {
                     "description": "资产名称",
@@ -2648,6 +3108,21 @@
                 }
             }
         },
+        "model.AssetTransferMainPage": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "AssetTransferMainPageDeliver": "配送中跳转",
+                "AssetTransferMainPageReceive": "待接收跳转"
+            },
+            "x-enum-varnames": [
+                "AssetTransferMainPageReceive",
+                "AssetTransferMainPageDeliver"
+            ]
+        },
         "model.AssetTransferReceiveDetail": {
             "type": "object",
             "required": [
@@ -2666,6 +3141,10 @@
                     "description": "其它物资分类ID",
                     "type": "integer"
                 },
+                "modelId": {
+                    "description": "电池型号ID",
+                    "type": "integer"
+                },
                 "num": {
                     "description": "调拨数量",
                     "type": "integer"
@@ -2679,7 +3158,8 @@
         "model.AssetTransferReceiveReq": {
             "type": "object",
             "required": [
-                "detail"
+                "detail",
+                "id"
             ],
             "properties": {
                 "detail": {
@@ -2688,6 +3168,10 @@
                     "items": {
                         "$ref": "#/definitions/model.AssetTransferReceiveDetail"
                     }
+                },
+                "id": {
+                    "description": "调拨ID",
+                    "type": "integer"
                 },
                 "remark": {
                     "description": "备注",
@@ -2770,6 +3254,104 @@
                 "AssetTypeOtherAccessory"
             ]
         },
+        "model.Branch": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "网点名称",
+                    "type": "string"
+                }
+            }
+        },
+        "model.CabinetBin": {
+            "type": "object",
+            "properties": {
+                "battery": {
+                    "description": "是否有电池",
+                    "type": "boolean"
+                },
+                "batterySN": {
+                    "description": "电池序列号",
+                    "type": "string"
+                },
+                "chargerErrors": {
+                    "description": "故障信息",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "current": {
+                    "description": "充电电流(A)",
+                    "type": "number"
+                },
+                "deactivate": {
+                    "description": "是否禁用",
+                    "type": "boolean"
+                },
+                "deactivateReason": {
+                    "description": "禁用原因",
+                    "type": "string"
+                },
+                "doorHealth": {
+                    "description": "是否锁仓 (柜门是否正常)",
+                    "type": "boolean"
+                },
+                "electricity": {
+                    "description": "当前电量",
+                    "type": "number"
+                },
+                "full": {
+                    "description": "是否满电",
+                    "type": "boolean"
+                },
+                "index": {
+                    "description": "仓位index (从0开始)",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "柜门名称",
+                    "type": "string"
+                },
+                "openStatus": {
+                    "description": "是否开门",
+                    "type": "boolean"
+                },
+                "ordinal": {
+                    "description": "仓位序号 (从1开始)",
+                    "type": "integer"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "voltage": {
+                    "description": "电压(V)",
+                    "type": "number"
+                }
+            }
+        },
+        "model.CabinetStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "CabinetStatusMaintenance": "维护中",
+                "CabinetStatusNormal": "运营中",
+                "CabinetStatusPending": "未投放"
+            },
+            "x-enum-varnames": [
+                "CabinetStatusPending",
+                "CabinetStatusNormal",
+                "CabinetStatusMaintenance"
+            ]
+        },
         "model.CascaderOptionLevel2": {
             "type": "object",
             "properties": {
@@ -2807,6 +3389,275 @@
                 }
             }
         },
+        "model.MaintainerBinOperate": {
+            "type": "string",
+            "enum": [
+                "open",
+                "lock",
+                "unlock",
+                "disable",
+                "enable"
+            ],
+            "x-enum-comments": {
+                "MaintainerBinOperateDisable": "禁用",
+                "MaintainerBinOperateEnable": "启用",
+                "MaintainerBinOperateLock": "锁定",
+                "MaintainerBinOperateOpen": "开仓",
+                "MaintainerBinOperateUnlock": "解锁"
+            },
+            "x-enum-varnames": [
+                "MaintainerBinOperateOpen",
+                "MaintainerBinOperateLock",
+                "MaintainerBinOperateUnlock",
+                "MaintainerBinOperateDisable",
+                "MaintainerBinOperateEnable"
+            ]
+        },
+        "model.MaintainerBinOperateReq": {
+            "type": "object",
+            "required": [
+                "lat",
+                "lng",
+                "operate",
+                "reason"
+            ],
+            "properties": {
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "operate": {
+                    "description": "操作, 所有操作均需要提前设电柜为维护状态。open:开仓, lock:锁定, unlock:解锁, disable:禁用, enable:启用",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.MaintainerBinOperate"
+                        }
+                    ]
+                },
+                "reason": {
+                    "description": "操作原因",
+                    "type": "string"
+                }
+            }
+        },
+        "model.MaintainerCabinetDetailRes": {
+            "type": "object",
+            "required": [
+                "brand",
+                "name",
+                "serial"
+            ],
+            "properties": {
+                "batteryNum": {
+                    "description": "电池数量",
+                    "type": "integer"
+                },
+                "bins": {
+                    "description": "仓位信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CabinetBin"
+                    }
+                },
+                "biz": {
+                    "description": "电柜当前业务",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pb.CabinetBiz"
+                    }
+                },
+                "branch": {
+                    "description": "所属网点",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Branch"
+                        }
+                    ]
+                },
+                "branchId": {
+                    "description": "网点",
+                    "type": "integer"
+                },
+                "brand": {
+                    "description": "品牌, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/adapter.CabinetBrand"
+                        }
+                    ]
+                },
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "doors": {
+                    "description": "柜门数量",
+                    "type": "integer"
+                },
+                "enterpriseId": {
+                    "description": "团签ID",
+                    "type": "integer"
+                },
+                "enterpriseName": {
+                    "description": "团签名称",
+                    "type": "string"
+                },
+                "health": {
+                    "description": "在线状态 0离线 1在线 2故障",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "intelligent": {
+                    "description": "是否智能柜",
+                    "type": "boolean"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "models": {
+                    "description": "电池型号",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "reserves": {
+                    "description": "当前预约",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ReserveCabinetItem"
+                    }
+                },
+                "serial": {
+                    "description": "电柜编码",
+                    "type": "string"
+                },
+                "simDate": {
+                    "description": "SIM卡到期日期, 例: 2022-06-01",
+                    "type": "string"
+                },
+                "simSn": {
+                    "description": "SIM卡号",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "平台编码",
+                    "type": "string"
+                },
+                "stationId": {
+                    "description": "站点id",
+                    "type": "integer"
+                },
+                "stationName": {
+                    "description": "所属站点名称",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "电柜状态 0未投放 1运营中 2维护中",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetStatus"
+                        }
+                    ]
+                },
+                "stockNum": {
+                    "description": "库存电池",
+                    "type": "integer"
+                },
+                "transferred": {
+                    "description": "是否初始化过调拨",
+                    "type": "boolean"
+                }
+            }
+        },
+        "model.MaintainerCabinetOperate": {
+            "type": "string",
+            "enum": [
+                "open-all",
+                "maintenance",
+                "maintenance-cancel",
+                "interrupt",
+                "reboot"
+            ],
+            "x-enum-comments": {
+                "MaintainerCabinetOperateInterrupt": "中断维护",
+                "MaintainerCabinetOperateMaintenance": "维护",
+                "MaintainerCabinetOperateMaintenanceCancel": "取消维护",
+                "MaintainerCabinetOperateOpenAll": "全部开仓",
+                "MaintainerCabinetOperateReboot": "重启"
+            },
+            "x-enum-varnames": [
+                "MaintainerCabinetOperateOpenAll",
+                "MaintainerCabinetOperateMaintenance",
+                "MaintainerCabinetOperateMaintenanceCancel",
+                "MaintainerCabinetOperateInterrupt",
+                "MaintainerCabinetOperateReboot"
+            ]
+        },
+        "model.MaintainerCabinetOperateReq": {
+            "type": "object",
+            "required": [
+                "lat",
+                "lng",
+                "operate",
+                "reason"
+            ],
+            "properties": {
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "operate": {
+                    "description": "操作, 除`maintenance`之外所有操作均需要提前设电柜为维护状态。 open:开仓, open-all:全部开仓（暂时不做）, maintenance:电柜维护, maintenance-cancel:取消维护, interrupt:中断业务, reboot:重启（暂时不做）",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.MaintainerCabinetOperate"
+                        }
+                    ]
+                },
+                "reason": {
+                    "description": "操作原因",
+                    "type": "string"
+                }
+            }
+        },
         "model.Pagination": {
             "type": "object",
             "properties": {
@@ -2840,6 +3691,33 @@
                 }
             }
         },
+        "model.ReserveCabinetItem": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                    "type": "string",
+                    "enum": [
+                        "active",
+                        "pause",
+                        "continue",
+                        "unsubscribe"
+                    ]
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "time": {
+                    "description": "预约时间",
+                    "type": "string"
+                }
+            }
+        },
         "model.SelectOption": {
             "type": "object",
             "properties": {
@@ -2862,6 +3740,25 @@
             "properties": {
                 "status": {
                     "type": "boolean"
+                }
+            }
+        },
+        "pb.CabinetBiz": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "description": "业务描述",
+                    "type": "string"
+                },
+                "ordinal": {
+                    "type": "integer"
+                },
+                "serial": {
+                    "type": "string"
+                },
+                "user": {
+                    "description": "业务人员",
+                    "type": "string"
                 }
             }
         }

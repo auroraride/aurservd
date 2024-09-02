@@ -86,12 +86,25 @@ func loadAgentRoutes() {
 	auth.POST("/misc/feedback", aapi.Misc.Feedback)            // 意见反馈
 	auth.POST("/misc/feedback/image", aapi.Misc.FeedbackImage) // 意见反馈 - 上传图片
 
+	// 筛选项
+	auth.GET("/selection/warehouse", aapi.Selection.Warehouse)      // 城市仓库
+	auth.GET("/selection/store", aapi.Selection.Store)              // 城市门店
+	auth.GET("/selection/city_station", aapi.Selection.CityStation) // 城市站点
+	auth.GET("/selection/maintainer", aapi.Selection.Maintainer)    // 运维
+	auth.GET("/selection/station", aapi.Selection.Station)          // 企业站点
+	auth.GET("/selection/model", aapi.Selection.Model)              // 电池型号筛选
+	auth.GET("/selection/ebike/brand", aapi.Selection.EbikeBrand)   // 电车品牌筛选
+
 	// 资产调拨
-	auth.POST("/transfer", aapi.AssetTransfer.Transfer)                // 创建调拨
-	auth.GET("/transfer", aapi.AssetTransfer.TransferList)             // 调拨列表
-	auth.GET("/transfer/:id", aapi.AssetTransfer.TransferDetail)       // 调拨详情
-	auth.POST("/transfer/receive", aapi.AssetTransfer.TransferReceive) // 调拨批量入库
-	auth.GET("/transfer/sn/:sn", aapi.AssetTransfer.TransferBySn)      // 根据sn查询调拨信息
+	auth.POST("/transfer", aapi.AssetTransfer.Transfer)                   // 创建调拨
+	auth.GET("/transfer", aapi.AssetTransfer.TransferList)                // 调拨列表
+	auth.GET("/transfer/:id", aapi.AssetTransfer.TransferDetail)          // 调拨详情
+	auth.POST("/transfer/receive", aapi.AssetTransfer.TransferReceive)    // 调拨批量入库
+	auth.GET("/transfer/sn/:sn", aapi.AssetTransfer.TransferBySn)         // 根据sn查询调拨信息
+	auth.GET("/transfer/flow", aapi.AssetTransfer.TransferFlow)           // 资产流转明细
+	auth.GET("/transfer/details", aapi.AssetTransfer.TransferDetailsList) // 出入库明细
+	auth.PUT("/transfer/:id", aapi.AssetTransfer.Modify)                  // 修改调拨记录
+	auth.PUT("/transfer/cancel/:id", aapi.AssetTransfer.TransferCancel)   // 取消资产调拨
 
 	// 物资管理
 	auth.GET("/assets", aapi.Asset.Assets)              // 资产数据

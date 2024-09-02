@@ -30,12 +30,11 @@ func loadWarestoreRoutes() {
 	auth.GET("/selection/model", wapi.Selection.Model)                        // 电池型号筛选
 	auth.GET("/selection/ebike/brand", wapi.Selection.EbikeBrand)             // 电车品牌筛选
 
-	// 资产统计
-	auth.GET("/asset/count", wapi.Assets.AssetCount) // 资产统计
-
 	// 物资管理
+	auth.GET("/assets/count", wapi.Assets.AssetCount)    // 资产统计
 	auth.GET("/assets", wapi.Assets.Assets)              // 资产数据
 	auth.GET("/assets/common", wapi.Assets.AssetsCommon) // 电池/电车资产数据
+	auth.PUT("/assets/:id", wapi.Assets.Update)          // 更新资产
 
 	// 资产调拨
 	auth.POST("/transfer", wapi.AssetTransfer.Transfer)                   // 创建调拨
@@ -45,6 +44,8 @@ func loadWarestoreRoutes() {
 	auth.GET("/transfer/flow", wapi.AssetTransfer.TransferFlow)           // 资产流转明细
 	auth.GET("/transfer/sn/:sn", wapi.AssetTransfer.TransferBySn)         // 根据sn查询调拨信息
 	auth.GET("/transfer/details", wapi.AssetTransfer.TransferDetailsList) // 出入库明细
+	auth.PUT("/transfer/:id", wapi.AssetTransfer.Modify)                  // 修改调拨记录
+	auth.PUT("/transfer/cancel/:id", wapi.AssetTransfer.TransferCancel)   // 取消资产调拨
 
 	// 盘点
 	auth.GET("/check/sn/:sn", wapi.AssetCheck.GetAssetBySN)      // 通过SN查询资产
@@ -52,5 +53,10 @@ func loadWarestoreRoutes() {
 	auth.POST("/check", wapi.AssetCheck.Create)                  // 创建资产盘点
 	auth.GET("/check/:id", wapi.AssetCheck.Detail)               // 盘点详情
 	auth.GET("/check/asset:id", wapi.AssetCheck.AssetDetailList) // 盘点资产明细
+
+	// 电柜操作
+	auth.GET("/cabinet/:serial", wapi.Cabinet.Detail)
+	auth.POST("/cabinet/:serial", wapi.Cabinet.Operate)
+	auth.POST("/cabinet/:serial/:ordinal", wapi.Cabinet.BinOperate)
 
 }
