@@ -18,6 +18,7 @@ func loadMaintainerRoutes() {
 	auth.GET("/cabinet/:serial", oapi.Cabinet.Detail)
 	auth.POST("/cabinet/:serial", oapi.Cabinet.Operate)
 	auth.POST("/cabinet/:serial/:ordinal", oapi.Cabinet.BinOperate)
+	auth.POST("/cabinet/pause/:serial", oapi.Cabinet.Pause)
 
 	// 筛选项
 	auth.GET("/selection/warehouse", oapi.Selection.Warehouse)      // 城市仓库

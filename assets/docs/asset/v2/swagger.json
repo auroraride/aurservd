@@ -6849,7 +6849,7 @@
                     "type": "string"
                 },
                 "status": {
-                    "description": "维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消",
+                    "description": "维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护",
                     "type": "string"
                 }
             }
@@ -6878,7 +6878,7 @@
                     "type": "string"
                 },
                 "status": {
-                    "description": "维修状态1:维修中 2:已维修 3:维修失败 4:已取消",
+                    "description": "维修状态1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.AssetMaintenanceStatus"
@@ -6890,14 +6890,16 @@
         "model.AssetMaintenanceStatus": {
             "type": "integer",
             "enum": [
-                0,
                 1,
                 2,
-                3
+                3,
+                4,
+                5
             ],
             "x-enum-comments": {
                 "AssetMaintenanceStatusCancel": "已取消",
                 "AssetMaintenanceStatusFail": "维修失败",
+                "AssetMaintenanceStatusPause": "已暂停",
                 "AssetMaintenanceStatusSuccess": "已维修",
                 "AssetMaintenanceStatusUnder": "维修中"
             },
@@ -6905,7 +6907,8 @@
                 "AssetMaintenanceStatusUnder",
                 "AssetMaintenanceStatusSuccess",
                 "AssetMaintenanceStatusFail",
-                "AssetMaintenanceStatusCancel"
+                "AssetMaintenanceStatusCancel",
+                "AssetMaintenanceStatusPause"
             ]
         },
         "model.AssetModifyReq": {

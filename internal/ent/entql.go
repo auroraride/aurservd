@@ -360,18 +360,17 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "AssetMaintenance",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			assetmaintenance.FieldCreatedAt:     {Type: field.TypeTime, Column: assetmaintenance.FieldCreatedAt},
-			assetmaintenance.FieldUpdatedAt:     {Type: field.TypeTime, Column: assetmaintenance.FieldUpdatedAt},
-			assetmaintenance.FieldDeletedAt:     {Type: field.TypeTime, Column: assetmaintenance.FieldDeletedAt},
-			assetmaintenance.FieldCreator:       {Type: field.TypeJSON, Column: assetmaintenance.FieldCreator},
-			assetmaintenance.FieldLastModifier:  {Type: field.TypeJSON, Column: assetmaintenance.FieldLastModifier},
-			assetmaintenance.FieldRemark:        {Type: field.TypeString, Column: assetmaintenance.FieldRemark},
-			assetmaintenance.FieldCabinetID:     {Type: field.TypeUint64, Column: assetmaintenance.FieldCabinetID},
-			assetmaintenance.FieldMaintainerID:  {Type: field.TypeUint64, Column: assetmaintenance.FieldMaintainerID},
-			assetmaintenance.FieldReason:        {Type: field.TypeString, Column: assetmaintenance.FieldReason},
-			assetmaintenance.FieldContent:       {Type: field.TypeString, Column: assetmaintenance.FieldContent},
-			assetmaintenance.FieldStatus:        {Type: field.TypeUint8, Column: assetmaintenance.FieldStatus},
-			assetmaintenance.FieldCabinetStatus: {Type: field.TypeUint8, Column: assetmaintenance.FieldCabinetStatus},
+			assetmaintenance.FieldCreatedAt:    {Type: field.TypeTime, Column: assetmaintenance.FieldCreatedAt},
+			assetmaintenance.FieldUpdatedAt:    {Type: field.TypeTime, Column: assetmaintenance.FieldUpdatedAt},
+			assetmaintenance.FieldDeletedAt:    {Type: field.TypeTime, Column: assetmaintenance.FieldDeletedAt},
+			assetmaintenance.FieldCreator:      {Type: field.TypeJSON, Column: assetmaintenance.FieldCreator},
+			assetmaintenance.FieldLastModifier: {Type: field.TypeJSON, Column: assetmaintenance.FieldLastModifier},
+			assetmaintenance.FieldRemark:       {Type: field.TypeString, Column: assetmaintenance.FieldRemark},
+			assetmaintenance.FieldCabinetID:    {Type: field.TypeUint64, Column: assetmaintenance.FieldCabinetID},
+			assetmaintenance.FieldMaintainerID: {Type: field.TypeUint64, Column: assetmaintenance.FieldMaintainerID},
+			assetmaintenance.FieldReason:       {Type: field.TypeString, Column: assetmaintenance.FieldReason},
+			assetmaintenance.FieldContent:      {Type: field.TypeString, Column: assetmaintenance.FieldContent},
+			assetmaintenance.FieldStatus:       {Type: field.TypeUint8, Column: assetmaintenance.FieldStatus},
 		},
 	}
 	graph.Nodes[10] = &sqlgraph.Node{
@@ -9534,11 +9533,6 @@ func (f *AssetMaintenanceFilter) WhereContent(p entql.StringP) {
 // WhereStatus applies the entql uint8 predicate on the status field.
 func (f *AssetMaintenanceFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(assetmaintenance.FieldStatus))
-}
-
-// WhereCabinetStatus applies the entql uint8 predicate on the cabinet_status field.
-func (f *AssetMaintenanceFilter) WhereCabinetStatus(p entql.Uint8P) {
-	f.Where(p.Field(assetmaintenance.FieldCabinetStatus))
 }
 
 // WhereHasCabinet applies a predicate to check if query has an edge cabinet.

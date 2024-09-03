@@ -237,6 +237,54 @@
                 }
             }
         },
+        "/maintainer/v1/cabinet/pause/{serial}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[O]运维接口"
+                ],
+                "summary": "O2005 电柜暂停维护",
+                "operationId": "MaintainerCabinetPause",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "运维校验token",
+                        "name": "X-Maintainer-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MaintainerCabinetPauseReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/maintainer/v1/cabinet/{serial}": {
             "get": {
                 "consumes": [
@@ -397,6 +445,51 @@
                         "name": "X-Maintainer-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电池型号ID",
+                        "name": "modelID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "CabinetStatusMaintenance": "维护中",
+                            "CabinetStatusNormal": "运营中",
+                            "CabinetStatusPending": "未投放"
+                        },
+                        "x-enum-varnames": [
+                            "CabinetStatusPending",
+                            "CabinetStatusNormal",
+                            "CabinetStatusMaintenance"
+                        ],
+                        "description": "电柜状态 0未投放 1运营中 2维护中",
+                        "name": "status",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1742,6 +1835,23 @@
                 "AssetLocationsTypeRider"
             ]
         },
+        "model.AssetMaintenanceCreateDetail": {
+            "type": "object",
+            "required": [
+                "materialId",
+                "num"
+            ],
+            "properties": {
+                "materialId": {
+                    "description": "其它物资分类ID",
+                    "type": "integer"
+                },
+                "num": {
+                    "description": "数量",
+                    "type": "integer"
+                }
+            }
+        },
         "model.AssetMaintenanceDetail": {
             "type": "object",
             "required": [
@@ -1807,10 +1917,51 @@
                     "type": "string"
                 },
                 "status": {
-                    "description": "维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消",
+                    "description": "维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护",
                     "type": "string"
                 }
             }
+        },
+        "model.AssetMaintenanceRes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "维保ID",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetMaintenanceStatus"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.AssetMaintenanceStatus": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "x-enum-comments": {
+                "AssetMaintenanceStatusCancel": "已取消",
+                "AssetMaintenanceStatusFail": "维修失败",
+                "AssetMaintenanceStatusPause": "已暂停",
+                "AssetMaintenanceStatusSuccess": "已维修",
+                "AssetMaintenanceStatusUnder": "维修中"
+            },
+            "x-enum-varnames": [
+                "AssetMaintenanceStatusUnder",
+                "AssetMaintenanceStatusSuccess",
+                "AssetMaintenanceStatusFail",
+                "AssetMaintenanceStatusCancel",
+                "AssetMaintenanceStatusPause"
+            ]
         },
         "model.AssetStatus": {
             "type": "integer",
@@ -2577,6 +2728,14 @@
                     "description": "经度",
                     "type": "number"
                 },
+                "maintenance": {
+                    "description": "电柜维保信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetMaintenanceRes"
+                        }
+                    ]
+                },
                 "models": {
                     "description": "电池型号",
                     "type": "array",
@@ -2675,10 +2834,20 @@
             "required": [
                 "lat",
                 "lng",
-                "operate",
-                "reason"
+                "operate"
             ],
             "properties": {
+                "content": {
+                    "description": "维保内容（取消维护 必填）",
+                    "type": "string"
+                },
+                "details": {
+                    "description": "维保使用配件",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetMaintenanceCreateDetail"
+                    }
+                },
                 "lat": {
                     "description": "纬度",
                     "type": "number"
@@ -2696,8 +2865,42 @@
                     ]
                 },
                 "reason": {
-                    "description": "操作原因",
+                    "description": "操作原因（中断业务、维保失败 必填）",
                     "type": "string"
+                },
+                "status": {
+                    "description": "维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetMaintenanceStatus"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.MaintainerCabinetPauseReq": {
+            "type": "object",
+            "required": [
+                "lat",
+                "lng",
+                "status"
+            ],
+            "properties": {
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "status": {
+                    "description": "维修状态, 维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetMaintenanceStatus"
+                        }
+                    ]
                 }
             }
         },

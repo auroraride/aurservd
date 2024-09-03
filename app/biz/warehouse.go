@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/lithammer/shortuuid/v4"
 
@@ -20,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
+	"github.com/auroraride/aurservd/pkg/snag"
 )
 
 type warehouseBiz struct {
@@ -400,4 +402,16 @@ func (b *warehouseBiz) ListByManager(am *ent.AssetManager) (res []*model.Cascade
 	}
 
 	return
+}
+
+// QuerySn 通过SN查询仓库
+func (b *warehouseBiz) QuerySn(sn string) *ent.Warehouse {
+	if strings.HasPrefix(sn, "WAREHOUSE:") {
+		sn = strings.ReplaceAll(sn, "WAREHOUSE:", "")
+	}
+	item, err := b.orm.QueryNotDeleted().WithAssetManager().Where(warehouse.Sn(sn)).First(b.ctx)
+	if err != nil {
+		snag.Panic("未找到有效仓库")
+	}
+	return item
 }

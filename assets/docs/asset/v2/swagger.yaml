@@ -1173,7 +1173,7 @@ definitions:
         description: 维护理由
         type: string
       status:
-        description: 维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消
+        description: 维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
         type: string
     type: object
   model.AssetMaintenanceModifyReq:
@@ -1192,7 +1192,7 @@ definitions:
       status:
         allOf:
         - $ref: '#/definitions/model.AssetMaintenanceStatus'
-        description: 维修状态1:维修中 2:已维修 3:维修失败 4:已取消
+        description: 维修状态1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
     required:
     - content
     - reason
@@ -1200,14 +1200,16 @@ definitions:
     type: object
   model.AssetMaintenanceStatus:
     enum:
-    - 0
     - 1
     - 2
     - 3
+    - 4
+    - 5
     type: integer
     x-enum-comments:
       AssetMaintenanceStatusCancel: 已取消
       AssetMaintenanceStatusFail: 维修失败
+      AssetMaintenanceStatusPause: 已暂停
       AssetMaintenanceStatusSuccess: 已维修
       AssetMaintenanceStatusUnder: 维修中
     x-enum-varnames:
@@ -1215,6 +1217,7 @@ definitions:
     - AssetMaintenanceStatusSuccess
     - AssetMaintenanceStatusFail
     - AssetMaintenanceStatusCancel
+    - AssetMaintenanceStatusPause
   model.AssetModifyReq:
     properties:
       attribute:

@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/LucaTheHacker/go-haversine"
+
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
@@ -116,6 +118,70 @@ func (b *warestoreBiz) Signin(req *definition.WarestorePeopleSigninReq) (res *de
 	}
 
 	return b.signin(am, ep, req.PlatType)
+}
+
+// Duty 库管端上班
+func (b *warestoreBiz) Duty(assetSignInfo definition.AssetSignInfo, req *definition.WarestoreDutyReq) (err error) {
+	switch {
+	case assetSignInfo.AssetManager != nil:
+		// 检查是否可上班
+		var wh *ent.Warehouse
+		wh, err = b.checkWarehouseDuty(req.Sn, req.Lat, req.Lng)
+		if err != nil {
+			return
+		}
+		// 上班更新
+		return wh.Update().SetAssetManagerID(assetSignInfo.AssetManager.ID).Exec(b.ctx)
+
+	case assetSignInfo.Employee != nil:
+		// 检查是否可上班
+		var st *ent.Store
+		st, err = b.checkStoreDuty(req.Sn, req.Lat, req.Lng)
+		if err != nil {
+			return
+		}
+		// 上班更新
+		return st.Update().SetEmployeeID(assetSignInfo.Employee.ID).Exec(b.ctx)
+	}
+	return
+}
+
+// checkWarehouseDuty 检查仓库上班信息
+func (b *warestoreBiz) checkWarehouseDuty(sn string, lat, lng float64) (wh *ent.Warehouse, err error) {
+	wh = NewWarehouse().QuerySn(sn)
+	// 判断距离
+	if wh == nil || wh.Lat == 0 || wh.Lng == 0 {
+		return wh, errors.New("未找到门店地理信息")
+	}
+	if wh.AssetManagerID != nil {
+		return wh, errors.New("当前已有员工上班")
+	}
+
+	distance := haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(wh.Lat, wh.Lng))
+	meters := distance.Kilometers() * 1000
+	if meters > 1000 {
+		return wh, errors.New("距离过远")
+	}
+	return wh, nil
+}
+
+// checkStoreDuty 检查门店上班信息
+func (b *warestoreBiz) checkStoreDuty(sn string, lat, lng float64) (st *ent.Store, err error) {
+	st = service.NewStore().QuerySn(sn)
+	bc := service.NewBranch().Query(st.BranchID)
+	if st.EmployeeID != nil {
+		return st, errors.New("当前已有员工上班")
+	}
+	// 判断距离
+	if bc == nil || bc.Lat == 0 || bc.Lng == 0 {
+		return st, errors.New("未找到门店地理信息")
+	}
+	distance := haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(bc.Lat, bc.Lng))
+	meters := distance.Kilometers() * 1000
+	if meters > 1000 {
+		return st, errors.New("距离过远")
+	}
+	return st, nil
 }
 
 // Profile 仓管资料

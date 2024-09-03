@@ -105,7 +105,7 @@ func (*selection) EbikeBrand(c echo.Context) (err error) {
 // CityStation
 // @ID		SelectionCityStation
 // @Router	/agent/v1/selection/city_station [GET]
-// @Summary	企业-站点
+// @Summary	城市-站点
 // @Tags	Selection - 筛选
 // @Accept	json
 // @Produce	json

@@ -20,8 +20,8 @@ var Cabinet = new(cabinet)
 // Detail
 // @ID		CabinetDetail
 // @Router	/warestore/v2/cabinet/{serial} [GET]
-// @Summary	O2002 获取电柜详情
-// @Tags	[O]运维接口
+// @Summary 获取电柜详情
+// @Tags	Cabinet - 电柜
 // @Accept	json
 // @Produce	json
 // @Param	serial				path		string								true	"电柜编号"
@@ -35,8 +35,8 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 // Operate
 // @ID		CabinetOperate
 // @Router	/warestore/v2/cabinet/{serial} [POST]
-// @Summary	O2003 电柜操作
-// @Tags	[O]运维接口
+// @Summary 电柜操作
+// @Tags	Cabinet - 电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Warestore-Token	header		string								true	"运维校验token"
@@ -51,8 +51,8 @@ func (*cabinet) Operate(c echo.Context) (err error) {
 // BinOperate
 // @ID		CabinetBinOperate
 // @Router	/warestore/v2/cabinet/{serial}/{ordinal} [POST]
-// @Summary	O2004 仓位操作
-// @Tags	[O]运维接口
+// @Summary 仓位操作
+// @Tags	Cabinet - 电柜
 // @Accept	json
 // @Produce	json
 // @Param	X-Warestore-Token	header		string							true	"运维校验token"

@@ -148,20 +148,6 @@ func (amc *AssetMaintenanceCreate) SetNillableStatus(u *uint8) *AssetMaintenance
 	return amc
 }
 
-// SetCabinetStatus sets the "cabinet_status" field.
-func (amc *AssetMaintenanceCreate) SetCabinetStatus(u uint8) *AssetMaintenanceCreate {
-	amc.mutation.SetCabinetStatus(u)
-	return amc
-}
-
-// SetNillableCabinetStatus sets the "cabinet_status" field if the given value is not nil.
-func (amc *AssetMaintenanceCreate) SetNillableCabinetStatus(u *uint8) *AssetMaintenanceCreate {
-	if u != nil {
-		amc.SetCabinetStatus(*u)
-	}
-	return amc
-}
-
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
 func (amc *AssetMaintenanceCreate) SetCabinet(c *Cabinet) *AssetMaintenanceCreate {
 	return amc.SetCabinetID(c.ID)
@@ -242,10 +228,6 @@ func (amc *AssetMaintenanceCreate) defaults() error {
 		v := assetmaintenance.DefaultStatus
 		amc.mutation.SetStatus(v)
 	}
-	if _, ok := amc.mutation.CabinetStatus(); !ok {
-		v := assetmaintenance.DefaultCabinetStatus
-		amc.mutation.SetCabinetStatus(v)
-	}
 	return nil
 }
 
@@ -265,9 +247,6 @@ func (amc *AssetMaintenanceCreate) check() error {
 	}
 	if _, ok := amc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "AssetMaintenance.status"`)}
-	}
-	if _, ok := amc.mutation.CabinetStatus(); !ok {
-		return &ValidationError{Name: "cabinet_status", err: errors.New(`ent: missing required field "AssetMaintenance.cabinet_status"`)}
 	}
 	return nil
 }
@@ -331,10 +310,6 @@ func (amc *AssetMaintenanceCreate) createSpec() (*AssetMaintenance, *sqlgraph.Cr
 	if value, ok := amc.mutation.Status(); ok {
 		_spec.SetField(assetmaintenance.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
-	}
-	if value, ok := amc.mutation.CabinetStatus(); ok {
-		_spec.SetField(assetmaintenance.FieldCabinetStatus, field.TypeUint8, value)
-		_node.CabinetStatus = value
 	}
 	if nodes := amc.mutation.CabinetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -582,24 +557,6 @@ func (u *AssetMaintenanceUpsert) AddStatus(v uint8) *AssetMaintenanceUpsert {
 	return u
 }
 
-// SetCabinetStatus sets the "cabinet_status" field.
-func (u *AssetMaintenanceUpsert) SetCabinetStatus(v uint8) *AssetMaintenanceUpsert {
-	u.Set(assetmaintenance.FieldCabinetStatus, v)
-	return u
-}
-
-// UpdateCabinetStatus sets the "cabinet_status" field to the value that was provided on create.
-func (u *AssetMaintenanceUpsert) UpdateCabinetStatus() *AssetMaintenanceUpsert {
-	u.SetExcluded(assetmaintenance.FieldCabinetStatus)
-	return u
-}
-
-// AddCabinetStatus adds v to the "cabinet_status" field.
-func (u *AssetMaintenanceUpsert) AddCabinetStatus(v uint8) *AssetMaintenanceUpsert {
-	u.Add(assetmaintenance.FieldCabinetStatus, v)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -813,27 +770,6 @@ func (u *AssetMaintenanceUpsertOne) AddStatus(v uint8) *AssetMaintenanceUpsertOn
 func (u *AssetMaintenanceUpsertOne) UpdateStatus() *AssetMaintenanceUpsertOne {
 	return u.Update(func(s *AssetMaintenanceUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// SetCabinetStatus sets the "cabinet_status" field.
-func (u *AssetMaintenanceUpsertOne) SetCabinetStatus(v uint8) *AssetMaintenanceUpsertOne {
-	return u.Update(func(s *AssetMaintenanceUpsert) {
-		s.SetCabinetStatus(v)
-	})
-}
-
-// AddCabinetStatus adds v to the "cabinet_status" field.
-func (u *AssetMaintenanceUpsertOne) AddCabinetStatus(v uint8) *AssetMaintenanceUpsertOne {
-	return u.Update(func(s *AssetMaintenanceUpsert) {
-		s.AddCabinetStatus(v)
-	})
-}
-
-// UpdateCabinetStatus sets the "cabinet_status" field to the value that was provided on create.
-func (u *AssetMaintenanceUpsertOne) UpdateCabinetStatus() *AssetMaintenanceUpsertOne {
-	return u.Update(func(s *AssetMaintenanceUpsert) {
-		s.UpdateCabinetStatus()
 	})
 }
 
@@ -1216,27 +1152,6 @@ func (u *AssetMaintenanceUpsertBulk) AddStatus(v uint8) *AssetMaintenanceUpsertB
 func (u *AssetMaintenanceUpsertBulk) UpdateStatus() *AssetMaintenanceUpsertBulk {
 	return u.Update(func(s *AssetMaintenanceUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// SetCabinetStatus sets the "cabinet_status" field.
-func (u *AssetMaintenanceUpsertBulk) SetCabinetStatus(v uint8) *AssetMaintenanceUpsertBulk {
-	return u.Update(func(s *AssetMaintenanceUpsert) {
-		s.SetCabinetStatus(v)
-	})
-}
-
-// AddCabinetStatus adds v to the "cabinet_status" field.
-func (u *AssetMaintenanceUpsertBulk) AddCabinetStatus(v uint8) *AssetMaintenanceUpsertBulk {
-	return u.Update(func(s *AssetMaintenanceUpsert) {
-		s.AddCabinetStatus(v)
-	})
-}
-
-// UpdateCabinetStatus sets the "cabinet_status" field to the value that was provided on create.
-func (u *AssetMaintenanceUpsertBulk) UpdateCabinetStatus() *AssetMaintenanceUpsertBulk {
-	return u.Update(func(s *AssetMaintenanceUpsert) {
-		s.UpdateCabinetStatus()
 	})
 }
 

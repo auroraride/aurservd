@@ -37,8 +37,6 @@ const (
 	FieldContent = "content"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
-	// FieldCabinetStatus holds the string denoting the cabinet_status field in the database.
-	FieldCabinetStatus = "cabinet_status"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
 	EdgeCabinet = "cabinet"
 	// EdgeMaintainer holds the string denoting the maintainer edge name in mutations.
@@ -84,7 +82,6 @@ var Columns = []string{
 	FieldReason,
 	FieldContent,
 	FieldStatus,
-	FieldCabinetStatus,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -112,8 +109,6 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus uint8
-	// DefaultCabinetStatus holds the default value on creation for the "cabinet_status" field.
-	DefaultCabinetStatus uint8
 )
 
 // OrderOption defines the ordering options for the AssetMaintenance queries.
@@ -167,11 +162,6 @@ func ByContent(opts ...sql.OrderTermOption) OrderOption {
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
-}
-
-// ByCabinetStatus orders the results by the cabinet_status field.
-func ByCabinetStatus(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCabinetStatus, opts...).ToFunc()
 }
 
 // ByCabinetField orders the results by cabinet field.

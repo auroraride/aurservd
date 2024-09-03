@@ -4119,7 +4119,7 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: 企业-站点
+      summary: 城市-站点
       tags:
       - Selection - 筛选
   /agent/v1/selection/ebike/brand:

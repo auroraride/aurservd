@@ -3,10 +3,11 @@ package model
 type AssetMaintenanceStatus uint8
 
 const (
-	AssetMaintenanceStatusUnder   AssetMaintenanceStatus = iota // 维修中
-	AssetMaintenanceStatusSuccess                               // 已维修
-	AssetMaintenanceStatusFail                                  // 维修失败
-	AssetMaintenanceStatusCancel                                // 已取消
+	AssetMaintenanceStatusUnder   AssetMaintenanceStatus = iota + 1 // 维修中
+	AssetMaintenanceStatusSuccess                                   // 已维修
+	AssetMaintenanceStatusFail                                      // 维修失败
+	AssetMaintenanceStatusCancel                                    // 已取消
+	AssetMaintenanceStatusPause                                     // 已暂停
 )
 
 func (a AssetMaintenanceStatus) String() string {
@@ -19,6 +20,8 @@ func (a AssetMaintenanceStatus) String() string {
 		return "维修失败"
 	case AssetMaintenanceStatusCancel:
 		return "已取消"
+	case AssetMaintenanceStatusPause:
+		return "已暂停"
 	default:
 		return "未知"
 	}
@@ -48,7 +51,7 @@ type AssetMaintenanceListRes struct {
 	OpratorName  string                   `json:"opratorName"`  // 维护人
 	CreatedAt    string                   `json:"createdAt"`    // 维护时间
 	OpratorPhone string                   `json:"opratorPhone"` // 维护人电话
-	Status       string                   `json:"status"`       // 维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消
+	Status       string                   `json:"status"`       // 维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
 	Details      []AssetMaintenanceDetail `json:"details"`      // 维护详情
 
 }
@@ -77,6 +80,12 @@ type AssetMaintenanceModifyReq struct {
 	ID      uint64                         `json:"id" validate:"required" param:"id"` // ID
 	Reason  string                         `json:"reason" validate:"required"`        // 维护理由
 	Content string                         `json:"content" validate:"required"`       // 维护内容
-	Status  AssetMaintenanceStatus         `json:"status" validate:"required"`        // 维修状态1:维修中 2:已维修 3:维修失败 4:已取消
+	Status  AssetMaintenanceStatus         `json:"status" validate:"required"`        // 维修状态1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
 	Details []AssetMaintenanceCreateDetail `json:"details"`                           // 维护详情
+}
+
+// AssetMaintenanceRes 维修记录信息
+type AssetMaintenanceRes struct {
+	ID     uint64                 `json:"id"`     // 维保ID
+	Status AssetMaintenanceStatus `json:"status"` // 维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
 }

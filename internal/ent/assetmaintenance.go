@@ -41,10 +41,8 @@ type AssetMaintenance struct {
 	Reason string `json:"reason,omitempty"`
 	// 内容
 	Content string `json:"content,omitempty"`
-	// 维修状态 1:维护中 2:已维修 3:维修失败 4:已取消
+	// 维修状态 1:维护中 2:已维修 3:维修失败 4:已取消 5:暂停维护
 	Status uint8 `json:"status,omitempty"`
-	// 电柜状态 1:运营中 2:维护中 3:暂停维护
-	CabinetStatus uint8 `json:"cabinet_status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetMaintenanceQuery when eager-loading is set.
 	Edges        AssetMaintenanceEdges `json:"edges"`
@@ -102,7 +100,7 @@ func (*AssetMaintenance) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case assetmaintenance.FieldCreator, assetmaintenance.FieldLastModifier:
 			values[i] = new([]byte)
-		case assetmaintenance.FieldID, assetmaintenance.FieldCabinetID, assetmaintenance.FieldMaintainerID, assetmaintenance.FieldStatus, assetmaintenance.FieldCabinetStatus:
+		case assetmaintenance.FieldID, assetmaintenance.FieldCabinetID, assetmaintenance.FieldMaintainerID, assetmaintenance.FieldStatus:
 			values[i] = new(sql.NullInt64)
 		case assetmaintenance.FieldRemark, assetmaintenance.FieldReason, assetmaintenance.FieldContent:
 			values[i] = new(sql.NullString)
@@ -202,12 +200,6 @@ func (am *AssetMaintenance) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				am.Status = uint8(value.Int64)
 			}
-		case assetmaintenance.FieldCabinetStatus:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field cabinet_status", values[i])
-			} else if value.Valid {
-				am.CabinetStatus = uint8(value.Int64)
-			}
 		default:
 			am.selectValues.Set(columns[i], values[i])
 		}
@@ -297,9 +289,6 @@ func (am *AssetMaintenance) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", am.Status))
-	builder.WriteString(", ")
-	builder.WriteString("cabinet_status=")
-	builder.WriteString(fmt.Sprintf("%v", am.CabinetStatus))
 	builder.WriteByte(')')
 	return builder.String()
 }

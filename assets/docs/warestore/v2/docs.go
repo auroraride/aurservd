@@ -328,9 +328,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[O]运维接口"
+                    "Cabinet - 电柜"
                 ],
-                "summary": "O2002 获取电柜详情",
+                "summary": "获取电柜详情",
                 "operationId": "CabinetDetail",
                 "parameters": [
                     {
@@ -365,9 +365,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[O]运维接口"
+                    "Cabinet - 电柜"
                 ],
-                "summary": "O2003 电柜操作",
+                "summary": "电柜操作",
                 "operationId": "CabinetOperate",
                 "parameters": [
                     {
@@ -413,9 +413,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[O]运维接口"
+                    "Cabinet - 电柜"
                 ],
-                "summary": "O2004 仓位操作",
+                "summary": "仓位操作",
                 "operationId": "CabinetBinOperate",
                 "parameters": [
                     {
@@ -780,6 +780,40 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.AssetCheckListRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/duty": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Warestore - 仓管接口"
+                ],
+                "summary": "上班",
+                "operationId": "WarestoreDuty",
+                "parameters": [
+                    {
+                        "description": "登录请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.WarestoreDutyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -2302,6 +2336,28 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.WarestoreDutyReq": {
+            "type": "object",
+            "required": [
+                "lat",
+                "lng",
+                "sn"
+            ],
+            "properties": {
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "sn": {
+                    "description": "上班位置编号",
+                    "type": "string"
+                }
+            }
+        },
         "definition.WarestoreMaterial": {
             "type": "object",
             "properties": {
@@ -2783,6 +2839,64 @@ const docTemplate = `{
                 "AssetLocationsTypeOperation",
                 "AssetLocationsTypeCabinet",
                 "AssetLocationsTypeRider"
+            ]
+        },
+        "model.AssetMaintenanceCreateDetail": {
+            "type": "object",
+            "required": [
+                "materialId",
+                "num"
+            ],
+            "properties": {
+                "materialId": {
+                    "description": "其它物资分类ID",
+                    "type": "integer"
+                },
+                "num": {
+                    "description": "数量",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.AssetMaintenanceRes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "维保ID",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetMaintenanceStatus"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.AssetMaintenanceStatus": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "x-enum-comments": {
+                "AssetMaintenanceStatusCancel": "已取消",
+                "AssetMaintenanceStatusFail": "维修失败",
+                "AssetMaintenanceStatusPause": "已暂停",
+                "AssetMaintenanceStatusSuccess": "已维修",
+                "AssetMaintenanceStatusUnder": "维修中"
+            },
+            "x-enum-varnames": [
+                "AssetMaintenanceStatusUnder",
+                "AssetMaintenanceStatusSuccess",
+                "AssetMaintenanceStatusFail",
+                "AssetMaintenanceStatusCancel",
+                "AssetMaintenanceStatusPause"
             ]
         },
         "model.AssetModifyReq": {
@@ -3541,6 +3655,14 @@ const docTemplate = `{
                     "description": "经度",
                     "type": "number"
                 },
+                "maintenance": {
+                    "description": "电柜维保信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetMaintenanceRes"
+                        }
+                    ]
+                },
                 "models": {
                     "description": "电池型号",
                     "type": "array",
@@ -3639,10 +3761,20 @@ const docTemplate = `{
             "required": [
                 "lat",
                 "lng",
-                "operate",
-                "reason"
+                "operate"
             ],
             "properties": {
+                "content": {
+                    "description": "维保内容（取消维护 必填）",
+                    "type": "string"
+                },
+                "details": {
+                    "description": "维保使用配件",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetMaintenanceCreateDetail"
+                    }
+                },
                 "lat": {
                     "description": "纬度",
                     "type": "number"
@@ -3660,8 +3792,16 @@ const docTemplate = `{
                     ]
                 },
                 "reason": {
-                    "description": "操作原因",
+                    "description": "操作原因（中断业务、维保失败 必填）",
                     "type": "string"
+                },
+                "status": {
+                    "description": "维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetMaintenanceStatus"
+                        }
+                    ]
                 }
             }
         },

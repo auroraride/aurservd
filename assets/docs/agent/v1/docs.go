@@ -2416,7 +2416,7 @@ const docTemplate = `{
                 "tags": [
                     "Selection - 筛选"
                 ],
-                "summary": "企业-站点",
+                "summary": "城市-站点",
                 "operationId": "SelectionCityStation",
                 "parameters": [
                     {

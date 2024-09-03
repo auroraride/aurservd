@@ -29,3 +29,20 @@ func (*warestore) Signin(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[definition.WarestorePeopleSigninReq](c)
 	return ctx.SendResponse(biz.NewWarestore().Signin(req))
 }
+
+// Duty
+// @ID		WarestoreDuty
+// @Router	/warestore/v2/duty [POST]
+// @Summary	上班
+// @Tags	Warestore - 仓管接口
+// @Accept	json
+// @Produce	json
+// @Param	body	body		definition.WarestoreDutyReq	true	"登录请求"
+// @Success	200		{object}	model.StatusResponse		"请求成功"
+func (*warestore) Duty(c echo.Context) (err error) {
+	ctx, req := app.WarestoreContextAndBinding[definition.WarestoreDutyReq](c)
+	return ctx.SendResponse(biz.NewWarestore().Duty(definition.AssetSignInfo{
+		AssetManager: ctx.AssetManager,
+		Employee:     ctx.Employee,
+	}, req))
+}

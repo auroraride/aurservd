@@ -258,6 +258,18 @@ definitions:
     - AssetLocationsTypeOperation
     - AssetLocationsTypeCabinet
     - AssetLocationsTypeRider
+  model.AssetMaintenanceCreateDetail:
+    properties:
+      materialId:
+        description: 其它物资分类ID
+        type: integer
+      num:
+        description: 数量
+        type: integer
+    required:
+    - materialId
+    - num
+    type: object
   model.AssetMaintenanceDetail:
     properties:
       assetName:
@@ -306,9 +318,39 @@ definitions:
         description: 维护理由
         type: string
       status:
-        description: 维修状态 0:待维修 1:维修中 2:已维修 3:维修失败 4:已取消
+        description: 维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
         type: string
     type: object
+  model.AssetMaintenanceRes:
+    properties:
+      id:
+        description: 维保ID
+        type: integer
+      status:
+        allOf:
+        - $ref: '#/definitions/model.AssetMaintenanceStatus'
+        description: 维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
+    type: object
+  model.AssetMaintenanceStatus:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    type: integer
+    x-enum-comments:
+      AssetMaintenanceStatusCancel: 已取消
+      AssetMaintenanceStatusFail: 维修失败
+      AssetMaintenanceStatusPause: 已暂停
+      AssetMaintenanceStatusSuccess: 已维修
+      AssetMaintenanceStatusUnder: 维修中
+    x-enum-varnames:
+    - AssetMaintenanceStatusUnder
+    - AssetMaintenanceStatusSuccess
+    - AssetMaintenanceStatusFail
+    - AssetMaintenanceStatusCancel
+    - AssetMaintenanceStatusPause
   model.AssetStatus:
     enum:
     - 1
@@ -848,6 +890,10 @@ definitions:
       lng:
         description: 经度
         type: number
+      maintenance:
+        allOf:
+        - $ref: '#/definitions/model.AssetMaintenanceRes'
+        description: 电柜维保信息
       models:
         description: 电池型号
         items:
@@ -923,6 +969,14 @@ definitions:
     - MaintainerCabinetOperateReboot
   model.MaintainerCabinetOperateReq:
     properties:
+      content:
+        description: 维保内容（取消维护 必填）
+        type: string
+      details:
+        description: 维保使用配件
+        items:
+          $ref: '#/definitions/model.AssetMaintenanceCreateDetail'
+        type: array
       lat:
         description: 纬度
         type: number
@@ -935,13 +989,33 @@ definitions:
         description: 操作, 除`maintenance`之外所有操作均需要提前设电柜为维护状态。 open:开仓, open-all:全部开仓（暂时不做）,
           maintenance:电柜维护, maintenance-cancel:取消维护, interrupt:中断业务, reboot:重启（暂时不做）
       reason:
-        description: 操作原因
+        description: 操作原因（中断业务、维保失败 必填）
         type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/model.AssetMaintenanceStatus'
+        description: 维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
     required:
     - lat
     - lng
     - operate
-    - reason
+    type: object
+  model.MaintainerCabinetPauseReq:
+    properties:
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      status:
+        allOf:
+        - $ref: '#/definitions/model.AssetMaintenanceStatus'
+        description: 维修状态, 维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
+    required:
+    - lat
+    - lng
+    - status
     type: object
   model.MaintainerSigninReq:
     properties:
@@ -1378,6 +1452,38 @@ paths:
       summary: O2004 仓位操作
       tags:
       - '[O]运维接口'
+  /maintainer/v1/cabinet/pause/{serial}:
+    post:
+      consumes:
+      - application/json
+      operationId: MaintainerCabinetPause
+      parameters:
+      - description: 运维校验token
+        in: header
+        name: X-Maintainer-Token
+        required: true
+        type: string
+      - description: 电柜编号
+        in: path
+        name: serial
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.MaintainerCabinetPauseReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: O2005 电柜暂停维护
+      tags:
+      - '[O]运维接口'
   /maintainer/v1/cabinets:
     get:
       consumes:
@@ -1389,6 +1495,38 @@ paths:
         name: X-Maintainer-Token
         required: true
         type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 关键词
+        in: query
+        name: keyword
+        type: string
+      - description: 电池型号ID
+        in: query
+        name: modelID
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 电柜状态 0未投放 1运营中 2维护中
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: status
+        type: integer
+        x-enum-comments:
+          CabinetStatusMaintenance: 维护中
+          CabinetStatusNormal: 运营中
+          CabinetStatusPending: 未投放
+        x-enum-varnames:
+        - CabinetStatusPending
+        - CabinetStatusNormal
+        - CabinetStatusMaintenance
       produces:
       - application/json
       responses:

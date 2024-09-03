@@ -19,6 +19,9 @@ func loadWarestoreRoutes() {
 	// 需校验
 	auth := g.Group("", middleware.Warestore(), middleware.WarestoreAuth())
 
+	// 上班
+	auth.POST("/duty", wapi.Warestore.Duty) // 上班
+
 	// 筛选项
 	auth.GET("/selection/warehouse", wapi.Selection.Warehouse)                // 城市仓库
 	auth.GET("/selection/manager_warehouse", wapi.Selection.ManagerWarehouse) // 仓管仓库

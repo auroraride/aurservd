@@ -17,6 +17,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
@@ -243,12 +245,24 @@ func (s *assetCheckService) getAssetByOperateRole(ctx context.Context, req model
 			ids = append(ids, v.ID)
 		}
 	case model.OperatorTypeEmployee:
-		// 查询能操作哪些门店的资产
-		// todo 门店集合没写！还有上班限制
+		// 查询是否当前位置上班
+		st, _ := ent.Database.Store.QueryNotDeleted().Where(
+			store.ID(req.LocationsID),
+			store.HasEmployeeWith(employee.ID(req.OpratorID)),
+		).First(context.Background())
+		if st == nil {
+			return b, nil, errors.New("当年门店未存在上班信息")
+		}
 		b = true
 	case model.OperatorTypeAssetManager:
-		// 查询能操作哪些仓库的资产
-		// todo 仓库集合没写！还有上班限制
+		// 查询是否当前位置上班
+		wh, _ := ent.Database.Warehouse.QueryNotDeleted().Where(
+			warehouse.ID(req.LocationsID),
+			warehouse.HasAssetManagerWith(assetmanager.ID(req.OpratorID)),
+		).First(context.Background())
+		if wh == nil {
+			return b, nil, errors.New("当年门店未存在上班信息")
+		}
 		b = true
 	default:
 		return b, nil, fmt.Errorf("未知的操作人类型")

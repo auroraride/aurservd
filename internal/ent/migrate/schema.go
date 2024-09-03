@@ -684,8 +684,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "reason", Type: field.TypeString, Comment: "原因"},
 		{Name: "content", Type: field.TypeString, Comment: "内容"},
-		{Name: "status", Type: field.TypeUint8, Comment: "维修状态 1:维护中 2:已维修 3:维修失败 4:已取消", Default: 1},
-		{Name: "cabinet_status", Type: field.TypeUint8, Comment: "电柜状态 1:运营中 2:维护中 3:暂停维护", Default: 0},
+		{Name: "status", Type: field.TypeUint8, Comment: "维修状态 1:维护中 2:已维修 3:维修失败 4:已取消 5:暂停维护", Default: 1},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
 		{Name: "maintainer_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -697,13 +696,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "asset_maintenance_cabinet_cabinet",
-				Columns:    []*schema.Column{AssetMaintenanceColumns[11]},
+				Columns:    []*schema.Column{AssetMaintenanceColumns[10]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_maintenance_maintainer_maintainer",
-				Columns:    []*schema.Column{AssetMaintenanceColumns[12]},
+				Columns:    []*schema.Column{AssetMaintenanceColumns[11]},
 				RefColumns: []*schema.Column{MaintainerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -722,12 +721,12 @@ var (
 			{
 				Name:    "assetmaintenance_cabinet_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetMaintenanceColumns[11]},
+				Columns: []*schema.Column{AssetMaintenanceColumns[10]},
 			},
 			{
 				Name:    "assetmaintenance_maintainer_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetMaintenanceColumns[12]},
+				Columns: []*schema.Column{AssetMaintenanceColumns[11]},
 			},
 		},
 	}

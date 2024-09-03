@@ -36,12 +36,10 @@ type WarestorePeopleSigninRes struct {
 	Token   string                 `json:"token"`
 }
 
-type OpenidReq struct {
-	Code string `json:"code" query:"code"`
-}
-
-type OpenidRes struct {
-	Openid string `json:"openid"`
+type WarestoreDutyReq struct {
+	Sn  string  `json:"sn" validate:"required" trans:"上班位置编号"`
+	Lng float64 `json:"lng"  validate:"required" trans:"经度"`
+	Lat float64 `json:"lat"  validate:"required" trans:"纬度"`
 }
 
 type WarestorePeopleProfile struct {
