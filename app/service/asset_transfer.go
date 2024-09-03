@@ -1536,14 +1536,19 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 			inTimeAt = item.InTimeAt.Format("2006-01-02 15:04:05")
 		}
 
-		out := model.AssetTransferFlowDetail{
-			OperatorName:     fromoperateName,
-			LocationsName:    fromLocationName,
-			TimeAt:           outTimeAt,
-			TransferTypeName: "[出库]" + transferType.String(),
-			TransferType:     transferType.Value(),
-			LocationsType:    fromLocationType.Value(),
+		var out *model.AssetTransferFlowDetail
+
+		if fromLocationName != "" {
+			out = &model.AssetTransferFlowDetail{
+				OperatorName:     fromoperateName,
+				LocationsName:    fromLocationName,
+				TimeAt:           outTimeAt,
+				TransferTypeName: "[出库]" + transferType.String(),
+				TransferType:     transferType.Value(),
+				LocationsType:    fromLocationType.Value(),
+			}
 		}
+
 		in := model.AssetTransferFlowDetail{
 			OperatorName:     toOperateName,
 			LocationsName:    toLocationName,
@@ -1552,9 +1557,10 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 			TransferType:     transferType.Value(),
 			LocationsType:    toLocationType.Value(),
 		}
+
 		res = append(res, &model.AssetTransferFlow{
 			Out: out,
-			In:  in,
+			In:  &in,
 		})
 	}
 	return res

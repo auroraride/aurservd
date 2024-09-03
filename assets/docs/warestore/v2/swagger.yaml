@@ -296,6 +296,12 @@ definitions:
         description: 名称
         type: string
     type: object
+  definition.WarestoreCheckDutyRes:
+    properties:
+      name:
+        description: 上班位置名称
+        type: string
+    type: object
   definition.WarestoreDutyReq:
     properties:
       lat:
@@ -2012,8 +2018,13 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: WarestoreDuty
+      operationId: WarestoreOnDuty
       parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
       - description: 登录请求
         in: body
         name: body
@@ -2028,6 +2039,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: 上班
+      tags:
+      - Warestore - 仓管接口
+  /warestore/v2/duty/check:
+    post:
+      consumes:
+      - application/json
+      operationId: WarestoreCheckDuty
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      - description: 登录请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.WarestoreDutyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.WarestoreCheckDutyRes'
+      summary: 上班范围检查
       tags:
       - Warestore - 仓管接口
   /warestore/v2/selection/city_station:

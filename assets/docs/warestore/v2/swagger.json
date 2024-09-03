@@ -790,8 +790,15 @@
                     "Warestore - 仓管接口"
                 ],
                 "summary": "上班",
-                "operationId": "WarestoreDuty",
+                "operationId": "WarestoreOnDuty",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "登录请求",
                         "name": "body",
@@ -807,6 +814,47 @@
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/duty/check": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Warestore - 仓管接口"
+                ],
+                "summary": "上班范围检查",
+                "operationId": "WarestoreCheckDuty",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "登录请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.WarestoreDutyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.WarestoreCheckDutyRes"
                         }
                     }
                 }
@@ -2325,6 +2373,15 @@
                 },
                 "name": {
                     "description": "名称",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.WarestoreCheckDutyRes": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "上班位置名称",
                     "type": "string"
                 }
             }

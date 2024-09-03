@@ -30,16 +30,35 @@ func (*warestore) Signin(c echo.Context) (err error) {
 	return ctx.SendResponse(biz.NewWarestore().Signin(req))
 }
 
-// Duty
-// @ID		WarestoreDuty
+// CheckDuty
+// @ID		WarestoreCheckDuty
+// @Router	/warestore/v2/duty/check [POST]
+// @Summary	上班范围检查
+// @Tags	Warestore - 仓管接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Warestore-Token	header		string								true	"仓管校验token"
+// @Param	body				body		definition.WarestoreDutyReq			true	"登录请求"
+// @Success	200					{object}	definition.WarestoreCheckDutyRes	"请求成功"
+func (*warestore) CheckDuty(c echo.Context) (err error) {
+	ctx, req := app.WarestoreContextAndBinding[definition.WarestoreDutyReq](c)
+	return ctx.SendResponse(biz.NewWarestore().CheckDuty(definition.AssetSignInfo{
+		AssetManager: ctx.AssetManager,
+		Employee:     ctx.Employee,
+	}, req))
+}
+
+// OnDuty
+// @ID		WarestoreOnDuty
 // @Router	/warestore/v2/duty [POST]
 // @Summary	上班
 // @Tags	Warestore - 仓管接口
 // @Accept	json
 // @Produce	json
-// @Param	body	body		definition.WarestoreDutyReq	true	"登录请求"
-// @Success	200		{object}	model.StatusResponse		"请求成功"
-func (*warestore) Duty(c echo.Context) (err error) {
+// @Param	X-Warestore-Token	header		string						true	"仓管校验token"
+// @Param	body				body		definition.WarestoreDutyReq	true	"登录请求"
+// @Success	200					{object}	model.StatusResponse		"请求成功"
+func (*warestore) OnDuty(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[definition.WarestoreDutyReq](c)
 	return ctx.SendResponse(biz.NewWarestore().Duty(definition.AssetSignInfo{
 		AssetManager: ctx.AssetManager,

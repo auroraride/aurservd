@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/auroraride/aurservd/app/controller/v1/oapi"
+	"github.com/auroraride/aurservd/app/controller/v2/wapi"
 	"github.com/auroraride/aurservd/app/middleware"
 )
 
@@ -26,6 +27,7 @@ func loadMaintainerRoutes() {
 	auth.GET("/selection/city_station", oapi.Selection.CityStation) // 城市站点
 	auth.GET("/selection/maintainer", oapi.Selection.Maintainer)    // 运维
 	auth.GET("/selection/model", oapi.Selection.Model)              // 电池型号筛选
+	auth.GET("/selection/material", oapi.Selection.Material)        // 物资类型筛选
 
 	// 资产调拨
 	auth.POST("/transfer", oapi.AssetTransfer.Transfer)                   // 创建调拨
@@ -40,6 +42,7 @@ func loadMaintainerRoutes() {
 
 	// 物资管理
 	auth.GET("/assets/common", oapi.Asset.AssetsCommon) // 电池/电车资产数据
+	auth.GET("/assets/count", wapi.Assets.AssetCount)   // 资产统计
 
 	auth.GET("/check/sn/:sn", oapi.AssetCheck.GetAssetBySN) // 通过SN查询资产
 

@@ -42,6 +42,10 @@ type WarestoreDutyReq struct {
 	Lat float64 `json:"lat"  validate:"required" trans:"纬度"`
 }
 
+type WarestoreCheckDutyRes struct {
+	Name string `json:"name"` // 上班位置名称
+}
+
 type WarestorePeopleProfile struct {
 	ID             uint64   `json:"id"`
 	Phone          string   `json:"phone"`          // 手机号
