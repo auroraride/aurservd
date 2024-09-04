@@ -615,3 +615,15 @@ func (s *selectionService) EbikeBrandByCity(req *model.SelectionBrandByCityReq) 
 	}
 	return
 }
+
+// StoreGroup 筛选门店集合
+func (s *selectionService) StoreGroup() (items []model.SelectOption) {
+	list, _ := ent.Database.StoreGroup.QueryNotDeleted().All(context.Background())
+	for _, v := range list {
+		items = append(items, model.SelectOption{
+			Value: v.ID,
+			Label: v.Name,
+		})
+	}
+	return
+}

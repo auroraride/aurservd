@@ -19,7 +19,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
-	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
@@ -71,6 +70,7 @@ func (b *warehouseBiz) detail(item *ent.Warehouse) (res *definition.WarehouseDet
 		Lat:     item.Lat,
 		Address: item.Address,
 		QRCode:  fmt.Sprintf("WAREHOUSE:%s", item.Sn),
+		Remark:  item.Remark,
 	}
 
 	if item.Edges.City != nil {
@@ -95,21 +95,14 @@ func (b *warehouseBiz) Detail(id uint64) (*definition.WarehouseDetail, error) {
 
 // Create 创建仓库
 func (b *warehouseBiz) Create(req *definition.WarehouseCreateReq) (err error) {
-	c, err := ent.Database.City.QueryNotDeleted().
-		Where(
-			city.ID(req.CityID),
-		).First(b.ctx)
-	if c == nil || err != nil {
-		return errors.New("城市无效")
-	}
 
 	_, err = b.orm.Create().
 		SetName(req.Name).
 		SetCityID(req.CityID).
 		SetAddress(req.Address).
 		SetRemark(req.Remark).
-		SetLat(c.Lat).
-		SetLng(c.Lng).
+		SetLat(req.Lat).
+		SetLng(req.Lng).
 		SetSn(shortuuid.New()).
 		Save(b.ctx)
 	if err != nil {
@@ -130,22 +123,14 @@ func (b *warehouseBiz) Modify(req *definition.WarehouseModifyReq) (err error) {
 		return errors.New("仓库不存在")
 	}
 
-	c, err := ent.Database.City.QueryNotDeleted().
-		Where(
-			city.ID(req.CityID),
-		).First(b.ctx)
-	if c == nil || err != nil {
-		return errors.New("城市无效")
-	}
-
 	_, err = b.orm.UpdateOneID(req.ID).
 		SetName(req.Name).
 		SetName(req.Name).
 		SetCityID(req.CityID).
 		SetAddress(req.Address).
 		SetRemark(req.Remark).
-		SetLat(c.Lat).
-		SetLng(c.Lng).
+		SetLat(req.Lat).
+		SetLng(req.Lng).
 		Save(b.ctx)
 	if err != nil {
 		return err

@@ -20,8 +20,10 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/material"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -287,7 +289,7 @@ func (s *assetScrapService) Scrap(ctx context.Context, req *model.AssetScrapReq,
 				return err
 			}
 		case model.AssetTypeOtherAccessory, model.AssetTypeCabinetAccessory, model.AssetTypeNonSmartBattery, model.AssetTypeEbikeAccessory:
-			assetId, err := s.scrapAssetWithoutSN(ctx, &v, req.WarehouseID)
+			assetId, err := s.scrapAssetWithoutSN(ctx, &v, req)
 			if err != nil {
 				return err
 			}
@@ -372,35 +374,35 @@ func (s *assetScrapService) scrapAssetWithSN(ctx context.Context, req *model.Ass
 }
 
 // 无编号资产报废
-func (s *assetScrapService) scrapAssetWithoutSN(ctx context.Context, req *model.AssetScrapDetails, warehouseID *uint64) ([]uint64, error) {
+func (s *assetScrapService) scrapAssetWithoutSN(ctx context.Context, asd *model.AssetScrapDetails, req *model.AssetScrapReq) ([]uint64, error) {
 	ids := make([]uint64, 0)
-	if req.AssetType == model.AssetTypeNonSmartBattery {
+	if asd.AssetType == model.AssetTypeNonSmartBattery {
 		// 非智能电池调拨
-		if req.ModelID == nil || *req.ModelID == 0 {
-			return nil, errors.New(req.AssetType.String() + "型号ID不能为空")
+		if asd.ModelID == nil || *asd.ModelID == 0 {
+			return nil, errors.New(asd.AssetType.String() + "型号ID不能为空")
 		}
-		item, _ := ent.Database.BatteryModel.Query().Where(batterymodel.ID(*req.ModelID)).First(ctx)
+		item, _ := ent.Database.BatteryModel.Query().Where(batterymodel.ID(*asd.ModelID)).First(ctx)
 		if item == nil {
-			return nil, errors.New(req.AssetType.String() + "型号不存在")
+			return nil, errors.New(asd.AssetType.String() + "型号不存在")
 		}
 	} else {
-		if req.MaterialID == nil || *req.MaterialID == 0 {
-			return nil, errors.New(req.AssetType.String() + "分类ID不能为空")
+		if asd.MaterialID == nil || *asd.MaterialID == 0 {
+			return nil, errors.New(asd.AssetType.String() + "分类ID不能为空")
 		}
 		// 判定其它物资类型是否存在
 		item, _ := ent.Database.Material.QueryNotDeleted().Where(
-			material.ID(*req.MaterialID),
-			material.Type(req.AssetType.Value()),
+			material.ID(*asd.MaterialID),
+			material.Type(asd.AssetType.Value()),
 		).First(ctx)
 		if item == nil {
-			return nil, errors.New(req.AssetType.String() + "分类不存在")
+			return nil, errors.New(asd.AssetType.String() + "分类不存在")
 		}
 	}
-	if req.Num == nil || *req.Num == 0 {
+	if asd.Num == nil || *asd.Num == 0 {
 		return nil, fmt.Errorf("报废数量不能为空")
 	}
-	if warehouseID == nil {
-		return nil, fmt.Errorf("仓库ID不能为空")
+	if req.LocationType == nil || req.LocationID == nil {
+		return nil, fmt.Errorf("报废位置有误")
 	}
 	q := ent.Database.Asset.QueryNotDeleted().Where(
 		// 资产状态在库存或故障可报废
@@ -413,17 +415,30 @@ func (s *assetScrapService) scrapAssetWithoutSN(ctx context.Context, req *model.
 			model.AssetLocationsTypeRider.Value(),
 			model.AssetLocationsTypeOperation.Value(),
 		),
-		asset.HasWarehouseWith(warehouse.ID(*warehouseID)),
 	)
-	if req.ModelID != nil {
-		q.Where(asset.ModelID(*req.ModelID))
+
+	switch *req.LocationType {
+	case model.AssetLocationsTypeWarehouse:
+		q.Where(asset.HasWarehouseWith(warehouse.ID(*req.LocationID)))
+	case model.AssetLocationsTypeStore:
+		q.Where(asset.HasStoreWith(store.ID(*req.LocationID)))
+	case model.AssetLocationsTypeStation:
+		q.Where(asset.HasStationWith(enterprisestation.ID(*req.LocationID)))
+	case model.AssetLocationsTypeOperation:
+		q.Where(asset.HasOperatorWith(maintainer.ID(*req.LocationID)))
+	default:
+		return nil, fmt.Errorf("报废位置类型错误")
 	}
-	if req.MaterialID != nil {
-		q.Where(asset.MaterialID(*req.MaterialID))
+
+	if asd.ModelID != nil {
+		q.Where(asset.ModelID(*asd.ModelID))
 	}
-	all, _ := q.Where(asset.Type(req.AssetType.Value())).Limit(int(*req.Num)).Order(ent.Asc(asset.FieldCreatedAt)).All(ctx)
-	if len(all) < int(*req.Num) {
-		return nil, fmt.Errorf(strconv.FormatUint(*req.MaterialID, 10) + "物资数量不足")
+	if asd.MaterialID != nil {
+		q.Where(asset.MaterialID(*asd.MaterialID))
+	}
+	all, _ := q.Where(asset.Type(asd.AssetType.Value())).Limit(int(*asd.Num)).Order(ent.Asc(asset.FieldCreatedAt)).All(ctx)
+	if len(all) < int(*asd.Num) {
+		return nil, fmt.Errorf(strconv.FormatUint(*asd.MaterialID, 10) + "物资数量不足")
 	}
 	for _, vl := range all {
 		ids = append(ids, vl.ID)

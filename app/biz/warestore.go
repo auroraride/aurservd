@@ -126,7 +126,7 @@ func (b *warestoreBiz) CheckDuty(assetSignInfo definition.AssetSignInfo, req *de
 	case assetSignInfo.AssetManager != nil:
 		// 检查是否可上班
 		var wh *ent.Warehouse
-		wh, err = b.checkWarehouseDuty(req.Sn, req.Lat, req.Lng)
+		wh, err = b.checkWarehouseDuty(assetSignInfo.AssetManager.ID, req.Sn, req.Lat, req.Lng)
 		if err != nil {
 			return
 		}
@@ -135,7 +135,7 @@ func (b *warestoreBiz) CheckDuty(assetSignInfo definition.AssetSignInfo, req *de
 	case assetSignInfo.Employee != nil:
 		// 检查是否可上班
 		var st *ent.Store
-		st, err = b.checkStoreDuty(req.Sn, req.Lat, req.Lng)
+		st, err = b.checkStoreDuty(assetSignInfo.Employee.ID, req.Sn, req.Lat, req.Lng)
 		if err != nil {
 			return
 		}
@@ -150,7 +150,7 @@ func (b *warestoreBiz) Duty(assetSignInfo definition.AssetSignInfo, req *definit
 	case assetSignInfo.AssetManager != nil:
 		// 检查是否可上班
 		var wh *ent.Warehouse
-		wh, err = b.checkWarehouseDuty(req.Sn, req.Lat, req.Lng)
+		wh, err = b.checkWarehouseDuty(assetSignInfo.AssetManager.ID, req.Sn, req.Lat, req.Lng)
 		if err != nil {
 			return
 		}
@@ -165,7 +165,7 @@ func (b *warestoreBiz) Duty(assetSignInfo definition.AssetSignInfo, req *definit
 	case assetSignInfo.Employee != nil:
 		// 检查是否可上班
 		var st *ent.Store
-		st, err = b.checkStoreDuty(req.Sn, req.Lat, req.Lng)
+		st, err = b.checkStoreDuty(assetSignInfo.Employee.ID, req.Sn, req.Lat, req.Lng)
 		if err != nil {
 			return
 		}
@@ -180,7 +180,7 @@ func (b *warestoreBiz) Duty(assetSignInfo definition.AssetSignInfo, req *definit
 }
 
 // checkWarehouseDuty 检查仓库上班信息
-func (b *warestoreBiz) checkWarehouseDuty(sn string, lat, lng float64) (wh *ent.Warehouse, err error) {
+func (b *warestoreBiz) checkWarehouseDuty(amId uint64, sn string, lat, lng float64) (wh *ent.Warehouse, err error) {
 	wh = NewWarehouse().QuerySn(sn)
 	// 判断距离
 	if wh == nil || wh.Lat == 0 || wh.Lng == 0 {
@@ -188,6 +188,15 @@ func (b *warestoreBiz) checkWarehouseDuty(sn string, lat, lng float64) (wh *ent.
 	}
 	if wh.AssetManagerID != nil {
 		return wh, errors.New("当前已有员工上班")
+	}
+
+	// 检查当前账号与目标是否绑定关系
+	if ewh, _ := ent.Database.Warehouse.QueryNotDeleted().
+		Where(
+			warehouse.ID(wh.ID),
+			warehouse.HasAssetManagersWith(assetmanager.ID(amId)),
+		).First(b.ctx); ewh == nil {
+		return wh, errors.New("当前用户未拥有该仓库权限")
 	}
 
 	distance := haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(wh.Lat, wh.Lng))
@@ -199,9 +208,13 @@ func (b *warestoreBiz) checkWarehouseDuty(sn string, lat, lng float64) (wh *ent.
 }
 
 // checkStoreDuty 检查门店上班信息
-func (b *warestoreBiz) checkStoreDuty(sn string, lat, lng float64) (st *ent.Store, err error) {
+func (b *warestoreBiz) checkStoreDuty(epId uint64, sn string, lat, lng float64) (st *ent.Store, err error) {
 	st = service.NewStore().QuerySn(sn)
+	if st == nil {
+		return st, errors.New("当前门店未找到")
+	}
 	bc := service.NewBranch().Query(st.BranchID)
+
 	if st.EmployeeID != nil {
 		return st, errors.New("当前已有员工上班")
 	}
@@ -209,6 +222,15 @@ func (b *warestoreBiz) checkStoreDuty(sn string, lat, lng float64) (st *ent.Stor
 	if bc == nil || bc.Lat == 0 || bc.Lng == 0 {
 		return st, errors.New("未找到门店地理信息")
 	}
+	// 检查当前账号与目标是否绑定关系
+	if est, _ := ent.Database.Store.QueryNotDeleted().
+		Where(
+			store.ID(st.ID),
+			store.HasEmployeesWith(employee.ID(epId)),
+		).First(b.ctx); est == nil {
+		return st, errors.New("当前用户未拥有该门店权限")
+	}
+
 	distance := haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(bc.Lat, bc.Lng))
 	meters := distance.Kilometers() * 1000
 	if meters > 1000 {
