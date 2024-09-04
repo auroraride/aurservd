@@ -155,6 +155,11 @@ func (b *warestoreBiz) Duty(assetSignInfo definition.AssetSignInfo, req *definit
 			return
 		}
 		// 上班更新
+		err = ent.Database.Warehouse.Update().ClearAssetManagerID().Where(warehouse.AssetManagerID(assetSignInfo.AssetManager.ID)).Exec(b.ctx)
+		if err != nil {
+			return err
+		}
+
 		return wh.Update().SetAssetManagerID(assetSignInfo.AssetManager.ID).Exec(b.ctx)
 
 	case assetSignInfo.Employee != nil:
@@ -165,6 +170,10 @@ func (b *warestoreBiz) Duty(assetSignInfo definition.AssetSignInfo, req *definit
 			return
 		}
 		// 上班更新
+		err = ent.Database.Store.Update().ClearEmployeeID().Where(store.EmployeeID(assetSignInfo.Employee.ID)).Exec(b.ctx)
+		if err != nil {
+			return err
+		}
 		return st.Update().SetEmployeeID(assetSignInfo.Employee.ID).Exec(b.ctx)
 	}
 	return
