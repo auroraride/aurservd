@@ -215,8 +215,8 @@ type AssetTransferFlowReq struct {
 
 // AssetTransferFlow 资产流转明细
 type AssetTransferFlow struct {
-	Out AssetTransferFlowDetail `json:"out"` // 出库
-	In  AssetTransferFlowDetail `json:"in"`  // 入库
+	Out *AssetTransferFlowDetail `json:"out"` // 出库
+	In  *AssetTransferFlowDetail `json:"in"`  // 入库
 }
 
 // AssetTransferFlowDetail 资产流转明细详情

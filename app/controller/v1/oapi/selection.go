@@ -87,3 +87,18 @@ func (*selection) CityStation(c echo.Context) (err error) {
 	ctx := app.ContextX[app.MaintainerContext](c)
 	return ctx.SendResponse(biz.NewSelection().CityStationList())
 }
+
+// Material
+// @ID		SelectionMaterialSelect
+// @Router	/maintainer/v1/selection/material [GET]
+// @Summary	物资类型筛选
+// @Tags	Selection - 筛选
+// @Accept	json
+// @Produce	json
+// @Param	X-Maintainer-Token	header		string					true	"仓管校验token"
+// @Param	query				query		model.SelectMaterialReq	true	"查询参数"
+// @Success	200					{object}	[]model.SelectOption	"请求成功"
+func (*selection) Material(c echo.Context) (err error) {
+	ctx, req := app.MaintainerContextAndBinding[model.SelectMaterialReq](c)
+	return ctx.SendResponse(biz.NewSelection().MaterialSelect(req))
+}

@@ -37,7 +37,8 @@ type AssetScrapReq struct {
 	ScrapReasonType ScrapReasonType     `json:"scrapReasonType" validate:"required"`       // 报废原因
 	Remark          *string             `json:"remark"`                                    // 备注
 	Details         []AssetScrapDetails `json:"details" validate:"required,dive,required"` // 报废明细
-	WarehouseID     *uint64             `json:"warehouseId"`                               // 仓库ID
+	LocationType    *AssetLocationsType `json:"fromLocationType"`                          // 位置类型  1:仓库 2:门店 3:站点 4:运维
+	LocationID      *uint64             `json:"fromLocationID"`                            // 位置ID
 }
 
 type AssetScrapDetails struct {

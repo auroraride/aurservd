@@ -296,6 +296,28 @@ definitions:
         description: 名称
         type: string
     type: object
+  definition.WarestoreCheckDutyRes:
+    properties:
+      name:
+        description: 上班位置名称
+        type: string
+    type: object
+  definition.WarestoreDutyReq:
+    properties:
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      sn:
+        description: 上班位置编号
+        type: string
+    required:
+    - lat
+    - lng
+    - sn
+    type: object
   definition.WarestoreMaterial:
     properties:
       id:
@@ -638,6 +660,48 @@ definitions:
     - AssetLocationsTypeOperation
     - AssetLocationsTypeCabinet
     - AssetLocationsTypeRider
+  model.AssetMaintenanceCreateDetail:
+    properties:
+      materialId:
+        description: 其它物资分类ID
+        type: integer
+      num:
+        description: 数量
+        type: integer
+    required:
+    - materialId
+    - num
+    type: object
+  model.AssetMaintenanceRes:
+    properties:
+      id:
+        description: 维保ID
+        type: integer
+      status:
+        allOf:
+        - $ref: '#/definitions/model.AssetMaintenanceStatus'
+        description: 维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
+    type: object
+  model.AssetMaintenanceStatus:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    type: integer
+    x-enum-comments:
+      AssetMaintenanceStatusCancel: 已取消
+      AssetMaintenanceStatusFail: 维修失败
+      AssetMaintenanceStatusPause: 已暂停
+      AssetMaintenanceStatusSuccess: 已维修
+      AssetMaintenanceStatusUnder: 维修中
+    x-enum-varnames:
+    - AssetMaintenanceStatusUnder
+    - AssetMaintenanceStatusSuccess
+    - AssetMaintenanceStatusFail
+    - AssetMaintenanceStatusCancel
+    - AssetMaintenanceStatusPause
   model.AssetModifyReq:
     properties:
       attribute:
@@ -1172,6 +1236,10 @@ definitions:
       lng:
         description: 经度
         type: number
+      maintenance:
+        allOf:
+        - $ref: '#/definitions/model.AssetMaintenanceRes'
+        description: 电柜维保信息
       models:
         description: 电池型号
         items:
@@ -1247,6 +1315,14 @@ definitions:
     - MaintainerCabinetOperateReboot
   model.MaintainerCabinetOperateReq:
     properties:
+      content:
+        description: 维保内容（取消维护 必填）
+        type: string
+      details:
+        description: 维保使用配件
+        items:
+          $ref: '#/definitions/model.AssetMaintenanceCreateDetail'
+        type: array
       lat:
         description: 纬度
         type: number
@@ -1259,13 +1335,16 @@ definitions:
         description: 操作, 除`maintenance`之外所有操作均需要提前设电柜为维护状态。 open:开仓, open-all:全部开仓（暂时不做）,
           maintenance:电柜维护, maintenance-cancel:取消维护, interrupt:中断业务, reboot:重启（暂时不做）
       reason:
-        description: 操作原因
+        description: 操作原因（中断业务、维保失败 必填）
         type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/model.AssetMaintenanceStatus'
+        description: 维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
     required:
     - lat
     - lng
     - operate
-    - reason
     type: object
   model.Pagination:
     properties:
@@ -1648,9 +1727,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.MaintainerCabinetDetailRes'
-      summary: O2002 获取电柜详情
+      summary: 获取电柜详情
       tags:
-        - '[O]运维接口'
+      - Cabinet - 电柜
     post:
       consumes:
       - application/json
@@ -1679,9 +1758,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: O2003 电柜操作
+      summary: 电柜操作
       tags:
-        - '[O]运维接口'
+      - Cabinet - 电柜
   /warestore/v2/cabinet/{serial}/{ordinal}:
     post:
       consumes:
@@ -1716,9 +1795,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: O2004 仓位操作
+      summary: 仓位操作
       tags:
-        - '[O]运维接口'
+      - Cabinet - 电柜
   /warestore/v2/check:
     get:
       consumes:
@@ -1935,6 +2014,60 @@ paths:
       summary: 通过SN查询资产
       tags:
       - AssetCheck - 资产盘点
+  /warestore/v2/duty:
+    post:
+      consumes:
+      - application/json
+      operationId: WarestoreOnDuty
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      - description: 登录请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.WarestoreDutyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 上班
+      tags:
+      - Warestore - 仓管接口
+  /warestore/v2/duty/check:
+    post:
+      consumes:
+      - application/json
+      operationId: WarestoreCheckDuty
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Warestore-Token
+        required: true
+        type: string
+      - description: 登录请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.WarestoreDutyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.WarestoreCheckDutyRes'
+      summary: 上班范围检查
+      tags:
+      - Warestore - 仓管接口
   /warestore/v2/selection/city_station:
     get:
       consumes:

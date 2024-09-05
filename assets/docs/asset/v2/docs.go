@@ -6004,6 +6004,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "cityId",
+                "lat",
+                "lng",
                 "name"
             ],
             "properties": {
@@ -6015,6 +6017,14 @@ const docTemplate = `{
                 "cityId": {
                     "description": "城市ID, 城市ID",
                     "type": "integer"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
                 },
                 "name": {
                     "description": "仓库名称, 商品名称",
@@ -6070,6 +6080,10 @@ const docTemplate = `{
                 "qrcode": {
                     "description": "仓库二维码",
                     "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
                 }
             }
         },
@@ -6077,6 +6091,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "cityId",
+                "lat",
+                "lng",
                 "name"
             ],
             "properties": {
@@ -6088,6 +6104,14 @@ const docTemplate = `{
                 "cityId": {
                     "description": "城市ID, 城市ID",
                     "type": "integer"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
                 },
                 "name": {
                     "description": "仓库名称, 商品名称",
@@ -7082,6 +7106,18 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.AssetScrapDetails"
                     }
                 },
+                "fromLocationID": {
+                    "description": "位置ID",
+                    "type": "integer"
+                },
+                "fromLocationType": {
+                    "description": "位置类型  1:仓库 2:门店 3:站点 4:运维",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
+                },
                 "remark": {
                     "description": "备注",
                     "type": "string"
@@ -7093,10 +7129,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.ScrapReasonType"
                         }
                     ]
-                },
-                "warehouseId": {
-                    "description": "仓库ID",
-                    "type": "integer"
                 }
             }
         },

@@ -16,6 +16,49 @@ definitions:
     - CabinetBrandYundong
     - CabinetBrandTuobang
     - CabinetBrandXiliulouServer
+  definition.AssetCountDetail:
+    properties:
+      deliverCount:
+        description: 配送数量
+        type: integer
+      faultCount:
+        description: 故障数量
+        type: integer
+      stockCount:
+        description: 库存中数量
+        type: integer
+      totalCount:
+        description: 合计数量
+        type: integer
+    type: object
+  definition.AssetCountRes:
+    properties:
+      deliveringCount:
+        description: 配送中数量
+        type: integer
+      ebikeAsset:
+        allOf:
+        - $ref: '#/definitions/definition.AssetCountDetail'
+        description: 电车资产统计
+      exceptionCount:
+        description: 异常告警数量
+        type: integer
+      nonSmartBatteryAsset:
+        allOf:
+        - $ref: '#/definitions/definition.AssetCountDetail'
+        description: 非智能电池资产统计
+      otherAsset:
+        allOf:
+        - $ref: '#/definitions/definition.AssetCountDetail'
+        description: 其他资产统计
+      receivingCount:
+        description: 待接收数量
+        type: integer
+      smartBatteryAsset:
+        allOf:
+        - $ref: '#/definitions/definition.AssetCountDetail'
+        description: 智能电池资产统计
+    type: object
   definition.AssetTransferCreateReq:
     properties:
       details:
@@ -1358,6 +1401,27 @@ paths:
       summary: 资产电池数据
       tags:
       - Assets - 资产管理
+  /maintainer/v1/assets/count:
+    get:
+      consumes:
+      - application/json
+      operationId: MaintainerAssetCount
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Maintainer-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.AssetCountRes'
+      summary: 资产统计
+      tags:
+      - Assets - 资产管理
   /maintainer/v1/cabinet/{serial}:
     get:
       consumes:
@@ -1614,6 +1678,54 @@ paths:
               $ref: '#/definitions/model.SelectOption'
             type: array
       summary: 运维人员
+      tags:
+      - Selection - 筛选
+  /maintainer/v1/selection/material:
+    get:
+      consumes:
+      - application/json
+      operationId: SelectionMaterialSelect
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Maintainer-Token
+        required: true
+        type: string
+      - description: 4:电柜配件 5:电车配件 6:其他
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: type
+        type: integer
+        x-enum-comments:
+          AssetTypeCabinetAccessory: 电柜配件
+          AssetTypeEbike: 电车
+          AssetTypeEbikeAccessory: 电车配件
+          AssetTypeNonSmartBattery: 非智能电池
+          AssetTypeOtherAccessory: 其它配件
+          AssetTypeSmartBattery: 智能电池
+        x-enum-varnames:
+        - AssetTypeEbike
+        - AssetTypeSmartBattery
+        - AssetTypeNonSmartBattery
+        - AssetTypeCabinetAccessory
+        - AssetTypeEbikeAccessory
+        - AssetTypeOtherAccessory
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: 物资类型筛选
       tags:
       - Selection - 筛选
   /maintainer/v1/selection/model:

@@ -228,6 +228,7 @@ func LoadManagerV1Routes(root *echo.Group) {
 	g.GET("/selection/battery/serial", mapi.Selection.BatterySerial)
 	g.GET("/selection/commission/plan", mapi.Selection.CommissionPlan)
 	g.GET("/selection/question/category", mapi.Selection.QuestionCategory)
+	g.GET("/selection/store_group", mapi.Selection.StoreGroup)
 
 	// 救援
 	g.GET("/assistance", mapi.Assistance.List)
@@ -382,5 +383,10 @@ func LoadManagerV1Routes(root *echo.Group) {
 	contractTemplate.GET("", mapi.ContractTemplate.List) // 列表
 	contractTemplate.POST("", mapi.ContractTemplate.Create)
 	contractTemplate.PUT("/:id", mapi.ContractTemplate.Modify)
+
+	// 门店集合
+	g.GET("/store_group", mapi.StoreGroup.List)          // 门店集合列表
+	g.POST("/store_group", mapi.StoreGroup.Create)       // 创建门店集合
+	g.DELETE("/store_group/:id", mapi.StoreGroup.Delete) // 删除门店集合
 
 }

@@ -756,6 +756,23 @@ definitions:
     - name
     - sort
     type: object
+  definition.StoreGroupCreateRep:
+    properties:
+      name:
+        description: 门店集合名称
+        type: string
+    required:
+    - name
+    type: object
+  definition.StoreGroupListRes:
+    properties:
+      id:
+        description: 门店集合id
+        type: integer
+      name:
+        description: 门店集合名称
+        type: string
+    type: object
   definition.Version:
     properties:
       appPlatform:
@@ -6347,6 +6364,9 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
+      groupID:
+        description: 门店集合ID
+        type: integer
       headPic:
         description: 门店头图, 门店头图
         type: string
@@ -6387,6 +6407,15 @@ definitions:
     - photos
     - status
     type: object
+  model.StoreGroup:
+    properties:
+      id:
+        description: 集合id
+        type: integer
+      name:
+        description: 集合名称
+        type: string
+    type: object
   model.StoreItem:
     properties:
       branch:
@@ -6414,6 +6443,10 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Employee'
         description: 店员, 有可能不存在
+      group:
+        allOf:
+        - $ref: '#/definitions/model.StoreGroup'
+        description: 门店集合
       headPic:
         description: 门店头图
         type: string
@@ -6458,6 +6491,9 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
+      groupID:
+        description: 门店集合ID
+        type: integer
       headPic:
         description: 门店头图
         type: string
@@ -15474,6 +15510,29 @@ paths:
       summary: 筛选门店
       tags:
       - 筛选
+  /manager/v1/selection/store_group:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionStoreGroup
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: 筛选门店集合
+      tags:
+      - 筛选
   /manager/v1/selection/wxemployee:
     get:
       consumes:
@@ -16415,6 +16474,81 @@ paths:
       summary: 修改门店
       tags:
       - 门店
+  /manager/v1/store_group:
+    get:
+      consumes:
+      - application/json
+      operationId: StoreGroupList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.StoreGroupListRes'
+            type: array
+      summary: 门店集合列表
+      tags:
+      - StoreGroup - 门店集合
+    post:
+      consumes:
+      - application/json
+      operationId: StoreGroupCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 创建参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.StoreGroupCreateRep'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 门店集合创建
+      tags:
+      - StoreGroup - 门店集合
+  /manager/v1/store_group/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: StoreGroupDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 资产ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 门店集合删除
+      tags:
+      - StoreGroup - 门店集合
   /manager/v1/subscribe/active:
     post:
       consumes:

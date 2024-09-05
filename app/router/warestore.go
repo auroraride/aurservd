@@ -20,7 +20,8 @@ func loadWarestoreRoutes() {
 	auth := g.Group("", middleware.Warestore(), middleware.WarestoreAuth())
 
 	// 上班
-	auth.POST("/duty", wapi.Warestore.Duty) // 上班
+	auth.POST("/duty/check", wapi.Warestore.CheckDuty) // 检查上班范围
+	auth.POST("/duty", wapi.Warestore.OnDuty)          // 上班
 
 	// 筛选项
 	auth.GET("/selection/warehouse", wapi.Selection.Warehouse)                // 城市仓库

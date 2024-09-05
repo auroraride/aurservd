@@ -120,34 +120,67 @@ func (b *warestoreBiz) Signin(req *definition.WarestorePeopleSigninReq) (res *de
 	return b.signin(am, ep, req.PlatType)
 }
 
+// CheckDuty 库管端检查上班范围
+func (b *warestoreBiz) CheckDuty(assetSignInfo definition.AssetSignInfo, req *definition.WarestoreDutyReq) (res *definition.WarestoreCheckDutyRes, err error) {
+	switch {
+	case assetSignInfo.AssetManager != nil:
+		// 检查是否可上班
+		var wh *ent.Warehouse
+		wh, err = b.checkWarehouseDuty(assetSignInfo.AssetManager.ID, req.Sn, req.Lat, req.Lng)
+		if err != nil {
+			return
+		}
+		return &definition.WarestoreCheckDutyRes{Name: wh.Name}, nil
+
+	case assetSignInfo.Employee != nil:
+		// 检查是否可上班
+		var st *ent.Store
+		st, err = b.checkStoreDuty(assetSignInfo.Employee.ID, req.Sn, req.Lat, req.Lng)
+		if err != nil {
+			return
+		}
+		return &definition.WarestoreCheckDutyRes{Name: st.Name}, nil
+	}
+	return
+}
+
 // Duty 库管端上班
 func (b *warestoreBiz) Duty(assetSignInfo definition.AssetSignInfo, req *definition.WarestoreDutyReq) (err error) {
 	switch {
 	case assetSignInfo.AssetManager != nil:
 		// 检查是否可上班
 		var wh *ent.Warehouse
-		wh, err = b.checkWarehouseDuty(req.Sn, req.Lat, req.Lng)
+		wh, err = b.checkWarehouseDuty(assetSignInfo.AssetManager.ID, req.Sn, req.Lat, req.Lng)
 		if err != nil {
 			return
 		}
 		// 上班更新
+		err = ent.Database.Warehouse.Update().ClearAssetManagerID().Where(warehouse.AssetManagerID(assetSignInfo.AssetManager.ID)).Exec(b.ctx)
+		if err != nil {
+			return err
+		}
+
 		return wh.Update().SetAssetManagerID(assetSignInfo.AssetManager.ID).Exec(b.ctx)
 
 	case assetSignInfo.Employee != nil:
 		// 检查是否可上班
 		var st *ent.Store
-		st, err = b.checkStoreDuty(req.Sn, req.Lat, req.Lng)
+		st, err = b.checkStoreDuty(assetSignInfo.Employee.ID, req.Sn, req.Lat, req.Lng)
 		if err != nil {
 			return
 		}
 		// 上班更新
+		err = ent.Database.Store.Update().ClearEmployeeID().Where(store.EmployeeID(assetSignInfo.Employee.ID)).Exec(b.ctx)
+		if err != nil {
+			return err
+		}
 		return st.Update().SetEmployeeID(assetSignInfo.Employee.ID).Exec(b.ctx)
 	}
 	return
 }
 
 // checkWarehouseDuty 检查仓库上班信息
-func (b *warestoreBiz) checkWarehouseDuty(sn string, lat, lng float64) (wh *ent.Warehouse, err error) {
+func (b *warestoreBiz) checkWarehouseDuty(amId uint64, sn string, lat, lng float64) (wh *ent.Warehouse, err error) {
 	wh = NewWarehouse().QuerySn(sn)
 	// 判断距离
 	if wh == nil || wh.Lat == 0 || wh.Lng == 0 {
@@ -155,6 +188,15 @@ func (b *warestoreBiz) checkWarehouseDuty(sn string, lat, lng float64) (wh *ent.
 	}
 	if wh.AssetManagerID != nil {
 		return wh, errors.New("当前已有员工上班")
+	}
+
+	// 检查当前账号与目标是否绑定关系
+	if ewh, _ := ent.Database.Warehouse.QueryNotDeleted().
+		Where(
+			warehouse.ID(wh.ID),
+			warehouse.HasAssetManagersWith(assetmanager.ID(amId)),
+		).First(b.ctx); ewh == nil {
+		return wh, errors.New("当前用户未拥有该仓库权限")
 	}
 
 	distance := haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(wh.Lat, wh.Lng))
@@ -166,9 +208,13 @@ func (b *warestoreBiz) checkWarehouseDuty(sn string, lat, lng float64) (wh *ent.
 }
 
 // checkStoreDuty 检查门店上班信息
-func (b *warestoreBiz) checkStoreDuty(sn string, lat, lng float64) (st *ent.Store, err error) {
+func (b *warestoreBiz) checkStoreDuty(epId uint64, sn string, lat, lng float64) (st *ent.Store, err error) {
 	st = service.NewStore().QuerySn(sn)
+	if st == nil {
+		return st, errors.New("当前门店未找到")
+	}
 	bc := service.NewBranch().Query(st.BranchID)
+
 	if st.EmployeeID != nil {
 		return st, errors.New("当前已有员工上班")
 	}
@@ -176,6 +222,15 @@ func (b *warestoreBiz) checkStoreDuty(sn string, lat, lng float64) (st *ent.Stor
 	if bc == nil || bc.Lat == 0 || bc.Lng == 0 {
 		return st, errors.New("未找到门店地理信息")
 	}
+	// 检查当前账号与目标是否绑定关系
+	if est, _ := ent.Database.Store.QueryNotDeleted().
+		Where(
+			store.ID(st.ID),
+			store.HasEmployeesWith(employee.ID(epId)),
+		).First(b.ctx); est == nil {
+		return st, errors.New("当前用户未拥有该门店权限")
+	}
+
 	distance := haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(bc.Lat, bc.Lng))
 	meters := distance.Kilometers() * 1000
 	if meters > 1000 {
@@ -241,6 +296,9 @@ func (b *warestoreBiz) AssetCount(assetSignInfo definition.AssetSignInfo) (res d
 	case assetSignInfo.Employee != nil:
 		// 确认为门店管理员
 		return b.assetCountForStore(assetSignInfo.Employee.ID)
+	case assetSignInfo.Maintainer != nil:
+		// 确认为运维人员
+		return b.assetCountForMaintainer(assetSignInfo.Maintainer.ID)
 	}
 	return
 }
@@ -354,7 +412,7 @@ func (b *warestoreBiz) assetCountForStore(id uint64) (res definition.AssetCountR
 	// 配送中
 	dList, _ := ent.Database.AssetTransfer.QueryNotDeleted().Where(
 		assettransfer.FromLocationType(model.AssetLocationsTypeStore.Value()),
-		assettransfer.HasToLocationStoreWith(store.HasEmployeesWith(employee.ID(id))),
+		assettransfer.HasFromLocationStoreWith(store.HasEmployeesWith(employee.ID(id))),
 		assettransfer.Status(model.AssetTransferStatusDelivering.Value()),
 	).All(b.ctx)
 
@@ -368,6 +426,85 @@ func (b *warestoreBiz) assetCountForStore(id uint64) (res definition.AssetCountR
 		asset.StatusIn(model.AssetStatusStock.Value(), model.AssetStatusFault.Value()),
 		asset.LocationsType(model.AssetLocationsTypeStore.Value()),
 		asset.HasStoreWith(store.HasEmployeesWith(employee.ID(id))),
+	).All(b.ctx)
+	for _, v := range aList {
+		switch v.Type {
+		case model.AssetTypeEbikeAccessory.Value():
+			switch v.Status {
+			case model.AssetStatusStock.Value():
+				res.EbikeAsset.StockCount += 1
+			case model.AssetStatusFault.Value():
+				res.EbikeAsset.FaultCount += 1
+			}
+		case model.AssetTypeSmartBattery.Value():
+			switch v.Status {
+			case model.AssetStatusStock.Value():
+				res.SmartBatteryAsset.StockCount += 1
+			case model.AssetStatusFault.Value():
+				res.SmartBatteryAsset.FaultCount += 1
+			}
+		case model.AssetTypeNonSmartBattery.Value():
+			switch v.Status {
+			case model.AssetStatusStock.Value():
+				res.NonSmartBatteryAsset.StockCount += 1
+			case model.AssetStatusFault.Value():
+				res.NonSmartBatteryAsset.FaultCount += 1
+			}
+		}
+	}
+
+	// 各个类别合计
+	res.EbikeAsset.TotalCount = res.EbikeAsset.StockCount + res.EbikeAsset.DeliverCount + res.EbikeAsset.FaultCount
+	res.SmartBatteryAsset.TotalCount = res.SmartBatteryAsset.StockCount + res.SmartBatteryAsset.DeliverCount + res.SmartBatteryAsset.FaultCount
+	res.NonSmartBatteryAsset.TotalCount = res.NonSmartBatteryAsset.StockCount + res.NonSmartBatteryAsset.DeliverCount + res.NonSmartBatteryAsset.FaultCount
+
+	return
+}
+
+// assetCountForWarehouse 仓管资产统计
+func (b *warestoreBiz) assetCountForMaintainer(id uint64) (res definition.AssetCountRes) {
+	// 待接收
+	rList, _ := ent.Database.AssetTransfer.QueryNotDeleted().
+		WithTransferDetails(func(query *ent.AssetTransferDetailsQuery) { query.WithAsset() }).
+		Where(
+			assettransfer.ToLocationType(model.AssetLocationsTypeOperation.Value()),
+			assettransfer.HasToLocationOperatorWith(maintainer.ID(id)),
+			assettransfer.Status(model.AssetTransferStatusDelivering.Value()),
+		).All(b.ctx)
+
+	for _, v := range rList {
+		res.ReceivingCount += 1
+		for _, td := range v.Edges.TransferDetails {
+			if td.Edges.Asset != nil {
+				switch td.Edges.Asset.Type {
+				case model.AssetTypeEbikeAccessory.Value():
+					res.EbikeAsset.DeliverCount += 1
+				case model.AssetTypeSmartBattery.Value():
+					res.SmartBatteryAsset.DeliverCount += 1
+				case model.AssetTypeNonSmartBattery.Value():
+					res.NonSmartBatteryAsset.DeliverCount += 1
+				}
+			}
+		}
+	}
+
+	// 配送中
+	dList, _ := ent.Database.AssetTransfer.QueryNotDeleted().Where(
+		assettransfer.FromLocationType(model.AssetLocationsTypeOperation.Value()),
+		assettransfer.HasFromLocationOperatorWith(maintainer.ID(id)),
+		assettransfer.Status(model.AssetTransferStatusDelivering.Value()),
+	).All(b.ctx)
+
+	res.DeliveringCount = len(dList)
+
+	// 异常告警 暂时不做
+
+	// 从资产数据中查询当前账号所属仓库/门店各个类别统计数据
+
+	aList, _ := ent.Database.Asset.QueryNotDeleted().Where(
+		asset.StatusIn(model.AssetStatusStock.Value(), model.AssetStatusFault.Value()),
+		asset.LocationsType(model.AssetLocationsTypeOperation.Value()),
+		asset.LocationsID(id),
 	).All(b.ctx)
 	for _, v := range aList {
 		switch v.Type {

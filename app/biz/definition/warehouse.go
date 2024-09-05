@@ -19,14 +19,17 @@ type WarehouseDetail struct {
 	QRCode   string     `json:"qrcode"`   // 仓库二维码
 	CityID   uint64     `json:"cityId"`   // 城市ID
 	CityName string     `json:"cityName"` // 城市名称
+	Remark   string     `json:"remark"`   // 备注
 }
 
 // WarehouseCreateReq 创建
 type WarehouseCreateReq struct {
-	Name    string `json:"name" validate:"required,max=30" trans:"仓库名称"` // 商品名称
-	CityID  uint64 `json:"cityId" validate:"required" trans:"城市ID"`      // 城市ID
-	Address string `json:"address" validate:"max=50"`                    // 详细地址
-	Remark  string `json:"remark" validate:"max=50"`                     // 备注
+	Name    string  `json:"name" validate:"required,max=30" trans:"仓库名称"` // 商品名称
+	CityID  uint64  `json:"cityId" validate:"required" trans:"城市ID"`      // 城市ID
+	Address string  `json:"address" validate:"max=50"`                    // 详细地址
+	Remark  string  `json:"remark" validate:"max=50"`                     // 备注
+	Lat     float64 `json:"lat"  validate:"required" trans:"纬度"`
+	Lng     float64 `json:"lng"  validate:"required" trans:"经度"`
 }
 
 // WarehouseModifyReq 修改

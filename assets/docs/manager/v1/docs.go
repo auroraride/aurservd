@@ -11765,6 +11765,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/selection/store_group": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "筛选"
+                ],
+                "summary": "筛选门店集合",
+                "operationId": "ManagerSelectionStoreGroup",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/selection/wxemployee": {
             "get": {
                 "consumes": [
@@ -13169,6 +13204,119 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "门店ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/store_group": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StoreGroup - 门店集合"
+                ],
+                "summary": "门店集合列表",
+                "operationId": "StoreGroupList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.StoreGroupListRes"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StoreGroup - 门店集合"
+                ],
+                "summary": "门店集合创建",
+                "operationId": "StoreGroupCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "创建参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.StoreGroupCreateRep"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/store_group/{id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StoreGroup - 门店集合"
+                ],
+                "summary": "门店集合删除",
+                "operationId": "StoreGroupDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "资产ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -15003,6 +15151,31 @@ const docTemplate = `{
                 "sort": {
                     "description": "排序",
                     "type": "integer"
+                }
+            }
+        },
+        "definition.StoreGroupCreateRep": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "description": "门店集合名称",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.StoreGroupListRes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "门店集合id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "门店集合名称",
+                    "type": "string"
                 }
             }
         },
@@ -22984,6 +23157,10 @@ const docTemplate = `{
                     "description": "是否可以买车",
                     "type": "boolean"
                 },
+                "groupID": {
+                    "description": "门店集合ID",
+                    "type": "integer"
+                },
                 "headPic": {
                     "description": "门店头图, 门店头图",
                     "type": "string"
@@ -23031,6 +23208,19 @@ const docTemplate = `{
                 }
             }
         },
+        "model.StoreGroup": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "集合id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "集合名称",
+                    "type": "string"
+                }
+            }
+        },
         "model.StoreItem": {
             "type": "object",
             "properties": {
@@ -23070,6 +23260,14 @@ const docTemplate = `{
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.Employee"
+                        }
+                    ]
+                },
+                "group": {
+                    "description": "门店集合",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreGroup"
                         }
                     ]
                 },
@@ -23135,6 +23333,10 @@ const docTemplate = `{
                 "ebikeSale": {
                     "description": "是否可以买车",
                     "type": "boolean"
+                },
+                "groupID": {
+                    "description": "门店集合ID",
+                    "type": "integer"
                 },
                 "headPic": {
                     "description": "门店头图",
