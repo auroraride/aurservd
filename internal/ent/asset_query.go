@@ -1642,6 +1642,7 @@ func (aq *AssetQuery) loadAllocates(ctx context.Context, query *AllocateQuery, n
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(allocate.FieldEbikeID)
 	}

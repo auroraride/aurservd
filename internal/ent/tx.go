@@ -84,6 +84,8 @@ type Tx struct {
 	CouponAssembly *CouponAssemblyClient
 	// CouponTemplate is the client for interacting with the CouponTemplate builders.
 	CouponTemplate *CouponTemplateClient
+	// Ebike is the client for interacting with the Ebike builders.
+	Ebike *EbikeClient
 	// EbikeBrand is the client for interacting with the EbikeBrand builders.
 	EbikeBrand *EbikeBrandClient
 	// EbikeBrandAttribute is the client for interacting with the EbikeBrandAttribute builders.
@@ -188,6 +190,8 @@ type Tx struct {
 	Role *RoleClient
 	// Setting is the client for interacting with the Setting builders.
 	Setting *SettingClient
+	// Stock is the client for interacting with the Stock builders.
+	Stock *StockClient
 	// StockSummary is the client for interacting with the StockSummary builders.
 	StockSummary *StockSummaryClient
 	// Store is the client for interacting with the Store builders.
@@ -376,6 +380,7 @@ func (tx *Tx) init() {
 	tx.Coupon = NewCouponClient(tx.config)
 	tx.CouponAssembly = NewCouponAssemblyClient(tx.config)
 	tx.CouponTemplate = NewCouponTemplateClient(tx.config)
+	tx.Ebike = NewEbikeClient(tx.config)
 	tx.EbikeBrand = NewEbikeBrandClient(tx.config)
 	tx.EbikeBrandAttribute = NewEbikeBrandAttributeClient(tx.config)
 	tx.Employee = NewEmployeeClient(tx.config)
@@ -428,6 +433,7 @@ func (tx *Tx) init() {
 	tx.RiderPhoneDevice = NewRiderPhoneDeviceClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.Setting = NewSettingClient(tx.config)
+	tx.Stock = NewStockClient(tx.config)
 	tx.StockSummary = NewStockSummaryClient(tx.config)
 	tx.Store = NewStoreClient(tx.config)
 	tx.StoreGoods = NewStoreGoodsClient(tx.config)

@@ -53,8 +53,8 @@ const (
 	FieldType = "type"
 	// FieldBinInfo holds the string denoting the bin_info field in the database.
 	FieldBinInfo = "bin_info"
-	// FieldAssetTransferSn holds the string denoting the asset_transfer_sn field in the database.
-	FieldAssetTransferSn = "asset_transfer_sn"
+	// FieldStockSn holds the string denoting the stock_sn field in the database.
+	FieldStockSn = "stock_sn"
 	// FieldRtoEbikeID holds the string denoting the rto_ebike_id field in the database.
 	FieldRtoEbikeID = "rto_ebike_id"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
@@ -191,7 +191,7 @@ var Columns = []string{
 	FieldAgentID,
 	FieldType,
 	FieldBinInfo,
-	FieldAssetTransferSn,
+	FieldStockSn,
 	FieldRtoEbikeID,
 }
 
@@ -308,9 +308,9 @@ func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
 }
 
-// ByAssetTransferSn orders the results by the asset_transfer_sn field.
-func ByAssetTransferSn(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldAssetTransferSn, opts...).ToFunc()
+// ByStockSn orders the results by the stock_sn field.
+func ByStockSn(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStockSn, opts...).ToFunc()
 }
 
 // ByRtoEbikeID orders the results by the rto_ebike_id field.

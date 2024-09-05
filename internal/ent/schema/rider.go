@@ -92,6 +92,7 @@ func (Rider) Edges() []ent.Edge {
 		edge.To("subscribes", Subscribe.Type).Comment("订阅"),
 
 		edge.To("asset", Asset.Type),
+		edge.To("stocks", Stock.Type),
 		edge.To("followups", RiderFollowUp.Type),
 
 		edge.To("battery", Battery.Type).Unique(),

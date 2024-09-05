@@ -63,9 +63,11 @@ type EnterpriseStationEdges struct {
 	Batteries []*Battery `json:"batteries,omitempty"`
 	// Asset holds the value of the asset edge.
 	Asset []*Asset `json:"asset,omitempty"`
+	// Stocks holds the value of the stocks edge.
+	Stocks []*Stock `json:"stocks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [9]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -142,6 +144,15 @@ func (e EnterpriseStationEdges) AssetOrErr() ([]*Asset, error) {
 		return e.Asset, nil
 	}
 	return nil, &NotLoadedError{edge: "asset"}
+}
+
+// StocksOrErr returns the Stocks value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseStationEdges) StocksOrErr() ([]*Stock, error) {
+	if e.loadedTypes[8] {
+		return e.Stocks, nil
+	}
+	return nil, &NotLoadedError{edge: "stocks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -289,6 +300,11 @@ func (es *EnterpriseStation) QueryBatteries() *BatteryQuery {
 // QueryAsset queries the "asset" edge of the EnterpriseStation entity.
 func (es *EnterpriseStation) QueryAsset() *AssetQuery {
 	return NewEnterpriseStationClient(es.config).QueryAsset(es)
+}
+
+// QueryStocks queries the "stocks" edge of the EnterpriseStation entity.
+func (es *EnterpriseStation) QueryStocks() *StockQuery {
+	return NewEnterpriseStationClient(es.config).QueryStocks(es)
 }
 
 // Update returns a builder for updating this EnterpriseStation.

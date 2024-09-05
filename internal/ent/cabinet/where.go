@@ -1673,6 +1673,29 @@ func HasAssetWith(preds ...predicate.Asset) predicate.Cabinet {
 	})
 }
 
+// HasStocks applies the HasEdge predicate on the "stocks" edge.
+func HasStocks() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStocksWith applies the HasEdge predicate on the "stocks" edge with a given conditions (other predicates).
+func HasStocksWith(preds ...predicate.Stock) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		step := newStocksStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasBatteries applies the HasEdge predicate on the "batteries" edge.
 func HasBatteries() predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {

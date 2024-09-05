@@ -95,6 +95,8 @@ type RiderEdges struct {
 	Subscribes []*Subscribe `json:"subscribes,omitempty"`
 	// Asset holds the value of the asset edge.
 	Asset []*Asset `json:"asset,omitempty"`
+	// Stocks holds the value of the stocks edge.
+	Stocks []*Stock `json:"stocks,omitempty"`
 	// Followups holds the value of the followups edge.
 	Followups []*RiderFollowUp `json:"followups,omitempty"`
 	// Battery holds the value of the battery edge.
@@ -103,7 +105,7 @@ type RiderEdges struct {
 	BatteryFlows []*BatteryFlow `json:"battery_flows,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [12]bool
+	loadedTypes [13]bool
 }
 
 // StationOrErr returns the Station value or an error if the edge
@@ -193,10 +195,19 @@ func (e RiderEdges) AssetOrErr() ([]*Asset, error) {
 	return nil, &NotLoadedError{edge: "asset"}
 }
 
+// StocksOrErr returns the Stocks value or an error if the edge
+// was not loaded in eager-loading.
+func (e RiderEdges) StocksOrErr() ([]*Stock, error) {
+	if e.loadedTypes[9] {
+		return e.Stocks, nil
+	}
+	return nil, &NotLoadedError{edge: "stocks"}
+}
+
 // FollowupsOrErr returns the Followups value or an error if the edge
 // was not loaded in eager-loading.
 func (e RiderEdges) FollowupsOrErr() ([]*RiderFollowUp, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[10] {
 		return e.Followups, nil
 	}
 	return nil, &NotLoadedError{edge: "followups"}
@@ -207,7 +218,7 @@ func (e RiderEdges) FollowupsOrErr() ([]*RiderFollowUp, error) {
 func (e RiderEdges) BatteryOrErr() (*Battery, error) {
 	if e.Battery != nil {
 		return e.Battery, nil
-	} else if e.loadedTypes[10] {
+	} else if e.loadedTypes[11] {
 		return nil, &NotFoundError{label: battery.Label}
 	}
 	return nil, &NotLoadedError{edge: "battery"}
@@ -216,7 +227,7 @@ func (e RiderEdges) BatteryOrErr() (*Battery, error) {
 // BatteryFlowsOrErr returns the BatteryFlows value or an error if the edge
 // was not loaded in eager-loading.
 func (e RiderEdges) BatteryFlowsOrErr() ([]*BatteryFlow, error) {
-	if e.loadedTypes[11] {
+	if e.loadedTypes[12] {
 		return e.BatteryFlows, nil
 	}
 	return nil, &NotLoadedError{edge: "battery_flows"}
@@ -468,6 +479,11 @@ func (r *Rider) QuerySubscribes() *SubscribeQuery {
 // QueryAsset queries the "asset" edge of the Rider entity.
 func (r *Rider) QueryAsset() *AssetQuery {
 	return NewRiderClient(r.config).QueryAsset(r)
+}
+
+// QueryStocks queries the "stocks" edge of the Rider entity.
+func (r *Rider) QueryStocks() *StockQuery {
+	return NewRiderClient(r.config).QueryStocks(r)
 }
 
 // QueryFollowups queries the "followups" edge of the Rider entity.

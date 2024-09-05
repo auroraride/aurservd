@@ -81,6 +81,8 @@ const (
 	EdgeGoods = "goods"
 	// EdgeEmployees holds the string denoting the employees edge name in mutations.
 	EdgeEmployees = "employees"
+	// EdgeStocks holds the string denoting the stocks edge name in mutations.
+	EdgeStocks = "stocks"
 	// Table holds the table name of the store in the database.
 	Table = "store"
 	// CityTable is the table that holds the city relation/edge.
@@ -144,6 +146,13 @@ const (
 	// EmployeesInverseTable is the table name for the Employee entity.
 	// It exists in this package in order to avoid circular dependency with the "employee" package.
 	EmployeesInverseTable = "employee"
+	// StocksTable is the table that holds the stocks relation/edge.
+	StocksTable = "stock"
+	// StocksInverseTable is the table name for the Stock entity.
+	// It exists in this package in order to avoid circular dependency with the "stock" package.
+	StocksInverseTable = "stock"
+	// StocksColumn is the table column denoting the stocks relation/edge.
+	StocksColumn = "store_id"
 )
 
 // Columns holds all SQL columns for store fields.
@@ -432,6 +441,20 @@ func ByEmployees(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newEmployeesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByStocksCount orders the results by stocks count.
+func ByStocksCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newStocksStep(), opts...)
+	}
+}
+
+// ByStocks orders the results by stocks terms.
+func ByStocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStocksStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -493,5 +516,12 @@ func newEmployeesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(EmployeesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, EmployeesTable, EmployeesPrimaryKey...),
+	)
+}
+func newStocksStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StocksInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
 	)
 }

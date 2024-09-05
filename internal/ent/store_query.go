@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
 	"github.com/auroraride/aurservd/internal/ent/storegroup"
@@ -39,6 +40,7 @@ type StoreQuery struct {
 	withExceptions  *ExceptionQuery
 	withGoods       *StoreGoodsQuery
 	withEmployees   *EmployeeQuery
+	withStocks      *StockQuery
 	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -274,6 +276,28 @@ func (sq *StoreQuery) QueryEmployees() *EmployeeQuery {
 	return query
 }
 
+// QueryStocks chains the current query on the "stocks" edge.
+func (sq *StoreQuery) QueryStocks() *StockQuery {
+	query := (&StockClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, selector),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, store.StocksTable, store.StocksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Store entity from the query.
 // Returns a *NotFoundError when no Store was found.
 func (sq *StoreQuery) First(ctx context.Context) (*Store, error) {
@@ -475,6 +499,7 @@ func (sq *StoreQuery) Clone() *StoreQuery {
 		withExceptions:  sq.withExceptions.Clone(),
 		withGoods:       sq.withGoods.Clone(),
 		withEmployees:   sq.withEmployees.Clone(),
+		withStocks:      sq.withStocks.Clone(),
 		// clone intermediate query.
 		sql:  sq.sql.Clone(),
 		path: sq.path,
@@ -580,6 +605,17 @@ func (sq *StoreQuery) WithEmployees(opts ...func(*EmployeeQuery)) *StoreQuery {
 	return sq
 }
 
+// WithStocks tells the query-builder to eager-load the nodes that are connected to
+// the "stocks" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StoreQuery) WithStocks(opts ...func(*StockQuery)) *StoreQuery {
+	query := (&StockClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withStocks = query
+	return sq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -658,7 +694,7 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 	var (
 		nodes       = []*Store{}
 		_spec       = sq.querySpec()
-		loadedTypes = [9]bool{
+		loadedTypes = [10]bool{
 			sq.withCity != nil,
 			sq.withGroup != nil,
 			sq.withBranch != nil,
@@ -668,6 +704,7 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 			sq.withExceptions != nil,
 			sq.withGoods != nil,
 			sq.withEmployees != nil,
+			sq.withStocks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -747,6 +784,13 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 		if err := sq.loadEmployees(ctx, query, nodes,
 			func(n *Store) { n.Edges.Employees = []*Employee{} },
 			func(n *Store, e *Employee) { n.Edges.Employees = append(n.Edges.Employees, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withStocks; query != nil {
+		if err := sq.loadStocks(ctx, query, nodes,
+			func(n *Store) { n.Edges.Stocks = []*Stock{} },
+			func(n *Store, e *Stock) { n.Edges.Stocks = append(n.Edges.Stocks, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1057,6 +1101,40 @@ func (sq *StoreQuery) loadEmployees(ctx context.Context, query *EmployeeQuery, n
 	}
 	return nil
 }
+func (sq *StoreQuery) loadStocks(ctx context.Context, query *StockQuery, nodes []*Store, init func(*Store), assign func(*Store, *Stock)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Store)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(stock.FieldStoreID)
+	}
+	query.Where(predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(store.StocksColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.StoreID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "store_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "store_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (sq *StoreQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := sq.querySpec()
@@ -1175,6 +1253,7 @@ var (
 	StoreQueryWithExceptions  StoreQueryWith = "Exceptions"
 	StoreQueryWithGoods       StoreQueryWith = "Goods"
 	StoreQueryWithEmployees   StoreQueryWith = "Employees"
+	StoreQueryWithStocks      StoreQueryWith = "Stocks"
 )
 
 func (sq *StoreQuery) With(withEdges ...StoreQueryWith) *StoreQuery {
@@ -1198,6 +1277,8 @@ func (sq *StoreQuery) With(withEdges ...StoreQueryWith) *StoreQuery {
 			sq.WithGoods()
 		case StoreQueryWithEmployees:
 			sq.WithEmployees()
+		case StoreQueryWithStocks:
+			sq.WithStocks()
 		}
 	}
 	return sq

@@ -136,9 +136,9 @@ func Type(v model.BusinessType) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldType, v))
 }
 
-// AssetTransferSn applies equality check predicate on the "asset_transfer_sn" field. It's identical to AssetTransferSnEQ.
-func AssetTransferSn(v string) predicate.Business {
-	return predicate.Business(sql.FieldEQ(FieldAssetTransferSn, v))
+// StockSn applies equality check predicate on the "stock_sn" field. It's identical to StockSnEQ.
+func StockSn(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldStockSn, v))
 }
 
 // RtoEbikeID applies equality check predicate on the "rto_ebike_id" field. It's identical to RtoEbikeIDEQ.
@@ -721,79 +721,79 @@ func BinInfoNotNil() predicate.Business {
 	return predicate.Business(sql.FieldNotNull(FieldBinInfo))
 }
 
-// AssetTransferSnEQ applies the EQ predicate on the "asset_transfer_sn" field.
-func AssetTransferSnEQ(v string) predicate.Business {
-	return predicate.Business(sql.FieldEQ(FieldAssetTransferSn, v))
+// StockSnEQ applies the EQ predicate on the "stock_sn" field.
+func StockSnEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldStockSn, v))
 }
 
-// AssetTransferSnNEQ applies the NEQ predicate on the "asset_transfer_sn" field.
-func AssetTransferSnNEQ(v string) predicate.Business {
-	return predicate.Business(sql.FieldNEQ(FieldAssetTransferSn, v))
+// StockSnNEQ applies the NEQ predicate on the "stock_sn" field.
+func StockSnNEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldStockSn, v))
 }
 
-// AssetTransferSnIn applies the In predicate on the "asset_transfer_sn" field.
-func AssetTransferSnIn(vs ...string) predicate.Business {
-	return predicate.Business(sql.FieldIn(FieldAssetTransferSn, vs...))
+// StockSnIn applies the In predicate on the "stock_sn" field.
+func StockSnIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldStockSn, vs...))
 }
 
-// AssetTransferSnNotIn applies the NotIn predicate on the "asset_transfer_sn" field.
-func AssetTransferSnNotIn(vs ...string) predicate.Business {
-	return predicate.Business(sql.FieldNotIn(FieldAssetTransferSn, vs...))
+// StockSnNotIn applies the NotIn predicate on the "stock_sn" field.
+func StockSnNotIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldStockSn, vs...))
 }
 
-// AssetTransferSnGT applies the GT predicate on the "asset_transfer_sn" field.
-func AssetTransferSnGT(v string) predicate.Business {
-	return predicate.Business(sql.FieldGT(FieldAssetTransferSn, v))
+// StockSnGT applies the GT predicate on the "stock_sn" field.
+func StockSnGT(v string) predicate.Business {
+	return predicate.Business(sql.FieldGT(FieldStockSn, v))
 }
 
-// AssetTransferSnGTE applies the GTE predicate on the "asset_transfer_sn" field.
-func AssetTransferSnGTE(v string) predicate.Business {
-	return predicate.Business(sql.FieldGTE(FieldAssetTransferSn, v))
+// StockSnGTE applies the GTE predicate on the "stock_sn" field.
+func StockSnGTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldGTE(FieldStockSn, v))
 }
 
-// AssetTransferSnLT applies the LT predicate on the "asset_transfer_sn" field.
-func AssetTransferSnLT(v string) predicate.Business {
-	return predicate.Business(sql.FieldLT(FieldAssetTransferSn, v))
+// StockSnLT applies the LT predicate on the "stock_sn" field.
+func StockSnLT(v string) predicate.Business {
+	return predicate.Business(sql.FieldLT(FieldStockSn, v))
 }
 
-// AssetTransferSnLTE applies the LTE predicate on the "asset_transfer_sn" field.
-func AssetTransferSnLTE(v string) predicate.Business {
-	return predicate.Business(sql.FieldLTE(FieldAssetTransferSn, v))
+// StockSnLTE applies the LTE predicate on the "stock_sn" field.
+func StockSnLTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldLTE(FieldStockSn, v))
 }
 
-// AssetTransferSnContains applies the Contains predicate on the "asset_transfer_sn" field.
-func AssetTransferSnContains(v string) predicate.Business {
-	return predicate.Business(sql.FieldContains(FieldAssetTransferSn, v))
+// StockSnContains applies the Contains predicate on the "stock_sn" field.
+func StockSnContains(v string) predicate.Business {
+	return predicate.Business(sql.FieldContains(FieldStockSn, v))
 }
 
-// AssetTransferSnHasPrefix applies the HasPrefix predicate on the "asset_transfer_sn" field.
-func AssetTransferSnHasPrefix(v string) predicate.Business {
-	return predicate.Business(sql.FieldHasPrefix(FieldAssetTransferSn, v))
+// StockSnHasPrefix applies the HasPrefix predicate on the "stock_sn" field.
+func StockSnHasPrefix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasPrefix(FieldStockSn, v))
 }
 
-// AssetTransferSnHasSuffix applies the HasSuffix predicate on the "asset_transfer_sn" field.
-func AssetTransferSnHasSuffix(v string) predicate.Business {
-	return predicate.Business(sql.FieldHasSuffix(FieldAssetTransferSn, v))
+// StockSnHasSuffix applies the HasSuffix predicate on the "stock_sn" field.
+func StockSnHasSuffix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasSuffix(FieldStockSn, v))
 }
 
-// AssetTransferSnIsNil applies the IsNil predicate on the "asset_transfer_sn" field.
-func AssetTransferSnIsNil() predicate.Business {
-	return predicate.Business(sql.FieldIsNull(FieldAssetTransferSn))
+// StockSnIsNil applies the IsNil predicate on the "stock_sn" field.
+func StockSnIsNil() predicate.Business {
+	return predicate.Business(sql.FieldIsNull(FieldStockSn))
 }
 
-// AssetTransferSnNotNil applies the NotNil predicate on the "asset_transfer_sn" field.
-func AssetTransferSnNotNil() predicate.Business {
-	return predicate.Business(sql.FieldNotNull(FieldAssetTransferSn))
+// StockSnNotNil applies the NotNil predicate on the "stock_sn" field.
+func StockSnNotNil() predicate.Business {
+	return predicate.Business(sql.FieldNotNull(FieldStockSn))
 }
 
-// AssetTransferSnEqualFold applies the EqualFold predicate on the "asset_transfer_sn" field.
-func AssetTransferSnEqualFold(v string) predicate.Business {
-	return predicate.Business(sql.FieldEqualFold(FieldAssetTransferSn, v))
+// StockSnEqualFold applies the EqualFold predicate on the "stock_sn" field.
+func StockSnEqualFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldEqualFold(FieldStockSn, v))
 }
 
-// AssetTransferSnContainsFold applies the ContainsFold predicate on the "asset_transfer_sn" field.
-func AssetTransferSnContainsFold(v string) predicate.Business {
-	return predicate.Business(sql.FieldContainsFold(FieldAssetTransferSn, v))
+// StockSnContainsFold applies the ContainsFold predicate on the "stock_sn" field.
+func StockSnContainsFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldContainsFold(FieldStockSn, v))
 }
 
 // RtoEbikeIDEQ applies the EQ predicate on the "rto_ebike_id" field.

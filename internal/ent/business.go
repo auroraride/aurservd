@@ -70,7 +70,7 @@ type Business struct {
 	// 仓位信息
 	BinInfo *model.BinInfo `json:"bin_info,omitempty"`
 	// 出入库编码
-	AssetTransferSn string `json:"asset_transfer_sn,omitempty"`
+	StockSn string `json:"stock_sn,omitempty"`
 	// 以租代购车辆ID，生成后禁止修改
 	RtoEbikeID *uint64 `json:"rto_ebike_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -253,7 +253,7 @@ func (*Business) scanValues(columns []string) ([]any, error) {
 			values[i] = new(model.BusinessType)
 		case business.FieldID, business.FieldRiderID, business.FieldCityID, business.FieldSubscribeID, business.FieldEmployeeID, business.FieldStoreID, business.FieldPlanID, business.FieldEnterpriseID, business.FieldStationID, business.FieldCabinetID, business.FieldBatteryID, business.FieldAgentID, business.FieldRtoEbikeID:
 			values[i] = new(sql.NullInt64)
-		case business.FieldRemark, business.FieldAssetTransferSn:
+		case business.FieldRemark, business.FieldStockSn:
 			values[i] = new(sql.NullString)
 		case business.FieldCreatedAt, business.FieldUpdatedAt, business.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -407,11 +407,11 @@ func (b *Business) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field bin_info: %w", err)
 				}
 			}
-		case business.FieldAssetTransferSn:
+		case business.FieldStockSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field asset_transfer_sn", values[i])
+				return fmt.Errorf("unexpected type %T for field stock_sn", values[i])
 			} else if value.Valid {
-				b.AssetTransferSn = value.String
+				b.StockSn = value.String
 			}
 		case business.FieldRtoEbikeID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -591,8 +591,8 @@ func (b *Business) String() string {
 	builder.WriteString("bin_info=")
 	builder.WriteString(fmt.Sprintf("%v", b.BinInfo))
 	builder.WriteString(", ")
-	builder.WriteString("asset_transfer_sn=")
-	builder.WriteString(b.AssetTransferSn)
+	builder.WriteString("stock_sn=")
+	builder.WriteString(b.StockSn)
 	builder.WriteString(", ")
 	if v := b.RtoEbikeID; v != nil {
 		builder.WriteString("rto_ebike_id=")

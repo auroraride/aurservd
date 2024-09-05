@@ -91,6 +91,8 @@ const (
 	EdgeCabinets = "cabinets"
 	// EdgeAsset holds the string denoting the asset edge name in mutations.
 	EdgeAsset = "asset"
+	// EdgeStocks holds the string denoting the stocks edge name in mutations.
+	EdgeStocks = "stocks"
 	// EdgeSwapPutinBatteries holds the string denoting the swap_putin_batteries edge name in mutations.
 	EdgeSwapPutinBatteries = "swap_putin_batteries"
 	// EdgeSwapPutoutBatteries holds the string denoting the swap_putout_batteries edge name in mutations.
@@ -181,6 +183,13 @@ const (
 	AssetInverseTable = "asset"
 	// AssetColumn is the table column denoting the asset relation/edge.
 	AssetColumn = "enterprise_asset"
+	// StocksTable is the table that holds the stocks relation/edge.
+	StocksTable = "stock"
+	// StocksInverseTable is the table name for the Stock entity.
+	// It exists in this package in order to avoid circular dependency with the "stock" package.
+	StocksInverseTable = "stock"
+	// StocksColumn is the table column denoting the stocks relation/edge.
+	StocksColumn = "enterprise_id"
 	// SwapPutinBatteriesTable is the table that holds the swap_putin_batteries relation/edge.
 	SwapPutinBatteriesTable = "enterprise_battery_swap"
 	// SwapPutinBatteriesInverseTable is the table name for the EnterpriseBatterySwap entity.
@@ -550,6 +559,20 @@ func ByAsset(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByStocksCount orders the results by stocks count.
+func ByStocksCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newStocksStep(), opts...)
+	}
+}
+
+// ByStocks orders the results by stocks terms.
+func ByStocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStocksStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // BySwapPutinBatteriesCount orders the results by swap_putin_batteries count.
 func BySwapPutinBatteriesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -659,6 +682,13 @@ func newAssetStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AssetInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, AssetTable, AssetColumn),
+	)
+}
+func newStocksStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StocksInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
 	)
 }
 func newSwapPutinBatteriesStep() *sqlgraph.Step {

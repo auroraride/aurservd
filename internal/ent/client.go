@@ -50,6 +50,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrandattribute"
 	"github.com/auroraride/aurservd/internal/ent/employee"
@@ -102,6 +103,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/riderphonedevice"
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/setting"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
@@ -192,6 +194,8 @@ type Client struct {
 	CouponAssembly *CouponAssemblyClient
 	// CouponTemplate is the client for interacting with the CouponTemplate builders.
 	CouponTemplate *CouponTemplateClient
+	// Ebike is the client for interacting with the Ebike builders.
+	Ebike *EbikeClient
 	// EbikeBrand is the client for interacting with the EbikeBrand builders.
 	EbikeBrand *EbikeBrandClient
 	// EbikeBrandAttribute is the client for interacting with the EbikeBrandAttribute builders.
@@ -296,6 +300,8 @@ type Client struct {
 	Role *RoleClient
 	// Setting is the client for interacting with the Setting builders.
 	Setting *SettingClient
+	// Stock is the client for interacting with the Stock builders.
+	Stock *StockClient
 	// StockSummary is the client for interacting with the StockSummary builders.
 	StockSummary *StockSummaryClient
 	// Store is the client for interacting with the Store builders.
@@ -364,6 +370,7 @@ func (c *Client) init() {
 	c.Coupon = NewCouponClient(c.config)
 	c.CouponAssembly = NewCouponAssemblyClient(c.config)
 	c.CouponTemplate = NewCouponTemplateClient(c.config)
+	c.Ebike = NewEbikeClient(c.config)
 	c.EbikeBrand = NewEbikeBrandClient(c.config)
 	c.EbikeBrandAttribute = NewEbikeBrandAttributeClient(c.config)
 	c.Employee = NewEmployeeClient(c.config)
@@ -416,6 +423,7 @@ func (c *Client) init() {
 	c.RiderPhoneDevice = NewRiderPhoneDeviceClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.Setting = NewSettingClient(c.config)
+	c.Stock = NewStockClient(c.config)
 	c.StockSummary = NewStockSummaryClient(c.config)
 	c.Store = NewStoreClient(c.config)
 	c.StoreGoods = NewStoreGoodsClient(c.config)
@@ -554,6 +562,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Coupon:                     NewCouponClient(cfg),
 		CouponAssembly:             NewCouponAssemblyClient(cfg),
 		CouponTemplate:             NewCouponTemplateClient(cfg),
+		Ebike:                      NewEbikeClient(cfg),
 		EbikeBrand:                 NewEbikeBrandClient(cfg),
 		EbikeBrandAttribute:        NewEbikeBrandAttributeClient(cfg),
 		Employee:                   NewEmployeeClient(cfg),
@@ -606,6 +615,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		RiderPhoneDevice:           NewRiderPhoneDeviceClient(cfg),
 		Role:                       NewRoleClient(cfg),
 		Setting:                    NewSettingClient(cfg),
+		Stock:                      NewStockClient(cfg),
 		StockSummary:               NewStockSummaryClient(cfg),
 		Store:                      NewStoreClient(cfg),
 		StoreGoods:                 NewStoreGoodsClient(cfg),
@@ -671,6 +681,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Coupon:                     NewCouponClient(cfg),
 		CouponAssembly:             NewCouponAssemblyClient(cfg),
 		CouponTemplate:             NewCouponTemplateClient(cfg),
+		Ebike:                      NewEbikeClient(cfg),
 		EbikeBrand:                 NewEbikeBrandClient(cfg),
 		EbikeBrandAttribute:        NewEbikeBrandAttributeClient(cfg),
 		Employee:                   NewEmployeeClient(cfg),
@@ -723,6 +734,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		RiderPhoneDevice:           NewRiderPhoneDeviceClient(cfg),
 		Role:                       NewRoleClient(cfg),
 		Setting:                    NewSettingClient(cfg),
+		Stock:                      NewStockClient(cfg),
 		StockSummary:               NewStockSummaryClient(cfg),
 		Store:                      NewStoreClient(cfg),
 		StoreGoods:                 NewStoreGoodsClient(cfg),
@@ -770,7 +782,7 @@ func (c *Client) Use(hooks ...Hook) {
 		c.Attendance, c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch,
 		c.BranchContract, c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City,
 		c.Commission, c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly,
-		c.CouponTemplate, c.EbikeBrand, c.EbikeBrandAttribute, c.Employee,
+		c.CouponTemplate, c.Ebike, c.EbikeBrand, c.EbikeBrandAttribute, c.Employee,
 		c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
 		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
 		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
@@ -782,10 +794,10 @@ func (c *Client) Use(hooks ...Hook) {
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
-		c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting, c.StockSummary,
-		c.Store, c.StoreGoods, c.StoreGroup, c.Subscribe, c.SubscribeAlter,
-		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend, c.Version,
-		c.Warehouse,
+		c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting, c.Stock,
+		c.StockSummary, c.Store, c.StoreGoods, c.StoreGroup, c.Subscribe,
+		c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
+		c.Version, c.Warehouse,
 	} {
 		n.Use(hooks...)
 	}
@@ -802,7 +814,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.Attendance, c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch,
 		c.BranchContract, c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City,
 		c.Commission, c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly,
-		c.CouponTemplate, c.EbikeBrand, c.EbikeBrandAttribute, c.Employee,
+		c.CouponTemplate, c.Ebike, c.EbikeBrand, c.EbikeBrandAttribute, c.Employee,
 		c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
 		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
 		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Fault, c.Feedback,
@@ -814,10 +826,10 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
-		c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting, c.StockSummary,
-		c.Store, c.StoreGoods, c.StoreGroup, c.Subscribe, c.SubscribeAlter,
-		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend, c.Version,
-		c.Warehouse,
+		c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting, c.Stock,
+		c.StockSummary, c.Store, c.StoreGoods, c.StoreGroup, c.Subscribe,
+		c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
+		c.Version, c.Warehouse,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -896,6 +908,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.CouponAssembly.mutate(ctx, m)
 	case *CouponTemplateMutation:
 		return c.CouponTemplate.mutate(ctx, m)
+	case *EbikeMutation:
+		return c.Ebike.mutate(ctx, m)
 	case *EbikeBrandMutation:
 		return c.EbikeBrand.mutate(ctx, m)
 	case *EbikeBrandAttributeMutation:
@@ -1000,6 +1014,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Role.mutate(ctx, m)
 	case *SettingMutation:
 		return c.Setting.mutate(ctx, m)
+	case *StockMutation:
+		return c.Stock.mutate(ctx, m)
 	case *StockSummaryMutation:
 		return c.StockSummary.mutate(ctx, m)
 	case *StoreMutation:
@@ -6766,6 +6782,22 @@ func (c *CabinetClient) QueryAsset(ca *Cabinet) *AssetQuery {
 	return query
 }
 
+// QueryStocks queries the stocks edge of a Cabinet.
+func (c *CabinetClient) QueryStocks(ca *Cabinet) *StockQuery {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.StocksTable, cabinet.StocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryBatteries queries the batteries edge of a Cabinet.
 func (c *CabinetClient) QueryBatteries(ca *Cabinet) *BatteryQuery {
 	query := (&BatteryClient{config: c.config}).Query()
@@ -8477,6 +8509,252 @@ func (c *CouponTemplateClient) mutate(ctx context.Context, m *CouponTemplateMuta
 	}
 }
 
+// EbikeClient is a client for the Ebike schema.
+type EbikeClient struct {
+	config
+}
+
+// NewEbikeClient returns a client for the Ebike from the given config.
+func NewEbikeClient(c config) *EbikeClient {
+	return &EbikeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `ebike.Hooks(f(g(h())))`.
+func (c *EbikeClient) Use(hooks ...Hook) {
+	c.hooks.Ebike = append(c.hooks.Ebike, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `ebike.Intercept(f(g(h())))`.
+func (c *EbikeClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Ebike = append(c.inters.Ebike, interceptors...)
+}
+
+// Create returns a builder for creating a Ebike entity.
+func (c *EbikeClient) Create() *EbikeCreate {
+	mutation := newEbikeMutation(c.config, OpCreate)
+	return &EbikeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Ebike entities.
+func (c *EbikeClient) CreateBulk(builders ...*EbikeCreate) *EbikeCreateBulk {
+	return &EbikeCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EbikeClient) MapCreateBulk(slice any, setFunc func(*EbikeCreate, int)) *EbikeCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EbikeCreateBulk{err: fmt.Errorf("calling to EbikeClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EbikeCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EbikeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Ebike.
+func (c *EbikeClient) Update() *EbikeUpdate {
+	mutation := newEbikeMutation(c.config, OpUpdate)
+	return &EbikeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EbikeClient) UpdateOne(e *Ebike) *EbikeUpdateOne {
+	mutation := newEbikeMutation(c.config, OpUpdateOne, withEbike(e))
+	return &EbikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EbikeClient) UpdateOneID(id uint64) *EbikeUpdateOne {
+	mutation := newEbikeMutation(c.config, OpUpdateOne, withEbikeID(id))
+	return &EbikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Ebike.
+func (c *EbikeClient) Delete() *EbikeDelete {
+	mutation := newEbikeMutation(c.config, OpDelete)
+	return &EbikeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EbikeClient) DeleteOne(e *Ebike) *EbikeDeleteOne {
+	return c.DeleteOneID(e.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EbikeClient) DeleteOneID(id uint64) *EbikeDeleteOne {
+	builder := c.Delete().Where(ebike.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EbikeDeleteOne{builder}
+}
+
+// Query returns a query builder for Ebike.
+func (c *EbikeClient) Query() *EbikeQuery {
+	return &EbikeQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEbike},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Ebike entity by its id.
+func (c *EbikeClient) Get(ctx context.Context, id uint64) (*Ebike, error) {
+	return c.Query().Where(ebike.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EbikeClient) GetX(ctx context.Context, id uint64) *Ebike {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryBrand queries the brand edge of a Ebike.
+func (c *EbikeClient) QueryBrand(e *Ebike) *EbikeBrandQuery {
+	query := (&EbikeBrandClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, id),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebike.BrandTable, ebike.BrandColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a Ebike.
+func (c *EbikeClient) QueryRider(e *Ebike) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebike.RiderTable, ebike.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a Ebike.
+func (c *EbikeClient) QueryStore(e *Ebike) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebike.StoreTable, ebike.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEnterprise queries the enterprise edge of a Ebike.
+func (c *EbikeClient) QueryEnterprise(e *Ebike) *EnterpriseQuery {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebike.EnterpriseTable, ebike.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStation queries the station edge of a Ebike.
+func (c *EbikeClient) QueryStation(e *Ebike) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebike.StationTable, ebike.StationColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAllocates queries the allocates edge of a Ebike.
+func (c *EbikeClient) QueryAllocates(e *Ebike) *AllocateQuery {
+	query := (&AllocateClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, id),
+			sqlgraph.To(allocate.Table, allocate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ebike.AllocatesTable, ebike.AllocatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRtoRider queries the rto_rider edge of a Ebike.
+func (c *EbikeClient) QueryRtoRider(e *Ebike) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, ebike.RtoRiderTable, ebike.RtoRiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EbikeClient) Hooks() []Hook {
+	hooks := c.hooks.Ebike
+	return append(hooks[:len(hooks):len(hooks)], ebike.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *EbikeClient) Interceptors() []Interceptor {
+	return c.inters.Ebike
+}
+
+func (c *EbikeClient) mutate(ctx context.Context, m *EbikeMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EbikeCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EbikeUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EbikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EbikeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Ebike mutation op: %q", m.Op())
+	}
+}
+
 // EbikeBrandClient is a client for the EbikeBrand schema.
 type EbikeBrandClient struct {
 	config
@@ -8965,6 +9243,22 @@ func (c *EmployeeClient) QueryAttendances(e *Employee) *AttendanceQuery {
 	return query
 }
 
+// QueryStocks queries the stocks edge of a Employee.
+func (c *EmployeeClient) QueryStocks(e *Employee) *StockQuery {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, employee.StocksTable, employee.StocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryExchanges queries the exchanges edge of a Employee.
 func (c *EmployeeClient) QueryExchanges(e *Employee) *ExchangeQuery {
 	query := (&ExchangeClient{config: c.config}).Query()
@@ -9348,6 +9642,22 @@ func (c *EnterpriseClient) QueryAsset(e *Enterprise) *AssetQuery {
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
 			sqlgraph.To(asset.Table, asset.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.AssetTable, enterprise.AssetColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStocks queries the stocks edge of a Enterprise.
+func (c *EnterpriseClient) QueryStocks(e *Enterprise) *StockQuery {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.StocksTable, enterprise.StocksColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -10813,6 +11123,22 @@ func (c *EnterpriseStationClient) QueryAsset(es *EnterpriseStation) *AssetQuery 
 			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
 			sqlgraph.To(asset.Table, asset.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.AssetTable, enterprisestation.AssetColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStocks queries the stocks edge of a EnterpriseStation.
+func (c *EnterpriseStationClient) QueryStocks(es *EnterpriseStation) *StockQuery {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.StocksTable, enterprisestation.StocksColumn),
 		)
 		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
 		return fromV, nil
@@ -17322,6 +17648,22 @@ func (c *RiderClient) QueryAsset(r *Rider) *AssetQuery {
 	return query
 }
 
+// QueryStocks queries the stocks edge of a Rider.
+func (c *RiderClient) QueryStocks(r *Rider) *StockQuery {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.StocksTable, rider.StocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryFollowups queries the followups edge of a Rider.
 func (c *RiderClient) QueryFollowups(r *Rider) *RiderFollowUpQuery {
 	query := (&RiderFollowUpClient{config: c.config}).Query()
@@ -17978,6 +18320,380 @@ func (c *SettingClient) mutate(ctx context.Context, m *SettingMutation) (Value, 
 	}
 }
 
+// StockClient is a client for the Stock schema.
+type StockClient struct {
+	config
+}
+
+// NewStockClient returns a client for the Stock from the given config.
+func NewStockClient(c config) *StockClient {
+	return &StockClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `stock.Hooks(f(g(h())))`.
+func (c *StockClient) Use(hooks ...Hook) {
+	c.hooks.Stock = append(c.hooks.Stock, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `stock.Intercept(f(g(h())))`.
+func (c *StockClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Stock = append(c.inters.Stock, interceptors...)
+}
+
+// Create returns a builder for creating a Stock entity.
+func (c *StockClient) Create() *StockCreate {
+	mutation := newStockMutation(c.config, OpCreate)
+	return &StockCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Stock entities.
+func (c *StockClient) CreateBulk(builders ...*StockCreate) *StockCreateBulk {
+	return &StockCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *StockClient) MapCreateBulk(slice any, setFunc func(*StockCreate, int)) *StockCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &StockCreateBulk{err: fmt.Errorf("calling to StockClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*StockCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &StockCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Stock.
+func (c *StockClient) Update() *StockUpdate {
+	mutation := newStockMutation(c.config, OpUpdate)
+	return &StockUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *StockClient) UpdateOne(s *Stock) *StockUpdateOne {
+	mutation := newStockMutation(c.config, OpUpdateOne, withStock(s))
+	return &StockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *StockClient) UpdateOneID(id uint64) *StockUpdateOne {
+	mutation := newStockMutation(c.config, OpUpdateOne, withStockID(id))
+	return &StockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Stock.
+func (c *StockClient) Delete() *StockDelete {
+	mutation := newStockMutation(c.config, OpDelete)
+	return &StockDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *StockClient) DeleteOne(s *Stock) *StockDeleteOne {
+	return c.DeleteOneID(s.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *StockClient) DeleteOneID(id uint64) *StockDeleteOne {
+	builder := c.Delete().Where(stock.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &StockDeleteOne{builder}
+}
+
+// Query returns a query builder for Stock.
+func (c *StockClient) Query() *StockQuery {
+	return &StockQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeStock},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Stock entity by its id.
+func (c *StockClient) Get(ctx context.Context, id uint64) (*Stock, error) {
+	return c.Query().Where(stock.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *StockClient) GetX(ctx context.Context, id uint64) *Stock {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCity queries the city edge of a Stock.
+func (c *StockClient) QueryCity(s *Stock) *CityQuery {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.CityTable, stock.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscribe queries the subscribe edge of a Stock.
+func (c *StockClient) QuerySubscribe(s *Stock) *SubscribeQuery {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.SubscribeTable, stock.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEbike queries the ebike edge of a Stock.
+func (c *StockClient) QueryEbike(s *Stock) *EbikeQuery {
+	query := (&EbikeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(ebike.Table, ebike.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.EbikeTable, stock.EbikeColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBrand queries the brand edge of a Stock.
+func (c *StockClient) QueryBrand(s *Stock) *EbikeBrandQuery {
+	query := (&EbikeBrandClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.BrandTable, stock.BrandColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBattery queries the battery edge of a Stock.
+func (c *StockClient) QueryBattery(s *Stock) *BatteryQuery {
+	query := (&BatteryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.BatteryTable, stock.BatteryColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAgent queries the agent edge of a Stock.
+func (c *StockClient) QueryAgent(s *Stock) *AgentQuery {
+	query := (&AgentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.AgentTable, stock.AgentColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a Stock.
+func (c *StockClient) QueryStore(s *Stock) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.StoreTable, stock.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinet queries the cabinet edge of a Stock.
+func (c *StockClient) QueryCabinet(s *Stock) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.CabinetTable, stock.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a Stock.
+func (c *StockClient) QueryRider(s *Stock) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.RiderTable, stock.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmployee queries the employee edge of a Stock.
+func (c *StockClient) QueryEmployee(s *Stock) *EmployeeQuery {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.EmployeeTable, stock.EmployeeColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySpouse queries the spouse edge of a Stock.
+func (c *StockClient) QuerySpouse(s *Stock) *StockQuery {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, stock.SpouseTable, stock.SpouseColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryParent queries the parent edge of a Stock.
+func (c *StockClient) QueryParent(s *Stock) *StockQuery {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.ParentTable, stock.ParentColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryChildren queries the children edge of a Stock.
+func (c *StockClient) QueryChildren(s *Stock) *StockQuery {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, stock.ChildrenTable, stock.ChildrenColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEnterprise queries the enterprise edge of a Stock.
+func (c *StockClient) QueryEnterprise(s *Stock) *EnterpriseQuery {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.EnterpriseTable, stock.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStation queries the station edge of a Stock.
+func (c *StockClient) QueryStation(s *Stock) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.StationTable, stock.StationColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *StockClient) Hooks() []Hook {
+	hooks := c.hooks.Stock
+	return append(hooks[:len(hooks):len(hooks)], stock.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *StockClient) Interceptors() []Interceptor {
+	return c.inters.Stock
+}
+
+func (c *StockClient) mutate(ctx context.Context, m *StockMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&StockCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&StockUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&StockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&StockDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Stock mutation op: %q", m.Op())
+	}
+}
+
 // StockSummaryClient is a client for the StockSummary schema.
 type StockSummaryClient struct {
 	config
@@ -18436,6 +19152,22 @@ func (c *StoreClient) QueryEmployees(s *Store) *EmployeeQuery {
 			sqlgraph.From(store.Table, store.FieldID, id),
 			sqlgraph.To(employee.Table, employee.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, store.EmployeesTable, store.EmployeesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStocks queries the stocks edge of a Store.
+func (c *StoreClient) QueryStocks(s *Store) *StockQuery {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, store.StocksTable, store.StocksColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil
@@ -20418,20 +21150,20 @@ type (
 		AssetScrapDetails, AssetTransfer, AssetTransferDetails, Assistance, Attendance,
 		Battery, BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
 		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
-		CouponAssembly, CouponTemplate, EbikeBrand, EbikeBrandAttribute, Employee,
-		Enterprise, EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
-		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
-		Exception, Exchange, Export, Fault, Feedback, Goods, Instructions, Inventory,
-		Maintainer, Manager, Material, Order, OrderRefund, Person, Plan, PlanIntroduce,
-		PointLog, PromotionAchievement, PromotionBankCard, PromotionCommission,
-		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
-		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
-		PromotionPerson, PromotionPrivilege, PromotionReferrals,
-		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
-		QuestionCategory, Reserve, Rider, RiderFollowUp, RiderPhoneDevice, Role,
-		Setting, StockSummary, Store, StoreGoods, StoreGroup, Subscribe,
-		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend, Version,
-		Warehouse []ent.Hook
+		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, EbikeBrandAttribute,
+		Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
+		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
+		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Goods,
+		Instructions, Inventory, Maintainer, Manager, Material, Order, OrderRefund,
+		Person, Plan, PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
+		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
+		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
+		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
+		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
+		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
+		RiderPhoneDevice, Role, Setting, Stock, StockSummary, Store, StoreGoods,
+		StoreGroup, Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
+		SubscribeSuspend, Version, Warehouse []ent.Hook
 	}
 	inters struct {
 		Activity, Agent, Agreement, Allocate, Asset, AssetAttributeValues,
@@ -20440,20 +21172,20 @@ type (
 		AssetScrapDetails, AssetTransfer, AssetTransferDetails, Assistance, Attendance,
 		Battery, BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
 		CabinetEc, CabinetFault, City, Commission, Contract, ContractTemplate, Coupon,
-		CouponAssembly, CouponTemplate, EbikeBrand, EbikeBrandAttribute, Employee,
-		Enterprise, EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
-		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
-		Exception, Exchange, Export, Fault, Feedback, Goods, Instructions, Inventory,
-		Maintainer, Manager, Material, Order, OrderRefund, Person, Plan, PlanIntroduce,
-		PointLog, PromotionAchievement, PromotionBankCard, PromotionCommission,
-		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
-		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
-		PromotionPerson, PromotionPrivilege, PromotionReferrals,
-		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Question,
-		QuestionCategory, Reserve, Rider, RiderFollowUp, RiderPhoneDevice, Role,
-		Setting, StockSummary, Store, StoreGoods, StoreGroup, Subscribe,
-		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend, Version,
-		Warehouse []ent.Interceptor
+		CouponAssembly, CouponTemplate, Ebike, EbikeBrand, EbikeBrandAttribute,
+		Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
+		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
+		EnterpriseStation, Exception, Exchange, Export, Fault, Feedback, Goods,
+		Instructions, Inventory, Maintainer, Manager, Material, Order, OrderRefund,
+		Person, Plan, PlanIntroduce, PointLog, PromotionAchievement, PromotionBankCard,
+		PromotionCommission, PromotionCommissionPlan, PromotionEarnings,
+		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
+		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
+		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
+		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
+		RiderPhoneDevice, Role, Setting, Stock, StockSummary, Store, StoreGoods,
+		StoreGroup, Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
+		SubscribeSuspend, Version, Warehouse []ent.Interceptor
 	}
 )
 

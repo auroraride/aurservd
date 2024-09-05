@@ -67,6 +67,8 @@ type EmployeeEdges struct {
 	Store *Store `json:"store,omitempty"`
 	// Attendances holds the value of the attendances edge.
 	Attendances []*Attendance `json:"attendances,omitempty"`
+	// Stocks holds the value of the stocks edge.
+	Stocks []*Stock `json:"stocks,omitempty"`
 	// Exchanges holds the value of the exchanges edge.
 	Exchanges []*Exchange `json:"exchanges,omitempty"`
 	// Commissions holds the value of the commissions edge.
@@ -77,7 +79,7 @@ type EmployeeEdges struct {
 	Stores []*Store `json:"stores,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [9]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -122,10 +124,19 @@ func (e EmployeeEdges) AttendancesOrErr() ([]*Attendance, error) {
 	return nil, &NotLoadedError{edge: "attendances"}
 }
 
+// StocksOrErr returns the Stocks value or an error if the edge
+// was not loaded in eager-loading.
+func (e EmployeeEdges) StocksOrErr() ([]*Stock, error) {
+	if e.loadedTypes[4] {
+		return e.Stocks, nil
+	}
+	return nil, &NotLoadedError{edge: "stocks"}
+}
+
 // ExchangesOrErr returns the Exchanges value or an error if the edge
 // was not loaded in eager-loading.
 func (e EmployeeEdges) ExchangesOrErr() ([]*Exchange, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.Exchanges, nil
 	}
 	return nil, &NotLoadedError{edge: "exchanges"}
@@ -134,7 +145,7 @@ func (e EmployeeEdges) ExchangesOrErr() ([]*Exchange, error) {
 // CommissionsOrErr returns the Commissions value or an error if the edge
 // was not loaded in eager-loading.
 func (e EmployeeEdges) CommissionsOrErr() ([]*Commission, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		return e.Commissions, nil
 	}
 	return nil, &NotLoadedError{edge: "commissions"}
@@ -143,7 +154,7 @@ func (e EmployeeEdges) CommissionsOrErr() ([]*Commission, error) {
 // AssistancesOrErr returns the Assistances value or an error if the edge
 // was not loaded in eager-loading.
 func (e EmployeeEdges) AssistancesOrErr() ([]*Assistance, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		return e.Assistances, nil
 	}
 	return nil, &NotLoadedError{edge: "assistances"}
@@ -152,7 +163,7 @@ func (e EmployeeEdges) AssistancesOrErr() ([]*Assistance, error) {
 // StoresOrErr returns the Stores value or an error if the edge
 // was not loaded in eager-loading.
 func (e EmployeeEdges) StoresOrErr() ([]*Store, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[8] {
 		return e.Stores, nil
 	}
 	return nil, &NotLoadedError{edge: "stores"}
@@ -317,6 +328,11 @@ func (e *Employee) QueryStore() *StoreQuery {
 // QueryAttendances queries the "attendances" edge of the Employee entity.
 func (e *Employee) QueryAttendances() *AttendanceQuery {
 	return NewEmployeeClient(e.config).QueryAttendances(e)
+}
+
+// QueryStocks queries the "stocks" edge of the Employee entity.
+func (e *Employee) QueryStocks() *StockQuery {
+	return NewEmployeeClient(e.config).QueryStocks(e)
 }
 
 // QueryExchanges queries the "exchanges" edge of the Employee entity.

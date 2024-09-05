@@ -328,23 +328,23 @@ func (bu *BusinessUpdate) ClearBinInfo() *BusinessUpdate {
 	return bu
 }
 
-// SetAssetTransferSn sets the "asset_transfer_sn" field.
-func (bu *BusinessUpdate) SetAssetTransferSn(s string) *BusinessUpdate {
-	bu.mutation.SetAssetTransferSn(s)
+// SetStockSn sets the "stock_sn" field.
+func (bu *BusinessUpdate) SetStockSn(s string) *BusinessUpdate {
+	bu.mutation.SetStockSn(s)
 	return bu
 }
 
-// SetNillableAssetTransferSn sets the "asset_transfer_sn" field if the given value is not nil.
-func (bu *BusinessUpdate) SetNillableAssetTransferSn(s *string) *BusinessUpdate {
+// SetNillableStockSn sets the "stock_sn" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableStockSn(s *string) *BusinessUpdate {
 	if s != nil {
-		bu.SetAssetTransferSn(*s)
+		bu.SetStockSn(*s)
 	}
 	return bu
 }
 
-// ClearAssetTransferSn clears the value of the "asset_transfer_sn" field.
-func (bu *BusinessUpdate) ClearAssetTransferSn() *BusinessUpdate {
-	bu.mutation.ClearAssetTransferSn()
+// ClearStockSn clears the value of the "stock_sn" field.
+func (bu *BusinessUpdate) ClearStockSn() *BusinessUpdate {
+	bu.mutation.ClearStockSn()
 	return bu
 }
 
@@ -612,11 +612,11 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if bu.mutation.BinInfoCleared() {
 		_spec.ClearField(business.FieldBinInfo, field.TypeJSON)
 	}
-	if value, ok := bu.mutation.AssetTransferSn(); ok {
-		_spec.SetField(business.FieldAssetTransferSn, field.TypeString, value)
+	if value, ok := bu.mutation.StockSn(); ok {
+		_spec.SetField(business.FieldStockSn, field.TypeString, value)
 	}
-	if bu.mutation.AssetTransferSnCleared() {
-		_spec.ClearField(business.FieldAssetTransferSn, field.TypeString)
+	if bu.mutation.StockSnCleared() {
+		_spec.ClearField(business.FieldStockSn, field.TypeString)
 	}
 	if bu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1274,23 +1274,23 @@ func (buo *BusinessUpdateOne) ClearBinInfo() *BusinessUpdateOne {
 	return buo
 }
 
-// SetAssetTransferSn sets the "asset_transfer_sn" field.
-func (buo *BusinessUpdateOne) SetAssetTransferSn(s string) *BusinessUpdateOne {
-	buo.mutation.SetAssetTransferSn(s)
+// SetStockSn sets the "stock_sn" field.
+func (buo *BusinessUpdateOne) SetStockSn(s string) *BusinessUpdateOne {
+	buo.mutation.SetStockSn(s)
 	return buo
 }
 
-// SetNillableAssetTransferSn sets the "asset_transfer_sn" field if the given value is not nil.
-func (buo *BusinessUpdateOne) SetNillableAssetTransferSn(s *string) *BusinessUpdateOne {
+// SetNillableStockSn sets the "stock_sn" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableStockSn(s *string) *BusinessUpdateOne {
 	if s != nil {
-		buo.SetAssetTransferSn(*s)
+		buo.SetStockSn(*s)
 	}
 	return buo
 }
 
-// ClearAssetTransferSn clears the value of the "asset_transfer_sn" field.
-func (buo *BusinessUpdateOne) ClearAssetTransferSn() *BusinessUpdateOne {
-	buo.mutation.ClearAssetTransferSn()
+// ClearStockSn clears the value of the "stock_sn" field.
+func (buo *BusinessUpdateOne) ClearStockSn() *BusinessUpdateOne {
+	buo.mutation.ClearStockSn()
 	return buo
 }
 
@@ -1588,11 +1588,11 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 	if buo.mutation.BinInfoCleared() {
 		_spec.ClearField(business.FieldBinInfo, field.TypeJSON)
 	}
-	if value, ok := buo.mutation.AssetTransferSn(); ok {
-		_spec.SetField(business.FieldAssetTransferSn, field.TypeString, value)
+	if value, ok := buo.mutation.StockSn(); ok {
+		_spec.SetField(business.FieldStockSn, field.TypeString, value)
 	}
-	if buo.mutation.AssetTransferSnCleared() {
-		_spec.ClearField(business.FieldAssetTransferSn, field.TypeString)
+	if buo.mutation.StockSnCleared() {
+		_spec.ClearField(business.FieldStockSn, field.TypeString)
 	}
 	if buo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegroup"
 )
@@ -33,6 +34,7 @@ type EmployeeQuery struct {
 	withGroup       *StoreGroupQuery
 	withStore       *StoreQuery
 	withAttendances *AttendanceQuery
+	withStocks      *StockQuery
 	withExchanges   *ExchangeQuery
 	withCommissions *CommissionQuery
 	withAssistances *AssistanceQuery
@@ -155,6 +157,28 @@ func (eq *EmployeeQuery) QueryAttendances() *AttendanceQuery {
 			sqlgraph.From(employee.Table, employee.FieldID, selector),
 			sqlgraph.To(attendance.Table, attendance.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, employee.AttendancesTable, employee.AttendancesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStocks chains the current query on the "stocks" edge.
+func (eq *EmployeeQuery) QueryStocks() *StockQuery {
+	query := (&StockClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, selector),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, employee.StocksTable, employee.StocksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -446,6 +470,7 @@ func (eq *EmployeeQuery) Clone() *EmployeeQuery {
 		withGroup:       eq.withGroup.Clone(),
 		withStore:       eq.withStore.Clone(),
 		withAttendances: eq.withAttendances.Clone(),
+		withStocks:      eq.withStocks.Clone(),
 		withExchanges:   eq.withExchanges.Clone(),
 		withCommissions: eq.withCommissions.Clone(),
 		withAssistances: eq.withAssistances.Clone(),
@@ -497,6 +522,17 @@ func (eq *EmployeeQuery) WithAttendances(opts ...func(*AttendanceQuery)) *Employ
 		opt(query)
 	}
 	eq.withAttendances = query
+	return eq
+}
+
+// WithStocks tells the query-builder to eager-load the nodes that are connected to
+// the "stocks" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EmployeeQuery) WithStocks(opts ...func(*StockQuery)) *EmployeeQuery {
+	query := (&StockClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withStocks = query
 	return eq
 }
 
@@ -622,11 +658,12 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 	var (
 		nodes       = []*Employee{}
 		_spec       = eq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [9]bool{
 			eq.withCity != nil,
 			eq.withGroup != nil,
 			eq.withStore != nil,
 			eq.withAttendances != nil,
+			eq.withStocks != nil,
 			eq.withExchanges != nil,
 			eq.withCommissions != nil,
 			eq.withAssistances != nil,
@@ -676,6 +713,13 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 		if err := eq.loadAttendances(ctx, query, nodes,
 			func(n *Employee) { n.Edges.Attendances = []*Attendance{} },
 			func(n *Employee, e *Attendance) { n.Edges.Attendances = append(n.Edges.Attendances, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withStocks; query != nil {
+		if err := eq.loadStocks(ctx, query, nodes,
+			func(n *Employee) { n.Edges.Stocks = []*Stock{} },
+			func(n *Employee, e *Stock) { n.Edges.Stocks = append(n.Edges.Stocks, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -826,6 +870,40 @@ func (eq *EmployeeQuery) loadAttendances(ctx context.Context, query *AttendanceQ
 		node, ok := nodeids[fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "employee_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (eq *EmployeeQuery) loadStocks(ctx context.Context, query *StockQuery, nodes []*Employee, init func(*Employee), assign func(*Employee, *Stock)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Employee)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(stock.FieldEmployeeID)
+	}
+	query.Where(predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(employee.StocksColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.EmployeeID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "employee_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1098,6 +1176,7 @@ var (
 	EmployeeQueryWithGroup       EmployeeQueryWith = "Group"
 	EmployeeQueryWithStore       EmployeeQueryWith = "Store"
 	EmployeeQueryWithAttendances EmployeeQueryWith = "Attendances"
+	EmployeeQueryWithStocks      EmployeeQueryWith = "Stocks"
 	EmployeeQueryWithExchanges   EmployeeQueryWith = "Exchanges"
 	EmployeeQueryWithCommissions EmployeeQueryWith = "Commissions"
 	EmployeeQueryWithAssistances EmployeeQueryWith = "Assistances"
@@ -1115,6 +1194,8 @@ func (eq *EmployeeQuery) With(withEdges ...EmployeeQueryWith) *EmployeeQuery {
 			eq.WithStore()
 		case EmployeeQueryWithAttendances:
 			eq.WithAttendances()
+		case EmployeeQueryWithStocks:
+			eq.WithStocks()
 		case EmployeeQueryWithExchanges:
 			eq.WithExchanges()
 		case EmployeeQueryWithCommissions:

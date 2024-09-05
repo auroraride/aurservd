@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 )
 
 // EnterpriseStationCreate is the builder for creating a EnterpriseStation entity.
@@ -222,6 +223,21 @@ func (esc *EnterpriseStationCreate) AddAsset(a ...*Asset) *EnterpriseStationCrea
 		ids[i] = a[i].ID
 	}
 	return esc.AddAssetIDs(ids...)
+}
+
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (esc *EnterpriseStationCreate) AddStockIDs(ids ...uint64) *EnterpriseStationCreate {
+	esc.mutation.AddStockIDs(ids...)
+	return esc
+}
+
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (esc *EnterpriseStationCreate) AddStocks(s ...*Stock) *EnterpriseStationCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return esc.AddStockIDs(ids...)
 }
 
 // Mutation returns the EnterpriseStationMutation object of the builder.
@@ -473,6 +489,22 @@ func (esc *EnterpriseStationCreate) createSpec() (*EnterpriseStation, *sqlgraph.
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := esc.mutation.StocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.StocksTable,
+			Columns: []string{enterprisestation.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

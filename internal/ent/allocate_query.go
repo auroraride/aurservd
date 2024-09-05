@@ -44,6 +44,7 @@ type AllocateQuery struct {
 	withAgent     *AgentQuery
 	withContract  *ContractQuery
 	withEbike     *AssetQuery
+	withFKs       bool
 	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -730,6 +731,7 @@ func (aq *AllocateQuery) prepareQuery(ctx context.Context) error {
 func (aq *AllocateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Allocate, error) {
 	var (
 		nodes       = []*Allocate{}
+		withFKs     = aq.withFKs
 		_spec       = aq.querySpec()
 		loadedTypes = [11]bool{
 			aq.withRider != nil,
@@ -745,6 +747,9 @@ func (aq *AllocateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*All
 			aq.withEbike != nil,
 		}
 	)
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, allocate.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Allocate).scanValues(nil, columns)
 	}

@@ -24,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -43,6 +44,7 @@ type RiderQuery struct {
 	withExchanges    *ExchangeQuery
 	withSubscribes   *SubscribeQuery
 	withAsset        *AssetQuery
+	withStocks       *StockQuery
 	withFollowups    *RiderFollowUpQuery
 	withBattery      *BatteryQuery
 	withBatteryFlows *BatteryFlowQuery
@@ -274,6 +276,28 @@ func (rq *RiderQuery) QueryAsset() *AssetQuery {
 			sqlgraph.From(rider.Table, rider.FieldID, selector),
 			sqlgraph.To(asset.Table, asset.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, rider.AssetTable, rider.AssetColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStocks chains the current query on the "stocks" edge.
+func (rq *RiderQuery) QueryStocks() *StockQuery {
+	query := (&StockClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, selector),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.StocksTable, rider.StocksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -548,6 +572,7 @@ func (rq *RiderQuery) Clone() *RiderQuery {
 		withExchanges:    rq.withExchanges.Clone(),
 		withSubscribes:   rq.withSubscribes.Clone(),
 		withAsset:        rq.withAsset.Clone(),
+		withStocks:       rq.withStocks.Clone(),
 		withFollowups:    rq.withFollowups.Clone(),
 		withBattery:      rq.withBattery.Clone(),
 		withBatteryFlows: rq.withBatteryFlows.Clone(),
@@ -653,6 +678,17 @@ func (rq *RiderQuery) WithAsset(opts ...func(*AssetQuery)) *RiderQuery {
 		opt(query)
 	}
 	rq.withAsset = query
+	return rq
+}
+
+// WithStocks tells the query-builder to eager-load the nodes that are connected to
+// the "stocks" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RiderQuery) WithStocks(opts ...func(*StockQuery)) *RiderQuery {
+	query := (&StockClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withStocks = query
 	return rq
 }
 
@@ -767,7 +803,7 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 	var (
 		nodes       = []*Rider{}
 		_spec       = rq.querySpec()
-		loadedTypes = [12]bool{
+		loadedTypes = [13]bool{
 			rq.withStation != nil,
 			rq.withPerson != nil,
 			rq.withEnterprise != nil,
@@ -777,6 +813,7 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 			rq.withExchanges != nil,
 			rq.withSubscribes != nil,
 			rq.withAsset != nil,
+			rq.withStocks != nil,
 			rq.withFollowups != nil,
 			rq.withBattery != nil,
 			rq.withBatteryFlows != nil,
@@ -860,6 +897,13 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 		if err := rq.loadAsset(ctx, query, nodes,
 			func(n *Rider) { n.Edges.Asset = []*Asset{} },
 			func(n *Rider, e *Asset) { n.Edges.Asset = append(n.Edges.Asset, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := rq.withStocks; query != nil {
+		if err := rq.loadStocks(ctx, query, nodes,
+			func(n *Rider) { n.Edges.Stocks = []*Stock{} },
+			func(n *Rider, e *Stock) { n.Edges.Stocks = append(n.Edges.Stocks, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1163,6 +1207,40 @@ func (rq *RiderQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []
 	}
 	return nil
 }
+func (rq *RiderQuery) loadStocks(ctx context.Context, query *StockQuery, nodes []*Rider, init func(*Rider), assign func(*Rider, *Stock)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Rider)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(stock.FieldRiderID)
+	}
+	query.Where(predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(rider.StocksColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.RiderID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "rider_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "rider_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 func (rq *RiderQuery) loadFollowups(ctx context.Context, query *RiderFollowUpQuery, nodes []*Rider, init func(*Rider), assign func(*Rider, *RiderFollowUp)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*Rider)
@@ -1369,6 +1447,7 @@ var (
 	RiderQueryWithExchanges    RiderQueryWith = "Exchanges"
 	RiderQueryWithSubscribes   RiderQueryWith = "Subscribes"
 	RiderQueryWithAsset        RiderQueryWith = "Asset"
+	RiderQueryWithStocks       RiderQueryWith = "Stocks"
 	RiderQueryWithFollowups    RiderQueryWith = "Followups"
 	RiderQueryWithBattery      RiderQueryWith = "Battery"
 	RiderQueryWithBatteryFlows RiderQueryWith = "BatteryFlows"
@@ -1395,6 +1474,8 @@ func (rq *RiderQuery) With(withEdges ...RiderQueryWith) *RiderQuery {
 			rq.WithSubscribes()
 		case RiderQueryWithAsset:
 			rq.WithAsset()
+		case RiderQueryWithStocks:
+			rq.WithStocks()
 		case RiderQueryWithFollowups:
 			rq.WithFollowups()
 		case RiderQueryWithBattery:

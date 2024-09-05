@@ -111,6 +111,8 @@ type CabinetEdges struct {
 	Exchanges []*Exchange `json:"exchanges,omitempty"`
 	// Asset holds the value of the asset edge.
 	Asset []*Asset `json:"asset,omitempty"`
+	// Stocks holds the value of the stocks edge.
+	Stocks []*Stock `json:"stocks,omitempty"`
 	// Batteries holds the value of the batteries edge.
 	Batteries []*Battery `json:"batteries,omitempty"`
 	// BatteryFlows holds the value of the battery_flows edge.
@@ -121,7 +123,7 @@ type CabinetEdges struct {
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [11]bool
+	loadedTypes [12]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -193,10 +195,19 @@ func (e CabinetEdges) AssetOrErr() ([]*Asset, error) {
 	return nil, &NotLoadedError{edge: "asset"}
 }
 
+// StocksOrErr returns the Stocks value or an error if the edge
+// was not loaded in eager-loading.
+func (e CabinetEdges) StocksOrErr() ([]*Stock, error) {
+	if e.loadedTypes[7] {
+		return e.Stocks, nil
+	}
+	return nil, &NotLoadedError{edge: "stocks"}
+}
+
 // BatteriesOrErr returns the Batteries value or an error if the edge
 // was not loaded in eager-loading.
 func (e CabinetEdges) BatteriesOrErr() ([]*Battery, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[8] {
 		return e.Batteries, nil
 	}
 	return nil, &NotLoadedError{edge: "batteries"}
@@ -205,7 +216,7 @@ func (e CabinetEdges) BatteriesOrErr() ([]*Battery, error) {
 // BatteryFlowsOrErr returns the BatteryFlows value or an error if the edge
 // was not loaded in eager-loading.
 func (e CabinetEdges) BatteryFlowsOrErr() ([]*BatteryFlow, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[9] {
 		return e.BatteryFlows, nil
 	}
 	return nil, &NotLoadedError{edge: "battery_flows"}
@@ -216,7 +227,7 @@ func (e CabinetEdges) BatteryFlowsOrErr() ([]*BatteryFlow, error) {
 func (e CabinetEdges) StationOrErr() (*EnterpriseStation, error) {
 	if e.Station != nil {
 		return e.Station, nil
-	} else if e.loadedTypes[9] {
+	} else if e.loadedTypes[10] {
 		return nil, &NotFoundError{label: enterprisestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "station"}
@@ -227,7 +238,7 @@ func (e CabinetEdges) StationOrErr() (*EnterpriseStation, error) {
 func (e CabinetEdges) EnterpriseOrErr() (*Enterprise, error) {
 	if e.Enterprise != nil {
 		return e.Enterprise, nil
-	} else if e.loadedTypes[10] {
+	} else if e.loadedTypes[11] {
 		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
@@ -525,6 +536,11 @@ func (c *Cabinet) QueryExchanges() *ExchangeQuery {
 // QueryAsset queries the "asset" edge of the Cabinet entity.
 func (c *Cabinet) QueryAsset() *AssetQuery {
 	return NewCabinetClient(c.config).QueryAsset(c)
+}
+
+// QueryStocks queries the "stocks" edge of the Cabinet entity.
+func (c *Cabinet) QueryStocks() *StockQuery {
+	return NewCabinetClient(c.config).QueryStocks(c)
 }
 
 // QueryBatteries queries the "batteries" edge of the Cabinet entity.

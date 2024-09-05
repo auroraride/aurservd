@@ -24,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
@@ -486,6 +487,21 @@ func (cc *CabinetCreate) AddAsset(a ...*Asset) *CabinetCreate {
 	return cc.AddAssetIDs(ids...)
 }
 
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (cc *CabinetCreate) AddStockIDs(ids ...uint64) *CabinetCreate {
+	cc.mutation.AddStockIDs(ids...)
+	return cc
+}
+
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (cc *CabinetCreate) AddStocks(s ...*Stock) *CabinetCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return cc.AddStockIDs(ids...)
+}
+
 // AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
 func (cc *CabinetCreate) AddBatteryIDs(ids ...uint64) *CabinetCreate {
 	cc.mutation.AddBatteryIDs(ids...)
@@ -909,6 +925,22 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.StocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.StocksTable,
+			Columns: []string{cabinet.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

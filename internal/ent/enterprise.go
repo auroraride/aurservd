@@ -102,13 +102,15 @@ type EnterpriseEdges struct {
 	Cabinets []*Cabinet `json:"cabinets,omitempty"`
 	// Asset holds the value of the asset edge.
 	Asset []*Asset `json:"asset,omitempty"`
+	// Stocks holds the value of the stocks edge.
+	Stocks []*Stock `json:"stocks,omitempty"`
 	// SwapPutinBatteries holds the value of the swap_putin_batteries edge.
 	SwapPutinBatteries []*EnterpriseBatterySwap `json:"swap_putin_batteries,omitempty"`
 	// SwapPutoutBatteries holds the value of the swap_putout_batteries edge.
 	SwapPutoutBatteries []*EnterpriseBatterySwap `json:"swap_putout_batteries,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [14]bool
+	loadedTypes [15]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -221,10 +223,19 @@ func (e EnterpriseEdges) AssetOrErr() ([]*Asset, error) {
 	return nil, &NotLoadedError{edge: "asset"}
 }
 
+// StocksOrErr returns the Stocks value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) StocksOrErr() ([]*Stock, error) {
+	if e.loadedTypes[12] {
+		return e.Stocks, nil
+	}
+	return nil, &NotLoadedError{edge: "stocks"}
+}
+
 // SwapPutinBatteriesOrErr returns the SwapPutinBatteries value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseEdges) SwapPutinBatteriesOrErr() ([]*EnterpriseBatterySwap, error) {
-	if e.loadedTypes[12] {
+	if e.loadedTypes[13] {
 		return e.SwapPutinBatteries, nil
 	}
 	return nil, &NotLoadedError{edge: "swap_putin_batteries"}
@@ -233,7 +244,7 @@ func (e EnterpriseEdges) SwapPutinBatteriesOrErr() ([]*EnterpriseBatterySwap, er
 // SwapPutoutBatteriesOrErr returns the SwapPutoutBatteries value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseEdges) SwapPutoutBatteriesOrErr() ([]*EnterpriseBatterySwap, error) {
-	if e.loadedTypes[13] {
+	if e.loadedTypes[14] {
 		return e.SwapPutoutBatteries, nil
 	}
 	return nil, &NotLoadedError{edge: "swap_putout_batteries"}
@@ -510,6 +521,11 @@ func (e *Enterprise) QueryCabinets() *CabinetQuery {
 // QueryAsset queries the "asset" edge of the Enterprise entity.
 func (e *Enterprise) QueryAsset() *AssetQuery {
 	return NewEnterpriseClient(e.config).QueryAsset(e)
+}
+
+// QueryStocks queries the "stocks" edge of the Enterprise entity.
+func (e *Enterprise) QueryStocks() *StockQuery {
+	return NewEnterpriseClient(e.config).QueryStocks(e)
 }
 
 // QuerySwapPutinBatteries queries the "swap_putin_batteries" edge of the Enterprise entity.

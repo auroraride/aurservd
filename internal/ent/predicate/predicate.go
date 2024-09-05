@@ -111,6 +111,9 @@ type CouponAssembly func(*sql.Selector)
 // CouponTemplate is the predicate function for coupontemplate builders.
 type CouponTemplate func(*sql.Selector)
 
+// Ebike is the predicate function for ebike builders.
+type Ebike func(*sql.Selector)
+
 // EbikeBrand is the predicate function for ebikebrand builders.
 type EbikeBrand func(*sql.Selector)
 
@@ -266,6 +269,9 @@ type Role func(*sql.Selector)
 
 // Setting is the predicate function for setting builders.
 type Setting func(*sql.Selector)
+
+// Stock is the predicate function for stock builders.
+type Stock func(*sql.Selector)
 
 // StockSummary is the predicate function for stocksummary builders.
 type StockSummary func(*sql.Selector)

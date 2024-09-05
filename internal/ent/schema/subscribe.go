@@ -101,7 +101,6 @@ func (Subscribe) Fields() []ent.Field {
 		field.Uint64("enterprise_price_id").Optional().Comment("团签价格ID"),
 		field.Uint8("deposit_type").Optional().Comment("押金类型 1:芝麻免押 2:微信支付分免押 3:合同免押 4:支付押金"),
 
-		// field.Uint64("battery_id").Optional().Nillable().Comment("电池ID"),
 		field.Uint64("ebike_id").Optional().Nillable().Comment("电车ID"),
 	}
 }

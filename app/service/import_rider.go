@@ -415,7 +415,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
 			SetNillableStationID(sub.StationID).
 			SetNillablePlanID(sub.PlanID).
 			SetType(model.BusinessTypeActive).
-			SetAssetTransferSn(sn).
+			SetStockSn(sn).
 			Save(s.ctx)
 
 		return

@@ -47,6 +47,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrandattribute"
 	"github.com/auroraride/aurservd/internal/ent/employee"
@@ -99,6 +100,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/riderphonedevice"
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/setting"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
@@ -205,6 +207,7 @@ func checkColumn(table, column string) error {
 			coupon.Table:                     coupon.ValidColumn,
 			couponassembly.Table:             couponassembly.ValidColumn,
 			coupontemplate.Table:             coupontemplate.ValidColumn,
+			ebike.Table:                      ebike.ValidColumn,
 			ebikebrand.Table:                 ebikebrand.ValidColumn,
 			ebikebrandattribute.Table:        ebikebrandattribute.ValidColumn,
 			employee.Table:                   employee.ValidColumn,
@@ -257,6 +260,7 @@ func checkColumn(table, column string) error {
 			riderphonedevice.Table:           riderphonedevice.ValidColumn,
 			role.Table:                       role.ValidColumn,
 			setting.Table:                    setting.ValidColumn,
+			stock.Table:                      stock.ValidColumn,
 			stocksummary.Table:               stocksummary.ValidColumn,
 			store.Table:                      store.ValidColumn,
 			storegoods.Table:                 storegoods.ValidColumn,

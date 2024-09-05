@@ -296,6 +296,13 @@ func (c *CouponTemplateClient) ModifyOne(old *CouponTemplate, data any) *CouponT
 	return EntitySetAttributes[CouponTemplateUpdateOne, CouponTemplate](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for Ebike.
+func (c *EbikeClient) ModifyOne(old *Ebike, data any) *EbikeUpdateOne {
+	mutation := newEbikeMutation(c.config, OpUpdateOne, withEbike(old))
+	up := &EbikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[EbikeUpdateOne, Ebike](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for EbikeBrand.
 func (c *EbikeBrandClient) ModifyOne(old *EbikeBrand, data any) *EbikeBrandUpdateOne {
 	mutation := newEbikeBrandMutation(c.config, OpUpdateOne, withEbikeBrand(old))
@@ -658,6 +665,13 @@ func (c *SettingClient) ModifyOne(old *Setting, data any) *SettingUpdateOne {
 	mutation := newSettingMutation(c.config, OpUpdateOne, withSetting(old))
 	up := &SettingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return EntitySetAttributes[SettingUpdateOne, Setting](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for Stock.
+func (c *StockClient) ModifyOne(old *Stock, data any) *StockUpdateOne {
+	mutation := newStockMutation(c.config, OpUpdateOne, withStock(old))
+	up := &StockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[StockUpdateOne, Stock](up, old, data)
 }
 
 // ModifyOne returns an update with pointer struct builder for StockSummary.
