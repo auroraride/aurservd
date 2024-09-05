@@ -11,11 +11,11 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -44,7 +44,7 @@ type BusinessQuery struct {
 	withCabinet    *CabinetQuery
 	withBattery    *BatteryQuery
 	withAgent      *AgentQuery
-	withRtoEbike   *EbikeQuery
+	withRtoEbike   *AssetQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -325,8 +325,8 @@ func (bq *BusinessQuery) QueryAgent() *AgentQuery {
 }
 
 // QueryRtoEbike chains the current query on the "rto_ebike" edge.
-func (bq *BusinessQuery) QueryRtoEbike() *EbikeQuery {
-	query := (&EbikeClient{config: bq.config}).Query()
+func (bq *BusinessQuery) QueryRtoEbike() *AssetQuery {
+	query := (&AssetClient{config: bq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := bq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -337,7 +337,7 @@ func (bq *BusinessQuery) QueryRtoEbike() *EbikeQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(business.Table, business.FieldID, selector),
-			sqlgraph.To(ebike.Table, ebike.FieldID),
+			sqlgraph.To(asset.Table, asset.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, business.RtoEbikeTable, business.RtoEbikeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
@@ -679,8 +679,8 @@ func (bq *BusinessQuery) WithAgent(opts ...func(*AgentQuery)) *BusinessQuery {
 
 // WithRtoEbike tells the query-builder to eager-load the nodes that are connected to
 // the "rto_ebike" edge. The optional arguments are used to configure the query builder of the edge.
-func (bq *BusinessQuery) WithRtoEbike(opts ...func(*EbikeQuery)) *BusinessQuery {
-	query := (&EbikeClient{config: bq.config}).Query()
+func (bq *BusinessQuery) WithRtoEbike(opts ...func(*AssetQuery)) *BusinessQuery {
+	query := (&AssetClient{config: bq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -870,7 +870,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 	}
 	if query := bq.withRtoEbike; query != nil {
 		if err := bq.loadRtoEbike(ctx, query, nodes, nil,
-			func(n *Business, e *Ebike) { n.Edges.RtoEbike = e }); err != nil {
+			func(n *Business, e *Asset) { n.Edges.RtoEbike = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1220,7 +1220,7 @@ func (bq *BusinessQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes
 	}
 	return nil
 }
-func (bq *BusinessQuery) loadRtoEbike(ctx context.Context, query *EbikeQuery, nodes []*Business, init func(*Business), assign func(*Business, *Ebike)) error {
+func (bq *BusinessQuery) loadRtoEbike(ctx context.Context, query *AssetQuery, nodes []*Business, init func(*Business), assign func(*Business, *Asset)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Business)
 	for i := range nodes {
@@ -1236,7 +1236,7 @@ func (bq *BusinessQuery) loadRtoEbike(ctx context.Context, query *EbikeQuery, no
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(ebike.IDIn(ids...))
+	query.Where(asset.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err

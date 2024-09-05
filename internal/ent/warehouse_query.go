@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -27,6 +28,7 @@ type WarehouseQuery struct {
 	withCity          *CityQuery
 	withAssetManager  *AssetManagerQuery
 	withAssetManagers *AssetManagerQuery
+	withAsset         *AssetQuery
 	modifiers         []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -123,6 +125,28 @@ func (wq *WarehouseQuery) QueryAssetManagers() *AssetManagerQuery {
 			sqlgraph.From(warehouse.Table, warehouse.FieldID, selector),
 			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, warehouse.AssetManagersTable, warehouse.AssetManagersPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAsset chains the current query on the "asset" edge.
+func (wq *WarehouseQuery) QueryAsset() *AssetQuery {
+	query := (&AssetClient{config: wq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := wq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := wq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(warehouse.Table, warehouse.FieldID, selector),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, warehouse.AssetTable, warehouse.AssetColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
 		return fromU, nil
@@ -325,6 +349,7 @@ func (wq *WarehouseQuery) Clone() *WarehouseQuery {
 		withCity:          wq.withCity.Clone(),
 		withAssetManager:  wq.withAssetManager.Clone(),
 		withAssetManagers: wq.withAssetManagers.Clone(),
+		withAsset:         wq.withAsset.Clone(),
 		// clone intermediate query.
 		sql:  wq.sql.Clone(),
 		path: wq.path,
@@ -361,6 +386,17 @@ func (wq *WarehouseQuery) WithAssetManagers(opts ...func(*AssetManagerQuery)) *W
 		opt(query)
 	}
 	wq.withAssetManagers = query
+	return wq
+}
+
+// WithAsset tells the query-builder to eager-load the nodes that are connected to
+// the "asset" edge. The optional arguments are used to configure the query builder of the edge.
+func (wq *WarehouseQuery) WithAsset(opts ...func(*AssetQuery)) *WarehouseQuery {
+	query := (&AssetClient{config: wq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	wq.withAsset = query
 	return wq
 }
 
@@ -442,10 +478,11 @@ func (wq *WarehouseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Wa
 	var (
 		nodes       = []*Warehouse{}
 		_spec       = wq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			wq.withCity != nil,
 			wq.withAssetManager != nil,
 			wq.withAssetManagers != nil,
+			wq.withAsset != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -485,6 +522,13 @@ func (wq *WarehouseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Wa
 		if err := wq.loadAssetManagers(ctx, query, nodes,
 			func(n *Warehouse) { n.Edges.AssetManagers = []*AssetManager{} },
 			func(n *Warehouse, e *AssetManager) { n.Edges.AssetManagers = append(n.Edges.AssetManagers, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := wq.withAsset; query != nil {
+		if err := wq.loadAsset(ctx, query, nodes,
+			func(n *Warehouse) { n.Edges.Asset = []*Asset{} },
+			func(n *Warehouse, e *Asset) { n.Edges.Asset = append(n.Edges.Asset, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -613,6 +657,37 @@ func (wq *WarehouseQuery) loadAssetManagers(ctx context.Context, query *AssetMan
 	}
 	return nil
 }
+func (wq *WarehouseQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []*Warehouse, init func(*Warehouse), assign func(*Warehouse, *Asset)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Warehouse)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(asset.FieldLocationsID)
+	}
+	query.Where(predicate.Asset(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(warehouse.AssetColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.LocationsID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "locations_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (wq *WarehouseQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := wq.querySpec()
@@ -719,6 +794,7 @@ var (
 	WarehouseQueryWithCity          WarehouseQueryWith = "City"
 	WarehouseQueryWithAssetManager  WarehouseQueryWith = "AssetManager"
 	WarehouseQueryWithAssetManagers WarehouseQueryWith = "AssetManagers"
+	WarehouseQueryWithAsset         WarehouseQueryWith = "Asset"
 )
 
 func (wq *WarehouseQuery) With(withEdges ...WarehouseQueryWith) *WarehouseQuery {
@@ -730,6 +806,8 @@ func (wq *WarehouseQuery) With(withEdges ...WarehouseQueryWith) *WarehouseQuery 
 			wq.WithAssetManager()
 		case WarehouseQueryWithAssetManagers:
 			wq.WithAssetManagers()
+		case WarehouseQueryWithAsset:
+			wq.WithAsset()
 		}
 	}
 	return wq

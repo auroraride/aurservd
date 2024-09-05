@@ -146,13 +146,12 @@ func (b *assetTransferBiz) Transfer(assetSignInfo definition.AssetSignInfo, req 
 
 	var md model.Modifier
 
-	aType := model.AssetTransferTypeTransfer
 	newReq := model.AssetTransferCreateReq{
 		ToLocationType:    req.ToLocationType,
 		ToLocationID:      req.ToLocationID,
 		Details:           req.Details,
 		Reason:            req.Reason,
-		AssetTransferType: &aType,
+		AssetTransferType: model.AssetTransferTypeTransfer,
 	}
 
 	if assetSignInfo.AssetManager != nil {
@@ -214,8 +213,8 @@ func (b *assetTransferBiz) Transfer(assetSignInfo definition.AssetSignInfo, req 
 			Phone: assetSignInfo.Maintainer.Phone,
 		}
 	}
-
-	return service.NewAssetTransfer().Transfer(b.ctx, &newReq, &md)
+	_, failed, err = service.NewAssetTransfer().Transfer(b.ctx, &newReq, &md)
+	return
 }
 
 // Flow 资产流转明细

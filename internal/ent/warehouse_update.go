@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -225,6 +226,21 @@ func (wu *WarehouseUpdate) AddAssetManagers(a ...*AssetManager) *WarehouseUpdate
 	return wu.AddAssetManagerIDs(ids...)
 }
 
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (wu *WarehouseUpdate) AddAssetIDs(ids ...uint64) *WarehouseUpdate {
+	wu.mutation.AddAssetIDs(ids...)
+	return wu
+}
+
+// AddAsset adds the "asset" edges to the Asset entity.
+func (wu *WarehouseUpdate) AddAsset(a ...*Asset) *WarehouseUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return wu.AddAssetIDs(ids...)
+}
+
 // Mutation returns the WarehouseMutation object of the builder.
 func (wu *WarehouseUpdate) Mutation() *WarehouseMutation {
 	return wu.mutation
@@ -261,6 +277,27 @@ func (wu *WarehouseUpdate) RemoveAssetManagers(a ...*AssetManager) *WarehouseUpd
 		ids[i] = a[i].ID
 	}
 	return wu.RemoveAssetManagerIDs(ids...)
+}
+
+// ClearAsset clears all "asset" edges to the Asset entity.
+func (wu *WarehouseUpdate) ClearAsset() *WarehouseUpdate {
+	wu.mutation.ClearAsset()
+	return wu
+}
+
+// RemoveAssetIDs removes the "asset" edge to Asset entities by IDs.
+func (wu *WarehouseUpdate) RemoveAssetIDs(ids ...uint64) *WarehouseUpdate {
+	wu.mutation.RemoveAssetIDs(ids...)
+	return wu
+}
+
+// RemoveAsset removes "asset" edges to Asset entities.
+func (wu *WarehouseUpdate) RemoveAsset(a ...*Asset) *WarehouseUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return wu.RemoveAssetIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -472,6 +509,51 @@ func (wu *WarehouseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if wu.mutation.AssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   warehouse.AssetTable,
+			Columns: []string{warehouse.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.RemovedAssetIDs(); len(nodes) > 0 && !wu.mutation.AssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   warehouse.AssetTable,
+			Columns: []string{warehouse.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.AssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   warehouse.AssetTable,
+			Columns: []string{warehouse.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -694,6 +776,21 @@ func (wuo *WarehouseUpdateOne) AddAssetManagers(a ...*AssetManager) *WarehouseUp
 	return wuo.AddAssetManagerIDs(ids...)
 }
 
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (wuo *WarehouseUpdateOne) AddAssetIDs(ids ...uint64) *WarehouseUpdateOne {
+	wuo.mutation.AddAssetIDs(ids...)
+	return wuo
+}
+
+// AddAsset adds the "asset" edges to the Asset entity.
+func (wuo *WarehouseUpdateOne) AddAsset(a ...*Asset) *WarehouseUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return wuo.AddAssetIDs(ids...)
+}
+
 // Mutation returns the WarehouseMutation object of the builder.
 func (wuo *WarehouseUpdateOne) Mutation() *WarehouseMutation {
 	return wuo.mutation
@@ -730,6 +827,27 @@ func (wuo *WarehouseUpdateOne) RemoveAssetManagers(a ...*AssetManager) *Warehous
 		ids[i] = a[i].ID
 	}
 	return wuo.RemoveAssetManagerIDs(ids...)
+}
+
+// ClearAsset clears all "asset" edges to the Asset entity.
+func (wuo *WarehouseUpdateOne) ClearAsset() *WarehouseUpdateOne {
+	wuo.mutation.ClearAsset()
+	return wuo
+}
+
+// RemoveAssetIDs removes the "asset" edge to Asset entities by IDs.
+func (wuo *WarehouseUpdateOne) RemoveAssetIDs(ids ...uint64) *WarehouseUpdateOne {
+	wuo.mutation.RemoveAssetIDs(ids...)
+	return wuo
+}
+
+// RemoveAsset removes "asset" edges to Asset entities.
+func (wuo *WarehouseUpdateOne) RemoveAsset(a ...*Asset) *WarehouseUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return wuo.RemoveAssetIDs(ids...)
 }
 
 // Where appends a list predicates to the WarehouseUpdate builder.
@@ -971,6 +1089,51 @@ func (wuo *WarehouseUpdateOne) sqlSave(ctx context.Context) (_node *Warehouse, e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if wuo.mutation.AssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   warehouse.AssetTable,
+			Columns: []string{warehouse.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.RemovedAssetIDs(); len(nodes) > 0 && !wuo.mutation.AssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   warehouse.AssetTable,
+			Columns: []string{warehouse.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.AssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   warehouse.AssetTable,
+			Columns: []string{warehouse.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

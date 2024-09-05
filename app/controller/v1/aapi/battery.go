@@ -44,10 +44,11 @@ func (*battery) Selection(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Agent-Token	header		string	true	"代理校验token"
+// @Param	query			query		model.BatteryModelListReq	false	"筛选项"
 // @Success	200				{object}	model.ItemListRes
 func (*battery) Model(c echo.Context) (err error) {
-	ctx := app.ContextX[app.AgentContext](c)
-	return ctx.SendResponse(service.NewBatteryModel().List())
+	ctx, req := app.AgentContextAndBinding[model.BatteryModelListReq](c)
+	return ctx.SendResponse(service.NewBatteryModel().List(req))
 }
 
 // List 电池列表
@@ -58,21 +59,9 @@ func (*battery) Model(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Agent-Token	header		string					true	"代理校验token"
-// @Param	query			query		model.BatteryListReq	false	"筛选项"
-// @Success	200				{object}	[]model.BatteryListRes
+// @Param	query			query		model.AssetListReq	    false	"筛选项"
+// @Success	200				{object}	model.ItemListRes{items=[]model.AssetListRes}	"请求成功"
 func (*battery) List(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.BatteryListReq](c)
-	return ctx.SendResponse(service.NewBattery().List(&model.BatteryListReq{
-		PaginationReq: req.PaginationReq,
-		BatteryFilter: model.BatteryFilter{
-			EnterpriseID: &ctx.Enterprise.ID,
-			StationID:    req.StationID,
-			CabinetID:    req.CabinetID,
-			SN:           req.SN,
-			Model:        req.Model,
-			RiderID:      req.RiderID,
-			Status:       req.Status,
-			Goal:         req.Goal,
-		},
-	}))
+	ctx, req := app.AgentContextAndBinding[model.AssetListReq](c)
+	return ctx.SendResponse(service.NewAsset().List(ctx.Request().Context(), req))
 }

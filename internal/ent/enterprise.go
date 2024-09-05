@@ -100,8 +100,8 @@ type EnterpriseEdges struct {
 	Agents []*Agent `json:"agents,omitempty"`
 	// Cabinets holds the value of the cabinets edge.
 	Cabinets []*Cabinet `json:"cabinets,omitempty"`
-	// Stocks holds the value of the stocks edge.
-	Stocks []*Stock `json:"stocks,omitempty"`
+	// Asset holds the value of the asset edge.
+	Asset []*Asset `json:"asset,omitempty"`
 	// SwapPutinBatteries holds the value of the swap_putin_batteries edge.
 	SwapPutinBatteries []*EnterpriseBatterySwap `json:"swap_putin_batteries,omitempty"`
 	// SwapPutoutBatteries holds the value of the swap_putout_batteries edge.
@@ -212,13 +212,13 @@ func (e EnterpriseEdges) CabinetsOrErr() ([]*Cabinet, error) {
 	return nil, &NotLoadedError{edge: "cabinets"}
 }
 
-// StocksOrErr returns the Stocks value or an error if the edge
+// AssetOrErr returns the Asset value or an error if the edge
 // was not loaded in eager-loading.
-func (e EnterpriseEdges) StocksOrErr() ([]*Stock, error) {
+func (e EnterpriseEdges) AssetOrErr() ([]*Asset, error) {
 	if e.loadedTypes[11] {
-		return e.Stocks, nil
+		return e.Asset, nil
 	}
-	return nil, &NotLoadedError{edge: "stocks"}
+	return nil, &NotLoadedError{edge: "asset"}
 }
 
 // SwapPutinBatteriesOrErr returns the SwapPutinBatteries value or an error if the edge
@@ -507,9 +507,9 @@ func (e *Enterprise) QueryCabinets() *CabinetQuery {
 	return NewEnterpriseClient(e.config).QueryCabinets(e)
 }
 
-// QueryStocks queries the "stocks" edge of the Enterprise entity.
-func (e *Enterprise) QueryStocks() *StockQuery {
-	return NewEnterpriseClient(e.config).QueryStocks(e)
+// QueryAsset queries the "asset" edge of the Enterprise entity.
+func (e *Enterprise) QueryAsset() *AssetQuery {
+	return NewEnterpriseClient(e.config).QueryAsset(e)
 }
 
 // QuerySwapPutinBatteries queries the "swap_putin_batteries" edge of the Enterprise entity.

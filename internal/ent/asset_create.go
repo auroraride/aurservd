@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
@@ -27,6 +28,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
@@ -286,6 +288,34 @@ func (ac *AssetCreate) SetNillableBrandName(s *string) *AssetCreate {
 	return ac
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (ac *AssetCreate) SetSubscribeID(u uint64) *AssetCreate {
+	ac.mutation.SetSubscribeID(u)
+	return ac
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (ac *AssetCreate) SetNillableSubscribeID(u *uint64) *AssetCreate {
+	if u != nil {
+		ac.SetSubscribeID(*u)
+	}
+	return ac
+}
+
+// SetOrdinal sets the "ordinal" field.
+func (ac *AssetCreate) SetOrdinal(i int) *AssetCreate {
+	ac.mutation.SetOrdinal(i)
+	return ac
+}
+
+// SetNillableOrdinal sets the "ordinal" field if the given value is not nil.
+func (ac *AssetCreate) SetNillableOrdinal(i *int) *AssetCreate {
+	if i != nil {
+		ac.SetOrdinal(*i)
+	}
+	return ac
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (ac *AssetCreate) SetBrand(e *EbikeBrand) *AssetCreate {
 	return ac.SetBrandID(e.ID)
@@ -319,6 +349,71 @@ func (ac *AssetCreate) AddValues(a ...*AssetAttributeValues) *AssetCreate {
 		ids[i] = a[i].ID
 	}
 	return ac.AddValueIDs(ids...)
+}
+
+// AddScrapDetailIDs adds the "scrap_details" edge to the AssetScrapDetails entity by IDs.
+func (ac *AssetCreate) AddScrapDetailIDs(ids ...uint64) *AssetCreate {
+	ac.mutation.AddScrapDetailIDs(ids...)
+	return ac
+}
+
+// AddScrapDetails adds the "scrap_details" edges to the AssetScrapDetails entity.
+func (ac *AssetCreate) AddScrapDetails(a ...*AssetScrapDetails) *AssetCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ac.AddScrapDetailIDs(ids...)
+}
+
+// AddTransferDetailIDs adds the "transfer_details" edge to the AssetTransferDetails entity by IDs.
+func (ac *AssetCreate) AddTransferDetailIDs(ids ...uint64) *AssetCreate {
+	ac.mutation.AddTransferDetailIDs(ids...)
+	return ac
+}
+
+// AddTransferDetails adds the "transfer_details" edges to the AssetTransferDetails entity.
+func (ac *AssetCreate) AddTransferDetails(a ...*AssetTransferDetails) *AssetCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ac.AddTransferDetailIDs(ids...)
+}
+
+// AddMaintenanceDetailIDs adds the "maintenance_details" edge to the AssetMaintenanceDetails entity by IDs.
+func (ac *AssetCreate) AddMaintenanceDetailIDs(ids ...uint64) *AssetCreate {
+	ac.mutation.AddMaintenanceDetailIDs(ids...)
+	return ac
+}
+
+// AddMaintenanceDetails adds the "maintenance_details" edges to the AssetMaintenanceDetails entity.
+func (ac *AssetCreate) AddMaintenanceDetails(a ...*AssetMaintenanceDetails) *AssetCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ac.AddMaintenanceDetailIDs(ids...)
+}
+
+// AddCheckDetailIDs adds the "check_details" edge to the AssetCheckDetails entity by IDs.
+func (ac *AssetCreate) AddCheckDetailIDs(ids ...uint64) *AssetCreate {
+	ac.mutation.AddCheckDetailIDs(ids...)
+	return ac
+}
+
+// AddCheckDetails adds the "check_details" edges to the AssetCheckDetails entity.
+func (ac *AssetCreate) AddCheckDetails(a ...*AssetCheckDetails) *AssetCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ac.AddCheckDetailIDs(ids...)
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (ac *AssetCreate) SetSubscribe(s *Subscribe) *AssetCreate {
+	return ac.SetSubscribeID(s.ID)
 }
 
 // SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
@@ -435,64 +530,24 @@ func (ac *AssetCreate) SetOperator(m *Maintainer) *AssetCreate {
 	return ac.SetOperatorID(m.ID)
 }
 
-// AddScrapDetailIDs adds the "scrap_details" edge to the AssetScrapDetails entity by IDs.
-func (ac *AssetCreate) AddScrapDetailIDs(ids ...uint64) *AssetCreate {
-	ac.mutation.AddScrapDetailIDs(ids...)
+// AddAllocateIDs adds the "allocates" edge to the Allocate entity by IDs.
+func (ac *AssetCreate) AddAllocateIDs(ids ...uint64) *AssetCreate {
+	ac.mutation.AddAllocateIDs(ids...)
 	return ac
 }
 
-// AddScrapDetails adds the "scrap_details" edges to the AssetScrapDetails entity.
-func (ac *AssetCreate) AddScrapDetails(a ...*AssetScrapDetails) *AssetCreate {
+// AddAllocates adds the "allocates" edges to the Allocate entity.
+func (ac *AssetCreate) AddAllocates(a ...*Allocate) *AssetCreate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return ac.AddScrapDetailIDs(ids...)
+	return ac.AddAllocateIDs(ids...)
 }
 
-// AddTransferDetailIDs adds the "transfer_details" edge to the AssetTransferDetails entity by IDs.
-func (ac *AssetCreate) AddTransferDetailIDs(ids ...uint64) *AssetCreate {
-	ac.mutation.AddTransferDetailIDs(ids...)
-	return ac
-}
-
-// AddTransferDetails adds the "transfer_details" edges to the AssetTransferDetails entity.
-func (ac *AssetCreate) AddTransferDetails(a ...*AssetTransferDetails) *AssetCreate {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return ac.AddTransferDetailIDs(ids...)
-}
-
-// AddMaintenanceDetailIDs adds the "maintenance_details" edge to the AssetMaintenanceDetails entity by IDs.
-func (ac *AssetCreate) AddMaintenanceDetailIDs(ids ...uint64) *AssetCreate {
-	ac.mutation.AddMaintenanceDetailIDs(ids...)
-	return ac
-}
-
-// AddMaintenanceDetails adds the "maintenance_details" edges to the AssetMaintenanceDetails entity.
-func (ac *AssetCreate) AddMaintenanceDetails(a ...*AssetMaintenanceDetails) *AssetCreate {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return ac.AddMaintenanceDetailIDs(ids...)
-}
-
-// AddCheckDetailIDs adds the "check_details" edge to the AssetCheckDetails entity by IDs.
-func (ac *AssetCreate) AddCheckDetailIDs(ids ...uint64) *AssetCreate {
-	ac.mutation.AddCheckDetailIDs(ids...)
-	return ac
-}
-
-// AddCheckDetails adds the "check_details" edges to the AssetCheckDetails entity.
-func (ac *AssetCreate) AddCheckDetails(a ...*AssetCheckDetails) *AssetCreate {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return ac.AddCheckDetailIDs(ids...)
+// SetRtoRider sets the "rto_rider" edge to the Rider entity.
+func (ac *AssetCreate) SetRtoRider(r *Rider) *AssetCreate {
+	return ac.SetRtoRiderID(r.ID)
 }
 
 // Mutation returns the AssetMutation object of the builder.
@@ -652,10 +707,6 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		_spec.SetField(asset.FieldLocationsType, field.TypeUint8, value)
 		_node.LocationsType = value
 	}
-	if value, ok := ac.mutation.RtoRiderID(); ok {
-		_spec.SetField(asset.FieldRtoRiderID, field.TypeUint64, value)
-		_node.RtoRiderID = &value
-	}
 	if value, ok := ac.mutation.CheckAt(); ok {
 		_spec.SetField(asset.FieldCheckAt, field.TypeTime, value)
 		_node.CheckAt = &value
@@ -663,6 +714,10 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 	if value, ok := ac.mutation.BrandName(); ok {
 		_spec.SetField(asset.FieldBrandName, field.TypeString, value)
 		_node.BrandName = value
+	}
+	if value, ok := ac.mutation.Ordinal(); ok {
+		_spec.SetField(asset.FieldOrdinal, field.TypeInt, value)
+		_node.Ordinal = &value
 	}
 	if nodes := ac.mutation.BrandIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -748,108 +803,6 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.WarehouseIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.WarehouseTable,
-			Columns: []string{asset.WarehouseColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.LocationsID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ac.mutation.StoreIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.StoreTable,
-			Columns: []string{asset.StoreColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.LocationsID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ac.mutation.CabinetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.CabinetTable,
-			Columns: []string{asset.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.LocationsID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ac.mutation.StationIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.StationTable,
-			Columns: []string{asset.StationColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.LocationsID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ac.mutation.RiderIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.RiderTable,
-			Columns: []string{asset.RiderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.LocationsID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ac.mutation.OperatorIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.OperatorTable,
-			Columns: []string{asset.OperatorColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.LocationsID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := ac.mutation.ScrapDetailsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -912,6 +865,158 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   asset.SubscribeTable,
+			Columns: []string{asset.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.SubscribeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.WarehouseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.WarehouseTable,
+			Columns: []string{asset.WarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.LocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.StoreTable,
+			Columns: []string{asset.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.LocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.CabinetTable,
+			Columns: []string{asset.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.LocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.StationTable,
+			Columns: []string{asset.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.LocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RiderTable,
+			Columns: []string{asset.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.LocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.OperatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.OperatorTable,
+			Columns: []string{asset.OperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.LocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.AllocatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.AllocatesTable,
+			Columns: []string{asset.AllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.RtoRiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   asset.RtoRiderTable,
+			Columns: []string{asset.RtoRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RtoRiderID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -1236,12 +1341,6 @@ func (u *AssetUpsert) UpdateRtoRiderID() *AssetUpsert {
 	return u
 }
 
-// AddRtoRiderID adds v to the "rto_rider_id" field.
-func (u *AssetUpsert) AddRtoRiderID(v uint64) *AssetUpsert {
-	u.Add(asset.FieldRtoRiderID, v)
-	return u
-}
-
 // ClearRtoRiderID clears the value of the "rto_rider_id" field.
 func (u *AssetUpsert) ClearRtoRiderID() *AssetUpsert {
 	u.SetNull(asset.FieldRtoRiderID)
@@ -1281,6 +1380,48 @@ func (u *AssetUpsert) UpdateBrandName() *AssetUpsert {
 // ClearBrandName clears the value of the "brand_name" field.
 func (u *AssetUpsert) ClearBrandName() *AssetUpsert {
 	u.SetNull(asset.FieldBrandName)
+	return u
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *AssetUpsert) SetSubscribeID(v uint64) *AssetUpsert {
+	u.Set(asset.FieldSubscribeID, v)
+	return u
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *AssetUpsert) UpdateSubscribeID() *AssetUpsert {
+	u.SetExcluded(asset.FieldSubscribeID)
+	return u
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *AssetUpsert) ClearSubscribeID() *AssetUpsert {
+	u.SetNull(asset.FieldSubscribeID)
+	return u
+}
+
+// SetOrdinal sets the "ordinal" field.
+func (u *AssetUpsert) SetOrdinal(v int) *AssetUpsert {
+	u.Set(asset.FieldOrdinal, v)
+	return u
+}
+
+// UpdateOrdinal sets the "ordinal" field to the value that was provided on create.
+func (u *AssetUpsert) UpdateOrdinal() *AssetUpsert {
+	u.SetExcluded(asset.FieldOrdinal)
+	return u
+}
+
+// AddOrdinal adds v to the "ordinal" field.
+func (u *AssetUpsert) AddOrdinal(v int) *AssetUpsert {
+	u.Add(asset.FieldOrdinal, v)
+	return u
+}
+
+// ClearOrdinal clears the value of the "ordinal" field.
+func (u *AssetUpsert) ClearOrdinal() *AssetUpsert {
+	u.SetNull(asset.FieldOrdinal)
 	return u
 }
 
@@ -1640,13 +1781,6 @@ func (u *AssetUpsertOne) SetRtoRiderID(v uint64) *AssetUpsertOne {
 	})
 }
 
-// AddRtoRiderID adds v to the "rto_rider_id" field.
-func (u *AssetUpsertOne) AddRtoRiderID(v uint64) *AssetUpsertOne {
-	return u.Update(func(s *AssetUpsert) {
-		s.AddRtoRiderID(v)
-	})
-}
-
 // UpdateRtoRiderID sets the "rto_rider_id" field to the value that was provided on create.
 func (u *AssetUpsertOne) UpdateRtoRiderID() *AssetUpsertOne {
 	return u.Update(func(s *AssetUpsert) {
@@ -1700,6 +1834,55 @@ func (u *AssetUpsertOne) UpdateBrandName() *AssetUpsertOne {
 func (u *AssetUpsertOne) ClearBrandName() *AssetUpsertOne {
 	return u.Update(func(s *AssetUpsert) {
 		s.ClearBrandName()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *AssetUpsertOne) SetSubscribeID(v uint64) *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *AssetUpsertOne) UpdateSubscribeID() *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *AssetUpsertOne) ClearSubscribeID() *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.ClearSubscribeID()
+	})
+}
+
+// SetOrdinal sets the "ordinal" field.
+func (u *AssetUpsertOne) SetOrdinal(v int) *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.SetOrdinal(v)
+	})
+}
+
+// AddOrdinal adds v to the "ordinal" field.
+func (u *AssetUpsertOne) AddOrdinal(v int) *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.AddOrdinal(v)
+	})
+}
+
+// UpdateOrdinal sets the "ordinal" field to the value that was provided on create.
+func (u *AssetUpsertOne) UpdateOrdinal() *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.UpdateOrdinal()
+	})
+}
+
+// ClearOrdinal clears the value of the "ordinal" field.
+func (u *AssetUpsertOne) ClearOrdinal() *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.ClearOrdinal()
 	})
 }
 
@@ -2225,13 +2408,6 @@ func (u *AssetUpsertBulk) SetRtoRiderID(v uint64) *AssetUpsertBulk {
 	})
 }
 
-// AddRtoRiderID adds v to the "rto_rider_id" field.
-func (u *AssetUpsertBulk) AddRtoRiderID(v uint64) *AssetUpsertBulk {
-	return u.Update(func(s *AssetUpsert) {
-		s.AddRtoRiderID(v)
-	})
-}
-
 // UpdateRtoRiderID sets the "rto_rider_id" field to the value that was provided on create.
 func (u *AssetUpsertBulk) UpdateRtoRiderID() *AssetUpsertBulk {
 	return u.Update(func(s *AssetUpsert) {
@@ -2285,6 +2461,55 @@ func (u *AssetUpsertBulk) UpdateBrandName() *AssetUpsertBulk {
 func (u *AssetUpsertBulk) ClearBrandName() *AssetUpsertBulk {
 	return u.Update(func(s *AssetUpsert) {
 		s.ClearBrandName()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *AssetUpsertBulk) SetSubscribeID(v uint64) *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *AssetUpsertBulk) UpdateSubscribeID() *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *AssetUpsertBulk) ClearSubscribeID() *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.ClearSubscribeID()
+	})
+}
+
+// SetOrdinal sets the "ordinal" field.
+func (u *AssetUpsertBulk) SetOrdinal(v int) *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.SetOrdinal(v)
+	})
+}
+
+// AddOrdinal adds v to the "ordinal" field.
+func (u *AssetUpsertBulk) AddOrdinal(v int) *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.AddOrdinal(v)
+	})
+}
+
+// UpdateOrdinal sets the "ordinal" field to the value that was provided on create.
+func (u *AssetUpsertBulk) UpdateOrdinal() *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.UpdateOrdinal()
+	})
+}
+
+// ClearOrdinal clears the value of the "ordinal" field.
+func (u *AssetUpsertBulk) ClearOrdinal() *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.ClearOrdinal()
 	})
 }
 

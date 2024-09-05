@@ -673,7 +673,10 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
+                          "type": "array",
+                          "items": {
                             "$ref": "#/definitions/definition.CabinetTotalDetail"
+                          }
                         }
                     }
                 }
@@ -1959,7 +1962,10 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
+                          "type": "array",
+                          "items": {
                             "$ref": "#/definitions/definition.CommonAssetDetail"
+                          }
                         }
                     }
                 }
@@ -2122,7 +2128,10 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
+                          "type": "array",
+                          "items": {
                             "$ref": "#/definitions/definition.CommonAssetDetail"
+                          }
                         }
                     }
                 }
@@ -3454,7 +3463,7 @@
                 "tags": [
                     "Store - 门店"
                 ],
-                "summary": "门店物资详情",
+              "summary": "仓库物资详情",
                 "operationId": "StoreAssetDetail",
                 "parameters": [
                     {
@@ -3476,7 +3485,10 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
+                          "type": "array",
+                          "items": {
                             "$ref": "#/definitions/definition.CommonAssetDetail"
+                          }
                         }
                     }
                 }
@@ -3703,10 +3715,34 @@
                         "name": "employeeID",
                         "in": "query"
                     },
+                  {
+                    "type": "string",
+                    "description": "入库结束时间",
+                    "name": "inEnd",
+                    "in": "query"
+                  },
+                  {
+                    "type": "string",
+                    "description": "入库开始时间",
+                    "name": "inStart",
+                    "in": "query"
+                  },
+                  {
+                    "type": "string",
+                    "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
+                    "name": "keyword",
+                    "in": "query"
+                    },
                     {
                         "type": "integer",
-                        "description": "调出位置ID",
-                        "name": "fromLocationsId",
+                      "description": "调拨位置ID",
+                      "name": "locationsId",
+                      "in": "query"
+                    },
+                  {
+                    "type": "string",
+                    "description": "调拨位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
+                    "name": "locationsKeyword",
                         "in": "query"
                     },
                     {
@@ -3735,26 +3771,8 @@
                             "AssetLocationsTypeCabinet",
                             "AssetLocationsTypeRider"
                         ],
-                        "description": "调出位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-                        "name": "fromLocationsType",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "入库结束时间",
-                        "name": "inEnd",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "入库开始时间",
-                        "name": "inStart",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
-                        "name": "keyword",
+                      "description": "调拨位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                      "name": "locationsType",
                         "in": "query"
                     },
                     {
@@ -3818,42 +3836,6 @@
                         ],
                         "description": "调拨状态 1:配送中 2:待入库 3:已入库 4:已取消",
                         "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "调入位置ID",
-                        "name": "toLocationsId",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2,
-                            3,
-                            4,
-                            5,
-                            6
-                        ],
-                        "type": "integer",
-                        "x-enum-comments": {
-                            "AssetLocationsTypeCabinet": "电柜",
-                            "AssetLocationsTypeOperation": "运维",
-                            "AssetLocationsTypeRider": "骑手",
-                            "AssetLocationsTypeStation": "站点",
-                            "AssetLocationsTypeStore": "门店",
-                            "AssetLocationsTypeWarehouse": "仓库"
-                        },
-                        "x-enum-varnames": [
-                            "AssetLocationsTypeWarehouse",
-                            "AssetLocationsTypeStore",
-                            "AssetLocationsTypeStation",
-                            "AssetLocationsTypeOperation",
-                            "AssetLocationsTypeCabinet",
-                            "AssetLocationsTypeRider"
-                        ],
-                        "description": "调入位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
-                        "name": "toLocationsType",
                         "in": "query"
                     }
                 ],
@@ -5062,7 +5044,10 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
+                          "type": "array",
+                          "items": {
                             "$ref": "#/definitions/definition.CommonAssetDetail"
+                          }
                         }
                     }
                 }
@@ -5298,16 +5283,12 @@
                     "description": "异常数量(电柜无)",
                     "type": "integer"
                 },
-                "id": {
-                    "description": "Type      model.AssetType `json:\"type\"`                // 物资类别",
-                    "type": "integer"
-                },
                 "inbound": {
                     "description": "入库数量",
                     "type": "integer"
                 },
                 "name": {
-                    "description": "物资名称",
+                  "description": "Type      model.AssetType `json:\"type\"`                // 物资类别\nID        uint64          `json:\"id\"`                  // 物资ID",
                     "type": "string"
                 },
                 "outbound": {
@@ -5525,42 +5506,42 @@
             "type": "object",
             "properties": {
                 "cabinetAccessories": {
-                    "description": "电柜配件物资详情",
+                  "description": "CabinetAccessoryTotal int              `json:\"cabinetAccessoryTotal\"` // 电柜配件总数",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/definition.AssetMaterial"
                     }
                 },
                 "ebikeAccessories": {
-                    "description": "电车配件物资详情",
+                  "description": "EbikeAccessoryTotal   int              `json:\"ebikeAccessoryTotal\"`   // 电车配件总数",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/definition.AssetMaterial"
                     }
                 },
                 "ebikes": {
-                    "description": "电车物资详情",
+                  "description": "EbikeTotal            int              `json:\"ebikeTotal\"`            // 电车总数",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/definition.AssetMaterial"
                     }
                 },
                 "nonSmartBatteries": {
-                    "description": "非智能电池物资详情",
+                  "description": "NonSmartBatteryTotal  int              `json:\"nonSmartBatteryTotal\"`  // 非智能电池总数",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/definition.AssetMaterial"
                     }
                 },
                 "otherAssets": {
-                    "description": "其他物资详情",
+                  "description": "OtherAssetTotal       int              `json:\"otherAssetTotal\"`       // 其他物资总数",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/definition.AssetMaterial"
                     }
                 },
                 "smartBatteries": {
-                    "description": "智能电池物资详情",
+                  "description": "SmartBatteryTotal     int              `json:\"smartBatteryTotal\"`     // 智能电池总数",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/definition.AssetMaterial"
@@ -6532,7 +6513,7 @@
                     "type": "integer"
                 },
                 "locationsType": {
-                    "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                  "description": "资产位置类型 1:仓库",
                     "enum": [
                         1
                     ],

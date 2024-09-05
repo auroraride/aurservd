@@ -8,6 +8,7 @@ package app
 import (
 	"github.com/labstack/echo/v4"
 
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 )
 
@@ -15,18 +16,28 @@ import (
 type RiderContext struct {
 	*BaseContext
 
-	Rider *ent.Rider
-	Token string
+	Rider    *ent.Rider
+	Token    string
+	Operator *model.OperatorInfo
 }
 
 // NewRiderContext 创建骑手上下文
 func NewRiderContext(c echo.Context, rider *ent.Rider, token string) *RiderContext {
 	c.Set("rider", rider)
-	return &RiderContext{
+	ctx := &RiderContext{
 		BaseContext: Context(c),
 		Rider:       rider,
 		Token:       token,
 	}
+	if rider != nil {
+		ctx.Operator = &model.OperatorInfo{
+			Type:  model.OperatorTypeRider,
+			ID:    rider.ID,
+			Phone: rider.Phone,
+			Name:  rider.Name,
+		}
+	}
+	return ctx
 }
 
 // RiderContextAndBinding 骑手端上下文绑定数据

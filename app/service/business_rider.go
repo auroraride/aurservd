@@ -17,10 +17,9 @@ import (
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -55,13 +54,15 @@ type businessRiderService struct {
 	ebikeInfo *model.EbikeBusinessInfo
 
 	// 智能电池信息
-	battery *ent.Battery
+	battery *ent.Asset
+
+	*BaseService
 }
 
-func NewBusinessRider(r *ent.Rider) *businessRiderService {
+func NewBusinessRider(params ...any) *businessRiderService {
 	return &businessRiderService{
-		ctx:   context.Background(),
-		rider: r,
+		ctx:         context.Background(),
+		BaseService: newService(params...),
 	}
 }
 
@@ -148,7 +149,11 @@ func (s *businessRiderService) SetBatteryID(id *uint64) *businessRiderService {
 		return s
 	}
 	// 查找电池
-	s.battery = NewBattery().QueryIDX(*id)
+	bat, err := NewAsset().QueryID(*id)
+	if err != nil {
+		snag.Panic("电池查询失败")
+	}
+	s.battery = bat
 	return s
 }
 
@@ -157,9 +162,10 @@ func (s *businessRiderService) SetEbikeID(id *uint64) *businessRiderService {
 	if id == nil {
 		return s
 	}
-	bike, _ := ent.Database.Ebike.Query().Where(ebike.ID(*id)).WithBrand().First(s.ctx)
+	bike, _ := ent.Database.Asset.Query().Where(asset.ID(*id), asset.Type(model.AssetTypeEbike.Value())).WithBrand().First(s.ctx)
 	if bike == nil || bike.Edges.Brand == nil {
 		snag.Panic("电车信息查询失败")
+		return nil
 	}
 	brand := bike.Edges.Brand
 	s.ebikeInfo = &model.EbikeBusinessInfo{
@@ -198,7 +204,7 @@ func NewBusinessRiderWithParams(params ...any) *businessRiderService {
 			s.rider = v
 		case *ent.Store:
 			s.store = v
-		case *ent.Battery:
+		case *ent.Asset:
 			s.battery = v
 		case *ent.Subscribe:
 			s.subscribe = v
@@ -464,12 +470,12 @@ func (s *businessRiderService) doTask() (bin *model.BinInfo, bat *model.Battery,
 // do 处理业务
 func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func(tx *ent.Tx)) {
 	async.WithTask(func() {
-		sts := map[model.BusinessType]uint8{
-			model.BusinessTypeActive:      model.StockTypeRiderActive,
-			model.BusinessTypeUnsubscribe: model.StockTypeRiderUnSubscribe,
-			model.BusinessTypePause:       model.StockTypeRiderPause,
-			model.BusinessTypeContinue:    model.StockTypeRiderContinue,
-		}
+		// sts := map[model.BusinessType]uint8{
+		// 	model.BusinessTypeActive:      model.StockTypeRiderActive,
+		// 	model.BusinessTypeUnsubscribe: model.StockTypeRiderUnSubscribe,
+		// 	model.BusinessTypePause:       model.StockTypeRiderPause,
+		// 	model.BusinessTypeContinue:    model.StockTypeRiderContinue,
+		// }
 
 		ops := map[model.BusinessType]model.Operate{
 			model.BusinessTypeActive:      model.OperateActive,
@@ -498,10 +504,14 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 		// 放入电池优先执行
 		var bat *model.Battery
 		if s.battery != nil {
+			var m string
+			if s.battery.Edges.Model != nil {
+				m = s.battery.Edges.Model.Model
+			}
 			bat = &model.Battery{
 				ID:    s.battery.ID,
 				SN:    s.battery.Sn,
-				Model: s.battery.Model,
+				Model: m,
 			}
 		}
 
@@ -520,46 +530,45 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 		}
 
 		// 库存管理
-		// TODO 智能电池
-		var batSk *ent.Stock
-		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-			cb(tx)
-
-			// 需要进行业务出入库
-			if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil || s.ebikeStoreID != nil || s.batStoreID != nil {
-				batSk, _, err = NewStockWithModifier(s.modifier).RiderBusiness(
-					tx,
-					&model.StockBusinessReq{
-						RiderID:   s.subscribe.RiderID,
-						Model:     s.subscribe.Model,
-						CityID:    s.subscribe.CityID,
-						StockType: sts[doReq.Type],
-
-						StoreID:     s.storeID,
-						EmployeeID:  s.employeeID,
-						CabinetID:   s.cabinetID,
-						SubscribeID: s.subscribeID,
-
-						StationID:    s.subscribe.StationID,
-						EnterpriseID: s.subscribe.EnterpriseID,
-						AgentID:      s.agentID,
-
-						Ebike:   s.ebikeInfo,
-						Battery: bat,
-
-						Rto:          doReq.Rto,
-						EbikeStoreID: s.ebikeStoreID,
-						BatStoreID:   s.batStoreID,
-					},
-				)
-
-				if err != nil {
-					zap.L().Error("骑手业务出入库失败: "+doReq.Type.String(), zap.Error(err))
-				}
-			}
-
-			return
-		})
+		// var batSk *ent.Stock
+		// ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+		// 	cb(tx)
+		//
+		// 	// 需要进行业务出入库
+		// 	if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil || s.ebikeStoreID != nil || s.batStoreID != nil {
+		// 		batSk, _, err = NewStockWithModifier(s.modifier).RiderBusiness(
+		// 			tx,
+		// 			&model.StockBusinessReq{
+		// 				RiderID:   s.subscribe.RiderID,
+		// 				Model:     s.subscribe.Model,
+		// 				CityID:    s.subscribe.CityID,
+		// 				StockType: sts[doReq.Type],
+		//
+		// 				StoreID:     s.storeID,
+		// 				EmployeeID:  s.employeeID,
+		// 				CabinetID:   s.cabinetID,
+		// 				SubscribeID: s.subscribeID,
+		//
+		// 				StationID:    s.subscribe.StationID,
+		// 				EnterpriseID: s.subscribe.EnterpriseID,
+		// 				AgentID:      s.agentID,
+		//
+		// 				Ebike:   s.ebikeInfo,
+		// 				Battery: bat,
+		//
+		// 				Rto:          doReq.Rto,
+		// 				EbikeStoreID: s.ebikeStoreID,
+		// 				BatStoreID:   s.batStoreID,
+		// 			},
+		// 		)
+		//
+		// 		if err != nil {
+		// 			zap.L().Error("骑手业务出入库失败: "+doReq.Type.String(), zap.Error(err))
+		// 		}
+		// 	}
+		//
+		// 	return
+		// })
 
 		// 取出电池滞后执行电柜任务
 		if s.cabTask != nil && (doReq.Type == model.BusinessTypeActive || doReq.Type == model.BusinessTypeContinue) {
@@ -567,9 +576,9 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 			if err != nil {
 				zap.L().Error("骑手业务取出电池后任务执行失败: "+doReq.Type.String(), zap.Error(err))
 			}
-			if bat != nil && s.cabinet.Intelligent {
-				_ = batSk.Update().SetBatteryID(bat.ID).Exec(s.ctx)
-			}
+			// if bat != nil && s.cabinet.Intelligent {
+			// 	_ = batSk.Update().SetBatteryID(bat.ID).Exec(s.ctx)
+			// }
 		}
 
 		// 保存业务日志
@@ -581,7 +590,7 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 			SetCabinet(s.cabinet).
 			SetStore(s.store).
 			SetBinInfo(bin).
-			SetStock(batSk).
+			// SetStock(batSk).
 			SetBattery(bat).
 			SetAgentId(s.agentID)
 		// 电池归还门店必须保持与电车归还门店一致
@@ -704,15 +713,41 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 		// 更新电车
 		if s.ebikeInfo != nil {
 			// 更新电车所属
-			snag.PanicIfError(
-				tx.Ebike.UpdateOneID(s.ebikeInfo.ID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx),
-			)
-		}
+			eb, _ := NewAsset().QuerySn(s.ebikeInfo.Sn)
+			if eb != nil {
+				snag.Panic(err)
+			}
+			fromLocationType := model.AssetLocationsType(eb.LocationsType)
+			_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
+				FromLocationType: &fromLocationType,
+				FromLocationID:   &eb.LocationsID,
+				ToLocationType:   model.AssetLocationsTypeRider,
+				ToLocationID:     sub.RiderID,
+				Details: []model.AssetTransferCreateDetail{
+					{
+						AssetType: model.AssetTypeEbike,
+						SN:        silk.String(eb.Sn),
+					},
+				},
+				Reason:            "订阅激活",
+				AssetTransferType: model.AssetTransferTypeActive,
+				OperatorID:        s.operator.ID,
+				OperatorType:      s.operator.Type,
+				AutoIn:            false,
+			}, s.modifier)
+			if err != nil {
+				return
+			}
+			if failed != nil {
+				snag.Panic(failed[0])
+			}
 
+			// tx.Ebike.UpdateOneID(s.ebikeInfo.ID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
+		}
 		// 后台操作设置电池编码
 		if s.battery != nil && s.cabinet == nil {
 			snag.PanicIfError(
-				NewBattery(s.modifier).Allocate(tx, s.battery, s.subscribe, false),
+				NewBattery(s.modifier).Allocate(s.battery, s.subscribe, model.AssetTransferTypeActive),
 			)
 		}
 
@@ -763,7 +798,7 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 	s.agentID = req.AgentID
 
 	// 查找电池
-	s.battery, _ = ent.Database.Battery.Query().Where(battery.SubscribeID(sub.ID)).First(s.ctx)
+	s.battery, _ = ent.Database.Asset.Query().Where(asset.SubscribeID(sub.ID)).First(s.ctx)
 
 	err := NewSubscribe().UpdateStatus(sub, false)
 	if err != nil {
@@ -826,21 +861,63 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 		_, err = tx.Contract.Update().Where(contract.RiderID(sub.RiderID)).SetEffective(false).Save(s.ctx)
 		snag.PanicIfError(err)
 
+		// 判定退租到哪里
+		var toLocationType model.AssetLocationsType
+		var toLocationID uint64
+		if s.cabinet != nil {
+			toLocationType = model.AssetLocationsTypeCabinet
+			toLocationID = s.cabinet.ID
+		}
+		if s.ebikeStoreID != nil {
+			toLocationType = model.AssetLocationsTypeStore
+			toLocationID = *s.ebikeStoreID
+		}
+		if s.batStoreID != nil {
+			toLocationType = model.AssetLocationsTypeStore
+			toLocationID = *s.batStoreID
+		}
+
 		// 更新电车
 		if sub.EbikeID != nil {
+			eb, err := NewAsset().QueryID(*sub.EbikeID)
+			if err != nil {
+				return
+			}
+			fromLocationType := model.AssetLocationsType(eb.LocationsType)
+			_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
+				FromLocationType: &fromLocationType,
+				FromLocationID:   &eb.LocationsID,
+				ToLocationType:   toLocationType,
+				ToLocationID:     toLocationID,
+				Details: []model.AssetTransferCreateDetail{
+					{
+						AssetType: model.AssetTypeEbike,
+						SN:        silk.String(eb.Sn),
+					},
+				},
+				Reason:            "订阅退租",
+				AssetTransferType: model.AssetTransferTypeUnSubscribe,
+				OperatorID:        s.operator.ID,
+				OperatorType:      s.operator.Type,
+				AutoIn:            true,
+			}, s.modifier)
+			if err != nil {
+				return
+			}
+			if failed != nil {
+				snag.Panic(failed[0])
+			}
+
 			if doReq.Rto {
 				// 当前属于以租代购
-				ebu := tx.Ebike.UpdateOneID(*sub.EbikeID).
-					ClearRiderID().
-					ClearStoreID().
+				ebu := tx.Asset.UpdateOneID(*sub.EbikeID).
 					SetRtoRiderID(sub.RiderID)
 				err = ebu.Exec(s.ctx)
 				snag.PanicIfError(err)
 			} else {
 				// 删除电车所属
-				ebu := tx.Ebike.UpdateOneID(*sub.EbikeID).
-					ClearRiderID().
-					SetStatus(model.EbikeStatusInStock).
+				ebu := tx.Asset.UpdateOneID(*sub.EbikeID).
+					SetStatus(model.AssetStatusStock.Value()).
 					SetNillableStoreID(s.storeID)
 				if s.ebikeStoreID != nil {
 					ebu.SetNillableStoreID(s.ebikeStoreID)
@@ -852,7 +929,7 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 
 		// 删除电池
 		if s.battery != nil {
-			snag.PanicIfError(NewBattery().Unallocate(tx.Battery.UpdateOne(s.battery)))
+			snag.PanicIfError(NewBattery().Unallocate(s.battery, toLocationType, toLocationID, model.AssetTransferTypeUnSubscribe))
 		}
 	})
 

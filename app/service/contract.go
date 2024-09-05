@@ -23,6 +23,7 @@ import (
 	"github.com/auroraride/aurservd/app/socket"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/assetattributes"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -171,6 +172,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 	allo := NewAllocate().QueryEffectiveSubscribeIDX(sub.ID)
 	if allo == nil {
 		snag.Panic("未找到有效分配")
+		return model.ContractSignRes{}
 	}
 
 	if sub.BrandID != nil && allo.StoreID == nil && allo.StationID == nil {
@@ -184,7 +186,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 	}
 
 	// 判定非智能套餐门店库存
-	if allo.StoreID != nil && allo.BatteryID == nil && !NewStock().CheckStore(*allo.StoreID, sub.Model, 1) {
+	if allo.StoreID != nil && allo.BatteryID == nil && !NewAsset().CheckStore(*allo.StoreID, sub.Model, 1) {
 		snag.Panic("电池库存不足")
 	}
 
@@ -273,12 +275,29 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 		// 电车
 		if sub.BrandID != nil {
 			// 查找电车分配
-			bike, _ := allo.QueryEbike().WithBrand().First(s.ctx)
+			bike, _ := allo.QueryEbike().WithBrand().WithValues().First(s.ctx)
 			if bike == nil || bike.Edges.Brand == nil {
 				snag.Panic("未找到电车信息")
+				return model.ContractSignRes{}
 			}
 
 			brand := bike.Edges.Brand
+
+			// 查询电车属性
+			attributes, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.KeyIn("color", "plate")).All(s.ctx)
+			values, _ := bike.QueryValues().All(s.ctx)
+			for _, v := range attributes {
+				for _, av := range values {
+					if v.ID == av.AttributeID {
+						switch v.Key {
+						case "plate":
+							m["ebikePlate"] = av.Value
+						case "color":
+							m["ebikeColor"] = av.Value
+						}
+					}
+				}
+			}
 
 			// 车加电方案
 			m["schemaEbike"] = true
@@ -286,12 +305,8 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 			m["ebikeScheme1"] = true
 			// 车辆品牌
 			m["ebikeBrand"] = brand.Name
-			// 车辆颜色
-			m["ebikeColor"] = bike.Color
 			// 车架号
 			m["ebikeSN"] = bike.Sn
-			// 车牌号
-			m["ebikePlate"] = bike.Plate
 			// 电池类型
 			m["ebikeBattery"] = "时光驹电池"
 			// 电池规格

@@ -951,30 +951,6 @@ func (f CouponTemplateMutationRuleFunc) EvalMutation(ctx context.Context, m ent.
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.CouponTemplateMutation", m)
 }
 
-// The EbikeQueryRuleFunc type is an adapter to allow the use of ordinary
-// functions as a query rule.
-type EbikeQueryRuleFunc func(context.Context, *ent.EbikeQuery) error
-
-// EvalQuery return f(ctx, q).
-func (f EbikeQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.EbikeQuery); ok {
-		return f(ctx, q)
-	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.EbikeQuery", q)
-}
-
-// The EbikeMutationRuleFunc type is an adapter to allow the use of ordinary
-// functions as a mutation rule.
-type EbikeMutationRuleFunc func(context.Context, *ent.EbikeMutation) error
-
-// EvalMutation calls f(ctx, m).
-func (f EbikeMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.EbikeMutation); ok {
-		return f(ctx, m)
-	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.EbikeMutation", m)
-}
-
 // The EbikeBrandQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type EbikeBrandQueryRuleFunc func(context.Context, *ent.EbikeBrandQuery) error
@@ -2223,30 +2199,6 @@ func (f SettingMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutatio
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.SettingMutation", m)
 }
 
-// The StockQueryRuleFunc type is an adapter to allow the use of ordinary
-// functions as a query rule.
-type StockQueryRuleFunc func(context.Context, *ent.StockQuery) error
-
-// EvalQuery return f(ctx, q).
-func (f StockQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.StockQuery); ok {
-		return f(ctx, q)
-	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.StockQuery", q)
-}
-
-// The StockMutationRuleFunc type is an adapter to allow the use of ordinary
-// functions as a mutation rule.
-type StockMutationRuleFunc func(context.Context, *ent.StockMutation) error
-
-// EvalMutation calls f(ctx, m).
-func (f StockMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.StockMutation); ok {
-		return f(ctx, m)
-	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.StockMutation", m)
-}
-
 // The StockSummaryQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type StockSummaryQueryRuleFunc func(context.Context, *ent.StockSummaryQuery) error
@@ -2616,8 +2568,6 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.CouponTemplateQuery:
 		return q.Filter(), nil
-	case *ent.EbikeQuery:
-		return q.Filter(), nil
 	case *ent.EbikeBrandQuery:
 		return q.Filter(), nil
 	case *ent.EbikeBrandAttributeQuery:
@@ -2722,8 +2672,6 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.SettingQuery:
 		return q.Filter(), nil
-	case *ent.StockQuery:
-		return q.Filter(), nil
 	case *ent.StockSummaryQuery:
 		return q.Filter(), nil
 	case *ent.StoreQuery:
@@ -2822,8 +2770,6 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.CouponAssemblyMutation:
 		return m.Filter(), nil
 	case *ent.CouponTemplateMutation:
-		return m.Filter(), nil
-	case *ent.EbikeMutation:
 		return m.Filter(), nil
 	case *ent.EbikeBrandMutation:
 		return m.Filter(), nil
@@ -2928,8 +2874,6 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.RoleMutation:
 		return m.Filter(), nil
 	case *ent.SettingMutation:
-		return m.Filter(), nil
-	case *ent.StockMutation:
 		return m.Filter(), nil
 	case *ent.StockSummaryMutation:
 		return m.Filter(), nil

@@ -13,11 +13,11 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
@@ -140,20 +140,6 @@ func (oc *OrderCreate) SetBrandID(u uint64) *OrderCreate {
 func (oc *OrderCreate) SetNillableBrandID(u *uint64) *OrderCreate {
 	if u != nil {
 		oc.SetBrandID(*u)
-	}
-	return oc
-}
-
-// SetEbikeID sets the "ebike_id" field.
-func (oc *OrderCreate) SetEbikeID(u uint64) *OrderCreate {
-	oc.mutation.SetEbikeID(u)
-	return oc
-}
-
-// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableEbikeID(u *uint64) *OrderCreate {
-	if u != nil {
-		oc.SetEbikeID(*u)
 	}
 	return oc
 }
@@ -456,6 +442,20 @@ func (oc *OrderCreate) SetNillableSubscribeEndAt(t *time.Time) *OrderCreate {
 	return oc
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (oc *OrderCreate) SetEbikeID(u uint64) *OrderCreate {
+	oc.mutation.SetEbikeID(u)
+	return oc
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableEbikeID(u *uint64) *OrderCreate {
+	if u != nil {
+		oc.SetEbikeID(*u)
+	}
+	return oc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (oc *OrderCreate) SetPlan(p *Plan) *OrderCreate {
 	return oc.SetPlanID(p.ID)
@@ -469,11 +469,6 @@ func (oc *OrderCreate) SetCity(c *City) *OrderCreate {
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (oc *OrderCreate) SetBrand(e *EbikeBrand) *OrderCreate {
 	return oc.SetBrandID(e.ID)
-}
-
-// SetEbike sets the "ebike" edge to the Ebike entity.
-func (oc *OrderCreate) SetEbike(e *Ebike) *OrderCreate {
-	return oc.SetEbikeID(e.ID)
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
@@ -581,6 +576,11 @@ func (oc *OrderCreate) AddCoupons(c ...*Coupon) *OrderCreate {
 		ids[i] = c[i].ID
 	}
 	return oc.AddCouponIDs(ids...)
+}
+
+// SetEbike sets the "ebike" edge to the Asset entity.
+func (oc *OrderCreate) SetEbike(a *Asset) *OrderCreate {
+	return oc.SetEbikeID(a.ID)
 }
 
 // Mutation returns the OrderMutation object of the builder.
@@ -874,23 +874,6 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		_node.BrandID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := oc.mutation.EbikeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   order.EbikeTable,
-			Columns: []string{order.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.EbikeID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := oc.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1037,6 +1020,23 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.EbikeTable,
+			Columns: []string{order.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EbikeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -1208,24 +1208,6 @@ func (u *OrderUpsert) UpdateBrandID() *OrderUpsert {
 // ClearBrandID clears the value of the "brand_id" field.
 func (u *OrderUpsert) ClearBrandID() *OrderUpsert {
 	u.SetNull(order.FieldBrandID)
-	return u
-}
-
-// SetEbikeID sets the "ebike_id" field.
-func (u *OrderUpsert) SetEbikeID(v uint64) *OrderUpsert {
-	u.Set(order.FieldEbikeID, v)
-	return u
-}
-
-// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateEbikeID() *OrderUpsert {
-	u.SetExcluded(order.FieldEbikeID)
-	return u
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (u *OrderUpsert) ClearEbikeID() *OrderUpsert {
-	u.SetNull(order.FieldEbikeID)
 	return u
 }
 
@@ -1583,6 +1565,24 @@ func (u *OrderUpsert) ClearSubscribeEndAt() *OrderUpsert {
 	return u
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (u *OrderUpsert) SetEbikeID(v uint64) *OrderUpsert {
+	u.Set(order.FieldEbikeID, v)
+	return u
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateEbikeID() *OrderUpsert {
+	u.SetExcluded(order.FieldEbikeID)
+	return u
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *OrderUpsert) ClearEbikeID() *OrderUpsert {
+	u.SetNull(order.FieldEbikeID)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1780,27 +1780,6 @@ func (u *OrderUpsertOne) UpdateBrandID() *OrderUpsertOne {
 func (u *OrderUpsertOne) ClearBrandID() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearBrandID()
-	})
-}
-
-// SetEbikeID sets the "ebike_id" field.
-func (u *OrderUpsertOne) SetEbikeID(v uint64) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetEbikeID(v)
-	})
-}
-
-// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateEbikeID() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateEbikeID()
-	})
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (u *OrderUpsertOne) ClearEbikeID() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearEbikeID()
 	})
 }
 
@@ -2217,6 +2196,27 @@ func (u *OrderUpsertOne) ClearSubscribeEndAt() *OrderUpsertOne {
 	})
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (u *OrderUpsertOne) SetEbikeID(v uint64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetEbikeID(v)
+	})
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateEbikeID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateEbikeID()
+	})
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *OrderUpsertOne) ClearEbikeID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearEbikeID()
+	})
+}
+
 // Exec executes the query.
 func (u *OrderUpsertOne) Exec(ctx context.Context) error {
 	if len(u.create.conflict) == 0 {
@@ -2580,27 +2580,6 @@ func (u *OrderUpsertBulk) UpdateBrandID() *OrderUpsertBulk {
 func (u *OrderUpsertBulk) ClearBrandID() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearBrandID()
-	})
-}
-
-// SetEbikeID sets the "ebike_id" field.
-func (u *OrderUpsertBulk) SetEbikeID(v uint64) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetEbikeID(v)
-	})
-}
-
-// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateEbikeID() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateEbikeID()
-	})
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (u *OrderUpsertBulk) ClearEbikeID() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearEbikeID()
 	})
 }
 
@@ -3014,6 +2993,27 @@ func (u *OrderUpsertBulk) UpdateSubscribeEndAt() *OrderUpsertBulk {
 func (u *OrderUpsertBulk) ClearSubscribeEndAt() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearSubscribeEndAt()
+	})
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *OrderUpsertBulk) SetEbikeID(v uint64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetEbikeID(v)
+	})
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateEbikeID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateEbikeID()
+	})
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *OrderUpsertBulk) ClearEbikeID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearEbikeID()
 	})
 }
 

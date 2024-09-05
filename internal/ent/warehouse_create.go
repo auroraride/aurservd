@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
@@ -174,6 +175,21 @@ func (wc *WarehouseCreate) AddAssetManagers(a ...*AssetManager) *WarehouseCreate
 		ids[i] = a[i].ID
 	}
 	return wc.AddAssetManagerIDs(ids...)
+}
+
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (wc *WarehouseCreate) AddAssetIDs(ids ...uint64) *WarehouseCreate {
+	wc.mutation.AddAssetIDs(ids...)
+	return wc
+}
+
+// AddAsset adds the "asset" edges to the Asset entity.
+func (wc *WarehouseCreate) AddAsset(a ...*Asset) *WarehouseCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return wc.AddAssetIDs(ids...)
 }
 
 // Mutation returns the WarehouseMutation object of the builder.
@@ -370,6 +386,22 @@ func (wc *WarehouseCreate) createSpec() (*Warehouse, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := wc.mutation.AssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   warehouse.AssetTable,
+			Columns: []string{warehouse.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

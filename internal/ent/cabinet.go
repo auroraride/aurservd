@@ -109,8 +109,8 @@ type CabinetEdges struct {
 	Faults []*CabinetFault `json:"faults,omitempty"`
 	// Exchanges holds the value of the exchanges edge.
 	Exchanges []*Exchange `json:"exchanges,omitempty"`
-	// Stocks holds the value of the stocks edge.
-	Stocks []*Stock `json:"stocks,omitempty"`
+	// Asset holds the value of the asset edge.
+	Asset []*Asset `json:"asset,omitempty"`
 	// Batteries holds the value of the batteries edge.
 	Batteries []*Battery `json:"batteries,omitempty"`
 	// BatteryFlows holds the value of the battery_flows edge.
@@ -184,13 +184,13 @@ func (e CabinetEdges) ExchangesOrErr() ([]*Exchange, error) {
 	return nil, &NotLoadedError{edge: "exchanges"}
 }
 
-// StocksOrErr returns the Stocks value or an error if the edge
+// AssetOrErr returns the Asset value or an error if the edge
 // was not loaded in eager-loading.
-func (e CabinetEdges) StocksOrErr() ([]*Stock, error) {
+func (e CabinetEdges) AssetOrErr() ([]*Asset, error) {
 	if e.loadedTypes[6] {
-		return e.Stocks, nil
+		return e.Asset, nil
 	}
-	return nil, &NotLoadedError{edge: "stocks"}
+	return nil, &NotLoadedError{edge: "asset"}
 }
 
 // BatteriesOrErr returns the Batteries value or an error if the edge
@@ -522,9 +522,9 @@ func (c *Cabinet) QueryExchanges() *ExchangeQuery {
 	return NewCabinetClient(c.config).QueryExchanges(c)
 }
 
-// QueryStocks queries the "stocks" edge of the Cabinet entity.
-func (c *Cabinet) QueryStocks() *StockQuery {
-	return NewCabinetClient(c.config).QueryStocks(c)
+// QueryAsset queries the "asset" edge of the Cabinet entity.
+func (c *Cabinet) QueryAsset() *AssetQuery {
+	return NewCabinetClient(c.config).QueryAsset(c)
 }
 
 // QueryBatteries queries the "batteries" edge of the Cabinet entity.

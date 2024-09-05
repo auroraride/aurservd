@@ -804,8 +804,8 @@ definitions:
         type: integer
       opratorType:
         allOf:
-        - $ref: '#/definitions/model.OperatorType'
-        description: 操作人类型 0:业务管理员 1:门店 2:电柜 3:代理 4:运维 5:骑手 6:资产管理员
+          - $ref: '#/definitions/model.AssetOperateRoleType'
+        description: 操作人类型 1:资产后台(仓库) 2:门店 3:代理
       startAt:
         description: 盘点开始时间
         type: string
@@ -1220,6 +1220,10 @@ definitions:
     - AssetMaintenanceStatusPause
   model.AssetModifyReq:
     properties:
+      assetType:
+        allOf:
+          - $ref: '#/definitions/model.AssetType'
+        description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
       attribute:
         description: 属性
         items:
@@ -1237,7 +1241,35 @@ definitions:
       remark:
         description: 备注
         type: string
+    required:
+      - assetType
     type: object
+  model.AssetOperateRoleType:
+    enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+    type: integer
+    x-enum-comments:
+      AssetOperateRoleTypeAgent: 代理
+      AssetOperateRoleTypeBusinessManager: 业务后台
+      AssetOperateRoleTypeCabinet: 电柜
+      AssetOperateRoleTypeManager: 资产后台(仓库)
+      AssetOperateRoleTypeOperation: 运维
+      AssetOperateRoleTypeRider: 骑手
+      AssetOperateRoleTypeStore: 门店
+    x-enum-varnames:
+      - AssetOperateRoleTypeManager
+      - AssetOperateRoleTypeStore
+      - AssetOperateRoleTypeAgent
+      - AssetOperateRoleTypeOperation
+      - AssetOperateRoleTypeCabinet
+      - AssetOperateRoleTypeRider
+      - AssetOperateRoleTypeBusinessManager
   model.AssetScrapBatchRestoreReq:
     properties:
       ids:
@@ -1408,8 +1440,8 @@ definitions:
         type: integer
       opratorType:
         allOf:
-        - $ref: '#/definitions/model.OperatorType'
-        description: 操作人类型 0:业务管理员 1:门店 2:电柜 3:代理 4:运维 5:骑手 6:资产管理员
+          - $ref: '#/definitions/model.AssetOperateRoleType'
+        description: 操作人类型 1:资产后台(仓库) 2:门店 3:代理
       reason:
         description: 调拨事由
         type: string
@@ -1437,15 +1469,6 @@ definitions:
       inOperateName:
         description: 入库人
         type: string
-      inTimeAt:
-        description: 入库时间
-        type: string
-      materialId:
-        description: 其他物资ID
-        type: integer
-      modelId:
-        description: 电池型号ID
-        type: integer
       name:
         description: 资产名称
         type: string
@@ -1591,17 +1614,6 @@ definitions:
         description: 调入目标类型
         type: integer
     type: object
-  model.AssetTransferMainPage:
-    enum:
-    - 1
-    - 2
-    type: integer
-    x-enum-comments:
-      AssetTransferMainPageDeliver: 配送中跳转
-      AssetTransferMainPageReceive: 待接收跳转
-    x-enum-varnames:
-    - AssetTransferMainPageReceive
-    - AssetTransferMainPageDeliver
   model.AssetTransferModifyReq:
     properties:
       reason:
@@ -1632,8 +1644,8 @@ definitions:
         type: array
       operateType:
         allOf:
-        - $ref: '#/definitions/model.OperatorType'
-        description: 操作人角色类型 0:业务管理员 1:门店 2:电柜 3:代理 4:运维 5:骑手 6:资产管理员
+          - $ref: '#/definitions/model.AssetOperateRoleType'
+        description: 操作人角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手
         enum:
         - 1
         - 2
@@ -1653,9 +1665,6 @@ definitions:
       materialId:
         description: 其它物资分类ID
         type: integer
-      modelId:
-        description: 电池型号ID
-        type: integer
       num:
         description: 调拨数量
         type: integer
@@ -1672,15 +1681,11 @@ definitions:
         items:
           $ref: '#/definitions/model.AssetTransferReceiveDetail'
         type: array
-      id:
-        description: 调拨ID
-        type: integer
       remark:
         description: 备注
         type: string
     required:
     - detail
-    - id
     type: object
   model.AssetTransferStatus:
     enum:
@@ -1896,32 +1901,6 @@ definitions:
       token:
         type: string
     type: object
-  model.OperatorType:
-    enum:
-    - 0
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
-    - 6
-    type: integer
-    x-enum-comments:
-      OperatorTypeAgent: 代理
-      OperatorTypeAssetManager: 资产管理员
-      OperatorTypeCabinet: 电柜
-      OperatorTypeEmployee: 店员
-      OperatorTypeMaintainer: 运维
-      OperatorTypeManager: 业务管理员
-      OperatorTypeRider: 骑手
-    x-enum-varnames:
-    - OperatorTypeManager
-    - OperatorTypeEmployee
-    - OperatorTypeCabinet
-    - OperatorTypeAgent
-    - OperatorTypeMaintainer
-    - OperatorTypeRider
-    - OperatorTypeAssetManager
   model.Pagination:
     properties:
       current:
@@ -3209,7 +3188,7 @@ paths:
       summary: 创建品牌
       tags:
       - 电车型号 - EbikeBrand
-  /manager/v2/asset/ebike/brand/{id}:
+  /manager/v2/asset/ebike/brand/:id:
     delete:
       operationId: EbikeBrandDelete
       parameters:
@@ -3649,7 +3628,7 @@ paths:
       summary: 维修记录列表
       tags:
       - 资产
-  /manager/v2/asset/maintenance/{id}:
+  /manager/v2/asset/maintenance/:id:
     put:
       consumes:
       - application/json
@@ -4686,19 +4665,6 @@ paths:
         in: query
         name: keyword
         type: string
-      - description: 是否首页跳转查询
-        enum:
-        - 1
-        - 2
-        in: query
-        name: mainPage
-        type: integer
-        x-enum-comments:
-          AssetTransferMainPageDeliver: 配送中跳转
-          AssetTransferMainPageReceive: 待接收跳转
-        x-enum-varnames:
-        - AssetTransferMainPageReceive
-        - AssetTransferMainPageDeliver
       - description: 运维ID
         in: query
         name: maintainerID
@@ -4899,10 +4865,6 @@ paths:
         name: X-Asset-Manager-Token
         required: true
         type: string
-      - description: 代理员ID
-        in: query
-        name: agentID
-        type: integer
       - description: 仓库管理员ID
         in: query
         name: assetManagerID
@@ -5013,10 +4975,6 @@ paths:
         - AssetLocationsTypeOperation
         - AssetLocationsTypeCabinet
         - AssetLocationsTypeRider
-      - description: 运维ID
-        in: query
-        name: maintainerID
-        type: integer
       - description: 每页数据, 默认20
         in: query
         name: pageSize

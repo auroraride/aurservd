@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
@@ -23,7 +24,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
-	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -399,19 +399,19 @@ func (rc *RiderCreate) AddSubscribes(s ...*Subscribe) *RiderCreate {
 	return rc.AddSubscribeIDs(ids...)
 }
 
-// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
-func (rc *RiderCreate) AddStockIDs(ids ...uint64) *RiderCreate {
-	rc.mutation.AddStockIDs(ids...)
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (rc *RiderCreate) AddAssetIDs(ids ...uint64) *RiderCreate {
+	rc.mutation.AddAssetIDs(ids...)
 	return rc
 }
 
-// AddStocks adds the "stocks" edges to the Stock entity.
-func (rc *RiderCreate) AddStocks(s ...*Stock) *RiderCreate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// AddAsset adds the "asset" edges to the Asset entity.
+func (rc *RiderCreate) AddAsset(a ...*Asset) *RiderCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return rc.AddStockIDs(ids...)
+	return rc.AddAssetIDs(ids...)
 }
 
 // AddFollowupIDs adds the "followups" edge to the RiderFollowUp entity by IDs.
@@ -802,15 +802,15 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := rc.mutation.StocksIDs(); len(nodes) > 0 {
+	if nodes := rc.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.StocksTable,
-			Columns: []string{rider.StocksColumn},
+			Table:   rider.AssetTable,
+			Columns: []string{rider.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -21,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
@@ -69,10 +70,15 @@ type Asset struct {
 	CheckAt *time.Time `json:"check_at,omitempty"`
 	// 品牌名称
 	BrandName string `json:"brand_name,omitempty"`
+	// 订阅ID
+	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
+	// 仓位号
+	Ordinal *int `json:"ordinal,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetQuery when eager-loading is set.
-	Edges        AssetEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges            AssetEdges `json:"edges"`
+	enterprise_asset *uint64
+	selectValues     sql.SelectValues
 }
 
 // AssetEdges holds the relations/edges for other nodes in the graph.
@@ -87,6 +93,16 @@ type AssetEdges struct {
 	Material *Material `json:"material,omitempty"`
 	// Values holds the value of the values edge.
 	Values []*AssetAttributeValues `json:"values,omitempty"`
+	// ScrapDetails holds the value of the scrap_details edge.
+	ScrapDetails []*AssetScrapDetails `json:"scrap_details,omitempty"`
+	// TransferDetails holds the value of the transfer_details edge.
+	TransferDetails []*AssetTransferDetails `json:"transfer_details,omitempty"`
+	// MaintenanceDetails holds the value of the maintenance_details edge.
+	MaintenanceDetails []*AssetMaintenanceDetails `json:"maintenance_details,omitempty"`
+	// CheckDetails holds the value of the check_details edge.
+	CheckDetails []*AssetCheckDetails `json:"check_details,omitempty"`
+	// Subscribe holds the value of the subscribe edge.
+	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// Warehouse holds the value of the warehouse edge.
 	Warehouse *Warehouse `json:"warehouse,omitempty"`
 	// Store holds the value of the store edge.
@@ -99,17 +115,13 @@ type AssetEdges struct {
 	Rider *Rider `json:"rider,omitempty"`
 	// Operator holds the value of the operator edge.
 	Operator *Maintainer `json:"operator,omitempty"`
-	// ScrapDetails holds the value of the scrap_details edge.
-	ScrapDetails []*AssetScrapDetails `json:"scrap_details,omitempty"`
-	// TransferDetails holds the value of the transfer_details edge.
-	TransferDetails []*AssetTransferDetails `json:"transfer_details,omitempty"`
-	// MaintenanceDetails holds the value of the maintenance_details edge.
-	MaintenanceDetails []*AssetMaintenanceDetails `json:"maintenance_details,omitempty"`
-	// CheckDetails holds the value of the check_details edge.
-	CheckDetails []*AssetCheckDetails `json:"check_details,omitempty"`
+	// Allocates holds the value of the allocates edge.
+	Allocates []*Allocate `json:"allocates,omitempty"`
+	// RtoRider holds the value of the rto_rider edge.
+	RtoRider *Rider `json:"rto_rider,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [15]bool
+	loadedTypes [18]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
@@ -165,12 +177,59 @@ func (e AssetEdges) ValuesOrErr() ([]*AssetAttributeValues, error) {
 	return nil, &NotLoadedError{edge: "values"}
 }
 
+// ScrapDetailsOrErr returns the ScrapDetails value or an error if the edge
+// was not loaded in eager-loading.
+func (e AssetEdges) ScrapDetailsOrErr() ([]*AssetScrapDetails, error) {
+	if e.loadedTypes[5] {
+		return e.ScrapDetails, nil
+	}
+	return nil, &NotLoadedError{edge: "scrap_details"}
+}
+
+// TransferDetailsOrErr returns the TransferDetails value or an error if the edge
+// was not loaded in eager-loading.
+func (e AssetEdges) TransferDetailsOrErr() ([]*AssetTransferDetails, error) {
+	if e.loadedTypes[6] {
+		return e.TransferDetails, nil
+	}
+	return nil, &NotLoadedError{edge: "transfer_details"}
+}
+
+// MaintenanceDetailsOrErr returns the MaintenanceDetails value or an error if the edge
+// was not loaded in eager-loading.
+func (e AssetEdges) MaintenanceDetailsOrErr() ([]*AssetMaintenanceDetails, error) {
+	if e.loadedTypes[7] {
+		return e.MaintenanceDetails, nil
+	}
+	return nil, &NotLoadedError{edge: "maintenance_details"}
+}
+
+// CheckDetailsOrErr returns the CheckDetails value or an error if the edge
+// was not loaded in eager-loading.
+func (e AssetEdges) CheckDetailsOrErr() ([]*AssetCheckDetails, error) {
+	if e.loadedTypes[8] {
+		return e.CheckDetails, nil
+	}
+	return nil, &NotLoadedError{edge: "check_details"}
+}
+
+// SubscribeOrErr returns the Subscribe value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetEdges) SubscribeOrErr() (*Subscribe, error) {
+	if e.Subscribe != nil {
+		return e.Subscribe, nil
+	} else if e.loadedTypes[9] {
+		return nil, &NotFoundError{label: subscribe.Label}
+	}
+	return nil, &NotLoadedError{edge: "subscribe"}
+}
+
 // WarehouseOrErr returns the Warehouse value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AssetEdges) WarehouseOrErr() (*Warehouse, error) {
 	if e.Warehouse != nil {
 		return e.Warehouse, nil
-	} else if e.loadedTypes[5] {
+	} else if e.loadedTypes[10] {
 		return nil, &NotFoundError{label: warehouse.Label}
 	}
 	return nil, &NotLoadedError{edge: "warehouse"}
@@ -181,7 +240,7 @@ func (e AssetEdges) WarehouseOrErr() (*Warehouse, error) {
 func (e AssetEdges) StoreOrErr() (*Store, error) {
 	if e.Store != nil {
 		return e.Store, nil
-	} else if e.loadedTypes[6] {
+	} else if e.loadedTypes[11] {
 		return nil, &NotFoundError{label: store.Label}
 	}
 	return nil, &NotLoadedError{edge: "store"}
@@ -192,7 +251,7 @@ func (e AssetEdges) StoreOrErr() (*Store, error) {
 func (e AssetEdges) CabinetOrErr() (*Cabinet, error) {
 	if e.Cabinet != nil {
 		return e.Cabinet, nil
-	} else if e.loadedTypes[7] {
+	} else if e.loadedTypes[12] {
 		return nil, &NotFoundError{label: cabinet.Label}
 	}
 	return nil, &NotLoadedError{edge: "cabinet"}
@@ -203,7 +262,7 @@ func (e AssetEdges) CabinetOrErr() (*Cabinet, error) {
 func (e AssetEdges) StationOrErr() (*EnterpriseStation, error) {
 	if e.Station != nil {
 		return e.Station, nil
-	} else if e.loadedTypes[8] {
+	} else if e.loadedTypes[13] {
 		return nil, &NotFoundError{label: enterprisestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "station"}
@@ -214,7 +273,7 @@ func (e AssetEdges) StationOrErr() (*EnterpriseStation, error) {
 func (e AssetEdges) RiderOrErr() (*Rider, error) {
 	if e.Rider != nil {
 		return e.Rider, nil
-	} else if e.loadedTypes[9] {
+	} else if e.loadedTypes[14] {
 		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
@@ -225,46 +284,30 @@ func (e AssetEdges) RiderOrErr() (*Rider, error) {
 func (e AssetEdges) OperatorOrErr() (*Maintainer, error) {
 	if e.Operator != nil {
 		return e.Operator, nil
-	} else if e.loadedTypes[10] {
+	} else if e.loadedTypes[15] {
 		return nil, &NotFoundError{label: maintainer.Label}
 	}
 	return nil, &NotLoadedError{edge: "operator"}
 }
 
-// ScrapDetailsOrErr returns the ScrapDetails value or an error if the edge
+// AllocatesOrErr returns the Allocates value or an error if the edge
 // was not loaded in eager-loading.
-func (e AssetEdges) ScrapDetailsOrErr() ([]*AssetScrapDetails, error) {
-	if e.loadedTypes[11] {
-		return e.ScrapDetails, nil
+func (e AssetEdges) AllocatesOrErr() ([]*Allocate, error) {
+	if e.loadedTypes[16] {
+		return e.Allocates, nil
 	}
-	return nil, &NotLoadedError{edge: "scrap_details"}
+	return nil, &NotLoadedError{edge: "allocates"}
 }
 
-// TransferDetailsOrErr returns the TransferDetails value or an error if the edge
-// was not loaded in eager-loading.
-func (e AssetEdges) TransferDetailsOrErr() ([]*AssetTransferDetails, error) {
-	if e.loadedTypes[12] {
-		return e.TransferDetails, nil
+// RtoRiderOrErr returns the RtoRider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetEdges) RtoRiderOrErr() (*Rider, error) {
+	if e.RtoRider != nil {
+		return e.RtoRider, nil
+	} else if e.loadedTypes[17] {
+		return nil, &NotFoundError{label: rider.Label}
 	}
-	return nil, &NotLoadedError{edge: "transfer_details"}
-}
-
-// MaintenanceDetailsOrErr returns the MaintenanceDetails value or an error if the edge
-// was not loaded in eager-loading.
-func (e AssetEdges) MaintenanceDetailsOrErr() ([]*AssetMaintenanceDetails, error) {
-	if e.loadedTypes[13] {
-		return e.MaintenanceDetails, nil
-	}
-	return nil, &NotLoadedError{edge: "maintenance_details"}
-}
-
-// CheckDetailsOrErr returns the CheckDetails value or an error if the edge
-// was not loaded in eager-loading.
-func (e AssetEdges) CheckDetailsOrErr() ([]*AssetCheckDetails, error) {
-	if e.loadedTypes[14] {
-		return e.CheckDetails, nil
-	}
-	return nil, &NotLoadedError{edge: "check_details"}
+	return nil, &NotLoadedError{edge: "rto_rider"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -276,12 +319,14 @@ func (*Asset) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case asset.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case asset.FieldID, asset.FieldBrandID, asset.FieldModelID, asset.FieldCityID, asset.FieldMaterialID, asset.FieldType, asset.FieldStatus, asset.FieldLocationsType, asset.FieldLocationsID, asset.FieldRtoRiderID:
+		case asset.FieldID, asset.FieldBrandID, asset.FieldModelID, asset.FieldCityID, asset.FieldMaterialID, asset.FieldType, asset.FieldStatus, asset.FieldLocationsType, asset.FieldLocationsID, asset.FieldRtoRiderID, asset.FieldSubscribeID, asset.FieldOrdinal:
 			values[i] = new(sql.NullInt64)
 		case asset.FieldRemark, asset.FieldName, asset.FieldSn, asset.FieldBrandName:
 			values[i] = new(sql.NullString)
 		case asset.FieldCreatedAt, asset.FieldUpdatedAt, asset.FieldDeletedAt, asset.FieldCheckAt:
 			values[i] = new(sql.NullTime)
+		case asset.ForeignKeys[0]: // enterprise_asset
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -434,6 +479,27 @@ func (a *Asset) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.BrandName = value.String
 			}
+		case asset.FieldSubscribeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
+			} else if value.Valid {
+				a.SubscribeID = new(uint64)
+				*a.SubscribeID = uint64(value.Int64)
+			}
+		case asset.FieldOrdinal:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field ordinal", values[i])
+			} else if value.Valid {
+				a.Ordinal = new(int)
+				*a.Ordinal = int(value.Int64)
+			}
+		case asset.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field enterprise_asset", value)
+			} else if value.Valid {
+				a.enterprise_asset = new(uint64)
+				*a.enterprise_asset = uint64(value.Int64)
+			}
 		default:
 			a.selectValues.Set(columns[i], values[i])
 		}
@@ -472,6 +538,31 @@ func (a *Asset) QueryValues() *AssetAttributeValuesQuery {
 	return NewAssetClient(a.config).QueryValues(a)
 }
 
+// QueryScrapDetails queries the "scrap_details" edge of the Asset entity.
+func (a *Asset) QueryScrapDetails() *AssetScrapDetailsQuery {
+	return NewAssetClient(a.config).QueryScrapDetails(a)
+}
+
+// QueryTransferDetails queries the "transfer_details" edge of the Asset entity.
+func (a *Asset) QueryTransferDetails() *AssetTransferDetailsQuery {
+	return NewAssetClient(a.config).QueryTransferDetails(a)
+}
+
+// QueryMaintenanceDetails queries the "maintenance_details" edge of the Asset entity.
+func (a *Asset) QueryMaintenanceDetails() *AssetMaintenanceDetailsQuery {
+	return NewAssetClient(a.config).QueryMaintenanceDetails(a)
+}
+
+// QueryCheckDetails queries the "check_details" edge of the Asset entity.
+func (a *Asset) QueryCheckDetails() *AssetCheckDetailsQuery {
+	return NewAssetClient(a.config).QueryCheckDetails(a)
+}
+
+// QuerySubscribe queries the "subscribe" edge of the Asset entity.
+func (a *Asset) QuerySubscribe() *SubscribeQuery {
+	return NewAssetClient(a.config).QuerySubscribe(a)
+}
+
 // QueryWarehouse queries the "warehouse" edge of the Asset entity.
 func (a *Asset) QueryWarehouse() *WarehouseQuery {
 	return NewAssetClient(a.config).QueryWarehouse(a)
@@ -502,24 +593,14 @@ func (a *Asset) QueryOperator() *MaintainerQuery {
 	return NewAssetClient(a.config).QueryOperator(a)
 }
 
-// QueryScrapDetails queries the "scrap_details" edge of the Asset entity.
-func (a *Asset) QueryScrapDetails() *AssetScrapDetailsQuery {
-	return NewAssetClient(a.config).QueryScrapDetails(a)
+// QueryAllocates queries the "allocates" edge of the Asset entity.
+func (a *Asset) QueryAllocates() *AllocateQuery {
+	return NewAssetClient(a.config).QueryAllocates(a)
 }
 
-// QueryTransferDetails queries the "transfer_details" edge of the Asset entity.
-func (a *Asset) QueryTransferDetails() *AssetTransferDetailsQuery {
-	return NewAssetClient(a.config).QueryTransferDetails(a)
-}
-
-// QueryMaintenanceDetails queries the "maintenance_details" edge of the Asset entity.
-func (a *Asset) QueryMaintenanceDetails() *AssetMaintenanceDetailsQuery {
-	return NewAssetClient(a.config).QueryMaintenanceDetails(a)
-}
-
-// QueryCheckDetails queries the "check_details" edge of the Asset entity.
-func (a *Asset) QueryCheckDetails() *AssetCheckDetailsQuery {
-	return NewAssetClient(a.config).QueryCheckDetails(a)
+// QueryRtoRider queries the "rto_rider" edge of the Asset entity.
+func (a *Asset) QueryRtoRider() *RiderQuery {
+	return NewAssetClient(a.config).QueryRtoRider(a)
 }
 
 // Update returns a builder for updating this Asset.
@@ -618,6 +699,16 @@ func (a *Asset) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("brand_name=")
 	builder.WriteString(a.BrandName)
+	builder.WriteString(", ")
+	if v := a.SubscribeID; v != nil {
+		builder.WriteString("subscribe_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := a.Ordinal; v != nil {
+		builder.WriteString("ordinal=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

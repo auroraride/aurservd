@@ -94,7 +94,9 @@ type BatteryInCabinet struct {
 }
 
 type BatteryUnbindRequest struct {
-	RiderID uint64 `json:"riderId" validate:"required"` // 骑手ID
+	RiderID        uint64             `json:"riderId" validate:"required"`        // 骑手ID
+	ToLocationType AssetLocationsType `json:"toLocationType" validate:"required"` // 位置类型  1:仓库 2:门店 3:站点 4:运维
+	ToLocationID   uint64             `json:"toLocationID" validate:"required"`   // 位置ID
 }
 
 type BatteryBatchQueryRequest struct {

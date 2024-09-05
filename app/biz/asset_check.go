@@ -40,24 +40,24 @@ func (b *assetCheckBiz) GetAssetBySN(assetSignInfo definition.AssetSignInfo, req
 
 	if assetSignInfo.AssetManager != nil {
 		wType := model.OperatorTypeAssetManager
-		newReq.OpratorType = wType
-		newReq.OpratorID = assetSignInfo.AssetManager.ID
+		newReq.OperatorType = wType
+		newReq.OperatorID = assetSignInfo.AssetManager.ID
 	}
 	if assetSignInfo.Employee != nil {
 		sType := model.OperatorTypeEmployee
-		newReq.OpratorType = sType
-		newReq.OpratorID = assetSignInfo.Employee.ID
+		newReq.OperatorType = sType
+		newReq.OperatorID = assetSignInfo.Employee.ID
 	}
 	if assetSignInfo.Agent != nil {
 		sType := model.OperatorTypeAgent
-		newReq.OpratorType = sType
-		newReq.OpratorID = assetSignInfo.Agent.ID
+		newReq.OperatorType = sType
+		newReq.OperatorID = assetSignInfo.Agent.ID
 	}
 
 	if assetSignInfo.Maintainer != nil {
 		sType := model.OperatorTypeAgent
-		newReq.OpratorType = sType
-		newReq.OpratorID = assetSignInfo.Maintainer.ID
+		newReq.OperatorType = sType
+		newReq.OperatorID = assetSignInfo.Maintainer.ID
 	}
 
 	return service.NewAssetCheck().GetAssetBySN(b.ctx, &newReq)
@@ -88,8 +88,8 @@ func (b *assetCheckBiz) Create(assetSignInfo definition.AssetSignInfo, req *defi
 			return nil, errors.New("未找到仓管员上班信息")
 		}
 		newReq.LocationsID = am.Edges.Warehouse.ID
-		newReq.OpratorID = assetSignInfo.AssetManager.ID
-		newReq.OpratorType = model.OperatorTypeAssetManager
+		newReq.OperatorID = assetSignInfo.AssetManager.ID
+		newReq.OperatorType = model.OperatorTypeAssetManager
 
 		md = model.Modifier{
 			ID:    assetSignInfo.AssetManager.ID,
@@ -113,8 +113,8 @@ func (b *assetCheckBiz) Create(assetSignInfo definition.AssetSignInfo, req *defi
 		}
 
 		newReq.LocationsID = ep.Edges.Store.ID
-		newReq.OpratorID = assetSignInfo.Employee.ID
-		newReq.OpratorType = model.OperatorTypeEmployee
+		newReq.OperatorID = assetSignInfo.Employee.ID
+		newReq.OperatorType = model.OperatorTypeEmployee
 		md = model.Modifier{
 			ID:    assetSignInfo.Employee.ID,
 			Name:  assetSignInfo.Employee.Name,
@@ -129,8 +129,8 @@ func (b *assetCheckBiz) Create(assetSignInfo definition.AssetSignInfo, req *defi
 		sType := model.AssetLocationsTypeStation
 		newReq.LocationsType = sType
 		newReq.LocationsID = *req.StationID
-		newReq.OpratorID = assetSignInfo.Agent.ID
-		newReq.OpratorType = model.OperatorTypeAgent
+		newReq.OperatorID = assetSignInfo.Agent.ID
+		newReq.OperatorType = model.OperatorTypeAgent
 		md = model.Modifier{
 			ID:    assetSignInfo.Agent.ID,
 			Name:  assetSignInfo.Agent.Name,

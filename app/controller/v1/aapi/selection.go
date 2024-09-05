@@ -9,7 +9,7 @@ import (
 
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/biz"
-	"github.com/auroraride/aurservd/app/biz/definition"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 )
 
@@ -81,11 +81,11 @@ func (*selection) Station(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Agent-Token	header		string						true	"仓管校验token"
-// @Param	query			query		definition.SelectModelsReq	true	"查询参数"
+// @Param	query			query		model.SelectModelsReq	true	"查询参数"
 // @Success	200				{object}	[]model.SelectOption		"请求成功"
 func (*selection) Model(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[definition.SelectModelsReq](c)
-	return ctx.SendResponse(biz.NewBatteryModel().SelectionModels(req))
+	ctx, req := app.AgentContextAndBinding[model.SelectModelsReq](c)
+	return ctx.SendResponse(service.NewBatteryModel().SelectionModels(req))
 }
 
 // EbikeBrand

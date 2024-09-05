@@ -18,7 +18,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // Battery is the model entity for the Battery schema.
@@ -74,8 +73,6 @@ type BatteryEdges struct {
 	Rider *Rider `json:"rider,omitempty"`
 	// 所属电柜
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
-	// 所属订阅
-	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// 所属企业
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// 流转记录
@@ -84,7 +81,7 @@ type BatteryEdges struct {
 	Station *EnterpriseStation `json:"station,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [6]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -120,23 +117,12 @@ func (e BatteryEdges) CabinetOrErr() (*Cabinet, error) {
 	return nil, &NotLoadedError{edge: "cabinet"}
 }
 
-// SubscribeOrErr returns the Subscribe value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e BatteryEdges) SubscribeOrErr() (*Subscribe, error) {
-	if e.Subscribe != nil {
-		return e.Subscribe, nil
-	} else if e.loadedTypes[3] {
-		return nil, &NotFoundError{label: subscribe.Label}
-	}
-	return nil, &NotLoadedError{edge: "subscribe"}
-}
-
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BatteryEdges) EnterpriseOrErr() (*Enterprise, error) {
 	if e.Enterprise != nil {
 		return e.Enterprise, nil
-	} else if e.loadedTypes[4] {
+	} else if e.loadedTypes[3] {
 		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
@@ -145,7 +131,7 @@ func (e BatteryEdges) EnterpriseOrErr() (*Enterprise, error) {
 // FlowsOrErr returns the Flows value or an error if the edge
 // was not loaded in eager-loading.
 func (e BatteryEdges) FlowsOrErr() ([]*BatteryFlow, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[4] {
 		return e.Flows, nil
 	}
 	return nil, &NotLoadedError{edge: "flows"}
@@ -156,7 +142,7 @@ func (e BatteryEdges) FlowsOrErr() ([]*BatteryFlow, error) {
 func (e BatteryEdges) StationOrErr() (*EnterpriseStation, error) {
 	if e.Station != nil {
 		return e.Station, nil
-	} else if e.loadedTypes[6] {
+	} else if e.loadedTypes[5] {
 		return nil, &NotFoundError{label: enterprisestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "station"}
@@ -340,11 +326,6 @@ func (b *Battery) QueryRider() *RiderQuery {
 // QueryCabinet queries the "cabinet" edge of the Battery entity.
 func (b *Battery) QueryCabinet() *CabinetQuery {
 	return NewBatteryClient(b.config).QueryCabinet(b)
-}
-
-// QuerySubscribe queries the "subscribe" edge of the Battery entity.
-func (b *Battery) QuerySubscribe() *SubscribeQuery {
-	return NewBatteryClient(b.config).QuerySubscribe(b)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the Battery entity.

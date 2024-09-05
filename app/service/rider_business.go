@@ -39,7 +39,7 @@ type riderBusinessService struct {
 
 	bt model.BusinessType
 
-	battery *ent.Battery
+	battery *ent.Asset
 
 	response model.BusinessCabinetStatus
 }

@@ -12,20 +12,20 @@ import (
 	"entgo.io/ent"
 
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/stock"
+	// "github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 )
 
-func (sc *StockCreate) Clone() (creator *StockCreate) {
-	mutation := new(StockMutation)
-	*mutation = *sc.mutation
-	return &StockCreate{
-		config:   sc.config,
-		mutation: mutation,
-		hooks:    sc.hooks,
-		conflict: sc.conflict,
-	}
-}
+// func (sc *StockCreate) Clone() (creator *StockCreate) {
+// 	mutation := new(StockMutation)
+// 	*mutation = *sc.mutation
+// 	return &StockCreate{
+// 		config:   sc.config,
+// 		mutation: mutation,
+// 		hooks:    sc.hooks,
+// 		conflict: sc.conflict,
+// 	}
+// }
 
 type StockInfo interface {
 	Num() (r int, exists bool)
@@ -36,7 +36,7 @@ type StockInfo interface {
 	CabinetID() (r uint64, exists bool)
 	RiderID() (r uint64, exists bool)
 	Model() (r string, exists bool)
-	Material() (r stock.Material, exists bool)
+	// Material() (r stock.Material, exists bool)
 	Name() (r string, exists bool)
 }
 
@@ -121,14 +121,14 @@ func GetParams(st StockInfo, params *model.StockSummaryParams) {
 	if v, ok := st.Model(); ok {
 		params.Model = v
 	}
-	// 电车型号 其他物资名称
-	if v, ok := st.Name(); ok && params.Material != stock.MaterialBattery.String() {
-		params.Model = v
-	}
-
-	if v, ok := st.Material(); ok {
-		params.Material = v.String()
-	}
+	// // 电车型号 其他物资名称
+	// if v, ok := st.Name(); ok && params.Material != stock.MaterialBattery.String() {
+	// 	params.Model = v
+	// }
+	//
+	// if v, ok := st.Material(); ok {
+	// 	params.Material = v.String()
+	// }
 
 	if v, ok := st.Num(); ok {
 		params.Num = v
@@ -151,14 +151,14 @@ func GetStockNum(ctx context.Context, Params *model.StockSummaryParams) {
 		q.Where(stocksummary.Model(Params.Model))
 	}
 
-	switch Params.Material {
-	case stock.MaterialBattery.String(): // 电池物资
-		q.Where(stocksummary.MaterialEQ(stocksummary.Material(stock.MaterialBattery)))
-	case stock.MaterialEbike.String(): // 电车物资
-		q.Where(stocksummary.MaterialEQ(stocksummary.Material(stock.MaterialEbike)))
-	case stock.MaterialOthers.String(): // 其他物资
-		q.Where(stocksummary.MaterialEQ(stocksummary.Material(stock.MaterialOthers)))
-	}
+	// switch Params.Material {
+	// case stock.MaterialBattery.String(): // 电池物资
+	// 	q.Where(stocksummary.MaterialEQ(stocksummary.Material(stock.MaterialBattery)))
+	// case stock.MaterialEbike.String(): // 电车物资
+	// 	q.Where(stocksummary.MaterialEQ(stocksummary.Material(stock.MaterialEbike)))
+	// case stock.MaterialOthers.String(): // 其他物资
+	// 	q.Where(stocksummary.MaterialEQ(stocksummary.Material(stock.MaterialOthers)))
+	// }
 
 	//  站点查询
 	if Params.StationID != nil {

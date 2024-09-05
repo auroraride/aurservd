@@ -20,7 +20,7 @@ func Run() {
 		Addr: ar.Config.Redis.Address,
 	})
 
-	// 同步电池流转
+	// 同步电池流转 todo 这里可以不要了
 	go func() {
 		sync.New[batdef.BatteryFlow](
 			rdb,

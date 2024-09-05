@@ -69,6 +69,7 @@ func (Maintainer) Fields() []ent.Field {
 func (Maintainer) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("cities", City.Type).Ref("maintainers"),
+		edge.To("asset", Asset.Type),
 	}
 }
 

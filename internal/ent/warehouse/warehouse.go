@@ -47,6 +47,8 @@ const (
 	EdgeAssetManager = "asset_manager"
 	// EdgeAssetManagers holds the string denoting the asset_managers edge name in mutations.
 	EdgeAssetManagers = "asset_managers"
+	// EdgeAsset holds the string denoting the asset edge name in mutations.
+	EdgeAsset = "asset"
 	// Table holds the table name of the warehouse in the database.
 	Table = "warehouse"
 	// CityTable is the table that holds the city relation/edge.
@@ -68,6 +70,13 @@ const (
 	// AssetManagersInverseTable is the table name for the AssetManager entity.
 	// It exists in this package in order to avoid circular dependency with the "assetmanager" package.
 	AssetManagersInverseTable = "asset_manager"
+	// AssetTable is the table that holds the asset relation/edge.
+	AssetTable = "asset"
+	// AssetInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	AssetInverseTable = "asset"
+	// AssetColumn is the table column denoting the asset relation/edge.
+	AssetColumn = "locations_id"
 )
 
 // Columns holds all SQL columns for warehouse fields.
@@ -209,6 +218,20 @@ func ByAssetManagers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newAssetManagersStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByAssetCount orders the results by asset count.
+func ByAssetCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAssetStep(), opts...)
+	}
+}
+
+// ByAsset orders the results by asset terms.
+func ByAsset(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAssetStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -228,5 +251,12 @@ func newAssetManagersStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AssetManagersInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, AssetManagersTable, AssetManagersPrimaryKey...),
+	)
+}
+func newAssetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AssetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AssetTable, AssetColumn),
 	)
 }

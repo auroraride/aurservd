@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
@@ -28,6 +29,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
@@ -322,7 +324,6 @@ func (au *AssetUpdate) ClearLocationsID() *AssetUpdate {
 
 // SetRtoRiderID sets the "rto_rider_id" field.
 func (au *AssetUpdate) SetRtoRiderID(u uint64) *AssetUpdate {
-	au.mutation.ResetRtoRiderID()
 	au.mutation.SetRtoRiderID(u)
 	return au
 }
@@ -332,12 +333,6 @@ func (au *AssetUpdate) SetNillableRtoRiderID(u *uint64) *AssetUpdate {
 	if u != nil {
 		au.SetRtoRiderID(*u)
 	}
-	return au
-}
-
-// AddRtoRiderID adds u to the "rto_rider_id" field.
-func (au *AssetUpdate) AddRtoRiderID(u int64) *AssetUpdate {
-	au.mutation.AddRtoRiderID(u)
 	return au
 }
 
@@ -387,6 +382,53 @@ func (au *AssetUpdate) ClearBrandName() *AssetUpdate {
 	return au
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (au *AssetUpdate) SetSubscribeID(u uint64) *AssetUpdate {
+	au.mutation.SetSubscribeID(u)
+	return au
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (au *AssetUpdate) SetNillableSubscribeID(u *uint64) *AssetUpdate {
+	if u != nil {
+		au.SetSubscribeID(*u)
+	}
+	return au
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (au *AssetUpdate) ClearSubscribeID() *AssetUpdate {
+	au.mutation.ClearSubscribeID()
+	return au
+}
+
+// SetOrdinal sets the "ordinal" field.
+func (au *AssetUpdate) SetOrdinal(i int) *AssetUpdate {
+	au.mutation.ResetOrdinal()
+	au.mutation.SetOrdinal(i)
+	return au
+}
+
+// SetNillableOrdinal sets the "ordinal" field if the given value is not nil.
+func (au *AssetUpdate) SetNillableOrdinal(i *int) *AssetUpdate {
+	if i != nil {
+		au.SetOrdinal(*i)
+	}
+	return au
+}
+
+// AddOrdinal adds i to the "ordinal" field.
+func (au *AssetUpdate) AddOrdinal(i int) *AssetUpdate {
+	au.mutation.AddOrdinal(i)
+	return au
+}
+
+// ClearOrdinal clears the value of the "ordinal" field.
+func (au *AssetUpdate) ClearOrdinal() *AssetUpdate {
+	au.mutation.ClearOrdinal()
+	return au
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (au *AssetUpdate) SetBrand(e *EbikeBrand) *AssetUpdate {
 	return au.SetBrandID(e.ID)
@@ -420,6 +462,71 @@ func (au *AssetUpdate) AddValues(a ...*AssetAttributeValues) *AssetUpdate {
 		ids[i] = a[i].ID
 	}
 	return au.AddValueIDs(ids...)
+}
+
+// AddScrapDetailIDs adds the "scrap_details" edge to the AssetScrapDetails entity by IDs.
+func (au *AssetUpdate) AddScrapDetailIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.AddScrapDetailIDs(ids...)
+	return au
+}
+
+// AddScrapDetails adds the "scrap_details" edges to the AssetScrapDetails entity.
+func (au *AssetUpdate) AddScrapDetails(a ...*AssetScrapDetails) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.AddScrapDetailIDs(ids...)
+}
+
+// AddTransferDetailIDs adds the "transfer_details" edge to the AssetTransferDetails entity by IDs.
+func (au *AssetUpdate) AddTransferDetailIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.AddTransferDetailIDs(ids...)
+	return au
+}
+
+// AddTransferDetails adds the "transfer_details" edges to the AssetTransferDetails entity.
+func (au *AssetUpdate) AddTransferDetails(a ...*AssetTransferDetails) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.AddTransferDetailIDs(ids...)
+}
+
+// AddMaintenanceDetailIDs adds the "maintenance_details" edge to the AssetMaintenanceDetails entity by IDs.
+func (au *AssetUpdate) AddMaintenanceDetailIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.AddMaintenanceDetailIDs(ids...)
+	return au
+}
+
+// AddMaintenanceDetails adds the "maintenance_details" edges to the AssetMaintenanceDetails entity.
+func (au *AssetUpdate) AddMaintenanceDetails(a ...*AssetMaintenanceDetails) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.AddMaintenanceDetailIDs(ids...)
+}
+
+// AddCheckDetailIDs adds the "check_details" edge to the AssetCheckDetails entity by IDs.
+func (au *AssetUpdate) AddCheckDetailIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.AddCheckDetailIDs(ids...)
+	return au
+}
+
+// AddCheckDetails adds the "check_details" edges to the AssetCheckDetails entity.
+func (au *AssetUpdate) AddCheckDetails(a ...*AssetCheckDetails) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.AddCheckDetailIDs(ids...)
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (au *AssetUpdate) SetSubscribe(s *Subscribe) *AssetUpdate {
+	return au.SetSubscribeID(s.ID)
 }
 
 // SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
@@ -536,64 +643,24 @@ func (au *AssetUpdate) SetOperator(m *Maintainer) *AssetUpdate {
 	return au.SetOperatorID(m.ID)
 }
 
-// AddScrapDetailIDs adds the "scrap_details" edge to the AssetScrapDetails entity by IDs.
-func (au *AssetUpdate) AddScrapDetailIDs(ids ...uint64) *AssetUpdate {
-	au.mutation.AddScrapDetailIDs(ids...)
+// AddAllocateIDs adds the "allocates" edge to the Allocate entity by IDs.
+func (au *AssetUpdate) AddAllocateIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.AddAllocateIDs(ids...)
 	return au
 }
 
-// AddScrapDetails adds the "scrap_details" edges to the AssetScrapDetails entity.
-func (au *AssetUpdate) AddScrapDetails(a ...*AssetScrapDetails) *AssetUpdate {
+// AddAllocates adds the "allocates" edges to the Allocate entity.
+func (au *AssetUpdate) AddAllocates(a ...*Allocate) *AssetUpdate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return au.AddScrapDetailIDs(ids...)
+	return au.AddAllocateIDs(ids...)
 }
 
-// AddTransferDetailIDs adds the "transfer_details" edge to the AssetTransferDetails entity by IDs.
-func (au *AssetUpdate) AddTransferDetailIDs(ids ...uint64) *AssetUpdate {
-	au.mutation.AddTransferDetailIDs(ids...)
-	return au
-}
-
-// AddTransferDetails adds the "transfer_details" edges to the AssetTransferDetails entity.
-func (au *AssetUpdate) AddTransferDetails(a ...*AssetTransferDetails) *AssetUpdate {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return au.AddTransferDetailIDs(ids...)
-}
-
-// AddMaintenanceDetailIDs adds the "maintenance_details" edge to the AssetMaintenanceDetails entity by IDs.
-func (au *AssetUpdate) AddMaintenanceDetailIDs(ids ...uint64) *AssetUpdate {
-	au.mutation.AddMaintenanceDetailIDs(ids...)
-	return au
-}
-
-// AddMaintenanceDetails adds the "maintenance_details" edges to the AssetMaintenanceDetails entity.
-func (au *AssetUpdate) AddMaintenanceDetails(a ...*AssetMaintenanceDetails) *AssetUpdate {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return au.AddMaintenanceDetailIDs(ids...)
-}
-
-// AddCheckDetailIDs adds the "check_details" edge to the AssetCheckDetails entity by IDs.
-func (au *AssetUpdate) AddCheckDetailIDs(ids ...uint64) *AssetUpdate {
-	au.mutation.AddCheckDetailIDs(ids...)
-	return au
-}
-
-// AddCheckDetails adds the "check_details" edges to the AssetCheckDetails entity.
-func (au *AssetUpdate) AddCheckDetails(a ...*AssetCheckDetails) *AssetUpdate {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return au.AddCheckDetailIDs(ids...)
+// SetRtoRider sets the "rto_rider" edge to the Rider entity.
+func (au *AssetUpdate) SetRtoRider(r *Rider) *AssetUpdate {
+	return au.SetRtoRiderID(r.ID)
 }
 
 // Mutation returns the AssetMutation object of the builder.
@@ -644,42 +711,6 @@ func (au *AssetUpdate) RemoveValues(a ...*AssetAttributeValues) *AssetUpdate {
 		ids[i] = a[i].ID
 	}
 	return au.RemoveValueIDs(ids...)
-}
-
-// ClearWarehouse clears the "warehouse" edge to the Warehouse entity.
-func (au *AssetUpdate) ClearWarehouse() *AssetUpdate {
-	au.mutation.ClearWarehouse()
-	return au
-}
-
-// ClearStore clears the "store" edge to the Store entity.
-func (au *AssetUpdate) ClearStore() *AssetUpdate {
-	au.mutation.ClearStore()
-	return au
-}
-
-// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
-func (au *AssetUpdate) ClearCabinet() *AssetUpdate {
-	au.mutation.ClearCabinet()
-	return au
-}
-
-// ClearStation clears the "station" edge to the EnterpriseStation entity.
-func (au *AssetUpdate) ClearStation() *AssetUpdate {
-	au.mutation.ClearStation()
-	return au
-}
-
-// ClearRider clears the "rider" edge to the Rider entity.
-func (au *AssetUpdate) ClearRider() *AssetUpdate {
-	au.mutation.ClearRider()
-	return au
-}
-
-// ClearOperator clears the "operator" edge to the Maintainer entity.
-func (au *AssetUpdate) ClearOperator() *AssetUpdate {
-	au.mutation.ClearOperator()
-	return au
 }
 
 // ClearScrapDetails clears all "scrap_details" edges to the AssetScrapDetails entity.
@@ -764,6 +795,75 @@ func (au *AssetUpdate) RemoveCheckDetails(a ...*AssetCheckDetails) *AssetUpdate 
 		ids[i] = a[i].ID
 	}
 	return au.RemoveCheckDetailIDs(ids...)
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (au *AssetUpdate) ClearSubscribe() *AssetUpdate {
+	au.mutation.ClearSubscribe()
+	return au
+}
+
+// ClearWarehouse clears the "warehouse" edge to the Warehouse entity.
+func (au *AssetUpdate) ClearWarehouse() *AssetUpdate {
+	au.mutation.ClearWarehouse()
+	return au
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (au *AssetUpdate) ClearStore() *AssetUpdate {
+	au.mutation.ClearStore()
+	return au
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (au *AssetUpdate) ClearCabinet() *AssetUpdate {
+	au.mutation.ClearCabinet()
+	return au
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (au *AssetUpdate) ClearStation() *AssetUpdate {
+	au.mutation.ClearStation()
+	return au
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (au *AssetUpdate) ClearRider() *AssetUpdate {
+	au.mutation.ClearRider()
+	return au
+}
+
+// ClearOperator clears the "operator" edge to the Maintainer entity.
+func (au *AssetUpdate) ClearOperator() *AssetUpdate {
+	au.mutation.ClearOperator()
+	return au
+}
+
+// ClearAllocates clears all "allocates" edges to the Allocate entity.
+func (au *AssetUpdate) ClearAllocates() *AssetUpdate {
+	au.mutation.ClearAllocates()
+	return au
+}
+
+// RemoveAllocateIDs removes the "allocates" edge to Allocate entities by IDs.
+func (au *AssetUpdate) RemoveAllocateIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.RemoveAllocateIDs(ids...)
+	return au
+}
+
+// RemoveAllocates removes "allocates" edges to Allocate entities.
+func (au *AssetUpdate) RemoveAllocates(a ...*Allocate) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.RemoveAllocateIDs(ids...)
+}
+
+// ClearRtoRider clears the "rto_rider" edge to the Rider entity.
+func (au *AssetUpdate) ClearRtoRider() *AssetUpdate {
+	au.mutation.ClearRtoRider()
+	return au
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -880,15 +980,6 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if au.mutation.LocationsTypeCleared() {
 		_spec.ClearField(asset.FieldLocationsType, field.TypeUint8)
 	}
-	if value, ok := au.mutation.RtoRiderID(); ok {
-		_spec.SetField(asset.FieldRtoRiderID, field.TypeUint64, value)
-	}
-	if value, ok := au.mutation.AddedRtoRiderID(); ok {
-		_spec.AddField(asset.FieldRtoRiderID, field.TypeUint64, value)
-	}
-	if au.mutation.RtoRiderIDCleared() {
-		_spec.ClearField(asset.FieldRtoRiderID, field.TypeUint64)
-	}
 	if value, ok := au.mutation.CheckAt(); ok {
 		_spec.SetField(asset.FieldCheckAt, field.TypeTime, value)
 	}
@@ -900,6 +991,15 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if au.mutation.BrandNameCleared() {
 		_spec.ClearField(asset.FieldBrandName, field.TypeString)
+	}
+	if value, ok := au.mutation.Ordinal(); ok {
+		_spec.SetField(asset.FieldOrdinal, field.TypeInt, value)
+	}
+	if value, ok := au.mutation.AddedOrdinal(); ok {
+		_spec.AddField(asset.FieldOrdinal, field.TypeInt, value)
+	}
+	if au.mutation.OrdinalCleared() {
+		_spec.ClearField(asset.FieldOrdinal, field.TypeInt)
 	}
 	if au.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1055,180 +1155,6 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetattributevalues.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if au.mutation.WarehouseCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.WarehouseTable,
-			Columns: []string{asset.WarehouseColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.WarehouseIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.WarehouseTable,
-			Columns: []string{asset.WarehouseColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if au.mutation.StoreCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.StoreTable,
-			Columns: []string{asset.StoreColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.StoreIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.StoreTable,
-			Columns: []string{asset.StoreColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if au.mutation.CabinetCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.CabinetTable,
-			Columns: []string{asset.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.CabinetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.CabinetTable,
-			Columns: []string{asset.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if au.mutation.StationCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.StationTable,
-			Columns: []string{asset.StationColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.StationIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.StationTable,
-			Columns: []string{asset.StationColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if au.mutation.RiderCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.RiderTable,
-			Columns: []string{asset.RiderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.RiderIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.RiderTable,
-			Columns: []string{asset.RiderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if au.mutation.OperatorCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.OperatorTable,
-			Columns: []string{asset.OperatorColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.OperatorIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.OperatorTable,
-			Columns: []string{asset.OperatorColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1409,6 +1335,283 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetcheckdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   asset.SubscribeTable,
+			Columns: []string{asset.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   asset.SubscribeTable,
+			Columns: []string{asset.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.WarehouseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.WarehouseTable,
+			Columns: []string{asset.WarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.WarehouseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.WarehouseTable,
+			Columns: []string{asset.WarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.StoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.StoreTable,
+			Columns: []string{asset.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.StoreTable,
+			Columns: []string{asset.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.CabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.CabinetTable,
+			Columns: []string{asset.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.CabinetTable,
+			Columns: []string{asset.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.StationTable,
+			Columns: []string{asset.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.StationTable,
+			Columns: []string{asset.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RiderTable,
+			Columns: []string{asset.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RiderTable,
+			Columns: []string{asset.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.OperatorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.OperatorTable,
+			Columns: []string{asset.OperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.OperatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.OperatorTable,
+			Columns: []string{asset.OperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.AllocatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.AllocatesTable,
+			Columns: []string{asset.AllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedAllocatesIDs(); len(nodes) > 0 && !au.mutation.AllocatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.AllocatesTable,
+			Columns: []string{asset.AllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.AllocatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.AllocatesTable,
+			Columns: []string{asset.AllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.RtoRiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   asset.RtoRiderTable,
+			Columns: []string{asset.RtoRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RtoRiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   asset.RtoRiderTable,
+			Columns: []string{asset.RtoRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1715,7 +1918,6 @@ func (auo *AssetUpdateOne) ClearLocationsID() *AssetUpdateOne {
 
 // SetRtoRiderID sets the "rto_rider_id" field.
 func (auo *AssetUpdateOne) SetRtoRiderID(u uint64) *AssetUpdateOne {
-	auo.mutation.ResetRtoRiderID()
 	auo.mutation.SetRtoRiderID(u)
 	return auo
 }
@@ -1725,12 +1927,6 @@ func (auo *AssetUpdateOne) SetNillableRtoRiderID(u *uint64) *AssetUpdateOne {
 	if u != nil {
 		auo.SetRtoRiderID(*u)
 	}
-	return auo
-}
-
-// AddRtoRiderID adds u to the "rto_rider_id" field.
-func (auo *AssetUpdateOne) AddRtoRiderID(u int64) *AssetUpdateOne {
-	auo.mutation.AddRtoRiderID(u)
 	return auo
 }
 
@@ -1780,6 +1976,53 @@ func (auo *AssetUpdateOne) ClearBrandName() *AssetUpdateOne {
 	return auo
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (auo *AssetUpdateOne) SetSubscribeID(u uint64) *AssetUpdateOne {
+	auo.mutation.SetSubscribeID(u)
+	return auo
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (auo *AssetUpdateOne) SetNillableSubscribeID(u *uint64) *AssetUpdateOne {
+	if u != nil {
+		auo.SetSubscribeID(*u)
+	}
+	return auo
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (auo *AssetUpdateOne) ClearSubscribeID() *AssetUpdateOne {
+	auo.mutation.ClearSubscribeID()
+	return auo
+}
+
+// SetOrdinal sets the "ordinal" field.
+func (auo *AssetUpdateOne) SetOrdinal(i int) *AssetUpdateOne {
+	auo.mutation.ResetOrdinal()
+	auo.mutation.SetOrdinal(i)
+	return auo
+}
+
+// SetNillableOrdinal sets the "ordinal" field if the given value is not nil.
+func (auo *AssetUpdateOne) SetNillableOrdinal(i *int) *AssetUpdateOne {
+	if i != nil {
+		auo.SetOrdinal(*i)
+	}
+	return auo
+}
+
+// AddOrdinal adds i to the "ordinal" field.
+func (auo *AssetUpdateOne) AddOrdinal(i int) *AssetUpdateOne {
+	auo.mutation.AddOrdinal(i)
+	return auo
+}
+
+// ClearOrdinal clears the value of the "ordinal" field.
+func (auo *AssetUpdateOne) ClearOrdinal() *AssetUpdateOne {
+	auo.mutation.ClearOrdinal()
+	return auo
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (auo *AssetUpdateOne) SetBrand(e *EbikeBrand) *AssetUpdateOne {
 	return auo.SetBrandID(e.ID)
@@ -1813,6 +2056,71 @@ func (auo *AssetUpdateOne) AddValues(a ...*AssetAttributeValues) *AssetUpdateOne
 		ids[i] = a[i].ID
 	}
 	return auo.AddValueIDs(ids...)
+}
+
+// AddScrapDetailIDs adds the "scrap_details" edge to the AssetScrapDetails entity by IDs.
+func (auo *AssetUpdateOne) AddScrapDetailIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.AddScrapDetailIDs(ids...)
+	return auo
+}
+
+// AddScrapDetails adds the "scrap_details" edges to the AssetScrapDetails entity.
+func (auo *AssetUpdateOne) AddScrapDetails(a ...*AssetScrapDetails) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.AddScrapDetailIDs(ids...)
+}
+
+// AddTransferDetailIDs adds the "transfer_details" edge to the AssetTransferDetails entity by IDs.
+func (auo *AssetUpdateOne) AddTransferDetailIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.AddTransferDetailIDs(ids...)
+	return auo
+}
+
+// AddTransferDetails adds the "transfer_details" edges to the AssetTransferDetails entity.
+func (auo *AssetUpdateOne) AddTransferDetails(a ...*AssetTransferDetails) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.AddTransferDetailIDs(ids...)
+}
+
+// AddMaintenanceDetailIDs adds the "maintenance_details" edge to the AssetMaintenanceDetails entity by IDs.
+func (auo *AssetUpdateOne) AddMaintenanceDetailIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.AddMaintenanceDetailIDs(ids...)
+	return auo
+}
+
+// AddMaintenanceDetails adds the "maintenance_details" edges to the AssetMaintenanceDetails entity.
+func (auo *AssetUpdateOne) AddMaintenanceDetails(a ...*AssetMaintenanceDetails) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.AddMaintenanceDetailIDs(ids...)
+}
+
+// AddCheckDetailIDs adds the "check_details" edge to the AssetCheckDetails entity by IDs.
+func (auo *AssetUpdateOne) AddCheckDetailIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.AddCheckDetailIDs(ids...)
+	return auo
+}
+
+// AddCheckDetails adds the "check_details" edges to the AssetCheckDetails entity.
+func (auo *AssetUpdateOne) AddCheckDetails(a ...*AssetCheckDetails) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.AddCheckDetailIDs(ids...)
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (auo *AssetUpdateOne) SetSubscribe(s *Subscribe) *AssetUpdateOne {
+	return auo.SetSubscribeID(s.ID)
 }
 
 // SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
@@ -1929,64 +2237,24 @@ func (auo *AssetUpdateOne) SetOperator(m *Maintainer) *AssetUpdateOne {
 	return auo.SetOperatorID(m.ID)
 }
 
-// AddScrapDetailIDs adds the "scrap_details" edge to the AssetScrapDetails entity by IDs.
-func (auo *AssetUpdateOne) AddScrapDetailIDs(ids ...uint64) *AssetUpdateOne {
-	auo.mutation.AddScrapDetailIDs(ids...)
+// AddAllocateIDs adds the "allocates" edge to the Allocate entity by IDs.
+func (auo *AssetUpdateOne) AddAllocateIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.AddAllocateIDs(ids...)
 	return auo
 }
 
-// AddScrapDetails adds the "scrap_details" edges to the AssetScrapDetails entity.
-func (auo *AssetUpdateOne) AddScrapDetails(a ...*AssetScrapDetails) *AssetUpdateOne {
+// AddAllocates adds the "allocates" edges to the Allocate entity.
+func (auo *AssetUpdateOne) AddAllocates(a ...*Allocate) *AssetUpdateOne {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return auo.AddScrapDetailIDs(ids...)
+	return auo.AddAllocateIDs(ids...)
 }
 
-// AddTransferDetailIDs adds the "transfer_details" edge to the AssetTransferDetails entity by IDs.
-func (auo *AssetUpdateOne) AddTransferDetailIDs(ids ...uint64) *AssetUpdateOne {
-	auo.mutation.AddTransferDetailIDs(ids...)
-	return auo
-}
-
-// AddTransferDetails adds the "transfer_details" edges to the AssetTransferDetails entity.
-func (auo *AssetUpdateOne) AddTransferDetails(a ...*AssetTransferDetails) *AssetUpdateOne {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return auo.AddTransferDetailIDs(ids...)
-}
-
-// AddMaintenanceDetailIDs adds the "maintenance_details" edge to the AssetMaintenanceDetails entity by IDs.
-func (auo *AssetUpdateOne) AddMaintenanceDetailIDs(ids ...uint64) *AssetUpdateOne {
-	auo.mutation.AddMaintenanceDetailIDs(ids...)
-	return auo
-}
-
-// AddMaintenanceDetails adds the "maintenance_details" edges to the AssetMaintenanceDetails entity.
-func (auo *AssetUpdateOne) AddMaintenanceDetails(a ...*AssetMaintenanceDetails) *AssetUpdateOne {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return auo.AddMaintenanceDetailIDs(ids...)
-}
-
-// AddCheckDetailIDs adds the "check_details" edge to the AssetCheckDetails entity by IDs.
-func (auo *AssetUpdateOne) AddCheckDetailIDs(ids ...uint64) *AssetUpdateOne {
-	auo.mutation.AddCheckDetailIDs(ids...)
-	return auo
-}
-
-// AddCheckDetails adds the "check_details" edges to the AssetCheckDetails entity.
-func (auo *AssetUpdateOne) AddCheckDetails(a ...*AssetCheckDetails) *AssetUpdateOne {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return auo.AddCheckDetailIDs(ids...)
+// SetRtoRider sets the "rto_rider" edge to the Rider entity.
+func (auo *AssetUpdateOne) SetRtoRider(r *Rider) *AssetUpdateOne {
+	return auo.SetRtoRiderID(r.ID)
 }
 
 // Mutation returns the AssetMutation object of the builder.
@@ -2037,42 +2305,6 @@ func (auo *AssetUpdateOne) RemoveValues(a ...*AssetAttributeValues) *AssetUpdate
 		ids[i] = a[i].ID
 	}
 	return auo.RemoveValueIDs(ids...)
-}
-
-// ClearWarehouse clears the "warehouse" edge to the Warehouse entity.
-func (auo *AssetUpdateOne) ClearWarehouse() *AssetUpdateOne {
-	auo.mutation.ClearWarehouse()
-	return auo
-}
-
-// ClearStore clears the "store" edge to the Store entity.
-func (auo *AssetUpdateOne) ClearStore() *AssetUpdateOne {
-	auo.mutation.ClearStore()
-	return auo
-}
-
-// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
-func (auo *AssetUpdateOne) ClearCabinet() *AssetUpdateOne {
-	auo.mutation.ClearCabinet()
-	return auo
-}
-
-// ClearStation clears the "station" edge to the EnterpriseStation entity.
-func (auo *AssetUpdateOne) ClearStation() *AssetUpdateOne {
-	auo.mutation.ClearStation()
-	return auo
-}
-
-// ClearRider clears the "rider" edge to the Rider entity.
-func (auo *AssetUpdateOne) ClearRider() *AssetUpdateOne {
-	auo.mutation.ClearRider()
-	return auo
-}
-
-// ClearOperator clears the "operator" edge to the Maintainer entity.
-func (auo *AssetUpdateOne) ClearOperator() *AssetUpdateOne {
-	auo.mutation.ClearOperator()
-	return auo
 }
 
 // ClearScrapDetails clears all "scrap_details" edges to the AssetScrapDetails entity.
@@ -2157,6 +2389,75 @@ func (auo *AssetUpdateOne) RemoveCheckDetails(a ...*AssetCheckDetails) *AssetUpd
 		ids[i] = a[i].ID
 	}
 	return auo.RemoveCheckDetailIDs(ids...)
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (auo *AssetUpdateOne) ClearSubscribe() *AssetUpdateOne {
+	auo.mutation.ClearSubscribe()
+	return auo
+}
+
+// ClearWarehouse clears the "warehouse" edge to the Warehouse entity.
+func (auo *AssetUpdateOne) ClearWarehouse() *AssetUpdateOne {
+	auo.mutation.ClearWarehouse()
+	return auo
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (auo *AssetUpdateOne) ClearStore() *AssetUpdateOne {
+	auo.mutation.ClearStore()
+	return auo
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (auo *AssetUpdateOne) ClearCabinet() *AssetUpdateOne {
+	auo.mutation.ClearCabinet()
+	return auo
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (auo *AssetUpdateOne) ClearStation() *AssetUpdateOne {
+	auo.mutation.ClearStation()
+	return auo
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (auo *AssetUpdateOne) ClearRider() *AssetUpdateOne {
+	auo.mutation.ClearRider()
+	return auo
+}
+
+// ClearOperator clears the "operator" edge to the Maintainer entity.
+func (auo *AssetUpdateOne) ClearOperator() *AssetUpdateOne {
+	auo.mutation.ClearOperator()
+	return auo
+}
+
+// ClearAllocates clears all "allocates" edges to the Allocate entity.
+func (auo *AssetUpdateOne) ClearAllocates() *AssetUpdateOne {
+	auo.mutation.ClearAllocates()
+	return auo
+}
+
+// RemoveAllocateIDs removes the "allocates" edge to Allocate entities by IDs.
+func (auo *AssetUpdateOne) RemoveAllocateIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.RemoveAllocateIDs(ids...)
+	return auo
+}
+
+// RemoveAllocates removes "allocates" edges to Allocate entities.
+func (auo *AssetUpdateOne) RemoveAllocates(a ...*Allocate) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.RemoveAllocateIDs(ids...)
+}
+
+// ClearRtoRider clears the "rto_rider" edge to the Rider entity.
+func (auo *AssetUpdateOne) ClearRtoRider() *AssetUpdateOne {
+	auo.mutation.ClearRtoRider()
+	return auo
 }
 
 // Where appends a list predicates to the AssetUpdate builder.
@@ -2303,15 +2604,6 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	if auo.mutation.LocationsTypeCleared() {
 		_spec.ClearField(asset.FieldLocationsType, field.TypeUint8)
 	}
-	if value, ok := auo.mutation.RtoRiderID(); ok {
-		_spec.SetField(asset.FieldRtoRiderID, field.TypeUint64, value)
-	}
-	if value, ok := auo.mutation.AddedRtoRiderID(); ok {
-		_spec.AddField(asset.FieldRtoRiderID, field.TypeUint64, value)
-	}
-	if auo.mutation.RtoRiderIDCleared() {
-		_spec.ClearField(asset.FieldRtoRiderID, field.TypeUint64)
-	}
 	if value, ok := auo.mutation.CheckAt(); ok {
 		_spec.SetField(asset.FieldCheckAt, field.TypeTime, value)
 	}
@@ -2323,6 +2615,15 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	}
 	if auo.mutation.BrandNameCleared() {
 		_spec.ClearField(asset.FieldBrandName, field.TypeString)
+	}
+	if value, ok := auo.mutation.Ordinal(); ok {
+		_spec.SetField(asset.FieldOrdinal, field.TypeInt, value)
+	}
+	if value, ok := auo.mutation.AddedOrdinal(); ok {
+		_spec.AddField(asset.FieldOrdinal, field.TypeInt, value)
+	}
+	if auo.mutation.OrdinalCleared() {
+		_spec.ClearField(asset.FieldOrdinal, field.TypeInt)
 	}
 	if auo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2478,180 +2779,6 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetattributevalues.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if auo.mutation.WarehouseCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.WarehouseTable,
-			Columns: []string{asset.WarehouseColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.WarehouseIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.WarehouseTable,
-			Columns: []string{asset.WarehouseColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if auo.mutation.StoreCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.StoreTable,
-			Columns: []string{asset.StoreColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.StoreIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.StoreTable,
-			Columns: []string{asset.StoreColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if auo.mutation.CabinetCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.CabinetTable,
-			Columns: []string{asset.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.CabinetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.CabinetTable,
-			Columns: []string{asset.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if auo.mutation.StationCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.StationTable,
-			Columns: []string{asset.StationColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.StationIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.StationTable,
-			Columns: []string{asset.StationColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if auo.mutation.RiderCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.RiderTable,
-			Columns: []string{asset.RiderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.RiderIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.RiderTable,
-			Columns: []string{asset.RiderColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if auo.mutation.OperatorCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.OperatorTable,
-			Columns: []string{asset.OperatorColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.OperatorIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   asset.OperatorTable,
-			Columns: []string{asset.OperatorColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2832,6 +2959,283 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetcheckdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   asset.SubscribeTable,
+			Columns: []string{asset.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   asset.SubscribeTable,
+			Columns: []string{asset.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.WarehouseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.WarehouseTable,
+			Columns: []string{asset.WarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.WarehouseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.WarehouseTable,
+			Columns: []string{asset.WarehouseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.StoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.StoreTable,
+			Columns: []string{asset.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.StoreTable,
+			Columns: []string{asset.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.CabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.CabinetTable,
+			Columns: []string{asset.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.CabinetTable,
+			Columns: []string{asset.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.StationTable,
+			Columns: []string{asset.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.StationTable,
+			Columns: []string{asset.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RiderTable,
+			Columns: []string{asset.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RiderTable,
+			Columns: []string{asset.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.OperatorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.OperatorTable,
+			Columns: []string{asset.OperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.OperatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.OperatorTable,
+			Columns: []string{asset.OperatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.AllocatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.AllocatesTable,
+			Columns: []string{asset.AllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedAllocatesIDs(); len(nodes) > 0 && !auo.mutation.AllocatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.AllocatesTable,
+			Columns: []string{asset.AllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.AllocatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.AllocatesTable,
+			Columns: []string{asset.AllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.RtoRiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   asset.RtoRiderTable,
+			Columns: []string{asset.RtoRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RtoRiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   asset.RtoRiderTable,
+			Columns: []string{asset.RtoRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -13,10 +13,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -125,46 +124,6 @@ func (fu *FaultUpdate) SetNillableCabinetID(u *uint64) *FaultUpdate {
 // ClearCabinetID clears the value of the "cabinet_id" field.
 func (fu *FaultUpdate) ClearCabinetID() *FaultUpdate {
 	fu.mutation.ClearCabinetID()
-	return fu
-}
-
-// SetBatteryID sets the "battery_id" field.
-func (fu *FaultUpdate) SetBatteryID(u uint64) *FaultUpdate {
-	fu.mutation.SetBatteryID(u)
-	return fu
-}
-
-// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
-func (fu *FaultUpdate) SetNillableBatteryID(u *uint64) *FaultUpdate {
-	if u != nil {
-		fu.SetBatteryID(*u)
-	}
-	return fu
-}
-
-// ClearBatteryID clears the value of the "battery_id" field.
-func (fu *FaultUpdate) ClearBatteryID() *FaultUpdate {
-	fu.mutation.ClearBatteryID()
-	return fu
-}
-
-// SetEbikeID sets the "ebike_id" field.
-func (fu *FaultUpdate) SetEbikeID(u uint64) *FaultUpdate {
-	fu.mutation.SetEbikeID(u)
-	return fu
-}
-
-// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
-func (fu *FaultUpdate) SetNillableEbikeID(u *uint64) *FaultUpdate {
-	if u != nil {
-		fu.SetEbikeID(*u)
-	}
-	return fu
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (fu *FaultUpdate) ClearEbikeID() *FaultUpdate {
-	fu.mutation.ClearEbikeID()
 	return fu
 }
 
@@ -286,6 +245,46 @@ func (fu *FaultUpdate) ClearFault() *FaultUpdate {
 	return fu
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (fu *FaultUpdate) SetEbikeID(u uint64) *FaultUpdate {
+	fu.mutation.SetEbikeID(u)
+	return fu
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (fu *FaultUpdate) SetNillableEbikeID(u *uint64) *FaultUpdate {
+	if u != nil {
+		fu.SetEbikeID(*u)
+	}
+	return fu
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (fu *FaultUpdate) ClearEbikeID() *FaultUpdate {
+	fu.mutation.ClearEbikeID()
+	return fu
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (fu *FaultUpdate) SetBatteryID(u uint64) *FaultUpdate {
+	fu.mutation.SetBatteryID(u)
+	return fu
+}
+
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (fu *FaultUpdate) SetNillableBatteryID(u *uint64) *FaultUpdate {
+	if u != nil {
+		fu.SetBatteryID(*u)
+	}
+	return fu
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (fu *FaultUpdate) ClearBatteryID() *FaultUpdate {
+	fu.mutation.ClearBatteryID()
+	return fu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (fu *FaultUpdate) SetCity(c *City) *FaultUpdate {
 	return fu.SetCityID(c.ID)
@@ -296,19 +295,19 @@ func (fu *FaultUpdate) SetCabinet(c *Cabinet) *FaultUpdate {
 	return fu.SetCabinetID(c.ID)
 }
 
-// SetBattery sets the "battery" edge to the Battery entity.
-func (fu *FaultUpdate) SetBattery(b *Battery) *FaultUpdate {
-	return fu.SetBatteryID(b.ID)
-}
-
-// SetEbike sets the "ebike" edge to the Ebike entity.
-func (fu *FaultUpdate) SetEbike(e *Ebike) *FaultUpdate {
-	return fu.SetEbikeID(e.ID)
-}
-
 // SetRider sets the "rider" edge to the Rider entity.
 func (fu *FaultUpdate) SetRider(r *Rider) *FaultUpdate {
 	return fu.SetRiderID(r.ID)
+}
+
+// SetEbike sets the "ebike" edge to the Asset entity.
+func (fu *FaultUpdate) SetEbike(a *Asset) *FaultUpdate {
+	return fu.SetEbikeID(a.ID)
+}
+
+// SetBattery sets the "battery" edge to the Asset entity.
+func (fu *FaultUpdate) SetBattery(a *Asset) *FaultUpdate {
+	return fu.SetBatteryID(a.ID)
 }
 
 // Mutation returns the FaultMutation object of the builder.
@@ -328,21 +327,21 @@ func (fu *FaultUpdate) ClearCabinet() *FaultUpdate {
 	return fu
 }
 
-// ClearBattery clears the "battery" edge to the Battery entity.
-func (fu *FaultUpdate) ClearBattery() *FaultUpdate {
-	fu.mutation.ClearBattery()
+// ClearRider clears the "rider" edge to the Rider entity.
+func (fu *FaultUpdate) ClearRider() *FaultUpdate {
+	fu.mutation.ClearRider()
 	return fu
 }
 
-// ClearEbike clears the "ebike" edge to the Ebike entity.
+// ClearEbike clears the "ebike" edge to the Asset entity.
 func (fu *FaultUpdate) ClearEbike() *FaultUpdate {
 	fu.mutation.ClearEbike()
 	return fu
 }
 
-// ClearRider clears the "rider" edge to the Rider entity.
-func (fu *FaultUpdate) ClearRider() *FaultUpdate {
-	fu.mutation.ClearRider()
+// ClearBattery clears the "battery" edge to the Asset entity.
+func (fu *FaultUpdate) ClearBattery() *FaultUpdate {
+	fu.mutation.ClearBattery()
 	return fu
 }
 
@@ -536,64 +535,6 @@ func (fu *FaultUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if fu.mutation.BatteryCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   fault.BatteryTable,
-			Columns: []string{fault.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := fu.mutation.BatteryIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   fault.BatteryTable,
-			Columns: []string{fault.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if fu.mutation.EbikeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   fault.EbikeTable,
-			Columns: []string{fault.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := fu.mutation.EbikeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   fault.EbikeTable,
-			Columns: []string{fault.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if fu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -616,6 +557,64 @@ func (fu *FaultUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if fu.mutation.EbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   fault.EbikeTable,
+			Columns: []string{fault.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fu.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   fault.EbikeTable,
+			Columns: []string{fault.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if fu.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   fault.BatteryTable,
+			Columns: []string{fault.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fu.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   fault.BatteryTable,
+			Columns: []string{fault.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -737,46 +736,6 @@ func (fuo *FaultUpdateOne) ClearCabinetID() *FaultUpdateOne {
 	return fuo
 }
 
-// SetBatteryID sets the "battery_id" field.
-func (fuo *FaultUpdateOne) SetBatteryID(u uint64) *FaultUpdateOne {
-	fuo.mutation.SetBatteryID(u)
-	return fuo
-}
-
-// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
-func (fuo *FaultUpdateOne) SetNillableBatteryID(u *uint64) *FaultUpdateOne {
-	if u != nil {
-		fuo.SetBatteryID(*u)
-	}
-	return fuo
-}
-
-// ClearBatteryID clears the value of the "battery_id" field.
-func (fuo *FaultUpdateOne) ClearBatteryID() *FaultUpdateOne {
-	fuo.mutation.ClearBatteryID()
-	return fuo
-}
-
-// SetEbikeID sets the "ebike_id" field.
-func (fuo *FaultUpdateOne) SetEbikeID(u uint64) *FaultUpdateOne {
-	fuo.mutation.SetEbikeID(u)
-	return fuo
-}
-
-// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
-func (fuo *FaultUpdateOne) SetNillableEbikeID(u *uint64) *FaultUpdateOne {
-	if u != nil {
-		fuo.SetEbikeID(*u)
-	}
-	return fuo
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (fuo *FaultUpdateOne) ClearEbikeID() *FaultUpdateOne {
-	fuo.mutation.ClearEbikeID()
-	return fuo
-}
-
 // SetRiderID sets the "rider_id" field.
 func (fuo *FaultUpdateOne) SetRiderID(u uint64) *FaultUpdateOne {
 	fuo.mutation.SetRiderID(u)
@@ -895,6 +854,46 @@ func (fuo *FaultUpdateOne) ClearFault() *FaultUpdateOne {
 	return fuo
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (fuo *FaultUpdateOne) SetEbikeID(u uint64) *FaultUpdateOne {
+	fuo.mutation.SetEbikeID(u)
+	return fuo
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (fuo *FaultUpdateOne) SetNillableEbikeID(u *uint64) *FaultUpdateOne {
+	if u != nil {
+		fuo.SetEbikeID(*u)
+	}
+	return fuo
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (fuo *FaultUpdateOne) ClearEbikeID() *FaultUpdateOne {
+	fuo.mutation.ClearEbikeID()
+	return fuo
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (fuo *FaultUpdateOne) SetBatteryID(u uint64) *FaultUpdateOne {
+	fuo.mutation.SetBatteryID(u)
+	return fuo
+}
+
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (fuo *FaultUpdateOne) SetNillableBatteryID(u *uint64) *FaultUpdateOne {
+	if u != nil {
+		fuo.SetBatteryID(*u)
+	}
+	return fuo
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (fuo *FaultUpdateOne) ClearBatteryID() *FaultUpdateOne {
+	fuo.mutation.ClearBatteryID()
+	return fuo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (fuo *FaultUpdateOne) SetCity(c *City) *FaultUpdateOne {
 	return fuo.SetCityID(c.ID)
@@ -905,19 +904,19 @@ func (fuo *FaultUpdateOne) SetCabinet(c *Cabinet) *FaultUpdateOne {
 	return fuo.SetCabinetID(c.ID)
 }
 
-// SetBattery sets the "battery" edge to the Battery entity.
-func (fuo *FaultUpdateOne) SetBattery(b *Battery) *FaultUpdateOne {
-	return fuo.SetBatteryID(b.ID)
-}
-
-// SetEbike sets the "ebike" edge to the Ebike entity.
-func (fuo *FaultUpdateOne) SetEbike(e *Ebike) *FaultUpdateOne {
-	return fuo.SetEbikeID(e.ID)
-}
-
 // SetRider sets the "rider" edge to the Rider entity.
 func (fuo *FaultUpdateOne) SetRider(r *Rider) *FaultUpdateOne {
 	return fuo.SetRiderID(r.ID)
+}
+
+// SetEbike sets the "ebike" edge to the Asset entity.
+func (fuo *FaultUpdateOne) SetEbike(a *Asset) *FaultUpdateOne {
+	return fuo.SetEbikeID(a.ID)
+}
+
+// SetBattery sets the "battery" edge to the Asset entity.
+func (fuo *FaultUpdateOne) SetBattery(a *Asset) *FaultUpdateOne {
+	return fuo.SetBatteryID(a.ID)
 }
 
 // Mutation returns the FaultMutation object of the builder.
@@ -937,21 +936,21 @@ func (fuo *FaultUpdateOne) ClearCabinet() *FaultUpdateOne {
 	return fuo
 }
 
-// ClearBattery clears the "battery" edge to the Battery entity.
-func (fuo *FaultUpdateOne) ClearBattery() *FaultUpdateOne {
-	fuo.mutation.ClearBattery()
+// ClearRider clears the "rider" edge to the Rider entity.
+func (fuo *FaultUpdateOne) ClearRider() *FaultUpdateOne {
+	fuo.mutation.ClearRider()
 	return fuo
 }
 
-// ClearEbike clears the "ebike" edge to the Ebike entity.
+// ClearEbike clears the "ebike" edge to the Asset entity.
 func (fuo *FaultUpdateOne) ClearEbike() *FaultUpdateOne {
 	fuo.mutation.ClearEbike()
 	return fuo
 }
 
-// ClearRider clears the "rider" edge to the Rider entity.
-func (fuo *FaultUpdateOne) ClearRider() *FaultUpdateOne {
-	fuo.mutation.ClearRider()
+// ClearBattery clears the "battery" edge to the Asset entity.
+func (fuo *FaultUpdateOne) ClearBattery() *FaultUpdateOne {
+	fuo.mutation.ClearBattery()
 	return fuo
 }
 
@@ -1175,64 +1174,6 @@ func (fuo *FaultUpdateOne) sqlSave(ctx context.Context) (_node *Fault, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if fuo.mutation.BatteryCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   fault.BatteryTable,
-			Columns: []string{fault.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := fuo.mutation.BatteryIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   fault.BatteryTable,
-			Columns: []string{fault.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if fuo.mutation.EbikeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   fault.EbikeTable,
-			Columns: []string{fault.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := fuo.mutation.EbikeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   fault.EbikeTable,
-			Columns: []string{fault.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if fuo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1255,6 +1196,64 @@ func (fuo *FaultUpdateOne) sqlSave(ctx context.Context) (_node *Fault, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if fuo.mutation.EbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   fault.EbikeTable,
+			Columns: []string{fault.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fuo.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   fault.EbikeTable,
+			Columns: []string{fault.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if fuo.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   fault.BatteryTable,
+			Columns: []string{fault.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fuo.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   fault.BatteryTable,
+			Columns: []string{fault.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

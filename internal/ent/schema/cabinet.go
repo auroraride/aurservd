@@ -120,7 +120,7 @@ func (Cabinet) Edges() []ent.Edge {
 		edge.To("models", BatteryModel.Type),
 		edge.To("faults", CabinetFault.Type),
 		edge.To("exchanges", Exchange.Type),
-		edge.To("stocks", Stock.Type),
+		edge.To("asset", Asset.Type),
 		edge.To("batteries", Battery.Type),
 		edge.To("battery_flows", BatteryFlow.Type),
 		edge.From("station", EnterpriseStation.Type).Ref("cabinets").Field("station_id").Unique(),

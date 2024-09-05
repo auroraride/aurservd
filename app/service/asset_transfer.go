@@ -27,6 +27,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
+	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
@@ -41,11 +42,11 @@ func NewAssetTransfer() *assetTransferService {
 }
 
 // Transfer 调拨
-func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (failed []string, err error) {
+func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTransferCreateReq, modifier *model.Modifier) (sn string, failed []string, err error) {
 	// 调拨限制
 	err = s.transferLimit(ctx, req)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 
 	var assetIDs []uint64
@@ -57,24 +58,22 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 	if req.FromLocationType != nil && req.FromLocationID != nil {
 		assetIDs, failed = s.stockTransfer(ctx, req, modifier)
 		if len(failed) > 0 {
-			return failed, nil
+			return "", failed, nil
 		}
 		q.SetFromLocationType(req.FromLocationType.Value()).
 			SetFromLocationID(*req.FromLocationID).
 			SetStatus(model.AssetTransferStatusDelivering.Value()).
 			SetOutTimeAt(newTime).
-			SetOutOperateID(req.OpratorID).
-			SetOutOperateType(req.OpratorType.Value()).
-			SetOutNum(uint(len(assetIDs)))
-		if req.AssetTransferType != nil {
-			q.SetType(req.AssetTransferType.Value())
-		}
+			SetOutOperateID(req.OperatorID).
+			SetOutOperateType(req.OperatorType.Value()).
+			SetOutNum(uint(len(assetIDs))).
+			SetType(req.AssetTransferType.Value())
 		for _, id := range assetIDs {
 			d := ent.Database.AssetTransferDetails.Create().
 				SetAssetID(id).
 				SetCreator(modifier).
 				SetLastModifier(modifier).
-				SetRemark(req.OpratorType.String() + "调拨")
+				SetRemark(req.OperatorType.String() + "调拨")
 			bulk = append(bulk, d)
 		}
 
@@ -84,14 +83,14 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 			SetLastModifier(modifier).
 			Save(ctx)
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
 	}
 	// 初始调拨
 	if req.FromLocationType == nil {
 		assetIDs, failed = s.initialTransfer(ctx, req, modifier)
 		if len(failed) > 0 {
-			return failed, nil
+			return "", failed, nil
 		}
 		q.SetInNum(uint(len(assetIDs))).
 			SetStatus(model.AssetTransferStatusStock.Value()).
@@ -115,21 +114,47 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 
 	details, _ := ent.Database.AssetTransferDetails.CreateBulk(bulk...).Save(ctx)
 	if len(details) == 0 {
-		return nil, errors.New("调拨失败")
+		return "", nil, errors.New("调拨失败")
 	}
 
-	err = q.SetToLocationType(req.ToLocationType.Value()).
+	save, err := q.SetToLocationType(req.ToLocationType.Value()).
 		SetToLocationID(req.ToLocationID).
 		SetSn(tools.NewUnique().NewSN28()).
 		SetCreator(modifier).
 		SetLastModifier(modifier).
 		SetReason(req.Reason).
 		AddTransferDetails(details...).
-		Exec(ctx)
+		Save(ctx)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
-	return
+
+	// 自动入库
+	if req.AutoIn {
+		assetTransferReceive := make([]model.AssetTransferReceiveDetail, 0)
+		for _, v := range req.Details {
+			assetTransferReceive = append(assetTransferReceive, model.AssetTransferReceiveDetail{
+				AssetType:  v.AssetType,
+				SN:         v.SN,
+				Num:        v.Num,
+				MaterialID: v.MaterialID,
+			})
+		}
+		err = s.TransferReceive(ctx, &model.AssetTransferReceiveBatchReq{
+			OperateType: req.OperatorType,
+			AssetTransferReceive: []model.AssetTransferReceiveReq{
+				{
+					ID:     save.ID,
+					Remark: silk.String("自动入库"),
+					Detail: assetTransferReceive,
+				},
+			},
+		}, modifier)
+		if err != nil {
+			return "", nil, err
+		}
+	}
+	return save.Sn, failed, nil
 }
 
 // 有资产编号的物资调拨

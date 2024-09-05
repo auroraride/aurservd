@@ -14,10 +14,10 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -300,9 +300,9 @@ func (ac *AllocateCreate) SetContract(c *Contract) *AllocateCreate {
 	return ac.SetContractID(c.ID)
 }
 
-// SetEbike sets the "ebike" edge to the Ebike entity.
-func (ac *AllocateCreate) SetEbike(e *Ebike) *AllocateCreate {
-	return ac.SetEbikeID(e.ID)
+// SetEbike sets the "ebike" edge to the Asset entity.
+func (ac *AllocateCreate) SetEbike(a *Asset) *AllocateCreate {
+	return ac.SetEbikeID(a.ID)
 }
 
 // Mutation returns the AllocateMutation object of the builder.
@@ -630,7 +630,7 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 			Columns: []string{allocate.EbikeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

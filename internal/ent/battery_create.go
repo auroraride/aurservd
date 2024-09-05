@@ -20,7 +20,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // BatteryCreate is the builder for creating a Battery entity.
@@ -252,11 +251,6 @@ func (bc *BatteryCreate) SetCabinet(c *Cabinet) *BatteryCreate {
 	return bc.SetCabinetID(c.ID)
 }
 
-// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
-func (bc *BatteryCreate) SetSubscribe(s *Subscribe) *BatteryCreate {
-	return bc.SetSubscribeID(s.ID)
-}
-
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (bc *BatteryCreate) SetEnterprise(e *Enterprise) *BatteryCreate {
 	return bc.SetEnterpriseID(e.ID)
@@ -415,6 +409,10 @@ func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 		_spec.SetField(battery.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
+	if value, ok := bc.mutation.SubscribeID(); ok {
+		_spec.SetField(battery.FieldSubscribeID, field.TypeUint64, value)
+		_node.SubscribeID = &value
+	}
 	if value, ok := bc.mutation.Sn(); ok {
 		_spec.SetField(battery.FieldSn, field.TypeString, value)
 		_node.Sn = value
@@ -484,23 +482,6 @@ func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.CabinetID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := bc.mutation.SubscribeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   battery.SubscribeTable,
-			Columns: []string{battery.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.SubscribeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := bc.mutation.EnterpriseIDs(); len(nodes) > 0 {
@@ -734,6 +715,12 @@ func (u *BatteryUpsert) SetSubscribeID(v uint64) *BatteryUpsert {
 // UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
 func (u *BatteryUpsert) UpdateSubscribeID() *BatteryUpsert {
 	u.SetExcluded(battery.FieldSubscribeID)
+	return u
+}
+
+// AddSubscribeID adds v to the "subscribe_id" field.
+func (u *BatteryUpsert) AddSubscribeID(v uint64) *BatteryUpsert {
+	u.Add(battery.FieldSubscribeID, v)
 	return u
 }
 
@@ -1043,6 +1030,13 @@ func (u *BatteryUpsertOne) ClearCabinetID() *BatteryUpsertOne {
 func (u *BatteryUpsertOne) SetSubscribeID(v uint64) *BatteryUpsertOne {
 	return u.Update(func(s *BatteryUpsert) {
 		s.SetSubscribeID(v)
+	})
+}
+
+// AddSubscribeID adds v to the "subscribe_id" field.
+func (u *BatteryUpsertOne) AddSubscribeID(v uint64) *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.AddSubscribeID(v)
 	})
 }
 
@@ -1544,6 +1538,13 @@ func (u *BatteryUpsertBulk) ClearCabinetID() *BatteryUpsertBulk {
 func (u *BatteryUpsertBulk) SetSubscribeID(v uint64) *BatteryUpsertBulk {
 	return u.Update(func(s *BatteryUpsert) {
 		s.SetSubscribeID(v)
+	})
+}
+
+// AddSubscribeID adds v to the "subscribe_id" field.
+func (u *BatteryUpsertBulk) AddSubscribeID(v uint64) *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.AddSubscribeID(v)
 	})
 }
 

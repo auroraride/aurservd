@@ -42,6 +42,8 @@ type BaseService struct {
 	enterprise *ent.Enterprise
 
 	maintainer *ent.Maintainer
+
+	operator *model.OperatorInfo
 }
 
 func newService(params ...any) (bs *BaseService) {
@@ -90,6 +92,8 @@ func newService(params ...any) (bs *BaseService) {
 			bs.enterprise = p
 		case *ent.Maintainer:
 			bs.maintainer = p
+		case *model.OperatorInfo:
+			bs.operator = p
 		}
 	}
 

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
@@ -27,6 +28,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
@@ -42,16 +44,20 @@ type AssetQuery struct {
 	withCity               *CityQuery
 	withMaterial           *MaterialQuery
 	withValues             *AssetAttributeValuesQuery
+	withScrapDetails       *AssetScrapDetailsQuery
+	withTransferDetails    *AssetTransferDetailsQuery
+	withMaintenanceDetails *AssetMaintenanceDetailsQuery
+	withCheckDetails       *AssetCheckDetailsQuery
+	withSubscribe          *SubscribeQuery
 	withWarehouse          *WarehouseQuery
 	withStore              *StoreQuery
 	withCabinet            *CabinetQuery
 	withStation            *EnterpriseStationQuery
 	withRider              *RiderQuery
 	withOperator           *MaintainerQuery
-	withScrapDetails       *AssetScrapDetailsQuery
-	withTransferDetails    *AssetTransferDetailsQuery
-	withMaintenanceDetails *AssetMaintenanceDetailsQuery
-	withCheckDetails       *AssetCheckDetailsQuery
+	withAllocates          *AllocateQuery
+	withRtoRider           *RiderQuery
+	withFKs                bool
 	modifiers              []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -199,138 +205,6 @@ func (aq *AssetQuery) QueryValues() *AssetAttributeValuesQuery {
 	return query
 }
 
-// QueryWarehouse chains the current query on the "warehouse" edge.
-func (aq *AssetQuery) QueryWarehouse() *WarehouseQuery {
-	query := (&WarehouseClient{config: aq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(asset.Table, asset.FieldID, selector),
-			sqlgraph.To(warehouse.Table, warehouse.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, asset.WarehouseTable, asset.WarehouseColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryStore chains the current query on the "store" edge.
-func (aq *AssetQuery) QueryStore() *StoreQuery {
-	query := (&StoreClient{config: aq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(asset.Table, asset.FieldID, selector),
-			sqlgraph.To(store.Table, store.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, asset.StoreTable, asset.StoreColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryCabinet chains the current query on the "cabinet" edge.
-func (aq *AssetQuery) QueryCabinet() *CabinetQuery {
-	query := (&CabinetClient{config: aq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(asset.Table, asset.FieldID, selector),
-			sqlgraph.To(cabinet.Table, cabinet.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, asset.CabinetTable, asset.CabinetColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryStation chains the current query on the "station" edge.
-func (aq *AssetQuery) QueryStation() *EnterpriseStationQuery {
-	query := (&EnterpriseStationClient{config: aq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(asset.Table, asset.FieldID, selector),
-			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, asset.StationTable, asset.StationColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryRider chains the current query on the "rider" edge.
-func (aq *AssetQuery) QueryRider() *RiderQuery {
-	query := (&RiderClient{config: aq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(asset.Table, asset.FieldID, selector),
-			sqlgraph.To(rider.Table, rider.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, asset.RiderTable, asset.RiderColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryOperator chains the current query on the "operator" edge.
-func (aq *AssetQuery) QueryOperator() *MaintainerQuery {
-	query := (&MaintainerClient{config: aq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(asset.Table, asset.FieldID, selector),
-			sqlgraph.To(maintainer.Table, maintainer.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, asset.OperatorTable, asset.OperatorColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // QueryScrapDetails chains the current query on the "scrap_details" edge.
 func (aq *AssetQuery) QueryScrapDetails() *AssetScrapDetailsQuery {
 	query := (&AssetScrapDetailsClient{config: aq.config}).Query()
@@ -412,6 +286,204 @@ func (aq *AssetQuery) QueryCheckDetails() *AssetCheckDetailsQuery {
 			sqlgraph.From(asset.Table, asset.FieldID, selector),
 			sqlgraph.To(assetcheckdetails.Table, assetcheckdetails.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, asset.CheckDetailsTable, asset.CheckDetailsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySubscribe chains the current query on the "subscribe" edge.
+func (aq *AssetQuery) QuerySubscribe() *SubscribeQuery {
+	query := (&SubscribeClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, asset.SubscribeTable, asset.SubscribeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryWarehouse chains the current query on the "warehouse" edge.
+func (aq *AssetQuery) QueryWarehouse() *WarehouseQuery {
+	query := (&WarehouseClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(warehouse.Table, warehouse.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, asset.WarehouseTable, asset.WarehouseColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStore chains the current query on the "store" edge.
+func (aq *AssetQuery) QueryStore() *StoreQuery {
+	query := (&StoreClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, asset.StoreTable, asset.StoreColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCabinet chains the current query on the "cabinet" edge.
+func (aq *AssetQuery) QueryCabinet() *CabinetQuery {
+	query := (&CabinetClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, asset.CabinetTable, asset.CabinetColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStation chains the current query on the "station" edge.
+func (aq *AssetQuery) QueryStation() *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, asset.StationTable, asset.StationColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRider chains the current query on the "rider" edge.
+func (aq *AssetQuery) QueryRider() *RiderQuery {
+	query := (&RiderClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, asset.RiderTable, asset.RiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryOperator chains the current query on the "operator" edge.
+func (aq *AssetQuery) QueryOperator() *MaintainerQuery {
+	query := (&MaintainerClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(maintainer.Table, maintainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, asset.OperatorTable, asset.OperatorColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAllocates chains the current query on the "allocates" edge.
+func (aq *AssetQuery) QueryAllocates() *AllocateQuery {
+	query := (&AllocateClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(allocate.Table, allocate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, asset.AllocatesTable, asset.AllocatesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRtoRider chains the current query on the "rto_rider" edge.
+func (aq *AssetQuery) QueryRtoRider() *RiderQuery {
+	query := (&RiderClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, asset.RtoRiderTable, asset.RtoRiderColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -616,16 +688,19 @@ func (aq *AssetQuery) Clone() *AssetQuery {
 		withCity:               aq.withCity.Clone(),
 		withMaterial:           aq.withMaterial.Clone(),
 		withValues:             aq.withValues.Clone(),
+		withScrapDetails:       aq.withScrapDetails.Clone(),
+		withTransferDetails:    aq.withTransferDetails.Clone(),
+		withMaintenanceDetails: aq.withMaintenanceDetails.Clone(),
+		withCheckDetails:       aq.withCheckDetails.Clone(),
+		withSubscribe:          aq.withSubscribe.Clone(),
 		withWarehouse:          aq.withWarehouse.Clone(),
 		withStore:              aq.withStore.Clone(),
 		withCabinet:            aq.withCabinet.Clone(),
 		withStation:            aq.withStation.Clone(),
 		withRider:              aq.withRider.Clone(),
 		withOperator:           aq.withOperator.Clone(),
-		withScrapDetails:       aq.withScrapDetails.Clone(),
-		withTransferDetails:    aq.withTransferDetails.Clone(),
-		withMaintenanceDetails: aq.withMaintenanceDetails.Clone(),
-		withCheckDetails:       aq.withCheckDetails.Clone(),
+		withAllocates:          aq.withAllocates.Clone(),
+		withRtoRider:           aq.withRtoRider.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -684,6 +759,61 @@ func (aq *AssetQuery) WithValues(opts ...func(*AssetAttributeValuesQuery)) *Asse
 		opt(query)
 	}
 	aq.withValues = query
+	return aq
+}
+
+// WithScrapDetails tells the query-builder to eager-load the nodes that are connected to
+// the "scrap_details" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithScrapDetails(opts ...func(*AssetScrapDetailsQuery)) *AssetQuery {
+	query := (&AssetScrapDetailsClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withScrapDetails = query
+	return aq
+}
+
+// WithTransferDetails tells the query-builder to eager-load the nodes that are connected to
+// the "transfer_details" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithTransferDetails(opts ...func(*AssetTransferDetailsQuery)) *AssetQuery {
+	query := (&AssetTransferDetailsClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withTransferDetails = query
+	return aq
+}
+
+// WithMaintenanceDetails tells the query-builder to eager-load the nodes that are connected to
+// the "maintenance_details" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithMaintenanceDetails(opts ...func(*AssetMaintenanceDetailsQuery)) *AssetQuery {
+	query := (&AssetMaintenanceDetailsClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withMaintenanceDetails = query
+	return aq
+}
+
+// WithCheckDetails tells the query-builder to eager-load the nodes that are connected to
+// the "check_details" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithCheckDetails(opts ...func(*AssetCheckDetailsQuery)) *AssetQuery {
+	query := (&AssetCheckDetailsClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withCheckDetails = query
+	return aq
+}
+
+// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
+// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *AssetQuery {
+	query := (&SubscribeClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withSubscribe = query
 	return aq
 }
 
@@ -753,47 +883,25 @@ func (aq *AssetQuery) WithOperator(opts ...func(*MaintainerQuery)) *AssetQuery {
 	return aq
 }
 
-// WithScrapDetails tells the query-builder to eager-load the nodes that are connected to
-// the "scrap_details" edge. The optional arguments are used to configure the query builder of the edge.
-func (aq *AssetQuery) WithScrapDetails(opts ...func(*AssetScrapDetailsQuery)) *AssetQuery {
-	query := (&AssetScrapDetailsClient{config: aq.config}).Query()
+// WithAllocates tells the query-builder to eager-load the nodes that are connected to
+// the "allocates" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithAllocates(opts ...func(*AllocateQuery)) *AssetQuery {
+	query := (&AllocateClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	aq.withScrapDetails = query
+	aq.withAllocates = query
 	return aq
 }
 
-// WithTransferDetails tells the query-builder to eager-load the nodes that are connected to
-// the "transfer_details" edge. The optional arguments are used to configure the query builder of the edge.
-func (aq *AssetQuery) WithTransferDetails(opts ...func(*AssetTransferDetailsQuery)) *AssetQuery {
-	query := (&AssetTransferDetailsClient{config: aq.config}).Query()
+// WithRtoRider tells the query-builder to eager-load the nodes that are connected to
+// the "rto_rider" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithRtoRider(opts ...func(*RiderQuery)) *AssetQuery {
+	query := (&RiderClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	aq.withTransferDetails = query
-	return aq
-}
-
-// WithMaintenanceDetails tells the query-builder to eager-load the nodes that are connected to
-// the "maintenance_details" edge. The optional arguments are used to configure the query builder of the edge.
-func (aq *AssetQuery) WithMaintenanceDetails(opts ...func(*AssetMaintenanceDetailsQuery)) *AssetQuery {
-	query := (&AssetMaintenanceDetailsClient{config: aq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	aq.withMaintenanceDetails = query
-	return aq
-}
-
-// WithCheckDetails tells the query-builder to eager-load the nodes that are connected to
-// the "check_details" edge. The optional arguments are used to configure the query builder of the edge.
-func (aq *AssetQuery) WithCheckDetails(opts ...func(*AssetCheckDetailsQuery)) *AssetQuery {
-	query := (&AssetCheckDetailsClient{config: aq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	aq.withCheckDetails = query
+	aq.withRtoRider = query
 	return aq
 }
 
@@ -874,25 +982,32 @@ func (aq *AssetQuery) prepareQuery(ctx context.Context) error {
 func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset, error) {
 	var (
 		nodes       = []*Asset{}
+		withFKs     = aq.withFKs
 		_spec       = aq.querySpec()
-		loadedTypes = [15]bool{
+		loadedTypes = [18]bool{
 			aq.withBrand != nil,
 			aq.withModel != nil,
 			aq.withCity != nil,
 			aq.withMaterial != nil,
 			aq.withValues != nil,
+			aq.withScrapDetails != nil,
+			aq.withTransferDetails != nil,
+			aq.withMaintenanceDetails != nil,
+			aq.withCheckDetails != nil,
+			aq.withSubscribe != nil,
 			aq.withWarehouse != nil,
 			aq.withStore != nil,
 			aq.withCabinet != nil,
 			aq.withStation != nil,
 			aq.withRider != nil,
 			aq.withOperator != nil,
-			aq.withScrapDetails != nil,
-			aq.withTransferDetails != nil,
-			aq.withMaintenanceDetails != nil,
-			aq.withCheckDetails != nil,
+			aq.withAllocates != nil,
+			aq.withRtoRider != nil,
 		}
 	)
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, asset.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Asset).scanValues(nil, columns)
 	}
@@ -945,6 +1060,42 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 			return nil, err
 		}
 	}
+	if query := aq.withScrapDetails; query != nil {
+		if err := aq.loadScrapDetails(ctx, query, nodes,
+			func(n *Asset) { n.Edges.ScrapDetails = []*AssetScrapDetails{} },
+			func(n *Asset, e *AssetScrapDetails) { n.Edges.ScrapDetails = append(n.Edges.ScrapDetails, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withTransferDetails; query != nil {
+		if err := aq.loadTransferDetails(ctx, query, nodes,
+			func(n *Asset) { n.Edges.TransferDetails = []*AssetTransferDetails{} },
+			func(n *Asset, e *AssetTransferDetails) { n.Edges.TransferDetails = append(n.Edges.TransferDetails, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withMaintenanceDetails; query != nil {
+		if err := aq.loadMaintenanceDetails(ctx, query, nodes,
+			func(n *Asset) { n.Edges.MaintenanceDetails = []*AssetMaintenanceDetails{} },
+			func(n *Asset, e *AssetMaintenanceDetails) {
+				n.Edges.MaintenanceDetails = append(n.Edges.MaintenanceDetails, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withCheckDetails; query != nil {
+		if err := aq.loadCheckDetails(ctx, query, nodes,
+			func(n *Asset) { n.Edges.CheckDetails = []*AssetCheckDetails{} },
+			func(n *Asset, e *AssetCheckDetails) { n.Edges.CheckDetails = append(n.Edges.CheckDetails, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withSubscribe; query != nil {
+		if err := aq.loadSubscribe(ctx, query, nodes, nil,
+			func(n *Asset, e *Subscribe) { n.Edges.Subscribe = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := aq.withWarehouse; query != nil {
 		if err := aq.loadWarehouse(ctx, query, nodes, nil,
 			func(n *Asset, e *Warehouse) { n.Edges.Warehouse = e }); err != nil {
@@ -981,33 +1132,16 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 			return nil, err
 		}
 	}
-	if query := aq.withScrapDetails; query != nil {
-		if err := aq.loadScrapDetails(ctx, query, nodes,
-			func(n *Asset) { n.Edges.ScrapDetails = []*AssetScrapDetails{} },
-			func(n *Asset, e *AssetScrapDetails) { n.Edges.ScrapDetails = append(n.Edges.ScrapDetails, e) }); err != nil {
+	if query := aq.withAllocates; query != nil {
+		if err := aq.loadAllocates(ctx, query, nodes,
+			func(n *Asset) { n.Edges.Allocates = []*Allocate{} },
+			func(n *Asset, e *Allocate) { n.Edges.Allocates = append(n.Edges.Allocates, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := aq.withTransferDetails; query != nil {
-		if err := aq.loadTransferDetails(ctx, query, nodes,
-			func(n *Asset) { n.Edges.TransferDetails = []*AssetTransferDetails{} },
-			func(n *Asset, e *AssetTransferDetails) { n.Edges.TransferDetails = append(n.Edges.TransferDetails, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := aq.withMaintenanceDetails; query != nil {
-		if err := aq.loadMaintenanceDetails(ctx, query, nodes,
-			func(n *Asset) { n.Edges.MaintenanceDetails = []*AssetMaintenanceDetails{} },
-			func(n *Asset, e *AssetMaintenanceDetails) {
-				n.Edges.MaintenanceDetails = append(n.Edges.MaintenanceDetails, e)
-			}); err != nil {
-			return nil, err
-		}
-	}
-	if query := aq.withCheckDetails; query != nil {
-		if err := aq.loadCheckDetails(ctx, query, nodes,
-			func(n *Asset) { n.Edges.CheckDetails = []*AssetCheckDetails{} },
-			func(n *Asset, e *AssetCheckDetails) { n.Edges.CheckDetails = append(n.Edges.CheckDetails, e) }); err != nil {
+	if query := aq.withRtoRider; query != nil {
+		if err := aq.loadRtoRider(ctx, query, nodes, nil,
+			func(n *Asset, e *Rider) { n.Edges.RtoRider = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1169,6 +1303,158 @@ func (aq *AssetQuery) loadValues(ctx context.Context, query *AssetAttributeValue
 			return fmt.Errorf(`unexpected referenced foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (aq *AssetQuery) loadScrapDetails(ctx context.Context, query *AssetScrapDetailsQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *AssetScrapDetails)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Asset)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(assetscrapdetails.FieldAssetID)
+	}
+	query.Where(predicate.AssetScrapDetails(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(asset.ScrapDetailsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AssetID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (aq *AssetQuery) loadTransferDetails(ctx context.Context, query *AssetTransferDetailsQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *AssetTransferDetails)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Asset)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(assettransferdetails.FieldAssetID)
+	}
+	query.Where(predicate.AssetTransferDetails(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(asset.TransferDetailsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AssetID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (aq *AssetQuery) loadMaintenanceDetails(ctx context.Context, query *AssetMaintenanceDetailsQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *AssetMaintenanceDetails)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Asset)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(assetmaintenancedetails.FieldAssetID)
+	}
+	query.Where(predicate.AssetMaintenanceDetails(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(asset.MaintenanceDetailsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AssetID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (aq *AssetQuery) loadCheckDetails(ctx context.Context, query *AssetCheckDetailsQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *AssetCheckDetails)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Asset)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(assetcheckdetails.FieldAssetID)
+	}
+	query.Where(predicate.AssetCheckDetails(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(asset.CheckDetailsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AssetID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (aq *AssetQuery) loadSubscribe(ctx context.Context, query *SubscribeQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *Subscribe)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Asset)
+	for i := range nodes {
+		if nodes[i].SubscribeID == nil {
+			continue
+		}
+		fk := *nodes[i].SubscribeID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(subscribe.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
 	}
 	return nil
 }
@@ -1346,7 +1632,7 @@ func (aq *AssetQuery) loadOperator(ctx context.Context, query *MaintainerQuery, 
 	}
 	return nil
 }
-func (aq *AssetQuery) loadScrapDetails(ctx context.Context, query *AssetScrapDetailsQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *AssetScrapDetails)) error {
+func (aq *AssetQuery) loadAllocates(ctx context.Context, query *AllocateQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *Allocate)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*Asset)
 	for i := range nodes {
@@ -1357,112 +1643,57 @@ func (aq *AssetQuery) loadScrapDetails(ctx context.Context, query *AssetScrapDet
 		}
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(assetscrapdetails.FieldAssetID)
+		query.ctx.AppendFieldOnce(allocate.FieldEbikeID)
 	}
-	query.Where(predicate.AssetScrapDetails(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(asset.ScrapDetailsColumn), fks...))
+	query.Where(predicate.Allocate(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(asset.AllocatesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.AssetID
-		node, ok := nodeids[fk]
+		fk := n.EbikeID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "ebike_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "ebike_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
 	return nil
 }
-func (aq *AssetQuery) loadTransferDetails(ctx context.Context, query *AssetTransferDetailsQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *AssetTransferDetails)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*Asset)
+func (aq *AssetQuery) loadRtoRider(ctx context.Context, query *RiderQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *Rider)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Asset)
 	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
+		if nodes[i].RtoRiderID == nil {
+			continue
 		}
+		fk := *nodes[i].RtoRiderID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(assettransferdetails.FieldAssetID)
+	if len(ids) == 0 {
+		return nil
 	}
-	query.Where(predicate.AssetTransferDetails(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(asset.TransferDetailsColumn), fks...))
-	}))
+	query.Where(rider.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.AssetID
-		node, ok := nodeids[fk]
+		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "rto_rider_id" returned %v`, n.ID)
 		}
-		assign(node, n)
-	}
-	return nil
-}
-func (aq *AssetQuery) loadMaintenanceDetails(ctx context.Context, query *AssetMaintenanceDetailsQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *AssetMaintenanceDetails)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*Asset)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
+		for i := range nodes {
+			assign(nodes[i], n)
 		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(assetmaintenancedetails.FieldAssetID)
-	}
-	query.Where(predicate.AssetMaintenanceDetails(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(asset.MaintenanceDetailsColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.AssetID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (aq *AssetQuery) loadCheckDetails(ctx context.Context, query *AssetCheckDetailsQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *AssetCheckDetails)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*Asset)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(assetcheckdetails.FieldAssetID)
-	}
-	query.Where(predicate.AssetCheckDetails(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(asset.CheckDetailsColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.AssetID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
 	}
 	return nil
 }
@@ -1507,6 +1738,9 @@ func (aq *AssetQuery) querySpec() *sqlgraph.QuerySpec {
 		if aq.withMaterial != nil {
 			_spec.Node.AddColumnOnce(asset.FieldMaterialID)
 		}
+		if aq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(asset.FieldSubscribeID)
+		}
 		if aq.withWarehouse != nil {
 			_spec.Node.AddColumnOnce(asset.FieldLocationsID)
 		}
@@ -1524,6 +1758,9 @@ func (aq *AssetQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if aq.withOperator != nil {
 			_spec.Node.AddColumnOnce(asset.FieldLocationsID)
+		}
+		if aq.withRtoRider != nil {
+			_spec.Node.AddColumnOnce(asset.FieldRtoRiderID)
 		}
 	}
 	if ps := aq.predicates; len(ps) > 0 {
@@ -1598,16 +1835,19 @@ var (
 	AssetQueryWithCity               AssetQueryWith = "City"
 	AssetQueryWithMaterial           AssetQueryWith = "Material"
 	AssetQueryWithValues             AssetQueryWith = "Values"
+	AssetQueryWithScrapDetails       AssetQueryWith = "ScrapDetails"
+	AssetQueryWithTransferDetails    AssetQueryWith = "TransferDetails"
+	AssetQueryWithMaintenanceDetails AssetQueryWith = "MaintenanceDetails"
+	AssetQueryWithCheckDetails       AssetQueryWith = "CheckDetails"
+	AssetQueryWithSubscribe          AssetQueryWith = "Subscribe"
 	AssetQueryWithWarehouse          AssetQueryWith = "Warehouse"
 	AssetQueryWithStore              AssetQueryWith = "Store"
 	AssetQueryWithCabinet            AssetQueryWith = "Cabinet"
 	AssetQueryWithStation            AssetQueryWith = "Station"
 	AssetQueryWithRider              AssetQueryWith = "Rider"
 	AssetQueryWithOperator           AssetQueryWith = "Operator"
-	AssetQueryWithScrapDetails       AssetQueryWith = "ScrapDetails"
-	AssetQueryWithTransferDetails    AssetQueryWith = "TransferDetails"
-	AssetQueryWithMaintenanceDetails AssetQueryWith = "MaintenanceDetails"
-	AssetQueryWithCheckDetails       AssetQueryWith = "CheckDetails"
+	AssetQueryWithAllocates          AssetQueryWith = "Allocates"
+	AssetQueryWithRtoRider           AssetQueryWith = "RtoRider"
 )
 
 func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
@@ -1623,6 +1863,16 @@ func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
 			aq.WithMaterial()
 		case AssetQueryWithValues:
 			aq.WithValues()
+		case AssetQueryWithScrapDetails:
+			aq.WithScrapDetails()
+		case AssetQueryWithTransferDetails:
+			aq.WithTransferDetails()
+		case AssetQueryWithMaintenanceDetails:
+			aq.WithMaintenanceDetails()
+		case AssetQueryWithCheckDetails:
+			aq.WithCheckDetails()
+		case AssetQueryWithSubscribe:
+			aq.WithSubscribe()
 		case AssetQueryWithWarehouse:
 			aq.WithWarehouse()
 		case AssetQueryWithStore:
@@ -1635,14 +1885,10 @@ func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
 			aq.WithRider()
 		case AssetQueryWithOperator:
 			aq.WithOperator()
-		case AssetQueryWithScrapDetails:
-			aq.WithScrapDetails()
-		case AssetQueryWithTransferDetails:
-			aq.WithTransferDetails()
-		case AssetQueryWithMaintenanceDetails:
-			aq.WithMaintenanceDetails()
-		case AssetQueryWithCheckDetails:
-			aq.WithCheckDetails()
+		case AssetQueryWithAllocates:
+			aq.WithAllocates()
+		case AssetQueryWithRtoRider:
+			aq.WithRtoRider()
 		}
 	}
 	return aq

@@ -20,18 +20,17 @@ func (t StoreStatus) Value() uint8 {
 
 // StoreCreateReq 门店创建请求
 type StoreCreateReq struct {
-	BranchID      *uint64              `json:"branchId" validate:"required" trans:"网点"`
-	Name          *string              `json:"name" validate:"required" trans:"门店名称"`
-	Status        *StoreStatus         `json:"status" validate:"required" enums:"0,1,2,3"`    // 门店状态 0维护 1营业 2休息 3隐藏
-	Materials     []StockStoreMaterial `json:"materials"`                                     // 门店物资
-	EbikeObtain   bool                 `json:"ebikeObtain"`                                   // 是否可以领取车辆
-	EbikeRepair   bool                 `json:"ebikeRepair"`                                   // 是否可以维修车辆
-	EbikeSale     bool                 `json:"ebikeSale"`                                     // 是否可以买车
-	BusinessHours string               `json:"businessHours"`                                 // 营业时间
-	Rest          bool                 `json:"rest"`                                          // 是否驿站
-	Photos        []string             `json:"photos" validate:"required" trans:"门店照片"`       // 门店照片
-	Phone         string               `json:"phone" validate:"required,max=20" trans:"门店电话"` // 门店电话
-	HeadPic       string               `json:"headPic" validate:"required" trans:"门店头图"`      // 门店头图
+	BranchID      *uint64      `json:"branchId" validate:"required" trans:"网点"`
+	Name          *string      `json:"name" validate:"required" trans:"门店名称"`
+	Status        *StoreStatus `json:"status" validate:"required" enums:"0,1,2,3"`    // 门店状态 0维护 1营业 2休息 3隐藏
+	EbikeObtain   bool         `json:"ebikeObtain"`                                   // 是否可以领取车辆
+	EbikeRepair   bool         `json:"ebikeRepair"`                                   // 是否可以维修车辆
+	EbikeSale     bool         `json:"ebikeSale"`                                     // 是否可以买车
+	BusinessHours string       `json:"businessHours"`                                 // 营业时间
+	Rest          bool         `json:"rest"`                                          // 是否驿站
+	Photos        []string     `json:"photos" validate:"required" trans:"门店照片"`       // 门店照片
+	Phone         string       `json:"phone" validate:"required,max=20" trans:"门店电话"` // 门店电话
+	HeadPic       string       `json:"headPic" validate:"required" trans:"门店头图"`      // 门店头图
 }
 
 // StoreModifyReq 门店修改请求

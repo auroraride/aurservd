@@ -127,7 +127,7 @@ func (s *maintainerCabinetService) Operate(m *ent.Maintainer, cities []uint64, r
 		// 创建维护记录
 		err := NewAssetMaintenance().Create(s.ctx, &model.AssetMaintenanceCreateReq{
 			CabinetID:       cab.ID,
-			OpratorID:       m.ID,
+			OperatorID:      m.ID,
 			OperateRoleType: model.OperatorTypeMaintainer.Value(),
 		}, &model.Modifier{
 			ID:    m.ID,

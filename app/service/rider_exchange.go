@@ -197,7 +197,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
 		tcab  *ec.Cabinet
 		tex   *ec.Exchange
 		t     *ec.Task
-		bat   *ent.Battery
+		bat   *ent.Asset
 		batSN *string
 	)
 

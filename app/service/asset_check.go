@@ -42,8 +42,8 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 	var assetIDs []uint64
 	// 查询应盘电车资产
 	allEbike, err := s.getCheckAsset(ctx, model.GetCheckAssetReq{
-		OpratorType:   req.OpratorType,
-		OpratorID:     req.OpratorID,
+		OperatorType:  req.OperatorType,
+		OperatorID:    req.OperatorID,
 		LocationsType: req.LocationsType,
 		LocationsID:   req.LocationsID,
 		AssetType:     model.AssetTypeEbike,
@@ -64,8 +64,8 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 	}
 	// 查询应盘电池资产
 	allBattery, err := s.getCheckAsset(ctx, model.GetCheckAssetReq{
-		OpratorType:   req.OpratorType,
-		OpratorID:     req.OpratorID,
+		OperatorType:  req.OperatorType,
+		OperatorID:    req.OperatorID,
 		LocationsType: req.LocationsType,
 		LocationsID:   req.LocationsID,
 		AssetType:     model.AssetTypeSmartBattery,
@@ -90,8 +90,8 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 		err = s.checkAssetCheckOwner(ctx, model.CheckAssetCheckOwnerReq{
 			AssetID:       v.AssetID,
 			AssetType:     v.AssetType,
-			OpratorType:   req.OpratorType,
-			OpratorID:     req.OpratorID,
+			OperatorType:  req.OperatorType,
+			OperatorID:    req.OperatorID,
 			LocationsType: req.LocationsType,
 			LocationsID:   req.LocationsID,
 		})
@@ -117,8 +117,8 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 	c, err := s.orm.Create().
 		SetCreator(modifier).
 		SetLastModifier(modifier).
-		SetOperateID(req.OpratorID).
-		SetOperateType(req.OpratorType.Value()).
+		SetOperateID(req.OperatorID).
+		SetOperateType(req.OperatorType.Value()).
 		SetLocationsID(req.LocationsID).
 		SetLocationsType(req.LocationsType.Value()).
 		SetEbikeNum(uint(len(allEbike))).
@@ -201,8 +201,8 @@ func (s *assetCheckService) findMissingAndExtraIDs(assetIDs []uint64, realAssetI
 // 查询应盘点资产
 func (s *assetCheckService) getCheckAsset(ctx context.Context, req model.GetCheckAssetReq) (res []*ent.Asset, err error) {
 	t, _, err := s.getAssetByOperateRole(ctx, model.GetAssetByOperateRole{
-		OpratorType:   req.OpratorType,
-		OpratorID:     req.OpratorID,
+		OperatorType:  req.OperatorType,
+		OperatorID:    req.OperatorID,
 		LocationsType: req.LocationsType,
 		LocationsID:   req.LocationsID,
 	})
@@ -229,9 +229,9 @@ func (s *assetCheckService) getAssetByOperateRole(ctx context.Context, req model
 	ids = make([]uint64, 0)
 	b = false
 
-	switch req.OpratorType {
+	switch req.OperatorType {
 	case model.OperatorTypeAgent:
-		item, _ := ent.Database.Agent.QueryNotDeleted().Where(agent.ID(req.OpratorID)).WithStations().First(ctx)
+		item, _ := ent.Database.Agent.QueryNotDeleted().Where(agent.ID(req.OperatorID)).WithStations().First(ctx)
 		if item == nil {
 			return b, nil, fmt.Errorf("未找到对应的代理商")
 		}
@@ -248,7 +248,7 @@ func (s *assetCheckService) getAssetByOperateRole(ctx context.Context, req model
 		// 查询是否当前位置上班
 		st, _ := ent.Database.Store.QueryNotDeleted().Where(
 			store.ID(req.LocationsID),
-			store.HasEmployeeWith(employee.ID(req.OpratorID)),
+			store.HasEmployeeWith(employee.ID(req.OperatorID)),
 		).First(context.Background())
 		if st == nil {
 			return b, nil, errors.New("当年门店未存在上班信息")
@@ -258,7 +258,7 @@ func (s *assetCheckService) getAssetByOperateRole(ctx context.Context, req model
 		// 查询是否当前位置上班
 		wh, _ := ent.Database.Warehouse.QueryNotDeleted().Where(
 			warehouse.ID(req.LocationsID),
-			warehouse.HasAssetManagerWith(assetmanager.ID(req.OpratorID)),
+			warehouse.HasAssetManagerWith(assetmanager.ID(req.OperatorID)),
 		).First(context.Background())
 		if wh == nil {
 			return b, nil, errors.New("当年门店未存在上班信息")
@@ -297,8 +297,8 @@ func (s *assetCheckService) GetAssetBySN(ctx context.Context, req *model.AssetCh
 	err = s.checkAssetCheckOwner(ctx, model.CheckAssetCheckOwnerReq{
 		AssetID:       item.ID,
 		AssetType:     model.AssetType(item.Type),
-		OpratorType:   req.OpratorType,
-		OpratorID:     req.OpratorID,
+		OperatorType:  req.OperatorType,
+		OperatorID:    req.OperatorID,
 		LocationsType: req.LocationsType,
 		LocationsID:   req.LocationsID,
 	})
@@ -322,8 +322,8 @@ func (s *assetCheckService) GetAssetBySN(ctx context.Context, req *model.AssetCh
 // MarkStartOrEndCheck 标记开始盘点或结束盘点
 func (s *assetCheckService) MarkStartOrEndCheck(ctx context.Context, req *model.MarkStartOrEndCheckReq) (err error) {
 	t, _, err := s.getAssetByOperateRole(ctx, model.GetAssetByOperateRole{
-		OpratorType:   req.OpratorType,
-		OpratorID:     req.OpratorID,
+		OperatorType:  req.OperatorType,
+		OperatorID:    req.OperatorID,
 		LocationsType: req.LocationsType,
 		LocationsID:   req.LocationsID,
 	})
@@ -458,22 +458,22 @@ func (s *assetCheckService) detail(item *ent.AssetCheck) *model.AssetCheckListRe
 	if item.EndAt != nil {
 		end = item.EndAt.Format("2006-01-02 15:04:05")
 	}
-	opratorName := ""
+	OperatorName := ""
 	switch model.OperatorType(item.OperateType) {
 	case model.OperatorTypeAgent:
 		if item.Edges.OperateAgent != nil {
-			opratorName = item.Edges.OperateAgent.Name
+			OperatorName = item.Edges.OperateAgent.Name
 		}
 	case model.OperatorTypeEmployee:
 		if item.Edges.OperateStore != nil {
-			opratorName = item.Edges.OperateStore.Name
+			OperatorName = item.Edges.OperateStore.Name
 		}
 	case model.OperatorTypeAssetManager:
 		if item.Edges.OperateManager != nil {
-			opratorName = item.Edges.OperateManager.Name
+			OperatorName = item.Edges.OperateManager.Name
 		}
 	default:
-		opratorName = ""
+		OperatorName = ""
 	}
 	locationsName := ""
 	switch model.AssetLocationsType(item.LocationsType) {
@@ -508,8 +508,8 @@ func (s *assetCheckService) detail(item *ent.AssetCheck) *model.AssetCheckListRe
 		ID:             item.ID,
 		StartAt:        start,
 		EndAt:          end,
-		OpratorID:      item.OperateID,
-		OpratorName:    opratorName,
+		OperatorID:     item.OperateID,
+		OperatorName:   OperatorName,
 		BatteryNum:     item.BatteryNum,
 		BatteryNumReal: item.BatteryNumReal,
 		EbikeNum:       item.EbikeNum,
@@ -538,7 +538,7 @@ func (s *assetCheckService) ListAbnormal(ctx context.Context, req *model.AssetCh
 		All(context.Background())
 
 	for _, v := range abnormalAll {
-		var name, sn, modelName, brandName, locationsName, realLocationsName, opratorName string
+		var name, sn, modelName, brandName, locationsName, realLocationsName, operatorName string
 		if v.Edges.Asset != nil {
 			name = v.Edges.Asset.Name
 			sn = v.Edges.Asset.Sn
@@ -609,11 +609,11 @@ func (s *assetCheckService) ListAbnormal(ctx context.Context, req *model.AssetCh
 		}
 
 		if v.Edges.Maintainer != nil {
-			opratorName = v.Edges.Maintainer.Name
+			operatorName = v.Edges.Maintainer.Name
 		}
-		var opratorAt string
+		var operatorAt string
 		if v.OperateAt != nil {
-			opratorAt = v.OperateAt.Format("2006-01-02 15:04:05")
+			operatorAt = v.OperateAt.Format("2006-01-02 15:04:05")
 		}
 
 		var assetType model.AssetType
@@ -631,8 +631,8 @@ func (s *assetCheckService) ListAbnormal(ctx context.Context, req *model.AssetCh
 			LocationsName:     locationsName,
 			RealLocationsName: realLocationsName,
 			Status:            model.AssetCheckDetailsStatus(v.Status).String(),
-			OpratorName:       opratorName,
-			OpratorAt:         opratorAt,
+			OperatorName:      operatorName,
+			OperatorAt:        operatorAt,
 			AssetType:         assetType,
 		})
 	}
@@ -791,7 +791,6 @@ func (s *assetCheckService) AssetCheckAbnormalOperate(ctx context.Context, req *
 	if item.Result == model.AssetCheckResultSurplus.Value() {
 		// 盘盈操作入库
 		fromLocationType := model.AssetLocationsType(item.LocationsType)
-		assetTransferType := model.AssetTransferTypeTransfer
 		transferCreateReq := &model.AssetTransferCreateReq{
 			FromLocationType:  &fromLocationType,
 			FromLocationID:    &item.LocationsID,
@@ -799,7 +798,7 @@ func (s *assetCheckService) AssetCheckAbnormalOperate(ctx context.Context, req *
 			ToLocationID:      item.RealLocationsID,
 			Details:           make([]model.AssetTransferCreateDetail, 0),
 			Reason:            "盘盈入库",
-			AssetTransferType: &assetTransferType,
+			AssetTransferType: model.AssetTransferTypeTransfer,
 		}
 		if item.Edges.Asset == nil {
 			return fmt.Errorf("未找到对应的资产")
@@ -809,7 +808,7 @@ func (s *assetCheckService) AssetCheckAbnormalOperate(ctx context.Context, req *
 			SN:        &item.Edges.Asset.Sn,
 		})
 
-		failed, err := NewAssetTransfer().Transfer(ctx, transferCreateReq, modifier)
+		_, failed, err := NewAssetTransfer().Transfer(ctx, transferCreateReq, modifier)
 		if err != nil {
 			return err
 		}

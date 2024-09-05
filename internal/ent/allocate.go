@@ -13,10 +13,10 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -97,7 +97,7 @@ type AllocateEdges struct {
 	// Contract holds the value of the contract edge.
 	Contract *Contract `json:"contract,omitempty"`
 	// Ebike holds the value of the ebike edge.
-	Ebike *Ebike `json:"ebike,omitempty"`
+	Ebike *Asset `json:"ebike,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [11]bool
@@ -215,11 +215,11 @@ func (e AllocateEdges) ContractOrErr() (*Contract, error) {
 
 // EbikeOrErr returns the Ebike value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AllocateEdges) EbikeOrErr() (*Ebike, error) {
+func (e AllocateEdges) EbikeOrErr() (*Asset, error) {
 	if e.Ebike != nil {
 		return e.Ebike, nil
 	} else if e.loadedTypes[10] {
-		return nil, &NotFoundError{label: ebike.Label}
+		return nil, &NotFoundError{label: asset.Label}
 	}
 	return nil, &NotLoadedError{edge: "ebike"}
 }
@@ -450,7 +450,7 @@ func (a *Allocate) QueryContract() *ContractQuery {
 }
 
 // QueryEbike queries the "ebike" edge of the Allocate entity.
-func (a *Allocate) QueryEbike() *EbikeQuery {
+func (a *Allocate) QueryEbike() *AssetQuery {
 	return NewAllocateClient(a.config).QueryEbike(a)
 }
 

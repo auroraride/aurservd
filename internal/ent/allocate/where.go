@@ -1017,7 +1017,7 @@ func HasEbike() predicate.Allocate {
 }
 
 // HasEbikeWith applies the HasEdge predicate on the "ebike" edge with a given conditions (other predicates).
-func HasEbikeWith(preds ...predicate.Ebike) predicate.Allocate {
+func HasEbikeWith(preds ...predicate.Asset) predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
 		step := newEbikeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {

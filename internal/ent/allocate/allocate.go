@@ -150,9 +150,9 @@ const (
 	ContractColumn = "allocate_id"
 	// EbikeTable is the table that holds the ebike relation/edge.
 	EbikeTable = "allocate"
-	// EbikeInverseTable is the table name for the Ebike entity.
-	// It exists in this package in order to avoid circular dependency with the "ebike" package.
-	EbikeInverseTable = "ebike"
+	// EbikeInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	EbikeInverseTable = "asset"
 	// EbikeColumn is the table column denoting the ebike relation/edge.
 	EbikeColumn = "ebike_id"
 )

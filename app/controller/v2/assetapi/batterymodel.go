@@ -8,9 +8,8 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/auroraride/aurservd/app"
-	"github.com/auroraride/aurservd/app/biz"
-	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
 )
 
 type batterymodel struct{}
@@ -24,12 +23,12 @@ var BatteryModel = new(batterymodel)
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
 // @Produce	json
-// @Param	X-Asset-Manager-Token	header		string														true	"管理员校验token"
-// @Param	query					query		definition.BatteryModelListReq								true	"desc"
+// @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
+// @Param	query					query		model.BatteryModelListReq								true	"desc"
 // @Success	200						{object}	model.PaginationRes{items=[]definition.BatteryModelDetail}	"请求成功"
 func (*batterymodel) List(c echo.Context) (err error) {
-	ctx, req := app.AssetManagerContextAndBinding[definition.BatteryModelListReq](c)
-	return ctx.SendResponse(biz.NewBatteryModel().List(req))
+	ctx, req := app.AssetManagerContextAndBinding[model.BatteryModelListReq](c)
+	return ctx.SendResponse(service.NewBatteryModel().List(req))
 }
 
 // Create
@@ -40,11 +39,11 @@ func (*batterymodel) List(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
-// @Param	body					body		definition.BatteryModelCreateReq	true	"desc"
+// @Param	body					body		model.BatteryModelCreateReq	true	"desc"
 // @Success	200						{object}	model.StatusResponse				"请求成功"
 func (*batterymodel) Create(c echo.Context) (err error) {
-	ctx, req := app.AssetManagerContextAndBinding[definition.BatteryModelCreateReq](c)
-	return ctx.SendResponse(biz.NewBatteryModelWithModifier(ctx.Modifier).Create(req))
+	ctx, req := app.AssetManagerContextAndBinding[model.BatteryModelCreateReq](c)
+	return ctx.SendResponse(service.NewBatteryModelWithModifier(ctx.Modifier).Create(req))
 }
 
 // Delete
@@ -59,5 +58,5 @@ func (*batterymodel) Create(c echo.Context) (err error) {
 // @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*batterymodel) Delete(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
-	return ctx.SendResponse(biz.NewBatteryModelWithModifier(ctx.Modifier).Delete(req.ID))
+	return ctx.SendResponse(service.NewBatteryModelWithModifier(ctx.Modifier).Delete(req.ID))
 }

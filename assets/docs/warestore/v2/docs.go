@@ -56,12 +56,6 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "站点ID",
-                        "name": "stationID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
                         "description": "门店ID",
                         "name": "storeID",
                         "in": "query"
@@ -1232,12 +1226,6 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "代理员ID",
-                        "name": "agentID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
                         "description": "仓库管理员ID",
                         "name": "assetManagerID",
                         "in": "query"
@@ -1324,12 +1312,6 @@ const docTemplate = `{
                         ],
                         "description": "是否首页跳转查询",
                         "name": "mainPage",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "运维ID",
-                        "name": "maintainerID",
                         "in": "query"
                     },
                     {
@@ -1944,10 +1926,6 @@ const docTemplate = `{
                 "startAt": {
                     "description": "盘点开始时间",
                     "type": "string"
-                },
-                "stationId": {
-                    "description": "盘点站点ID",
-                    "type": "integer"
                 }
             }
         },
@@ -2189,10 +2167,6 @@ const docTemplate = `{
                 "inNum": {
                     "description": "入库数量",
                     "type": "integer"
-                },
-                "inOut": {
-                    "description": "in:入库方、out:出库方、all:出入库方",
-                    "type": "string"
                 },
                 "outNum": {
                     "description": "出库数量",
@@ -3182,10 +3156,6 @@ const docTemplate = `{
                 "inNum": {
                     "description": "入库数量",
                     "type": "integer"
-                },
-                "inOut": {
-                    "description": "in:入库方、out:出库方、all:出入库方",
-                    "type": "string"
                 },
                 "outNum": {
                     "description": "出库数量",

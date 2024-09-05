@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -20,7 +21,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
-	"github.com/auroraride/aurservd/internal/ent/stock"
 )
 
 // EnterpriseStationUpdate is the builder for updating EnterpriseStation entities.
@@ -228,19 +228,19 @@ func (esu *EnterpriseStationUpdate) AddBatteries(b ...*Battery) *EnterpriseStati
 	return esu.AddBatteryIDs(ids...)
 }
 
-// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
-func (esu *EnterpriseStationUpdate) AddStockIDs(ids ...uint64) *EnterpriseStationUpdate {
-	esu.mutation.AddStockIDs(ids...)
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (esu *EnterpriseStationUpdate) AddAssetIDs(ids ...uint64) *EnterpriseStationUpdate {
+	esu.mutation.AddAssetIDs(ids...)
 	return esu
 }
 
-// AddStocks adds the "stocks" edges to the Stock entity.
-func (esu *EnterpriseStationUpdate) AddStocks(s ...*Stock) *EnterpriseStationUpdate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// AddAsset adds the "asset" edges to the Asset entity.
+func (esu *EnterpriseStationUpdate) AddAsset(a ...*Asset) *EnterpriseStationUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return esu.AddStockIDs(ids...)
+	return esu.AddAssetIDs(ids...)
 }
 
 // Mutation returns the EnterpriseStationMutation object of the builder.
@@ -365,25 +365,25 @@ func (esu *EnterpriseStationUpdate) RemoveBatteries(b ...*Battery) *EnterpriseSt
 	return esu.RemoveBatteryIDs(ids...)
 }
 
-// ClearStocks clears all "stocks" edges to the Stock entity.
-func (esu *EnterpriseStationUpdate) ClearStocks() *EnterpriseStationUpdate {
-	esu.mutation.ClearStocks()
+// ClearAsset clears all "asset" edges to the Asset entity.
+func (esu *EnterpriseStationUpdate) ClearAsset() *EnterpriseStationUpdate {
+	esu.mutation.ClearAsset()
 	return esu
 }
 
-// RemoveStockIDs removes the "stocks" edge to Stock entities by IDs.
-func (esu *EnterpriseStationUpdate) RemoveStockIDs(ids ...uint64) *EnterpriseStationUpdate {
-	esu.mutation.RemoveStockIDs(ids...)
+// RemoveAssetIDs removes the "asset" edge to Asset entities by IDs.
+func (esu *EnterpriseStationUpdate) RemoveAssetIDs(ids ...uint64) *EnterpriseStationUpdate {
+	esu.mutation.RemoveAssetIDs(ids...)
 	return esu
 }
 
-// RemoveStocks removes "stocks" edges to Stock entities.
-func (esu *EnterpriseStationUpdate) RemoveStocks(s ...*Stock) *EnterpriseStationUpdate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// RemoveAsset removes "asset" edges to Asset entities.
+func (esu *EnterpriseStationUpdate) RemoveAsset(a ...*Asset) *EnterpriseStationUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return esu.RemoveStockIDs(ids...)
+	return esu.RemoveAssetIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -764,28 +764,28 @@ func (esu *EnterpriseStationUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if esu.mutation.StocksCleared() {
+	if esu.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   enterprisestation.StocksTable,
-			Columns: []string{enterprisestation.StocksColumn},
+			Table:   enterprisestation.AssetTable,
+			Columns: []string{enterprisestation.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := esu.mutation.RemovedStocksIDs(); len(nodes) > 0 && !esu.mutation.StocksCleared() {
+	if nodes := esu.mutation.RemovedAssetIDs(); len(nodes) > 0 && !esu.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   enterprisestation.StocksTable,
-			Columns: []string{enterprisestation.StocksColumn},
+			Table:   enterprisestation.AssetTable,
+			Columns: []string{enterprisestation.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -793,15 +793,15 @@ func (esu *EnterpriseStationUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := esu.mutation.StocksIDs(); len(nodes) > 0 {
+	if nodes := esu.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   enterprisestation.StocksTable,
-			Columns: []string{enterprisestation.StocksColumn},
+			Table:   enterprisestation.AssetTable,
+			Columns: []string{enterprisestation.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1022,19 +1022,19 @@ func (esuo *EnterpriseStationUpdateOne) AddBatteries(b ...*Battery) *EnterpriseS
 	return esuo.AddBatteryIDs(ids...)
 }
 
-// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
-func (esuo *EnterpriseStationUpdateOne) AddStockIDs(ids ...uint64) *EnterpriseStationUpdateOne {
-	esuo.mutation.AddStockIDs(ids...)
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (esuo *EnterpriseStationUpdateOne) AddAssetIDs(ids ...uint64) *EnterpriseStationUpdateOne {
+	esuo.mutation.AddAssetIDs(ids...)
 	return esuo
 }
 
-// AddStocks adds the "stocks" edges to the Stock entity.
-func (esuo *EnterpriseStationUpdateOne) AddStocks(s ...*Stock) *EnterpriseStationUpdateOne {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// AddAsset adds the "asset" edges to the Asset entity.
+func (esuo *EnterpriseStationUpdateOne) AddAsset(a ...*Asset) *EnterpriseStationUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return esuo.AddStockIDs(ids...)
+	return esuo.AddAssetIDs(ids...)
 }
 
 // Mutation returns the EnterpriseStationMutation object of the builder.
@@ -1159,25 +1159,25 @@ func (esuo *EnterpriseStationUpdateOne) RemoveBatteries(b ...*Battery) *Enterpri
 	return esuo.RemoveBatteryIDs(ids...)
 }
 
-// ClearStocks clears all "stocks" edges to the Stock entity.
-func (esuo *EnterpriseStationUpdateOne) ClearStocks() *EnterpriseStationUpdateOne {
-	esuo.mutation.ClearStocks()
+// ClearAsset clears all "asset" edges to the Asset entity.
+func (esuo *EnterpriseStationUpdateOne) ClearAsset() *EnterpriseStationUpdateOne {
+	esuo.mutation.ClearAsset()
 	return esuo
 }
 
-// RemoveStockIDs removes the "stocks" edge to Stock entities by IDs.
-func (esuo *EnterpriseStationUpdateOne) RemoveStockIDs(ids ...uint64) *EnterpriseStationUpdateOne {
-	esuo.mutation.RemoveStockIDs(ids...)
+// RemoveAssetIDs removes the "asset" edge to Asset entities by IDs.
+func (esuo *EnterpriseStationUpdateOne) RemoveAssetIDs(ids ...uint64) *EnterpriseStationUpdateOne {
+	esuo.mutation.RemoveAssetIDs(ids...)
 	return esuo
 }
 
-// RemoveStocks removes "stocks" edges to Stock entities.
-func (esuo *EnterpriseStationUpdateOne) RemoveStocks(s ...*Stock) *EnterpriseStationUpdateOne {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// RemoveAsset removes "asset" edges to Asset entities.
+func (esuo *EnterpriseStationUpdateOne) RemoveAsset(a ...*Asset) *EnterpriseStationUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return esuo.RemoveStockIDs(ids...)
+	return esuo.RemoveAssetIDs(ids...)
 }
 
 // Where appends a list predicates to the EnterpriseStationUpdate builder.
@@ -1588,28 +1588,28 @@ func (esuo *EnterpriseStationUpdateOne) sqlSave(ctx context.Context) (_node *Ent
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if esuo.mutation.StocksCleared() {
+	if esuo.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   enterprisestation.StocksTable,
-			Columns: []string{enterprisestation.StocksColumn},
+			Table:   enterprisestation.AssetTable,
+			Columns: []string{enterprisestation.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := esuo.mutation.RemovedStocksIDs(); len(nodes) > 0 && !esuo.mutation.StocksCleared() {
+	if nodes := esuo.mutation.RemovedAssetIDs(); len(nodes) > 0 && !esuo.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   enterprisestation.StocksTable,
-			Columns: []string{enterprisestation.StocksColumn},
+			Table:   enterprisestation.AssetTable,
+			Columns: []string{enterprisestation.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1617,15 +1617,15 @@ func (esuo *EnterpriseStationUpdateOne) sqlSave(ctx context.Context) (_node *Ent
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := esuo.mutation.StocksIDs(); len(nodes) > 0 {
+	if nodes := esuo.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   enterprisestation.StocksTable,
-			Columns: []string{enterprisestation.StocksColumn},
+			Table:   enterprisestation.AssetTable,
+			Columns: []string{enterprisestation.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

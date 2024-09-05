@@ -187,7 +187,10 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 		}
 	}
 
-	NewBatteryModel().QueryModelsX(bms)
+	_, err := NewBatteryModel().QueryModels(bms)
+	if err != nil {
+		snag.Panic("电池型号不存在")
+	}
 
 	// 查询是否重复
 	s.checkDuplicate(req.BrandID, req.Cities, bms, start, end, req.Type)
@@ -368,7 +371,10 @@ func (s *planService) CheckUpdateEnable(item *ent.Plan) {
 			mms[c.Model] = true
 		}
 	}
-	NewBatteryModel().QueryModelsX(bms)
+	_, err := NewBatteryModel().QueryModels(bms)
+	if err != nil {
+		snag.Panic("电池型号不存在")
+	}
 
 	var bId uint64
 	if item.BrandID != nil {

@@ -34,7 +34,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/hook"
-	"github.com/auroraride/aurservd/internal/ent/stock"
+	// "github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -112,7 +112,10 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
 	res = new(model.CabinetItem)
 
 	// 查询设置电池型号
-	models := NewBatteryModel().QueryModelsX(req.Models)
+	models, err := NewBatteryModel().QueryModels(req.Models)
+	if err != nil {
+		snag.Panic(err)
+	}
 	for _, bm := range models {
 		res.Models = append(res.Models, bm.Model)
 	}
@@ -235,9 +238,13 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
 			})
 
 			if slices.Compare(rms, models) != 0 {
+				m, err := NewBatteryModel().QueryModels(*req.Models)
+				if err != nil {
+					return err
+				}
 				q.ClearModels()
 				// 查询设置电池型号
-				q.AddModels(NewBatteryModel().QueryModelsX(*req.Models)...)
+				q.AddModels(m...)
 			}
 		}
 		if req.BranchID != nil {
@@ -376,7 +383,7 @@ func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
 	}
 	res.Reserves = make([]model.ReserveCabinetItem, 0)
 
-	res.StockNum = NewStock().CurrentBattery(item.ID, stock.FieldCabinetID)
+	res.StockNum = NewAsset().CurrentBattery(item.ID, model.AssetLocationsTypeCabinet)
 
 	// 获取生效中的预约
 	revs := NewReserve().CabinetUnfinished(item.ID)
@@ -608,7 +615,7 @@ func (s *cabinetService) dataItems(res *model.PaginationRes) *model.PaginationRe
 	for i, item := range items {
 		ids[i] = item.ID
 	}
-	m := NewStock().CurrentBatteryNum(ids, stock.FieldCabinetID)
+	m := NewAsset().CurrentBatteryNum(ids, model.AssetLocationsTypeCabinet)
 	for i, item := range items {
 		items[i].StockNum = m[item.ID]
 	}
@@ -671,14 +678,15 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
 	if !s.ModelInclude(cab, req.Model) {
 		snag.Panic("电池型号错误")
 	}
-	NewStockWithModifier(s.modifier).Transfer(&model.StockTransferReq{
-		Model:         req.Model,
-		Num:           req.Num,
-		InboundID:     cab.ID,
-		InboundTarget: model.StockTargetCabinet,
-		Force:         true,
-		Remark:        "电柜初始化",
-	})
+	// NewStockWithModifier(s.modifier).Transfer(&model.StockTransferReq{
+	// 	Model:         req.Model,
+	// 	Num:           req.Num,
+	// 	InboundID:     cab.ID,
+	// 	InboundTarget: model.StockTargetCabinet,
+	// 	Force:         true,
+	// 	Remark:        "电柜初始化",
+	// })
+
 	_, _ = cab.Update().SetTransferred(true).Save(s.ctx)
 }
 

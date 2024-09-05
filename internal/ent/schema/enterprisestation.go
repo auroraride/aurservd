@@ -73,7 +73,7 @@ func (EnterpriseStation) Edges() []ent.Edge {
 
 		edge.To("cabinets", Cabinet.Type),
 		edge.To("batteries", Battery.Type),
-		edge.To("stocks", Stock.Type),
+		edge.To("asset", Asset.Type),
 	}
 }
 

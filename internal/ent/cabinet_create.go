@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
@@ -23,7 +24,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
-	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
@@ -471,19 +471,19 @@ func (cc *CabinetCreate) AddExchanges(e ...*Exchange) *CabinetCreate {
 	return cc.AddExchangeIDs(ids...)
 }
 
-// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
-func (cc *CabinetCreate) AddStockIDs(ids ...uint64) *CabinetCreate {
-	cc.mutation.AddStockIDs(ids...)
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (cc *CabinetCreate) AddAssetIDs(ids ...uint64) *CabinetCreate {
+	cc.mutation.AddAssetIDs(ids...)
 	return cc
 }
 
-// AddStocks adds the "stocks" edges to the Stock entity.
-func (cc *CabinetCreate) AddStocks(s ...*Stock) *CabinetCreate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// AddAsset adds the "asset" edges to the Asset entity.
+func (cc *CabinetCreate) AddAsset(a ...*Asset) *CabinetCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return cc.AddStockIDs(ids...)
+	return cc.AddAssetIDs(ids...)
 }
 
 // AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
@@ -900,15 +900,15 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := cc.mutation.StocksIDs(); len(nodes) > 0 {
+	if nodes := cc.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   cabinet.StocksTable,
-			Columns: []string{cabinet.StocksColumn},
+			Table:   cabinet.AssetTable,
+			Columns: []string{cabinet.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

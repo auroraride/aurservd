@@ -98,23 +98,6 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
 		SetHeadPic(req.HeadPic).
 		SaveX(s.ctx)
 
-	if len(req.Materials) > 0 {
-		for _, m := range req.Materials {
-			tf := &model.StockTransferReq{
-				OutboundID:    0,
-				InboundID:     item.ID,
-				Num:           m.Num,
-				InboundTarget: model.StockTargetStore,
-			}
-			if m.Model != "" {
-				tf.Model = m.Model
-			} else {
-				tf.Name = m.Name
-			}
-			NewStockWithModifier(s.modifier).Transfer(tf)
-		}
-	}
-
 	return s.Detail(item.ID)
 }
 

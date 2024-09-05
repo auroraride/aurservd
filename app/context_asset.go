@@ -12,6 +12,7 @@ type AssetManagerContext struct {
 	*BaseContext
 	AssetManager *ent.AssetManager
 	Modifier     *model.Modifier
+	Operator     *model.OperatorInfo
 }
 
 // NewAssetManagerContext 新建管理员上下文
@@ -20,6 +21,12 @@ func NewAssetManagerContext(c echo.Context, mgr *ent.AssetManager, m *model.Modi
 		BaseContext:  Context(c),
 		AssetManager: mgr,
 		Modifier:     m,
+		Operator: &model.OperatorInfo{
+			Type:  model.OperatorTypeAssetManager,
+			ID:    mgr.ID,
+			Phone: mgr.Phone,
+			Name:  mgr.Name,
+		},
 	}
 }
 

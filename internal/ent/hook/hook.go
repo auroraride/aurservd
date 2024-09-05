@@ -429,18 +429,6 @@ func (f CouponTemplateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CouponTemplateMutation", m)
 }
 
-// The EbikeFunc type is an adapter to allow the use of ordinary
-// function as Ebike mutator.
-type EbikeFunc func(context.Context, *ent.EbikeMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f EbikeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.EbikeMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EbikeMutation", m)
-}
-
 // The EbikeBrandFunc type is an adapter to allow the use of ordinary
 // function as EbikeBrand mutator.
 type EbikeBrandFunc func(context.Context, *ent.EbikeBrandMutation) (ent.Value, error)
@@ -1063,18 +1051,6 @@ func (f SettingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SettingMutation", m)
-}
-
-// The StockFunc type is an adapter to allow the use of ordinary
-// function as Stock mutator.
-type StockFunc func(context.Context, *ent.StockMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f StockFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.StockMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StockMutation", m)
 }
 
 // The StockSummaryFunc type is an adapter to allow the use of ordinary

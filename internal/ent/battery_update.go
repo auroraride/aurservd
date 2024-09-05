@@ -21,7 +21,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // BatteryUpdate is the builder for updating Battery entities.
@@ -158,6 +157,7 @@ func (bu *BatteryUpdate) ClearCabinetID() *BatteryUpdate {
 
 // SetSubscribeID sets the "subscribe_id" field.
 func (bu *BatteryUpdate) SetSubscribeID(u uint64) *BatteryUpdate {
+	bu.mutation.ResetSubscribeID()
 	bu.mutation.SetSubscribeID(u)
 	return bu
 }
@@ -167,6 +167,12 @@ func (bu *BatteryUpdate) SetNillableSubscribeID(u *uint64) *BatteryUpdate {
 	if u != nil {
 		bu.SetSubscribeID(*u)
 	}
+	return bu
+}
+
+// AddSubscribeID adds u to the "subscribe_id" field.
+func (bu *BatteryUpdate) AddSubscribeID(u int64) *BatteryUpdate {
+	bu.mutation.AddSubscribeID(u)
 	return bu
 }
 
@@ -314,11 +320,6 @@ func (bu *BatteryUpdate) SetCabinet(c *Cabinet) *BatteryUpdate {
 	return bu.SetCabinetID(c.ID)
 }
 
-// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
-func (bu *BatteryUpdate) SetSubscribe(s *Subscribe) *BatteryUpdate {
-	return bu.SetSubscribeID(s.ID)
-}
-
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (bu *BatteryUpdate) SetEnterprise(e *Enterprise) *BatteryUpdate {
 	return bu.SetEnterpriseID(e.ID)
@@ -364,12 +365,6 @@ func (bu *BatteryUpdate) ClearRider() *BatteryUpdate {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (bu *BatteryUpdate) ClearCabinet() *BatteryUpdate {
 	bu.mutation.ClearCabinet()
-	return bu
-}
-
-// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
-func (bu *BatteryUpdate) ClearSubscribe() *BatteryUpdate {
-	bu.mutation.ClearSubscribe()
 	return bu
 }
 
@@ -487,6 +482,15 @@ func (bu *BatteryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if bu.mutation.RemarkCleared() {
 		_spec.ClearField(battery.FieldRemark, field.TypeString)
 	}
+	if value, ok := bu.mutation.SubscribeID(); ok {
+		_spec.SetField(battery.FieldSubscribeID, field.TypeUint64, value)
+	}
+	if value, ok := bu.mutation.AddedSubscribeID(); ok {
+		_spec.AddField(battery.FieldSubscribeID, field.TypeUint64, value)
+	}
+	if bu.mutation.SubscribeIDCleared() {
+		_spec.ClearField(battery.FieldSubscribeID, field.TypeUint64)
+	}
 	if value, ok := bu.mutation.Sn(); ok {
 		_spec.SetField(battery.FieldSn, field.TypeString, value)
 	}
@@ -588,35 +592,6 @@ func (bu *BatteryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if bu.mutation.SubscribeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   battery.SubscribeTable,
-			Columns: []string{battery.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := bu.mutation.SubscribeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   battery.SubscribeTable,
-			Columns: []string{battery.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -869,6 +844,7 @@ func (buo *BatteryUpdateOne) ClearCabinetID() *BatteryUpdateOne {
 
 // SetSubscribeID sets the "subscribe_id" field.
 func (buo *BatteryUpdateOne) SetSubscribeID(u uint64) *BatteryUpdateOne {
+	buo.mutation.ResetSubscribeID()
 	buo.mutation.SetSubscribeID(u)
 	return buo
 }
@@ -878,6 +854,12 @@ func (buo *BatteryUpdateOne) SetNillableSubscribeID(u *uint64) *BatteryUpdateOne
 	if u != nil {
 		buo.SetSubscribeID(*u)
 	}
+	return buo
+}
+
+// AddSubscribeID adds u to the "subscribe_id" field.
+func (buo *BatteryUpdateOne) AddSubscribeID(u int64) *BatteryUpdateOne {
+	buo.mutation.AddSubscribeID(u)
 	return buo
 }
 
@@ -1025,11 +1007,6 @@ func (buo *BatteryUpdateOne) SetCabinet(c *Cabinet) *BatteryUpdateOne {
 	return buo.SetCabinetID(c.ID)
 }
 
-// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
-func (buo *BatteryUpdateOne) SetSubscribe(s *Subscribe) *BatteryUpdateOne {
-	return buo.SetSubscribeID(s.ID)
-}
-
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (buo *BatteryUpdateOne) SetEnterprise(e *Enterprise) *BatteryUpdateOne {
 	return buo.SetEnterpriseID(e.ID)
@@ -1075,12 +1052,6 @@ func (buo *BatteryUpdateOne) ClearRider() *BatteryUpdateOne {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (buo *BatteryUpdateOne) ClearCabinet() *BatteryUpdateOne {
 	buo.mutation.ClearCabinet()
-	return buo
-}
-
-// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
-func (buo *BatteryUpdateOne) ClearSubscribe() *BatteryUpdateOne {
-	buo.mutation.ClearSubscribe()
 	return buo
 }
 
@@ -1228,6 +1199,15 @@ func (buo *BatteryUpdateOne) sqlSave(ctx context.Context) (_node *Battery, err e
 	if buo.mutation.RemarkCleared() {
 		_spec.ClearField(battery.FieldRemark, field.TypeString)
 	}
+	if value, ok := buo.mutation.SubscribeID(); ok {
+		_spec.SetField(battery.FieldSubscribeID, field.TypeUint64, value)
+	}
+	if value, ok := buo.mutation.AddedSubscribeID(); ok {
+		_spec.AddField(battery.FieldSubscribeID, field.TypeUint64, value)
+	}
+	if buo.mutation.SubscribeIDCleared() {
+		_spec.ClearField(battery.FieldSubscribeID, field.TypeUint64)
+	}
 	if value, ok := buo.mutation.Sn(); ok {
 		_spec.SetField(battery.FieldSn, field.TypeString, value)
 	}
@@ -1329,35 +1309,6 @@ func (buo *BatteryUpdateOne) sqlSave(ctx context.Context) (_node *Battery, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if buo.mutation.SubscribeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   battery.SubscribeTable,
-			Columns: []string{battery.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := buo.mutation.SubscribeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   battery.SubscribeTable,
-			Columns: []string{battery.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

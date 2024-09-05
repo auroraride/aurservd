@@ -41,8 +41,6 @@ const (
 	FieldCabinetID = "cabinet_id"
 	// FieldBrandID holds the string denoting the brand_id field in the database.
 	FieldBrandID = "brand_id"
-	// FieldEbikeID holds the string denoting the ebike_id field in the database.
-	FieldEbikeID = "ebike_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
 	// FieldInitialOrderID holds the string denoting the initial_order_id field in the database.
@@ -99,6 +97,8 @@ const (
 	FieldEnterprisePriceID = "enterprise_price_id"
 	// FieldDepositType holds the string denoting the deposit_type field in the database.
 	FieldDepositType = "deposit_type"
+	// FieldEbikeID holds the string denoting the ebike_id field in the database.
+	FieldEbikeID = "ebike_id"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -113,8 +113,6 @@ const (
 	EdgeCabinet = "cabinet"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
-	// EdgeEbike holds the string denoting the ebike edge name in mutations.
-	EdgeEbike = "ebike"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
@@ -131,6 +129,8 @@ const (
 	EdgeInitialOrder = "initial_order"
 	// EdgeBills holds the string denoting the bills edge name in mutations.
 	EdgeBills = "bills"
+	// EdgeEbike holds the string denoting the ebike edge name in mutations.
+	EdgeEbike = "ebike"
 	// EdgeBattery holds the string denoting the battery edge name in mutations.
 	EdgeBattery = "battery"
 	// EdgeEnterprisePrice holds the string denoting the enterprise_price edge name in mutations.
@@ -186,13 +186,6 @@ const (
 	BrandInverseTable = "ebike_brand"
 	// BrandColumn is the table column denoting the brand relation/edge.
 	BrandColumn = "brand_id"
-	// EbikeTable is the table that holds the ebike relation/edge.
-	EbikeTable = "subscribe"
-	// EbikeInverseTable is the table name for the Ebike entity.
-	// It exists in this package in order to avoid circular dependency with the "ebike" package.
-	EbikeInverseTable = "ebike"
-	// EbikeColumn is the table column denoting the ebike relation/edge.
-	EbikeColumn = "ebike_id"
 	// RiderTable is the table that holds the rider relation/edge.
 	RiderTable = "subscribe"
 	// RiderInverseTable is the table name for the Rider entity.
@@ -249,11 +242,18 @@ const (
 	BillsInverseTable = "enterprise_bill"
 	// BillsColumn is the table column denoting the bills relation/edge.
 	BillsColumn = "subscribe_id"
+	// EbikeTable is the table that holds the ebike relation/edge.
+	EbikeTable = "subscribe"
+	// EbikeInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	EbikeInverseTable = "asset"
+	// EbikeColumn is the table column denoting the ebike relation/edge.
+	EbikeColumn = "ebike_id"
 	// BatteryTable is the table that holds the battery relation/edge.
-	BatteryTable = "battery"
-	// BatteryInverseTable is the table name for the Battery entity.
-	// It exists in this package in order to avoid circular dependency with the "battery" package.
-	BatteryInverseTable = "battery"
+	BatteryTable = "asset"
+	// BatteryInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	BatteryInverseTable = "asset"
 	// BatteryColumn is the table column denoting the battery relation/edge.
 	BatteryColumn = "subscribe_id"
 	// EnterprisePriceTable is the table that holds the enterprise_price relation/edge.
@@ -281,7 +281,6 @@ var Columns = []string{
 	FieldStoreID,
 	FieldCabinetID,
 	FieldBrandID,
-	FieldEbikeID,
 	FieldRiderID,
 	FieldInitialOrderID,
 	FieldEnterpriseID,
@@ -310,6 +309,7 @@ var Columns = []string{
 	FieldAgreementHash,
 	FieldEnterprisePriceID,
 	FieldDepositType,
+	FieldEbikeID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -420,11 +420,6 @@ func ByCabinetID(opts ...sql.OrderTermOption) OrderOption {
 // ByBrandID orders the results by the brand_id field.
 func ByBrandID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBrandID, opts...).ToFunc()
-}
-
-// ByEbikeID orders the results by the ebike_id field.
-func ByEbikeID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldEbikeID, opts...).ToFunc()
 }
 
 // ByRiderID orders the results by the rider_id field.
@@ -567,6 +562,11 @@ func ByDepositType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDepositType, opts...).ToFunc()
 }
 
+// ByEbikeID orders the results by the ebike_id field.
+func ByEbikeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEbikeID, opts...).ToFunc()
+}
+
 // ByPlanField orders the results by plan field.
 func ByPlanField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -613,13 +613,6 @@ func ByCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
 func ByBrandField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newBrandStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByEbikeField orders the results by ebike field.
-func ByEbikeField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newEbikeStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -714,6 +707,13 @@ func ByBills(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByEbikeField orders the results by ebike field.
+func ByEbikeField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEbikeStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByBatteryField orders the results by battery field.
 func ByBatteryField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -776,13 +776,6 @@ func newBrandStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
 	)
 }
-func newEbikeStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(EbikeInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
-	)
-}
 func newRiderStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -837,6 +830,13 @@ func newBillsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BillsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, BillsTable, BillsColumn),
+	)
+}
+func newEbikeStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EbikeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
 	)
 }
 func newBatteryStep() *sqlgraph.Step {

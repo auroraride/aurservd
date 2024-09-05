@@ -84,12 +84,12 @@ func LoadManagerV1Routes(root *echo.Group) {
 
 	// 电池
 	g.GET("/battery/model", mapi.Battery.ListModels)
-	g.POST("/battery/model", mapi.Battery.CreateModel)
-	g.DELETE("/battery/model", mapi.Battery.DeleteModel)
-	g.GET("/battery", mapi.Battery.List)
-	g.POST("/battery", mapi.Battery.Create)
-	g.PUT("/battery/:id", mapi.Battery.Modify)
-	g.POST("/battery/batch", mapi.Battery.BatchCreate)
+	// g.POST("/battery/model", mapi.Battery.CreateModel)
+	// g.DELETE("/battery/model", mapi.Battery.DeleteModel)
+	// g.GET("/battery", mapi.Battery.List)
+	// g.POST("/battery", mapi.Battery.Create)
+	// g.PUT("/battery/:id", mapi.Battery.Modify)
+	// g.POST("/battery/batch", mapi.Battery.BatchCreate)
 	g.POST("/battery/bind", mapi.Battery.Bind)
 	g.POST("/battery/unbind", mapi.Battery.Unbind)
 	g.GET("/battery/xc/:sn", mapi.Battery.Detail)
@@ -202,12 +202,12 @@ func LoadManagerV1Routes(root *echo.Group) {
 	g.POST("/employee/offwork", mapi.Employee.OffWork)
 
 	// 物资
-	g.POST("/stock", mapi.Stock.Create)
-	g.GET("/stock/battery/overview", mapi.Stock.BatteryOverview)
-	g.GET("/stock/store", mapi.Stock.StoreList)
-	g.GET("/stock/cabinet", mapi.Stock.CabinetList)
-	g.GET("/stock/detail", mapi.Stock.Detail)
-	g.GET("/stock/enterprise/list", mapi.Stock.EnterpriseList) // 团签物资列表
+	// g.POST("/stock", mapi.Stock.Create)
+	// g.GET("/stock/battery/overview", mapi.Stock.BatteryOverview)
+	// g.GET("/stock/store", mapi.Stock.StoreList)
+	// g.GET("/stock/cabinet", mapi.Stock.CabinetList)
+	// g.GET("/stock/detail", mapi.Stock.Detail)
+	// g.GET("/stock/enterprise/list", mapi.Stock.EnterpriseList) // 团签物资列表
 
 	// 选择项目
 	g.GET("/selection/plan", mapi.Selection.Plan)
@@ -257,7 +257,7 @@ func LoadManagerV1Routes(root *echo.Group) {
 	export.POST("/order", mapi.Export.Order)
 	export.POST("/commission", mapi.Export.Commission)
 	export.POST("/business", mapi.Export.Business)
-	export.POST("/stock-detail", mapi.Export.StockDetail)
+	// export.POST("/stock-detail", mapi.Export.StockDetail)
 	export.POST("/exchange", mapi.Export.Exchange)
 
 	// 积分
@@ -278,10 +278,10 @@ func LoadManagerV1Routes(root *echo.Group) {
 	g.GET("/ebike/brand", mapi.Ebike.BrandList)
 	g.POST("/ebike/brand", mapi.Ebike.BrandCreate)
 	g.PUT("/ebike/brand/:id", mapi.Ebike.BrandModify)
-	g.GET("/ebike", mapi.Ebike.List)
-	g.POST("/ebike", mapi.Ebike.Create)
-	g.PUT("/ebike/:id", mapi.Ebike.Modify)
-	g.POST("/ebike/batch", mapi.Ebike.BatchCreate)
+	// g.GET("/ebike", mapi.Ebike.List)
+	// g.POST("/ebike", mapi.Ebike.Create)
+	// g.PUT("/ebike/:id", mapi.Ebike.Modify)
+	// g.POST("/ebike/batch", mapi.Ebike.BatchCreate)
 
 	// 合同
 	g.GET("/contract", mapi.Contract.List)

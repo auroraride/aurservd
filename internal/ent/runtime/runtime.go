@@ -42,7 +42,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/coupon"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrandattribute"
 	"github.com/auroraride/aurservd/internal/ent/employee"
@@ -95,7 +94,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/schema"
 	"github.com/auroraride/aurservd/internal/ent/setting"
-	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
@@ -904,35 +902,6 @@ func init() {
 	coupontemplateDescEnable := coupontemplateFields[0].Descriptor()
 	// coupontemplate.DefaultEnable holds the default value on creation for the enable field.
 	coupontemplate.DefaultEnable = coupontemplateDescEnable.Default.(bool)
-	ebikeMixin := schema.Ebike{}.Mixin()
-	ebikeMixinHooks1 := ebikeMixin[1].Hooks()
-	ebike.Hooks[0] = ebikeMixinHooks1[0]
-	ebikeMixinFields0 := ebikeMixin[0].Fields()
-	_ = ebikeMixinFields0
-	ebikeFields := schema.Ebike{}.Fields()
-	_ = ebikeFields
-	// ebikeDescCreatedAt is the schema descriptor for created_at field.
-	ebikeDescCreatedAt := ebikeMixinFields0[0].Descriptor()
-	// ebike.DefaultCreatedAt holds the default value on creation for the created_at field.
-	ebike.DefaultCreatedAt = ebikeDescCreatedAt.Default.(func() time.Time)
-	// ebikeDescUpdatedAt is the schema descriptor for updated_at field.
-	ebikeDescUpdatedAt := ebikeMixinFields0[1].Descriptor()
-	// ebike.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	ebike.DefaultUpdatedAt = ebikeDescUpdatedAt.Default.(func() time.Time)
-	// ebike.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	ebike.UpdateDefaultUpdatedAt = ebikeDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// ebikeDescStatus is the schema descriptor for status field.
-	ebikeDescStatus := ebikeFields[0].Descriptor()
-	// ebike.DefaultStatus holds the default value on creation for the status field.
-	ebike.DefaultStatus = ebikeDescStatus.Default.(model.EbikeStatus)
-	// ebikeDescEnable is the schema descriptor for enable field.
-	ebikeDescEnable := ebikeFields[1].Descriptor()
-	// ebike.DefaultEnable holds the default value on creation for the enable field.
-	ebike.DefaultEnable = ebikeDescEnable.Default.(bool)
-	// ebikeDescColor is the schema descriptor for color field.
-	ebikeDescColor := ebikeFields[6].Descriptor()
-	// ebike.DefaultColor holds the default value on creation for the color field.
-	ebike.DefaultColor = ebikeDescColor.Default.(string)
 	ebikebrandMixin := schema.EbikeBrand{}.Mixin()
 	ebikebrandMixinHooks2 := ebikebrandMixin[2].Hooks()
 	ebikebrand.Hooks[0] = ebikebrandMixinHooks2[0]
@@ -2143,29 +2112,6 @@ func init() {
 	settingDescKey := settingFields[0].Descriptor()
 	// setting.KeyValidator is a validator for the "key" field. It is called by the builders before save.
 	setting.KeyValidator = settingDescKey.Validators[0].(func(string) error)
-	stockMixin := schema.Stock{}.Mixin()
-	stockMixinHooks1 := stockMixin[1].Hooks()
-	stockHooks := schema.Stock{}.Hooks()
-	stock.Hooks[0] = stockMixinHooks1[0]
-	stock.Hooks[1] = stockHooks[0]
-	stockMixinFields0 := stockMixin[0].Fields()
-	_ = stockMixinFields0
-	stockFields := schema.Stock{}.Fields()
-	_ = stockFields
-	// stockDescCreatedAt is the schema descriptor for created_at field.
-	stockDescCreatedAt := stockMixinFields0[0].Descriptor()
-	// stock.DefaultCreatedAt holds the default value on creation for the created_at field.
-	stock.DefaultCreatedAt = stockDescCreatedAt.Default.(func() time.Time)
-	// stockDescUpdatedAt is the schema descriptor for updated_at field.
-	stockDescUpdatedAt := stockMixinFields0[1].Descriptor()
-	// stock.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	stock.DefaultUpdatedAt = stockDescUpdatedAt.Default.(func() time.Time)
-	// stock.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	stock.UpdateDefaultUpdatedAt = stockDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// stockDescType is the schema descriptor for type field.
-	stockDescType := stockFields[2].Descriptor()
-	// stock.DefaultType holds the default value on creation for the type field.
-	stock.DefaultType = stockDescType.Default.(uint8)
 	stocksummaryFields := schema.StockSummary{}.Fields()
 	_ = stocksummaryFields
 	// stocksummaryDescDate is the schema descriptor for date field.

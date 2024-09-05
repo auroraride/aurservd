@@ -87,8 +87,8 @@ type StoreEdges struct {
 	Branch *Branch `json:"branch,omitempty"`
 	// Employee holds the value of the employee edge.
 	Employee *Employee `json:"employee,omitempty"`
-	// Stocks holds the value of the stocks edge.
-	Stocks []*Stock `json:"stocks,omitempty"`
+	// Asset holds the value of the asset edge.
+	Asset []*Asset `json:"asset,omitempty"`
 	// Attendances holds the value of the attendances edge.
 	Attendances []*Attendance `json:"attendances,omitempty"`
 	// Exceptions holds the value of the exceptions edge.
@@ -146,13 +146,13 @@ func (e StoreEdges) EmployeeOrErr() (*Employee, error) {
 	return nil, &NotLoadedError{edge: "employee"}
 }
 
-// StocksOrErr returns the Stocks value or an error if the edge
+// AssetOrErr returns the Asset value or an error if the edge
 // was not loaded in eager-loading.
-func (e StoreEdges) StocksOrErr() ([]*Stock, error) {
+func (e StoreEdges) AssetOrErr() ([]*Asset, error) {
 	if e.loadedTypes[4] {
-		return e.Stocks, nil
+		return e.Asset, nil
 	}
-	return nil, &NotLoadedError{edge: "stocks"}
+	return nil, &NotLoadedError{edge: "asset"}
 }
 
 // AttendancesOrErr returns the Attendances value or an error if the edge
@@ -415,9 +415,9 @@ func (s *Store) QueryEmployee() *EmployeeQuery {
 	return NewStoreClient(s.config).QueryEmployee(s)
 }
 
-// QueryStocks queries the "stocks" edge of the Store entity.
-func (s *Store) QueryStocks() *StockQuery {
-	return NewStoreClient(s.config).QueryStocks(s)
+// QueryAsset queries the "asset" edge of the Store entity.
+func (s *Store) QueryAsset() *AssetQuery {
+	return NewStoreClient(s.config).QueryAsset(s)
 }
 
 // QueryAttendances queries the "attendances" edge of the Store entity.

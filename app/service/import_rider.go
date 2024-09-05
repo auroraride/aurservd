@@ -20,11 +20,11 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
+	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/silk"
@@ -204,7 +204,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
 
 		// 定义变量
 		var (
-			bike     *ent.Ebike
+			bike     *ent.Asset
 			brand    *ent.EbikeBrand
 			bikeID   *uint64
 			brandID  *uint64
@@ -213,8 +213,12 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
 
 		// 查询电车
 		if s.plan.BrandID != nil {
-			bike, _ = NewEbike().AllocatableBaseFilter().
-				Where(ebike.Sn(req.EbikeSN), ebike.StoreID(req.StoreID)).
+			bike, _ = ent.Database.Asset.QueryNotDeleted().
+				Where(
+					asset.Sn(req.EbikeSN),
+					asset.LocationsType(model.StockTargetStore),
+					asset.LocationsID(req.StoreID),
+				).
 				WithBrand().
 				First(s.ctx)
 			if bike == nil {
@@ -329,51 +333,74 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
 			return
 		}
 
-		// 创建 stock
-		var stockParent *ent.Stock
-		stockParent, err = tx.Stock.Create().
-			SetRemark("导入数据").
-			SetStoreID(req.StoreID).
-			SetEmployeeID(req.EmployeeID).
-			SetName(s.plan.Model).
-			SetRiderID(sub.RiderID).
-			SetType(model.StockTypeRiderActive).
-			SetModel(s.plan.Model).
-			SetNum(-1).
-			SetCityID(req.CityID).
-			SetSubscribeID(sub.ID).
-			SetMaterial(stock.MaterialBattery).
-			SetSn(tools.NewUnique().NewSN()).
-			Save(s.ctx)
-		if err != nil {
-			return
+		// 找一个符合条件的电池
+		q := ent.Database.Asset.QueryNotDeleted().
+			Where(
+				asset.Status(model.AssetStatusStock.Value()),
+				asset.LocationsType(model.AssetLocationsTypeStore.Value()),
+				asset.LocationsID(req.StoreID),
+			)
+		if s.plan.Intelligent {
+			// 查询智能电池
+			q.Where(asset.Type(model.AssetTypeSmartBattery.Value()))
+		} else {
+			// 查询型号id
+			batteryModel, _ := ent.Database.BatteryModel.Query().Where(batterymodel.Model(s.plan.Model)).First(s.ctx)
+			if batteryModel == nil {
+				return errors.New("电池型号未找到")
+			}
+			// 查询非智能电池
+			q.Where(asset.ModelID(batteryModel.ID), asset.Type(model.AssetTypeNonSmartBattery.Value()))
+		}
+		battery, _ := q.WithModel().First(s.ctx)
+		if battery == nil {
+			return errors.New("电池未找到")
+		}
+		// 创建调拨详情
+		detail := make([]model.AssetTransferCreateDetail, 0)
+
+		if battery.Type == model.AssetTypeSmartBattery.Value() {
+			// 智能电池
+			detail = append(detail, model.AssetTransferCreateDetail{
+				AssetType: model.AssetTypeSmartBattery,
+				SN:        silk.String(battery.Sn),
+			})
+		} else {
+			// 非智能电池
+			detail = append(detail, model.AssetTransferCreateDetail{
+				AssetType: model.AssetTypeNonSmartBattery,
+				Num:       silk.UInt(1),
+				ModelID:   battery.ModelID,
+			})
 		}
 
-		// 更新电车
 		if bike != nil {
-			err = tx.Ebike.UpdateOneID(bike.ID).SetRiderID(r.ID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
-			if err != nil {
-				return
-			}
-			err = tx.Stock.Create().
-				SetRemark("导入数据").
-				SetStoreID(req.StoreID).
-				SetEmployeeID(req.EmployeeID).
-				SetName(brand.Name).
-				SetRiderID(sub.RiderID).
-				SetType(model.StockTypeRiderActive).
-				SetNum(-1).
-				SetCityID(req.CityID).
-				SetSubscribeID(sub.ID).
-				SetMaterial(stock.MaterialEbike).
-				SetSn(tools.NewUnique().NewSN()).
-				SetNillableEbikeID(bikeID).
-				SetNillableBrandID(brandID).
-				SetParent(stockParent).
-				Exec(s.ctx)
-			if err != nil {
-				return
-			}
+			// 电车
+			detail = append(detail, model.AssetTransferCreateDetail{
+				AssetType: model.AssetTypeEbike,
+				SN:        silk.String(bike.Sn),
+			})
+		}
+
+		// 创建调拨
+		fromLocationType := model.AssetLocationsTypeStore
+		sn, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
+			FromLocationType:  &fromLocationType,
+			FromLocationID:    silk.UInt64(req.StoreID),
+			ToLocationType:    model.AssetLocationsTypeRider,
+			ToLocationID:      sub.RiderID,
+			Details:           detail,
+			Reason:            "导入骑手数据",
+			AssetTransferType: model.AssetTransferTypeTransfer,
+			OperatorID:        req.EmployeeID,
+			OperatorType:      model.OperatorTypeEmployee,
+			AutoIn:            true,
+		}, s.modifier)
+		if err != nil {
+			return err
+		}
+		if len(failed) > 0 {
+			return errors.New(failed[0])
 		}
 
 		// 创建 business
@@ -388,7 +415,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
 			SetNillableStationID(sub.StationID).
 			SetNillablePlanID(sub.PlanID).
 			SetType(model.BusinessTypeActive).
-			SetStockSn(stockParent.Sn).
+			SetAssetTransferSn(sn).
 			Save(s.ctx)
 
 		return

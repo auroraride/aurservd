@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/adapter"
 	"github.com/labstack/echo/v4"
 
@@ -58,6 +59,8 @@ func (s *assetService) Create(ctx context.Context, req *model.AssetCreateReq, mo
 	// 入库状态默认为配送中
 	assetStatus := model.AssetStatusDelivering.Value()
 
+	var name string
+
 	q := s.orm.Create()
 	switch req.AssetType {
 	case model.AssetTypeSmartBattery:
@@ -80,6 +83,7 @@ func (s *assetService) Create(ctx context.Context, req *model.AssetCreateReq, mo
 		if modelInfo == nil {
 			return fmt.Errorf("电池型号%s不存在", ab.Model)
 		}
+		name = s.getAssetName(req.AssetType, modelInfo.ID)
 		q.SetNillableModelID(&modelInfo.ID).
 			SetBrandName(ab.Brand.String()).
 			SetNillableCityID(req.CityID)
@@ -88,11 +92,10 @@ func (s *assetService) Create(ctx context.Context, req *model.AssetCreateReq, mo
 			return errors.New("品牌不能为空")
 		}
 		q.SetBrandID(*req.BrandID)
+		name = s.getAssetName(req.AssetType, *req.BrandID)
 	default:
 		return errors.New("未知类型")
 	}
-
-	name := s.getAssetName(req.AssetType, nil)
 
 	q.SetType(req.AssetType.Value()).
 		SetName(name).
@@ -100,12 +103,11 @@ func (s *assetService) Create(ctx context.Context, req *model.AssetCreateReq, mo
 		SetEnable(enable).
 		SetStatus(assetStatus).
 		SetCreator(modifier).
-		SetLastModifier(modifier)
-	if req.LocationsType != nil && req.LocationsID != nil {
-		q.
-			SetLocationsType((*req.LocationsType).Value()).
-			SetLocationsID(*req.LocationsID)
-	}
+		SetLastModifier(modifier).
+		// if req.LocationsType != nil && req.LocationsID != nil {
+		SetLocationsType((req.LocationsType).Value()).
+		SetLocationsID(req.LocationsID)
+	// }
 	item, err := q.Save(ctx)
 	if err != nil {
 		return err
@@ -128,46 +130,43 @@ func (s *assetService) Create(ctx context.Context, req *model.AssetCreateReq, mo
 		return err
 	}
 	// 创建调拨单
-	if req.LocationsType != nil && req.LocationsID != nil {
-		assetTransferType := model.AssetTransferTypeInitial
-		failed, err := NewAssetTransfer().Transfer(ctx, &model.AssetTransferCreateReq{
-			ToLocationType:    *req.LocationsType,
-			ToLocationID:      *req.LocationsID,
-			Reason:            "初始入库",
-			AssetTransferType: &assetTransferType,
-			Details: []model.AssetTransferCreateDetail{
-				{
-					AssetType: req.AssetType,
-					SN:        req.SN,
-				},
+	_, failed, err := NewAssetTransfer().Transfer(ctx, &model.AssetTransferCreateReq{
+		ToLocationType:    req.LocationsType,
+		ToLocationID:      req.LocationsID,
+		Reason:            "初始入库",
+		AssetTransferType: model.AssetTransferTypeInitial,
+		Details: []model.AssetTransferCreateDetail{
+			{
+				AssetType: req.AssetType,
+				SN:        req.SN,
 			},
-		}, modifier)
-		if err != nil {
-			return err
-		}
-		if len(failed) > 0 {
-			return errors.New(failed[0])
-		}
+		},
+	}, modifier)
+	if err != nil {
+		return err
+	}
+	if len(failed) > 0 {
+		return errors.New(failed[0])
 	}
 	return nil
 }
 
 // 获取资产名称
-func (s *assetService) getAssetName(assetType model.AssetType, materialID *uint64) string {
+func (s *assetService) getAssetName(assetType model.AssetType, materialID uint64) string {
 	var name string
 	switch assetType {
-	case model.AssetTypeSmartBattery:
-		name = "智能电池"
+	case model.AssetTypeSmartBattery, model.AssetTypeNonSmartBattery:
+		only, _ := ent.Database.BatteryModel.Query().Where(batterymodel.ID(materialID)).Only(s.ctx)
+		name = only.Model
 	case model.AssetTypeEbike:
-		name = "电车"
-	case model.AssetTypeNonSmartBattery, model.AssetTypeCabinetAccessory, model.AssetTypeEbikeAccessory, model.AssetTypeOtherAccessory:
-		if materialID != nil {
-			only, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(*materialID)).Only(s.ctx)
-			if only == nil {
-				return "未知"
-			}
-			name = only.Name
+		only, _ := ent.Database.EbikeBrand.Query().Where(ebikebrand.ID(materialID)).Only(s.ctx)
+		name = only.Name
+	case model.AssetTypeCabinetAccessory, model.AssetTypeEbikeAccessory, model.AssetTypeOtherAccessory:
+		only, _ := ent.Database.Material.QueryNotDeleted().Where(material.ID(materialID)).Only(s.ctx)
+		if only == nil {
+			return "未知"
 		}
+		name = only.Name
 	default:
 		name = "未知"
 	}
@@ -257,7 +256,7 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 			continue
 		}
 
-		name := s.getAssetName(model.AssetTypeEbike, nil)
+		name := s.getAssetName(model.AssetTypeEbike, bid)
 		save, _ := s.orm.Create().
 			SetSn(columns[1]).
 			SetType(model.AssetTypeEbike.Value()).
@@ -305,12 +304,11 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 				SN:        &vl,
 			})
 		}
-		assetTransferType := model.AssetTransferTypeInitial
-		failed, err = NewAssetTransfer().Transfer(context.Background(), &model.AssetTransferCreateReq{
+		_, failed, err = NewAssetTransfer().Transfer(context.Background(), &model.AssetTransferCreateReq{
 			ToLocationType:    model.AssetLocationsTypeWarehouse,
 			ToLocationID:      k,
 			Reason:            "初始入库",
-			AssetTransferType: &assetTransferType,
+			AssetTransferType: model.AssetTransferTypeInitial,
 			Details:           details,
 		}, modifier)
 		if err != nil {
@@ -412,7 +410,7 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 			continue
 		}
 
-		name := s.getAssetName(model.AssetTypeSmartBattery, nil)
+		name := s.getAssetName(model.AssetTypeSmartBattery, mid)
 		save, err := s.orm.Create().
 			SetBrandName(ab.Brand.String()).
 			SetSn(sn).
@@ -445,12 +443,11 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 				SN:        &vl,
 			})
 		}
-		assetTransferType := model.AssetTransferTypeInitial
-		failed, err = NewAssetTransfer().Transfer(context.Background(), &model.AssetTransferCreateReq{
+		_, failed, err = NewAssetTransfer().Transfer(context.Background(), &model.AssetTransferCreateReq{
 			ToLocationType:    model.AssetLocationsTypeWarehouse,
 			ToLocationID:      k,
 			Reason:            "初始入库",
-			AssetTransferType: &assetTransferType,
+			AssetTransferType: model.AssetTransferTypeInitial,
 			Details:           details,
 		}, modifier)
 		if err != nil {
@@ -1026,8 +1023,129 @@ func (s *assetService) ebikeFilter(q *ent.AssetQuery, req *model.AssetFilter) *e
 
 // Count 查询有效的资产数量
 func (s *assetService) Count(ctx context.Context, req *model.AssetFilter) *model.AssetNumRes {
-	q := s.orm.QueryNotDeleted().Where(asset.StatusNEQ(model.AssetStatusScrap.Value()))
+	q := s.orm.QueryNotDeleted().Where(asset.StatusNEQ(model.AssetStatusScrap.Value()), asset.CheckAtIsNil())
 	s.filter(q, req)
 	count, _ := q.Count(ctx)
 	return &model.AssetNumRes{Num: count}
+}
+
+// QuerySn 通过SN查询被未盘点资产
+func (s *assetService) QuerySn(sn string) (bat *ent.Asset, err error) {
+	return s.orm.Query().WithModel().Where(asset.Sn(sn), asset.Type(model.AssetTypeSmartBattery.Value()), asset.CheckAtIsNil()).First(s.ctx)
+}
+
+// QueryID 通过ID查询资产
+func (s *assetService) QueryID(id uint64) (*ent.Asset, error) {
+	return s.orm.Query().WithModel().Where(asset.ID(id), asset.Type(model.AssetTypeSmartBattery.Value()), asset.CheckAtIsNil()).First(s.ctx)
+}
+
+// QueryRiderID 通过骑手ID查询资产
+func (s *assetService) QueryRiderID(id uint64) (*ent.Asset, error) {
+	return s.orm.Query().WithModel().Where(
+		asset.LocationsID(id),
+		asset.LocationsType(model.AssetLocationsTypeRider.Value()),
+		asset.CheckAtIsNil(),
+	).First(s.ctx)
+}
+
+// QueryNonSmartBattery 查询一个符合条件的非智能电池
+func (s *assetService) QueryNonSmartBattery(req *model.QueryAssetReq) (bat *ent.Asset, err error) {
+	q := s.orm.Query().WithModel().Where(asset.Type(model.AssetTypeNonSmartBattery.Value()), asset.CheckAtIsNil()).Limit(1)
+	if req.LocationsType != nil {
+		q.Where(asset.LocationsType(req.LocationsType.Value()))
+	}
+	if req.LocationsID != nil {
+		q.Where(asset.LocationsID(*req.LocationsID))
+	}
+	item, _ := q.First(s.ctx)
+	if item == nil {
+		return nil, errors.New("未找到符合条件的非智能电池")
+	}
+	return item, nil
+}
+
+// CheckCabinet 检查电柜电池库存
+func (s *assetService) CheckCabinet(cabinetID uint64, m string, num int) bool {
+	count, _ := s.orm.QueryNotDeleted().Where(
+		asset.LocationsID(cabinetID),
+		asset.LocationsType(model.AssetLocationsTypeCabinet.Value()),
+		asset.Status(model.AssetStatusStock.Value()),
+		asset.HasModelWith(batterymodel.Model(m)),
+	).Count(s.ctx)
+	return count >= num
+}
+
+// CheckStore 检查门店电池库存
+func (s *assetService) CheckStore(storeID uint64, m string, num int) bool {
+	count, _ := s.orm.QueryNotDeleted().Where(
+		asset.LocationsID(storeID),
+		asset.LocationsType(model.AssetLocationsTypeStore.Value()),
+		asset.Status(model.AssetStatusStock.Value()),
+		asset.HasModelWith(batterymodel.Model(m)),
+	).Count(s.ctx)
+	return count >= num
+}
+
+// CheckStation 检查站点电池库存
+func (s *assetService) CheckStation(stationID uint64, m string, num int) bool {
+	count, _ := s.orm.QueryNotDeleted().Where(
+		asset.LocationsID(stationID),
+		asset.LocationsType(model.AssetLocationsTypeStation.Value()),
+		asset.Status(model.AssetStatusStock.Value()),
+		asset.HasModelWith(batterymodel.Model(m)),
+	).Count(s.ctx)
+	return count >= num
+}
+
+func (s *assetService) CurrentBatteryNum(ids []uint64, locationsType model.AssetLocationsType) map[uint64]int {
+	var result []struct {
+		TargetID uint64 `json:"target_id"`
+		Sum      int    `json:"sum"`
+	}
+	v := make([]interface{}, len(ids))
+	for i := range v {
+		v[i] = ids[i]
+	}
+	_ = s.orm.Query().
+		Where(asset.LocationsType(locationsType.Value())).
+		Modify(func(sel *sql.Selector) {
+			sel.Where(sql.In(sel.C(asset.FieldLocationsID), v...)).
+				Select(
+					sql.As(sel.C(asset.FieldLocationsID), "target_id"),
+					sql.As(sql.Sum(asset.FieldID), "sum"),
+				).
+				GroupBy(asset.FieldLocationsID)
+		}).
+		Scan(s.ctx, &result)
+	m := make(map[uint64]int)
+	for _, r := range result {
+		m[r.TargetID] = r.Sum
+	}
+	return m
+}
+
+func (s *assetService) CurrentBattery(id uint64, locationsType model.AssetLocationsType) int {
+	return s.CurrentBatteryNum([]uint64{id}, locationsType)[id]
+}
+
+// StoreCurrent 列出当前门店所有电池物资
+func (s *assetService) StoreCurrent(id uint64) []model.InventoryNum {
+	ins := make([]model.InventoryNum, 0)
+	_ = s.orm.Query().
+		Where(
+			asset.LocationsType(model.AssetLocationsTypeStore.Value()),
+			asset.LocationsID(id),
+			asset.Status(model.AssetStatusStock.Value()),
+		).
+		Modify(func(sel *sql.Selector) {
+			t := sql.Table(batterymodel.Table).As("model")
+			sel.LeftJoin(t).On(t.C(batterymodel.FieldID), sel.C(asset.FieldModelID))
+			sel.GroupBy(asset.FieldName, t.C(batterymodel.FieldModel)).
+				Select(asset.FieldName, t.C(batterymodel.FieldModel)).
+				AppendSelectExprAs(sql.Raw(fmt.Sprintf("%s IS NOT NULL", asset.FieldModelID)), "battery").
+				AppendSelectExprAs(sql.Raw(fmt.Sprintf("SUM(%s)", asset.FieldID)), "num")
+		}).
+		Scan(s.ctx, &ins)
+
+	return ins
 }

@@ -7,6 +7,7 @@ package app
 import (
 	"github.com/labstack/echo/v4"
 
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 )
 
@@ -14,6 +15,8 @@ type WarestoreContext struct {
 	*BaseContext
 	AssetManager *ent.AssetManager
 	Employee     *ent.Employee
+
+	Operator *model.OperatorInfo
 }
 
 // NewWarestoreContext 新建代理上下文
@@ -23,6 +26,22 @@ func NewWarestoreContext(c echo.Context, am *ent.AssetManager, ep *ent.Employee)
 		AssetManager: am,
 		Employee:     ep,
 	}
+	if am != nil {
+		ctx.Operator = &model.OperatorInfo{
+			Type:  model.OperatorTypeAssetManager,
+			ID:    am.ID,
+			Phone: am.Phone,
+			Name:  am.Name,
+		}
+	} else if ep != nil {
+		ctx.Operator = &model.OperatorInfo{
+			Type:  model.OperatorTypeEmployee,
+			ID:    ep.ID,
+			Phone: ep.Phone,
+			Name:  ep.Name,
+		}
+	}
+
 	return ctx
 }
 

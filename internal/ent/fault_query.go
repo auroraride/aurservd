@@ -10,10 +10,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -28,9 +27,9 @@ type FaultQuery struct {
 	predicates  []predicate.Fault
 	withCity    *CityQuery
 	withCabinet *CabinetQuery
-	withBattery *BatteryQuery
-	withEbike   *EbikeQuery
 	withRider   *RiderQuery
+	withEbike   *AssetQuery
+	withBattery *AssetQuery
 	modifiers   []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -112,50 +111,6 @@ func (fq *FaultQuery) QueryCabinet() *CabinetQuery {
 	return query
 }
 
-// QueryBattery chains the current query on the "battery" edge.
-func (fq *FaultQuery) QueryBattery() *BatteryQuery {
-	query := (&BatteryClient{config: fq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := fq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := fq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(fault.Table, fault.FieldID, selector),
-			sqlgraph.To(battery.Table, battery.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, fault.BatteryTable, fault.BatteryColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(fq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryEbike chains the current query on the "ebike" edge.
-func (fq *FaultQuery) QueryEbike() *EbikeQuery {
-	query := (&EbikeClient{config: fq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := fq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := fq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(fault.Table, fault.FieldID, selector),
-			sqlgraph.To(ebike.Table, ebike.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, fault.EbikeTable, fault.EbikeColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(fq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // QueryRider chains the current query on the "rider" edge.
 func (fq *FaultQuery) QueryRider() *RiderQuery {
 	query := (&RiderClient{config: fq.config}).Query()
@@ -171,6 +126,50 @@ func (fq *FaultQuery) QueryRider() *RiderQuery {
 			sqlgraph.From(fault.Table, fault.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, fault.RiderTable, fault.RiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(fq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEbike chains the current query on the "ebike" edge.
+func (fq *FaultQuery) QueryEbike() *AssetQuery {
+	query := (&AssetClient{config: fq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := fq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := fq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(fault.Table, fault.FieldID, selector),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, fault.EbikeTable, fault.EbikeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(fq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBattery chains the current query on the "battery" edge.
+func (fq *FaultQuery) QueryBattery() *AssetQuery {
+	query := (&AssetClient{config: fq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := fq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := fq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(fault.Table, fault.FieldID, selector),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, fault.BatteryTable, fault.BatteryColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(fq.driver.Dialect(), step)
 		return fromU, nil
@@ -372,9 +371,9 @@ func (fq *FaultQuery) Clone() *FaultQuery {
 		predicates:  append([]predicate.Fault{}, fq.predicates...),
 		withCity:    fq.withCity.Clone(),
 		withCabinet: fq.withCabinet.Clone(),
-		withBattery: fq.withBattery.Clone(),
-		withEbike:   fq.withEbike.Clone(),
 		withRider:   fq.withRider.Clone(),
+		withEbike:   fq.withEbike.Clone(),
+		withBattery: fq.withBattery.Clone(),
 		// clone intermediate query.
 		sql:  fq.sql.Clone(),
 		path: fq.path,
@@ -403,28 +402,6 @@ func (fq *FaultQuery) WithCabinet(opts ...func(*CabinetQuery)) *FaultQuery {
 	return fq
 }
 
-// WithBattery tells the query-builder to eager-load the nodes that are connected to
-// the "battery" edge. The optional arguments are used to configure the query builder of the edge.
-func (fq *FaultQuery) WithBattery(opts ...func(*BatteryQuery)) *FaultQuery {
-	query := (&BatteryClient{config: fq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	fq.withBattery = query
-	return fq
-}
-
-// WithEbike tells the query-builder to eager-load the nodes that are connected to
-// the "ebike" edge. The optional arguments are used to configure the query builder of the edge.
-func (fq *FaultQuery) WithEbike(opts ...func(*EbikeQuery)) *FaultQuery {
-	query := (&EbikeClient{config: fq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	fq.withEbike = query
-	return fq
-}
-
 // WithRider tells the query-builder to eager-load the nodes that are connected to
 // the "rider" edge. The optional arguments are used to configure the query builder of the edge.
 func (fq *FaultQuery) WithRider(opts ...func(*RiderQuery)) *FaultQuery {
@@ -433,6 +410,28 @@ func (fq *FaultQuery) WithRider(opts ...func(*RiderQuery)) *FaultQuery {
 		opt(query)
 	}
 	fq.withRider = query
+	return fq
+}
+
+// WithEbike tells the query-builder to eager-load the nodes that are connected to
+// the "ebike" edge. The optional arguments are used to configure the query builder of the edge.
+func (fq *FaultQuery) WithEbike(opts ...func(*AssetQuery)) *FaultQuery {
+	query := (&AssetClient{config: fq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	fq.withEbike = query
+	return fq
+}
+
+// WithBattery tells the query-builder to eager-load the nodes that are connected to
+// the "battery" edge. The optional arguments are used to configure the query builder of the edge.
+func (fq *FaultQuery) WithBattery(opts ...func(*AssetQuery)) *FaultQuery {
+	query := (&AssetClient{config: fq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	fq.withBattery = query
 	return fq
 }
 
@@ -517,9 +516,9 @@ func (fq *FaultQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Fault,
 		loadedTypes = [5]bool{
 			fq.withCity != nil,
 			fq.withCabinet != nil,
-			fq.withBattery != nil,
-			fq.withEbike != nil,
 			fq.withRider != nil,
+			fq.withEbike != nil,
+			fq.withBattery != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -555,21 +554,21 @@ func (fq *FaultQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Fault,
 			return nil, err
 		}
 	}
-	if query := fq.withBattery; query != nil {
-		if err := fq.loadBattery(ctx, query, nodes, nil,
-			func(n *Fault, e *Battery) { n.Edges.Battery = e }); err != nil {
+	if query := fq.withRider; query != nil {
+		if err := fq.loadRider(ctx, query, nodes, nil,
+			func(n *Fault, e *Rider) { n.Edges.Rider = e }); err != nil {
 			return nil, err
 		}
 	}
 	if query := fq.withEbike; query != nil {
 		if err := fq.loadEbike(ctx, query, nodes, nil,
-			func(n *Fault, e *Ebike) { n.Edges.Ebike = e }); err != nil {
+			func(n *Fault, e *Asset) { n.Edges.Ebike = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := fq.withRider; query != nil {
-		if err := fq.loadRider(ctx, query, nodes, nil,
-			func(n *Fault, e *Rider) { n.Edges.Rider = e }); err != nil {
+	if query := fq.withBattery; query != nil {
+		if err := fq.loadBattery(ctx, query, nodes, nil,
+			func(n *Fault, e *Asset) { n.Edges.Battery = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -637,70 +636,6 @@ func (fq *FaultQuery) loadCabinet(ctx context.Context, query *CabinetQuery, node
 	}
 	return nil
 }
-func (fq *FaultQuery) loadBattery(ctx context.Context, query *BatteryQuery, nodes []*Fault, init func(*Fault), assign func(*Fault, *Battery)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Fault)
-	for i := range nodes {
-		if nodes[i].BatteryID == nil {
-			continue
-		}
-		fk := *nodes[i].BatteryID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(battery.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "battery_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (fq *FaultQuery) loadEbike(ctx context.Context, query *EbikeQuery, nodes []*Fault, init func(*Fault), assign func(*Fault, *Ebike)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Fault)
-	for i := range nodes {
-		if nodes[i].EbikeID == nil {
-			continue
-		}
-		fk := *nodes[i].EbikeID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(ebike.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "ebike_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
 func (fq *FaultQuery) loadRider(ctx context.Context, query *RiderQuery, nodes []*Fault, init func(*Fault), assign func(*Fault, *Rider)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Fault)
@@ -726,6 +661,70 @@ func (fq *FaultQuery) loadRider(ctx context.Context, query *RiderQuery, nodes []
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (fq *FaultQuery) loadEbike(ctx context.Context, query *AssetQuery, nodes []*Fault, init func(*Fault), assign func(*Fault, *Asset)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Fault)
+	for i := range nodes {
+		if nodes[i].EbikeID == nil {
+			continue
+		}
+		fk := *nodes[i].EbikeID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(asset.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "ebike_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (fq *FaultQuery) loadBattery(ctx context.Context, query *AssetQuery, nodes []*Fault, init func(*Fault), assign func(*Fault, *Asset)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Fault)
+	for i := range nodes {
+		if nodes[i].BatteryID == nil {
+			continue
+		}
+		fk := *nodes[i].BatteryID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(asset.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "battery_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -768,14 +767,14 @@ func (fq *FaultQuery) querySpec() *sqlgraph.QuerySpec {
 		if fq.withCabinet != nil {
 			_spec.Node.AddColumnOnce(fault.FieldCabinetID)
 		}
-		if fq.withBattery != nil {
-			_spec.Node.AddColumnOnce(fault.FieldBatteryID)
+		if fq.withRider != nil {
+			_spec.Node.AddColumnOnce(fault.FieldRiderID)
 		}
 		if fq.withEbike != nil {
 			_spec.Node.AddColumnOnce(fault.FieldEbikeID)
 		}
-		if fq.withRider != nil {
-			_spec.Node.AddColumnOnce(fault.FieldRiderID)
+		if fq.withBattery != nil {
+			_spec.Node.AddColumnOnce(fault.FieldBatteryID)
 		}
 	}
 	if ps := fq.predicates; len(ps) > 0 {
@@ -847,9 +846,9 @@ type FaultQueryWith string
 var (
 	FaultQueryWithCity    FaultQueryWith = "City"
 	FaultQueryWithCabinet FaultQueryWith = "Cabinet"
-	FaultQueryWithBattery FaultQueryWith = "Battery"
-	FaultQueryWithEbike   FaultQueryWith = "Ebike"
 	FaultQueryWithRider   FaultQueryWith = "Rider"
+	FaultQueryWithEbike   FaultQueryWith = "Ebike"
+	FaultQueryWithBattery FaultQueryWith = "Battery"
 )
 
 func (fq *FaultQuery) With(withEdges ...FaultQueryWith) *FaultQuery {
@@ -859,12 +858,12 @@ func (fq *FaultQuery) With(withEdges ...FaultQueryWith) *FaultQuery {
 			fq.WithCity()
 		case FaultQueryWithCabinet:
 			fq.WithCabinet()
-		case FaultQueryWithBattery:
-			fq.WithBattery()
-		case FaultQueryWithEbike:
-			fq.WithEbike()
 		case FaultQueryWithRider:
 			fq.WithRider()
+		case FaultQueryWithEbike:
+			fq.WithEbike()
+		case FaultQueryWithBattery:
+			fq.WithBattery()
 		}
 	}
 	return fq

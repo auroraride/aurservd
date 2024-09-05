@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 	"github.com/auroraride/adapter"
+
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -78,12 +79,12 @@ func (BatteryFlow) Fields() []ent.Field {
 // Edges of the BatteryFlow.
 func (BatteryFlow) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("battery", Battery.Type).Field("battery_id").
-			Required().Unique().Ref("flows").
-			Annotations(
-				entsql.WithComments(true),
-			).
-			Comment("所属电池"),
+		// edge.From("battery", Asset.Type).Field("battery_id").
+		// 	Required().Unique().Ref("flows").
+		// 	Annotations(
+		// 		entsql.WithComments(true),
+		// 	).
+		// 	Comment("所属电池"),
 
 		edge.From("cabinet", Cabinet.Type).Field("cabinet_id").
 			Unique().Ref("battery_flows").

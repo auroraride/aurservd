@@ -27,6 +27,13 @@ func (t OperatorType) Value() uint8 {
 	return uint8(t)
 }
 
+type OperatorInfo struct {
+	Type  OperatorType `json:"type"`  // 操作人类型
+	ID    uint64       `json:"id"`    // 操作人ID
+	Phone string       `json:"phone"` // 操作人电话
+	Name  string       `json:"name"`  // 操作人姓名
+}
+
 const (
 	OperatePersonBan            Operate = iota // 封禁身份
 	OperatePersonUnBan                         // 解封身份

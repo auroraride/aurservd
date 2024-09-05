@@ -90,10 +90,10 @@ type AssetTransferCreateReq struct {
 	ToLocationID      uint64                      `json:"toLocationID" validate:"required"`      // 调拨后位置ID
 	Details           []AssetTransferCreateDetail `json:"details"`                               // 资产调拨详情
 	Reason            string                      `json:"reason" validate:"required"`            // 调拨事由
-	AssetTransferType *AssetTransferType          `json:"assetTransferType" enums:"1,2,3,4,5,6"` // 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
-	OpratorID         uint64                      `json:"opratorId"`                             // 操作人ID
-	OpratorType       OperatorType                `json:"opratorType"`                           // 操作人类型 0:业务管理员 1:门店 2:电柜 3:代理 4:运维 5:骑手 6:资产管理员
-
+	AssetTransferType AssetTransferType           `json:"assetTransferType" enums:"1,2,3,4,5,6"` // 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
+	OperatorID        uint64                      `json:"operatorId"`                            // 操作人ID
+	OperatorType      OperatorType                `json:"OperatorType"`                          // 操作人类型 2:门店 3:代理 6:资产后台(仓库)
+	AutoIn            bool                        `json:"autoIn"`                                // 是否自动入库 true:自动入库 false:手动入库
 }
 
 // AssetTransferCreateDetail 资产调拨详情

@@ -739,6 +739,29 @@ func HasAssetManagersWith(preds ...predicate.AssetManager) predicate.Warehouse {
 	})
 }
 
+// HasAsset applies the HasEdge predicate on the "asset" edge.
+func HasAsset() predicate.Warehouse {
+	return predicate.Warehouse(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AssetTable, AssetColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAssetWith applies the HasEdge predicate on the "asset" edge with a given conditions (other predicates).
+func HasAssetWith(preds ...predicate.Asset) predicate.Warehouse {
+	return predicate.Warehouse(func(s *sql.Selector) {
+		step := newAssetStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Warehouse) predicate.Warehouse {
 	return predicate.Warehouse(sql.AndPredicates(predicates...))

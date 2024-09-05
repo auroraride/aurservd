@@ -744,7 +744,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 	if sto != nil {
 		data.Type = "store"
 		// 查询门店电池库存
-		ins := NewStock().StoreCurrent(sto.ID)
+		ins := NewAsset().StoreCurrent(sto.ID)
 		models := make([]string, 0)
 		for _, in := range ins {
 			if in.Num > 0 && in.Battery {

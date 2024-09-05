@@ -42,6 +42,11 @@ func Int(i int) *int {
 	return &i
 }
 
+// UInt 复制 uint 对象，并返回复制体的指针
+func UInt(i uint) *uint {
+	return &i
+}
+
 // Int64 复制 int64 对象，并返回复制体的指针
 func Int64(i int64) *int64 {
 	return &i

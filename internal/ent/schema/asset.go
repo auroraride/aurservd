@@ -69,24 +69,38 @@ func (Asset) Fields() []ent.Field {
 		field.Uint64("rto_rider_id").Optional().Nillable().Comment("以租代购骑手ID，生成后禁止修改"),
 		field.Time("check_at").Optional().Nillable().Comment("盘点时间"),
 		field.String("brand_name").Optional().Comment("品牌名称"),
+		field.Uint64("subscribe_id").Optional().Nillable().Comment("订阅ID"),
+		field.Int("ordinal").Optional().Nillable().Comment("仓位号"),
 	}
 }
 
 // Edges of the Asset.
 func (Asset) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("values", AssetAttributeValues.Type),                              // 关联资产属性
-		edge.To("warehouse", Warehouse.Type).Unique().Field("locations_id"),       // 关联仓库
-		edge.To("store", Store.Type).Unique().Field("locations_id"),               // 关联门店
-		edge.To("cabinet", Cabinet.Type).Unique().Field("locations_id"),           // 关联电柜
-		edge.To("station", EnterpriseStation.Type).Unique().Field("locations_id"), // 关联站点
-		edge.To("rider", Rider.Type).Unique().Field("locations_id"),               // 关联骑手
-		edge.To("operator", Maintainer.Type).Unique().Field("locations_id"),       // 关联运维
+		edge.To("values", AssetAttributeValues.Type), // 关联资产属性
+		// edge.To("warehouse", Warehouse.Type).Unique().Field("locations_id"),       // 关联仓库
+		// edge.To("store", Store.Type).Unique().Field("locations_id"),               // 关联门店
+		// edge.To("cabinet", Cabinet.Type).Unique().Field("locations_id"),           // 关联电柜
+		// edge.To("station", EnterpriseStation.Type).Unique().Field("locations_id"), // 关联站点
+		// edge.To("rider", Rider.Type).Unique().Field("locations_id"),               // 关联骑手
+		// edge.To("operator", Maintainer.Type).Unique().Field("locations_id"),       // 关联运维
 
 		edge.To("scrap_details", AssetScrapDetails.Type),             // 关联报废详情
 		edge.To("transfer_details", AssetTransferDetails.Type),       // 关联调拨详情
 		edge.To("maintenance_details", AssetMaintenanceDetails.Type), // 关联维护详情
 		edge.To("check_details", AssetCheckDetails.Type),             // 关联盘点详情
+
+		edge.From("subscribe", Subscribe.Type).Unique().Ref("battery").Field("subscribe_id"), // 关联订阅
+
+		edge.From("warehouse", Warehouse.Type).Unique().Ref("asset").Field("locations_id"),       // 关联仓库
+		edge.From("store", Store.Type).Unique().Ref("asset").Field("locations_id"),               // 关联门店
+		edge.From("cabinet", Cabinet.Type).Unique().Ref("asset").Field("locations_id"),           // 关联电柜
+		edge.From("station", EnterpriseStation.Type).Ref("asset").Unique().Field("locations_id"), // 关联站点
+		edge.From("rider", Rider.Type).Unique().Ref("asset").Field("locations_id"),               // 关联骑手
+		edge.From("operator", Maintainer.Type).Unique().Ref("asset").Field("locations_id"),       // 关联运维
+
+		edge.To("allocates", Allocate.Type),
+		edge.To("rto_rider", Rider.Type).Unique().Field("rto_rider_id"),
 	}
 }
 

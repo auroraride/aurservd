@@ -9,12 +9,11 @@ import (
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/hook"
 )
 
 func entInit() {
 	ent.Database = ent.OpenDatabase(ar.Config.Database.Postgres.Dsn, ar.Config.App.SQL)
 	ent.Database.Cabinet.Use(service.NewCabinet().EntHooks()...)
 	// 使用stock hook
-	ent.Database.Stock.Use(hook.On(ent.NewStockHook(), ent.OpCreate))
+	// ent.Database.Stock.Use(hook.On(ent.NewStockHook(), ent.OpCreate))
 }

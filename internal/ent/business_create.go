@@ -13,11 +13,11 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -245,16 +245,16 @@ func (bc *BusinessCreate) SetBinInfo(mi *model.BinInfo) *BusinessCreate {
 	return bc
 }
 
-// SetStockSn sets the "stock_sn" field.
-func (bc *BusinessCreate) SetStockSn(s string) *BusinessCreate {
-	bc.mutation.SetStockSn(s)
+// SetAssetTransferSn sets the "asset_transfer_sn" field.
+func (bc *BusinessCreate) SetAssetTransferSn(s string) *BusinessCreate {
+	bc.mutation.SetAssetTransferSn(s)
 	return bc
 }
 
-// SetNillableStockSn sets the "stock_sn" field if the given value is not nil.
-func (bc *BusinessCreate) SetNillableStockSn(s *string) *BusinessCreate {
+// SetNillableAssetTransferSn sets the "asset_transfer_sn" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableAssetTransferSn(s *string) *BusinessCreate {
 	if s != nil {
-		bc.SetStockSn(*s)
+		bc.SetAssetTransferSn(*s)
 	}
 	return bc
 }
@@ -328,9 +328,9 @@ func (bc *BusinessCreate) SetAgent(a *Agent) *BusinessCreate {
 	return bc.SetAgentID(a.ID)
 }
 
-// SetRtoEbike sets the "rto_ebike" edge to the Ebike entity.
-func (bc *BusinessCreate) SetRtoEbike(e *Ebike) *BusinessCreate {
-	return bc.SetRtoEbikeID(e.ID)
+// SetRtoEbike sets the "rto_ebike" edge to the Asset entity.
+func (bc *BusinessCreate) SetRtoEbike(a *Asset) *BusinessCreate {
+	return bc.SetRtoEbikeID(a.ID)
 }
 
 // Mutation returns the BusinessMutation object of the builder.
@@ -475,9 +475,9 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 		_spec.SetField(business.FieldBinInfo, field.TypeJSON, value)
 		_node.BinInfo = value
 	}
-	if value, ok := bc.mutation.StockSn(); ok {
-		_spec.SetField(business.FieldStockSn, field.TypeString, value)
-		_node.StockSn = value
+	if value, ok := bc.mutation.AssetTransferSn(); ok {
+		_spec.SetField(business.FieldAssetTransferSn, field.TypeString, value)
+		_node.AssetTransferSn = value
 	}
 	if nodes := bc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -674,7 +674,7 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 			Columns: []string{business.RtoEbikeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1011,21 +1011,21 @@ func (u *BusinessUpsert) ClearBinInfo() *BusinessUpsert {
 	return u
 }
 
-// SetStockSn sets the "stock_sn" field.
-func (u *BusinessUpsert) SetStockSn(v string) *BusinessUpsert {
-	u.Set(business.FieldStockSn, v)
+// SetAssetTransferSn sets the "asset_transfer_sn" field.
+func (u *BusinessUpsert) SetAssetTransferSn(v string) *BusinessUpsert {
+	u.Set(business.FieldAssetTransferSn, v)
 	return u
 }
 
-// UpdateStockSn sets the "stock_sn" field to the value that was provided on create.
-func (u *BusinessUpsert) UpdateStockSn() *BusinessUpsert {
-	u.SetExcluded(business.FieldStockSn)
+// UpdateAssetTransferSn sets the "asset_transfer_sn" field to the value that was provided on create.
+func (u *BusinessUpsert) UpdateAssetTransferSn() *BusinessUpsert {
+	u.SetExcluded(business.FieldAssetTransferSn)
 	return u
 }
 
-// ClearStockSn clears the value of the "stock_sn" field.
-func (u *BusinessUpsert) ClearStockSn() *BusinessUpsert {
-	u.SetNull(business.FieldStockSn)
+// ClearAssetTransferSn clears the value of the "asset_transfer_sn" field.
+func (u *BusinessUpsert) ClearAssetTransferSn() *BusinessUpsert {
+	u.SetNull(business.FieldAssetTransferSn)
 	return u
 }
 
@@ -1417,24 +1417,24 @@ func (u *BusinessUpsertOne) ClearBinInfo() *BusinessUpsertOne {
 	})
 }
 
-// SetStockSn sets the "stock_sn" field.
-func (u *BusinessUpsertOne) SetStockSn(v string) *BusinessUpsertOne {
+// SetAssetTransferSn sets the "asset_transfer_sn" field.
+func (u *BusinessUpsertOne) SetAssetTransferSn(v string) *BusinessUpsertOne {
 	return u.Update(func(s *BusinessUpsert) {
-		s.SetStockSn(v)
+		s.SetAssetTransferSn(v)
 	})
 }
 
-// UpdateStockSn sets the "stock_sn" field to the value that was provided on create.
-func (u *BusinessUpsertOne) UpdateStockSn() *BusinessUpsertOne {
+// UpdateAssetTransferSn sets the "asset_transfer_sn" field to the value that was provided on create.
+func (u *BusinessUpsertOne) UpdateAssetTransferSn() *BusinessUpsertOne {
 	return u.Update(func(s *BusinessUpsert) {
-		s.UpdateStockSn()
+		s.UpdateAssetTransferSn()
 	})
 }
 
-// ClearStockSn clears the value of the "stock_sn" field.
-func (u *BusinessUpsertOne) ClearStockSn() *BusinessUpsertOne {
+// ClearAssetTransferSn clears the value of the "asset_transfer_sn" field.
+func (u *BusinessUpsertOne) ClearAssetTransferSn() *BusinessUpsertOne {
 	return u.Update(func(s *BusinessUpsert) {
-		s.ClearStockSn()
+		s.ClearAssetTransferSn()
 	})
 }
 
@@ -1995,24 +1995,24 @@ func (u *BusinessUpsertBulk) ClearBinInfo() *BusinessUpsertBulk {
 	})
 }
 
-// SetStockSn sets the "stock_sn" field.
-func (u *BusinessUpsertBulk) SetStockSn(v string) *BusinessUpsertBulk {
+// SetAssetTransferSn sets the "asset_transfer_sn" field.
+func (u *BusinessUpsertBulk) SetAssetTransferSn(v string) *BusinessUpsertBulk {
 	return u.Update(func(s *BusinessUpsert) {
-		s.SetStockSn(v)
+		s.SetAssetTransferSn(v)
 	})
 }
 
-// UpdateStockSn sets the "stock_sn" field to the value that was provided on create.
-func (u *BusinessUpsertBulk) UpdateStockSn() *BusinessUpsertBulk {
+// UpdateAssetTransferSn sets the "asset_transfer_sn" field to the value that was provided on create.
+func (u *BusinessUpsertBulk) UpdateAssetTransferSn() *BusinessUpsertBulk {
 	return u.Update(func(s *BusinessUpsert) {
-		s.UpdateStockSn()
+		s.UpdateAssetTransferSn()
 	})
 }
 
-// ClearStockSn clears the value of the "stock_sn" field.
-func (u *BusinessUpsertBulk) ClearStockSn() *BusinessUpsertBulk {
+// ClearAssetTransferSn clears the value of the "asset_transfer_sn" field.
+func (u *BusinessUpsertBulk) ClearAssetTransferSn() *BusinessUpsertBulk {
 	return u.Update(func(s *BusinessUpsert) {
-		s.ClearStockSn()
+		s.ClearAssetTransferSn()
 	})
 }
 

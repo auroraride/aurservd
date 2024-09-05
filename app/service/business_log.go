@@ -82,12 +82,12 @@ func (s *businessLogService) SetBinInfo(bin *model.BinInfo) *businessLogService 
 	return s
 }
 
-func (s *businessLogService) SetStock(sk *ent.Stock) *businessLogService {
-	if sk != nil {
-		s.creator.SetStockSn(sk.Sn)
-	}
-	return s
-}
+// func (s *businessLogService) SetStock(sk *ent.Stock) *businessLogService {
+// 	if sk != nil {
+// 		s.creator.SetStockSn(sk.Sn)
+// 	}
+// 	return s
+// }
 
 func (s *businessLogService) setSubscribe(sub *ent.Subscribe) {
 	s.creator.SetRiderID(sub.RiderID).

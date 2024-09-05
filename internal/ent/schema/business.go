@@ -64,7 +64,7 @@ func (Business) Fields() []ent.Field {
 			dialect.Postgres: postgres.TypeCharVar,
 		}).Comment("业务类型"),
 		field.JSON("bin_info", &model.BinInfo{}).Optional().Comment("仓位信息"),
-		field.String("stock_sn").Optional().Comment("出入库编码"),
+		field.String("asset_transfer_sn").Optional().Comment("出入库编码"),
 		field.Uint64("rto_ebike_id").Optional().Nillable().Comment("以租代购车辆ID，生成后禁止修改"),
 	}
 }
@@ -72,7 +72,7 @@ func (Business) Fields() []ent.Field {
 // Edges of the Business.
 func (Business) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("rto_ebike", Ebike.Type).Unique().Field("rto_ebike_id"),
+		edge.To("rto_ebike", Asset.Type).Unique().Field("rto_ebike_id"),
 	}
 }
 
@@ -100,7 +100,7 @@ func (Business) Mixin() []ent.Mixin {
 func (Business) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("type"),
-		index.Fields("stock_sn"),
+		index.Fields("asset_transfer_sn"),
 		index.Fields("rto_ebike_id"),
 	}
 }

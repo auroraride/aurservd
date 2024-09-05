@@ -408,16 +408,6 @@ func (ct *CouponTemplate) GetName() string {
 	return ct.Name
 }
 
-// GetTableName returns table name for Ebike.
-func (e *Ebike) GetTableName() string {
-	return "ebike"
-}
-
-// GetID returns id for Ebike.
-func (e *Ebike) GetID() uint64 {
-	return e.ID
-}
-
 // GetTableName returns table name for EbikeBrand.
 func (eb *EbikeBrand) GetTableName() string {
 	return "ebike_brand"
@@ -1036,20 +1026,6 @@ func (s *Setting) GetTableName() string {
 // GetID returns id for Setting.
 func (s *Setting) GetID() uint64 {
 	return s.ID
-}
-
-// GetTableName returns table name for Stock.
-func (s *Stock) GetTableName() string {
-	return "stock"
-}
-
-// GetID returns id for Stock.
-func (s *Stock) GetID() uint64 {
-	return s.ID
-}
-
-func (s *Stock) GetName() string {
-	return s.Name
 }
 
 // GetTableName returns table name for StockSummary.

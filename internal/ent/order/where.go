@@ -90,11 +90,6 @@ func BrandID(v uint64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldBrandID, v))
 }
 
-// EbikeID applies equality check predicate on the "ebike_id" field. It's identical to EbikeIDEQ.
-func EbikeID(v uint64) predicate.Order {
-	return predicate.Order(sql.FieldEQ(FieldEbikeID, v))
-}
-
 // AgentID applies equality check predicate on the "agent_id" field. It's identical to AgentIDEQ.
 func AgentID(v uint64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldAgentID, v))
@@ -208,6 +203,11 @@ func OutRequestNo(v string) predicate.Order {
 // SubscribeEndAt applies equality check predicate on the "subscribe_end_at" field. It's identical to SubscribeEndAtEQ.
 func SubscribeEndAt(v time.Time) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldSubscribeEndAt, v))
+}
+
+// EbikeID applies equality check predicate on the "ebike_id" field. It's identical to EbikeIDEQ.
+func EbikeID(v uint64) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldEbikeID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -523,36 +523,6 @@ func BrandIDIsNil() predicate.Order {
 // BrandIDNotNil applies the NotNil predicate on the "brand_id" field.
 func BrandIDNotNil() predicate.Order {
 	return predicate.Order(sql.FieldNotNull(FieldBrandID))
-}
-
-// EbikeIDEQ applies the EQ predicate on the "ebike_id" field.
-func EbikeIDEQ(v uint64) predicate.Order {
-	return predicate.Order(sql.FieldEQ(FieldEbikeID, v))
-}
-
-// EbikeIDNEQ applies the NEQ predicate on the "ebike_id" field.
-func EbikeIDNEQ(v uint64) predicate.Order {
-	return predicate.Order(sql.FieldNEQ(FieldEbikeID, v))
-}
-
-// EbikeIDIn applies the In predicate on the "ebike_id" field.
-func EbikeIDIn(vs ...uint64) predicate.Order {
-	return predicate.Order(sql.FieldIn(FieldEbikeID, vs...))
-}
-
-// EbikeIDNotIn applies the NotIn predicate on the "ebike_id" field.
-func EbikeIDNotIn(vs ...uint64) predicate.Order {
-	return predicate.Order(sql.FieldNotIn(FieldEbikeID, vs...))
-}
-
-// EbikeIDIsNil applies the IsNil predicate on the "ebike_id" field.
-func EbikeIDIsNil() predicate.Order {
-	return predicate.Order(sql.FieldIsNull(FieldEbikeID))
-}
-
-// EbikeIDNotNil applies the NotNil predicate on the "ebike_id" field.
-func EbikeIDNotNil() predicate.Order {
-	return predicate.Order(sql.FieldNotNull(FieldEbikeID))
 }
 
 // AgentIDEQ applies the EQ predicate on the "agent_id" field.
@@ -1660,6 +1630,36 @@ func SubscribeEndAtNotNil() predicate.Order {
 	return predicate.Order(sql.FieldNotNull(FieldSubscribeEndAt))
 }
 
+// EbikeIDEQ applies the EQ predicate on the "ebike_id" field.
+func EbikeIDEQ(v uint64) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldEbikeID, v))
+}
+
+// EbikeIDNEQ applies the NEQ predicate on the "ebike_id" field.
+func EbikeIDNEQ(v uint64) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldEbikeID, v))
+}
+
+// EbikeIDIn applies the In predicate on the "ebike_id" field.
+func EbikeIDIn(vs ...uint64) predicate.Order {
+	return predicate.Order(sql.FieldIn(FieldEbikeID, vs...))
+}
+
+// EbikeIDNotIn applies the NotIn predicate on the "ebike_id" field.
+func EbikeIDNotIn(vs ...uint64) predicate.Order {
+	return predicate.Order(sql.FieldNotIn(FieldEbikeID, vs...))
+}
+
+// EbikeIDIsNil applies the IsNil predicate on the "ebike_id" field.
+func EbikeIDIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldEbikeID))
+}
+
+// EbikeIDNotNil applies the NotNil predicate on the "ebike_id" field.
+func EbikeIDNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldEbikeID))
+}
+
 // HasPlan applies the HasEdge predicate on the "plan" edge.
 func HasPlan() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
@@ -1721,29 +1721,6 @@ func HasBrand() predicate.Order {
 func HasBrandWith(preds ...predicate.EbikeBrand) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
 		step := newBrandStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasEbike applies the HasEdge predicate on the "ebike" edge.
-func HasEbike() predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasEbikeWith applies the HasEdge predicate on the "ebike" edge with a given conditions (other predicates).
-func HasEbikeWith(preds ...predicate.Ebike) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		step := newEbikeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1951,6 +1928,29 @@ func HasCoupons() predicate.Order {
 func HasCouponsWith(preds ...predicate.Coupon) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
 		step := newCouponsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEbike applies the HasEdge predicate on the "ebike" edge.
+func HasEbike() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEbikeWith applies the HasEdge predicate on the "ebike" edge with a given conditions (other predicates).
+func HasEbikeWith(preds ...predicate.Asset) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := newEbikeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -55,6 +55,10 @@ const (
 	FieldCheckAt = "check_at"
 	// FieldBrandName holds the string denoting the brand_name field in the database.
 	FieldBrandName = "brand_name"
+	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
+	FieldSubscribeID = "subscribe_id"
+	// FieldOrdinal holds the string denoting the ordinal field in the database.
+	FieldOrdinal = "ordinal"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
 	// EdgeModel holds the string denoting the model edge name in mutations.
@@ -65,6 +69,16 @@ const (
 	EdgeMaterial = "material"
 	// EdgeValues holds the string denoting the values edge name in mutations.
 	EdgeValues = "values"
+	// EdgeScrapDetails holds the string denoting the scrap_details edge name in mutations.
+	EdgeScrapDetails = "scrap_details"
+	// EdgeTransferDetails holds the string denoting the transfer_details edge name in mutations.
+	EdgeTransferDetails = "transfer_details"
+	// EdgeMaintenanceDetails holds the string denoting the maintenance_details edge name in mutations.
+	EdgeMaintenanceDetails = "maintenance_details"
+	// EdgeCheckDetails holds the string denoting the check_details edge name in mutations.
+	EdgeCheckDetails = "check_details"
+	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
+	EdgeSubscribe = "subscribe"
 	// EdgeWarehouse holds the string denoting the warehouse edge name in mutations.
 	EdgeWarehouse = "warehouse"
 	// EdgeStore holds the string denoting the store edge name in mutations.
@@ -77,14 +91,10 @@ const (
 	EdgeRider = "rider"
 	// EdgeOperator holds the string denoting the operator edge name in mutations.
 	EdgeOperator = "operator"
-	// EdgeScrapDetails holds the string denoting the scrap_details edge name in mutations.
-	EdgeScrapDetails = "scrap_details"
-	// EdgeTransferDetails holds the string denoting the transfer_details edge name in mutations.
-	EdgeTransferDetails = "transfer_details"
-	// EdgeMaintenanceDetails holds the string denoting the maintenance_details edge name in mutations.
-	EdgeMaintenanceDetails = "maintenance_details"
-	// EdgeCheckDetails holds the string denoting the check_details edge name in mutations.
-	EdgeCheckDetails = "check_details"
+	// EdgeAllocates holds the string denoting the allocates edge name in mutations.
+	EdgeAllocates = "allocates"
+	// EdgeRtoRider holds the string denoting the rto_rider edge name in mutations.
+	EdgeRtoRider = "rto_rider"
 	// Table holds the table name of the asset in the database.
 	Table = "asset"
 	// BrandTable is the table that holds the brand relation/edge.
@@ -122,6 +132,41 @@ const (
 	ValuesInverseTable = "asset_attribute_values"
 	// ValuesColumn is the table column denoting the values relation/edge.
 	ValuesColumn = "asset_id"
+	// ScrapDetailsTable is the table that holds the scrap_details relation/edge.
+	ScrapDetailsTable = "asset_scrap_details"
+	// ScrapDetailsInverseTable is the table name for the AssetScrapDetails entity.
+	// It exists in this package in order to avoid circular dependency with the "assetscrapdetails" package.
+	ScrapDetailsInverseTable = "asset_scrap_details"
+	// ScrapDetailsColumn is the table column denoting the scrap_details relation/edge.
+	ScrapDetailsColumn = "asset_id"
+	// TransferDetailsTable is the table that holds the transfer_details relation/edge.
+	TransferDetailsTable = "asset_transfer_details"
+	// TransferDetailsInverseTable is the table name for the AssetTransferDetails entity.
+	// It exists in this package in order to avoid circular dependency with the "assettransferdetails" package.
+	TransferDetailsInverseTable = "asset_transfer_details"
+	// TransferDetailsColumn is the table column denoting the transfer_details relation/edge.
+	TransferDetailsColumn = "asset_id"
+	// MaintenanceDetailsTable is the table that holds the maintenance_details relation/edge.
+	MaintenanceDetailsTable = "asset_maintenance_details"
+	// MaintenanceDetailsInverseTable is the table name for the AssetMaintenanceDetails entity.
+	// It exists in this package in order to avoid circular dependency with the "assetmaintenancedetails" package.
+	MaintenanceDetailsInverseTable = "asset_maintenance_details"
+	// MaintenanceDetailsColumn is the table column denoting the maintenance_details relation/edge.
+	MaintenanceDetailsColumn = "asset_id"
+	// CheckDetailsTable is the table that holds the check_details relation/edge.
+	CheckDetailsTable = "asset_check_details"
+	// CheckDetailsInverseTable is the table name for the AssetCheckDetails entity.
+	// It exists in this package in order to avoid circular dependency with the "assetcheckdetails" package.
+	CheckDetailsInverseTable = "asset_check_details"
+	// CheckDetailsColumn is the table column denoting the check_details relation/edge.
+	CheckDetailsColumn = "asset_id"
+	// SubscribeTable is the table that holds the subscribe relation/edge.
+	SubscribeTable = "asset"
+	// SubscribeInverseTable is the table name for the Subscribe entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
+	SubscribeInverseTable = "subscribe"
+	// SubscribeColumn is the table column denoting the subscribe relation/edge.
+	SubscribeColumn = "subscribe_id"
 	// WarehouseTable is the table that holds the warehouse relation/edge.
 	WarehouseTable = "asset"
 	// WarehouseInverseTable is the table name for the Warehouse entity.
@@ -164,34 +209,20 @@ const (
 	OperatorInverseTable = "maintainer"
 	// OperatorColumn is the table column denoting the operator relation/edge.
 	OperatorColumn = "locations_id"
-	// ScrapDetailsTable is the table that holds the scrap_details relation/edge.
-	ScrapDetailsTable = "asset_scrap_details"
-	// ScrapDetailsInverseTable is the table name for the AssetScrapDetails entity.
-	// It exists in this package in order to avoid circular dependency with the "assetscrapdetails" package.
-	ScrapDetailsInverseTable = "asset_scrap_details"
-	// ScrapDetailsColumn is the table column denoting the scrap_details relation/edge.
-	ScrapDetailsColumn = "asset_id"
-	// TransferDetailsTable is the table that holds the transfer_details relation/edge.
-	TransferDetailsTable = "asset_transfer_details"
-	// TransferDetailsInverseTable is the table name for the AssetTransferDetails entity.
-	// It exists in this package in order to avoid circular dependency with the "assettransferdetails" package.
-	TransferDetailsInverseTable = "asset_transfer_details"
-	// TransferDetailsColumn is the table column denoting the transfer_details relation/edge.
-	TransferDetailsColumn = "asset_id"
-	// MaintenanceDetailsTable is the table that holds the maintenance_details relation/edge.
-	MaintenanceDetailsTable = "asset_maintenance_details"
-	// MaintenanceDetailsInverseTable is the table name for the AssetMaintenanceDetails entity.
-	// It exists in this package in order to avoid circular dependency with the "assetmaintenancedetails" package.
-	MaintenanceDetailsInverseTable = "asset_maintenance_details"
-	// MaintenanceDetailsColumn is the table column denoting the maintenance_details relation/edge.
-	MaintenanceDetailsColumn = "asset_id"
-	// CheckDetailsTable is the table that holds the check_details relation/edge.
-	CheckDetailsTable = "asset_check_details"
-	// CheckDetailsInverseTable is the table name for the AssetCheckDetails entity.
-	// It exists in this package in order to avoid circular dependency with the "assetcheckdetails" package.
-	CheckDetailsInverseTable = "asset_check_details"
-	// CheckDetailsColumn is the table column denoting the check_details relation/edge.
-	CheckDetailsColumn = "asset_id"
+	// AllocatesTable is the table that holds the allocates relation/edge.
+	AllocatesTable = "allocate"
+	// AllocatesInverseTable is the table name for the Allocate entity.
+	// It exists in this package in order to avoid circular dependency with the "allocate" package.
+	AllocatesInverseTable = "allocate"
+	// AllocatesColumn is the table column denoting the allocates relation/edge.
+	AllocatesColumn = "ebike_id"
+	// RtoRiderTable is the table that holds the rto_rider relation/edge.
+	RtoRiderTable = "asset"
+	// RtoRiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	RtoRiderInverseTable = "rider"
+	// RtoRiderColumn is the table column denoting the rto_rider relation/edge.
+	RtoRiderColumn = "rto_rider_id"
 )
 
 // Columns holds all SQL columns for asset fields.
@@ -217,12 +248,25 @@ var Columns = []string{
 	FieldRtoRiderID,
 	FieldCheckAt,
 	FieldBrandName,
+	FieldSubscribeID,
+	FieldOrdinal,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "asset"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"enterprise_asset",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -346,6 +390,16 @@ func ByBrandName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBrandName, opts...).ToFunc()
 }
 
+// BySubscribeID orders the results by the subscribe_id field.
+func BySubscribeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSubscribeID, opts...).ToFunc()
+}
+
+// ByOrdinal orders the results by the ordinal field.
+func ByOrdinal(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOrdinal, opts...).ToFunc()
+}
+
 // ByBrandField orders the results by brand field.
 func ByBrandField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -385,48 +439,6 @@ func ByValuesCount(opts ...sql.OrderTermOption) OrderOption {
 func ByValues(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newValuesStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByWarehouseField orders the results by warehouse field.
-func ByWarehouseField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newWarehouseStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByStoreField orders the results by store field.
-func ByStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newStoreStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByCabinetField orders the results by cabinet field.
-func ByCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newCabinetStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByStationField orders the results by station field.
-func ByStationField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newStationStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByRiderField orders the results by rider field.
-func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newRiderStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByOperatorField orders the results by operator field.
-func ByOperatorField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newOperatorStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -485,6 +497,76 @@ func ByCheckDetails(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCheckDetailsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// BySubscribeField orders the results by subscribe field.
+func BySubscribeField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSubscribeStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByWarehouseField orders the results by warehouse field.
+func ByWarehouseField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newWarehouseStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByStoreField orders the results by store field.
+func ByStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStoreStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByCabinetField orders the results by cabinet field.
+func ByCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCabinetStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByStationField orders the results by station field.
+func ByStationField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStationStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByRiderField orders the results by rider field.
+func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByOperatorField orders the results by operator field.
+func ByOperatorField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newOperatorStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByAllocatesCount orders the results by allocates count.
+func ByAllocatesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAllocatesStep(), opts...)
+	}
+}
+
+// ByAllocates orders the results by allocates terms.
+func ByAllocates(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAllocatesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByRtoRiderField orders the results by rto_rider field.
+func ByRtoRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRtoRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newBrandStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -520,48 +602,6 @@ func newValuesStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2M, false, ValuesTable, ValuesColumn),
 	)
 }
-func newWarehouseStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(WarehouseInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, WarehouseTable, WarehouseColumn),
-	)
-}
-func newStoreStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(StoreInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
-	)
-}
-func newCabinetStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(CabinetInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
-	)
-}
-func newStationStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(StationInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
-	)
-}
-func newRiderStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(RiderInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
-	)
-}
-func newOperatorStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(OperatorInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, OperatorTable, OperatorColumn),
-	)
-}
 func newScrapDetailsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -588,5 +628,68 @@ func newCheckDetailsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CheckDetailsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CheckDetailsTable, CheckDetailsColumn),
+	)
+}
+func newSubscribeStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SubscribeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, true, SubscribeTable, SubscribeColumn),
+	)
+}
+func newWarehouseStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(WarehouseInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, WarehouseTable, WarehouseColumn),
+	)
+}
+func newStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, StoreTable, StoreColumn),
+	)
+}
+func newCabinetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CabinetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, CabinetTable, CabinetColumn),
+	)
+}
+func newStationStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StationInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, StationTable, StationColumn),
+	)
+}
+func newRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, RiderTable, RiderColumn),
+	)
+}
+func newOperatorStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(OperatorInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, OperatorTable, OperatorColumn),
+	)
+}
+func newAllocatesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AllocatesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AllocatesTable, AllocatesColumn),
+	)
+}
+func newRtoRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RtoRiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RtoRiderTable, RtoRiderColumn),
 	)
 }

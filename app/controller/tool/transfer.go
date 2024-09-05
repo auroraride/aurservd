@@ -54,7 +54,7 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
 		}
 
 		var (
-			bat *ent.Battery
+			bat *ent.Asset
 			bid *uint64
 
 			bm = sub.Model
@@ -69,7 +69,7 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
 			}
 
 			// 查找电池
-			bat, _ = service.NewBattery().QuerySn(ab.SN)
+			bat, _ = service.NewAsset().QuerySn(ab.SN)
 			if bat == nil {
 				message = "未找到电池信息"
 				goto RENDER
@@ -92,7 +92,7 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
 
 			// 更新电池信息
 			if intelligent && bat != nil {
-				err = service.NewBattery().Allocate(tx, bat, sub, false)
+				err = service.NewBattery().Allocate(bat, sub, model.AssetTransferTypeTransfer)
 			}
 
 			return

@@ -679,7 +679,7 @@ func (b *cabinetBiz) Operate(assetSignInfo definition.AssetSignInfo, req *model.
 		// 创建维护记录
 		err = service.NewAssetMaintenance().Create(b.ctx, &model.AssetMaintenanceCreateReq{
 			CabinetID:       cab.ID,
-			OpratorID:       md.ID,
+			OperatorID:      md.ID,
 			OperateRoleType: model.OperatorTypeMaintainer.Value(),
 		}, &md)
 		if err != nil {

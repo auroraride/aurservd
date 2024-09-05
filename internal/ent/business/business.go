@@ -53,8 +53,8 @@ const (
 	FieldType = "type"
 	// FieldBinInfo holds the string denoting the bin_info field in the database.
 	FieldBinInfo = "bin_info"
-	// FieldStockSn holds the string denoting the stock_sn field in the database.
-	FieldStockSn = "stock_sn"
+	// FieldAssetTransferSn holds the string denoting the asset_transfer_sn field in the database.
+	FieldAssetTransferSn = "asset_transfer_sn"
 	// FieldRtoEbikeID holds the string denoting the rto_ebike_id field in the database.
 	FieldRtoEbikeID = "rto_ebike_id"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
@@ -162,9 +162,9 @@ const (
 	AgentColumn = "agent_id"
 	// RtoEbikeTable is the table that holds the rto_ebike relation/edge.
 	RtoEbikeTable = "business"
-	// RtoEbikeInverseTable is the table name for the Ebike entity.
-	// It exists in this package in order to avoid circular dependency with the "ebike" package.
-	RtoEbikeInverseTable = "ebike"
+	// RtoEbikeInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	RtoEbikeInverseTable = "asset"
 	// RtoEbikeColumn is the table column denoting the rto_ebike relation/edge.
 	RtoEbikeColumn = "rto_ebike_id"
 )
@@ -191,7 +191,7 @@ var Columns = []string{
 	FieldAgentID,
 	FieldType,
 	FieldBinInfo,
-	FieldStockSn,
+	FieldAssetTransferSn,
 	FieldRtoEbikeID,
 }
 
@@ -308,9 +308,9 @@ func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
 }
 
-// ByStockSn orders the results by the stock_sn field.
-func ByStockSn(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStockSn, opts...).ToFunc()
+// ByAssetTransferSn orders the results by the asset_transfer_sn field.
+func ByAssetTransferSn(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAssetTransferSn, opts...).ToFunc()
 }
 
 // ByRtoEbikeID orders the results by the rto_ebike_id field.

@@ -7,14 +7,11 @@ package service
 
 import (
 	"context"
-	"strings"
 	"time"
 
-	"github.com/LucaTheHacker/go-haversine"
 	"github.com/golang-module/carbon/v2"
 
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/app/workwx"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/employee"
@@ -68,31 +65,31 @@ func NewAttendanceWithEmployee(e *ent.Employee) *attendanceService {
 }
 
 // check 检查是否满足打卡条件并获取需盘点物资清单
-func (s *attendanceService) check(req *model.AttendancePrecheck) (*ent.Store, float64, []model.InventoryNum) {
-	st := NewStore().QuerySn(*req.SN)
-	b := NewBranch().Query(st.BranchID)
-	if st.EmployeeID != nil && req.Duty {
-		snag.Panic("当前已有员工上班")
-	}
-	if !req.Duty && (st.EmployeeID == nil || *st.EmployeeID != s.employee.ID) {
-		snag.Panic("当前上班员工非本人")
-	}
-	// 判断距离
-	if b == nil || b.Lat == 0 || b.Lng == 0 {
-		snag.Panic("未找到门店地理信息")
-	}
-	distance := haversine.Distance(haversine.NewCoordinates(*req.Lat, *req.Lng), haversine.NewCoordinates(b.Lat, b.Lng))
-	meters := distance.Kilometers() * 1000
-	if meters > 1000 {
-		snag.Panic("距离过远")
-	}
-	return st, meters, NewInventory().ListStockInventory(st.ID, model.InventoryListReq{Count: true})
-}
+// func (s *attendanceService) check(req *model.AttendancePrecheck) (*ent.Store, float64, []model.InventoryNum) {
+// 	st := NewStore().QuerySn(*req.SN)
+// 	b := NewBranch().Query(st.BranchID)
+// 	if st.EmployeeID != nil && req.Duty {
+// 		snag.Panic("当前已有员工上班")
+// 	}
+// 	if !req.Duty && (st.EmployeeID == nil || *st.EmployeeID != s.employee.ID) {
+// 		snag.Panic("当前上班员工非本人")
+// 	}
+// 	// 判断距离
+// 	if b == nil || b.Lat == 0 || b.Lng == 0 {
+// 		snag.Panic("未找到门店地理信息")
+// 	}
+// 	distance := haversine.Distance(haversine.NewCoordinates(*req.Lat, *req.Lng), haversine.NewCoordinates(b.Lat, b.Lng))
+// 	meters := distance.Kilometers() * 1000
+// 	if meters > 1000 {
+// 		snag.Panic("距离过远")
+// 	}
+// 	return st, meters, NewInventory().ListStockInventory(st.ID, model.InventoryListReq{Count: true})
+// }
 
-func (s *attendanceService) Precheck(req *model.AttendancePrecheck) []model.InventoryNum {
-	_, _, items := s.check(req)
-	return items
-}
+// func (s *attendanceService) Precheck(req *model.AttendancePrecheck) []model.InventoryNum {
+// 	_, _, items := s.check(req)
+// 	return items
+// }
 
 // QueryDuty 获取员工最近的上班打卡信息
 func (s *attendanceService) QueryDuty(storeID, employeeID uint64, panic ...bool) *ent.Attendance {
@@ -119,77 +116,77 @@ func (s *attendanceService) dutyDate(duty bool, storeID, employeeID uint64) time
 }
 
 // Create 打卡
-func (s *attendanceService) Create(req *model.AttendanceCreateReq) {
-	if !strings.HasPrefix(*req.Photo, "employee/") {
-		snag.Panic("照片错误")
-	}
-
-	inventory := make([]model.AttendanceInventory, 0)
-	st, distance, items := s.check(req.AttendancePrecheck)
-
-	em := model.Employee{
-		ID:    s.employee.ID,
-		Name:  s.employee.Name,
-		Phone: s.employee.Phone,
-	}
-
-	var noticeItems []model.AttendanceInventory
-
-	for _, item := range items {
-		n, ok := req.Inventory[item.Name]
-		if !ok {
-			snag.Panic("请提交全部的物资清单")
-		}
-
-		ai := model.AttendanceInventory{
-			Name:     item.Name,
-			Num:      n,
-			StockNum: item.Num,
-			Model:    item.Model,
-		}
-		inventory = append(inventory, ai)
-
-		if n != item.Num {
-			noticeItems = append(noticeItems, ai)
-		}
-	}
-
-	c := NewCity().Query(st.CityID)
-
-	if len(noticeItems) > 0 {
-		go func() { workwx.New().SendInventory(req.Duty, c.Name, st.Name, em, noticeItems) }()
-	}
-
-	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
-		_, err := tx.Attendance.Create().
-			SetEmployee(s.employee).
-			SetStore(st).
-			SetDate(s.dutyDate(req.Duty, st.ID, s.employee.ID)).
-			SetDuty(req.Duty).
-			SetInventory(inventory).
-			SetPhoto(*req.Photo).
-			SetDuty(req.Duty).
-			SetAddress(*req.Address).
-			SetLng(*req.Lng).
-			SetLat(*req.Lat).
-			SetDistance(distance).
-			Save(s.ctx)
-
-		if err != nil {
-			snag.Panic("考勤打卡失败")
-		}
-
-		if req.Duty {
-			_, err = tx.Store.UpdateOneID(st.ID).SetEmployee(s.employee).Save(s.ctx)
-		} else {
-			_, err = tx.Store.UpdateOneID(st.ID).ClearEmployeeID().Save(s.ctx)
-		}
-		if err != nil {
-			snag.Panic("考勤打卡失败")
-		}
-		return nil
-	})
-}
+// func (s *attendanceService) Create(req *model.AttendanceCreateReq) {
+// 	if !strings.HasPrefix(*req.Photo, "employee/") {
+// 		snag.Panic("照片错误")
+// 	}
+//
+// 	inventory := make([]model.AttendanceInventory, 0)
+// 	st, distance, items := s.check(req.AttendancePrecheck)
+//
+// 	em := model.Employee{
+// 		ID:    s.employee.ID,
+// 		Name:  s.employee.Name,
+// 		Phone: s.employee.Phone,
+// 	}
+//
+// 	var noticeItems []model.AttendanceInventory
+//
+// 	for _, item := range items {
+// 		n, ok := req.Inventory[item.Name]
+// 		if !ok {
+// 			snag.Panic("请提交全部的物资清单")
+// 		}
+//
+// 		ai := model.AttendanceInventory{
+// 			Name:     item.Name,
+// 			Num:      n,
+// 			StockNum: item.Num,
+// 			Model:    item.Model,
+// 		}
+// 		inventory = append(inventory, ai)
+//
+// 		if n != item.Num {
+// 			noticeItems = append(noticeItems, ai)
+// 		}
+// 	}
+//
+// 	c := NewCity().Query(st.CityID)
+//
+// 	if len(noticeItems) > 0 {
+// 		go func() { workwx.New().SendInventory(req.Duty, c.Name, st.Name, em, noticeItems) }()
+// 	}
+//
+// 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
+// 		_, err := tx.Attendance.Create().
+// 			SetEmployee(s.employee).
+// 			SetStore(st).
+// 			SetDate(s.dutyDate(req.Duty, st.ID, s.employee.ID)).
+// 			SetDuty(req.Duty).
+// 			SetInventory(inventory).
+// 			SetPhoto(*req.Photo).
+// 			SetDuty(req.Duty).
+// 			SetAddress(*req.Address).
+// 			SetLng(*req.Lng).
+// 			SetLat(*req.Lat).
+// 			SetDistance(distance).
+// 			Save(s.ctx)
+//
+// 		if err != nil {
+// 			snag.Panic("考勤打卡失败")
+// 		}
+//
+// 		if req.Duty {
+// 			_, err = tx.Store.UpdateOneID(st.ID).SetEmployee(s.employee).Save(s.ctx)
+// 		} else {
+// 			_, err = tx.Store.UpdateOneID(st.ID).ClearEmployeeID().Save(s.ctx)
+// 		}
+// 		if err != nil {
+// 			snag.Panic("考勤打卡失败")
+// 		}
+// 		return nil
+// 	})
+// }
 
 func (s *attendanceService) List(req *model.AttendanceListReq) *model.PaginationRes {
 	q := s.orm.QueryNotDeleted().

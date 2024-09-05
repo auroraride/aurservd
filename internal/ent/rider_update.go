@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
@@ -25,7 +26,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
-	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -509,19 +509,19 @@ func (ru *RiderUpdate) AddSubscribes(s ...*Subscribe) *RiderUpdate {
 	return ru.AddSubscribeIDs(ids...)
 }
 
-// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
-func (ru *RiderUpdate) AddStockIDs(ids ...uint64) *RiderUpdate {
-	ru.mutation.AddStockIDs(ids...)
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (ru *RiderUpdate) AddAssetIDs(ids ...uint64) *RiderUpdate {
+	ru.mutation.AddAssetIDs(ids...)
 	return ru
 }
 
-// AddStocks adds the "stocks" edges to the Stock entity.
-func (ru *RiderUpdate) AddStocks(s ...*Stock) *RiderUpdate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// AddAsset adds the "asset" edges to the Asset entity.
+func (ru *RiderUpdate) AddAsset(a ...*Asset) *RiderUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return ru.AddStockIDs(ids...)
+	return ru.AddAssetIDs(ids...)
 }
 
 // AddFollowupIDs adds the "followups" edge to the RiderFollowUp entity by IDs.
@@ -701,25 +701,25 @@ func (ru *RiderUpdate) RemoveSubscribes(s ...*Subscribe) *RiderUpdate {
 	return ru.RemoveSubscribeIDs(ids...)
 }
 
-// ClearStocks clears all "stocks" edges to the Stock entity.
-func (ru *RiderUpdate) ClearStocks() *RiderUpdate {
-	ru.mutation.ClearStocks()
+// ClearAsset clears all "asset" edges to the Asset entity.
+func (ru *RiderUpdate) ClearAsset() *RiderUpdate {
+	ru.mutation.ClearAsset()
 	return ru
 }
 
-// RemoveStockIDs removes the "stocks" edge to Stock entities by IDs.
-func (ru *RiderUpdate) RemoveStockIDs(ids ...uint64) *RiderUpdate {
-	ru.mutation.RemoveStockIDs(ids...)
+// RemoveAssetIDs removes the "asset" edge to Asset entities by IDs.
+func (ru *RiderUpdate) RemoveAssetIDs(ids ...uint64) *RiderUpdate {
+	ru.mutation.RemoveAssetIDs(ids...)
 	return ru
 }
 
-// RemoveStocks removes "stocks" edges to Stock entities.
-func (ru *RiderUpdate) RemoveStocks(s ...*Stock) *RiderUpdate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// RemoveAsset removes "asset" edges to Asset entities.
+func (ru *RiderUpdate) RemoveAsset(a ...*Asset) *RiderUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return ru.RemoveStockIDs(ids...)
+	return ru.RemoveAssetIDs(ids...)
 }
 
 // ClearFollowups clears all "followups" edges to the RiderFollowUp entity.
@@ -1274,28 +1274,28 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ru.mutation.StocksCleared() {
+	if ru.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.StocksTable,
-			Columns: []string{rider.StocksColumn},
+			Table:   rider.AssetTable,
+			Columns: []string{rider.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.RemovedStocksIDs(); len(nodes) > 0 && !ru.mutation.StocksCleared() {
+	if nodes := ru.mutation.RemovedAssetIDs(); len(nodes) > 0 && !ru.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.StocksTable,
-			Columns: []string{rider.StocksColumn},
+			Table:   rider.AssetTable,
+			Columns: []string{rider.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1303,15 +1303,15 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.StocksIDs(); len(nodes) > 0 {
+	if nodes := ru.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.StocksTable,
-			Columns: []string{rider.StocksColumn},
+			Table:   rider.AssetTable,
+			Columns: []string{rider.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1926,19 +1926,19 @@ func (ruo *RiderUpdateOne) AddSubscribes(s ...*Subscribe) *RiderUpdateOne {
 	return ruo.AddSubscribeIDs(ids...)
 }
 
-// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
-func (ruo *RiderUpdateOne) AddStockIDs(ids ...uint64) *RiderUpdateOne {
-	ruo.mutation.AddStockIDs(ids...)
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (ruo *RiderUpdateOne) AddAssetIDs(ids ...uint64) *RiderUpdateOne {
+	ruo.mutation.AddAssetIDs(ids...)
 	return ruo
 }
 
-// AddStocks adds the "stocks" edges to the Stock entity.
-func (ruo *RiderUpdateOne) AddStocks(s ...*Stock) *RiderUpdateOne {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// AddAsset adds the "asset" edges to the Asset entity.
+func (ruo *RiderUpdateOne) AddAsset(a ...*Asset) *RiderUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return ruo.AddStockIDs(ids...)
+	return ruo.AddAssetIDs(ids...)
 }
 
 // AddFollowupIDs adds the "followups" edge to the RiderFollowUp entity by IDs.
@@ -2118,25 +2118,25 @@ func (ruo *RiderUpdateOne) RemoveSubscribes(s ...*Subscribe) *RiderUpdateOne {
 	return ruo.RemoveSubscribeIDs(ids...)
 }
 
-// ClearStocks clears all "stocks" edges to the Stock entity.
-func (ruo *RiderUpdateOne) ClearStocks() *RiderUpdateOne {
-	ruo.mutation.ClearStocks()
+// ClearAsset clears all "asset" edges to the Asset entity.
+func (ruo *RiderUpdateOne) ClearAsset() *RiderUpdateOne {
+	ruo.mutation.ClearAsset()
 	return ruo
 }
 
-// RemoveStockIDs removes the "stocks" edge to Stock entities by IDs.
-func (ruo *RiderUpdateOne) RemoveStockIDs(ids ...uint64) *RiderUpdateOne {
-	ruo.mutation.RemoveStockIDs(ids...)
+// RemoveAssetIDs removes the "asset" edge to Asset entities by IDs.
+func (ruo *RiderUpdateOne) RemoveAssetIDs(ids ...uint64) *RiderUpdateOne {
+	ruo.mutation.RemoveAssetIDs(ids...)
 	return ruo
 }
 
-// RemoveStocks removes "stocks" edges to Stock entities.
-func (ruo *RiderUpdateOne) RemoveStocks(s ...*Stock) *RiderUpdateOne {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// RemoveAsset removes "asset" edges to Asset entities.
+func (ruo *RiderUpdateOne) RemoveAsset(a ...*Asset) *RiderUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return ruo.RemoveStockIDs(ids...)
+	return ruo.RemoveAssetIDs(ids...)
 }
 
 // ClearFollowups clears all "followups" edges to the RiderFollowUp entity.
@@ -2721,28 +2721,28 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ruo.mutation.StocksCleared() {
+	if ruo.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.StocksTable,
-			Columns: []string{rider.StocksColumn},
+			Table:   rider.AssetTable,
+			Columns: []string{rider.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.RemovedStocksIDs(); len(nodes) > 0 && !ruo.mutation.StocksCleared() {
+	if nodes := ruo.mutation.RemovedAssetIDs(); len(nodes) > 0 && !ruo.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.StocksTable,
-			Columns: []string{rider.StocksColumn},
+			Table:   rider.AssetTable,
+			Columns: []string{rider.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2750,15 +2750,15 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.StocksIDs(); len(nodes) > 0 {
+	if nodes := ruo.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.StocksTable,
-			Columns: []string{rider.StocksColumn},
+			Table:   rider.AssetTable,
+			Columns: []string{rider.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

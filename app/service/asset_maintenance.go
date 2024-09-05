@@ -155,8 +155,8 @@ func (s *assetMaintenanceService) List(ctx context.Context, req *model.AssetMain
 			Details:   make([]model.AssetMaintenanceDetail, 0),
 		}
 		if item.Edges.Maintainer != nil {
-			res.OpratorName = item.Edges.Maintainer.Name
-			res.OpratorPhone = item.Edges.Maintainer.Phone
+			res.OperatorName = item.Edges.Maintainer.Name
+			res.OperatorPhone = item.Edges.Maintainer.Phone
 		}
 		if item.Edges.Cabinet != nil {
 			res.CabinetName = item.Edges.Cabinet.Name

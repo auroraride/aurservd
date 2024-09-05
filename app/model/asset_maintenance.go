@@ -43,16 +43,16 @@ type AssetMaintenanceListReq struct {
 
 // AssetMaintenanceListRes 维修记录列表响应
 type AssetMaintenanceListRes struct {
-	ID           uint64                   `json:"id"`           // ID
-	CabinetName  string                   `json:"cabinetName"`  // 电柜名称
-	CabinetSn    string                   `json:"cabinetSn"`    // 电柜编号
-	Reason       string                   `json:"reason"`       // 维护理由
-	Content      string                   `json:"content"`      // 维护内容
-	OpratorName  string                   `json:"opratorName"`  // 维护人
-	CreatedAt    string                   `json:"createdAt"`    // 维护时间
-	OpratorPhone string                   `json:"opratorPhone"` // 维护人电话
-	Status       string                   `json:"status"`       // 维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
-	Details      []AssetMaintenanceDetail `json:"details"`      // 维护详情
+	ID            uint64                   `json:"id"`            // ID
+	CabinetName   string                   `json:"cabinetName"`   // 电柜名称
+	CabinetSn     string                   `json:"cabinetSn"`     // 电柜编号
+	Reason        string                   `json:"reason"`        // 维护理由
+	Content       string                   `json:"content"`       // 维护内容
+	OperatorName  string                   `json:"OperatorName"`  // 维护人
+	CreatedAt     string                   `json:"createdAt"`     // 维护时间
+	OperatorPhone string                   `json:"OperatorPhone"` // 维护人电话
+	Status        string                   `json:"status"`        // 维修状态  1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
+	Details       []AssetMaintenanceDetail `json:"details"`       // 维护详情
 
 }
 
@@ -66,7 +66,7 @@ type AssetMaintenanceDetail struct {
 // AssetMaintenanceCreateReq 创建维修记录请求
 type AssetMaintenanceCreateReq struct {
 	CabinetID       uint64 `json:"cabinetId" validate:"required"` // 电柜ID
-	OpratorID       uint64 `json:"opratorId"`                     // 维护人ID
+	OperatorID      uint64 `json:"operatorId"`                    // 维护人ID
 	OperateRoleType uint8  `json:"operateRoleType"`               // 维护人角色类型
 }
 

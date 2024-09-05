@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -24,6 +25,7 @@ type MaintainerQuery struct {
 	inters     []Interceptor
 	predicates []predicate.Maintainer
 	withCities *CityQuery
+	withAsset  *AssetQuery
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -76,6 +78,28 @@ func (mq *MaintainerQuery) QueryCities() *CityQuery {
 			sqlgraph.From(maintainer.Table, maintainer.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, maintainer.CitiesTable, maintainer.CitiesPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAsset chains the current query on the "asset" edge.
+func (mq *MaintainerQuery) QueryAsset() *AssetQuery {
+	query := (&AssetClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(maintainer.Table, maintainer.FieldID, selector),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, maintainer.AssetTable, maintainer.AssetColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
@@ -276,6 +300,7 @@ func (mq *MaintainerQuery) Clone() *MaintainerQuery {
 		inters:     append([]Interceptor{}, mq.inters...),
 		predicates: append([]predicate.Maintainer{}, mq.predicates...),
 		withCities: mq.withCities.Clone(),
+		withAsset:  mq.withAsset.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
 		path: mq.path,
@@ -290,6 +315,17 @@ func (mq *MaintainerQuery) WithCities(opts ...func(*CityQuery)) *MaintainerQuery
 		opt(query)
 	}
 	mq.withCities = query
+	return mq
+}
+
+// WithAsset tells the query-builder to eager-load the nodes that are connected to
+// the "asset" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MaintainerQuery) WithAsset(opts ...func(*AssetQuery)) *MaintainerQuery {
+	query := (&AssetClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withAsset = query
 	return mq
 }
 
@@ -371,8 +407,9 @@ func (mq *MaintainerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*M
 	var (
 		nodes       = []*Maintainer{}
 		_spec       = mq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			mq.withCities != nil,
+			mq.withAsset != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -400,6 +437,13 @@ func (mq *MaintainerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*M
 		if err := mq.loadCities(ctx, query, nodes,
 			func(n *Maintainer) { n.Edges.Cities = []*City{} },
 			func(n *Maintainer, e *City) { n.Edges.Cities = append(n.Edges.Cities, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withAsset; query != nil {
+		if err := mq.loadAsset(ctx, query, nodes,
+			func(n *Maintainer) { n.Edges.Asset = []*Asset{} },
+			func(n *Maintainer, e *Asset) { n.Edges.Asset = append(n.Edges.Asset, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -464,6 +508,37 @@ func (mq *MaintainerQuery) loadCities(ctx context.Context, query *CityQuery, nod
 		for kn := range nodes {
 			assign(kn, n)
 		}
+	}
+	return nil
+}
+func (mq *MaintainerQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []*Maintainer, init func(*Maintainer), assign func(*Maintainer, *Asset)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Maintainer)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(asset.FieldLocationsID)
+	}
+	query.Where(predicate.Asset(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(maintainer.AssetColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.LocationsID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "locations_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }
@@ -565,6 +640,7 @@ type MaintainerQueryWith string
 
 var (
 	MaintainerQueryWithCities MaintainerQueryWith = "Cities"
+	MaintainerQueryWithAsset  MaintainerQueryWith = "Asset"
 )
 
 func (mq *MaintainerQuery) With(withEdges ...MaintainerQueryWith) *MaintainerQuery {
@@ -572,6 +648,8 @@ func (mq *MaintainerQuery) With(withEdges ...MaintainerQueryWith) *MaintainerQue
 		switch v {
 		case MaintainerQueryWithCities:
 			mq.WithCities()
+		case MaintainerQueryWithAsset:
+			mq.WithAsset()
 		}
 	}
 	return mq
