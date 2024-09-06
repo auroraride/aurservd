@@ -752,7 +752,19 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "enum": [
+                            1,
+                            2
+                        ],
                         "type": "integer",
+                        "x-enum-comments": {
+                            "BatteryModelTypeNonSmart": "非智能电池",
+                            "BatteryModelTypeSmart": "智能电池"
+                        },
+                        "x-enum-varnames": [
+                            "BatteryModelTypeSmart",
+                            "BatteryModelTypeNonSmart"
+                        ],
                         "description": "1智能电池 2非智能电池",
                         "name": "type",
                         "in": "query"
@@ -2051,6 +2063,14 @@ const docTemplate = `{
         "model.AssetMaintenanceListRes": {
             "type": "object",
             "properties": {
+                "OperatorName": {
+                    "description": "维护人",
+                    "type": "string"
+                },
+                "OperatorPhone": {
+                    "description": "维护人电话",
+                    "type": "string"
+                },
                 "cabinetName": {
                     "description": "电柜名称",
                     "type": "string"
@@ -2078,20 +2098,12 @@ const docTemplate = `{
                     "description": "ID",
                     "type": "integer"
                 },
-                "opratorName": {
-                    "description": "维护人",
-                    "type": "string"
-                },
-                "opratorPhone": {
-                    "description": "维护人电话",
-                    "type": "string"
-                },
                 "reason": {
                     "description": "维护理由",
                     "type": "string"
                 },
                 "status": {
-                    "description": "维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护",
+                    "description": "维修状态  1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护",
                     "type": "string"
                 }
             }
@@ -2583,6 +2595,21 @@ const docTemplate = `{
                 "AssetTypeCabinetAccessory",
                 "AssetTypeEbikeAccessory",
                 "AssetTypeOtherAccessory"
+            ]
+        },
+        "model.BatteryModelType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "BatteryModelTypeNonSmart": "非智能电池",
+                "BatteryModelTypeSmart": "智能电池"
+            },
+            "x-enum-varnames": [
+                "BatteryModelTypeSmart",
+                "BatteryModelTypeNonSmart"
             ]
         },
         "model.Branch": {

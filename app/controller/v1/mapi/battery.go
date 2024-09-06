@@ -25,11 +25,10 @@ var Battery = new(battery)
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string											true	"管理员校验token"
-// @Param	query			query		model.SelectModelsReq							false	"筛选条件"
 // @Success	200				{object}	model.ItemListRes{items=[]model.BatteryModel}	"请求成功"
 func (*battery) ListModels(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.SelectModelsReq](c)
-	return ctx.SendResponse(service.NewBatteryModel().ListModel(req))
+	ctx := app.ContextX[app.ManagerContext](c)
+	return ctx.SendResponse(service.NewBatteryModel().ListModel())
 }
 
 // CreateModel

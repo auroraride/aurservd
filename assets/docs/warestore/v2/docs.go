@@ -56,6 +56,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "门店ID",
                         "name": "storeID",
                         "in": "query"
@@ -1093,7 +1099,19 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "enum": [
+                            1,
+                            2
+                        ],
                         "type": "integer",
+                        "x-enum-comments": {
+                            "BatteryModelTypeNonSmart": "非智能电池",
+                            "BatteryModelTypeSmart": "智能电池"
+                        },
+                        "x-enum-varnames": [
+                            "BatteryModelTypeSmart",
+                            "BatteryModelTypeNonSmart"
+                        ],
                         "description": "1智能电池 2非智能电池",
                         "name": "type",
                         "in": "query"
@@ -1274,6 +1292,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "代理员ID",
+                        "name": "agentID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "仓库管理员ID",
                         "name": "assetManagerID",
                         "in": "query"
@@ -1360,6 +1384,12 @@ const docTemplate = `{
                         ],
                         "description": "是否首页跳转查询",
                         "name": "mainPage",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "运维ID",
+                        "name": "maintainerID",
                         "in": "query"
                     },
                     {
@@ -1974,6 +2004,10 @@ const docTemplate = `{
                 "startAt": {
                     "description": "盘点开始时间",
                     "type": "string"
+                },
+                "stationId": {
+                    "description": "盘点站点ID",
+                    "type": "integer"
                 }
             }
         },
@@ -2215,6 +2249,10 @@ const docTemplate = `{
                 "inNum": {
                     "description": "入库数量",
                     "type": "integer"
+                },
+                "inOut": {
+                    "description": "in:入库方、out:出库方、all:出入库方",
+                    "type": "string"
                 },
                 "outNum": {
                     "description": "出库数量",
@@ -2528,6 +2566,14 @@ const docTemplate = `{
         "model.AssetCheckAbnormal": {
             "type": "object",
             "properties": {
+                "OperatorAt": {
+                    "description": "操作时间",
+                    "type": "string"
+                },
+                "OperatorName": {
+                    "description": "操作人名称",
+                    "type": "string"
+                },
                 "assetId": {
                     "description": "资产ID",
                     "type": "integer"
@@ -2554,14 +2600,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "名称",
-                    "type": "string"
-                },
-                "opratorAt": {
-                    "description": "操作时间",
-                    "type": "string"
-                },
-                "opratorName": {
-                    "description": "操作人名称",
                     "type": "string"
                 },
                 "realLocationsName": {
@@ -2687,6 +2725,10 @@ const docTemplate = `{
         "model.AssetCheckListRes": {
             "type": "object",
             "properties": {
+                "OperatorName": {
+                    "description": "操作人名称",
+                    "type": "string"
+                },
                 "abnormals": {
                     "description": "盘点异常资产",
                     "type": "array",
@@ -2734,13 +2776,9 @@ const docTemplate = `{
                     "description": "位置类型",
                     "type": "integer"
                 },
-                "opratorId": {
+                "operatorId": {
                     "description": "操作人ID",
                     "type": "integer"
-                },
-                "opratorName": {
-                    "description": "操作人名称",
-                    "type": "string"
                 },
                 "startAt": {
                     "description": "盘点开始时间",
@@ -3214,6 +3252,10 @@ const docTemplate = `{
                     "description": "入库数量",
                     "type": "integer"
                 },
+                "inOut": {
+                    "description": "in:入库方、out:出库方、all:出入库方",
+                    "type": "string"
+                },
                 "outNum": {
                     "description": "出库数量",
                     "type": "integer"
@@ -3400,6 +3442,21 @@ const docTemplate = `{
                 "AssetTypeCabinetAccessory",
                 "AssetTypeEbikeAccessory",
                 "AssetTypeOtherAccessory"
+            ]
+        },
+        "model.BatteryModelType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "BatteryModelTypeNonSmart": "非智能电池",
+                "BatteryModelTypeSmart": "智能电池"
+            },
+            "x-enum-varnames": [
+                "BatteryModelTypeSmart",
+                "BatteryModelTypeNonSmart"
             ]
         },
         "model.Branch": {

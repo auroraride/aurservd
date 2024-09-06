@@ -104,10 +104,8 @@ func (s *assetService) Create(ctx context.Context, req *model.AssetCreateReq, mo
 		SetStatus(assetStatus).
 		SetCreator(modifier).
 		SetLastModifier(modifier).
-		// if req.LocationsType != nil && req.LocationsID != nil {
 		SetLocationsType((req.LocationsType).Value()).
 		SetLocationsID(req.LocationsID)
-	// }
 	item, err := q.Save(ctx)
 	if err != nil {
 		return err
@@ -354,7 +352,7 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 	}
 
 	// 查询型号是否存在
-	modelInfo, _ := ent.Database.BatteryModel.Query().Where(batterymodel.Type(1)).All(s.ctx)
+	modelInfo, _ := ent.Database.BatteryModel.Query().All(s.ctx)
 	if len(modelInfo) == 0 {
 		return nil, errors.New("电池型号未配置")
 	}

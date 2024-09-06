@@ -1,48 +1,5 @@
 basePath: /
 definitions:
-  model.AllocateDetail:
-    properties:
-      ebike:
-        allOf:
-        - $ref: '#/definitions/model.Ebike'
-        description: 电车信息
-      id:
-        type: integer
-      model:
-        description: 电池型号
-        type: string
-      rider:
-        allOf:
-        - $ref: '#/definitions/model.Rider'
-        description: 骑手信息
-      status:
-        allOf:
-        - $ref: '#/definitions/model.AllocateStatus'
-        description: 1:未激活 2:已签约 3:已作废
-      time:
-        description: 分配时间
-        type: string
-      type:
-        description: 分配类型 battery:单电 ebike:车电
-        enum:
-        - battery
-        - ebike
-        type: string
-    type: object
-  model.AllocateStatus:
-    enum:
-    - 1
-    - 2
-    - 3
-    type: integer
-    x-enum-comments:
-      AllocateStatusPending: 未激活
-      AllocateStatusSigned: 已签约
-      AllocateStatusVoid: 已作废
-    x-enum-varnames:
-    - AllocateStatusPending
-    - AllocateStatusSigned
-    - AllocateStatusVoid
   model.AssistanceEmployeeDetailRes:
     properties:
       address:
@@ -240,61 +197,6 @@ definitions:
       time:
         description: 发起时间
         type: string
-    type: object
-  model.AttendanceCreateReq:
-    properties:
-      address:
-        description: 详细地址
-        type: string
-      duty:
-        description: 上下班 `true`上班 `false`下班
-        type: boolean
-      inventory:
-        additionalProperties:
-          type: integer
-        description: 物资盘点清单, 格式为 [名称]:数量
-        type: object
-      lat:
-        description: 纬度
-        type: number
-      lng:
-        description: 经度
-        type: number
-      photo:
-        description: 上班照片
-        type: string
-      sn:
-        description: 门店编号
-        type: string
-    required:
-    - address
-    - inventory
-    - lat
-    - lng
-    - sn
-    type: object
-  model.AttendancePrecheck:
-    properties:
-      address:
-        description: 详细地址
-        type: string
-      duty:
-        description: 上下班 `true`上班 `false`下班
-        type: boolean
-      lat:
-        description: 纬度
-        type: number
-      lng:
-        description: 经度
-        type: number
-      sn:
-        description: 门店编号
-        type: string
-    required:
-    - address
-    - lat
-    - lng
-    - sn
     type: object
   model.BusinessEmployeeListRes:
     properties:
@@ -753,78 +655,6 @@ definitions:
       status:
         type: boolean
     type: object
-  model.StockEmployeeListRes:
-    properties:
-      items:
-        description: 返回数据
-      pagination:
-        allOf:
-        - $ref: '#/definitions/model.Pagination'
-        description: 分页属性
-      today:
-        description: 今日出库/入库数量, 仅第一页请求时会返回
-        type: integer
-    type: object
-  model.StockEmployeeListResItem:
-    properties:
-      id:
-        type: integer
-      model:
-        description: 电池型号
-        type: string
-      name:
-        description: 骑手姓名, 平台调拨此字段不存在
-        type: string
-      num:
-        description: 数量, 正数为入库, 负数为出库(前端显示正数)
-        type: integer
-      phone:
-        description: 骑手电话, 平台调拨此字段不存在
-        type: string
-      time:
-        description: 时间
-        type: string
-      type:
-        description: 出入库类型 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
-        type: integer
-    type: object
-  model.StockEmployeeOverview:
-    properties:
-      batteries:
-        description: 电池
-        items:
-          $ref: '#/definitions/model.StockEmployeeOverviewBattery'
-        type: array
-      materials:
-        description: 非电池物资
-        items:
-          $ref: '#/definitions/model.StockEmployeeOverviewMaterial'
-        type: array
-    type: object
-  model.StockEmployeeOverviewBattery:
-    properties:
-      inbound:
-        description: 今日入库
-        type: integer
-      model:
-        description: 电池型号
-        type: string
-      outbound:
-        description: 今日出库
-        type: integer
-      surplus:
-        description: 库存电池
-        type: integer
-    type: object
-  model.StockEmployeeOverviewMaterial:
-    properties:
-      name:
-        description: 物资名称
-        type: string
-      surplus:
-        description: 库存数量
-        type: integer
-    type: object
   model.Store:
     properties:
       id:
@@ -1100,74 +930,6 @@ info:
   title: 极光出行API - 代理端api
   version: "1.0"
 paths:
-  /employee/v1/allocate:
-    get:
-      consumes:
-      - application/json
-      operationId: EmployeeAllocateList
-      parameters:
-      - description: 店员校验token
-        in: header
-        name: X-Employee-Token
-        required: true
-        type: string
-      - description: 当前页, 从1开始, 默认1
-        in: query
-        name: current
-        type: integer
-      - description: 每页数据, 默认20
-        in: query
-        name: pageSize
-        type: integer
-      - description: 签约状态 1:未签约(默认) 2:已签约
-        enum:
-        - 1
-        - 2
-        - 3
-        in: query
-        name: status
-        type: integer
-        x-enum-comments:
-          AllocateStatusPending: 未激活
-          AllocateStatusSigned: 已签约
-          AllocateStatusVoid: 已作废
-        x-enum-varnames:
-        - AllocateStatusPending
-        - AllocateStatusSigned
-        - AllocateStatusVoid
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/model.PaginationRes'
-            - properties:
-                items:
-                  items:
-                    $ref: '#/definitions/model.AllocateDetail'
-                  type: array
-              type: object
-      summary: E6004 分配记录
-      tags:
-      - '[E]店员接口'
-    post:
-      consumes:
-      - application/json
-      operationId: EmployeeAllocate
-      parameters:
-      - description: 店员校验token
-        in: header
-        name: X-Employee-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: E6002 分配车辆 (废弃)
-      tags:
-      - '[E]店员接口'
   /employee/v1/allocate/ebike:
     get:
       consumes:
@@ -1192,33 +954,6 @@ paths:
           schema:
             $ref: '#/definitions/model.Ebike'
       summary: E6001 获取未分配电车信息
-      tags:
-      - '[E]店员接口'
-  /employee/v1/allocate/info/{id}:
-    get:
-      consumes:
-      - application/json
-      description: 骑手签约成功后通过socket推送门店消息
-      operationId: EmployeeAllocateInfo
-      parameters:
-      - description: 店员校验token
-        in: header
-        name: X-Employee-Token
-        required: true
-        type: string
-      - description: 分配ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.AllocateDetail'
-      summary: E6003 分配详情
       tags:
       - '[E]店员接口'
   /employee/v1/assistance:
@@ -1381,62 +1116,6 @@ paths:
           schema:
             $ref: '#/definitions/model.AssistanceProcessRes'
       summary: E5002 处理救援
-      tags:
-      - '[E]店员接口'
-  /employee/v1/attendance:
-    post:
-      consumes:
-      - application/json
-      operationId: EmployeeAttendanceCreate
-      parameters:
-      - description: 店员校验token
-        in: header
-        name: X-Employee-Token
-        required: true
-        type: string
-      - description: 打卡信息
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.AttendanceCreateReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: E1004 考勤打卡
-      tags:
-      - '[E]店员接口'
-  /employee/v1/attendance/precheck:
-    post:
-      consumes:
-      - application/json
-      operationId: EmployeeAttendancePrecheck
-      parameters:
-      - description: 店员校验token
-        in: header
-        name: X-Employee-Token
-        required: true
-        type: string
-      - description: 预检请求
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.AttendancePrecheck'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 需盘点物资清单
-          schema:
-            items:
-              $ref: '#/definitions/model.InventoryItem'
-            type: array
-      summary: E1003 打卡预检
       tags:
       - '[E]店员接口'
   /employee/v1/business:
@@ -1874,75 +1553,6 @@ paths:
           schema:
             $ref: '#/definitions/model.EmployeeProfile'
       summary: E1001 登录
-      tags:
-      - '[E]店员接口'
-  /employee/v1/stock:
-    get:
-      consumes:
-      - application/json
-      operationId: EmployeeStockList
-      parameters:
-      - description: 店员校验token
-        in: header
-        name: X-Employee-Token
-        required: true
-        type: string
-      - description: 当前页, 从1开始, 默认1
-        in: query
-        name: current
-        type: integer
-      - description: '筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
-        in: query
-        name: end
-        type: string
-      - description: 是否筛选出库, false(默认):入库 true:出库
-        in: query
-        name: outbound
-        type: boolean
-      - description: 每页数据, 默认20
-        in: query
-        name: pageSize
-        type: integer
-      - description: '筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
-        in: query
-        name: start
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/model.StockEmployeeListRes'
-            - properties:
-                items:
-                  items:
-                    $ref: '#/definitions/model.StockEmployeeListResItem'
-                  type: array
-              type: object
-      summary: E2010 电池出入库详情
-      tags:
-      - '[E]店员接口'
-  /employee/v1/stock/overview:
-    get:
-      consumes:
-      - application/json
-      operationId: EmployeeStockOverview
-      parameters:
-      - description: 店员校验token
-        in: header
-        name: X-Employee-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StockEmployeeOverview'
-      summary: E2009 物资概览
       tags:
       - '[E]店员接口'
   /employee/v1/store/status:

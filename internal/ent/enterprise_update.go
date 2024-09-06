@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
-	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -598,21 +597,6 @@ func (eu *EnterpriseUpdate) AddCabinets(c ...*Cabinet) *EnterpriseUpdate {
 	return eu.AddCabinetIDs(ids...)
 }
 
-// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
-func (eu *EnterpriseUpdate) AddAssetIDs(ids ...uint64) *EnterpriseUpdate {
-	eu.mutation.AddAssetIDs(ids...)
-	return eu
-}
-
-// AddAsset adds the "asset" edges to the Asset entity.
-func (eu *EnterpriseUpdate) AddAsset(a ...*Asset) *EnterpriseUpdate {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return eu.AddAssetIDs(ids...)
-}
-
 // AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
 func (eu *EnterpriseUpdate) AddStockIDs(ids ...uint64) *EnterpriseUpdate {
 	eu.mutation.AddStockIDs(ids...)
@@ -877,27 +861,6 @@ func (eu *EnterpriseUpdate) RemoveCabinets(c ...*Cabinet) *EnterpriseUpdate {
 		ids[i] = c[i].ID
 	}
 	return eu.RemoveCabinetIDs(ids...)
-}
-
-// ClearAsset clears all "asset" edges to the Asset entity.
-func (eu *EnterpriseUpdate) ClearAsset() *EnterpriseUpdate {
-	eu.mutation.ClearAsset()
-	return eu
-}
-
-// RemoveAssetIDs removes the "asset" edge to Asset entities by IDs.
-func (eu *EnterpriseUpdate) RemoveAssetIDs(ids ...uint64) *EnterpriseUpdate {
-	eu.mutation.RemoveAssetIDs(ids...)
-	return eu
-}
-
-// RemoveAsset removes "asset" edges to Asset entities.
-func (eu *EnterpriseUpdate) RemoveAsset(a ...*Asset) *EnterpriseUpdate {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return eu.RemoveAssetIDs(ids...)
 }
 
 // ClearStocks clears all "stocks" edges to the Stock entity.
@@ -1639,51 +1602,6 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if eu.mutation.AssetCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.AssetTable,
-			Columns: []string{enterprise.AssetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := eu.mutation.RemovedAssetIDs(); len(nodes) > 0 && !eu.mutation.AssetCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.AssetTable,
-			Columns: []string{enterprise.AssetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := eu.mutation.AssetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.AssetTable,
-			Columns: []string{enterprise.AssetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if eu.mutation.StocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -2394,21 +2312,6 @@ func (euo *EnterpriseUpdateOne) AddCabinets(c ...*Cabinet) *EnterpriseUpdateOne 
 	return euo.AddCabinetIDs(ids...)
 }
 
-// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
-func (euo *EnterpriseUpdateOne) AddAssetIDs(ids ...uint64) *EnterpriseUpdateOne {
-	euo.mutation.AddAssetIDs(ids...)
-	return euo
-}
-
-// AddAsset adds the "asset" edges to the Asset entity.
-func (euo *EnterpriseUpdateOne) AddAsset(a ...*Asset) *EnterpriseUpdateOne {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return euo.AddAssetIDs(ids...)
-}
-
 // AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
 func (euo *EnterpriseUpdateOne) AddStockIDs(ids ...uint64) *EnterpriseUpdateOne {
 	euo.mutation.AddStockIDs(ids...)
@@ -2673,27 +2576,6 @@ func (euo *EnterpriseUpdateOne) RemoveCabinets(c ...*Cabinet) *EnterpriseUpdateO
 		ids[i] = c[i].ID
 	}
 	return euo.RemoveCabinetIDs(ids...)
-}
-
-// ClearAsset clears all "asset" edges to the Asset entity.
-func (euo *EnterpriseUpdateOne) ClearAsset() *EnterpriseUpdateOne {
-	euo.mutation.ClearAsset()
-	return euo
-}
-
-// RemoveAssetIDs removes the "asset" edge to Asset entities by IDs.
-func (euo *EnterpriseUpdateOne) RemoveAssetIDs(ids ...uint64) *EnterpriseUpdateOne {
-	euo.mutation.RemoveAssetIDs(ids...)
-	return euo
-}
-
-// RemoveAsset removes "asset" edges to Asset entities.
-func (euo *EnterpriseUpdateOne) RemoveAsset(a ...*Asset) *EnterpriseUpdateOne {
-	ids := make([]uint64, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return euo.RemoveAssetIDs(ids...)
 }
 
 // ClearStocks clears all "stocks" edges to the Stock entity.
@@ -3458,51 +3340,6 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if euo.mutation.AssetCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.AssetTable,
-			Columns: []string{enterprise.AssetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := euo.mutation.RemovedAssetIDs(); len(nodes) > 0 && !euo.mutation.AssetCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.AssetTable,
-			Columns: []string{enterprise.AssetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := euo.mutation.AssetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.AssetTable,
-			Columns: []string{enterprise.AssetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

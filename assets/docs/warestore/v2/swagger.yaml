@@ -413,6 +413,12 @@ definitions:
     type: object
   model.AssetCheckAbnormal:
     properties:
+      OperatorAt:
+        description: 操作时间
+        type: string
+      OperatorName:
+        description: 操作人名称
+        type: string
       assetId:
         description: 资产ID
         type: integer
@@ -431,12 +437,6 @@ definitions:
         type: string
       name:
         description: 名称
-        type: string
-      opratorAt:
-        description: 操作时间
-        type: string
-      opratorName:
-        description: 操作人名称
         type: string
       realLocationsName:
         description: 实际位置名称
@@ -521,6 +521,9 @@ definitions:
     type: object
   model.AssetCheckListRes:
     properties:
+      OperatorName:
+        description: 操作人名称
+        type: string
       abnormals:
         description: 盘点异常资产
         items:
@@ -556,12 +559,9 @@ definitions:
       locationsType:
         description: 位置类型
         type: integer
-      opratorId:
+      operatorId:
         description: 操作人ID
         type: integer
-      opratorName:
-        description: 操作人名称
-        type: string
       startAt:
         description: 盘点开始时间
         type: string
@@ -1039,6 +1039,17 @@ definitions:
     - AssetTypeCabinetAccessory
     - AssetTypeEbikeAccessory
     - AssetTypeOtherAccessory
+  model.BatteryModelType:
+    enum:
+      - 1
+      - 2
+    type: integer
+    x-enum-comments:
+      BatteryModelTypeNonSmart: 非智能电池
+      BatteryModelTypeSmart: 智能电池
+    x-enum-varnames:
+      - BatteryModelTypeSmart
+      - BatteryModelTypeNonSmart
   model.Branch:
     properties:
       id:
@@ -2218,9 +2229,18 @@ paths:
         required: true
         type: string
       - description: 1智能电池 2非智能电池
+        enum:
+          - 1
+          - 2
         in: query
         name: type
         type: integer
+        x-enum-comments:
+          BatteryModelTypeNonSmart: 非智能电池
+          BatteryModelTypeSmart: 智能电池
+        x-enum-varnames:
+          - BatteryModelTypeSmart
+          - BatteryModelTypeNonSmart
       produces:
       - application/json
       responses:

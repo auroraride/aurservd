@@ -61,9 +61,21 @@ func newService(params ...any) (bs *BaseService) {
 				Phone: p.Phone,
 				Name:  p.Name,
 			}
+			bs.operator = &model.OperatorInfo{
+				ID:    p.ID,
+				Phone: p.Phone,
+				Name:  p.Name,
+				Type:  model.OperatorTypeRider,
+			}
 			ctx = context.WithValue(ctx, model.CtxRiderKey{}, bs.rider)
 		case *model.Rider:
 			bs.rider = p
+			bs.operator = &model.OperatorInfo{
+				ID:    p.ID,
+				Phone: p.Phone,
+				Name:  p.Name,
+				Type:  model.OperatorTypeRider,
+			}
 			ctx = context.WithValue(ctx, model.CtxRiderKey{}, bs.rider)
 		case *ent.Manager:
 			bs.modifier = &model.Modifier{
@@ -71,9 +83,21 @@ func newService(params ...any) (bs *BaseService) {
 				Phone: p.Phone,
 				Name:  p.Name,
 			}
+			bs.operator = &model.OperatorInfo{
+				ID:    p.ID,
+				Phone: p.Phone,
+				Name:  p.Name,
+				Type:  model.OperatorTypeManager,
+			}
 			ctx = context.WithValue(ctx, model.CtxModifierKey{}, bs.modifier)
 		case *model.Modifier:
 			bs.modifier = p
+			bs.operator = &model.OperatorInfo{
+				ID:    p.ID,
+				Phone: p.Phone,
+				Name:  p.Name,
+				Type:  model.OperatorTypeManager,
+			}
 			ctx = context.WithValue(ctx, model.CtxModifierKey{}, bs.modifier)
 		case *ent.Employee:
 			bs.entEmployee = p
@@ -86,14 +110,30 @@ func newService(params ...any) (bs *BaseService) {
 			ctx = context.WithValue(ctx, model.CtxEmployeeKey{}, bs.employee)
 		case *ent.Store:
 			bs.entStore = p
+			bs.operator = &model.OperatorInfo{
+				ID:    p.ID,
+				Phone: p.Phone,
+				Name:  p.Name,
+				Type:  model.OperatorTypeEmployee,
+			}
 		case *ent.Agent:
 			bs.agent = p
+			bs.operator = &model.OperatorInfo{
+				ID:    p.ID,
+				Phone: p.Phone,
+				Name:  p.Name,
+				Type:  model.OperatorTypeAgent,
+			}
 		case *ent.Enterprise:
 			bs.enterprise = p
 		case *ent.Maintainer:
 			bs.maintainer = p
-		case *model.OperatorInfo:
-			bs.operator = p
+			bs.operator = &model.OperatorInfo{
+				ID:    p.ID,
+				Phone: p.Phone,
+				Name:  p.Name,
+				Type:  model.OperatorTypeMaintainer,
+			}
 		}
 	}
 

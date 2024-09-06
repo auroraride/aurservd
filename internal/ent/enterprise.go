@@ -100,8 +100,6 @@ type EnterpriseEdges struct {
 	Agents []*Agent `json:"agents,omitempty"`
 	// Cabinets holds the value of the cabinets edge.
 	Cabinets []*Cabinet `json:"cabinets,omitempty"`
-	// Asset holds the value of the asset edge.
-	Asset []*Asset `json:"asset,omitempty"`
 	// Stocks holds the value of the stocks edge.
 	Stocks []*Stock `json:"stocks,omitempty"`
 	// SwapPutinBatteries holds the value of the swap_putin_batteries edge.
@@ -110,7 +108,7 @@ type EnterpriseEdges struct {
 	SwapPutoutBatteries []*EnterpriseBatterySwap `json:"swap_putout_batteries,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [15]bool
+	loadedTypes [14]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -214,19 +212,10 @@ func (e EnterpriseEdges) CabinetsOrErr() ([]*Cabinet, error) {
 	return nil, &NotLoadedError{edge: "cabinets"}
 }
 
-// AssetOrErr returns the Asset value or an error if the edge
-// was not loaded in eager-loading.
-func (e EnterpriseEdges) AssetOrErr() ([]*Asset, error) {
-	if e.loadedTypes[11] {
-		return e.Asset, nil
-	}
-	return nil, &NotLoadedError{edge: "asset"}
-}
-
 // StocksOrErr returns the Stocks value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseEdges) StocksOrErr() ([]*Stock, error) {
-	if e.loadedTypes[12] {
+	if e.loadedTypes[11] {
 		return e.Stocks, nil
 	}
 	return nil, &NotLoadedError{edge: "stocks"}
@@ -235,7 +224,7 @@ func (e EnterpriseEdges) StocksOrErr() ([]*Stock, error) {
 // SwapPutinBatteriesOrErr returns the SwapPutinBatteries value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseEdges) SwapPutinBatteriesOrErr() ([]*EnterpriseBatterySwap, error) {
-	if e.loadedTypes[13] {
+	if e.loadedTypes[12] {
 		return e.SwapPutinBatteries, nil
 	}
 	return nil, &NotLoadedError{edge: "swap_putin_batteries"}
@@ -244,7 +233,7 @@ func (e EnterpriseEdges) SwapPutinBatteriesOrErr() ([]*EnterpriseBatterySwap, er
 // SwapPutoutBatteriesOrErr returns the SwapPutoutBatteries value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseEdges) SwapPutoutBatteriesOrErr() ([]*EnterpriseBatterySwap, error) {
-	if e.loadedTypes[14] {
+	if e.loadedTypes[13] {
 		return e.SwapPutoutBatteries, nil
 	}
 	return nil, &NotLoadedError{edge: "swap_putout_batteries"}
@@ -516,11 +505,6 @@ func (e *Enterprise) QueryAgents() *AgentQuery {
 // QueryCabinets queries the "cabinets" edge of the Enterprise entity.
 func (e *Enterprise) QueryCabinets() *CabinetQuery {
 	return NewEnterpriseClient(e.config).QueryCabinets(e)
-}
-
-// QueryAsset queries the "asset" edge of the Enterprise entity.
-func (e *Enterprise) QueryAsset() *AssetQuery {
-	return NewEnterpriseClient(e.config).QueryAsset(e)
 }
 
 // QueryStocks queries the "stocks" edge of the Enterprise entity.

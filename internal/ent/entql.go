@@ -685,7 +685,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			batterymodel.FieldModel:     {Type: field.TypeString, Column: batterymodel.FieldModel},
 			batterymodel.FieldCreatedAt: {Type: field.TypeTime, Column: batterymodel.FieldCreatedAt},
-			batterymodel.FieldType:      {Type: field.TypeUint8, Column: batterymodel.FieldType},
 			batterymodel.FieldVoltage:   {Type: field.TypeUint, Column: batterymodel.FieldVoltage},
 			batterymodel.FieldCapacity:  {Type: field.TypeUint, Column: batterymodel.FieldCapacity},
 		},
@@ -5244,18 +5243,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Enterprise",
 		"Cabinet",
-	)
-	graph.MustAddE(
-		"asset",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.AssetTable,
-			Columns: []string{enterprise.AssetColumn},
-			Bidi:    false,
-		},
-		"Enterprise",
-		"Asset",
 	)
 	graph.MustAddE(
 		"stocks",
@@ -11799,11 +11786,6 @@ func (f *BatteryModelFilter) WhereCreatedAt(p entql.TimeP) {
 	f.Where(p.Field(batterymodel.FieldCreatedAt))
 }
 
-// WhereType applies the entql uint8 predicate on the type field.
-func (f *BatteryModelFilter) WhereType(p entql.Uint8P) {
-	f.Where(p.Field(batterymodel.FieldType))
-}
-
 // WhereVoltage applies the entql uint predicate on the voltage field.
 func (f *BatteryModelFilter) WhereVoltage(p entql.UintP) {
 	f.Where(p.Field(batterymodel.FieldVoltage))
@@ -15161,20 +15143,6 @@ func (f *EnterpriseFilter) WhereHasCabinets() {
 // WhereHasCabinetsWith applies a predicate to check if query has an edge cabinets with a given conditions (other predicates).
 func (f *EnterpriseFilter) WhereHasCabinetsWith(preds ...predicate.Cabinet) {
 	f.Where(entql.HasEdgeWith("cabinets", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasAsset applies a predicate to check if query has an edge asset.
-func (f *EnterpriseFilter) WhereHasAsset() {
-	f.Where(entql.HasEdge("asset"))
-}
-
-// WhereHasAssetWith applies a predicate to check if query has an edge asset with a given conditions (other predicates).
-func (f *EnterpriseFilter) WhereHasAssetWith(preds ...predicate.Asset) {
-	f.Where(entql.HasEdgeWith("asset", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

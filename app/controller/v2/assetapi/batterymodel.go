@@ -23,8 +23,8 @@ var BatteryModel = new(batterymodel)
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
 // @Produce	json
-// @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
-// @Param	query					query		model.BatteryModelListReq								true	"desc"
+// @Param	X-Asset-Manager-Token	header		string														true	"管理员校验token"
+// @Param	query					query		model.BatteryModelListReq									true	"desc"
 // @Success	200						{object}	model.PaginationRes{items=[]definition.BatteryModelDetail}	"请求成功"
 func (*batterymodel) List(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.BatteryModelListReq](c)
@@ -38,9 +38,9 @@ func (*batterymodel) List(c echo.Context) (err error) {
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
 // @Produce	json
-// @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
 // @Param	body					body		model.BatteryModelCreateReq	true	"desc"
-// @Success	200						{object}	model.StatusResponse				"请求成功"
+// @Success	200						{object}	model.StatusResponse		"请求成功"
 func (*batterymodel) Create(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.BatteryModelCreateReq](c)
 	return ctx.SendResponse(service.NewBatteryModelWithModifier(ctx.Modifier).Create(req))

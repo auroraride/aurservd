@@ -21,8 +21,6 @@ type BatteryModel struct {
 	Model string `json:"model,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	// 电池类型 1智能电池 2非智能电池
-	Type uint8 `json:"type,omitempty"`
 	// 电压
 	Voltage uint `json:"voltage,omitempty"`
 	// 容量
@@ -56,7 +54,7 @@ func (*BatteryModel) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case batterymodel.FieldID, batterymodel.FieldType, batterymodel.FieldVoltage, batterymodel.FieldCapacity:
+		case batterymodel.FieldID, batterymodel.FieldVoltage, batterymodel.FieldCapacity:
 			values[i] = new(sql.NullInt64)
 		case batterymodel.FieldModel:
 			values[i] = new(sql.NullString)
@@ -94,12 +92,6 @@ func (bm *BatteryModel) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				bm.CreatedAt = value.Time
-			}
-		case batterymodel.FieldType:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field type", values[i])
-			} else if value.Valid {
-				bm.Type = uint8(value.Int64)
 			}
 		case batterymodel.FieldVoltage:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -159,9 +151,6 @@ func (bm *BatteryModel) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(bm.CreatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("type=")
-	builder.WriteString(fmt.Sprintf("%v", bm.Type))
 	builder.WriteString(", ")
 	builder.WriteString("voltage=")
 	builder.WriteString(fmt.Sprintf("%v", bm.Voltage))

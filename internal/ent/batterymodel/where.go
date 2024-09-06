@@ -65,11 +65,6 @@ func CreatedAt(v time.Time) predicate.BatteryModel {
 	return predicate.BatteryModel(sql.FieldEQ(FieldCreatedAt, v))
 }
 
-// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
-func Type(v uint8) predicate.BatteryModel {
-	return predicate.BatteryModel(sql.FieldEQ(FieldType, v))
-}
-
 // Voltage applies equality check predicate on the "voltage" field. It's identical to VoltageEQ.
 func Voltage(v uint) predicate.BatteryModel {
 	return predicate.BatteryModel(sql.FieldEQ(FieldVoltage, v))
@@ -183,46 +178,6 @@ func CreatedAtLT(v time.Time) predicate.BatteryModel {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.BatteryModel {
 	return predicate.BatteryModel(sql.FieldLTE(FieldCreatedAt, v))
-}
-
-// TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v uint8) predicate.BatteryModel {
-	return predicate.BatteryModel(sql.FieldEQ(FieldType, v))
-}
-
-// TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v uint8) predicate.BatteryModel {
-	return predicate.BatteryModel(sql.FieldNEQ(FieldType, v))
-}
-
-// TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...uint8) predicate.BatteryModel {
-	return predicate.BatteryModel(sql.FieldIn(FieldType, vs...))
-}
-
-// TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...uint8) predicate.BatteryModel {
-	return predicate.BatteryModel(sql.FieldNotIn(FieldType, vs...))
-}
-
-// TypeGT applies the GT predicate on the "type" field.
-func TypeGT(v uint8) predicate.BatteryModel {
-	return predicate.BatteryModel(sql.FieldGT(FieldType, v))
-}
-
-// TypeGTE applies the GTE predicate on the "type" field.
-func TypeGTE(v uint8) predicate.BatteryModel {
-	return predicate.BatteryModel(sql.FieldGTE(FieldType, v))
-}
-
-// TypeLT applies the LT predicate on the "type" field.
-func TypeLT(v uint8) predicate.BatteryModel {
-	return predicate.BatteryModel(sql.FieldLT(FieldType, v))
-}
-
-// TypeLTE applies the LTE predicate on the "type" field.
-func TypeLTE(v uint8) predicate.BatteryModel {
-	return predicate.BatteryModel(sql.FieldLTE(FieldType, v))
 }
 
 // VoltageEQ applies the EQ predicate on the "voltage" field.

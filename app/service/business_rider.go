@@ -470,12 +470,12 @@ func (s *businessRiderService) doTask() (bin *model.BinInfo, bat *model.Battery,
 // do 处理业务
 func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func(tx *ent.Tx)) {
 	async.WithTask(func() {
-		// sts := map[model.BusinessType]uint8{
-		// 	model.BusinessTypeActive:      model.StockTypeRiderActive,
-		// 	model.BusinessTypeUnsubscribe: model.StockTypeRiderUnSubscribe,
-		// 	model.BusinessTypePause:       model.StockTypeRiderPause,
-		// 	model.BusinessTypeContinue:    model.StockTypeRiderContinue,
-		// }
+		sts := map[model.BusinessType]uint8{
+			model.BusinessTypeActive:      model.StockTypeRiderActive,
+			model.BusinessTypeUnsubscribe: model.StockTypeRiderUnSubscribe,
+			model.BusinessTypePause:       model.StockTypeRiderPause,
+			model.BusinessTypeContinue:    model.StockTypeRiderContinue,
+		}
 
 		ops := map[model.BusinessType]model.Operate{
 			model.BusinessTypeActive:      model.OperateActive,
@@ -531,44 +531,44 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 
 		// 库存管理
 		// var batSk *ent.Stock
-		// ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-		// 	cb(tx)
-		//
-		// 	// 需要进行业务出入库
-		// 	if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil || s.ebikeStoreID != nil || s.batStoreID != nil {
-		// 		batSk, _, err = NewStockWithModifier(s.modifier).RiderBusiness(
-		// 			tx,
-		// 			&model.StockBusinessReq{
-		// 				RiderID:   s.subscribe.RiderID,
-		// 				Model:     s.subscribe.Model,
-		// 				CityID:    s.subscribe.CityID,
-		// 				StockType: sts[doReq.Type],
-		//
-		// 				StoreID:     s.storeID,
-		// 				EmployeeID:  s.employeeID,
-		// 				CabinetID:   s.cabinetID,
-		// 				SubscribeID: s.subscribeID,
-		//
-		// 				StationID:    s.subscribe.StationID,
-		// 				EnterpriseID: s.subscribe.EnterpriseID,
-		// 				AgentID:      s.agentID,
-		//
-		// 				Ebike:   s.ebikeInfo,
-		// 				Battery: bat,
-		//
-		// 				Rto:          doReq.Rto,
-		// 				EbikeStoreID: s.ebikeStoreID,
-		// 				BatStoreID:   s.batStoreID,
-		// 			},
-		// 		)
-		//
-		// 		if err != nil {
-		// 			zap.L().Error("骑手业务出入库失败: "+doReq.Type.String(), zap.Error(err))
-		// 		}
-		// 	}
-		//
-		// 	return
-		// })
+		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+			cb(tx)
+
+			// 需要进行业务出入库
+			if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil || s.ebikeStoreID != nil || s.batStoreID != nil {
+				_, _, err = NewStockWithModifier(s.modifier).RiderBusiness(
+					tx,
+					&model.StockBusinessReq{
+						RiderID:   s.subscribe.RiderID,
+						Model:     s.subscribe.Model,
+						CityID:    s.subscribe.CityID,
+						StockType: sts[doReq.Type],
+
+						StoreID:     s.storeID,
+						EmployeeID:  s.employeeID,
+						CabinetID:   s.cabinetID,
+						SubscribeID: s.subscribeID,
+
+						StationID:    s.subscribe.StationID,
+						EnterpriseID: s.subscribe.EnterpriseID,
+						AgentID:      s.agentID,
+
+						Ebike:   s.ebikeInfo,
+						Battery: bat,
+
+						Rto:          doReq.Rto,
+						EbikeStoreID: s.ebikeStoreID,
+						BatStoreID:   s.batStoreID,
+					},
+				)
+
+				if err != nil {
+					zap.L().Error("骑手业务出入库失败: "+doReq.Type.String(), zap.Error(err))
+				}
+			}
+
+			return
+		})
 
 		// 取出电池滞后执行电柜任务
 		if s.cabTask != nil && (doReq.Type == model.BusinessTypeActive || doReq.Type == model.BusinessTypeContinue) {
@@ -590,7 +590,7 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 			SetCabinet(s.cabinet).
 			SetStore(s.store).
 			SetBinInfo(bin).
-			// SetStock(batSk).
+			// SetAssetTransfer(batSk).
 			SetBattery(bat).
 			SetAgentId(s.agentID)
 		// 电池归还门店必须保持与电车归还门店一致

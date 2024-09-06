@@ -130,7 +130,7 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 	}
 
 	// 自动入库
-	if req.AutoIn {
+	if req.AutoIn && req.FromLocationType != nil {
 		assetTransferReceive := make([]model.AssetTransferReceiveDetail, 0)
 		for _, v := range req.Details {
 			assetTransferReceive = append(assetTransferReceive, model.AssetTransferReceiveDetail{
@@ -242,6 +242,10 @@ func (s *assetTransferService) checkTargetLocationExists(ctx context.Context, lo
 		exists, _ = ent.Database.EnterpriseStation.QueryNotDeleted().Where(enterprisestation.ID(locationID)).Exist(ctx)
 	case model.AssetLocationsTypeOperation:
 		exists, _ = ent.Database.Maintainer.Query().Where(maintainer.ID(locationID)).Exist(ctx)
+	case model.AssetLocationsTypeCabinet:
+		exists, _ = ent.Database.Cabinet.Query().Where(cabinet.ID(locationID)).Exist(ctx)
+	case model.AssetLocationsTypeRider:
+		exists, _ = ent.Database.Rider.Query().Where(rider.ID(locationID)).Exist(ctx)
 	default:
 		return errors.New("调拨目标地点不存在")
 	}
@@ -312,10 +316,10 @@ func (s *assetTransferService) transferLimit(ctx context.Context, req *model.Ass
 		}
 	}
 	if req.FromLocationType == nil {
-		// 初始调拨只能调仓库
-		if req.ToLocationType != model.AssetLocationsTypeWarehouse {
-			return errors.New("调拨目标地点不存在")
-		}
+		// 初始调拨只能调仓库  todo 暂时去掉吧
+		// if req.ToLocationType != model.AssetLocationsTypeWarehouse  || req.ToLocationType!={
+		// 	return errors.New("调拨目标地点不存在")
+		// }
 		if err = s.checkTargetLocationExists(ctx, req.ToLocationType, req.ToLocationID); err != nil {
 			return err
 		}

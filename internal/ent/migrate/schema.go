@@ -309,7 +309,6 @@ var (
 		{Name: "material_id", Type: field.TypeUint64, Nullable: true, Comment: "物资ID"},
 		{Name: "rto_rider_id", Type: field.TypeUint64, Nullable: true, Comment: "以租代购骑手ID，生成后禁止修改"},
 		{Name: "locations_id", Type: field.TypeUint64, Nullable: true, Comment: "资产位置ID"},
-		{Name: "enterprise_asset", Type: field.TypeUint64, Nullable: true},
 		{Name: "subscribe_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "订阅ID"},
 	}
 	// AssetTable holds the schema information for the "asset" table.
@@ -355,12 +354,6 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_enterprise_asset",
-				Columns:    []*schema.Column{AssetColumns[22]},
-				RefColumns: []*schema.Column{EnterpriseColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "asset_enterprise_station_asset",
 				Columns:    []*schema.Column{AssetColumns[21]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
@@ -386,7 +379,7 @@ var (
 			},
 			{
 				Symbol:     "asset_subscribe_battery",
-				Columns:    []*schema.Column{AssetColumns[23]},
+				Columns:    []*schema.Column{AssetColumns[22]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1617,7 +1610,6 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "model", Type: field.TypeString, Unique: true, Comment: "型号"},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "type", Type: field.TypeUint8, Comment: "电池类型 1智能电池 2非智能电池", Default: 1},
 		{Name: "voltage", Type: field.TypeUint, Nullable: true, Comment: "电压"},
 		{Name: "capacity", Type: field.TypeUint, Nullable: true, Comment: "容量"},
 	}
@@ -7557,13 +7549,12 @@ func init() {
 	AssetTable.ForeignKeys[3].RefTable = MaterialTable
 	AssetTable.ForeignKeys[4].RefTable = RiderTable
 	AssetTable.ForeignKeys[5].RefTable = CabinetTable
-	AssetTable.ForeignKeys[6].RefTable = EnterpriseTable
-	AssetTable.ForeignKeys[7].RefTable = EnterpriseStationTable
-	AssetTable.ForeignKeys[8].RefTable = MaintainerTable
-	AssetTable.ForeignKeys[9].RefTable = RiderTable
-	AssetTable.ForeignKeys[10].RefTable = StoreTable
-	AssetTable.ForeignKeys[11].RefTable = SubscribeTable
-	AssetTable.ForeignKeys[12].RefTable = WarehouseTable
+	AssetTable.ForeignKeys[6].RefTable = EnterpriseStationTable
+	AssetTable.ForeignKeys[7].RefTable = MaintainerTable
+	AssetTable.ForeignKeys[8].RefTable = RiderTable
+	AssetTable.ForeignKeys[9].RefTable = StoreTable
+	AssetTable.ForeignKeys[10].RefTable = SubscribeTable
+	AssetTable.ForeignKeys[11].RefTable = WarehouseTable
 	AssetTable.Annotation = &entsql.Annotation{
 		Table: "asset",
 	}

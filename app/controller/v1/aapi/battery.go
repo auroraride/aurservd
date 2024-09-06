@@ -43,7 +43,7 @@ func (*battery) Selection(c echo.Context) (err error) {
 // @Tags	[A]代理接口
 // @Accept	json
 // @Produce	json
-// @Param	X-Agent-Token	header		string	true	"代理校验token"
+// @Param	X-Agent-Token	header		string						true	"代理校验token"
 // @Param	query			query		model.BatteryModelListReq	false	"筛选项"
 // @Success	200				{object}	model.ItemListRes
 func (*battery) Model(c echo.Context) (err error) {
@@ -58,8 +58,8 @@ func (*battery) Model(c echo.Context) (err error) {
 // @Tags	[A]代理接口
 // @Accept	json
 // @Produce	json
-// @Param	X-Agent-Token	header		string					true	"代理校验token"
-// @Param	query			query		model.AssetListReq	    false	"筛选项"
+// @Param	X-Agent-Token	header		string											true	"代理校验token"
+// @Param	query			query		model.AssetListReq								false	"筛选项"
 // @Success	200				{object}	model.ItemListRes{items=[]model.AssetListRes}	"请求成功"
 func (*battery) List(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AssetListReq](c)

@@ -39,15 +39,12 @@ func NewBatteryModelWithModifier(m *model.Modifier) *batteryModelService {
 }
 
 // ListModel 列举电池型号
-func (s *batteryModelService) ListModel(req *model.SelectModelsReq) (res *model.ItemListRes) {
+func (s *batteryModelService) ListModel() (res *model.ItemListRes) {
 	res = new(model.ItemListRes)
 	var items []model.BatteryModel
-	q := s.orm.Query().
-		Select(batterymodel.FieldID, batterymodel.FieldModel)
-	if req.Type != nil {
-		q.Where(batterymodel.Type(req.Type.Value()))
-	}
-	q.ScanX(s.ctx, &items)
+	s.orm.Query().
+		Select(batterymodel.FieldID, batterymodel.FieldModel).
+		ScanX(s.ctx, &items)
 	model.SetItemListResItems[model.BatteryModel](res, items)
 	return
 }
@@ -106,9 +103,6 @@ func (s *batteryModelService) Models() []string {
 // List 列表
 func (s *batteryModelService) List(req *model.BatteryModelListReq) (res *model.PaginationRes, err error) {
 	q := s.orm.Query()
-	if req.Type != nil {
-		q.Where(batterymodel.Type(req.Type.Value()))
-	}
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.BatteryModel) (result *model.BatteryModelDetail) {
 		return s.detail(item)
 	}), nil
@@ -119,7 +113,6 @@ func (s *batteryModelService) detail(item *ent.BatteryModel) (res *model.Battery
 	res = &model.BatteryModelDetail{
 		ID:       item.ID,
 		Model:    fmt.Sprintf("%dV%dAH", item.Voltage, item.Capacity),
-		Type:     model.BatteryModelType(item.Type),
 		Voltage:  item.Voltage,
 		Capacity: item.Capacity,
 	}
@@ -158,7 +151,6 @@ func (s *batteryModelService) Create(req *model.BatteryModelCreateReq) (err erro
 		return errors.New("电池型号已存在")
 	}
 	_, err = s.orm.Create().
-		SetType(uint8(req.Type)).
 		SetVoltage(req.Voltage).
 		SetCapacity(req.Capacity).
 		SetModel(batModel).
@@ -184,7 +176,6 @@ func (s *batteryModelService) Modify(req *model.BatteryModelModifyReq) (err erro
 	}
 
 	_, err = s.orm.UpdateOneID(req.ID).
-		SetType(uint8(req.Type)).
 		SetVoltage(req.Voltage).
 		SetCapacity(req.Capacity).
 		SetModel(batModel).
@@ -210,12 +201,8 @@ func (s *batteryModelService) Delete(id uint64) (err error) {
 }
 
 // SelectionModels 电池型号筛选项
-func (s *batteryModelService) SelectionModels(req *model.SelectModelsReq) (res []model.SelectOption) {
-	q := s.orm.Query()
-	if req.Type != nil {
-		q.Where(batterymodel.Type(req.Type.Value()))
-	}
-	items, _ := q.All(s.ctx)
+func (s *batteryModelService) SelectionModels() (res []model.SelectOption) {
+	items, _ := s.orm.Query().All(s.ctx)
 	res = make([]model.SelectOption, 0)
 	for _, item := range items {
 		res = append(res, model.SelectOption{
@@ -231,7 +218,6 @@ func (s *batteryModelService) QueryModels(m []string) ([]*ent.BatteryModel, erro
 		Query().
 		Where(
 			batterymodel.ModelIn(m...),
-			batterymodel.Type(model.BatteryModelTypeSmart.Value()),
 		).
 		All(context.Background())
 }

@@ -1023,7 +1023,6 @@ func (esq *EnterpriseStationQuery) loadAsset(ctx context.Context, query *AssetQu
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(asset.FieldLocationsID)
 	}

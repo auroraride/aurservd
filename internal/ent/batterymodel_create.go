@@ -43,20 +43,6 @@ func (bmc *BatteryModelCreate) SetNillableCreatedAt(t *time.Time) *BatteryModelC
 	return bmc
 }
 
-// SetType sets the "type" field.
-func (bmc *BatteryModelCreate) SetType(u uint8) *BatteryModelCreate {
-	bmc.mutation.SetType(u)
-	return bmc
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (bmc *BatteryModelCreate) SetNillableType(u *uint8) *BatteryModelCreate {
-	if u != nil {
-		bmc.SetType(*u)
-	}
-	return bmc
-}
-
 // SetVoltage sets the "voltage" field.
 func (bmc *BatteryModelCreate) SetVoltage(u uint) *BatteryModelCreate {
 	bmc.mutation.SetVoltage(u)
@@ -139,10 +125,6 @@ func (bmc *BatteryModelCreate) defaults() {
 		v := batterymodel.DefaultCreatedAt()
 		bmc.mutation.SetCreatedAt(v)
 	}
-	if _, ok := bmc.mutation.GetType(); !ok {
-		v := batterymodel.DefaultType
-		bmc.mutation.SetType(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -152,9 +134,6 @@ func (bmc *BatteryModelCreate) check() error {
 	}
 	if _, ok := bmc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "BatteryModel.created_at"`)}
-	}
-	if _, ok := bmc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "BatteryModel.type"`)}
 	}
 	return nil
 }
@@ -190,10 +169,6 @@ func (bmc *BatteryModelCreate) createSpec() (*BatteryModel, *sqlgraph.CreateSpec
 	if value, ok := bmc.mutation.CreatedAt(); ok {
 		_spec.SetField(batterymodel.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
-	}
-	if value, ok := bmc.mutation.GetType(); ok {
-		_spec.SetField(batterymodel.FieldType, field.TypeUint8, value)
-		_node.Type = value
 	}
 	if value, ok := bmc.mutation.Voltage(); ok {
 		_spec.SetField(batterymodel.FieldVoltage, field.TypeUint, value)
@@ -280,24 +255,6 @@ func (u *BatteryModelUpsert) SetModel(v string) *BatteryModelUpsert {
 // UpdateModel sets the "model" field to the value that was provided on create.
 func (u *BatteryModelUpsert) UpdateModel() *BatteryModelUpsert {
 	u.SetExcluded(batterymodel.FieldModel)
-	return u
-}
-
-// SetType sets the "type" field.
-func (u *BatteryModelUpsert) SetType(v uint8) *BatteryModelUpsert {
-	u.Set(batterymodel.FieldType, v)
-	return u
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *BatteryModelUpsert) UpdateType() *BatteryModelUpsert {
-	u.SetExcluded(batterymodel.FieldType)
-	return u
-}
-
-// AddType adds v to the "type" field.
-func (u *BatteryModelUpsert) AddType(v uint8) *BatteryModelUpsert {
-	u.Add(batterymodel.FieldType, v)
 	return u
 }
 
@@ -405,27 +362,6 @@ func (u *BatteryModelUpsertOne) SetModel(v string) *BatteryModelUpsertOne {
 func (u *BatteryModelUpsertOne) UpdateModel() *BatteryModelUpsertOne {
 	return u.Update(func(s *BatteryModelUpsert) {
 		s.UpdateModel()
-	})
-}
-
-// SetType sets the "type" field.
-func (u *BatteryModelUpsertOne) SetType(v uint8) *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetType(v)
-	})
-}
-
-// AddType adds v to the "type" field.
-func (u *BatteryModelUpsertOne) AddType(v uint8) *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.AddType(v)
-	})
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *BatteryModelUpsertOne) UpdateType() *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateType()
 	})
 }
 
@@ -707,27 +643,6 @@ func (u *BatteryModelUpsertBulk) SetModel(v string) *BatteryModelUpsertBulk {
 func (u *BatteryModelUpsertBulk) UpdateModel() *BatteryModelUpsertBulk {
 	return u.Update(func(s *BatteryModelUpsert) {
 		s.UpdateModel()
-	})
-}
-
-// SetType sets the "type" field.
-func (u *BatteryModelUpsertBulk) SetType(v uint8) *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetType(v)
-	})
-}
-
-// AddType adds v to the "type" field.
-func (u *BatteryModelUpsertBulk) AddType(v uint8) *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.AddType(v)
-	})
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *BatteryModelUpsertBulk) UpdateType() *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateType()
 	})
 }
 

@@ -225,11 +225,11 @@ func init() {
 	// asset.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	asset.UpdateDefaultUpdatedAt = assetDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// assetDescStatus is the schema descriptor for status field.
-	assetDescStatus := assetFields[3].Descriptor()
+	assetDescStatus := assetFields[4].Descriptor()
 	// asset.DefaultStatus holds the default value on creation for the status field.
 	asset.DefaultStatus = assetDescStatus.Default.(uint8)
 	// assetDescEnable is the schema descriptor for enable field.
-	assetDescEnable := assetFields[4].Descriptor()
+	assetDescEnable := assetFields[5].Descriptor()
 	// asset.DefaultEnable holds the default value on creation for the enable field.
 	asset.DefaultEnable = assetDescEnable.Default.(bool)
 	assetattributevaluesMixin := schema.AssetAttributeValues{}.Mixin()
@@ -563,10 +563,6 @@ func init() {
 	batterymodelDescCreatedAt := batterymodelFields[1].Descriptor()
 	// batterymodel.DefaultCreatedAt holds the default value on creation for the created_at field.
 	batterymodel.DefaultCreatedAt = batterymodelDescCreatedAt.Default.(func() time.Time)
-	// batterymodelDescType is the schema descriptor for type field.
-	batterymodelDescType := batterymodelFields[2].Descriptor()
-	// batterymodel.DefaultType holds the default value on creation for the type field.
-	batterymodel.DefaultType = batterymodelDescType.Default.(uint8)
 	branchMixin := schema.Branch{}.Mixin()
 	branchMixinHooks2 := branchMixin[2].Hooks()
 	branch.Hooks[0] = branchMixinHooks2[0]

@@ -316,6 +316,12 @@ func (ac *AssetCreate) SetNillableOrdinal(i *int) *AssetCreate {
 	return ac
 }
 
+// SetID sets the "id" field.
+func (ac *AssetCreate) SetID(u uint64) *AssetCreate {
+	ac.mutation.SetID(u)
+	return ac
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (ac *AssetCreate) SetBrand(e *EbikeBrand) *AssetCreate {
 	return ac.SetBrandID(e.ID)
@@ -646,8 +652,10 @@ func (ac *AssetCreate) sqlSave(ctx context.Context) (*Asset, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = uint64(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = uint64(id)
+	}
 	ac.mutation.id = &_node.ID
 	ac.mutation.done = true
 	return _node, nil
@@ -659,6 +667,10 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		_spec = sqlgraph.NewCreateSpec(asset.Table, sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = ac.conflict
+	if id, ok := ac.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := ac.mutation.CreatedAt(); ok {
 		_spec.SetField(asset.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -1425,17 +1437,23 @@ func (u *AssetUpsert) ClearOrdinal() *AssetUpsert {
 	return u
 }
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.Asset.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(asset.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 func (u *AssetUpsertOne) UpdateNewValues() *AssetUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(asset.FieldID)
+		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(asset.FieldCreatedAt)
 		}
@@ -1966,7 +1984,7 @@ func (acb *AssetCreateBulk) Save(ctx context.Context) ([]*Asset, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = uint64(id)
 				}
@@ -2056,12 +2074,18 @@ type AssetUpsertBulk struct {
 //	client.Asset.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(asset.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 func (u *AssetUpsertBulk) UpdateNewValues() *AssetUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(asset.FieldID)
+			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(asset.FieldCreatedAt)
 			}

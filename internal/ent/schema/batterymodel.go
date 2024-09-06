@@ -62,7 +62,6 @@ func (BatteryModel) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("model").Unique().Comment("型号"),
 		field.Time("created_at").Immutable().Default(time.Now),
-		field.Uint8("type").Default(1).Comment("电池类型 1智能电池 2非智能电池"),
 		field.Uint("voltage").Optional().Comment("电压"),
 		field.Uint("capacity").Optional().Comment("容量"),
 	}

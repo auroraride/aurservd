@@ -7,6 +7,9 @@ package service
 
 import (
 	"context"
+	"errors"
+	"math"
+	"time"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -364,102 +367,102 @@ func NewStockWithEmployee(e *ent.Employee) *stockService {
 
 // RiderBusiness 骑手业务 电池 / 电车 出入库
 // 此方法操作库存
-// func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (batSk, ebikeSk *ent.Stock, err error) {
-// 	num := model.StockNumberOfRiderBusiness(req.StockType)
-//
-// 	if req.StoreID == nil && req.EbikeStoreID == nil && req.BatStoreID == nil && req.CabinetID == nil && req.EnterpriseID == nil && req.StationID == nil {
-// 		err = errors.New("参数校验错误")
-// 		return
-// 	}
-//
-// 	creator := tx.Stock.Create()
-//
-// 	// TODO 平台管理员可操作性时处理出入库逻辑
-// 	switch {
-// 	case req.StoreID != nil:
-// 		creator.SetStoreID(*req.StoreID)
-// 		// 判定非智能电池库存
-// 		if req.Battery == nil && num < 0 && !s.CheckStore(*req.StoreID, req.Model, int(math.Round(math.Abs(float64(num))))) {
-// 			err = errors.New("电池库存不足")
-// 			return
-// 		}
-// 	case req.BatStoreID != nil:
-// 		// 退租电池返回门店（退租时电池是查询出来的一定不会为空，所以此处无需上面的判定非智能电池库存）
-// 		creator.SetStoreID(*req.BatStoreID)
-// 		if req.Battery == nil && num < 0 && !s.CheckStore(*req.StoreID, req.Model, int(math.Round(math.Abs(float64(num))))) {
-// 			err = errors.New("电池库存不足")
-// 			return
-// 		}
-// 	}
-//
-// 	// 判定团签库存
-// 	// 未使用电柜激活的时候才需要判定团签站点库存
-// 	if req.CabinetID == nil && req.EnterpriseID != nil && req.StationID != nil {
-// 		creator.SetEnterpriseID(*req.EnterpriseID).SetStationID(*req.StationID)
-// 		// 判断团签非智能电池库存是否足够
-// 		if req.Battery == nil && num < 0 && !s.CheckStation(*req.StationID, req.Model, int(math.Round(math.Abs(float64(num))))) {
-// 			err = errors.New("电池库存不足")
-// 			return
-// 		}
-// 	}
-//
-// 	// 主出入库
-// 	creator.SetNillableEmployeeID(req.EmployeeID).
-// 		SetRiderID(req.RiderID).
-// 		SetType(req.StockType).
-// 		SetNum(num).
-// 		SetCityID(req.CityID).
-// 		SetNillableSubscribeID(req.SubscribeID).
-// 		SetNillableAgentID(req.AgentID)
-//
-// 	son := creator.Clone()
-//
-// 	// 判定电柜库存
-// 	if req.CabinetID != nil {
-// 		creator.SetCabinetID(*req.CabinetID)
-// 		if num < 0 && !s.CheckCabinet(*req.CabinetID, req.Model, int(math.Round(math.Abs(float64(num))))) {
-// 			err = errors.New("电池库存不足")
-// 			return
-// 		}
-// 	}
-//
-// 	var batID *uint64
-// 	if req.Battery != nil {
-// 		batID = silk.UInt64(req.Battery.ID)
-// 	}
-// 	batSk, err = creator.SetName(req.Model).
-// 		SetModel(req.Model).
-// 		SetMaterial(stock.MaterialBattery).
-// 		SetSn(tools.NewUnique().NewSN()).
-// 		SetNillableBatteryID(batID). // 设置智能电池ID
-// 		Save(s.ctx)
-// 	if err != nil {
-// 		return
-// 	}
-//
-// 	time.Sleep(10 * time.Millisecond)
-//
-// 	// 当电车需要参与出入库时
-// 	if req.Ebike != nil && !req.Rto {
-// 		ebq := son.SetParent(batSk).
-// 			SetEbikeID(req.Ebike.ID).
-// 			SetName(req.Ebike.BrandName).
-// 			SetBrandID(req.Ebike.BrandID).
-// 			SetMaterial(stock.MaterialEbike).
-// 			SetSn(tools.NewUnique().NewSN())
-//
-// 		if req.EbikeStoreID != nil {
-// 			ebq.SetStoreID(*req.EbikeStoreID)
-// 		}
-//
-// 		ebikeSk, err = ebq.Save(s.ctx)
-// 		if err != nil {
-// 			return
-// 		}
-// 	}
-//
-// 	return
-// }
+func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (batSk, ebikeSk *ent.Stock, err error) {
+	num := model.StockNumberOfRiderBusiness(req.StockType)
+
+	if req.StoreID == nil && req.EbikeStoreID == nil && req.BatStoreID == nil && req.CabinetID == nil && req.EnterpriseID == nil && req.StationID == nil {
+		err = errors.New("参数校验错误")
+		return
+	}
+
+	// creator := tx.Stock.Create()
+
+	// TODO 平台管理员可操作性时处理出入库逻辑
+	switch {
+	case req.StoreID != nil:
+		// creator.SetStoreID(*req.StoreID)
+		// 判定非智能电池库存
+		if req.Battery == nil && num < 0 && !NewAsset().CheckStore(*req.StoreID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+			err = errors.New("电池库存不足")
+			return
+		}
+	case req.BatStoreID != nil:
+		// 退租电池返回门店（退租时电池是查询出来的一定不会为空，所以此处无需上面的判定非智能电池库存）
+		// creator.SetStoreID(*req.BatStoreID)
+		if req.Battery == nil && num < 0 && !NewAsset().CheckStore(*req.StoreID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+			err = errors.New("电池库存不足")
+			return
+		}
+	}
+
+	// 判定团签库存
+	// 未使用电柜激活的时候才需要判定团签站点库存
+	if req.CabinetID == nil && req.EnterpriseID != nil && req.StationID != nil {
+		// creator.SetEnterpriseID(*req.EnterpriseID).SetStationID(*req.StationID)
+		// 判断团签非智能电池库存是否足够
+		if req.Battery == nil && num < 0 && !NewAsset().CheckStation(*req.StationID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+			err = errors.New("电池库存不足")
+			return
+		}
+	}
+
+	// // 主出入库
+	// creator.SetNillableEmployeeID(req.EmployeeID).
+	// 	SetRiderID(req.RiderID).
+	// 	SetType(req.StockType).
+	// 	SetNum(num).
+	// 	SetCityID(req.CityID).
+	// 	SetNillableSubscribeID(req.SubscribeID).
+	// 	SetNillableAgentID(req.AgentID)
+	//
+	// son := creator.Clone()
+
+	// 判定电柜库存
+	if req.CabinetID != nil {
+		// creator.SetCabinetID(*req.CabinetID)
+		if num < 0 && !NewAsset().CheckCabinet(*req.CabinetID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+			err = errors.New("电池库存不足")
+			return
+		}
+	}
+
+	// var batID *uint64
+	// if req.Battery != nil {
+	// 	batID = silk.UInt64(req.Battery.ID)
+	// }
+	// batSk, err = creator.SetName(req.Model).
+	// 	SetModel(req.Model).
+	// 	SetMaterial(stock.MaterialBattery).
+	// 	SetSn(tools.NewUnique().NewSN()).
+	// 	SetNillableBatteryID(batID). // 设置智能电池ID
+	// 	Save(s.ctx)
+	// if err != nil {
+	// 	return
+	// }
+
+	time.Sleep(10 * time.Millisecond)
+
+	// 当电车需要参与出入库时
+	// if req.Ebike != nil && !req.Rto {
+	// 	ebq := son.SetParent(batSk).
+	// 		SetEbikeID(req.Ebike.ID).
+	// 		SetName(req.Ebike.BrandName).
+	// 		SetBrandID(req.Ebike.BrandID).
+	// 		SetMaterial(stock.MaterialEbike).
+	// 		SetSn(tools.NewUnique().NewSN())
+	//
+	// 	if req.EbikeStoreID != nil {
+	// 		ebq.SetStoreID(*req.EbikeStoreID)
+	// 	}
+	//
+	// 	ebikeSk, err = ebq.Save(s.ctx)
+	// 	if err != nil {
+	// 		return
+	// 	}
+	// }
+
+	return
+}
 
 // EmployeeOverview 店员物资概览
 // func (s *stockService) EmployeeOverview() (res model.StockEmployeeOverview) {

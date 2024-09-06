@@ -108,12 +108,12 @@ func (*selection) AssetRole(c echo.Context) (err error) {
 // @Tags	Selection - 筛选
 // @Accept	json
 // @Produce	json
-// @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Param	query					query		model.SelectModelsReq	true	"查询参数"
-// @Success	200						{object}	[]model.SelectOption		"请求成功"
+// @Success	200						{object}	[]model.SelectOption	"请求成功"
 func (*selection) Model(c echo.Context) (err error) {
-	ctx, req := app.AssetManagerContextAndBinding[model.SelectModelsReq](c)
-	return ctx.SendResponse(service.NewBatteryModel().SelectionModels(req))
+	ctx := app.ContextX[app.AssetManagerContext](c)
+	return ctx.SendResponse(service.NewBatteryModel().SelectionModels())
 }
 
 // Maintainer

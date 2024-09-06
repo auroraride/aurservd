@@ -76,9 +76,8 @@ type Asset struct {
 	Ordinal *int `json:"ordinal,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetQuery when eager-loading is set.
-	Edges            AssetEdges `json:"edges"`
-	enterprise_asset *uint64
-	selectValues     sql.SelectValues
+	Edges        AssetEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // AssetEdges holds the relations/edges for other nodes in the graph.
@@ -325,8 +324,6 @@ func (*Asset) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case asset.FieldCreatedAt, asset.FieldUpdatedAt, asset.FieldDeletedAt, asset.FieldCheckAt:
 			values[i] = new(sql.NullTime)
-		case asset.ForeignKeys[0]: // enterprise_asset
-			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -492,13 +489,6 @@ func (a *Asset) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.Ordinal = new(int)
 				*a.Ordinal = int(value.Int64)
-			}
-		case asset.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field enterprise_asset", value)
-			} else if value.Valid {
-				a.enterprise_asset = new(uint64)
-				*a.enterprise_asset = uint64(value.Int64)
 			}
 		default:
 			a.selectValues.Set(columns[i], values[i])

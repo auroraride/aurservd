@@ -59,6 +59,7 @@ func (Asset) Annotations() []schema.Annotation {
 // Fields of the Asset.
 func (Asset) Fields() []ent.Field {
 	return []ent.Field{
+		field.Uint64("id").Unique(),
 		field.Uint8("type").Comment("资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它"),
 		field.String("name").Comment("资产名称"),
 		field.String("sn").Optional().Comment("资产编号"),

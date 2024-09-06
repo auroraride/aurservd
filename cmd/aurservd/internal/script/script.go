@@ -10,6 +10,7 @@ import (
 
 	"github.com/auroraride/aurservd/app/biz"
 	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/cmd/aurservd/internal/script/fix"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/boot"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -43,6 +44,10 @@ func Execute() {
 
 			// 初始化资产属性
 			service.NewAssetAttributes().Initialize()
+
+			// todo 临时测试用 之后删除
+			fix.AssetDo()
+
 		},
 	}
 

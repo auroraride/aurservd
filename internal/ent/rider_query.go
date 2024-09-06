@@ -1186,7 +1186,6 @@ func (rq *RiderQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(asset.FieldLocationsID)
 	}

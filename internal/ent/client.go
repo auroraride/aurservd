@@ -9633,22 +9633,6 @@ func (c *EnterpriseClient) QueryCabinets(e *Enterprise) *CabinetQuery {
 	return query
 }
 
-// QueryAsset queries the asset edge of a Enterprise.
-func (c *EnterpriseClient) QueryAsset(e *Enterprise) *AssetQuery {
-	query := (&AssetClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := e.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
-			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.AssetTable, enterprise.AssetColumn),
-		)
-		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryStocks queries the stocks edge of a Enterprise.
 func (c *EnterpriseClient) QueryStocks(e *Enterprise) *StockQuery {
 	query := (&StockClient{config: c.config}).Query()

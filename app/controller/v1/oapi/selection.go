@@ -66,12 +66,12 @@ func (*selection) Maintainer(c echo.Context) (err error) {
 // @Tags	Selection - 筛选
 // @Accept	json
 // @Produce	json
-// @Param	X-Maintainer-Token	header		string						true	"仓管校验token"
+// @Param	X-Maintainer-Token	header		string					true	"仓管校验token"
 // @Param	query				query		model.SelectModelsReq	true	"查询参数"
-// @Success	200					{object}	[]model.SelectOption		"请求成功"
+// @Success	200					{object}	[]model.SelectOption	"请求成功"
 func (*selection) Model(c echo.Context) (err error) {
-	ctx, req := app.MaintainerContextAndBinding[model.SelectModelsReq](c)
-	return ctx.SendResponse(service.NewBatteryModel().SelectionModels(req))
+	ctx := app.ContextX[app.MaintainerContext](c)
+	return ctx.SendResponse(service.NewBatteryModel().SelectionModels())
 }
 
 // CityStation

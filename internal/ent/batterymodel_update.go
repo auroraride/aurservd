@@ -43,27 +43,6 @@ func (bmu *BatteryModelUpdate) SetNillableModel(s *string) *BatteryModelUpdate {
 	return bmu
 }
 
-// SetType sets the "type" field.
-func (bmu *BatteryModelUpdate) SetType(u uint8) *BatteryModelUpdate {
-	bmu.mutation.ResetType()
-	bmu.mutation.SetType(u)
-	return bmu
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (bmu *BatteryModelUpdate) SetNillableType(u *uint8) *BatteryModelUpdate {
-	if u != nil {
-		bmu.SetType(*u)
-	}
-	return bmu
-}
-
-// AddType adds u to the "type" field.
-func (bmu *BatteryModelUpdate) AddType(u int8) *BatteryModelUpdate {
-	bmu.mutation.AddType(u)
-	return bmu
-}
-
 // SetVoltage sets the "voltage" field.
 func (bmu *BatteryModelUpdate) SetVoltage(u uint) *BatteryModelUpdate {
 	bmu.mutation.ResetVoltage()
@@ -204,12 +183,6 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := bmu.mutation.Model(); ok {
 		_spec.SetField(batterymodel.FieldModel, field.TypeString, value)
 	}
-	if value, ok := bmu.mutation.GetType(); ok {
-		_spec.SetField(batterymodel.FieldType, field.TypeUint8, value)
-	}
-	if value, ok := bmu.mutation.AddedType(); ok {
-		_spec.AddField(batterymodel.FieldType, field.TypeUint8, value)
-	}
 	if value, ok := bmu.mutation.Voltage(); ok {
 		_spec.SetField(batterymodel.FieldVoltage, field.TypeUint, value)
 	}
@@ -306,27 +279,6 @@ func (bmuo *BatteryModelUpdateOne) SetNillableModel(s *string) *BatteryModelUpda
 	if s != nil {
 		bmuo.SetModel(*s)
 	}
-	return bmuo
-}
-
-// SetType sets the "type" field.
-func (bmuo *BatteryModelUpdateOne) SetType(u uint8) *BatteryModelUpdateOne {
-	bmuo.mutation.ResetType()
-	bmuo.mutation.SetType(u)
-	return bmuo
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (bmuo *BatteryModelUpdateOne) SetNillableType(u *uint8) *BatteryModelUpdateOne {
-	if u != nil {
-		bmuo.SetType(*u)
-	}
-	return bmuo
-}
-
-// AddType adds u to the "type" field.
-func (bmuo *BatteryModelUpdateOne) AddType(u int8) *BatteryModelUpdateOne {
-	bmuo.mutation.AddType(u)
 	return bmuo
 }
 
@@ -499,12 +451,6 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 	}
 	if value, ok := bmuo.mutation.Model(); ok {
 		_spec.SetField(batterymodel.FieldModel, field.TypeString, value)
-	}
-	if value, ok := bmuo.mutation.GetType(); ok {
-		_spec.SetField(batterymodel.FieldType, field.TypeUint8, value)
-	}
-	if value, ok := bmuo.mutation.AddedType(); ok {
-		_spec.AddField(batterymodel.FieldType, field.TypeUint8, value)
 	}
 	if value, ok := bmuo.mutation.Voltage(); ok {
 		_spec.SetField(batterymodel.FieldVoltage, field.TypeUint, value)
