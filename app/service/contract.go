@@ -186,7 +186,11 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 	}
 
 	// 判定非智能套餐门店库存
-	if allo.StoreID != nil && allo.BatteryID == nil && !NewAsset().CheckStore(*allo.StoreID, sub.Model, 1) {
+	a, _ := NewAsset().CheckAsset(model.AssetLocationsTypeStore, *allo.StoreID, sub.Model)
+	if a == nil {
+		snag.Panic("未找到门店资产信息")
+	}
+	if allo.StoreID != nil && allo.BatteryID == nil && a == nil {
 		snag.Panic("电池库存不足")
 	}
 
@@ -583,16 +587,7 @@ func (s *contractService) Update(c *ent.Contract) (err error) {
 	// 设置电车属性
 	if allo.EbikeID != nil {
 		bike, _ := allo.QueryEbike().WithBrand().First(s.ctx)
-		if bike == nil || bike.Edges.Brand == nil {
-			return errors.New("未找到电车信息")
-		}
-		brand := bike.Edges.Brand
-		srv.SetEbike(&model.EbikeBusinessInfo{
-			ID:        bike.ID,
-			BrandID:   brand.ID,
-			BrandName: brand.Name,
-			Sn:        bike.Sn,
-		})
+		srv.SetEbikeID(&bike.ID)
 	}
 
 	// 完成签约后

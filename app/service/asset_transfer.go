@@ -35,7 +35,7 @@ type assetTransferService struct {
 	orm *ent.AssetTransferClient
 }
 
-func NewAssetTransfer() *assetTransferService {
+func NewAssetTransfer(params ...any) *assetTransferService {
 	return &assetTransferService{
 		orm: ent.Database.AssetTransfer,
 	}
@@ -103,8 +103,8 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 				SetLastModifier(modifier)
 			if req.FromLocationType == nil {
 				d.SetInTimeAt(newTime).
-					SetInOperateID(modifier.ID).
-					SetInOperateType(model.OperatorTypeAssetManager.Value()).
+					SetInOperateID(req.OperatorID).
+					SetInOperateType(req.OperatorType.Value()).
 					SetIsIn(true).
 					SetRemark("后台初始调拨")
 			}

@@ -1062,37 +1062,19 @@ func (s *assetService) QueryNonSmartBattery(req *model.QueryAssetReq) (bat *ent.
 	return item, nil
 }
 
-// CheckCabinet 检查电柜电池库存
-func (s *assetService) CheckCabinet(cabinetID uint64, m string, num int) bool {
-	count, _ := s.orm.QueryNotDeleted().Where(
-		asset.LocationsID(cabinetID),
-		asset.LocationsType(model.AssetLocationsTypeCabinet.Value()),
+// CheckAsset 检查非智能电池数量
+func (s *assetService) CheckAsset(locationType model.AssetLocationsType, locationTypeID uint64, m string) (*ent.Asset, error) {
+	item, _ := s.orm.QueryNotDeleted().Where(
+		asset.LocationsID(locationTypeID),
+		asset.LocationsType(locationType.Value()),
 		asset.Status(model.AssetStatusStock.Value()),
+		asset.Type(model.AssetTypeNonSmartBattery.Value()),
 		asset.HasModelWith(batterymodel.Model(m)),
-	).Count(s.ctx)
-	return count >= num
-}
-
-// CheckStore 检查门店电池库存
-func (s *assetService) CheckStore(storeID uint64, m string, num int) bool {
-	count, _ := s.orm.QueryNotDeleted().Where(
-		asset.LocationsID(storeID),
-		asset.LocationsType(model.AssetLocationsTypeStore.Value()),
-		asset.Status(model.AssetStatusStock.Value()),
-		asset.HasModelWith(batterymodel.Model(m)),
-	).Count(s.ctx)
-	return count >= num
-}
-
-// CheckStation 检查站点电池库存
-func (s *assetService) CheckStation(stationID uint64, m string, num int) bool {
-	count, _ := s.orm.QueryNotDeleted().Where(
-		asset.LocationsID(stationID),
-		asset.LocationsType(model.AssetLocationsTypeStation.Value()),
-		asset.Status(model.AssetStatusStock.Value()),
-		asset.HasModelWith(batterymodel.Model(m)),
-	).Count(s.ctx)
-	return count >= num
+	).WithModel().First(s.ctx)
+	if item == nil {
+		return nil, errors.New("未找到符合条件的非智能电池")
+	}
+	return item, nil
 }
 
 func (s *assetService) CurrentBatteryNum(ids []uint64, locationsType model.AssetLocationsType) map[uint64]int {

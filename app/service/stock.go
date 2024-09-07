@@ -8,11 +8,10 @@ package service
 import (
 	"context"
 	"errors"
-	"math"
-	"time"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/pkg/silk"
 )
 
 type stockService struct {
@@ -21,21 +20,23 @@ type stockService struct {
 	employee *ent.Employee
 	// orm          *ent.StockClient
 	employeeInfo *model.Employee
+	*BaseService
 }
 
-func NewStock() *stockService {
+func NewStock(params ...any) *stockService {
 	return &stockService{
 		ctx: context.Background(),
 		// orm: ent.Database.Stock,
+		BaseService: newService(params...),
 	}
 }
 
-func NewStockWithModifier(m *model.Modifier) *stockService {
-	s := NewStock()
-	if m != nil {
-		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
-		s.modifier = m
-	}
+func NewStockWithModifier(params ...any) *stockService {
+	s := NewStock(params)
+	// if m != nil {
+	// 	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
+	// 	s.modifier = m
+	// }
 	return s
 }
 
@@ -367,99 +368,162 @@ func NewStockWithEmployee(e *ent.Employee) *stockService {
 
 // RiderBusiness 骑手业务 电池 / 电车 出入库
 // 此方法操作库存
-func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (batSk, ebikeSk *ent.Stock, err error) {
-	num := model.StockNumberOfRiderBusiness(req.StockType)
-
+func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (batSk, ebikeSk *ent.Stock, err error) {
 	if req.StoreID == nil && req.EbikeStoreID == nil && req.BatStoreID == nil && req.CabinetID == nil && req.EnterpriseID == nil && req.StationID == nil {
 		err = errors.New("参数校验错误")
 		return
 	}
 
-	// creator := tx.Stock.Create()
+	// 查询资产
+	var ebike *ent.Asset
+	var battery *ent.Asset
 
-	// TODO 平台管理员可操作性时处理出入库逻辑
-	switch {
-	case req.StoreID != nil:
-		// creator.SetStoreID(*req.StoreID)
-		// 判定非智能电池库存
-		if req.Battery == nil && num < 0 && !NewAsset().CheckStore(*req.StoreID, req.Model, int(math.Round(math.Abs(float64(num))))) {
-			err = errors.New("电池库存不足")
+	if req.Ebike != nil {
+		ebike, _ = NewAsset().QuerySn(req.Ebike.Sn)
+		if ebike == nil {
+			err = errors.New("电车不存在")
 			return
 		}
-	case req.BatStoreID != nil:
-		// 退租电池返回门店（退租时电池是查询出来的一定不会为空，所以此处无需上面的判定非智能电池库存）
-		// creator.SetStoreID(*req.BatStoreID)
-		if req.Battery == nil && num < 0 && !NewAsset().CheckStore(*req.StoreID, req.Model, int(math.Round(math.Abs(float64(num))))) {
-			err = errors.New("电池库存不足")
+	}
+	if req.Battery != nil {
+		battery, _ = NewAsset().QuerySn(req.Battery.SN)
+		if battery == nil {
+			err = errors.New("电池不存在")
 			return
 		}
 	}
 
-	// 判定团签库存
-	// 未使用电柜激活的时候才需要判定团签站点库存
-	if req.CabinetID == nil && req.EnterpriseID != nil && req.StationID != nil {
-		// creator.SetEnterpriseID(*req.EnterpriseID).SetStationID(*req.StationID)
-		// 判断团签非智能电池库存是否足够
-		if req.Battery == nil && num < 0 && !NewAsset().CheckStation(*req.StationID, req.Model, int(math.Round(math.Abs(float64(num))))) {
-			err = errors.New("电池库存不足")
-			return
-		}
+	// 判定是智能电池还是非智能电池
+	assetType := model.AssetTypeNonSmartBattery
+	if req.Battery != nil {
+		assetType = model.AssetTypeSmartBattery
 	}
 
-	// // 主出入库
-	// creator.SetNillableEmployeeID(req.EmployeeID).
-	// 	SetRiderID(req.RiderID).
-	// 	SetType(req.StockType).
-	// 	SetNum(num).
-	// 	SetCityID(req.CityID).
-	// 	SetNillableSubscribeID(req.SubscribeID).
-	// 	SetNillableAgentID(req.AgentID)
-	//
-	// son := creator.Clone()
+	var toLocationType model.AssetLocationsType
+	var toLocationID uint64
+	details := make([]model.AssetTransferCreateDetail, 0)
+	if req.AssetTransferType == model.AssetTransferTypeActive || req.AssetTransferType == model.AssetTransferTypeContinue {
+		switch {
+		case req.StoreID != nil, req.BatStoreID != nil:
+			if req.Battery == nil {
+				var storeID uint64
+				if req.StoreID != nil {
+					storeID = *req.StoreID
+				}
+				if req.BatStoreID != nil {
+					storeID = *req.BatStoreID
+				}
 
-	// 判定电柜库存
-	if req.CabinetID != nil {
-		// creator.SetCabinetID(*req.CabinetID)
-		if num < 0 && !NewAsset().CheckCabinet(*req.CabinetID, req.Model, int(math.Round(math.Abs(float64(num))))) {
-			err = errors.New("电池库存不足")
-			return
+				// 判定非智能电池库存
+				battery, _ = NewAsset().CheckAsset(model.AssetLocationsTypeStore, storeID, req.Model)
+				if battery == nil {
+					err = errors.New("电池库存不足")
+					return
+				}
+				if battery.Edges.Model == nil {
+					err = errors.New("电池型号不存在")
+					return
+				}
+
+				toLocationType = model.AssetLocationsTypeStore
+				toLocationID = storeID
+
+			}
+		case req.CabinetID == nil && req.EnterpriseID != nil && req.StationID != nil:
+			// 判定团签库存
+			// 未使用电柜激活的时候才需要判定团签站点库存
+			battery, _ = NewAsset().CheckAsset(model.AssetLocationsTypeStation, *req.StoreID, req.Model)
+			if req.Battery == nil && battery == nil {
+				err = errors.New("电池库存不足")
+				return
+			}
+			if battery.Edges.Model == nil {
+				err = errors.New("电池型号不存在")
+				return
+			}
+
+			toLocationType = model.AssetLocationsTypeStation
+			toLocationID = *req.StationID
+
+		case req.CabinetID != nil:
+			battery, _ = NewAsset().CheckAsset(model.AssetLocationsTypeCabinet, *req.StoreID, req.Model)
+			if battery == nil {
+				err = errors.New("电池库存不足")
+				return
+			}
+			if battery.Edges.Model == nil {
+				err = errors.New("电池型号不存在")
+				return
+			}
+
 		}
 	}
-
-	// var batID *uint64
-	// if req.Battery != nil {
-	// 	batID = silk.UInt64(req.Battery.ID)
+	// else {
+	// 电池参与寄存 和退租非智能电池
+	// var storeID uint64
+	// if req.StoreID != nil {
+	// 	storeID = *req.StoreID
 	// }
-	// batSk, err = creator.SetName(req.Model).
-	// 	SetModel(req.Model).
-	// 	SetMaterial(stock.MaterialBattery).
-	// 	SetSn(tools.NewUnique().NewSN()).
-	// 	SetNillableBatteryID(batID). // 设置智能电池ID
-	// 	Save(s.ctx)
-	// if err != nil {
-	// 	return
+	// if req.BatStoreID != nil {
+	// 	storeID = *req.BatStoreID
 	// }
-
-	time.Sleep(10 * time.Millisecond)
-
-	// 当电车需要参与出入库时
-	// if req.Ebike != nil && !req.Rto {
-	// 	ebq := son.SetParent(batSk).
-	// 		SetEbikeID(req.Ebike.ID).
-	// 		SetName(req.Ebike.BrandName).
-	// 		SetBrandID(req.Ebike.BrandID).
-	// 		SetMaterial(stock.MaterialEbike).
-	// 		SetSn(tools.NewUnique().NewSN())
+	// switch {
+	// case req.StoreID != nil, req.BatStoreID != nil:
+	// 	ent.Database.Asset.QueryNotDeleted().
+	// 		Where(asset.LocationsID(storeID),asset.LocationsType(model.AssetLocationsTypeStore.Value())
 	//
-	// 	if req.EbikeStoreID != nil {
-	// 		ebq.SetStoreID(*req.EbikeStoreID)
-	// 	}
-	//
-	// 	ebikeSk, err = ebq.Save(s.ctx)
-	// 	if err != nil {
-	// 		return
-	// 	}
 	// }
+
+	var fromLocationType model.AssetLocationsType
+	var fromLocationID uint64
+
+	// 当电车需要参与出入库时 如果电车赠送的情况不需要产生调拨单
+	if req.Ebike != nil && !req.Rto {
+		details = append(details, model.AssetTransferCreateDetail{
+			AssetType: model.AssetTypeEbike,
+			SN:        silk.String(req.Ebike.Sn),
+		})
+		fromLocationType = model.AssetLocationsType(ebike.LocationsType)
+		fromLocationID = ebike.LocationsID
+	}
+
+	if req.Battery != nil {
+		fromLocationType = model.AssetLocationsType(battery.LocationsType)
+		fromLocationID = battery.LocationsID
+		details = append(details, model.AssetTransferCreateDetail{
+			AssetType: assetType,
+			SN:        silk.String(battery.Sn),
+		})
+	}
+	autoIn := true
+	if s.operator.Type == model.OperatorTypeRider {
+		// 骑手操作不自动入库
+		autoIn = false
+	}
+
+	// 创建调拨单
+	_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
+		FromLocationType:  &fromLocationType,
+		FromLocationID:    &fromLocationID,
+		ToLocationType:    toLocationType,
+		ToLocationID:      toLocationID,
+		Details:           details,
+		Reason:            "骑手业务",
+		AssetTransferType: req.AssetTransferType,
+		OperatorID:        s.operator.ID,
+		OperatorType:      s.operator.Type,
+		AutoIn:            autoIn,
+	}, &model.Modifier{
+		ID:    s.operator.ID,
+		Name:  s.operator.Name,
+		Phone: s.operator.Phone,
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+	if len(failed) > 0 {
+		return nil, nil, errors.New(failed[0])
+	}
 
 	return
 }

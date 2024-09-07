@@ -77,7 +77,8 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (res *
 	}
 
 	// 判定非智能套餐门店库存
-	if allo.StoreID != nil && allo.BatteryID == nil && !service.NewAsset().CheckStore(*allo.StoreID, sub.Model, 1) {
+	checkAsset, _ := service.NewAsset().CheckAsset(model.AssetLocationsTypeStore, *allo.StoreID, sub.Model)
+	if allo.StoreID != nil && allo.BatteryID == nil && checkAsset == nil {
 		return nil, errors.New("库存不足")
 	}
 

@@ -62,7 +62,7 @@ func (*business) Unsubscribe(c echo.Context) (err error) {
 func (*business) Pause(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
 	return ctx.SendResponse(
-		service.NewRiderBusiness(ctx.Rider).Pause(req),
+		service.NewRiderBusiness(ctx.Rider, ctx.Operator).Pause(req),
 	)
 }
 

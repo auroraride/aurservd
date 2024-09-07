@@ -163,9 +163,9 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 	if params.StoreID != nil {
 		entStore = NewStore().Query(*params.StoreID)
 		cityID = entStore.CityID
-
+		checkAsset, _ := NewAsset().CheckAsset(model.AssetLocationsTypeStore, *params.StoreID, sub.Model)
 		// 判定门店非智能电池库存
-		if params.BatteryID == nil && !NewAsset().CheckStore(*params.StoreID, sub.Model, 1) {
+		if params.BatteryID == nil && checkAsset == nil {
 			snag.Panic("电池库存不足")
 		}
 	}
@@ -175,8 +175,8 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 		entStation = NewEnterpriseStation().QueryX(*sub.StationID)
 		cityID = *entStation.CityID
 		// TODO 判定站点非智能电池库存
-
-		if params.BatteryID == nil && !NewAsset().CheckStation(*sub.StationID, sub.Model, 1) {
+		checkAsset, _ := NewAsset().CheckAsset(model.AssetLocationsTypeStore, *params.StoreID, sub.Model)
+		if params.BatteryID == nil && checkAsset == nil {
 			snag.Panic("站点电池库存不足")
 		}
 	}

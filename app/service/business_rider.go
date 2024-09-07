@@ -470,11 +470,11 @@ func (s *businessRiderService) doTask() (bin *model.BinInfo, bat *model.Battery,
 // do 处理业务
 func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func(tx *ent.Tx)) {
 	async.WithTask(func() {
-		sts := map[model.BusinessType]uint8{
-			model.BusinessTypeActive:      model.StockTypeRiderActive,
-			model.BusinessTypeUnsubscribe: model.StockTypeRiderUnSubscribe,
-			model.BusinessTypePause:       model.StockTypeRiderPause,
-			model.BusinessTypeContinue:    model.StockTypeRiderContinue,
+		sts := map[model.BusinessType]model.AssetTransferType{
+			model.BusinessTypeActive:      model.AssetTransferTypeActive,
+			model.BusinessTypeUnsubscribe: model.AssetTransferTypeUnSubscribe,
+			model.BusinessTypePause:       model.AssetTransferTypePause,
+			model.BusinessTypeContinue:    model.AssetTransferTypeContinue,
 		}
 
 		ops := map[model.BusinessType]model.Operate{
@@ -536,13 +536,13 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 
 			// 需要进行业务出入库
 			if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil || s.ebikeStoreID != nil || s.batStoreID != nil {
-				_, _, err = NewStockWithModifier(s.modifier).RiderBusiness(
-					tx,
+				_, _, err = NewStockWithModifier(s.modifier, s.operator).RiderBusiness(
 					&model.StockBusinessReq{
-						RiderID:   s.subscribe.RiderID,
-						Model:     s.subscribe.Model,
-						CityID:    s.subscribe.CityID,
-						StockType: sts[doReq.Type],
+						RiderID:           s.subscribe.RiderID,
+						Model:             s.subscribe.Model,
+						CityID:            s.subscribe.CityID,
+						AssetTransferType: sts[doReq.Type],
+						BusinessType:      doReq.Type,
 
 						StoreID:     s.storeID,
 						EmployeeID:  s.employeeID,
@@ -577,7 +577,7 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 				zap.L().Error("骑手业务取出电池后任务执行失败: "+doReq.Type.String(), zap.Error(err))
 			}
 			// if bat != nil && s.cabinet.Intelligent {
-			// 	_ = batSk.Update().SetBatteryID(bat.ID).Exec(s.ctx)
+			// _ = batSk.Update().SetBatteryID(bat.ID).Exec(s.ctx)
 			// }
 		}
 
