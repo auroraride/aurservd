@@ -50,7 +50,7 @@ func NewRiderBusiness(params ...any) *riderBusinessService {
 	s := &riderBusinessService{
 		ctx:         context.Background(),
 		maxTime:     180 * time.Second,
-		BaseService: newService(params),
+		BaseService: newService(params...),
 	}
 	// s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, rider)
 	// s.rider = rider

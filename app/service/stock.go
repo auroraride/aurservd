@@ -8,35 +8,52 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
+	"math"
+	"strings"
+
+	"entgo.io/ent/dialect/sql"
+	"github.com/golang-module/carbon/v2"
 
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/stock"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/pkg/silk"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type stockService struct {
-	ctx      context.Context
-	modifier *model.Modifier
-	employee *ent.Employee
-	// orm          *ent.StockClient
+	ctx          context.Context
+	modifier     *model.Modifier
+	employee     *ent.Employee
+	orm          *ent.StockClient
 	employeeInfo *model.Employee
 	*BaseService
 }
 
 func NewStock(params ...any) *stockService {
 	return &stockService{
-		ctx: context.Background(),
-		// orm: ent.Database.Stock,
+		ctx:         context.Background(),
+		orm:         ent.Database.Stock,
 		BaseService: newService(params...),
 	}
 }
 
-func NewStockWithModifier(params ...any) *stockService {
-	s := NewStock(params)
-	// if m != nil {
-	// 	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
-	// 	s.modifier = m
-	// }
+func NewStockWithModifier(m *model.Modifier) *stockService {
+	s := NewStock()
+	if m != nil {
+		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
+		s.modifier = m
+	}
 	return s
 }
 
@@ -375,126 +392,103 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (batSk, ebikeS
 	}
 
 	// 查询资产
-	var ebike *ent.Asset
-	var battery *ent.Asset
-
+	var ebikeInfo *ent.Asset
+	var batteryInfo *ent.Asset
+	var fromLocationType model.AssetLocationsType
+	var fromLocationID uint64
+	details := make([]model.AssetTransferCreateDetail, 0)
+	assetType := model.AssetTypeSmartBattery
 	if req.Ebike != nil {
-		ebike, _ = NewAsset().QuerySn(req.Ebike.Sn)
-		if ebike == nil {
+		ebikeInfo, _ = NewAsset().QuerySn(req.Ebike.Sn)
+		if ebikeInfo == nil {
 			err = errors.New("电车不存在")
 			return
 		}
 	}
-	if req.Battery != nil {
-		battery, _ = NewAsset().QuerySn(req.Battery.SN)
-		if battery == nil {
-			err = errors.New("电池不存在")
-			return
-		}
-	}
-
-	// 判定是智能电池还是非智能电池
-	assetType := model.AssetTypeNonSmartBattery
-	if req.Battery != nil {
-		assetType = model.AssetTypeSmartBattery
-	}
 
 	var toLocationType model.AssetLocationsType
 	var toLocationID uint64
-	details := make([]model.AssetTransferCreateDetail, 0)
-	if req.AssetTransferType == model.AssetTransferTypeActive || req.AssetTransferType == model.AssetTransferTypeContinue {
-		switch {
-		case req.StoreID != nil, req.BatStoreID != nil:
-			if req.Battery == nil {
-				var storeID uint64
-				if req.StoreID != nil {
-					storeID = *req.StoreID
-				}
-				if req.BatStoreID != nil {
-					storeID = *req.BatStoreID
-				}
-
-				// 判定非智能电池库存
-				battery, _ = NewAsset().CheckAsset(model.AssetLocationsTypeStore, storeID, req.Model)
-				if battery == nil {
-					err = errors.New("电池库存不足")
-					return
-				}
-				if battery.Edges.Model == nil {
-					err = errors.New("电池型号不存在")
-					return
-				}
-
-				toLocationType = model.AssetLocationsTypeStore
-				toLocationID = storeID
-
-			}
-		case req.CabinetID == nil && req.EnterpriseID != nil && req.StationID != nil:
-			// 判定团签库存
-			// 未使用电柜激活的时候才需要判定团签站点库存
-			battery, _ = NewAsset().CheckAsset(model.AssetLocationsTypeStation, *req.StoreID, req.Model)
-			if req.Battery == nil && battery == nil {
-				err = errors.New("电池库存不足")
-				return
-			}
-			if battery.Edges.Model == nil {
-				err = errors.New("电池型号不存在")
-				return
-			}
-
-			toLocationType = model.AssetLocationsTypeStation
-			toLocationID = *req.StationID
-
-		case req.CabinetID != nil:
-			battery, _ = NewAsset().CheckAsset(model.AssetLocationsTypeCabinet, *req.StoreID, req.Model)
-			if battery == nil {
-				err = errors.New("电池库存不足")
-				return
-			}
-			if battery.Edges.Model == nil {
-				err = errors.New("电池型号不存在")
-				return
-			}
-
+	switch {
+	case req.StoreID != nil, req.BatStoreID != nil:
+		var storeID uint64
+		if req.StoreID != nil {
+			storeID = *req.StoreID
 		}
-	}
-	// else {
-	// 电池参与寄存 和退租非智能电池
-	// var storeID uint64
-	// if req.StoreID != nil {
-	// 	storeID = *req.StoreID
-	// }
-	// if req.BatStoreID != nil {
-	// 	storeID = *req.BatStoreID
-	// }
-	// switch {
-	// case req.StoreID != nil, req.BatStoreID != nil:
-	// 	ent.Database.Asset.QueryNotDeleted().
-	// 		Where(asset.LocationsID(storeID),asset.LocationsType(model.AssetLocationsTypeStore.Value())
-	//
-	// }
+		if req.BatStoreID != nil {
+			storeID = *req.BatStoreID
+		}
+		// 判定非智能电池库存
+		if req.Battery == nil && (req.AssetTransferType == model.AssetTransferTypeActive || req.AssetTransferType == model.AssetTransferTypeContinue) {
+			batteryInfo, _ = s.CheckBusinessBattery(req, model.AssetLocationsTypeStore, storeID)
+			assetType = model.AssetTypeSmartBattery
 
-	var fromLocationType model.AssetLocationsType
-	var fromLocationID uint64
+			fromLocationType = model.AssetLocationsType(batteryInfo.LocationsType)
+			fromLocationID = batteryInfo.LocationsID
+			details = append(details, model.AssetTransferCreateDetail{
+				AssetType: assetType,
+				ModelID:   batteryInfo.ModelID,
+				Num:       silk.UInt(1),
+			})
+		}
+		toLocationType = model.AssetLocationsTypeStore
+		toLocationID = storeID
+	case req.CabinetID == nil && req.EnterpriseID != nil && req.StationID != nil:
+		// 判定团签库存
+		// 未使用电柜激活的时候才需要判定团签站点库存
+		// 判定非智能电池库存
+		if req.Battery == nil && (req.AssetTransferType == model.AssetTransferTypeActive || req.AssetTransferType == model.AssetTransferTypeContinue) {
+			batteryInfo, _ = s.CheckBusinessBattery(req, model.AssetLocationsTypeStation, *req.StationID)
+			assetType = model.AssetTypeSmartBattery
+			fromLocationType = model.AssetLocationsType(batteryInfo.LocationsType)
+			fromLocationID = batteryInfo.LocationsID
+			details = append(details, model.AssetTransferCreateDetail{
+				AssetType: assetType,
+				ModelID:   batteryInfo.ModelID,
+				Num:       silk.UInt(1),
+			})
+		}
+		toLocationType = model.AssetLocationsTypeStation
+		toLocationID = *req.StationID
+	case req.CabinetID != nil:
+		if req.Battery == nil && (req.AssetTransferType == model.AssetTransferTypeActive || req.AssetTransferType == model.AssetTransferTypeContinue) {
+			batteryInfo, _ = s.CheckBusinessBattery(req, model.AssetLocationsTypeStation, *req.CabinetID)
+			assetType = model.AssetTypeSmartBattery
+			fromLocationType = model.AssetLocationsType(batteryInfo.LocationsType)
+			fromLocationID = batteryInfo.LocationsID
+			details = append(details, model.AssetTransferCreateDetail{
+				AssetType: assetType,
+				ModelID:   batteryInfo.ModelID,
+				Num:       silk.UInt(1),
+			})
+		}
+		toLocationType = model.AssetLocationsTypeCabinet
+		toLocationID = *req.CabinetID
+	}
+
+	if req.Battery != nil {
+		batteryInfo, _ = NewAsset().QuerySn(req.Battery.SN)
+		if batteryInfo == nil {
+			err = errors.New("电池不存在")
+			return
+		}
+		fromLocationType = model.AssetLocationsType(batteryInfo.LocationsType)
+		fromLocationID = batteryInfo.LocationsID
+		details = append(details, model.AssetTransferCreateDetail{
+			AssetType: assetType,
+			SN:        silk.String(batteryInfo.Sn),
+		})
+	}
 
 	// 当电车需要参与出入库时 如果电车赠送的情况不需要产生调拨单
-	if req.Ebike != nil && !req.Rto {
+	if ebikeInfo != nil && !req.Rto {
 		details = append(details, model.AssetTransferCreateDetail{
 			AssetType: model.AssetTypeEbike,
 			SN:        silk.String(req.Ebike.Sn),
 		})
-		fromLocationType = model.AssetLocationsType(ebike.LocationsType)
-		fromLocationID = ebike.LocationsID
+		fromLocationType = model.AssetLocationsType(ebikeInfo.LocationsType)
+		fromLocationID = ebikeInfo.LocationsID
 	}
 
-	if req.Battery != nil {
-		fromLocationType = model.AssetLocationsType(battery.LocationsType)
-		fromLocationID = battery.LocationsID
-		details = append(details, model.AssetTransferCreateDetail{
-			AssetType: assetType,
-			SN:        silk.String(battery.Sn),
-		})
-	}
 	autoIn := true
 	if s.operator.Type == model.OperatorTypeRider {
 		// 骑手操作不自动入库
@@ -528,502 +522,617 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (batSk, ebikeS
 	return
 }
 
-// EmployeeOverview 店员物资概览
-// func (s *stockService) EmployeeOverview() (res model.StockEmployeeOverview) {
-// 	st := s.employee.Edges.Store
-// 	if st == nil {
-// 		snag.Panic("未上班")
+// CheckBusinessBattery 激活和取消寄存非智能电池数量判定
+func (s *stockService) CheckBusinessBattery(req *model.StockBusinessReq, locationsType model.AssetLocationsType, locationsID uint64) (batteryInfo *ent.Asset, err error) {
+	// 判定非智能电池库存
+	batteryInfo, _ = NewAsset().CheckAsset(locationsType, locationsID, req.Model)
+	if batteryInfo == nil {
+		err = errors.New("电池库存不足")
+		return
+	}
+	if batteryInfo.Edges.Model == nil {
+		err = errors.New("电池型号不存在")
+		return
+	}
+	return batteryInfo, nil
+}
+
+// func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (batSk, ebikeSk *ent.Stock, err error) {
+// 	num := model.StockNumberOfRiderBusiness(req.StockType)
+//
+// 	if req.StoreID == nil && req.EbikeStoreID == nil && req.BatStoreID == nil && req.CabinetID == nil && req.EnterpriseID == nil && req.StationID == nil {
+// 		err = errors.New("参数校验错误")
+// 		return
 // 	}
 //
-// 	start := carbon.Now().StartOfDay().Timestamp()
+// 	creator := tx.Stock.Create()
 //
-// 	res = model.StockEmployeeOverview{
-// 		Batteries: make([]*model.StockEmployeeOverviewBattery, 0),
-// 		Materials: make([]*model.StockEmployeeOverviewMaterial, 0),
-// 	}
-//
-// 	// 计算所有物资
-// 	batteries := make(map[string]*model.StockEmployeeOverviewBattery)
-// 	materials := make(map[string]*model.StockEmployeeOverviewMaterial)
-//
-// 	items, _ := s.orm.Query().Where(stock.StoreID(st.ID)).All(s.ctx)
-// 	for _, item := range items {
-// 		name := st.Name
-// 		if item.Model != nil {
-// 			if _, ok := batteries[name]; !ok {
-// 				batteries[name] = &model.StockEmployeeOverviewBattery{
-// 					Outbound: 0,
-// 					Inbound:  0,
-// 					Surplus:  0,
-// 					Model:    *item.Model,
-// 				}
-// 			}
-// 			// 判断是否今日
-// 			if item.CreatedAt.Unix() > start {
-// 				if item.Num > 0 {
-// 					batteries[name].Inbound += item.Num
-// 				} else {
-// 					batteries[name].Outbound += int(math.Abs(float64(item.Num)))
-// 				}
-// 			}
-// 			batteries[name].Surplus += item.Num
-// 		} else {
-// 			if _, ok := materials[name]; !ok {
-// 				materials[name] = &model.StockEmployeeOverviewMaterial{
-// 					Name:    name,
-// 					Surplus: 0,
-// 				}
-// 			}
-// 			materials[name].Surplus += item.Num
+// 	// TODO 平台管理员可操作性时处理出入库逻辑
+// 	switch {
+// 	case req.StoreID != nil:
+// 		creator.SetStoreID(*req.StoreID)
+// 		// 判定非智能电池库存
+// 		if req.Battery == nil && num < 0 && !s.CheckStore(*req.StoreID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+// 			err = errors.New("电池库存不足")
+// 			return
+// 		}
+// 	case req.BatStoreID != nil:
+// 		// 退租电池返回门店（退租时电池是查询出来的一定不会为空，所以此处无需上面的判定非智能电池库存）
+// 		creator.SetStoreID(*req.BatStoreID)
+// 		if req.Battery == nil && num < 0 && !s.CheckStore(*req.StoreID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+// 			err = errors.New("电池库存不足")
+// 			return
 // 		}
 // 	}
 //
-// 	for _, battery := range batteries {
-// 		res.Batteries = append(res.Batteries, battery)
+// 	// 判定团签库存
+// 	// 未使用电柜激活的时候才需要判定团签站点库存
+// 	if req.CabinetID == nil && req.EnterpriseID != nil && req.StationID != nil {
+// 		creator.SetEnterpriseID(*req.EnterpriseID).SetStationID(*req.StationID)
+// 		// 判断团签非智能电池库存是否足够
+// 		if req.Battery == nil && num < 0 && !s.CheckStation(*req.StationID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+// 			err = errors.New("电池库存不足")
+// 			return
+// 		}
 // 	}
 //
-// 	for _, material := range materials {
-// 		res.Materials = append(res.Materials, material)
+// 	// 主出入库
+// 	creator.SetNillableEmployeeID(req.EmployeeID).
+// 		SetRiderID(req.RiderID).
+// 		SetType(req.StockType).
+// 		SetNum(num).
+// 		SetCityID(req.CityID).
+// 		SetNillableSubscribeID(req.SubscribeID).
+// 		SetNillableAgentID(req.AgentID)
+//
+// 	son := creator.Clone()
+//
+// 	// 判定电柜库存
+// 	if req.CabinetID != nil {
+// 		creator.SetCabinetID(*req.CabinetID)
+// 		if num < 0 && !s.CheckCabinet(*req.CabinetID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+// 			err = errors.New("电池库存不足")
+// 			return
+// 		}
 // 	}
 //
-// 	// 排序
-// 	sort.Slice(res.Batteries, func(i, j int) bool {
-// 		return strings.Compare(res.Batteries[i].Model, res.Batteries[j].Model) < 0
-// 	})
-// 	sort.Slice(res.Materials, func(i, j int) bool {
-// 		return strings.Compare(res.Materials[i].Name, res.Materials[j].Name) < 0
-// 	})
+// 	var batID *uint64
+// 	if req.Battery != nil {
+// 		batID = silk.UInt64(req.Battery.ID)
+// 	}
+// 	batSk, err = creator.SetName(req.Model).
+// 		SetModel(req.Model).
+// 		SetMaterial(stock.MaterialBattery).
+// 		SetSn(tools.NewUnique().NewSN()).
+// 		SetNillableBatteryID(batID). // 设置智能电池ID
+// 		Save(s.ctx)
+// 	if err != nil {
+// 		return
+// 	}
+//
+// 	time.Sleep(10 * time.Millisecond)
+//
+// 	// 当电车需要参与出入库时
+// 	if req.Ebike != nil && !req.Rto {
+// 		ebq := son.SetParent(batSk).
+// 			SetEbikeID(req.Ebike.ID).
+// 			SetName(req.Ebike.BrandName).
+// 			SetBrandID(req.Ebike.BrandID).
+// 			SetMaterial(stock.MaterialEbike).
+// 			SetSn(tools.NewUnique().NewSN())
+//
+// 		if req.EbikeStoreID != nil {
+// 			ebq.SetStoreID(*req.EbikeStoreID)
+// 		}
+//
+// 		ebikeSk, err = ebq.Save(s.ctx)
+// 		if err != nil {
+// 			return
+// 		}
+// 	}
 //
 // 	return
 // }
+
+// EmployeeOverview 店员物资概览
+//
+//	func (s *stockService) EmployeeOverview() (res model.StockEmployeeOverview) {
+//		st := s.employee.Edges.Store
+//		if st == nil {
+//			snag.Panic("未上班")
+//		}
+//
+//		start := carbon.Now().StartOfDay().Timestamp()
+//
+//		res = model.StockEmployeeOverview{
+//			Batteries: make([]*model.StockEmployeeOverviewBattery, 0),
+//			Materials: make([]*model.StockEmployeeOverviewMaterial, 0),
+//		}
+//
+//		// 计算所有物资
+//		batteries := make(map[string]*model.StockEmployeeOverviewBattery)
+//		materials := make(map[string]*model.StockEmployeeOverviewMaterial)
+//
+//		items, _ := s.orm.Query().Where(stock.StoreID(st.ID)).All(s.ctx)
+//		for _, item := range items {
+//			name := st.Name
+//			if item.Model != nil {
+//				if _, ok := batteries[name]; !ok {
+//					batteries[name] = &model.StockEmployeeOverviewBattery{
+//						Outbound: 0,
+//						Inbound:  0,
+//						Surplus:  0,
+//						Model:    *item.Model,
+//					}
+//				}
+//				// 判断是否今日
+//				if item.CreatedAt.Unix() > start {
+//					if item.Num > 0 {
+//						batteries[name].Inbound += item.Num
+//					} else {
+//						batteries[name].Outbound += int(math.Abs(float64(item.Num)))
+//					}
+//				}
+//				batteries[name].Surplus += item.Num
+//			} else {
+//				if _, ok := materials[name]; !ok {
+//					materials[name] = &model.StockEmployeeOverviewMaterial{
+//						Name:    name,
+//						Surplus: 0,
+//					}
+//				}
+//				materials[name].Surplus += item.Num
+//			}
+//		}
+//
+//		for _, battery := range batteries {
+//			res.Batteries = append(res.Batteries, battery)
+//		}
+//
+//		for _, material := range materials {
+//			res.Materials = append(res.Materials, material)
+//		}
+//
+//		// 排序
+//		sort.Slice(res.Batteries, func(i, j int) bool {
+//			return strings.Compare(res.Batteries[i].Model, res.Batteries[j].Model) < 0
+//		})
+//		sort.Slice(res.Materials, func(i, j int) bool {
+//			return strings.Compare(res.Materials[i].Name, res.Materials[j].Name) < 0
+//		})
+//
+//		return
+//	}
 //
 // // listBasicQuery 列表基础查询语句
-// func (s *stockService) listBasicQuery(req *model.StockEmployeeListReq) *ent.StockQuery {
-// 	tt := tools.NewTime()
 //
-// 	q := s.orm.Query().WithRider()
+//	func (s *stockService) listBasicQuery(req *model.StockEmployeeListReq) *ent.StockQuery {
+//		tt := tools.NewTime()
 //
-// 	if req.Outbound {
-// 		q.Where(stock.NumLT(0))
-// 	} else {
-// 		q.Where(stock.NumGT(0))
-// 	}
+//		q := s.orm.Query().WithRider()
 //
-// 	if req.Start != nil {
-// 		q.Where(stock.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
-// 	}
+//		if req.Outbound {
+//			q.Where(stock.NumLT(0))
+//		} else {
+//			q.Where(stock.NumGT(0))
+//		}
 //
-// 	if req.End != nil {
-// 		q.Where(stock.CreatedAtLTE(tt.ParseNextDateStringX(*req.End)))
-// 	}
+//		if req.Start != nil {
+//			q.Where(stock.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
+//		}
 //
-// 	return q
-// }
+//		if req.End != nil {
+//			q.Where(stock.CreatedAtLTE(tt.ParseNextDateStringX(*req.End)))
+//		}
 //
-// func (s *stockService) EmployeeList(req *model.StockEmployeeListReq) model.StockEmployeeListRes {
-// 	st := s.employee.Edges.Store
-// 	if st == nil {
-// 		snag.Panic("未上班")
-// 	}
-// 	q := s.listBasicQuery(req).Where(stock.StoreID(st.ID))
+//		return q
+//	}
 //
-// 	res := model.ParsePaginationResponse(
-// 		q,
-// 		req.PaginationReq,
-// 		func(item *ent.Stock) model.StockEmployeeListResItem {
-// 			r := item.Edges.Rider
-// 			res := model.StockEmployeeListResItem{
-// 				ID:    item.ID,
-// 				Type:  item.Type,
-// 				Model: item.Model,
-// 				Num:   item.Num,
-// 				Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
-// 			}
-// 			if r != nil {
-// 				res.Phone = r.Phone
-// 				res.Name = r.Name
-// 			}
-// 			return res
-// 		},
-// 	)
+//	func (s *stockService) EmployeeList(req *model.StockEmployeeListReq) model.StockEmployeeListRes {
+//		st := s.employee.Edges.Store
+//		if st == nil {
+//			snag.Panic("未上班")
+//		}
+//		q := s.listBasicQuery(req).Where(stock.StoreID(st.ID))
 //
-// 	var today *int
+//		res := model.ParsePaginationResponse(
+//			q,
+//			req.PaginationReq,
+//			func(item *ent.Stock) model.StockEmployeeListResItem {
+//				r := item.Edges.Rider
+//				res := model.StockEmployeeListResItem{
+//					ID:    item.ID,
+//					Type:  item.Type,
+//					Model: item.Model,
+//					Num:   item.Num,
+//					Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
+//				}
+//				if r != nil {
+//					res.Phone = r.Phone
+//					res.Name = r.Name
+//				}
+//				return res
+//			},
+//		)
 //
-// 	if res.Pagination.Current == 1 {
-// 		today = new(int)
-// 		// 获取今日数量
-// 		var result []struct {
-// 			ID  uint64 `json:"id"`
-// 			Sum int    `json:"sum"`
-// 		}
-// 		cq := s.orm.Query().Where(
-// 			stock.CreatedAtGTE(carbon.Now().StartOfDay().StdTime()),
-// 			stock.StoreID(st.ID),
-// 		)
-// 		if req.Outbound {
-// 			cq.Where(stock.NumLT(0))
-// 		} else {
-// 			cq.Where(stock.NumGT(0))
-// 		}
-// 		_ = cq.Modify().GroupBy(stock.FieldID).Aggregate(ent.Sum(stock.FieldNum)).Scan(s.ctx, &result)
+//		var today *int
 //
-// 		if len(result) > 0 {
-// 			today = &result[0].Sum
-// 		}
-// 	}
+//		if res.Pagination.Current == 1 {
+//			today = new(int)
+//			// 获取今日数量
+//			var result []struct {
+//				ID  uint64 `json:"id"`
+//				Sum int    `json:"sum"`
+//			}
+//			cq := s.orm.Query().Where(
+//				stock.CreatedAtGTE(carbon.Now().StartOfDay().StdTime()),
+//				stock.StoreID(st.ID),
+//			)
+//			if req.Outbound {
+//				cq.Where(stock.NumLT(0))
+//			} else {
+//				cq.Where(stock.NumGT(0))
+//			}
+//			_ = cq.Modify().GroupBy(stock.FieldID).Aggregate(ent.Sum(stock.FieldNum)).Scan(s.ctx, &result)
 //
-// 	return model.StockEmployeeListRes{
-// 		Today:         today,
-// 		PaginationRes: res,
-// 	}
-// }
+//			if len(result) > 0 {
+//				today = &result[0].Sum
+//			}
+//		}
+//
+//		return model.StockEmployeeListRes{
+//			Today:         today,
+//			PaginationRes: res,
+//		}
+//	}
 //
 // // CabinetList 电柜物资列表
-// func (s *stockService) CabinetList(req *model.StockCabinetListReq) *model.PaginationRes {
-// 	q := ent.Database.Cabinet.QueryNotDeleted().
-// 		Where(cabinet.HasStocks()).
-// 		WithCity().
-// 		WithStocks()
 //
-// 	if req.CabinetID != 0 {
-// 		q.Where(cabinet.ID(req.CabinetID))
-// 	}
-// 	if req.Serial != "" {
-// 		q.Where(cabinet.Serial(req.Serial))
-// 	}
-// 	if req.CityID != 0 {
-// 		q.Where(cabinet.CityID(req.CityID))
-// 	}
-// 	if req.Start != "" {
-// 		q.Where(cabinet.CreatedAtGTE(tools.NewTime().ParseDateStringX(req.Start)))
-// 	}
-// 	if req.End != "" {
-// 		q.Where(cabinet.CreatedAtLT(tools.NewTime().ParseNextDateStringX(req.End)))
-// 	}
+//	func (s *stockService) CabinetList(req *model.StockCabinetListReq) *model.PaginationRes {
+//		q := ent.Database.Cabinet.QueryNotDeleted().
+//			Where(cabinet.HasStocks()).
+//			WithCity().
+//			WithStocks()
 //
-// 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) model.StockCabinetListRes {
-// 		res := model.StockCabinetListRes{
-// 			ID:        item.ID,
-// 			Serial:    item.Serial,
-// 			Name:      item.Name,
-// 			Batteries: make([]*model.StockMaterial, 0),
-// 		}
-// 		c := item.Edges.City
-// 		if c != nil {
-// 			res.City = model.City{
-// 				ID:   c.ID,
-// 				Name: c.Name,
-// 			}
-// 		}
-// 		batteries := make(map[string]*model.StockMaterial)
+//		if req.CabinetID != 0 {
+//			q.Where(cabinet.ID(req.CabinetID))
+//		}
+//		if req.Serial != "" {
+//			q.Where(cabinet.Serial(req.Serial))
+//		}
+//		if req.CityID != 0 {
+//			q.Where(cabinet.CityID(req.CityID))
+//		}
+//		if req.Start != "" {
+//			q.Where(cabinet.CreatedAtGTE(tools.NewTime().ParseDateStringX(req.Start)))
+//		}
+//		if req.End != "" {
+//			q.Where(cabinet.CreatedAtLT(tools.NewTime().ParseNextDateStringX(req.End)))
+//		}
 //
-// 		// 出入库
-// 		for _, st := range item.Edges.Stocks {
-// 			s.Calculate(batteries, st)
-// 		}
+//		return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) model.StockCabinetListRes {
+//			res := model.StockCabinetListRes{
+//				ID:        item.ID,
+//				Serial:    item.Serial,
+//				Name:      item.Name,
+//				Batteries: make([]*model.StockMaterial, 0),
+//			}
+//			c := item.Edges.City
+//			if c != nil {
+//				res.City = model.City{
+//					ID:   c.ID,
+//					Name: c.Name,
+//				}
+//			}
+//			batteries := make(map[string]*model.StockMaterial)
 //
-// 		for _, battery := range batteries {
-// 			res.Batteries = append(res.Batteries, battery)
-// 		}
+//			// 出入库
+//			for _, st := range item.Edges.Stocks {
+//				s.Calculate(batteries, st)
+//			}
 //
-// 		return res
-// 	})
-// }
+//			for _, battery := range batteries {
+//				res.Batteries = append(res.Batteries, battery)
+//			}
 //
-// func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuery, info ar.Map) {
-// 	info = make(ar.Map)
-//
-// 	q = s.orm.Query().
-// 		Modify(func(sel *sql.Selector) {
-// 			// 不做对象查询时需要去重排除配偶
-// 			if req.Goal == 0 && req.Serial == "" && req.StoreID == 0 && req.CabinetID == 0 && req.EnterpriseID == 0 && req.StationID == 0 {
-// 				sel.FromExpr(sql.Raw("(SELECT DISTINCT ON (id + COALESCE(stock_spouse, 0)) * FROM stock) stock"))
-// 			}
-// 		}).
-// 		WithCabinet().
-// 		WithStore().
-// 		WithSpouse(func(sq *ent.StockQuery) {
-// 			sq.WithStore().WithCabinet().WithRider().WithStation().WithBattery().WithEnterprise()
-// 		}).
-// 		WithRider().
-// 		WithEmployee().
-// 		WithCity().
-// 		WithEbike().
-// 		WithStation().
-// 		WithBattery().
-// 		WithEnterprise().
-// 		WithAgent()
-// 	// 排序
-// 	if req.Positive {
-// 		q.Order(ent.Asc(stock.FieldSn))
-// 	} else {
-// 		q.Order(ent.Desc(stock.FieldSn))
-// 	}
-//
-// 	if req.Start != "" {
-// 		info["开始时间"] = req.Start
-// 		q.Where(stock.CreatedAtGTE(tools.NewTime().ParseDateStringX(req.Start)))
-// 	}
-//
-// 	if req.End != "" {
-// 		info["结束时间"] = req.Start
-// 		q.Where(stock.CreatedAtLT(tools.NewTime().ParseNextDateStringX(req.End)))
-// 	}
-//
-// 	if req.CityID != 0 {
-// 		info["城市"] = ent.NewExportInfo(req.CityID, city.Table)
-// 		q.Where(stock.CityID(req.CityID))
-// 	}
-//
-// 	if req.Serial != "" {
-// 		info["电柜编号"] = req.Serial
-// 		q.Where(stock.HasCabinetWith(cabinet.Serial(req.Serial)))
-// 	}
-//
-// 	if req.EbikeSN != "" {
-// 		info["车架号"] = req.EbikeSN
-// 		q.Where(stock.HasEbikeWith(ebike.Sn(req.EbikeSN)))
-// 	}
-//
-// 	if req.BatterySN != "" {
-// 		info["电池编码"] = req.BatterySN
-// 		q.Where(stock.HasBatteryWith(battery.Sn(req.BatterySN)))
-// 	}
-//
-// 	switch req.Goal {
-// 	case model.StockGoalStore:
-// 		// 门店物资
-// 		info["查询目标"] = "门店"
-// 		q.Where(
-// 			stock.StoreIDNotNil(),
-// 			stock.CabinetIDIsNil(),
-// 			stock.StationIDIsNil(),
-// 		)
-// 	case model.StockGoalCabinet:
-// 		// 电柜物资
-// 		info["查询目标"] = "电柜"
-// 		q.Where(
-// 			stock.StoreIDIsNil(),
-// 			stock.CabinetIDNotNil(),
-// 			stock.StationIDIsNil(),
-// 		)
-// 	case model.StockGoalStation:
-// 		// 站点
-// 		info["查询目标"] = "站点"
-// 		q.Where(
-// 			stock.StoreIDIsNil(),
-// 			stock.CabinetIDIsNil(),
-// 			stock.StationIDNotNil(),
-// 		)
-// 	default:
-// 		// 门店或电柜物资或站点
-// 		info["查询目标"] = "电柜或门店或站点"
-// 		q.Where(
-// 			stock.Or(
-// 				stock.StoreIDNotNil(),
-// 				stock.CabinetIDNotNil(),
-// 				stock.StationIDNotNil(),
-// 			),
-// 		)
-// 	}
-//
-// 	// 筛选物资类别
-// 	if req.Materials == "" {
-// 		req.Materials = fmt.Sprintf("%s,%s", stock.MaterialBattery, stock.MaterialEbike)
-// 	} else {
-// 		req.Materials = strings.ReplaceAll(req.Materials, " ", "")
-// 	}
-// 	materials := strings.Split(req.Materials, ",")
-//
-// 	if len(materials) > 0 {
-// 		var mtext []string
-// 		var predicates []predicate.Stock
-// 		for _, material := range materials {
-// 			switch stock.Material(material) {
-// 			case stock.MaterialBattery:
-// 				mtext = append(mtext, "电池")
-// 				predicates = append(predicates, stock.ModelNotNil())
-// 			case stock.MaterialEbike:
-// 				mtext = append(mtext, "电车")
-// 				predicates = append(predicates, stock.EbikeIDNotNil())
-// 			case stock.MaterialOthers:
-// 				mtext = append(mtext, "其他")
-// 				predicates = append(predicates, stock.ModelIsNil())
-// 			}
-// 		}
-// 		info["物资"] = strings.Join(mtext, ",")
-// 		q.Where(stock.Or(predicates...))
-// 	}
-//
-// 	if req.Type != 0 {
-// 		info["类型"] = model.StockTypesText[req.Type]
-// 		q.Where(stock.Type(req.Type))
-// 	}
-//
-// 	if req.StoreID != 0 {
-// 		info["门店"] = ent.NewExportInfo(req.StoreID, store.Table)
-// 		q.Where(stock.StoreID(req.StoreID))
-// 	}
-//
-// 	if req.CabinetID != 0 {
-// 		info["电柜"] = ent.NewExportInfo(req.CabinetID, cabinet.Table)
-// 		q.Where(stock.CabinetID(req.CabinetID))
-// 	}
-//
-// 	if req.EnterpriseID != 0 {
-// 		info["团签"] = ent.NewExportInfo(req.EnterpriseID, enterprise.Table)
-// 		q.Where(stock.EnterpriseID(req.EnterpriseID))
-// 	}
-// 	if req.StationID != 0 {
-// 		info["站点"] = ent.NewExportInfo(req.StationID, enterprisestation.Table)
-// 		q.Where(stock.StationID(req.StationID))
-// 	}
-//
-// 	return
-// }
-//
-// // detailInfo 库存出入明细信息
-// func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
-// 	res := model.StockDetailRes{
-// 		ID:     item.ID,
-// 		Sn:     item.Sn,
-// 		Name:   item.Name,
-// 		Num:    int(math.Abs(float64(item.Num))),
-// 		Time:   item.CreatedAt.Format(carbon.DateTimeLayout),
-// 		Remark: item.Remark,
-// 	}
-//
-// 	// 城市
-// 	c := item.Edges.City
-// 	if c != nil {
-// 		res.City = c.Name
-// 	}
-//
-// 	// 电车
-// 	bike := item.Edges.Ebike
-// 	if bike != nil {
-// 		res.Name = fmt.Sprintf("[%s] %s", item.Name, bike.Sn)
-// 	}
-//
-// 	em := item.Creator
-// 	er := item.Edges.Rider
-// 	ee := item.Edges.Employee
-// 	es := item.Edges.Store
-// 	ec := item.Edges.Cabinet
-// 	en := item.Edges.Enterprise
-// 	st := item.Edges.Station
-// 	ba := item.Edges.Battery
-// 	ag := item.Edges.Agent
-//
-// 	// 站点调拨电池
-// 	if ba != nil {
-// 		res.Name = fmt.Sprintf("[%s] %s", *item.Model, ba.Sn)
-// 	}
-// 	if item.Type == model.StockTypeTransfer {
-// 		// 平台调拨记录
-// 		res.Type = "平台调拨"
-// 		res.Operator = "后台"
-// 		if em != nil {
-// 			res.Operator = fmt.Sprintf("后台 - %s", em.Name)
-// 		}
-// 		var ses *ent.Store
-// 		var sec *ent.Cabinet
-// 		var sst *ent.EnterpriseStation
-// 		var sen *ent.Enterprise
-// 		sp := item.Edges.Spouse
-// 		if sp != nil {
-// 			ses = sp.Edges.Store
-// 			sec = sp.Edges.Cabinet
-// 			sst = sp.Edges.Station
-// 			sen = sp.Edges.Enterprise
-// 		}
-//
-// 		// 出入库对象判定
-// 		if item.Num > 0 {
-// 			res.Inbound = s.target(es, ec, st, en)
-// 			res.Outbound = s.target(ses, sec, sst, sen)
-// 		} else {
-// 			res.Inbound = s.target(ses, sec, sst, sen)
-// 			res.Outbound = s.target(es, ec, st, en)
-// 		}
-// 	} else {
-// 		// 业务调拨记录
-// 		var riderName string
-// 		var agentName string
-//
-// 		if er != nil {
-// 			riderName = er.Name
-// 			res.Rider = fmt.Sprintf("%s - %s", riderName, er.Phone)
-// 		}
-//
-// 		if ag != nil {
-// 			agentName = ag.Name
-// 		}
-//
-// 		tm := map[uint8]string{
-// 			model.StockTypeRiderActive:      "新签",
-// 			model.StockTypeRiderPause:       "寄存",
-// 			model.StockTypeRiderContinue:    "取消寄存",
-// 			model.StockTypeRiderUnSubscribe: "退租",
-// 		}
-//
-// 		var tmr string
-// 		if ec != nil {
-// 			res.Operator = fmt.Sprintf("骑手 - %s", riderName)
-// 			tmr = "电柜"
-// 		} else {
-// 			if ee != nil {
-// 				tmr = "门店"
-// 				res.Operator = fmt.Sprintf("店员 - %s", ee.Name)
-// 			} else if item.Creator != nil {
-// 				tmr = "后台"
-// 				res.Operator = fmt.Sprintf("后台 - %s", item.Creator.Name)
-// 			} else if st != nil {
-// 				tmr = "站点"
-// 				res.Operator = fmt.Sprintf("代理 - %s", agentName)
-// 			}
-// 		}
-//
-// 		res.Type = tmr + tm[item.Type]
-//
-// 		// 出入库对象
-// 		target := fmt.Sprintf("[骑手] %s", riderName)
-// 		switch item.Type {
-// 		case model.StockTypeRiderActive, model.StockTypeRiderContinue:
-// 			res.Inbound = target
-// 			res.Outbound = s.target(es, ec, st, en)
-// 		case model.StockTypeRiderPause, model.StockTypeRiderUnSubscribe:
-// 			res.Inbound = s.target(es, ec, st, en)
-// 			res.Outbound = target
-// 		}
-// 	}
-//
-// 	return res
-// }
-//
-// // target 出入库对象
-// func (s *stockService) target(es *ent.Store, ec *ent.Cabinet, st *ent.EnterpriseStation, en *ent.Enterprise) (target string) {
-// 	target = "平台"
-// 	if es != nil {
-// 		target = fmt.Sprintf("[门店] %s", es.Name)
-// 	}
-// 	if ec != nil {
-// 		target = fmt.Sprintf("[电柜] %s - %s", ec.Name, ec.Serial)
-// 	}
-// 	if st != nil {
-// 		target = fmt.Sprintf("[代理商站点] %s - %s", en.Name, st.Name)
-// 	}
-// 	return
-// }
-//
-// // Detail 出入库明细
-// func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
-// 	q, _ := s.listFilter(req.StockDetailFilter)
-//
-// 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Stock) model.StockDetailRes {
-// 		return s.detailInfo(item)
-// 	})
-// }
+//			return res
+//		})
+//	}
+func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuery, info ar.Map) {
+	info = make(ar.Map)
+
+	q = s.orm.Query().
+		Modify(func(sel *sql.Selector) {
+			// 不做对象查询时需要去重排除配偶
+			if req.Goal == 0 && req.Serial == "" && req.StoreID == 0 && req.CabinetID == 0 && req.EnterpriseID == 0 && req.StationID == 0 {
+				sel.FromExpr(sql.Raw("(SELECT DISTINCT ON (id + COALESCE(stock_spouse, 0)) * FROM stock) stock"))
+			}
+		}).
+		WithCabinet().
+		WithStore().
+		WithSpouse(func(sq *ent.StockQuery) {
+			sq.WithStore().WithCabinet().WithRider().WithStation().WithBattery().WithEnterprise()
+		}).
+		WithRider().
+		WithEmployee().
+		WithCity().
+		WithEbike().
+		WithStation().
+		WithBattery().
+		WithEnterprise().
+		WithAgent()
+	// 排序
+	if req.Positive {
+		q.Order(ent.Asc(stock.FieldSn))
+	} else {
+		q.Order(ent.Desc(stock.FieldSn))
+	}
+
+	if req.Start != "" {
+		info["开始时间"] = req.Start
+		q.Where(stock.CreatedAtGTE(tools.NewTime().ParseDateStringX(req.Start)))
+	}
+
+	if req.End != "" {
+		info["结束时间"] = req.Start
+		q.Where(stock.CreatedAtLT(tools.NewTime().ParseNextDateStringX(req.End)))
+	}
+
+	if req.CityID != 0 {
+		info["城市"] = ent.NewExportInfo(req.CityID, city.Table)
+		q.Where(stock.CityID(req.CityID))
+	}
+
+	if req.Serial != "" {
+		info["电柜编号"] = req.Serial
+		q.Where(stock.HasCabinetWith(cabinet.Serial(req.Serial)))
+	}
+
+	if req.EbikeSN != "" {
+		info["车架号"] = req.EbikeSN
+		q.Where(stock.HasEbikeWith(ebike.Sn(req.EbikeSN)))
+	}
+
+	if req.BatterySN != "" {
+		info["电池编码"] = req.BatterySN
+		q.Where(stock.HasBatteryWith(battery.Sn(req.BatterySN)))
+	}
+
+	switch req.Goal {
+	case model.StockGoalStore:
+		// 门店物资
+		info["查询目标"] = "门店"
+		q.Where(
+			stock.StoreIDNotNil(),
+			stock.CabinetIDIsNil(),
+			stock.StationIDIsNil(),
+		)
+	case model.StockGoalCabinet:
+		// 电柜物资
+		info["查询目标"] = "电柜"
+		q.Where(
+			stock.StoreIDIsNil(),
+			stock.CabinetIDNotNil(),
+			stock.StationIDIsNil(),
+		)
+	case model.StockGoalStation:
+		// 站点
+		info["查询目标"] = "站点"
+		q.Where(
+			stock.StoreIDIsNil(),
+			stock.CabinetIDIsNil(),
+			stock.StationIDNotNil(),
+		)
+	default:
+		// 门店或电柜物资或站点
+		info["查询目标"] = "电柜或门店或站点"
+		q.Where(
+			stock.Or(
+				stock.StoreIDNotNil(),
+				stock.CabinetIDNotNil(),
+				stock.StationIDNotNil(),
+			),
+		)
+	}
+
+	// 筛选物资类别
+	if req.Materials == "" {
+		req.Materials = fmt.Sprintf("%s,%s", stock.MaterialBattery, stock.MaterialEbike)
+	} else {
+		req.Materials = strings.ReplaceAll(req.Materials, " ", "")
+	}
+	materials := strings.Split(req.Materials, ",")
+
+	if len(materials) > 0 {
+		var mtext []string
+		var predicates []predicate.Stock
+		for _, material := range materials {
+			switch stock.Material(material) {
+			case stock.MaterialBattery:
+				mtext = append(mtext, "电池")
+				predicates = append(predicates, stock.ModelNotNil())
+			case stock.MaterialEbike:
+				mtext = append(mtext, "电车")
+				predicates = append(predicates, stock.EbikeIDNotNil())
+			case stock.MaterialOthers:
+				mtext = append(mtext, "其他")
+				predicates = append(predicates, stock.ModelIsNil())
+			}
+		}
+		info["物资"] = strings.Join(mtext, ",")
+		q.Where(stock.Or(predicates...))
+	}
+
+	if req.Type != 0 {
+		info["类型"] = model.StockTypesText[req.Type]
+		q.Where(stock.Type(req.Type))
+	}
+
+	if req.StoreID != 0 {
+		info["门店"] = ent.NewExportInfo(req.StoreID, store.Table)
+		q.Where(stock.StoreID(req.StoreID))
+	}
+
+	if req.CabinetID != 0 {
+		info["电柜"] = ent.NewExportInfo(req.CabinetID, cabinet.Table)
+		q.Where(stock.CabinetID(req.CabinetID))
+	}
+
+	if req.EnterpriseID != 0 {
+		info["团签"] = ent.NewExportInfo(req.EnterpriseID, enterprise.Table)
+		q.Where(stock.EnterpriseID(req.EnterpriseID))
+	}
+	if req.StationID != 0 {
+		info["站点"] = ent.NewExportInfo(req.StationID, enterprisestation.Table)
+		q.Where(stock.StationID(req.StationID))
+	}
+
+	return
+}
+
+// detailInfo 库存出入明细信息
+func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
+	res := model.StockDetailRes{
+		ID:     item.ID,
+		Sn:     item.Sn,
+		Name:   item.Name,
+		Num:    int(math.Abs(float64(item.Num))),
+		Time:   item.CreatedAt.Format(carbon.DateTimeLayout),
+		Remark: item.Remark,
+	}
+
+	// 城市
+	c := item.Edges.City
+	if c != nil {
+		res.City = c.Name
+	}
+
+	// 电车
+	bike := item.Edges.Ebike
+	if bike != nil {
+		res.Name = fmt.Sprintf("[%s] %s", item.Name, bike.Sn)
+	}
+
+	em := item.Creator
+	er := item.Edges.Rider
+	ee := item.Edges.Employee
+	es := item.Edges.Store
+	ec := item.Edges.Cabinet
+	en := item.Edges.Enterprise
+	st := item.Edges.Station
+	ba := item.Edges.Battery
+	ag := item.Edges.Agent
+
+	// 站点调拨电池
+	if ba != nil {
+		res.Name = fmt.Sprintf("[%s] %s", *item.Model, ba.Sn)
+	}
+	if item.Type == model.StockTypeTransfer {
+		// 平台调拨记录
+		res.Type = "平台调拨"
+		res.Operator = "后台"
+		if em != nil {
+			res.Operator = fmt.Sprintf("后台 - %s", em.Name)
+		}
+		var ses *ent.Store
+		var sec *ent.Cabinet
+		var sst *ent.EnterpriseStation
+		var sen *ent.Enterprise
+		sp := item.Edges.Spouse
+		if sp != nil {
+			ses = sp.Edges.Store
+			sec = sp.Edges.Cabinet
+			sst = sp.Edges.Station
+			sen = sp.Edges.Enterprise
+		}
+
+		// 出入库对象判定
+		if item.Num > 0 {
+			res.Inbound = s.target(es, ec, st, en)
+			res.Outbound = s.target(ses, sec, sst, sen)
+		} else {
+			res.Inbound = s.target(ses, sec, sst, sen)
+			res.Outbound = s.target(es, ec, st, en)
+		}
+	} else {
+		// 业务调拨记录
+		var riderName string
+		var agentName string
+
+		if er != nil {
+			riderName = er.Name
+			res.Rider = fmt.Sprintf("%s - %s", riderName, er.Phone)
+		}
+
+		if ag != nil {
+			agentName = ag.Name
+		}
+
+		tm := map[uint8]string{
+			model.StockTypeRiderActive:      "新签",
+			model.StockTypeRiderPause:       "寄存",
+			model.StockTypeRiderContinue:    "取消寄存",
+			model.StockTypeRiderUnSubscribe: "退租",
+		}
+
+		var tmr string
+		if ec != nil {
+			res.Operator = fmt.Sprintf("骑手 - %s", riderName)
+			tmr = "电柜"
+		} else {
+			if ee != nil {
+				tmr = "门店"
+				res.Operator = fmt.Sprintf("店员 - %s", ee.Name)
+			} else if item.Creator != nil {
+				tmr = "后台"
+				res.Operator = fmt.Sprintf("后台 - %s", item.Creator.Name)
+			} else if st != nil {
+				tmr = "站点"
+				res.Operator = fmt.Sprintf("代理 - %s", agentName)
+			}
+		}
+
+		res.Type = tmr + tm[item.Type]
+
+		// 出入库对象
+		target := fmt.Sprintf("[骑手] %s", riderName)
+		switch item.Type {
+		case model.StockTypeRiderActive, model.StockTypeRiderContinue:
+			res.Inbound = target
+			res.Outbound = s.target(es, ec, st, en)
+		case model.StockTypeRiderPause, model.StockTypeRiderUnSubscribe:
+			res.Inbound = s.target(es, ec, st, en)
+			res.Outbound = target
+		}
+	}
+
+	return res
+}
+
+// target 出入库对象
+func (s *stockService) target(es *ent.Store, ec *ent.Cabinet, st *ent.EnterpriseStation, en *ent.Enterprise) (target string) {
+	target = "平台"
+	if es != nil {
+		target = fmt.Sprintf("[门店] %s", es.Name)
+	}
+	if ec != nil {
+		target = fmt.Sprintf("[电柜] %s - %s", ec.Name, ec.Serial)
+	}
+	if st != nil {
+		target = fmt.Sprintf("[代理商站点] %s - %s", en.Name, st.Name)
+	}
+	return
+}
+
+// Detail 出入库明细
+func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
+	q, _ := s.listFilter(req.StockDetailFilter)
+
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Stock) model.StockDetailRes {
+		return s.detailInfo(item)
+	})
+}
+
 //
 // // StoreCurrent 列出当前门店所有库存物资
 // func (s *stockService) StoreCurrent(id uint64) []model.InventoryNum {

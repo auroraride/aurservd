@@ -55,7 +55,7 @@ func loadAgentRoutes() {
 	auth.POST("/cabinet/binopen", aapi.Cabinet.BinOpen)      // 电柜开仓
 
 	// A6 物资
-	// auth.GET("/stock", aapi.Stock.Detail)               // 出入库详情
+	// auth.GET("/stock", aapi.Stock.Detail) // 出入库详情
 	// auth.GET("/stock/battery", aapi.Stock.BatteryStock) //  电池物资
 	// auth.GET("/stock/ebike", aapi.Stock.EBikeStock)     // 电车物资
 

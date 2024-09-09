@@ -466,9 +466,9 @@ func (s *assetTransferService) initialTransferWithSN(ctx context.Context, req mo
 // TransferList 调拨列表
 func (s *assetTransferService) TransferList(ctx context.Context, req *model.AssetTransferListReq) (res *model.PaginationRes, err error) {
 	q := ent.Database.AssetTransfer.QueryNotDeleted().WithTransferDetails().
-		WithOutOperateAgent().WithOutOperateManager().WithOutOperateStore().WithOutOperateMaintainer().
-		WithFromLocationWarehouse().WithFromLocationStore().WithFromLocationStation().WithFromLocationOperator().
-		WithToLocationWarehouse().WithToLocationStore().WithToLocationStation().WithToLocationOperator()
+		WithOutOperateAgent().WithOutOperateManager().WithOutOperateStore().WithOutOperateMaintainer().WithOutOperateRider().WithOutOperateCabinet().
+		WithFromLocationWarehouse().WithFromLocationStore().WithFromLocationStation().WithFromLocationOperator().WithFromLocationRider().WithFromLocationCabinet().
+		WithToLocationWarehouse().WithToLocationStore().WithToLocationStation().WithToLocationOperator().WithToLocationRider().WithToLocationCabinet()
 	s.filter(ctx, q, &req.AssetTransferFilter)
 	q.Order(ent.Desc(assettransfer.FieldCreatedAt))
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetTransfer) (res *model.AssetTransferListRes) {
@@ -513,6 +513,14 @@ func (s *assetTransferService) TransferInfo(atu *model.AssetTransferUserId, item
 			if item.Edges.FromLocationOperator != nil {
 				res.FromLocationName = "[运维]" + item.Edges.FromLocationOperator.Name
 			}
+		case model.AssetLocationsTypeRider:
+			if item.Edges.FromLocationRider != nil {
+				res.FromLocationName = "[骑手]" + item.Edges.FromLocationRider.Name
+			}
+		case model.AssetLocationsTypeCabinet:
+			if item.Edges.FromLocationCabinet != nil {
+				res.FromLocationName = "[电柜]" + item.Edges.FromLocationCabinet.Name
+			}
 		default:
 		}
 	}
@@ -537,6 +545,14 @@ func (s *assetTransferService) TransferInfo(atu *model.AssetTransferUserId, item
 			if item.Edges.ToLocationOperator != nil {
 				res.ToLocationName = "[运维]" + item.Edges.ToLocationOperator.Name
 			}
+		case model.AssetLocationsTypeRider:
+			if item.Edges.ToLocationRider != nil {
+				res.ToLocationName = "[骑手]" + item.Edges.ToLocationRider.Name
+			}
+		case model.AssetLocationsTypeCabinet:
+			if item.Edges.ToLocationCabinet != nil {
+				res.ToLocationName = "[电柜]" + item.Edges.ToLocationCabinet.Name
+			}
 		default:
 		}
 	}
@@ -559,6 +575,14 @@ func (s *assetTransferService) TransferInfo(atu *model.AssetTransferUserId, item
 		case model.OperatorTypeMaintainer:
 			if item.Edges.OutOperateMaintainer != nil {
 				res.OutOperateName = "[运维]" + item.Edges.OutOperateMaintainer.Name
+			}
+		case model.OperatorTypeRider:
+			if item.Edges.OutOperateRider != nil {
+				res.OutOperateName = "[骑手]" + item.Edges.OutOperateRider.Name
+			}
+		case model.OperatorTypeCabinet:
+			if item.Edges.OutOperateCabinet != nil {
+				res.OutOperateName = "[电柜]" + item.Edges.OutOperateCabinet.Name
 			}
 		default:
 		}

@@ -5,6 +5,14 @@
 
 package mapi
 
+import (
+	"github.com/labstack/echo/v4"
+
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+)
+
 type stock struct{}
 
 var Stock = new(stock)
@@ -79,10 +87,10 @@ var Stock = new(stock)
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"
 // @Param	query			query		model.StockDetailReq								false	"筛选条件"
 // @Success	200				{object}	model.PaginationRes{items=[]model.StockDetailRes}	"请求成功"
-// func (*stock) Detail(c echo.Context) (err error) {
-// 	ctx, req := app.ManagerContextAndBinding[model.StockDetailReq](c)
-// 	return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).Detail(req))
-// }
+func (*stock) Detail(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.StockDetailReq](c)
+	return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).Detail(req))
+}
 
 // EnterpriseList 团签物资列表
 // @ID		ManagerStockEnterpriseList

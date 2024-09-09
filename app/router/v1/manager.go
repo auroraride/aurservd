@@ -206,7 +206,7 @@ func LoadManagerV1Routes(root *echo.Group) {
 	// g.GET("/stock/battery/overview", mapi.Stock.BatteryOverview)
 	// g.GET("/stock/store", mapi.Stock.StoreList)
 	// g.GET("/stock/cabinet", mapi.Stock.CabinetList)
-	// g.GET("/stock/detail", mapi.Stock.Detail)
+	g.GET("/stock/detail", mapi.Stock.Detail)
 	// g.GET("/stock/enterprise/list", mapi.Stock.EnterpriseList) // 团签物资列表
 
 	// 选择项目

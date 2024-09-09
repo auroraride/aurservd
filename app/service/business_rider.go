@@ -453,6 +453,17 @@ func (s *businessRiderService) Preprocess(bt model.BusinessType, sub *ent.Subscr
 			s.reserve, _ = rev.Update().SetStatus(model.ReserveStatusProcessing.Value()).Save(s.ctx)
 		}
 	}
+
+	// 如果是后台操作 查询订阅绑定电池信息
+	if s.operator.Type == model.OperatorTypeManager {
+		// 查询订阅绑定电池
+		b, _ := ent.Database.Asset.QueryNotDeleted().Where(asset.SubscribeID(sub.ID), asset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value())).First(s.ctx)
+		if b == nil {
+			snag.Panic("电池查询失败")
+		}
+		s.battery = b
+	}
+
 }
 
 // doTask 处理电柜任务
@@ -536,7 +547,7 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 
 			// 需要进行业务出入库
 			if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil || s.ebikeStoreID != nil || s.batStoreID != nil {
-				_, _, err = NewStockWithModifier(s.modifier, s.operator).RiderBusiness(
+				_, _, err = NewStock(s.modifier).RiderBusiness(
 					&model.StockBusinessReq{
 						RiderID:           s.subscribe.RiderID,
 						Model:             s.subscribe.Model,

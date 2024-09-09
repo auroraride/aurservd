@@ -9,6 +9,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/auroraride/adapter"
 	"github.com/spf13/cobra"
@@ -22,6 +24,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assetrole"
+	"github.com/auroraride/aurservd/internal/ent/assettransfer"
+	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -90,8 +94,12 @@ func AssetDo() {
 		Name:  am.Name,
 		Phone: am.Phone,
 	}
+	// 电池
 	BatteryDo(ctx, modifier)
-	EbikeDo(ctx, modifier)
+	// 车
+	// EbikeDo(ctx, modifier)
+	// 骑手身上的非智能电池
+	// RiderBatteryDo(ctx, modifier)
 }
 
 func BatteryDo(ctx context.Context, modifier *model.Modifier) {
@@ -178,7 +186,6 @@ func BatteryDo(ctx context.Context, modifier *model.Modifier) {
 			Ordinal:       b.Ordinal,
 		}, modifier)
 		if err != nil {
-			fmt.Printf("创建智能电池失败: %v\n", err)
 			continue
 		}
 	}
@@ -325,6 +332,8 @@ func createAsset(ctx context.Context, id uint64, req *AssetCreateReq, modifier *
 				SN:        req.SN,
 			},
 		},
+		OperatorID:   modifier.ID,
+		OperatorType: model.OperatorTypeAssetManager,
 	}, modifier)
 	if err != nil {
 		return err
@@ -398,6 +407,93 @@ func EbikeDo(ctx context.Context, modifier *model.Modifier) {
 		if err != nil {
 			fmt.Printf("创建电车失败: %v\n", err)
 			continue
+		}
+	}
+}
+
+// RiderBatteryDo 骑手身上的非智能电池创建资产
+func RiderBatteryDo(ctx context.Context, modifier *model.Modifier) {
+	r, _ := ent.Database.Rider.QueryNotDeleted().All(ctx)
+	for _, v := range r {
+
+		subd, _ := service.NewSubscribe().RecentDetail(v.ID)
+		if subd == nil || subd.Intelligent {
+			continue
+		}
+		// 计费和逾期的骑手 才创建资产
+		if subd.Status == model.SubscribeStatusUsing || subd.Status == model.SubscribeStatusOverdue {
+			// 查询非智能订阅电池型号
+			m, _ := ent.Database.BatteryModel.Query().Where(batterymodel.Model(subd.Model)).Only(ctx)
+			if m == nil {
+				parts := strings.Split(subd.Model, "V")
+
+				// 提取第一个数字部分
+				vPart := parts[0]
+
+				// 提取第二个数字部分
+				ahParts := strings.Split(parts[1], "AH")
+				ahPart := ahParts[0]
+
+				// 将字符串转换为uint
+				vNum, _ := strconv.ParseUint(vPart, 10, 64)
+				ahNum, _ := strconv.ParseUint(ahPart, 10, 64)
+				err := service.NewBatteryModel().Create(&model.BatteryModelCreateReq{
+					Voltage:  uint(vNum),
+					Capacity: uint(ahNum),
+				})
+				if err != nil {
+					fmt.Printf("创建电池型号失败: %v\n", err)
+					continue
+				}
+				m = ent.Database.BatteryModel.Query().Where(batterymodel.Model(subd.Model)).OnlyX(ctx)
+			}
+
+			// 判定是否重复初始调拨
+			b, _ := ent.Database.Asset.QueryNotDeleted().
+				Where(
+					asset.Type(model.AssetTypeNonSmartBattery.Value()),
+					asset.LocationsID(v.ID),
+					asset.ModelID(m.ID),
+					asset.Status(model.AssetStatusStock.Value()),
+				).Count(ctx)
+			if b > 0 {
+				continue
+			}
+
+			sn, failed, err := service.NewAssetTransfer().Transfer(ctx, &model.AssetTransferCreateReq{
+				ToLocationType: model.AssetLocationsTypeRider,
+				ToLocationID:   v.ID,
+				Details: []model.AssetTransferCreateDetail{
+					{
+						AssetType: model.AssetTypeNonSmartBattery,
+						Num:       silk.UInt(1),
+						ModelID:   silk.UInt64(m.ID),
+					},
+				},
+				Reason:            "骑手绑定非智能系统初始入库",
+				AssetTransferType: model.AssetTransferTypeInitial,
+				OperatorID:        modifier.ID,
+				OperatorType:      model.OperatorTypeAssetManager,
+				AutoIn:            true,
+			}, modifier)
+			if err != nil {
+				fmt.Printf("创建非智能电池失败: %v\n", err)
+				continue
+			}
+			if len(failed) > 0 {
+				fmt.Printf("创建非智能电池失败: %v\n", failed[0])
+				continue
+			}
+
+			// 更新资产订阅
+			d, _ := ent.Database.AssetTransferDetails.QueryNotDeleted().Where(assettransferdetails.HasTransferWith(assettransfer.Sn(sn))).First(ctx)
+			if d == nil {
+				continue
+			}
+			err = ent.Database.Asset.Update().Where(asset.ID(d.AssetID)).SetSubscribeID(subd.ID).Exec(ctx)
+			if err != nil {
+				continue
+			}
 		}
 	}
 }
