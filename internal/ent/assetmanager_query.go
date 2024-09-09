@@ -20,14 +20,14 @@ import (
 // AssetManagerQuery is the builder for querying AssetManager entities.
 type AssetManagerQuery struct {
 	config
-	ctx            *QueryContext
-	order          []assetmanager.OrderOption
-	inters         []Interceptor
-	predicates     []predicate.AssetManager
-	withRole       *AssetRoleQuery
-	withWarehouses *WarehouseQuery
-	withWarehouse  *WarehouseQuery
-	modifiers      []func(*sql.Selector)
+	ctx                  *QueryContext
+	order                []assetmanager.OrderOption
+	inters               []Interceptor
+	predicates           []predicate.AssetManager
+	withRole             *AssetRoleQuery
+	withBelongWarehouses *WarehouseQuery
+	withDutyWarehouse    *WarehouseQuery
+	modifiers            []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -86,8 +86,8 @@ func (amq *AssetManagerQuery) QueryRole() *AssetRoleQuery {
 	return query
 }
 
-// QueryWarehouses chains the current query on the "warehouses" edge.
-func (amq *AssetManagerQuery) QueryWarehouses() *WarehouseQuery {
+// QueryBelongWarehouses chains the current query on the "belong_warehouses" edge.
+func (amq *AssetManagerQuery) QueryBelongWarehouses() *WarehouseQuery {
 	query := (&WarehouseClient{config: amq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := amq.prepareQuery(ctx); err != nil {
@@ -100,7 +100,7 @@ func (amq *AssetManagerQuery) QueryWarehouses() *WarehouseQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetmanager.Table, assetmanager.FieldID, selector),
 			sqlgraph.To(warehouse.Table, warehouse.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, assetmanager.WarehousesTable, assetmanager.WarehousesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, assetmanager.BelongWarehousesTable, assetmanager.BelongWarehousesPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(amq.driver.Dialect(), step)
 		return fromU, nil
@@ -108,8 +108,8 @@ func (amq *AssetManagerQuery) QueryWarehouses() *WarehouseQuery {
 	return query
 }
 
-// QueryWarehouse chains the current query on the "warehouse" edge.
-func (amq *AssetManagerQuery) QueryWarehouse() *WarehouseQuery {
+// QueryDutyWarehouse chains the current query on the "duty_warehouse" edge.
+func (amq *AssetManagerQuery) QueryDutyWarehouse() *WarehouseQuery {
 	query := (&WarehouseClient{config: amq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := amq.prepareQuery(ctx); err != nil {
@@ -122,7 +122,7 @@ func (amq *AssetManagerQuery) QueryWarehouse() *WarehouseQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetmanager.Table, assetmanager.FieldID, selector),
 			sqlgraph.To(warehouse.Table, warehouse.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, assetmanager.WarehouseTable, assetmanager.WarehouseColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, assetmanager.DutyWarehouseTable, assetmanager.DutyWarehouseColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(amq.driver.Dialect(), step)
 		return fromU, nil
@@ -317,14 +317,14 @@ func (amq *AssetManagerQuery) Clone() *AssetManagerQuery {
 		return nil
 	}
 	return &AssetManagerQuery{
-		config:         amq.config,
-		ctx:            amq.ctx.Clone(),
-		order:          append([]assetmanager.OrderOption{}, amq.order...),
-		inters:         append([]Interceptor{}, amq.inters...),
-		predicates:     append([]predicate.AssetManager{}, amq.predicates...),
-		withRole:       amq.withRole.Clone(),
-		withWarehouses: amq.withWarehouses.Clone(),
-		withWarehouse:  amq.withWarehouse.Clone(),
+		config:               amq.config,
+		ctx:                  amq.ctx.Clone(),
+		order:                append([]assetmanager.OrderOption{}, amq.order...),
+		inters:               append([]Interceptor{}, amq.inters...),
+		predicates:           append([]predicate.AssetManager{}, amq.predicates...),
+		withRole:             amq.withRole.Clone(),
+		withBelongWarehouses: amq.withBelongWarehouses.Clone(),
+		withDutyWarehouse:    amq.withDutyWarehouse.Clone(),
 		// clone intermediate query.
 		sql:  amq.sql.Clone(),
 		path: amq.path,
@@ -342,25 +342,25 @@ func (amq *AssetManagerQuery) WithRole(opts ...func(*AssetRoleQuery)) *AssetMana
 	return amq
 }
 
-// WithWarehouses tells the query-builder to eager-load the nodes that are connected to
-// the "warehouses" edge. The optional arguments are used to configure the query builder of the edge.
-func (amq *AssetManagerQuery) WithWarehouses(opts ...func(*WarehouseQuery)) *AssetManagerQuery {
+// WithBelongWarehouses tells the query-builder to eager-load the nodes that are connected to
+// the "belong_warehouses" edge. The optional arguments are used to configure the query builder of the edge.
+func (amq *AssetManagerQuery) WithBelongWarehouses(opts ...func(*WarehouseQuery)) *AssetManagerQuery {
 	query := (&WarehouseClient{config: amq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	amq.withWarehouses = query
+	amq.withBelongWarehouses = query
 	return amq
 }
 
-// WithWarehouse tells the query-builder to eager-load the nodes that are connected to
-// the "warehouse" edge. The optional arguments are used to configure the query builder of the edge.
-func (amq *AssetManagerQuery) WithWarehouse(opts ...func(*WarehouseQuery)) *AssetManagerQuery {
+// WithDutyWarehouse tells the query-builder to eager-load the nodes that are connected to
+// the "duty_warehouse" edge. The optional arguments are used to configure the query builder of the edge.
+func (amq *AssetManagerQuery) WithDutyWarehouse(opts ...func(*WarehouseQuery)) *AssetManagerQuery {
 	query := (&WarehouseClient{config: amq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	amq.withWarehouse = query
+	amq.withDutyWarehouse = query
 	return amq
 }
 
@@ -444,8 +444,8 @@ func (amq *AssetManagerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		_spec       = amq.querySpec()
 		loadedTypes = [3]bool{
 			amq.withRole != nil,
-			amq.withWarehouses != nil,
-			amq.withWarehouse != nil,
+			amq.withBelongWarehouses != nil,
+			amq.withDutyWarehouse != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -475,16 +475,16 @@ func (amq *AssetManagerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 			return nil, err
 		}
 	}
-	if query := amq.withWarehouses; query != nil {
-		if err := amq.loadWarehouses(ctx, query, nodes,
-			func(n *AssetManager) { n.Edges.Warehouses = []*Warehouse{} },
-			func(n *AssetManager, e *Warehouse) { n.Edges.Warehouses = append(n.Edges.Warehouses, e) }); err != nil {
+	if query := amq.withBelongWarehouses; query != nil {
+		if err := amq.loadBelongWarehouses(ctx, query, nodes,
+			func(n *AssetManager) { n.Edges.BelongWarehouses = []*Warehouse{} },
+			func(n *AssetManager, e *Warehouse) { n.Edges.BelongWarehouses = append(n.Edges.BelongWarehouses, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := amq.withWarehouse; query != nil {
-		if err := amq.loadWarehouse(ctx, query, nodes, nil,
-			func(n *AssetManager, e *Warehouse) { n.Edges.Warehouse = e }); err != nil {
+	if query := amq.withDutyWarehouse; query != nil {
+		if err := amq.loadDutyWarehouse(ctx, query, nodes, nil,
+			func(n *AssetManager, e *Warehouse) { n.Edges.DutyWarehouse = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -523,7 +523,7 @@ func (amq *AssetManagerQuery) loadRole(ctx context.Context, query *AssetRoleQuer
 	}
 	return nil
 }
-func (amq *AssetManagerQuery) loadWarehouses(ctx context.Context, query *WarehouseQuery, nodes []*AssetManager, init func(*AssetManager), assign func(*AssetManager, *Warehouse)) error {
+func (amq *AssetManagerQuery) loadBelongWarehouses(ctx context.Context, query *WarehouseQuery, nodes []*AssetManager, init func(*AssetManager), assign func(*AssetManager, *Warehouse)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[uint64]*AssetManager)
 	nids := make(map[uint64]map[*AssetManager]struct{})
@@ -535,11 +535,11 @@ func (amq *AssetManagerQuery) loadWarehouses(ctx context.Context, query *Warehou
 		}
 	}
 	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(assetmanager.WarehousesTable)
-		s.Join(joinT).On(s.C(warehouse.FieldID), joinT.C(assetmanager.WarehousesPrimaryKey[0]))
-		s.Where(sql.InValues(joinT.C(assetmanager.WarehousesPrimaryKey[1]), edgeIDs...))
+		joinT := sql.Table(assetmanager.BelongWarehousesTable)
+		s.Join(joinT).On(s.C(warehouse.FieldID), joinT.C(assetmanager.BelongWarehousesPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(assetmanager.BelongWarehousesPrimaryKey[1]), edgeIDs...))
 		columns := s.SelectedColumns()
-		s.Select(joinT.C(assetmanager.WarehousesPrimaryKey[1]))
+		s.Select(joinT.C(assetmanager.BelongWarehousesPrimaryKey[1]))
 		s.AppendSelect(columns...)
 		s.SetDistinct(false)
 	})
@@ -576,7 +576,7 @@ func (amq *AssetManagerQuery) loadWarehouses(ctx context.Context, query *Warehou
 	for _, n := range neighbors {
 		nodes, ok := nids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "warehouses" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected "belong_warehouses" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)
@@ -584,33 +584,35 @@ func (amq *AssetManagerQuery) loadWarehouses(ctx context.Context, query *Warehou
 	}
 	return nil
 }
-func (amq *AssetManagerQuery) loadWarehouse(ctx context.Context, query *WarehouseQuery, nodes []*AssetManager, init func(*AssetManager), assign func(*AssetManager, *Warehouse)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*AssetManager)
+func (amq *AssetManagerQuery) loadDutyWarehouse(ctx context.Context, query *WarehouseQuery, nodes []*AssetManager, init func(*AssetManager), assign func(*AssetManager, *Warehouse)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetManager)
 	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
+		if nodes[i].WarehouseID == nil {
+			continue
+		}
+		fk := *nodes[i].WarehouseID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(warehouse.FieldAssetManagerID)
+	if len(ids) == 0 {
+		return nil
 	}
-	query.Where(predicate.Warehouse(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(assetmanager.WarehouseColumn), fks...))
-	}))
+	query.Where(warehouse.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.AssetManagerID
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "asset_manager_id" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "asset_manager_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "warehouse_id" returned %v`, n.ID)
 		}
-		assign(node, n)
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
 	}
 	return nil
 }
@@ -645,6 +647,9 @@ func (amq *AssetManagerQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if amq.withRole != nil {
 			_spec.Node.AddColumnOnce(assetmanager.FieldRoleID)
+		}
+		if amq.withDutyWarehouse != nil {
+			_spec.Node.AddColumnOnce(assetmanager.FieldWarehouseID)
 		}
 	}
 	if ps := amq.predicates; len(ps) > 0 {
@@ -714,9 +719,9 @@ func (amq *AssetManagerQuery) Modify(modifiers ...func(s *sql.Selector)) *AssetM
 type AssetManagerQueryWith string
 
 var (
-	AssetManagerQueryWithRole       AssetManagerQueryWith = "Role"
-	AssetManagerQueryWithWarehouses AssetManagerQueryWith = "Warehouses"
-	AssetManagerQueryWithWarehouse  AssetManagerQueryWith = "Warehouse"
+	AssetManagerQueryWithRole             AssetManagerQueryWith = "Role"
+	AssetManagerQueryWithBelongWarehouses AssetManagerQueryWith = "BelongWarehouses"
+	AssetManagerQueryWithDutyWarehouse    AssetManagerQueryWith = "DutyWarehouse"
 )
 
 func (amq *AssetManagerQuery) With(withEdges ...AssetManagerQueryWith) *AssetManagerQuery {
@@ -724,10 +729,10 @@ func (amq *AssetManagerQuery) With(withEdges ...AssetManagerQueryWith) *AssetMan
 		switch v {
 		case AssetManagerQueryWithRole:
 			amq.WithRole()
-		case AssetManagerQueryWithWarehouses:
-			amq.WithWarehouses()
-		case AssetManagerQueryWithWarehouse:
-			amq.WithWarehouse()
+		case AssetManagerQueryWithBelongWarehouses:
+			amq.WithBelongWarehouses()
+		case AssetManagerQueryWithDutyWarehouse:
+			amq.WithDutyWarehouse()
 		}
 	}
 	return amq

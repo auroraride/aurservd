@@ -51,6 +51,8 @@ type Employee struct {
 	Password string `json:"password,omitempty"`
 	// 限制范围(m)
 	Limit uint `json:"limit,omitempty"`
+	// 上班门店ID
+	DutyStoreID *uint64 `json:"duty_store_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EmployeeQuery when eager-loading is set.
 	Edges        EmployeeEdges `json:"edges"`
@@ -77,9 +79,11 @@ type EmployeeEdges struct {
 	Assistances []*Assistance `json:"assistances,omitempty"`
 	// Stores holds the value of the stores edge.
 	Stores []*Store `json:"stores,omitempty"`
+	// DutyStore holds the value of the duty_store edge.
+	DutyStore *Store `json:"duty_store,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [10]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -169,6 +173,17 @@ func (e EmployeeEdges) StoresOrErr() ([]*Store, error) {
 	return nil, &NotLoadedError{edge: "stores"}
 }
 
+// DutyStoreOrErr returns the DutyStore value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EmployeeEdges) DutyStoreOrErr() (*Store, error) {
+	if e.DutyStore != nil {
+		return e.DutyStore, nil
+	} else if e.loadedTypes[9] {
+		return nil, &NotFoundError{label: store.Label}
+	}
+	return nil, &NotLoadedError{edge: "duty_store"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Employee) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -178,7 +193,7 @@ func (*Employee) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case employee.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case employee.FieldID, employee.FieldCityID, employee.FieldGroupID, employee.FieldLimit:
+		case employee.FieldID, employee.FieldCityID, employee.FieldGroupID, employee.FieldLimit, employee.FieldDutyStoreID:
 			values[i] = new(sql.NullInt64)
 		case employee.FieldRemark, employee.FieldName, employee.FieldPhone, employee.FieldPassword:
 			values[i] = new(sql.NullString)
@@ -297,6 +312,13 @@ func (e *Employee) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.Limit = uint(value.Int64)
 			}
+		case employee.FieldDutyStoreID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field duty_store_id", values[i])
+			} else if value.Valid {
+				e.DutyStoreID = new(uint64)
+				*e.DutyStoreID = uint64(value.Int64)
+			}
 		default:
 			e.selectValues.Set(columns[i], values[i])
 		}
@@ -353,6 +375,11 @@ func (e *Employee) QueryAssistances() *AssistanceQuery {
 // QueryStores queries the "stores" edge of the Employee entity.
 func (e *Employee) QueryStores() *StoreQuery {
 	return NewEmployeeClient(e.config).QueryStores(e)
+}
+
+// QueryDutyStore queries the "duty_store" edge of the Employee entity.
+func (e *Employee) QueryDutyStore() *StoreQuery {
+	return NewEmployeeClient(e.config).QueryDutyStore(e)
 }
 
 // Update returns a builder for updating this Employee.
@@ -423,6 +450,11 @@ func (e *Employee) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("limit=")
 	builder.WriteString(fmt.Sprintf("%v", e.Limit))
+	builder.WriteString(", ")
+	if v := e.DutyStoreID; v != nil {
+		builder.WriteString("duty_store_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

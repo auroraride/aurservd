@@ -25,6 +25,7 @@ func NewSelection() *selectionBiz {
 
 // MaintainerList 维护人员筛选数据
 func (b *selectionBiz) MaintainerList() (res []model.SelectOption) {
+	res = make([]model.SelectOption, 0)
 	ms, _ := ent.Database.Maintainer.Query().Where(
 		maintainer.Enable(true),
 	).All(b.ctx)
@@ -39,6 +40,7 @@ func (b *selectionBiz) MaintainerList() (res []model.SelectOption) {
 
 // StationList 团签站点筛选数据
 func (b *selectionBiz) StationList() (res []model.CascaderOptionLevel2) {
+	res = make([]model.CascaderOptionLevel2, 0)
 	stList, _ := ent.Database.EnterpriseStation.QueryNotDeleted().WithEnterprise().All(b.ctx)
 	eIds := make([]uint64, 0)
 	eIdMap := make(map[uint64]*ent.Enterprise)
@@ -109,6 +111,7 @@ func (b *selectionBiz) CityStationList() (res []model.CascaderOptionLevel2) {
 
 // MaterialSelect 资产分类筛选数据
 func (b *selectionBiz) MaterialSelect(req *model.SelectMaterialReq) (res []model.SelectOption) {
+	res = make([]model.SelectOption, 0)
 	q := ent.Database.Material.QueryNotDeleted()
 	if req.Type != nil {
 		q.Where(material.Type(req.Type.Value()))

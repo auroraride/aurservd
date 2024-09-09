@@ -823,6 +823,7 @@ var (
 		{Name: "mini_limit", Type: field.TypeUint, Comment: "仓管小程序人员限制范围(m)", Default: 0},
 		{Name: "last_signin_at", Type: field.TypeTime, Nullable: true, Comment: "最后登录时间"},
 		{Name: "role_id", Type: field.TypeUint64, Nullable: true, Comment: "角色ID"},
+		{Name: "warehouse_id", Type: field.TypeUint64, Nullable: true, Comment: "上班仓库ID"},
 	}
 	// AssetManagerTable holds the schema information for the "asset_manager" table.
 	AssetManagerTable = &schema.Table{
@@ -834,6 +835,12 @@ var (
 				Symbol:     "asset_manager_asset_role_asset_managers",
 				Columns:    []*schema.Column{AssetManagerColumns[13]},
 				RefColumns: []*schema.Column{AssetRoleColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_manager_warehouse_duty_asset_managers",
+				Columns:    []*schema.Column{AssetManagerColumns[14]},
+				RefColumns: []*schema.Column{WarehouseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -2899,6 +2906,7 @@ var (
 		{Name: "limit", Type: field.TypeUint, Comment: "限制范围(m)", Default: 0},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 		{Name: "group_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
+		{Name: "duty_store_id", Type: field.TypeUint64, Nullable: true, Comment: "上班门店ID"},
 	}
 	// EmployeeTable holds the schema information for the "employee" table.
 	EmployeeTable = &schema.Table{
@@ -2916,6 +2924,12 @@ var (
 				Symbol:     "employee_store_group_group",
 				Columns:    []*schema.Column{EmployeeColumns[14]},
 				RefColumns: []*schema.Column{StoreGroupColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "employee_store_duty_employees",
+				Columns:    []*schema.Column{EmployeeColumns[15]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -7205,7 +7219,6 @@ var (
 		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度"},
 		{Name: "address", Type: field.TypeString, Nullable: true, Comment: "详细地址"},
 		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "仓库编号"},
-		{Name: "asset_manager_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "上班仓管员ID"},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 	}
 	// WarehouseTable holds the schema information for the "warehouse" table.
@@ -7215,14 +7228,8 @@ var (
 		PrimaryKey: []*schema.Column{WarehouseColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "warehouse_asset_manager_warehouse",
-				Columns:    []*schema.Column{WarehouseColumns[12]},
-				RefColumns: []*schema.Column{AssetManagerColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "warehouse_city_city",
-				Columns:    []*schema.Column{WarehouseColumns[13]},
+				Columns:    []*schema.Column{WarehouseColumns[12]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -7241,7 +7248,7 @@ var (
 			{
 				Name:    "warehouse_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{WarehouseColumns[13]},
+				Columns: []*schema.Column{WarehouseColumns[12]},
 			},
 			{
 				Name:    "warehouse_name",
@@ -7381,26 +7388,26 @@ var (
 			},
 		},
 	}
-	// WarehouseAssetManagersColumns holds the columns for the "warehouse_asset_managers" table.
-	WarehouseAssetManagersColumns = []*schema.Column{
+	// WarehouseBelongAssetManagersColumns holds the columns for the "warehouse_belong_asset_managers" table.
+	WarehouseBelongAssetManagersColumns = []*schema.Column{
 		{Name: "warehouse_id", Type: field.TypeInt},
 		{Name: "asset_manager_id", Type: field.TypeInt},
 	}
-	// WarehouseAssetManagersTable holds the schema information for the "warehouse_asset_managers" table.
-	WarehouseAssetManagersTable = &schema.Table{
-		Name:       "warehouse_asset_managers",
-		Columns:    WarehouseAssetManagersColumns,
-		PrimaryKey: []*schema.Column{WarehouseAssetManagersColumns[0], WarehouseAssetManagersColumns[1]},
+	// WarehouseBelongAssetManagersTable holds the schema information for the "warehouse_belong_asset_managers" table.
+	WarehouseBelongAssetManagersTable = &schema.Table{
+		Name:       "warehouse_belong_asset_managers",
+		Columns:    WarehouseBelongAssetManagersColumns,
+		PrimaryKey: []*schema.Column{WarehouseBelongAssetManagersColumns[0], WarehouseBelongAssetManagersColumns[1]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "warehouse_asset_managers_warehouse_id",
-				Columns:    []*schema.Column{WarehouseAssetManagersColumns[0]},
+				Symbol:     "warehouse_belong_asset_managers_warehouse_id",
+				Columns:    []*schema.Column{WarehouseBelongAssetManagersColumns[0]},
 				RefColumns: []*schema.Column{WarehouseColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
-				Symbol:     "warehouse_asset_managers_asset_manager_id",
-				Columns:    []*schema.Column{WarehouseAssetManagersColumns[1]},
+				Symbol:     "warehouse_belong_asset_managers_asset_manager_id",
+				Columns:    []*schema.Column{WarehouseBelongAssetManagersColumns[1]},
 				RefColumns: []*schema.Column{AssetManagerColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -7513,7 +7520,7 @@ var (
 		CityMaintainersTable,
 		PlanCitiesTable,
 		StoreEmployeesTable,
-		WarehouseAssetManagersTable,
+		WarehouseBelongAssetManagersTable,
 	}
 )
 
@@ -7605,6 +7612,7 @@ func init() {
 		Table: "asset_maintenance_details",
 	}
 	AssetManagerTable.ForeignKeys[0].RefTable = AssetRoleTable
+	AssetManagerTable.ForeignKeys[1].RefTable = WarehouseTable
 	AssetManagerTable.Annotation = &entsql.Annotation{
 		Table: "asset_manager",
 	}
@@ -7785,6 +7793,7 @@ func init() {
 	}
 	EmployeeTable.ForeignKeys[0].RefTable = CityTable
 	EmployeeTable.ForeignKeys[1].RefTable = StoreGroupTable
+	EmployeeTable.ForeignKeys[2].RefTable = StoreTable
 	EmployeeTable.Annotation = &entsql.Annotation{
 		Table: "employee",
 	}
@@ -8124,8 +8133,7 @@ func init() {
 	VersionTable.Annotation = &entsql.Annotation{
 		Table: "version",
 	}
-	WarehouseTable.ForeignKeys[0].RefTable = AssetManagerTable
-	WarehouseTable.ForeignKeys[1].RefTable = CityTable
+	WarehouseTable.ForeignKeys[0].RefTable = CityTable
 	WarehouseTable.Annotation = &entsql.Annotation{
 		Table: "warehouse",
 	}
@@ -8139,6 +8147,6 @@ func init() {
 	PlanCitiesTable.ForeignKeys[1].RefTable = CityTable
 	StoreEmployeesTable.ForeignKeys[0].RefTable = StoreTable
 	StoreEmployeesTable.ForeignKeys[1].RefTable = EmployeeTable
-	WarehouseAssetManagersTable.ForeignKeys[0].RefTable = WarehouseTable
-	WarehouseAssetManagersTable.ForeignKeys[1].RefTable = AssetManagerTable
+	WarehouseBelongAssetManagersTable.ForeignKeys[0].RefTable = WarehouseTable
+	WarehouseBelongAssetManagersTable.ForeignKeys[1].RefTable = AssetManagerTable
 }

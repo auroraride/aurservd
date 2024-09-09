@@ -109,6 +109,7 @@ func loadAgentRoutes() {
 	// 物资管理
 	auth.GET("/assets", aapi.Asset.Assets)              // 资产数据
 	auth.GET("/assets/common", aapi.Asset.AssetsCommon) // 电池/电车资产数据
+	auth.GET("/assets/count", aapi.Asset.AssetCount)    // 资产统计
 
 	// 盘点
 	auth.GET("/check/sn/:sn", aapi.AssetCheck.GetAssetBySN)      // 通过SN查询资产

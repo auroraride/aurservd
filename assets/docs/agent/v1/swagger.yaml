@@ -134,6 +134,49 @@ definitions:
         description: 资产盘点ID
         type: integer
     type: object
+  definition.AssetCountDetail:
+    properties:
+      deliverCount:
+        description: 配送数量
+        type: integer
+      faultCount:
+        description: 故障数量
+        type: integer
+      stockCount:
+        description: 库存中数量
+        type: integer
+      totalCount:
+        description: 合计数量
+        type: integer
+    type: object
+  definition.AssetCountRes:
+    properties:
+      deliveringCount:
+        description: 配送中数量
+        type: integer
+      ebikeAsset:
+        allOf:
+        - $ref: '#/definitions/definition.AssetCountDetail'
+        description: 电车资产统计
+      exceptionCount:
+        description: 异常告警数量
+        type: integer
+      nonSmartBatteryAsset:
+        allOf:
+        - $ref: '#/definitions/definition.AssetCountDetail'
+        description: 非智能电池资产统计
+      otherAsset:
+        allOf:
+        - $ref: '#/definitions/definition.AssetCountDetail'
+        description: 其他资产统计
+      receivingCount:
+        description: 待接收数量
+        type: integer
+      smartBatteryAsset:
+        allOf:
+        - $ref: '#/definitions/definition.AssetCountDetail'
+        description: 智能电池资产统计
+    type: object
   definition.AssetTransferCreateReq:
     properties:
       details:
@@ -789,9 +832,24 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池
+      attribute:
+        additionalProperties:
+          $ref: '#/definitions/model.AssetAttribute'
+        description: 属性
+        type: object
       brandName:
         description: 品牌
         type: string
+      locationsId:
+        description: 位置ID
+        type: integer
+      locationsName:
+        description: 位置名称
+        type: string
+      locationsType:
+        allOf:
+        - $ref: '#/definitions/model.AssetLocationsType'
+        description: 位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
       model:
         description: 型号
         type: string
@@ -1032,6 +1090,11 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.AssetType'
         description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+      attribute:
+        additionalProperties:
+          $ref: '#/definitions/model.AssetAttribute'
+        description: 属性
+        type: object
       in:
         description: 入库数量
         type: integer
@@ -1313,17 +1376,6 @@ definitions:
         description: 编号
         type: string
     type: object
-  model.BatteryModelType:
-    enum:
-    - 1
-    - 2
-    type: integer
-    x-enum-comments:
-      BatteryModelTypeNonSmart: 非智能电池
-      BatteryModelTypeSmart: 智能电池
-    x-enum-varnames:
-      - BatteryModelTypeSmart
-      - BatteryModelTypeNonSmart
   model.BatterySummary:
     properties:
       batteryTotal:
@@ -2331,6 +2383,10 @@ paths:
         in: query
         name: ebikeKeyword
         type: string
+      - description: 运维ID
+        in: query
+        name: maintainerID
+        type: integer
       - description: 电池型号ID
         in: query
         name: model
@@ -2338,6 +2394,10 @@ paths:
       - description: 每页数据, 默认20
         in: query
         name: pageSize
+        type: integer
+      - description: 站点ID
+        in: query
+        name: stationID
         type: integer
       - description: 资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
         enum:
@@ -2400,6 +2460,27 @@ paths:
       summary: 资产电车、电池等数据
       tags:
       - Assets - 资产管理
+  /agent/v1/assets/count:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentAssetCount
+      parameters:
+      - description: 仓管校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.AssetCountRes'
+      summary: 资产统计
+      tags:
+      - Assets - 资产管理
   /agent/v1/battery:
     get:
       consumes:
@@ -2417,12 +2498,12 @@ paths:
         type: integer
       - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
         enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
         in: query
         name: assetType
         type: integer
@@ -2434,12 +2515,12 @@ paths:
           AssetTypeOtherAccessory: 其它配件
           AssetTypeSmartBattery: 智能电池
         x-enum-varnames:
-          - AssetTypeEbike
-          - AssetTypeSmartBattery
-          - AssetTypeNonSmartBattery
-          - AssetTypeCabinetAccessory
-          - AssetTypeEbikeAccessory
-          - AssetTypeOtherAccessory
+        - AssetTypeEbike
+        - AssetTypeSmartBattery
+        - AssetTypeNonSmartBattery
+        - AssetTypeCabinetAccessory
+        - AssetTypeEbikeAccessory
+        - AssetTypeOtherAccessory
       - description: 属性 id:value
         in: query
         name: attribute
@@ -2468,6 +2549,10 @@ paths:
         in: query
         name: enable
         type: boolean
+      - description: 团签企业ID
+        in: query
+        name: enterpriseId
+        type: integer
       - description: 资产位置ID
         in: query
         name: locationsId
@@ -2495,12 +2580,16 @@ paths:
           AssetLocationsTypeStore: 门店
           AssetLocationsTypeWarehouse: 仓库
         x-enum-varnames:
-          - AssetLocationsTypeWarehouse
-          - AssetLocationsTypeStore
-          - AssetLocationsTypeStation
-          - AssetLocationsTypeOperation
-          - AssetLocationsTypeCabinet
-          - AssetLocationsTypeRider
+        - AssetLocationsTypeWarehouse
+        - AssetLocationsTypeStore
+        - AssetLocationsTypeStation
+        - AssetLocationsTypeOperation
+        - AssetLocationsTypeCabinet
+        - AssetLocationsTypeRider
+      - description: 其他物资ID
+        in: query
+        name: materialId
+        type: integer
       - description: 型号ID
         in: query
         name: modelId
@@ -2530,11 +2619,11 @@ paths:
         type: integer
       - description: 资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
         enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
         in: query
         name: status
         type: integer
@@ -2545,11 +2634,11 @@ paths:
           AssetStatusStock: 库存中
           AssetStatusUsing: 使用中
         x-enum-varnames:
-          - AssetStatusStock
-          - AssetStatusDelivering
-          - AssetStatusUsing
-          - AssetStatusFault
-          - AssetStatusScrap
+        - AssetStatusStock
+        - AssetStatusDelivering
+        - AssetStatusUsing
+        - AssetStatusFault
+        - AssetStatusScrap
       produces:
       - application/json
       responses:
@@ -2557,13 +2646,13 @@ paths:
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.ItemListRes'
-              - properties:
+            - $ref: '#/definitions/model.ItemListRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/model.AssetListRes'
-                    type: array
-                type: object
+                    $ref: '#/definitions/model.AssetListRes'
+                  type: array
+              type: object
       summary: AA003 电池列表
       tags:
       - '[A]代理接口'
@@ -2586,19 +2675,6 @@ paths:
         in: query
         name: pageSize
         type: integer
-      - description: 电池类型 1智能电池 2非智能电池
-        enum:
-          - 1
-          - 2
-        in: query
-        name: type
-        type: integer
-        x-enum-comments:
-          BatteryModelTypeNonSmart: 非智能电池
-          BatteryModelTypeSmart: 智能电池
-        x-enum-varnames:
-          - BatteryModelTypeSmart
-          - BatteryModelTypeNonSmart
       produces:
       - application/json
       responses:
@@ -3363,6 +3439,10 @@ paths:
         name: sn
         required: true
         type: string
+      - description: 站点ID（扫码时选择站点必填）
+        in: query
+        name: stationID
+        type: integer
       produces:
       - application/json
       responses:
@@ -3906,19 +3986,6 @@ paths:
         name: X-Agent-Token
         required: true
         type: string
-      - description: 1智能电池 2非智能电池
-        enum:
-          - 1
-          - 2
-        in: query
-        name: type
-        type: integer
-        x-enum-comments:
-          BatteryModelTypeNonSmart: 非智能电池
-          BatteryModelTypeSmart: 智能电池
-        x-enum-varnames:
-          - BatteryModelTypeSmart
-          - BatteryModelTypeNonSmart
       produces:
       - application/json
       responses:
@@ -4277,7 +4344,7 @@ paths:
         in: query
         name: pageSize
         type: integer
-      - description: 调拨状态 1:配送中 2:待入库 3:已入库 4:已取消
+      - description: 调拨状态 1:配送中 2:已入库 3:已取消
         enum:
         - 1
         - 2

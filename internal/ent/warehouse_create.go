@@ -138,43 +138,39 @@ func (wc *WarehouseCreate) SetSn(s string) *WarehouseCreate {
 	return wc
 }
 
-// SetAssetManagerID sets the "asset_manager_id" field.
-func (wc *WarehouseCreate) SetAssetManagerID(u uint64) *WarehouseCreate {
-	wc.mutation.SetAssetManagerID(u)
-	return wc
-}
-
-// SetNillableAssetManagerID sets the "asset_manager_id" field if the given value is not nil.
-func (wc *WarehouseCreate) SetNillableAssetManagerID(u *uint64) *WarehouseCreate {
-	if u != nil {
-		wc.SetAssetManagerID(*u)
-	}
-	return wc
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (wc *WarehouseCreate) SetCity(c *City) *WarehouseCreate {
 	return wc.SetCityID(c.ID)
 }
 
-// SetAssetManager sets the "asset_manager" edge to the AssetManager entity.
-func (wc *WarehouseCreate) SetAssetManager(a *AssetManager) *WarehouseCreate {
-	return wc.SetAssetManagerID(a.ID)
-}
-
-// AddAssetManagerIDs adds the "asset_managers" edge to the AssetManager entity by IDs.
-func (wc *WarehouseCreate) AddAssetManagerIDs(ids ...uint64) *WarehouseCreate {
-	wc.mutation.AddAssetManagerIDs(ids...)
+// AddBelongAssetManagerIDs adds the "belong_asset_managers" edge to the AssetManager entity by IDs.
+func (wc *WarehouseCreate) AddBelongAssetManagerIDs(ids ...uint64) *WarehouseCreate {
+	wc.mutation.AddBelongAssetManagerIDs(ids...)
 	return wc
 }
 
-// AddAssetManagers adds the "asset_managers" edges to the AssetManager entity.
-func (wc *WarehouseCreate) AddAssetManagers(a ...*AssetManager) *WarehouseCreate {
+// AddBelongAssetManagers adds the "belong_asset_managers" edges to the AssetManager entity.
+func (wc *WarehouseCreate) AddBelongAssetManagers(a ...*AssetManager) *WarehouseCreate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return wc.AddAssetManagerIDs(ids...)
+	return wc.AddBelongAssetManagerIDs(ids...)
+}
+
+// AddDutyAssetManagerIDs adds the "duty_asset_managers" edge to the AssetManager entity by IDs.
+func (wc *WarehouseCreate) AddDutyAssetManagerIDs(ids ...uint64) *WarehouseCreate {
+	wc.mutation.AddDutyAssetManagerIDs(ids...)
+	return wc
+}
+
+// AddDutyAssetManagers adds the "duty_asset_managers" edges to the AssetManager entity.
+func (wc *WarehouseCreate) AddDutyAssetManagers(a ...*AssetManager) *WarehouseCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return wc.AddDutyAssetManagerIDs(ids...)
 }
 
 // AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
@@ -360,12 +356,12 @@ func (wc *WarehouseCreate) createSpec() (*Warehouse, *sqlgraph.CreateSpec) {
 		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := wc.mutation.AssetManagerIDs(); len(nodes) > 0 {
+	if nodes := wc.mutation.BelongAssetManagersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   warehouse.AssetManagerTable,
-			Columns: []string{warehouse.AssetManagerColumn},
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   warehouse.BelongAssetManagersTable,
+			Columns: warehouse.BelongAssetManagersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -374,15 +370,14 @@ func (wc *WarehouseCreate) createSpec() (*Warehouse, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.AssetManagerID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := wc.mutation.AssetManagersIDs(); len(nodes) > 0 {
+	if nodes := wc.mutation.DutyAssetManagersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   warehouse.AssetManagersTable,
-			Columns: warehouse.AssetManagersPrimaryKey,
+			Table:   warehouse.DutyAssetManagersTable,
+			Columns: []string{warehouse.DutyAssetManagersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -605,24 +600,6 @@ func (u *WarehouseUpsert) ClearAddress() *WarehouseUpsert {
 	return u
 }
 
-// SetAssetManagerID sets the "asset_manager_id" field.
-func (u *WarehouseUpsert) SetAssetManagerID(v uint64) *WarehouseUpsert {
-	u.Set(warehouse.FieldAssetManagerID, v)
-	return u
-}
-
-// UpdateAssetManagerID sets the "asset_manager_id" field to the value that was provided on create.
-func (u *WarehouseUpsert) UpdateAssetManagerID() *WarehouseUpsert {
-	u.SetExcluded(warehouse.FieldAssetManagerID)
-	return u
-}
-
-// ClearAssetManagerID clears the value of the "asset_manager_id" field.
-func (u *WarehouseUpsert) ClearAssetManagerID() *WarehouseUpsert {
-	u.SetNull(warehouse.FieldAssetManagerID)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -839,27 +816,6 @@ func (u *WarehouseUpsertOne) UpdateAddress() *WarehouseUpsertOne {
 func (u *WarehouseUpsertOne) ClearAddress() *WarehouseUpsertOne {
 	return u.Update(func(s *WarehouseUpsert) {
 		s.ClearAddress()
-	})
-}
-
-// SetAssetManagerID sets the "asset_manager_id" field.
-func (u *WarehouseUpsertOne) SetAssetManagerID(v uint64) *WarehouseUpsertOne {
-	return u.Update(func(s *WarehouseUpsert) {
-		s.SetAssetManagerID(v)
-	})
-}
-
-// UpdateAssetManagerID sets the "asset_manager_id" field to the value that was provided on create.
-func (u *WarehouseUpsertOne) UpdateAssetManagerID() *WarehouseUpsertOne {
-	return u.Update(func(s *WarehouseUpsert) {
-		s.UpdateAssetManagerID()
-	})
-}
-
-// ClearAssetManagerID clears the value of the "asset_manager_id" field.
-func (u *WarehouseUpsertOne) ClearAssetManagerID() *WarehouseUpsertOne {
-	return u.Update(func(s *WarehouseUpsert) {
-		s.ClearAssetManagerID()
 	})
 }
 
@@ -1245,27 +1201,6 @@ func (u *WarehouseUpsertBulk) UpdateAddress() *WarehouseUpsertBulk {
 func (u *WarehouseUpsertBulk) ClearAddress() *WarehouseUpsertBulk {
 	return u.Update(func(s *WarehouseUpsert) {
 		s.ClearAddress()
-	})
-}
-
-// SetAssetManagerID sets the "asset_manager_id" field.
-func (u *WarehouseUpsertBulk) SetAssetManagerID(v uint64) *WarehouseUpsertBulk {
-	return u.Update(func(s *WarehouseUpsert) {
-		s.SetAssetManagerID(v)
-	})
-}
-
-// UpdateAssetManagerID sets the "asset_manager_id" field to the value that was provided on create.
-func (u *WarehouseUpsertBulk) UpdateAssetManagerID() *WarehouseUpsertBulk {
-	return u.Update(func(s *WarehouseUpsert) {
-		s.UpdateAssetManagerID()
-	})
-}
-
-// ClearAssetManagerID clears the value of the "asset_manager_id" field.
-func (u *WarehouseUpsertBulk) ClearAssetManagerID() *WarehouseUpsertBulk {
-	return u.Update(func(s *WarehouseUpsert) {
-		s.ClearAssetManagerID()
 	})
 }
 

@@ -67,3 +67,8 @@ type WarestoreMaterial struct {
 	Name string `json:"name"` // 物资名称
 	Num  int    `json:"num"`  // 物资数量
 }
+
+// AssetSnReq 通过sn查询资产请求
+type AssetSnReq struct {
+	SN string `json:"sn" query:"sn" param:"sn"` // 资产编号
+}

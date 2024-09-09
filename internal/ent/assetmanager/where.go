@@ -110,6 +110,11 @@ func LastSigninAt(v time.Time) predicate.AssetManager {
 	return predicate.AssetManager(sql.FieldEQ(FieldLastSigninAt, v))
 }
 
+// WarehouseID applies equality check predicate on the "warehouse_id" field. It's identical to WarehouseIDEQ.
+func WarehouseID(v uint64) predicate.AssetManager {
+	return predicate.AssetManager(sql.FieldEQ(FieldWarehouseID, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.AssetManager {
 	return predicate.AssetManager(sql.FieldEQ(FieldCreatedAt, v))
@@ -660,6 +665,36 @@ func LastSigninAtNotNil() predicate.AssetManager {
 	return predicate.AssetManager(sql.FieldNotNull(FieldLastSigninAt))
 }
 
+// WarehouseIDEQ applies the EQ predicate on the "warehouse_id" field.
+func WarehouseIDEQ(v uint64) predicate.AssetManager {
+	return predicate.AssetManager(sql.FieldEQ(FieldWarehouseID, v))
+}
+
+// WarehouseIDNEQ applies the NEQ predicate on the "warehouse_id" field.
+func WarehouseIDNEQ(v uint64) predicate.AssetManager {
+	return predicate.AssetManager(sql.FieldNEQ(FieldWarehouseID, v))
+}
+
+// WarehouseIDIn applies the In predicate on the "warehouse_id" field.
+func WarehouseIDIn(vs ...uint64) predicate.AssetManager {
+	return predicate.AssetManager(sql.FieldIn(FieldWarehouseID, vs...))
+}
+
+// WarehouseIDNotIn applies the NotIn predicate on the "warehouse_id" field.
+func WarehouseIDNotIn(vs ...uint64) predicate.AssetManager {
+	return predicate.AssetManager(sql.FieldNotIn(FieldWarehouseID, vs...))
+}
+
+// WarehouseIDIsNil applies the IsNil predicate on the "warehouse_id" field.
+func WarehouseIDIsNil() predicate.AssetManager {
+	return predicate.AssetManager(sql.FieldIsNull(FieldWarehouseID))
+}
+
+// WarehouseIDNotNil applies the NotNil predicate on the "warehouse_id" field.
+func WarehouseIDNotNil() predicate.AssetManager {
+	return predicate.AssetManager(sql.FieldNotNull(FieldWarehouseID))
+}
+
 // HasRole applies the HasEdge predicate on the "role" edge.
 func HasRole() predicate.AssetManager {
 	return predicate.AssetManager(func(s *sql.Selector) {
@@ -683,21 +718,21 @@ func HasRoleWith(preds ...predicate.AssetRole) predicate.AssetManager {
 	})
 }
 
-// HasWarehouses applies the HasEdge predicate on the "warehouses" edge.
-func HasWarehouses() predicate.AssetManager {
+// HasBelongWarehouses applies the HasEdge predicate on the "belong_warehouses" edge.
+func HasBelongWarehouses() predicate.AssetManager {
 	return predicate.AssetManager(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, WarehousesTable, WarehousesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, BelongWarehousesTable, BelongWarehousesPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasWarehousesWith applies the HasEdge predicate on the "warehouses" edge with a given conditions (other predicates).
-func HasWarehousesWith(preds ...predicate.Warehouse) predicate.AssetManager {
+// HasBelongWarehousesWith applies the HasEdge predicate on the "belong_warehouses" edge with a given conditions (other predicates).
+func HasBelongWarehousesWith(preds ...predicate.Warehouse) predicate.AssetManager {
 	return predicate.AssetManager(func(s *sql.Selector) {
-		step := newWarehousesStep()
+		step := newBelongWarehousesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -706,21 +741,21 @@ func HasWarehousesWith(preds ...predicate.Warehouse) predicate.AssetManager {
 	})
 }
 
-// HasWarehouse applies the HasEdge predicate on the "warehouse" edge.
-func HasWarehouse() predicate.AssetManager {
+// HasDutyWarehouse applies the HasEdge predicate on the "duty_warehouse" edge.
+func HasDutyWarehouse() predicate.AssetManager {
 	return predicate.AssetManager(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, WarehouseTable, WarehouseColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, DutyWarehouseTable, DutyWarehouseColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasWarehouseWith applies the HasEdge predicate on the "warehouse" edge with a given conditions (other predicates).
-func HasWarehouseWith(preds ...predicate.Warehouse) predicate.AssetManager {
+// HasDutyWarehouseWith applies the HasEdge predicate on the "duty_warehouse" edge with a given conditions (other predicates).
+func HasDutyWarehouseWith(preds ...predicate.Warehouse) predicate.AssetManager {
 	return predicate.AssetManager(func(s *sql.Selector) {
-		step := newWarehouseStep()
+		step := newDutyWarehouseStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

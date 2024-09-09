@@ -45,6 +45,7 @@ func loadAssetsRoutes() {
 	asset.GET("/selection/maintainer", assetapi.Selection.Maintainer)          // 运维人员筛选
 	asset.GET("/selection/station", assetapi.Selection.Station)                // 站点筛选
 	asset.GET("/selection/material", assetapi.Selection.Material)              // 物资类型筛选
+	asset.GET("/selection/cabinet", assetapi.Selection.Cabinet)                // 筛选电柜
 
 	// 基础档案
 	asset.POST("", assetapi.Assets.Create)     // 创建资产
@@ -123,7 +124,6 @@ func loadAssetsRoutes() {
 	asset.GET("/transfer/:id", assetapi.AssetTransfer.TransferDetail)          // 资产调拨详情
 	asset.PUT("/transfer/cancel/:id", assetapi.AssetTransfer.TransferCancel)   // 取消资产调拨
 	asset.POST("/transfer/receive", assetapi.AssetTransfer.TransferReceive)    // 接收资产
-	asset.GET("/transfer/sn/:sn", assetapi.AssetTransfer.GetTransferBySN)      // 根据sn查询调拨单
 	asset.GET("/transfer/flow", assetapi.AssetTransfer.TransferFlow)           // 调拨流转记录
 	asset.GET("/transfer/details", assetapi.AssetTransfer.TransferDetailsList) // 调拨详情列表(出入库明细)
 	asset.PUT("/transfer/:id", assetapi.AssetTransfer.Modify)                  // 修改调拨记录

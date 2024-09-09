@@ -1262,6 +1262,29 @@ func HasEmployeesWith(preds ...predicate.Employee) predicate.Store {
 	})
 }
 
+// HasDutyEmployees applies the HasEdge predicate on the "duty_employees" edge.
+func HasDutyEmployees() predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DutyEmployeesTable, DutyEmployeesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDutyEmployeesWith applies the HasEdge predicate on the "duty_employees" edge with a given conditions (other predicates).
+func HasDutyEmployeesWith(preds ...predicate.Employee) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := newDutyEmployeesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasStocks applies the HasEdge predicate on the "stocks" edge.
 func HasStocks() predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {

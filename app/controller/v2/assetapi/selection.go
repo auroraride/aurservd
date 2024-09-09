@@ -109,7 +109,6 @@ func (*selection) AssetRole(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
-// @Param	query					query		model.SelectModelsReq	true	"查询参数"
 // @Success	200						{object}	[]model.SelectOption	"请求成功"
 func (*selection) Model(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AssetManagerContext](c)
@@ -155,6 +154,21 @@ func (*selection) Station(c echo.Context) (err error) {
 // @Param	query					query		model.SelectMaterialReq	true	"查询参数"
 // @Success	200						{object}	[]model.SelectOption	"请求成功"
 func (*selection) Material(c echo.Context) (err error) {
-	ctx, req := app.ContextBinding[model.SelectMaterialReq](c)
+	ctx, req := app.AssetManagerContextAndBinding[model.SelectMaterialReq](c)
 	return ctx.SendResponse(biz.NewSelection().MaterialSelect(req))
+}
+
+// Cabinet
+// @ID		SelectionCabinet
+// @Router	/manager/v2/asset/selection/cabinet [GET]
+// @Summary	筛选电柜
+// @Tags	Selection - 筛选
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
+// @Param	query					query		model.CabinetSelectionReq		false	"筛选参数"
+// @Success	200						{object}	[]model.CascaderOptionLevel2	"请求成功"
+func (*selection) Cabinet(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[model.CabinetSelectionReq](c)
+	return ctx.SendResponse(service.NewSelection().Cabinet(req))
 }

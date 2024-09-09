@@ -77,7 +77,8 @@ func (b *assetManagerBiz) Modify(req *definition.AssetManagerModifyReq) error {
 		u.SetMiniLimit(*req.MiniLimit)
 	}
 	if len(req.WarehouseIDs) != 0 {
-		u.AddWarehouseIDs(req.WarehouseIDs...)
+		u.ClearBelongWarehouses()
+		u.AddBelongWarehouseIDs(req.WarehouseIDs...)
 	}
 
 	_, err := u.Save(b.ctx)
@@ -159,7 +160,7 @@ func (b *assetManagerBiz) ExtendTokenTime(id uint64, token string) {
 
 // List 列举管理员
 func (b *assetManagerBiz) List(req *definition.AssetManagerListReq) *model.PaginationRes {
-	q := b.orm.QueryNotDeleted().Order(ent.Desc(assetmanager.FieldCreatedAt)).WithRole().WithWarehouses(func(query *ent.WarehouseQuery) {
+	q := b.orm.QueryNotDeleted().Order(ent.Desc(assetmanager.FieldCreatedAt)).WithRole().WithBelongWarehouses(func(query *ent.WarehouseQuery) {
 		query.WithCity()
 	})
 	if req.Keyword != nil {
@@ -179,7 +180,7 @@ func (b *assetManagerBiz) List(req *definition.AssetManagerListReq) *model.Pagin
 
 	if req.WarehouseID != nil {
 		q.Where(
-			assetmanager.HasWarehousesWith(
+			assetmanager.HasBelongWarehousesWith(
 				warehouse.ID(*req.WarehouseID),
 			),
 		)
@@ -213,7 +214,7 @@ func (b *assetManagerBiz) List(req *definition.AssetManagerListReq) *model.Pagin
 					Name: r.Name,
 				}
 			}
-			whs := item.Edges.Warehouses
+			whs := item.Edges.BelongWarehouses
 			wRes := make([]*definition.AssetManagerWarehouse, 0)
 			for _, wh := range whs {
 				var cityName string

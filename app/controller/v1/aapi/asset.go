@@ -45,3 +45,17 @@ func (*asset) AssetsCommon(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[definition.WarestoreAssetsCommonReq](c)
 	return ctx.SendResponse(biz.NewWarestore().AssetsCommon(definition.AssetSignInfo{Agent: ctx.Agent}, req))
 }
+
+// AssetCount
+// @ID		AgentAssetCount
+// @Router	/agent/v1/assets/count [GET]
+// @Summary	资产统计
+// @Tags	Assets - 资产管理
+// @Accept	json
+// @Produce	json
+// @Param	X-Agent-Token	header		string						true	"仓管校验token"
+// @Success	200				{object}	definition.AssetCountRes	"请求成功"
+func (*asset) AssetCount(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AgentContext](c)
+	return ctx.SendResponse(biz.NewWarestore().AssetCount(definition.AssetSignInfo{Agent: ctx.Agent}))
+}

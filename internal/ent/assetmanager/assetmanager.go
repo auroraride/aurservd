@@ -41,12 +41,14 @@ const (
 	FieldMiniLimit = "mini_limit"
 	// FieldLastSigninAt holds the string denoting the last_signin_at field in the database.
 	FieldLastSigninAt = "last_signin_at"
+	// FieldWarehouseID holds the string denoting the warehouse_id field in the database.
+	FieldWarehouseID = "warehouse_id"
 	// EdgeRole holds the string denoting the role edge name in mutations.
 	EdgeRole = "role"
-	// EdgeWarehouses holds the string denoting the warehouses edge name in mutations.
-	EdgeWarehouses = "warehouses"
-	// EdgeWarehouse holds the string denoting the warehouse edge name in mutations.
-	EdgeWarehouse = "warehouse"
+	// EdgeBelongWarehouses holds the string denoting the belong_warehouses edge name in mutations.
+	EdgeBelongWarehouses = "belong_warehouses"
+	// EdgeDutyWarehouse holds the string denoting the duty_warehouse edge name in mutations.
+	EdgeDutyWarehouse = "duty_warehouse"
 	// Table holds the table name of the assetmanager in the database.
 	Table = "asset_manager"
 	// RoleTable is the table that holds the role relation/edge.
@@ -56,18 +58,18 @@ const (
 	RoleInverseTable = "asset_role"
 	// RoleColumn is the table column denoting the role relation/edge.
 	RoleColumn = "role_id"
-	// WarehousesTable is the table that holds the warehouses relation/edge. The primary key declared below.
-	WarehousesTable = "warehouse_asset_managers"
-	// WarehousesInverseTable is the table name for the Warehouse entity.
+	// BelongWarehousesTable is the table that holds the belong_warehouses relation/edge. The primary key declared below.
+	BelongWarehousesTable = "warehouse_belong_asset_managers"
+	// BelongWarehousesInverseTable is the table name for the Warehouse entity.
 	// It exists in this package in order to avoid circular dependency with the "warehouse" package.
-	WarehousesInverseTable = "warehouse"
-	// WarehouseTable is the table that holds the warehouse relation/edge.
-	WarehouseTable = "warehouse"
-	// WarehouseInverseTable is the table name for the Warehouse entity.
+	BelongWarehousesInverseTable = "warehouse"
+	// DutyWarehouseTable is the table that holds the duty_warehouse relation/edge.
+	DutyWarehouseTable = "asset_manager"
+	// DutyWarehouseInverseTable is the table name for the Warehouse entity.
 	// It exists in this package in order to avoid circular dependency with the "warehouse" package.
-	WarehouseInverseTable = "warehouse"
-	// WarehouseColumn is the table column denoting the warehouse relation/edge.
-	WarehouseColumn = "asset_manager_id"
+	DutyWarehouseInverseTable = "warehouse"
+	// DutyWarehouseColumn is the table column denoting the duty_warehouse relation/edge.
+	DutyWarehouseColumn = "warehouse_id"
 )
 
 // Columns holds all SQL columns for assetmanager fields.
@@ -86,12 +88,13 @@ var Columns = []string{
 	FieldMiniEnable,
 	FieldMiniLimit,
 	FieldLastSigninAt,
+	FieldWarehouseID,
 }
 
 var (
-	// WarehousesPrimaryKey and WarehousesColumn2 are the table columns denoting the
-	// primary key for the warehouses relation (M2M).
-	WarehousesPrimaryKey = []string{"warehouse_id", "asset_manager_id"}
+	// BelongWarehousesPrimaryKey and BelongWarehousesColumn2 are the table columns denoting the
+	// primary key for the belong_warehouses relation (M2M).
+	BelongWarehousesPrimaryKey = []string{"warehouse_id", "asset_manager_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -190,6 +193,11 @@ func ByLastSigninAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastSigninAt, opts...).ToFunc()
 }
 
+// ByWarehouseID orders the results by the warehouse_id field.
+func ByWarehouseID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWarehouseID, opts...).ToFunc()
+}
+
 // ByRoleField orders the results by role field.
 func ByRoleField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -197,24 +205,24 @@ func ByRoleField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByWarehousesCount orders the results by warehouses count.
-func ByWarehousesCount(opts ...sql.OrderTermOption) OrderOption {
+// ByBelongWarehousesCount orders the results by belong_warehouses count.
+func ByBelongWarehousesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newWarehousesStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newBelongWarehousesStep(), opts...)
 	}
 }
 
-// ByWarehouses orders the results by warehouses terms.
-func ByWarehouses(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByBelongWarehouses orders the results by belong_warehouses terms.
+func ByBelongWarehouses(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newWarehousesStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newBelongWarehousesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
-// ByWarehouseField orders the results by warehouse field.
-func ByWarehouseField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByDutyWarehouseField orders the results by duty_warehouse field.
+func ByDutyWarehouseField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newWarehouseStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newDutyWarehouseStep(), sql.OrderByField(field, opts...))
 	}
 }
 func newRoleStep() *sqlgraph.Step {
@@ -224,17 +232,17 @@ func newRoleStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, RoleTable, RoleColumn),
 	)
 }
-func newWarehousesStep() *sqlgraph.Step {
+func newBelongWarehousesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(WarehousesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, WarehousesTable, WarehousesPrimaryKey...),
+		sqlgraph.To(BelongWarehousesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, BelongWarehousesTable, BelongWarehousesPrimaryKey...),
 	)
 }
-func newWarehouseStep() *sqlgraph.Step {
+func newDutyWarehouseStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(WarehouseInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, false, WarehouseTable, WarehouseColumn),
+		sqlgraph.To(DutyWarehouseInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, DutyWarehouseTable, DutyWarehouseColumn),
 	)
 }

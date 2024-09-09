@@ -234,6 +234,26 @@ func (eu *EmployeeUpdate) AddLimit(u int) *EmployeeUpdate {
 	return eu
 }
 
+// SetDutyStoreID sets the "duty_store_id" field.
+func (eu *EmployeeUpdate) SetDutyStoreID(u uint64) *EmployeeUpdate {
+	eu.mutation.SetDutyStoreID(u)
+	return eu
+}
+
+// SetNillableDutyStoreID sets the "duty_store_id" field if the given value is not nil.
+func (eu *EmployeeUpdate) SetNillableDutyStoreID(u *uint64) *EmployeeUpdate {
+	if u != nil {
+		eu.SetDutyStoreID(*u)
+	}
+	return eu
+}
+
+// ClearDutyStoreID clears the value of the "duty_store_id" field.
+func (eu *EmployeeUpdate) ClearDutyStoreID() *EmployeeUpdate {
+	eu.mutation.ClearDutyStoreID()
+	return eu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (eu *EmployeeUpdate) SetCity(c *City) *EmployeeUpdate {
 	return eu.SetCityID(c.ID)
@@ -351,6 +371,11 @@ func (eu *EmployeeUpdate) AddStores(s ...*Store) *EmployeeUpdate {
 		ids[i] = s[i].ID
 	}
 	return eu.AddStoreIDs(ids...)
+}
+
+// SetDutyStore sets the "duty_store" edge to the Store entity.
+func (eu *EmployeeUpdate) SetDutyStore(s *Store) *EmployeeUpdate {
+	return eu.SetDutyStoreID(s.ID)
 }
 
 // Mutation returns the EmployeeMutation object of the builder.
@@ -500,6 +525,12 @@ func (eu *EmployeeUpdate) RemoveStores(s ...*Store) *EmployeeUpdate {
 		ids[i] = s[i].ID
 	}
 	return eu.RemoveStoreIDs(ids...)
+}
+
+// ClearDutyStore clears the "duty_store" edge to the Store entity.
+func (eu *EmployeeUpdate) ClearDutyStore() *EmployeeUpdate {
+	eu.mutation.ClearDutyStore()
+	return eu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -978,6 +1009,35 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.DutyStoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   employee.DutyStoreTable,
+			Columns: []string{employee.DutyStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.DutyStoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   employee.DutyStoreTable,
+			Columns: []string{employee.DutyStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(eu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -1195,6 +1255,26 @@ func (euo *EmployeeUpdateOne) AddLimit(u int) *EmployeeUpdateOne {
 	return euo
 }
 
+// SetDutyStoreID sets the "duty_store_id" field.
+func (euo *EmployeeUpdateOne) SetDutyStoreID(u uint64) *EmployeeUpdateOne {
+	euo.mutation.SetDutyStoreID(u)
+	return euo
+}
+
+// SetNillableDutyStoreID sets the "duty_store_id" field if the given value is not nil.
+func (euo *EmployeeUpdateOne) SetNillableDutyStoreID(u *uint64) *EmployeeUpdateOne {
+	if u != nil {
+		euo.SetDutyStoreID(*u)
+	}
+	return euo
+}
+
+// ClearDutyStoreID clears the value of the "duty_store_id" field.
+func (euo *EmployeeUpdateOne) ClearDutyStoreID() *EmployeeUpdateOne {
+	euo.mutation.ClearDutyStoreID()
+	return euo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (euo *EmployeeUpdateOne) SetCity(c *City) *EmployeeUpdateOne {
 	return euo.SetCityID(c.ID)
@@ -1312,6 +1392,11 @@ func (euo *EmployeeUpdateOne) AddStores(s ...*Store) *EmployeeUpdateOne {
 		ids[i] = s[i].ID
 	}
 	return euo.AddStoreIDs(ids...)
+}
+
+// SetDutyStore sets the "duty_store" edge to the Store entity.
+func (euo *EmployeeUpdateOne) SetDutyStore(s *Store) *EmployeeUpdateOne {
+	return euo.SetDutyStoreID(s.ID)
 }
 
 // Mutation returns the EmployeeMutation object of the builder.
@@ -1461,6 +1546,12 @@ func (euo *EmployeeUpdateOne) RemoveStores(s ...*Store) *EmployeeUpdateOne {
 		ids[i] = s[i].ID
 	}
 	return euo.RemoveStoreIDs(ids...)
+}
+
+// ClearDutyStore clears the "duty_store" edge to the Store entity.
+func (euo *EmployeeUpdateOne) ClearDutyStore() *EmployeeUpdateOne {
+	euo.mutation.ClearDutyStore()
+	return euo
 }
 
 // Where appends a list predicates to the EmployeeUpdate builder.
@@ -1959,6 +2050,35 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 			Inverse: true,
 			Table:   employee.StoresTable,
 			Columns: employee.StoresPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.DutyStoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   employee.DutyStoreTable,
+			Columns: []string{employee.DutyStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.DutyStoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   employee.DutyStoreTable,
+			Columns: []string{employee.DutyStoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),

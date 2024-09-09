@@ -76,15 +76,14 @@ func (Warehouse) Fields() []ent.Field {
 		field.Float("lat").Comment("纬度"),
 		field.String("address").Optional().Comment("详细地址"),
 		field.String("sn").Immutable().Unique().Comment("仓库编号"),
-		field.Uint64("asset_manager_id").Optional().Nillable().Comment("上班仓管员ID"),
 	}
 }
 
 // Edges of the Warehouse.
 func (Warehouse) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("asset_manager", AssetManager.Type).Ref("warehouse").Unique().Field("asset_manager_id"),
-		edge.To("asset_managers", AssetManager.Type),
+		edge.To("belong_asset_managers", AssetManager.Type),
+		edge.To("duty_asset_managers", AssetManager.Type),
 		edge.To("asset", Asset.Type),
 	}
 }

@@ -114,7 +114,6 @@ func LoadManagerV1Routes(root *echo.Group) {
 	g.POST("/cabinet/openbind", mapi.Cabinet.OpenBind)
 	g.POST("/cabinet/bin/deactivate", mapi.Cabinet.Deactivate)
 	g.POST("/cabinet/interrupt", mapi.Cabinet.Interrupt)
-	g.POST("/cabinet/bind/store", mapi.Cabinet.BindStore)
 
 	// 骑士卡
 	g.GET("/plan", mapi.Plan.List)

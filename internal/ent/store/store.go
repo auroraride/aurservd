@@ -81,6 +81,8 @@ const (
 	EdgeGoods = "goods"
 	// EdgeEmployees holds the string denoting the employees edge name in mutations.
 	EdgeEmployees = "employees"
+	// EdgeDutyEmployees holds the string denoting the duty_employees edge name in mutations.
+	EdgeDutyEmployees = "duty_employees"
 	// EdgeStocks holds the string denoting the stocks edge name in mutations.
 	EdgeStocks = "stocks"
 	// Table holds the table name of the store in the database.
@@ -146,6 +148,13 @@ const (
 	// EmployeesInverseTable is the table name for the Employee entity.
 	// It exists in this package in order to avoid circular dependency with the "employee" package.
 	EmployeesInverseTable = "employee"
+	// DutyEmployeesTable is the table that holds the duty_employees relation/edge.
+	DutyEmployeesTable = "employee"
+	// DutyEmployeesInverseTable is the table name for the Employee entity.
+	// It exists in this package in order to avoid circular dependency with the "employee" package.
+	DutyEmployeesInverseTable = "employee"
+	// DutyEmployeesColumn is the table column denoting the duty_employees relation/edge.
+	DutyEmployeesColumn = "duty_store_id"
 	// StocksTable is the table that holds the stocks relation/edge.
 	StocksTable = "stock"
 	// StocksInverseTable is the table name for the Stock entity.
@@ -442,6 +451,20 @@ func ByEmployees(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByDutyEmployeesCount orders the results by duty_employees count.
+func ByDutyEmployeesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newDutyEmployeesStep(), opts...)
+	}
+}
+
+// ByDutyEmployees orders the results by duty_employees terms.
+func ByDutyEmployees(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newDutyEmployeesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByStocksCount orders the results by stocks count.
 func ByStocksCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -516,6 +539,13 @@ func newEmployeesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(EmployeesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, EmployeesTable, EmployeesPrimaryKey...),
+	)
+}
+func newDutyEmployeesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(DutyEmployeesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, DutyEmployeesTable, DutyEmployeesColumn),
 	)
 }
 func newStocksStep() *sqlgraph.Step {

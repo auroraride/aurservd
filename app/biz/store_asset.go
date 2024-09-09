@@ -10,10 +10,13 @@ import (
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
+	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type storeAssetBiz struct {
@@ -41,13 +44,8 @@ func NewStoreAssetWithModifier(m *model.Modifier) *storeAssetBiz {
 // Assets 资产列表
 func (b *storeAssetBiz) Assets(req *definition.StoreAssetListReq) (res *model.PaginationRes) {
 	// 查询分页的门店数据
-	q := b.orm.QueryNotDeleted().WithCity()
-	// if req.GroupID != nil {
-	// 	// q.Where(store.GroupID(*req.GroupID))
-	// }
-	if req.StoreID != nil {
-		q.Where(store.ID(*req.StoreID))
-	}
+	q := b.orm.QueryNotDeleted().WithCity().Order(ent.Desc(agreement.FieldCreatedAt))
+	b.assetsFilter(q, req)
 	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Store) (result *definition.StoreAssetDetail) {
 		result = &definition.StoreAssetDetail{
 			ID:    item.ID,
@@ -66,6 +64,80 @@ func (b *storeAssetBiz) Assets(req *definition.StoreAssetListReq) (res *model.Pa
 	})
 
 	return res
+}
+
+// assetsFilter 条件筛选
+func (b *storeAssetBiz) assetsFilter(q *ent.StoreQuery, req *definition.StoreAssetListReq) {
+
+	if req.CityID != nil {
+		q.Where(store.CityID(*req.CityID))
+	}
+	if req.GroupID != nil {
+		q.Where(store.GroupID(*req.GroupID))
+	}
+	if req.StoreID != nil {
+		q.Where(store.ID(*req.StoreID))
+	}
+	if req.ModelID != nil {
+		// 查询型号资产
+		ids := make([]uint64, 0)
+		list, _ := ent.Database.Asset.QueryNotDeleted().WithStore().Where(
+			entasset.ModelID(*req.ModelID),
+			entasset.LocationsType(model.AssetLocationsTypeStore.Value()),
+			entasset.Status(model.AssetStatusStock.Value()),
+		).All(b.ctx)
+		for _, v := range list {
+			if v.Edges.Store != nil {
+				ids = append(ids, v.Edges.Store.ID)
+			}
+		}
+
+		q.Where(
+			store.IDIn(ids...),
+		)
+	}
+	if req.BrandId != nil {
+		// 查询品牌资产
+		ids := make([]uint64, 0)
+		list, _ := ent.Database.Asset.QueryNotDeleted().WithStore().Where(
+			entasset.BrandID(*req.BrandId),
+			entasset.LocationsType(model.AssetLocationsTypeStore.Value()),
+			entasset.Status(model.AssetStatusStock.Value()),
+		).All(b.ctx)
+		for _, v := range list {
+			if v.Edges.Store != nil {
+				ids = append(ids, v.Edges.Store.ID)
+			}
+		}
+
+		q.Where(
+			store.IDIn(ids...),
+		)
+	}
+	if req.OtherName != nil {
+		// 查询其他物资资产
+		ids := make([]uint64, 0)
+		list, _ := ent.Database.Asset.QueryNotDeleted().WithStore().Where(
+			entasset.LocationsType(model.AssetLocationsTypeStore.Value()),
+			entasset.Status(model.AssetStatusStock.Value()),
+			entasset.HasMaterialWith(material.NameContainsFold(*req.OtherName)),
+		).All(b.ctx)
+		for _, v := range list {
+			if v.Edges.Store != nil {
+				ids = append(ids, v.Edges.Store.ID)
+			}
+		}
+
+		q.Where(
+			store.IDIn(ids...),
+		)
+	}
+	if req.Start != nil && req.End != nil {
+		start := tools.NewTime().ParseDateStringX(*req.Start)
+		end := tools.NewTime().ParseNextDateStringX(*req.End)
+		q.Where(store.CreatedAtGTE(start), store.CreatedAtLTE(end))
+	}
+
 }
 
 // AssetTotal 物资数据统计

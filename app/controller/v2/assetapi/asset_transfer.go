@@ -74,21 +74,6 @@ func (*assetTransfer) TransferCancel(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewAssetTransfer().TransferCancel(ctx.Request().Context(), req, ctx.Modifier))
 }
 
-// GetTransferBySN
-// @ID		GetTransferBySN
-// @Router	/manager/v2/asset/transfer/sn/{sn} [GET]
-// @Summary	根据调拨单号获取调拨详情
-// @Tags	资产
-// @Accept	json
-// @Produce	json
-// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
-// @Param	sn						path		string							true	"调拨单号"
-// @Success	200						{object}	model.AssetTransferDetailReq	"请求成功"
-func (*assetTransfer) GetTransferBySN(c echo.Context) (err error) {
-	ctx, req := app.AssetManagerContextAndBinding[model.GetTransferBySNReq](c)
-	return ctx.SendResponse(service.NewAssetTransfer().GetTransferBySN(ctx.Request().Context(), req))
-}
-
 // TransferReceive
 // @ID		AssetTransferReceive
 // @Router	/manager/v2/asset/transfer/receive [POST]

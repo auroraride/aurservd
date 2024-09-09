@@ -12,10 +12,12 @@ import (
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type cabinetAssetBiz struct {
@@ -43,16 +45,8 @@ func NewCabinetAssetWithModifier(m *model.Modifier) *cabinetAssetBiz {
 // Assets 资产列表
 func (b *cabinetAssetBiz) Assets(req *definition.CabinetAssetListReq) (res *model.PaginationRes) {
 	// 查询分页的门店数据
-	q := b.orm.QueryNotDeleted().WithCity()
-	if req.CityID != nil {
-		q.Where(cabinet.CityID(*req.CityID))
-	}
-	if req.Name != nil {
-		q.Where(cabinet.NameContains(*req.Name))
-	}
-	if req.Sn != nil {
-		q.Where(cabinet.SnContains(*req.Sn))
-	}
+	q := b.orm.QueryNotDeleted().WithCity().Order(ent.Desc(agreement.FieldCreatedAt))
+	b.assetsFilter(q, req)
 	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) (result *definition.CabinetAssetDetail) {
 		result = &definition.CabinetAssetDetail{
 			ID:    item.ID,
@@ -70,6 +64,42 @@ func (b *cabinetAssetBiz) Assets(req *definition.CabinetAssetListReq) (res *mode
 	})
 
 	return res
+}
+
+// assetsFilter 条件筛选
+func (b *cabinetAssetBiz) assetsFilter(q *ent.CabinetQuery, req *definition.CabinetAssetListReq) {
+	if req.CityID != nil {
+		q.Where(cabinet.CityID(*req.CityID))
+	}
+	if req.ModelID != nil {
+		// 查询型号资产
+		ids := make([]uint64, 0)
+		list, _ := ent.Database.Asset.QueryNotDeleted().WithCabinet().Where(
+			entasset.ModelID(*req.ModelID),
+			entasset.LocationsType(model.AssetLocationsTypeCabinet.Value()),
+			entasset.Status(model.AssetStatusStock.Value()),
+		).All(b.ctx)
+		for _, v := range list {
+			if v.Edges.Cabinet != nil {
+				ids = append(ids, v.Edges.Cabinet.ID)
+			}
+		}
+		q.Where(
+			cabinet.IDIn(ids...),
+		)
+	}
+	if req.Name != nil {
+		q.Where(cabinet.NameContainsFold(*req.Name))
+	}
+	if req.Sn != nil {
+		q.Where(cabinet.SnContainsFold(*req.Sn))
+	}
+	if req.Start != nil && req.End != nil {
+		start := tools.NewTime().ParseDateStringX(*req.Start)
+		end := tools.NewTime().ParseNextDateStringX(*req.End)
+		q.Where(cabinet.CreatedAtGTE(start), cabinet.CreatedAtLTE(end))
+	}
+
 }
 
 // AssetTotal 物资数据统计

@@ -167,43 +167,57 @@ func (amc *AssetManagerCreate) SetNillableLastSigninAt(t *time.Time) *AssetManag
 	return amc
 }
 
+// SetWarehouseID sets the "warehouse_id" field.
+func (amc *AssetManagerCreate) SetWarehouseID(u uint64) *AssetManagerCreate {
+	amc.mutation.SetWarehouseID(u)
+	return amc
+}
+
+// SetNillableWarehouseID sets the "warehouse_id" field if the given value is not nil.
+func (amc *AssetManagerCreate) SetNillableWarehouseID(u *uint64) *AssetManagerCreate {
+	if u != nil {
+		amc.SetWarehouseID(*u)
+	}
+	return amc
+}
+
 // SetRole sets the "role" edge to the AssetRole entity.
 func (amc *AssetManagerCreate) SetRole(a *AssetRole) *AssetManagerCreate {
 	return amc.SetRoleID(a.ID)
 }
 
-// AddWarehouseIDs adds the "warehouses" edge to the Warehouse entity by IDs.
-func (amc *AssetManagerCreate) AddWarehouseIDs(ids ...uint64) *AssetManagerCreate {
-	amc.mutation.AddWarehouseIDs(ids...)
+// AddBelongWarehouseIDs adds the "belong_warehouses" edge to the Warehouse entity by IDs.
+func (amc *AssetManagerCreate) AddBelongWarehouseIDs(ids ...uint64) *AssetManagerCreate {
+	amc.mutation.AddBelongWarehouseIDs(ids...)
 	return amc
 }
 
-// AddWarehouses adds the "warehouses" edges to the Warehouse entity.
-func (amc *AssetManagerCreate) AddWarehouses(w ...*Warehouse) *AssetManagerCreate {
+// AddBelongWarehouses adds the "belong_warehouses" edges to the Warehouse entity.
+func (amc *AssetManagerCreate) AddBelongWarehouses(w ...*Warehouse) *AssetManagerCreate {
 	ids := make([]uint64, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
-	return amc.AddWarehouseIDs(ids...)
+	return amc.AddBelongWarehouseIDs(ids...)
 }
 
-// SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
-func (amc *AssetManagerCreate) SetWarehouseID(id uint64) *AssetManagerCreate {
-	amc.mutation.SetWarehouseID(id)
+// SetDutyWarehouseID sets the "duty_warehouse" edge to the Warehouse entity by ID.
+func (amc *AssetManagerCreate) SetDutyWarehouseID(id uint64) *AssetManagerCreate {
+	amc.mutation.SetDutyWarehouseID(id)
 	return amc
 }
 
-// SetNillableWarehouseID sets the "warehouse" edge to the Warehouse entity by ID if the given value is not nil.
-func (amc *AssetManagerCreate) SetNillableWarehouseID(id *uint64) *AssetManagerCreate {
+// SetNillableDutyWarehouseID sets the "duty_warehouse" edge to the Warehouse entity by ID if the given value is not nil.
+func (amc *AssetManagerCreate) SetNillableDutyWarehouseID(id *uint64) *AssetManagerCreate {
 	if id != nil {
-		amc = amc.SetWarehouseID(*id)
+		amc = amc.SetDutyWarehouseID(*id)
 	}
 	return amc
 }
 
-// SetWarehouse sets the "warehouse" edge to the Warehouse entity.
-func (amc *AssetManagerCreate) SetWarehouse(w *Warehouse) *AssetManagerCreate {
-	return amc.SetWarehouseID(w.ID)
+// SetDutyWarehouse sets the "duty_warehouse" edge to the Warehouse entity.
+func (amc *AssetManagerCreate) SetDutyWarehouse(w *Warehouse) *AssetManagerCreate {
+	return amc.SetDutyWarehouseID(w.ID)
 }
 
 // Mutation returns the AssetManagerMutation object of the builder.
@@ -393,12 +407,12 @@ func (amc *AssetManagerCreate) createSpec() (*AssetManager, *sqlgraph.CreateSpec
 		_node.RoleID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := amc.mutation.WarehousesIDs(); len(nodes) > 0 {
+	if nodes := amc.mutation.BelongWarehousesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   assetmanager.WarehousesTable,
-			Columns: assetmanager.WarehousesPrimaryKey,
+			Table:   assetmanager.BelongWarehousesTable,
+			Columns: assetmanager.BelongWarehousesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -409,12 +423,12 @@ func (amc *AssetManagerCreate) createSpec() (*AssetManager, *sqlgraph.CreateSpec
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := amc.mutation.WarehouseIDs(); len(nodes) > 0 {
+	if nodes := amc.mutation.DutyWarehouseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   assetmanager.WarehouseTable,
-			Columns: []string{assetmanager.WarehouseColumn},
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   assetmanager.DutyWarehouseTable,
+			Columns: []string{assetmanager.DutyWarehouseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -423,6 +437,7 @@ func (amc *AssetManagerCreate) createSpec() (*AssetManager, *sqlgraph.CreateSpec
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.WarehouseID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -642,6 +657,24 @@ func (u *AssetManagerUpsert) UpdateLastSigninAt() *AssetManagerUpsert {
 // ClearLastSigninAt clears the value of the "last_signin_at" field.
 func (u *AssetManagerUpsert) ClearLastSigninAt() *AssetManagerUpsert {
 	u.SetNull(assetmanager.FieldLastSigninAt)
+	return u
+}
+
+// SetWarehouseID sets the "warehouse_id" field.
+func (u *AssetManagerUpsert) SetWarehouseID(v uint64) *AssetManagerUpsert {
+	u.Set(assetmanager.FieldWarehouseID, v)
+	return u
+}
+
+// UpdateWarehouseID sets the "warehouse_id" field to the value that was provided on create.
+func (u *AssetManagerUpsert) UpdateWarehouseID() *AssetManagerUpsert {
+	u.SetExcluded(assetmanager.FieldWarehouseID)
+	return u
+}
+
+// ClearWarehouseID clears the value of the "warehouse_id" field.
+func (u *AssetManagerUpsert) ClearWarehouseID() *AssetManagerUpsert {
+	u.SetNull(assetmanager.FieldWarehouseID)
 	return u
 }
 
@@ -886,6 +919,27 @@ func (u *AssetManagerUpsertOne) UpdateLastSigninAt() *AssetManagerUpsertOne {
 func (u *AssetManagerUpsertOne) ClearLastSigninAt() *AssetManagerUpsertOne {
 	return u.Update(func(s *AssetManagerUpsert) {
 		s.ClearLastSigninAt()
+	})
+}
+
+// SetWarehouseID sets the "warehouse_id" field.
+func (u *AssetManagerUpsertOne) SetWarehouseID(v uint64) *AssetManagerUpsertOne {
+	return u.Update(func(s *AssetManagerUpsert) {
+		s.SetWarehouseID(v)
+	})
+}
+
+// UpdateWarehouseID sets the "warehouse_id" field to the value that was provided on create.
+func (u *AssetManagerUpsertOne) UpdateWarehouseID() *AssetManagerUpsertOne {
+	return u.Update(func(s *AssetManagerUpsert) {
+		s.UpdateWarehouseID()
+	})
+}
+
+// ClearWarehouseID clears the value of the "warehouse_id" field.
+func (u *AssetManagerUpsertOne) ClearWarehouseID() *AssetManagerUpsertOne {
+	return u.Update(func(s *AssetManagerUpsert) {
+		s.ClearWarehouseID()
 	})
 }
 
@@ -1296,6 +1350,27 @@ func (u *AssetManagerUpsertBulk) UpdateLastSigninAt() *AssetManagerUpsertBulk {
 func (u *AssetManagerUpsertBulk) ClearLastSigninAt() *AssetManagerUpsertBulk {
 	return u.Update(func(s *AssetManagerUpsert) {
 		s.ClearLastSigninAt()
+	})
+}
+
+// SetWarehouseID sets the "warehouse_id" field.
+func (u *AssetManagerUpsertBulk) SetWarehouseID(v uint64) *AssetManagerUpsertBulk {
+	return u.Update(func(s *AssetManagerUpsert) {
+		s.SetWarehouseID(v)
+	})
+}
+
+// UpdateWarehouseID sets the "warehouse_id" field to the value that was provided on create.
+func (u *AssetManagerUpsertBulk) UpdateWarehouseID() *AssetManagerUpsertBulk {
+	return u.Update(func(s *AssetManagerUpsert) {
+		s.UpdateWarehouseID()
+	})
+}
+
+// ClearWarehouseID clears the value of the "warehouse_id" field.
+func (u *AssetManagerUpsertBulk) ClearWarehouseID() *AssetManagerUpsertBulk {
+	return u.Update(func(s *AssetManagerUpsert) {
+		s.ClearWarehouseID()
 	})
 }
 

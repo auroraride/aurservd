@@ -10,12 +10,14 @@ import (
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
-	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/material"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type enterpriseAssetBiz struct {
@@ -43,16 +45,8 @@ func NewEnterpriseAssetWithModifier(m *model.Modifier) *enterpriseAssetBiz {
 // Assets 资产列表
 func (b *enterpriseAssetBiz) Assets(req *definition.EnterpriseAssetListReq) (res *model.PaginationRes) {
 	// 查询分页数据
-	q := ent.Database.EnterpriseStation.QueryNotDeleted().WithCity().WithEnterprise()
-	if req.CityID != nil {
-		q.Where(enterprisestation.HasCityWith(city.ID(*req.CityID)))
-	}
-	if req.StationID != nil {
-		q.Where(enterprisestation.ID(*req.StationID))
-	}
-	if req.EnterpriseID != nil {
-		q.Where(enterprisestation.HasEnterpriseWith(enterprise.ID((*req.EnterpriseID))))
-	}
+	q := ent.Database.EnterpriseStation.QueryNotDeleted().WithCity().WithEnterprise().Order(ent.Desc(agreement.FieldCreatedAt))
+	b.assetsFilter(q, req)
 	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.EnterpriseStation) (result *definition.EnterpriseAssetDetail) {
 		result = &definition.EnterpriseAssetDetail{
 			ID:    item.ID,
@@ -77,6 +71,62 @@ func (b *enterpriseAssetBiz) Assets(req *definition.EnterpriseAssetListReq) (res
 	})
 
 	return res
+}
+
+// assetsFilter 条件筛选
+func (b *enterpriseAssetBiz) assetsFilter(q *ent.EnterpriseStationQuery, req *definition.EnterpriseAssetListReq) {
+	if req.EnterpriseID != nil {
+		q.Where(enterprisestation.HasEnterpriseWith(enterprise.ID(*req.EnterpriseID)))
+	}
+	if req.StationID != nil {
+		q.Where(enterprisestation.ID(*req.StationID))
+	}
+	if req.CityID != nil {
+		q.Where(enterprisestation.CityID(*req.CityID))
+	}
+	if req.ModelID != nil {
+		// 查询型号资产
+		ids := make([]uint64, 0)
+		list, _ := ent.Database.Asset.QueryNotDeleted().WithStation().Where(
+			entasset.ModelID(*req.ModelID),
+			entasset.LocationsType(model.AssetLocationsTypeStation.Value()),
+			entasset.Status(model.AssetStatusStock.Value()),
+		).All(b.ctx)
+		for _, v := range list {
+			if v.Edges.Station != nil {
+				ids = append(ids, v.Edges.Station.ID)
+			}
+		}
+
+		q.Where(
+			enterprisestation.IDIn(ids...),
+		)
+	}
+
+	if req.OtherName != nil {
+		// 查询其他物资资产
+		ids := make([]uint64, 0)
+		list, _ := ent.Database.Asset.QueryNotDeleted().WithStation().Where(
+			entasset.LocationsType(model.AssetLocationsTypeStation.Value()),
+			entasset.Status(model.AssetStatusStock.Value()),
+			entasset.HasMaterialWith(material.NameContainsFold(*req.OtherName)),
+		).All(b.ctx)
+		for _, v := range list {
+			if v.Edges.Station != nil {
+				ids = append(ids, v.Edges.Station.ID)
+			}
+		}
+
+		q.Where(
+			enterprisestation.IDIn(ids...),
+		)
+	}
+	if req.Start != nil && req.End != nil {
+		start := tools.NewTime().ParseDateStringX(*req.Start)
+		end := tools.NewTime().ParseNextDateStringX(*req.End)
+		q.Where(enterprisestation.CreatedAtGTE(start), enterprisestation.CreatedAtLTE(end))
+	}
+
 }
 
 // AssetTotal 物资数据统计

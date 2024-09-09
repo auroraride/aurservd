@@ -122,6 +122,7 @@ func (b *assetRoleBiz) Delete(req *model.IDParamReq) {
 
 // RoleSelection 筛选角色
 func (b *assetRoleBiz) RoleSelection() (items []model.SelectOption) {
+	items = make([]model.SelectOption, 0)
 	roles, _ := b.orm.Query().All(b.ctx)
 	for _, role := range roles {
 		items = append(items, model.SelectOption{

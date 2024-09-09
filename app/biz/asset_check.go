@@ -42,22 +42,58 @@ func (b *assetCheckBiz) GetAssetBySN(assetSignInfo definition.AssetSignInfo, req
 		wType := model.OperatorTypeAssetManager
 		newReq.OperatorType = wType
 		newReq.OperatorID = assetSignInfo.AssetManager.ID
+		// 上班确定仓库位置
+		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithDutyWarehouse().
+			Where(
+				assetmanager.ID(assetSignInfo.AssetManager.ID),
+			).First(b.ctx)
+		if am == nil {
+			return nil, errors.New("无效仓管员")
+		}
+
+		if am.Edges.DutyWarehouse == nil {
+			return nil, errors.New("未找到仓管员上班信息")
+		}
+		newReq.LocationsType = model.AssetLocationsTypeWarehouse
+		newReq.LocationsID = am.Edges.DutyWarehouse.ID
 	}
 	if assetSignInfo.Employee != nil {
 		sType := model.OperatorTypeEmployee
 		newReq.OperatorType = sType
 		newReq.OperatorID = assetSignInfo.Employee.ID
+		// 上班确定门店位置
+		ep, _ := ent.Database.Employee.QueryNotDeleted().WithStore().
+			Where(
+				employee.ID(assetSignInfo.Employee.ID),
+			).First(b.ctx)
+		if ep == nil {
+			return nil, errors.New("无效店员")
+		}
+
+		if ep.Edges.Store == nil {
+			return nil, errors.New("未找到店员上班信息")
+		}
+
+		newReq.LocationsType = model.AssetLocationsTypeStore
+		newReq.LocationsID = ep.Edges.Store.ID
 	}
 	if assetSignInfo.Agent != nil {
+		if req.StationID == nil {
+			return nil, errors.New("未选择具体站点")
+		}
 		sType := model.OperatorTypeAgent
 		newReq.OperatorType = sType
 		newReq.OperatorID = assetSignInfo.Agent.ID
+		newReq.LocationsType = model.AssetLocationsTypeStation
+		newReq.LocationsID = *req.StationID
 	}
 
 	if assetSignInfo.Maintainer != nil {
 		sType := model.OperatorTypeAgent
 		newReq.OperatorType = sType
 		newReq.OperatorID = assetSignInfo.Maintainer.ID
+		newReq.LocationsType = model.AssetLocationsTypeOperation
+		newReq.LocationsID = assetSignInfo.Maintainer.ID
 	}
 
 	return service.NewAssetCheck().GetAssetBySN(b.ctx, &newReq)
@@ -76,7 +112,7 @@ func (b *assetCheckBiz) Create(assetSignInfo definition.AssetSignInfo, req *defi
 	if assetSignInfo.AssetManager != nil {
 		wType := model.AssetLocationsTypeWarehouse
 		newReq.LocationsType = wType
-		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithWarehouse().
+		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithDutyWarehouse().
 			Where(
 				assetmanager.ID(assetSignInfo.AssetManager.ID),
 			).First(b.ctx)
@@ -84,10 +120,10 @@ func (b *assetCheckBiz) Create(assetSignInfo definition.AssetSignInfo, req *defi
 			return nil, errors.New("无效仓管员")
 		}
 
-		if am.Edges.Warehouse == nil {
+		if am.Edges.DutyWarehouse == nil {
 			return nil, errors.New("未找到仓管员上班信息")
 		}
-		newReq.LocationsID = am.Edges.Warehouse.ID
+		newReq.LocationsID = am.Edges.DutyWarehouse.ID
 		newReq.OperatorID = assetSignInfo.AssetManager.ID
 		newReq.OperatorType = model.OperatorTypeAssetManager
 
@@ -160,7 +196,7 @@ func (b *assetCheckBiz) List(assetSignInfo definition.AssetSignInfo, req *defini
 		wType := model.AssetLocationsTypeWarehouse
 		newReq.LocationsType = &wType
 
-		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithWarehouse().
+		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithDutyWarehouse().
 			Where(
 				assetmanager.ID(assetSignInfo.AssetManager.ID),
 			).First(b.ctx)
@@ -168,11 +204,11 @@ func (b *assetCheckBiz) List(assetSignInfo definition.AssetSignInfo, req *defini
 			return nil, errors.New("无效仓管员")
 		}
 
-		if am.Edges.Warehouse == nil {
+		if am.Edges.DutyWarehouse == nil {
 			return nil, errors.New("未找到仓管员上班信息")
 		}
 
-		newReq.LocationsID = silk.UInt64(am.Edges.Warehouse.ID)
+		newReq.LocationsID = silk.UInt64(am.Edges.DutyWarehouse.ID)
 	}
 	if assetSignInfo.Employee != nil {
 		sType := model.AssetLocationsTypeStore

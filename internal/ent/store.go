@@ -97,11 +97,13 @@ type StoreEdges struct {
 	Goods []*StoreGoods `json:"goods,omitempty"`
 	// Employees holds the value of the employees edge.
 	Employees []*Employee `json:"employees,omitempty"`
+	// DutyEmployees holds the value of the duty_employees edge.
+	DutyEmployees []*Employee `json:"duty_employees,omitempty"`
 	// Stocks holds the value of the stocks edge.
 	Stocks []*Stock `json:"stocks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [10]bool
+	loadedTypes [11]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -193,10 +195,19 @@ func (e StoreEdges) EmployeesOrErr() ([]*Employee, error) {
 	return nil, &NotLoadedError{edge: "employees"}
 }
 
+// DutyEmployeesOrErr returns the DutyEmployees value or an error if the edge
+// was not loaded in eager-loading.
+func (e StoreEdges) DutyEmployeesOrErr() ([]*Employee, error) {
+	if e.loadedTypes[9] {
+		return e.DutyEmployees, nil
+	}
+	return nil, &NotLoadedError{edge: "duty_employees"}
+}
+
 // StocksOrErr returns the Stocks value or an error if the edge
 // was not loaded in eager-loading.
 func (e StoreEdges) StocksOrErr() ([]*Stock, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[10] {
 		return e.Stocks, nil
 	}
 	return nil, &NotLoadedError{edge: "stocks"}
@@ -449,6 +460,11 @@ func (s *Store) QueryGoods() *StoreGoodsQuery {
 // QueryEmployees queries the "employees" edge of the Store entity.
 func (s *Store) QueryEmployees() *EmployeeQuery {
 	return NewStoreClient(s.config).QueryEmployees(s)
+}
+
+// QueryDutyEmployees queries the "duty_employees" edge of the Store entity.
+func (s *Store) QueryDutyEmployees() *EmployeeQuery {
+	return NewStoreClient(s.config).QueryDutyEmployees(s)
 }
 
 // QueryStocks queries the "stocks" edge of the Store entity.

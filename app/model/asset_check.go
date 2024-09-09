@@ -179,11 +179,15 @@ type AssetCheckByAssetSnReq struct {
 
 // AssetCheckByAssetSnRes 通过sn查询资产返回
 type AssetCheckByAssetSnRes struct {
-	AssetID   uint64    `json:"assetId"`   // 资产ID
-	AssetSN   string    `json:"assetSN"`   // 资产编号
-	Model     string    `json:"model"`     // 型号
-	BrandName string    `json:"brandName"` // 品牌
-	AssetType AssetType `json:"assetType"` // 资产类型 1:电车 2:智能电池
+	AssetID       uint64                    `json:"assetId"`       // 资产ID
+	AssetSN       string                    `json:"assetSN"`       // 资产编号
+	Model         string                    `json:"model"`         // 型号
+	BrandName     string                    `json:"brandName"`     // 品牌
+	AssetType     AssetType                 `json:"assetType"`     // 资产类型 1:电车 2:智能电池
+	LocationsType AssetLocationsType        `json:"locationsType"` // 位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	LocationsID   uint64                    `json:"locationsId"`   // 位置ID
+	LocationsName string                    `json:"locationsName"` // 位置名称
+	Attribute     map[uint64]AssetAttribute `json:"attribute"`     // 属性
 }
 
 type CheckAssetCheckOwnerReq struct {

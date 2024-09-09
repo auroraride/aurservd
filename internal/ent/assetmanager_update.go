@@ -207,43 +207,63 @@ func (amu *AssetManagerUpdate) ClearLastSigninAt() *AssetManagerUpdate {
 	return amu
 }
 
+// SetWarehouseID sets the "warehouse_id" field.
+func (amu *AssetManagerUpdate) SetWarehouseID(u uint64) *AssetManagerUpdate {
+	amu.mutation.SetWarehouseID(u)
+	return amu
+}
+
+// SetNillableWarehouseID sets the "warehouse_id" field if the given value is not nil.
+func (amu *AssetManagerUpdate) SetNillableWarehouseID(u *uint64) *AssetManagerUpdate {
+	if u != nil {
+		amu.SetWarehouseID(*u)
+	}
+	return amu
+}
+
+// ClearWarehouseID clears the value of the "warehouse_id" field.
+func (amu *AssetManagerUpdate) ClearWarehouseID() *AssetManagerUpdate {
+	amu.mutation.ClearWarehouseID()
+	return amu
+}
+
 // SetRole sets the "role" edge to the AssetRole entity.
 func (amu *AssetManagerUpdate) SetRole(a *AssetRole) *AssetManagerUpdate {
 	return amu.SetRoleID(a.ID)
 }
 
-// AddWarehouseIDs adds the "warehouses" edge to the Warehouse entity by IDs.
-func (amu *AssetManagerUpdate) AddWarehouseIDs(ids ...uint64) *AssetManagerUpdate {
-	amu.mutation.AddWarehouseIDs(ids...)
+// AddBelongWarehouseIDs adds the "belong_warehouses" edge to the Warehouse entity by IDs.
+func (amu *AssetManagerUpdate) AddBelongWarehouseIDs(ids ...uint64) *AssetManagerUpdate {
+	amu.mutation.AddBelongWarehouseIDs(ids...)
 	return amu
 }
 
-// AddWarehouses adds the "warehouses" edges to the Warehouse entity.
-func (amu *AssetManagerUpdate) AddWarehouses(w ...*Warehouse) *AssetManagerUpdate {
+// AddBelongWarehouses adds the "belong_warehouses" edges to the Warehouse entity.
+func (amu *AssetManagerUpdate) AddBelongWarehouses(w ...*Warehouse) *AssetManagerUpdate {
 	ids := make([]uint64, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
-	return amu.AddWarehouseIDs(ids...)
+	return amu.AddBelongWarehouseIDs(ids...)
 }
 
-// SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
-func (amu *AssetManagerUpdate) SetWarehouseID(id uint64) *AssetManagerUpdate {
-	amu.mutation.SetWarehouseID(id)
+// SetDutyWarehouseID sets the "duty_warehouse" edge to the Warehouse entity by ID.
+func (amu *AssetManagerUpdate) SetDutyWarehouseID(id uint64) *AssetManagerUpdate {
+	amu.mutation.SetDutyWarehouseID(id)
 	return amu
 }
 
-// SetNillableWarehouseID sets the "warehouse" edge to the Warehouse entity by ID if the given value is not nil.
-func (amu *AssetManagerUpdate) SetNillableWarehouseID(id *uint64) *AssetManagerUpdate {
+// SetNillableDutyWarehouseID sets the "duty_warehouse" edge to the Warehouse entity by ID if the given value is not nil.
+func (amu *AssetManagerUpdate) SetNillableDutyWarehouseID(id *uint64) *AssetManagerUpdate {
 	if id != nil {
-		amu = amu.SetWarehouseID(*id)
+		amu = amu.SetDutyWarehouseID(*id)
 	}
 	return amu
 }
 
-// SetWarehouse sets the "warehouse" edge to the Warehouse entity.
-func (amu *AssetManagerUpdate) SetWarehouse(w *Warehouse) *AssetManagerUpdate {
-	return amu.SetWarehouseID(w.ID)
+// SetDutyWarehouse sets the "duty_warehouse" edge to the Warehouse entity.
+func (amu *AssetManagerUpdate) SetDutyWarehouse(w *Warehouse) *AssetManagerUpdate {
+	return amu.SetDutyWarehouseID(w.ID)
 }
 
 // Mutation returns the AssetManagerMutation object of the builder.
@@ -257,30 +277,30 @@ func (amu *AssetManagerUpdate) ClearRole() *AssetManagerUpdate {
 	return amu
 }
 
-// ClearWarehouses clears all "warehouses" edges to the Warehouse entity.
-func (amu *AssetManagerUpdate) ClearWarehouses() *AssetManagerUpdate {
-	amu.mutation.ClearWarehouses()
+// ClearBelongWarehouses clears all "belong_warehouses" edges to the Warehouse entity.
+func (amu *AssetManagerUpdate) ClearBelongWarehouses() *AssetManagerUpdate {
+	amu.mutation.ClearBelongWarehouses()
 	return amu
 }
 
-// RemoveWarehouseIDs removes the "warehouses" edge to Warehouse entities by IDs.
-func (amu *AssetManagerUpdate) RemoveWarehouseIDs(ids ...uint64) *AssetManagerUpdate {
-	amu.mutation.RemoveWarehouseIDs(ids...)
+// RemoveBelongWarehouseIDs removes the "belong_warehouses" edge to Warehouse entities by IDs.
+func (amu *AssetManagerUpdate) RemoveBelongWarehouseIDs(ids ...uint64) *AssetManagerUpdate {
+	amu.mutation.RemoveBelongWarehouseIDs(ids...)
 	return amu
 }
 
-// RemoveWarehouses removes "warehouses" edges to Warehouse entities.
-func (amu *AssetManagerUpdate) RemoveWarehouses(w ...*Warehouse) *AssetManagerUpdate {
+// RemoveBelongWarehouses removes "belong_warehouses" edges to Warehouse entities.
+func (amu *AssetManagerUpdate) RemoveBelongWarehouses(w ...*Warehouse) *AssetManagerUpdate {
 	ids := make([]uint64, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
-	return amu.RemoveWarehouseIDs(ids...)
+	return amu.RemoveBelongWarehouseIDs(ids...)
 }
 
-// ClearWarehouse clears the "warehouse" edge to the Warehouse entity.
-func (amu *AssetManagerUpdate) ClearWarehouse() *AssetManagerUpdate {
-	amu.mutation.ClearWarehouse()
+// ClearDutyWarehouse clears the "duty_warehouse" edge to the Warehouse entity.
+func (amu *AssetManagerUpdate) ClearDutyWarehouse() *AssetManagerUpdate {
+	amu.mutation.ClearDutyWarehouse()
 	return amu
 }
 
@@ -436,12 +456,12 @@ func (amu *AssetManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if amu.mutation.WarehousesCleared() {
+	if amu.mutation.BelongWarehousesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   assetmanager.WarehousesTable,
-			Columns: assetmanager.WarehousesPrimaryKey,
+			Table:   assetmanager.BelongWarehousesTable,
+			Columns: assetmanager.BelongWarehousesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -449,12 +469,12 @@ func (amu *AssetManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := amu.mutation.RemovedWarehousesIDs(); len(nodes) > 0 && !amu.mutation.WarehousesCleared() {
+	if nodes := amu.mutation.RemovedBelongWarehousesIDs(); len(nodes) > 0 && !amu.mutation.BelongWarehousesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   assetmanager.WarehousesTable,
-			Columns: assetmanager.WarehousesPrimaryKey,
+			Table:   assetmanager.BelongWarehousesTable,
+			Columns: assetmanager.BelongWarehousesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -465,12 +485,12 @@ func (amu *AssetManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := amu.mutation.WarehousesIDs(); len(nodes) > 0 {
+	if nodes := amu.mutation.BelongWarehousesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   assetmanager.WarehousesTable,
-			Columns: assetmanager.WarehousesPrimaryKey,
+			Table:   assetmanager.BelongWarehousesTable,
+			Columns: assetmanager.BelongWarehousesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -481,12 +501,12 @@ func (amu *AssetManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if amu.mutation.WarehouseCleared() {
+	if amu.mutation.DutyWarehouseCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   assetmanager.WarehouseTable,
-			Columns: []string{assetmanager.WarehouseColumn},
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   assetmanager.DutyWarehouseTable,
+			Columns: []string{assetmanager.DutyWarehouseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -494,12 +514,12 @@ func (amu *AssetManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := amu.mutation.WarehouseIDs(); len(nodes) > 0 {
+	if nodes := amu.mutation.DutyWarehouseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   assetmanager.WarehouseTable,
-			Columns: []string{assetmanager.WarehouseColumn},
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   assetmanager.DutyWarehouseTable,
+			Columns: []string{assetmanager.DutyWarehouseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -707,43 +727,63 @@ func (amuo *AssetManagerUpdateOne) ClearLastSigninAt() *AssetManagerUpdateOne {
 	return amuo
 }
 
+// SetWarehouseID sets the "warehouse_id" field.
+func (amuo *AssetManagerUpdateOne) SetWarehouseID(u uint64) *AssetManagerUpdateOne {
+	amuo.mutation.SetWarehouseID(u)
+	return amuo
+}
+
+// SetNillableWarehouseID sets the "warehouse_id" field if the given value is not nil.
+func (amuo *AssetManagerUpdateOne) SetNillableWarehouseID(u *uint64) *AssetManagerUpdateOne {
+	if u != nil {
+		amuo.SetWarehouseID(*u)
+	}
+	return amuo
+}
+
+// ClearWarehouseID clears the value of the "warehouse_id" field.
+func (amuo *AssetManagerUpdateOne) ClearWarehouseID() *AssetManagerUpdateOne {
+	amuo.mutation.ClearWarehouseID()
+	return amuo
+}
+
 // SetRole sets the "role" edge to the AssetRole entity.
 func (amuo *AssetManagerUpdateOne) SetRole(a *AssetRole) *AssetManagerUpdateOne {
 	return amuo.SetRoleID(a.ID)
 }
 
-// AddWarehouseIDs adds the "warehouses" edge to the Warehouse entity by IDs.
-func (amuo *AssetManagerUpdateOne) AddWarehouseIDs(ids ...uint64) *AssetManagerUpdateOne {
-	amuo.mutation.AddWarehouseIDs(ids...)
+// AddBelongWarehouseIDs adds the "belong_warehouses" edge to the Warehouse entity by IDs.
+func (amuo *AssetManagerUpdateOne) AddBelongWarehouseIDs(ids ...uint64) *AssetManagerUpdateOne {
+	amuo.mutation.AddBelongWarehouseIDs(ids...)
 	return amuo
 }
 
-// AddWarehouses adds the "warehouses" edges to the Warehouse entity.
-func (amuo *AssetManagerUpdateOne) AddWarehouses(w ...*Warehouse) *AssetManagerUpdateOne {
+// AddBelongWarehouses adds the "belong_warehouses" edges to the Warehouse entity.
+func (amuo *AssetManagerUpdateOne) AddBelongWarehouses(w ...*Warehouse) *AssetManagerUpdateOne {
 	ids := make([]uint64, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
-	return amuo.AddWarehouseIDs(ids...)
+	return amuo.AddBelongWarehouseIDs(ids...)
 }
 
-// SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
-func (amuo *AssetManagerUpdateOne) SetWarehouseID(id uint64) *AssetManagerUpdateOne {
-	amuo.mutation.SetWarehouseID(id)
+// SetDutyWarehouseID sets the "duty_warehouse" edge to the Warehouse entity by ID.
+func (amuo *AssetManagerUpdateOne) SetDutyWarehouseID(id uint64) *AssetManagerUpdateOne {
+	amuo.mutation.SetDutyWarehouseID(id)
 	return amuo
 }
 
-// SetNillableWarehouseID sets the "warehouse" edge to the Warehouse entity by ID if the given value is not nil.
-func (amuo *AssetManagerUpdateOne) SetNillableWarehouseID(id *uint64) *AssetManagerUpdateOne {
+// SetNillableDutyWarehouseID sets the "duty_warehouse" edge to the Warehouse entity by ID if the given value is not nil.
+func (amuo *AssetManagerUpdateOne) SetNillableDutyWarehouseID(id *uint64) *AssetManagerUpdateOne {
 	if id != nil {
-		amuo = amuo.SetWarehouseID(*id)
+		amuo = amuo.SetDutyWarehouseID(*id)
 	}
 	return amuo
 }
 
-// SetWarehouse sets the "warehouse" edge to the Warehouse entity.
-func (amuo *AssetManagerUpdateOne) SetWarehouse(w *Warehouse) *AssetManagerUpdateOne {
-	return amuo.SetWarehouseID(w.ID)
+// SetDutyWarehouse sets the "duty_warehouse" edge to the Warehouse entity.
+func (amuo *AssetManagerUpdateOne) SetDutyWarehouse(w *Warehouse) *AssetManagerUpdateOne {
+	return amuo.SetDutyWarehouseID(w.ID)
 }
 
 // Mutation returns the AssetManagerMutation object of the builder.
@@ -757,30 +797,30 @@ func (amuo *AssetManagerUpdateOne) ClearRole() *AssetManagerUpdateOne {
 	return amuo
 }
 
-// ClearWarehouses clears all "warehouses" edges to the Warehouse entity.
-func (amuo *AssetManagerUpdateOne) ClearWarehouses() *AssetManagerUpdateOne {
-	amuo.mutation.ClearWarehouses()
+// ClearBelongWarehouses clears all "belong_warehouses" edges to the Warehouse entity.
+func (amuo *AssetManagerUpdateOne) ClearBelongWarehouses() *AssetManagerUpdateOne {
+	amuo.mutation.ClearBelongWarehouses()
 	return amuo
 }
 
-// RemoveWarehouseIDs removes the "warehouses" edge to Warehouse entities by IDs.
-func (amuo *AssetManagerUpdateOne) RemoveWarehouseIDs(ids ...uint64) *AssetManagerUpdateOne {
-	amuo.mutation.RemoveWarehouseIDs(ids...)
+// RemoveBelongWarehouseIDs removes the "belong_warehouses" edge to Warehouse entities by IDs.
+func (amuo *AssetManagerUpdateOne) RemoveBelongWarehouseIDs(ids ...uint64) *AssetManagerUpdateOne {
+	amuo.mutation.RemoveBelongWarehouseIDs(ids...)
 	return amuo
 }
 
-// RemoveWarehouses removes "warehouses" edges to Warehouse entities.
-func (amuo *AssetManagerUpdateOne) RemoveWarehouses(w ...*Warehouse) *AssetManagerUpdateOne {
+// RemoveBelongWarehouses removes "belong_warehouses" edges to Warehouse entities.
+func (amuo *AssetManagerUpdateOne) RemoveBelongWarehouses(w ...*Warehouse) *AssetManagerUpdateOne {
 	ids := make([]uint64, len(w))
 	for i := range w {
 		ids[i] = w[i].ID
 	}
-	return amuo.RemoveWarehouseIDs(ids...)
+	return amuo.RemoveBelongWarehouseIDs(ids...)
 }
 
-// ClearWarehouse clears the "warehouse" edge to the Warehouse entity.
-func (amuo *AssetManagerUpdateOne) ClearWarehouse() *AssetManagerUpdateOne {
-	amuo.mutation.ClearWarehouse()
+// ClearDutyWarehouse clears the "duty_warehouse" edge to the Warehouse entity.
+func (amuo *AssetManagerUpdateOne) ClearDutyWarehouse() *AssetManagerUpdateOne {
+	amuo.mutation.ClearDutyWarehouse()
 	return amuo
 }
 
@@ -966,12 +1006,12 @@ func (amuo *AssetManagerUpdateOne) sqlSave(ctx context.Context) (_node *AssetMan
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if amuo.mutation.WarehousesCleared() {
+	if amuo.mutation.BelongWarehousesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   assetmanager.WarehousesTable,
-			Columns: assetmanager.WarehousesPrimaryKey,
+			Table:   assetmanager.BelongWarehousesTable,
+			Columns: assetmanager.BelongWarehousesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -979,12 +1019,12 @@ func (amuo *AssetManagerUpdateOne) sqlSave(ctx context.Context) (_node *AssetMan
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := amuo.mutation.RemovedWarehousesIDs(); len(nodes) > 0 && !amuo.mutation.WarehousesCleared() {
+	if nodes := amuo.mutation.RemovedBelongWarehousesIDs(); len(nodes) > 0 && !amuo.mutation.BelongWarehousesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   assetmanager.WarehousesTable,
-			Columns: assetmanager.WarehousesPrimaryKey,
+			Table:   assetmanager.BelongWarehousesTable,
+			Columns: assetmanager.BelongWarehousesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -995,12 +1035,12 @@ func (amuo *AssetManagerUpdateOne) sqlSave(ctx context.Context) (_node *AssetMan
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := amuo.mutation.WarehousesIDs(); len(nodes) > 0 {
+	if nodes := amuo.mutation.BelongWarehousesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   assetmanager.WarehousesTable,
-			Columns: assetmanager.WarehousesPrimaryKey,
+			Table:   assetmanager.BelongWarehousesTable,
+			Columns: assetmanager.BelongWarehousesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -1011,12 +1051,12 @@ func (amuo *AssetManagerUpdateOne) sqlSave(ctx context.Context) (_node *AssetMan
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if amuo.mutation.WarehouseCleared() {
+	if amuo.mutation.DutyWarehouseCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   assetmanager.WarehouseTable,
-			Columns: []string{assetmanager.WarehouseColumn},
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   assetmanager.DutyWarehouseTable,
+			Columns: []string{assetmanager.DutyWarehouseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),
@@ -1024,12 +1064,12 @@ func (amuo *AssetManagerUpdateOne) sqlSave(ctx context.Context) (_node *AssetMan
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := amuo.mutation.WarehouseIDs(); len(nodes) > 0 {
+	if nodes := amuo.mutation.DutyWarehouseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   assetmanager.WarehouseTable,
-			Columns: []string{assetmanager.WarehouseColumn},
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   assetmanager.DutyWarehouseTable,
+			Columns: []string{assetmanager.DutyWarehouseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(warehouse.FieldID, field.TypeUint64),

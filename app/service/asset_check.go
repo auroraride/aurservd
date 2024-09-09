@@ -111,8 +111,8 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 		return
 	}
 
-	start := tools.NewTime().ParseDateStringX(req.StartAt)
-	end := tools.NewTime().ParseNextDateStringX(req.EndAt)
+	start := tools.NewTime().ParseDateTimeStringX(req.StartAt)
+	end := tools.NewTime().ParseDateTimeStringX(req.EndAt)
 
 	c, err := s.orm.Create().
 		SetCreator(modifier).
@@ -248,7 +248,7 @@ func (s *assetCheckService) getAssetByOperateRole(ctx context.Context, req model
 		// 查询是否当前位置上班
 		st, _ := ent.Database.Store.QueryNotDeleted().Where(
 			store.ID(req.LocationsID),
-			store.HasEmployeeWith(employee.ID(req.OperatorID)),
+			store.HasDutyEmployeesWith(employee.ID(req.OperatorID)),
 		).First(context.Background())
 		if st == nil {
 			return b, nil, errors.New("当年门店未存在上班信息")
@@ -258,7 +258,7 @@ func (s *assetCheckService) getAssetByOperateRole(ctx context.Context, req model
 		// 查询是否当前位置上班
 		wh, _ := ent.Database.Warehouse.QueryNotDeleted().Where(
 			warehouse.ID(req.LocationsID),
-			warehouse.HasAssetManagerWith(assetmanager.ID(req.OperatorID)),
+			warehouse.HasDutyAssetManagersWith(assetmanager.ID(req.OperatorID)),
 		).First(context.Background())
 		if wh == nil {
 			return b, nil, errors.New("当年门店未存在上班信息")
@@ -282,14 +282,14 @@ func (s *assetCheckService) checkAssetCheckOwner(ctx context.Context, req model.
 		)
 	item, _ := q.First(ctx)
 	if item == nil {
-		return fmt.Errorf("资产不存在或不属于当前用户")
+		return fmt.Errorf("该资产不属于当前目标位置")
 	}
 	return nil
 }
 
 // GetAssetBySN 通过sn查询资产
 func (s *assetCheckService) GetAssetBySN(ctx context.Context, req *model.AssetCheckByAssetSnReq) (res *model.AssetCheckByAssetSnRes, err error) {
-	item, _ := ent.Database.Asset.QueryNotDeleted().Where(asset.Sn(req.SN)).WithModel().WithBrand().First(ctx)
+	item, _ := ent.Database.Asset.QueryNotDeleted().Where(asset.Sn(req.SN)).WithModel().WithBrand().WithValues().First(ctx)
 	if item == nil {
 		return nil, fmt.Errorf("未找到对应的资产")
 	}
@@ -306,9 +306,11 @@ func (s *assetCheckService) GetAssetBySN(ctx context.Context, req *model.AssetCh
 		return nil, err
 	}
 	res = &model.AssetCheckByAssetSnRes{
-		AssetID:   item.ID,
-		AssetSN:   item.Sn,
-		AssetType: model.AssetType(item.Type),
+		AssetID:       item.ID,
+		AssetSN:       item.Sn,
+		AssetType:     model.AssetType(item.Type),
+		LocationsType: model.AssetLocationsType(item.LocationsType),
+		LocationsID:   item.LocationsID,
 	}
 	if item.Edges.Model != nil {
 		res.Model = item.Edges.Model.Model
@@ -316,6 +318,27 @@ func (s *assetCheckService) GetAssetBySN(ctx context.Context, req *model.AssetCh
 	if item.Edges.Brand != nil {
 		res.BrandName = item.Edges.Brand.Name
 	}
+
+	// 查询属性值
+	attributeValue, _ := item.QueryValues().WithAttribute().All(context.Background())
+	assetAttributeMap := make(map[uint64]model.AssetAttribute)
+	for _, v := range attributeValue {
+		var attributeName, attributeKey string
+		if v.Edges.Attribute != nil {
+			attributeName = v.Edges.Attribute.Name
+			attributeKey = v.Edges.Attribute.Key
+		}
+		assetAttributeMap[v.AttributeID] = model.AssetAttribute{
+			AttributeID:      v.AttributeID,
+			AttributeValue:   v.Value,
+			AttributeName:    attributeName,
+			AttributeKey:     attributeKey,
+			AttributeValueID: v.ID,
+		}
+	}
+
+	res.Attribute = assetAttributeMap
+
 	return res, nil
 }
 
@@ -442,7 +465,9 @@ func (s *assetCheckService) listFilter(q *ent.AssetCheckQuery, req *model.AssetC
 func (s *assetCheckService) Detail(ctx context.Context, id uint64) (*model.AssetCheckListRes, error) {
 	item, _ := ent.Database.AssetCheck.QueryNotDeleted().Where(assetcheck.ID(id)).WithStore().WithStation().WithWarehouse().
 		WithOperateStore().WithOperateManager().WithOperateAgent().WithCheckDetails(func(query *ent.AssetCheckDetailsQuery) {
-		query.WithAsset()
+		query.WithAsset(func(query *ent.AssetQuery) {
+			query.WithModel().WithBrand()
+		})
 	}).First(ctx)
 	if item == nil {
 		return nil, errors.New("未找到对应的盘点记录")

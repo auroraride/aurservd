@@ -89,7 +89,7 @@ func (*assetTransfer) TransferReceive(c echo.Context) (err error) {
 // @Success	200					{object}	model.AssetTransferListRes	"请求成功"
 func (*assetTransfer) TransferBySn(c echo.Context) (err error) {
 	ctx, req := app.MaintainerContextAndBinding[model.GetTransferBySNReq](c)
-	return ctx.SendResponse(biz.NewAssetTransfer().GetTransferBySn(req))
+	return ctx.SendResponse(biz.NewAssetTransfer().GetTransferBySn(definition.AssetSignInfo{Maintainer: ctx.Maintainer}, req))
 }
 
 // TransferFlow

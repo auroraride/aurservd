@@ -4,7 +4,8 @@ import "github.com/auroraride/aurservd/app/model"
 
 // AssetCheckByAssetSnReq 通过sn查询资产请求
 type AssetCheckByAssetSnReq struct {
-	SN string `json:"sn" query:"sn" param:"sn"` // 资产编号
+	SN        string  `json:"sn" query:"sn" param:"sn"`    // 资产编号
+	StationID *uint64 `json:"stationID" query:"stationID"` // 站点ID（扫码时选择站点必填）
 }
 
 // AssetCheckCreateReq 创建资产盘点请求

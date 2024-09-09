@@ -39,6 +39,7 @@ type EmployeeQuery struct {
 	withCommissions *CommissionQuery
 	withAssistances *AssistanceQuery
 	withStores      *StoreQuery
+	withDutyStore   *StoreQuery
 	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -274,6 +275,28 @@ func (eq *EmployeeQuery) QueryStores() *StoreQuery {
 	return query
 }
 
+// QueryDutyStore chains the current query on the "duty_store" edge.
+func (eq *EmployeeQuery) QueryDutyStore() *StoreQuery {
+	query := (&StoreClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, employee.DutyStoreTable, employee.DutyStoreColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Employee entity from the query.
 // Returns a *NotFoundError when no Employee was found.
 func (eq *EmployeeQuery) First(ctx context.Context) (*Employee, error) {
@@ -475,6 +498,7 @@ func (eq *EmployeeQuery) Clone() *EmployeeQuery {
 		withCommissions: eq.withCommissions.Clone(),
 		withAssistances: eq.withAssistances.Clone(),
 		withStores:      eq.withStores.Clone(),
+		withDutyStore:   eq.withDutyStore.Clone(),
 		// clone intermediate query.
 		sql:  eq.sql.Clone(),
 		path: eq.path,
@@ -580,6 +604,17 @@ func (eq *EmployeeQuery) WithStores(opts ...func(*StoreQuery)) *EmployeeQuery {
 	return eq
 }
 
+// WithDutyStore tells the query-builder to eager-load the nodes that are connected to
+// the "duty_store" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EmployeeQuery) WithDutyStore(opts ...func(*StoreQuery)) *EmployeeQuery {
+	query := (&StoreClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withDutyStore = query
+	return eq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -658,7 +693,7 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 	var (
 		nodes       = []*Employee{}
 		_spec       = eq.querySpec()
-		loadedTypes = [9]bool{
+		loadedTypes = [10]bool{
 			eq.withCity != nil,
 			eq.withGroup != nil,
 			eq.withStore != nil,
@@ -668,6 +703,7 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 			eq.withCommissions != nil,
 			eq.withAssistances != nil,
 			eq.withStores != nil,
+			eq.withDutyStore != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -748,6 +784,12 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 		if err := eq.loadStores(ctx, query, nodes,
 			func(n *Employee) { n.Edges.Stores = []*Store{} },
 			func(n *Employee, e *Store) { n.Edges.Stores = append(n.Edges.Stores, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withDutyStore; query != nil {
+		if err := eq.loadDutyStore(ctx, query, nodes, nil,
+			func(n *Employee, e *Store) { n.Edges.DutyStore = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1069,6 +1111,38 @@ func (eq *EmployeeQuery) loadStores(ctx context.Context, query *StoreQuery, node
 	}
 	return nil
 }
+func (eq *EmployeeQuery) loadDutyStore(ctx context.Context, query *StoreQuery, nodes []*Employee, init func(*Employee), assign func(*Employee, *Store)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Employee)
+	for i := range nodes {
+		if nodes[i].DutyStoreID == nil {
+			continue
+		}
+		fk := *nodes[i].DutyStoreID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(store.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "duty_store_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (eq *EmployeeQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := eq.querySpec()
@@ -1103,6 +1177,9 @@ func (eq *EmployeeQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if eq.withGroup != nil {
 			_spec.Node.AddColumnOnce(employee.FieldGroupID)
+		}
+		if eq.withDutyStore != nil {
+			_spec.Node.AddColumnOnce(employee.FieldDutyStoreID)
 		}
 	}
 	if ps := eq.predicates; len(ps) > 0 {
@@ -1181,6 +1258,7 @@ var (
 	EmployeeQueryWithCommissions EmployeeQueryWith = "Commissions"
 	EmployeeQueryWithAssistances EmployeeQueryWith = "Assistances"
 	EmployeeQueryWithStores      EmployeeQueryWith = "Stores"
+	EmployeeQueryWithDutyStore   EmployeeQueryWith = "DutyStore"
 )
 
 func (eq *EmployeeQuery) With(withEdges ...EmployeeQueryWith) *EmployeeQuery {
@@ -1204,6 +1282,8 @@ func (eq *EmployeeQuery) With(withEdges ...EmployeeQueryWith) *EmployeeQuery {
 			eq.WithAssistances()
 		case EmployeeQueryWithStores:
 			eq.WithStores()
+		case EmployeeQueryWithDutyStore:
+			eq.WithDutyStore()
 		}
 	}
 	return eq

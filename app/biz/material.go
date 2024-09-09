@@ -68,6 +68,10 @@ func (b *materialBiz) otherDetail(item *ent.Material) (res *definition.MaterialD
 
 // Create 其他物资创建
 func (b *materialBiz) Create(req *definition.MaterialCreateReq) (err error) {
+	if ex, _ := b.orm.QueryNotDeleted().Where(material.Type(req.Type.Value()), material.Name(req.Name)).First(b.ctx); ex != nil {
+		return errors.New("该类型配件已存在")
+	}
+
 	_, err = b.orm.Create().
 		SetType(req.Type.Value()).
 		SetName(req.Name).
@@ -90,6 +94,11 @@ func (b *materialBiz) Modify(req *definition.MaterialModifyReq) (err error) {
 	if g == nil {
 		return errors.New("数据不存在")
 	}
+
+	if ex, _ := b.orm.QueryNotDeleted().Where(material.IDNotIn(g.ID), material.Type(g.Type), material.Name(req.Name)).First(b.ctx); ex != nil {
+		return errors.New("该类型配件已存在")
+	}
+
 	_, err = b.orm.UpdateOneID(req.ID).
 		SetName(req.Name).
 		SetStatement(req.Statement).

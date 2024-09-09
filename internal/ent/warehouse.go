@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
@@ -45,8 +44,6 @@ type Warehouse struct {
 	Address string `json:"address,omitempty"`
 	// 仓库编号
 	Sn string `json:"sn,omitempty"`
-	// 上班仓管员ID
-	AssetManagerID *uint64 `json:"asset_manager_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WarehouseQuery when eager-loading is set.
 	Edges        WarehouseEdges `json:"edges"`
@@ -57,10 +54,10 @@ type Warehouse struct {
 type WarehouseEdges struct {
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
-	// AssetManager holds the value of the asset_manager edge.
-	AssetManager *AssetManager `json:"asset_manager,omitempty"`
-	// AssetManagers holds the value of the asset_managers edge.
-	AssetManagers []*AssetManager `json:"asset_managers,omitempty"`
+	// BelongAssetManagers holds the value of the belong_asset_managers edge.
+	BelongAssetManagers []*AssetManager `json:"belong_asset_managers,omitempty"`
+	// DutyAssetManagers holds the value of the duty_asset_managers edge.
+	DutyAssetManagers []*AssetManager `json:"duty_asset_managers,omitempty"`
 	// Asset holds the value of the asset edge.
 	Asset []*Asset `json:"asset,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -79,24 +76,22 @@ func (e WarehouseEdges) CityOrErr() (*City, error) {
 	return nil, &NotLoadedError{edge: "city"}
 }
 
-// AssetManagerOrErr returns the AssetManager value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e WarehouseEdges) AssetManagerOrErr() (*AssetManager, error) {
-	if e.AssetManager != nil {
-		return e.AssetManager, nil
-	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: assetmanager.Label}
+// BelongAssetManagersOrErr returns the BelongAssetManagers value or an error if the edge
+// was not loaded in eager-loading.
+func (e WarehouseEdges) BelongAssetManagersOrErr() ([]*AssetManager, error) {
+	if e.loadedTypes[1] {
+		return e.BelongAssetManagers, nil
 	}
-	return nil, &NotLoadedError{edge: "asset_manager"}
+	return nil, &NotLoadedError{edge: "belong_asset_managers"}
 }
 
-// AssetManagersOrErr returns the AssetManagers value or an error if the edge
+// DutyAssetManagersOrErr returns the DutyAssetManagers value or an error if the edge
 // was not loaded in eager-loading.
-func (e WarehouseEdges) AssetManagersOrErr() ([]*AssetManager, error) {
+func (e WarehouseEdges) DutyAssetManagersOrErr() ([]*AssetManager, error) {
 	if e.loadedTypes[2] {
-		return e.AssetManagers, nil
+		return e.DutyAssetManagers, nil
 	}
-	return nil, &NotLoadedError{edge: "asset_managers"}
+	return nil, &NotLoadedError{edge: "duty_asset_managers"}
 }
 
 // AssetOrErr returns the Asset value or an error if the edge
@@ -117,7 +112,7 @@ func (*Warehouse) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case warehouse.FieldLng, warehouse.FieldLat:
 			values[i] = new(sql.NullFloat64)
-		case warehouse.FieldID, warehouse.FieldCityID, warehouse.FieldAssetManagerID:
+		case warehouse.FieldID, warehouse.FieldCityID:
 			values[i] = new(sql.NullInt64)
 		case warehouse.FieldRemark, warehouse.FieldName, warehouse.FieldAddress, warehouse.FieldSn:
 			values[i] = new(sql.NullString)
@@ -221,13 +216,6 @@ func (w *Warehouse) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				w.Sn = value.String
 			}
-		case warehouse.FieldAssetManagerID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field asset_manager_id", values[i])
-			} else if value.Valid {
-				w.AssetManagerID = new(uint64)
-				*w.AssetManagerID = uint64(value.Int64)
-			}
 		default:
 			w.selectValues.Set(columns[i], values[i])
 		}
@@ -246,14 +234,14 @@ func (w *Warehouse) QueryCity() *CityQuery {
 	return NewWarehouseClient(w.config).QueryCity(w)
 }
 
-// QueryAssetManager queries the "asset_manager" edge of the Warehouse entity.
-func (w *Warehouse) QueryAssetManager() *AssetManagerQuery {
-	return NewWarehouseClient(w.config).QueryAssetManager(w)
+// QueryBelongAssetManagers queries the "belong_asset_managers" edge of the Warehouse entity.
+func (w *Warehouse) QueryBelongAssetManagers() *AssetManagerQuery {
+	return NewWarehouseClient(w.config).QueryBelongAssetManagers(w)
 }
 
-// QueryAssetManagers queries the "asset_managers" edge of the Warehouse entity.
-func (w *Warehouse) QueryAssetManagers() *AssetManagerQuery {
-	return NewWarehouseClient(w.config).QueryAssetManagers(w)
+// QueryDutyAssetManagers queries the "duty_asset_managers" edge of the Warehouse entity.
+func (w *Warehouse) QueryDutyAssetManagers() *AssetManagerQuery {
+	return NewWarehouseClient(w.config).QueryDutyAssetManagers(w)
 }
 
 // QueryAsset queries the "asset" edge of the Warehouse entity.
@@ -321,11 +309,6 @@ func (w *Warehouse) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("sn=")
 	builder.WriteString(w.Sn)
-	builder.WriteString(", ")
-	if v := w.AssetManagerID; v != nil {
-		builder.WriteString("asset_manager_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	builder.WriteByte(')')
 	return builder.String()
 }

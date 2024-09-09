@@ -116,6 +116,11 @@ func Limit(v uint) predicate.Employee {
 	return predicate.Employee(sql.FieldEQ(FieldLimit, v))
 }
 
+// DutyStoreID applies equality check predicate on the "duty_store_id" field. It's identical to DutyStoreIDEQ.
+func DutyStoreID(v uint64) predicate.Employee {
+	return predicate.Employee(sql.FieldEQ(FieldDutyStoreID, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Employee {
 	return predicate.Employee(sql.FieldEQ(FieldCreatedAt, v))
@@ -696,6 +701,36 @@ func LimitLTE(v uint) predicate.Employee {
 	return predicate.Employee(sql.FieldLTE(FieldLimit, v))
 }
 
+// DutyStoreIDEQ applies the EQ predicate on the "duty_store_id" field.
+func DutyStoreIDEQ(v uint64) predicate.Employee {
+	return predicate.Employee(sql.FieldEQ(FieldDutyStoreID, v))
+}
+
+// DutyStoreIDNEQ applies the NEQ predicate on the "duty_store_id" field.
+func DutyStoreIDNEQ(v uint64) predicate.Employee {
+	return predicate.Employee(sql.FieldNEQ(FieldDutyStoreID, v))
+}
+
+// DutyStoreIDIn applies the In predicate on the "duty_store_id" field.
+func DutyStoreIDIn(vs ...uint64) predicate.Employee {
+	return predicate.Employee(sql.FieldIn(FieldDutyStoreID, vs...))
+}
+
+// DutyStoreIDNotIn applies the NotIn predicate on the "duty_store_id" field.
+func DutyStoreIDNotIn(vs ...uint64) predicate.Employee {
+	return predicate.Employee(sql.FieldNotIn(FieldDutyStoreID, vs...))
+}
+
+// DutyStoreIDIsNil applies the IsNil predicate on the "duty_store_id" field.
+func DutyStoreIDIsNil() predicate.Employee {
+	return predicate.Employee(sql.FieldIsNull(FieldDutyStoreID))
+}
+
+// DutyStoreIDNotNil applies the NotNil predicate on the "duty_store_id" field.
+func DutyStoreIDNotNil() predicate.Employee {
+	return predicate.Employee(sql.FieldNotNull(FieldDutyStoreID))
+}
+
 // HasCity applies the HasEdge predicate on the "city" edge.
 func HasCity() predicate.Employee {
 	return predicate.Employee(func(s *sql.Selector) {
@@ -895,6 +930,29 @@ func HasStores() predicate.Employee {
 func HasStoresWith(preds ...predicate.Store) predicate.Employee {
 	return predicate.Employee(func(s *sql.Selector) {
 		step := newStoresStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasDutyStore applies the HasEdge predicate on the "duty_store" edge.
+func HasDutyStore() predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, DutyStoreTable, DutyStoreColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDutyStoreWith applies the HasEdge predicate on the "duty_store" edge with a given conditions (other predicates).
+func HasDutyStoreWith(preds ...predicate.Store) predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		step := newDutyStoreStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

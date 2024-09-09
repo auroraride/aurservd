@@ -33,12 +33,14 @@ func loadWarestoreRoutes() {
 	auth.GET("/selection/station", wapi.Selection.Station)                    // 企业站点
 	auth.GET("/selection/model", wapi.Selection.Model)                        // 电池型号筛选
 	auth.GET("/selection/ebike/brand", wapi.Selection.EbikeBrand)             // 电车品牌筛选
+	auth.GET("/selection/city", wapi.Selection.City)                          // 城市筛选
 
 	// 物资管理
-	auth.GET("/assets/count", wapi.Assets.AssetCount)    // 资产统计
-	auth.GET("/assets", wapi.Assets.Assets)              // 资产数据
-	auth.GET("/assets/common", wapi.Assets.AssetsCommon) // 电池/电车资产数据
-	auth.PUT("/assets/:id", wapi.Assets.Update)          // 更新资产
+	auth.GET("/assets/count", wapi.Assets.AssetCount)         // 资产统计
+	auth.GET("/assets", wapi.Assets.Assets)                   // 资产数据
+	auth.GET("/assets/common", wapi.Assets.AssetsCommon)      // 电池/电车资产数据
+	auth.PUT("/assets/:id", wapi.Assets.Update)               // 更新资产
+	auth.GET("/assets/attributes", wapi.AssetAttributes.List) // 资产属性列表
 
 	// 资产调拨
 	auth.POST("/transfer", wapi.AssetTransfer.Transfer)                   // 创建调拨

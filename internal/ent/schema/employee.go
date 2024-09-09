@@ -66,6 +66,7 @@ func (Employee) Fields() []ent.Field {
 		field.Bool("enable").Default(true).Comment("启用状态"),
 		field.String("password").Optional().Comment("密码"),
 		field.Uint("limit").Default(0).Comment("限制范围(m)"),
+		field.Uint64("duty_store_id").Optional().Nillable().Comment("上班门店ID"),
 	}
 }
 
@@ -80,6 +81,7 @@ func (Employee) Edges() []ent.Edge {
 		edge.To("commissions", Commission.Type),
 		edge.To("assistances", Assistance.Type),
 		edge.From("stores", Store.Type).Ref("employees"),
+		edge.From("duty_store", Store.Type).Ref("duty_employees").Field("duty_store_id").Unique(),
 	}
 }
 

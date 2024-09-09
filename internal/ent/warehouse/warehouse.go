@@ -39,14 +39,12 @@ const (
 	FieldAddress = "address"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
-	// FieldAssetManagerID holds the string denoting the asset_manager_id field in the database.
-	FieldAssetManagerID = "asset_manager_id"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
-	// EdgeAssetManager holds the string denoting the asset_manager edge name in mutations.
-	EdgeAssetManager = "asset_manager"
-	// EdgeAssetManagers holds the string denoting the asset_managers edge name in mutations.
-	EdgeAssetManagers = "asset_managers"
+	// EdgeBelongAssetManagers holds the string denoting the belong_asset_managers edge name in mutations.
+	EdgeBelongAssetManagers = "belong_asset_managers"
+	// EdgeDutyAssetManagers holds the string denoting the duty_asset_managers edge name in mutations.
+	EdgeDutyAssetManagers = "duty_asset_managers"
 	// EdgeAsset holds the string denoting the asset edge name in mutations.
 	EdgeAsset = "asset"
 	// Table holds the table name of the warehouse in the database.
@@ -58,18 +56,18 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
-	// AssetManagerTable is the table that holds the asset_manager relation/edge.
-	AssetManagerTable = "warehouse"
-	// AssetManagerInverseTable is the table name for the AssetManager entity.
+	// BelongAssetManagersTable is the table that holds the belong_asset_managers relation/edge. The primary key declared below.
+	BelongAssetManagersTable = "warehouse_belong_asset_managers"
+	// BelongAssetManagersInverseTable is the table name for the AssetManager entity.
 	// It exists in this package in order to avoid circular dependency with the "assetmanager" package.
-	AssetManagerInverseTable = "asset_manager"
-	// AssetManagerColumn is the table column denoting the asset_manager relation/edge.
-	AssetManagerColumn = "asset_manager_id"
-	// AssetManagersTable is the table that holds the asset_managers relation/edge. The primary key declared below.
-	AssetManagersTable = "warehouse_asset_managers"
-	// AssetManagersInverseTable is the table name for the AssetManager entity.
+	BelongAssetManagersInverseTable = "asset_manager"
+	// DutyAssetManagersTable is the table that holds the duty_asset_managers relation/edge.
+	DutyAssetManagersTable = "asset_manager"
+	// DutyAssetManagersInverseTable is the table name for the AssetManager entity.
 	// It exists in this package in order to avoid circular dependency with the "assetmanager" package.
-	AssetManagersInverseTable = "asset_manager"
+	DutyAssetManagersInverseTable = "asset_manager"
+	// DutyAssetManagersColumn is the table column denoting the duty_asset_managers relation/edge.
+	DutyAssetManagersColumn = "warehouse_id"
 	// AssetTable is the table that holds the asset relation/edge.
 	AssetTable = "asset"
 	// AssetInverseTable is the table name for the Asset entity.
@@ -94,13 +92,12 @@ var Columns = []string{
 	FieldLat,
 	FieldAddress,
 	FieldSn,
-	FieldAssetManagerID,
 }
 
 var (
-	// AssetManagersPrimaryKey and AssetManagersColumn2 are the table columns denoting the
-	// primary key for the asset_managers relation (M2M).
-	AssetManagersPrimaryKey = []string{"warehouse_id", "asset_manager_id"}
+	// BelongAssetManagersPrimaryKey and BelongAssetManagersColumn2 are the table columns denoting the
+	// primary key for the belong_asset_managers relation (M2M).
+	BelongAssetManagersPrimaryKey = []string{"warehouse_id", "asset_manager_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -186,11 +183,6 @@ func BySn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSn, opts...).ToFunc()
 }
 
-// ByAssetManagerID orders the results by the asset_manager_id field.
-func ByAssetManagerID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldAssetManagerID, opts...).ToFunc()
-}
-
 // ByCityField orders the results by city field.
 func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -198,24 +190,31 @@ func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByAssetManagerField orders the results by asset_manager field.
-func ByAssetManagerField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByBelongAssetManagersCount orders the results by belong_asset_managers count.
+func ByBelongAssetManagersCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newAssetManagerStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborsCount(s, newBelongAssetManagersStep(), opts...)
 	}
 }
 
-// ByAssetManagersCount orders the results by asset_managers count.
-func ByAssetManagersCount(opts ...sql.OrderTermOption) OrderOption {
+// ByBelongAssetManagers orders the results by belong_asset_managers terms.
+func ByBelongAssetManagers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newAssetManagersStep(), opts...)
+		sqlgraph.OrderByNeighborTerms(s, newBelongAssetManagersStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
-// ByAssetManagers orders the results by asset_managers terms.
-func ByAssetManagers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByDutyAssetManagersCount orders the results by duty_asset_managers count.
+func ByDutyAssetManagersCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newAssetManagersStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborsCount(s, newDutyAssetManagersStep(), opts...)
+	}
+}
+
+// ByDutyAssetManagers orders the results by duty_asset_managers terms.
+func ByDutyAssetManagers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newDutyAssetManagersStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -239,18 +238,18 @@ func newCityStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
 	)
 }
-func newAssetManagerStep() *sqlgraph.Step {
+func newBelongAssetManagersStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(AssetManagerInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, true, AssetManagerTable, AssetManagerColumn),
+		sqlgraph.To(BelongAssetManagersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, BelongAssetManagersTable, BelongAssetManagersPrimaryKey...),
 	)
 }
-func newAssetManagersStep() *sqlgraph.Step {
+func newDutyAssetManagersStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(AssetManagersInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, AssetManagersTable, AssetManagersPrimaryKey...),
+		sqlgraph.To(DutyAssetManagersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, DutyAssetManagersTable, DutyAssetManagersColumn),
 	)
 }
 func newAssetStep() *sqlgraph.Step {

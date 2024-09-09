@@ -130,7 +130,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
 
 // List 查询电柜
 func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.PaginationRes) {
-	q := s.orm.QueryNotDeleted().WithCity().WithModels().WithStation().WithEnterprise()
+	q := s.orm.QueryNotDeleted().WithCity().WithModels().WithStation().WithEnterprise().WithStore()
 
 	if s.modifier != nil && s.modifier.Phone == "15537112255" {
 		req.CityID = silk.UInt64(410100)
@@ -210,6 +210,10 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
 		if item.Edges.Enterprise != nil {
 			res.EnterpriseName = item.Edges.Enterprise.Name
 			res.EnterpriseID = &item.Edges.Enterprise.ID
+		}
+		if item.Edges.Store != nil {
+			res.StoreName = item.Edges.Store.Name
+			res.StoreID = &item.Edges.Store.ID
 		}
 		return res
 	}, s.SyncCabinets)
@@ -956,21 +960,9 @@ func (s *cabinetService) Interrupt(operator *logging.Operator, req *model.Cabine
 
 // BindCabinet 团签绑定电柜
 func (s *cabinetService) BindCabinet(req *model.EnterpriseBindCabinetReq) {
-	// 判断电柜是否被绑定
-	cab := s.QueryOne(req.ID)
-	if cab.Status == uint8(model.CabinetStatusNormal) {
-		snag.Panic("运营中的电柜不能绑定")
+	if req.EnterpriseID == 0 && req.StationID == 0 && req.StoreID == 0 {
+		snag.Panic("绑定参数有误")
 	}
-
-	if cab.EnterpriseID != nil || cab.StationID != nil {
-		snag.Panic("电柜已被绑定")
-	}
-	// 电柜绑定
-	s.orm.UpdateOneID(req.ID).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SaveX(s.ctx)
-}
-
-// BindStore 电柜绑定门店
-func (s *cabinetService) BindStore(req *model.BindStoreReq) {
 	// 判断电柜是否被绑定
 	cab := s.QueryOne(req.ID)
 	if cab.Status == uint8(model.CabinetStatusNormal) {
@@ -981,7 +973,7 @@ func (s *cabinetService) BindStore(req *model.BindStoreReq) {
 		snag.Panic("电柜已被绑定")
 	}
 	// 电柜绑定
-	s.orm.UpdateOneID(req.ID).SetStoreID(req.StoreID).SaveX(s.ctx)
+	s.orm.UpdateOneID(req.ID).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SetStoreID(req.StoreID).SaveX(s.ctx)
 }
 
 // UnbindCabinet 解绑电柜

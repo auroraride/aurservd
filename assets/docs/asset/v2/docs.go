@@ -116,6 +116,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "团签企业ID",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "资产位置ID",
                         "name": "locationsId",
                         "in": "query"
@@ -154,6 +160,12 @@ const docTemplate = `{
                         ],
                         "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
                         "name": "locationsType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "其他物资ID",
+                        "name": "materialId",
                         "in": "query"
                     },
                     {
@@ -429,24 +441,6 @@ const docTemplate = `{
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
                         "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "x-enum-comments": {
-                            "BatteryModelTypeIntelligent": "智能电池",
-                            "BatteryModelTypeNonIntelligent": "非智能电池"
-                        },
-                        "x-enum-varnames": [
-                            "BatteryModelTypeIntelligent",
-                            "BatteryModelTypeNonIntelligent"
-                        ],
-                        "description": "电池类型",
-                        "name": "type",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -463,7 +457,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/definition.BatteryModelDetail"
+                                                "$ref": "#/definitions/model.BatteryModelDetail"
                                             }
                                         }
                                     }
@@ -499,7 +493,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/definition.BatteryModelCreateReq"
+                            "$ref": "#/definitions/model.BatteryModelCreateReq"
                         }
                     }
                 ],
@@ -1327,6 +1321,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "团签企业ID",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "资产位置ID",
                         "name": "locationsId",
                         "in": "query"
@@ -1365,6 +1365,12 @@ const docTemplate = `{
                         ],
                         "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
                         "name": "locationsType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "其他物资ID",
+                        "name": "materialId",
                         "in": "query"
                     },
                     {
@@ -1543,7 +1549,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v2/asset/ebike/brand/:id": {
+        "/manager/v2/asset/ebike/brand/{id}": {
             "put": {
                 "consumes": [
                     "application/json"
@@ -2223,7 +2229,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v2/asset/maintenance/:id": {
+        "/manager/v2/asset/maintenance/{id}": {
             "put": {
                 "consumes": [
                     "application/json"
@@ -2957,6 +2963,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/selection/cabinet": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Selection - 筛选"
+                ],
+                "summary": "筛选电柜",
+                "operationId": "SelectionCabinet",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/selection/city": {
             "get": {
                 "consumes": [
@@ -3182,12 +3235,6 @@ const docTemplate = `{
                         "name": "X-Asset-Manager-Token",
                         "in": "header",
                         "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "1智能电池 2非智能电池",
-                        "name": "type",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3765,6 +3812,24 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetTransferMainPageDeliver": "配送中跳转",
+                            "AssetTransferMainPageReceive": "待接收跳转"
+                        },
+                        "x-enum-varnames": [
+                            "AssetTransferMainPageReceive",
+                            "AssetTransferMainPageDeliver"
+                        ],
+                        "description": "是否首页跳转查询",
+                        "name": "mainPage",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "运维ID",
                         "name": "maintainerID",
@@ -3805,7 +3870,7 @@ const docTemplate = `{
                             "AssetTransferStatusStock",
                             "AssetTransferStatusCancel"
                         ],
-                        "description": "调拨状态 1:配送中 2:待入库 3:已入库 4:已取消",
+                        "description": "调拨状态 1:配送中 2:已入库 3:已取消",
                         "name": "status",
                         "in": "query"
                     },
@@ -3972,6 +4037,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "代理员ID",
+                        "name": "agentID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "仓库管理员ID",
                         "name": "assetManagerID",
                         "in": "query"
@@ -4109,6 +4180,12 @@ const docTemplate = `{
                         ],
                         "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
                         "name": "locationsType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "运维ID",
+                        "name": "maintainerID",
                         "in": "query"
                     },
                     {
@@ -4275,45 +4352,6 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v2/asset/transfer/sn/{sn}": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "资产"
-                ],
-                "summary": "根据调拨单号获取调拨详情",
-                "operationId": "GetTransferBySN",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Asset-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "调拨单号",
-                        "name": "sn",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.AssetTransferDetailReq"
                         }
                     }
                 }
@@ -5359,80 +5397,6 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.BatteryModelCreateReq": {
-            "type": "object",
-            "required": [
-                "capacity",
-                "type",
-                "voltage"
-            ],
-            "properties": {
-                "capacity": {
-                    "description": "电池容量, 电池容量",
-                    "type": "integer"
-                },
-                "type": {
-                    "description": "电池类型, 电池类型",
-                    "enum": [
-                        1,
-                        2
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/definition.BatteryModelType"
-                        }
-                    ]
-                },
-                "voltage": {
-                    "description": "电池电压, 电池电压",
-                    "type": "integer"
-                }
-            }
-        },
-        "definition.BatteryModelDetail": {
-            "type": "object",
-            "properties": {
-                "capacity": {
-                    "description": "容量",
-                    "type": "integer"
-                },
-                "id": {
-                    "description": "电池型号ID",
-                    "type": "integer"
-                },
-                "model": {
-                    "description": "电池型号",
-                    "type": "string"
-                },
-                "type": {
-                    "description": "电池类型",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/definition.BatteryModelType"
-                        }
-                    ]
-                },
-                "voltage": {
-                    "description": "电压",
-                    "type": "integer"
-                }
-            }
-        },
-        "definition.BatteryModelType": {
-            "type": "integer",
-            "enum": [
-                1,
-                2
-            ],
-            "x-enum-comments": {
-                "BatteryModelTypeIntelligent": "智能电池",
-                "BatteryModelTypeNonIntelligent": "非智能电池"
-            },
-            "x-enum-varnames": [
-                "BatteryModelTypeIntelligent",
-                "BatteryModelTypeNonIntelligent"
-            ]
-        },
         "definition.CabinetAssetDetail": {
             "type": "object",
             "properties": {
@@ -6196,6 +6160,14 @@ const docTemplate = `{
         "model.AssetCheckAbnormal": {
             "type": "object",
             "properties": {
+                "OperatorAt": {
+                    "description": "操作时间",
+                    "type": "string"
+                },
+                "OperatorName": {
+                    "description": "操作人名称",
+                    "type": "string"
+                },
                 "assetId": {
                     "description": "资产ID",
                     "type": "integer"
@@ -6222,14 +6194,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "名称",
-                    "type": "string"
-                },
-                "opratorAt": {
-                    "description": "操作时间",
-                    "type": "string"
-                },
-                "opratorName": {
-                    "description": "操作人名称",
                     "type": "string"
                 },
                 "realLocationsName": {
@@ -6276,9 +6240,32 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "attribute": {
+                    "description": "属性",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/model.AssetAttribute"
+                    }
+                },
                 "brandName": {
                     "description": "品牌",
                     "type": "string"
+                },
+                "locationsId": {
+                    "description": "位置ID",
+                    "type": "integer"
+                },
+                "locationsName": {
+                    "description": "位置名称",
+                    "type": "string"
+                },
+                "locationsType": {
+                    "description": "位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
                 },
                 "model": {
                     "description": "型号",
@@ -6340,15 +6327,15 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "opratorId": {
+                "operatorId": {
                     "description": "操作人ID",
                     "type": "integer"
                 },
-                "opratorType": {
-                    "description": "操作人类型 1:资产后台(仓库) 2:门店 3:代理",
+                "operatorType": {
+                    "description": "操作人类型  2:门店 3:代理 6:资产后台(仓库)",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.AssetOperateRoleType"
+                            "$ref": "#/definitions/model.OperatorType"
                         }
                     ]
                 },
@@ -6409,6 +6396,10 @@ const docTemplate = `{
         "model.AssetCheckListRes": {
             "type": "object",
             "properties": {
+                "OperatorName": {
+                    "description": "操作人名称",
+                    "type": "string"
+                },
                 "abnormals": {
                     "description": "盘点异常资产",
                     "type": "array",
@@ -6456,13 +6447,9 @@ const docTemplate = `{
                     "description": "位置类型",
                     "type": "integer"
                 },
-                "opratorId": {
+                "operatorId": {
                     "description": "操作人ID",
                     "type": "integer"
-                },
-                "opratorName": {
-                    "description": "操作人名称",
-                    "type": "string"
                 },
                 "startAt": {
                     "description": "盘点开始时间",
@@ -6600,6 +6587,10 @@ const docTemplate = `{
                     "description": "是否启用",
                     "type": "boolean"
                 },
+                "enterpriseId": {
+                    "description": "团签企业ID",
+                    "type": "integer"
+                },
                 "locationsId": {
                     "description": "资产位置ID",
                     "type": "integer"
@@ -6623,6 +6614,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.AssetLocationsType"
                         }
                     ]
+                },
+                "materialId": {
+                    "description": "其他物资ID",
+                    "type": "integer"
                 },
                 "modelId": {
                     "description": "型号ID",
@@ -6810,6 +6805,14 @@ const docTemplate = `{
         "model.AssetMaintenanceListRes": {
             "type": "object",
             "properties": {
+                "OperatorName": {
+                    "description": "维护人",
+                    "type": "string"
+                },
+                "OperatorPhone": {
+                    "description": "维护人电话",
+                    "type": "string"
+                },
                 "cabinetName": {
                     "description": "电柜名称",
                     "type": "string"
@@ -6837,20 +6840,12 @@ const docTemplate = `{
                     "description": "ID",
                     "type": "integer"
                 },
-                "opratorName": {
-                    "description": "维护人",
-                    "type": "string"
-                },
-                "opratorPhone": {
-                    "description": "维护人电话",
-                    "type": "string"
-                },
                 "reason": {
                     "description": "维护理由",
                     "type": "string"
                 },
                 "status": {
-                    "description": "维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护",
+                    "description": "维修状态  1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护",
                     "type": "string"
                 }
             }
@@ -6914,18 +6909,7 @@ const docTemplate = `{
         },
         "model.AssetModifyReq": {
             "type": "object",
-            "required": [
-                "assetType"
-            ],
             "properties": {
-                "assetType": {
-                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.AssetType"
-                        }
-                    ]
-                },
                 "attribute": {
                     "description": "属性",
                     "type": "array",
@@ -6950,36 +6934,6 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
-        },
-        "model.AssetOperateRoleType": {
-            "type": "integer",
-            "enum": [
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7
-            ],
-            "x-enum-comments": {
-                "AssetOperateRoleTypeAgent": "代理",
-                "AssetOperateRoleTypeBusinessManager": "业务后台",
-                "AssetOperateRoleTypeCabinet": "电柜",
-                "AssetOperateRoleTypeManager": "资产后台(仓库)",
-                "AssetOperateRoleTypeOperation": "运维",
-                "AssetOperateRoleTypeRider": "骑手",
-                "AssetOperateRoleTypeStore": "门店"
-            },
-            "x-enum-varnames": [
-                "AssetOperateRoleTypeManager",
-                "AssetOperateRoleTypeStore",
-                "AssetOperateRoleTypeAgent",
-                "AssetOperateRoleTypeOperation",
-                "AssetOperateRoleTypeCabinet",
-                "AssetOperateRoleTypeRider",
-                "AssetOperateRoleTypeBusinessManager"
-            ]
         },
         "model.AssetScrapBatchRestoreReq": {
             "type": "object",
@@ -7196,6 +7150,14 @@ const docTemplate = `{
                 "toLocationType"
             ],
             "properties": {
+                "OperatorType": {
+                    "description": "操作人类型 2:门店 3:代理 6:资产后台(仓库)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.OperatorType"
+                        }
+                    ]
+                },
                 "assetTransferType": {
                     "description": "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
                     "enum": [
@@ -7212,6 +7174,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "autoIn": {
+                    "description": "是否自动入库 true:自动入库 false:手动入库",
+                    "type": "boolean"
+                },
                 "details": {
                     "description": "资产调拨详情",
                     "type": "array",
@@ -7224,24 +7190,16 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "fromLocationType": {
-                    "description": "调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 (初始调拨此字段不填写)",
+                    "description": "调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 (初始调拨此字段不填写)",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.AssetLocationsType"
                         }
                     ]
                 },
-                "opratorId": {
+                "operatorId": {
                     "description": "操作人ID",
                     "type": "integer"
-                },
-                "opratorType": {
-                    "description": "操作人类型 1:资产后台(仓库) 2:门店 3:代理",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.AssetOperateRoleType"
-                        }
-                    ]
                 },
                 "reason": {
                     "description": "调拨事由",
@@ -7252,7 +7210,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "toLocationType": {
-                    "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维",
+                    "description": "调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.AssetLocationsType"
@@ -7272,6 +7230,13 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "attribute": {
+                    "description": "属性",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/model.AssetAttribute"
+                    }
+                },
                 "in": {
                     "description": "入库数量",
                     "type": "integer"
@@ -7279,6 +7244,18 @@ const docTemplate = `{
                 "inOperateName": {
                     "description": "入库人",
                     "type": "string"
+                },
+                "inTimeAt": {
+                    "description": "入库时间",
+                    "type": "string"
+                },
+                "materialId": {
+                    "description": "其他物资ID",
+                    "type": "integer"
+                },
+                "modelId": {
+                    "description": "电池型号ID",
+                    "type": "integer"
                 },
                 "name": {
                     "description": "资产名称",
@@ -7359,9 +7336,6 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
-        },
-        "model.AssetTransferDetailReq": {
-            "type": "object"
         },
         "model.AssetTransferFlow": {
             "type": "object",
@@ -7498,6 +7472,21 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AssetTransferMainPage": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "AssetTransferMainPageDeliver": "配送中跳转",
+                "AssetTransferMainPageReceive": "待接收跳转"
+            },
+            "x-enum-varnames": [
+                "AssetTransferMainPageReceive",
+                "AssetTransferMainPageDeliver"
+            ]
+        },
         "model.AssetTransferModifyReq": {
             "type": "object",
             "required": [
@@ -7544,7 +7533,7 @@ const docTemplate = `{
                     }
                 },
                 "operateType": {
-                    "description": "操作人角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手",
+                    "description": "操作人角色类型 0:业务管理员 1:门店 2:电柜 3:代理 4:运维 5:骑手 6:资产管理员",
                     "enum": [
                         1,
                         2,
@@ -7555,7 +7544,7 @@ const docTemplate = `{
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.AssetOperateRoleType"
+                            "$ref": "#/definitions/model.OperatorType"
                         }
                     ]
                 }
@@ -7579,6 +7568,10 @@ const docTemplate = `{
                     "description": "其它物资分类ID",
                     "type": "integer"
                 },
+                "modelId": {
+                    "description": "电池型号ID",
+                    "type": "integer"
+                },
                 "num": {
                     "description": "调拨数量",
                     "type": "integer"
@@ -7592,7 +7585,8 @@ const docTemplate = `{
         "model.AssetTransferReceiveReq": {
             "type": "object",
             "required": [
-                "detail"
+                "detail",
+                "id"
             ],
             "properties": {
                 "detail": {
@@ -7601,6 +7595,10 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.AssetTransferReceiveDetail"
                     }
+                },
+                "id": {
+                    "description": "调拨ID",
+                    "type": "integer"
                 },
                 "remark": {
                     "description": "备注",
@@ -7682,6 +7680,44 @@ const docTemplate = `{
                 "AssetTypeEbikeAccessory",
                 "AssetTypeOtherAccessory"
             ]
+        },
+        "model.BatteryModelCreateReq": {
+            "type": "object",
+            "required": [
+                "capacity",
+                "voltage"
+            ],
+            "properties": {
+                "capacity": {
+                    "description": "电池容量, 电池容量",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "电池电压, 电池电压",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.BatteryModelDetail": {
+            "type": "object",
+            "properties": {
+                "capacity": {
+                    "description": "容量",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "电池型号ID",
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "voltage": {
+                    "description": "电压",
+                    "type": "integer"
+                }
+            }
         },
         "model.CascaderOptionLevel2": {
             "type": "object",
@@ -7899,6 +7935,36 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.OperatorType": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "x-enum-comments": {
+                "OperatorTypeAgent": "代理",
+                "OperatorTypeAssetManager": "资产管理员",
+                "OperatorTypeCabinet": "电柜",
+                "OperatorTypeEmployee": "店员",
+                "OperatorTypeMaintainer": "运维",
+                "OperatorTypeManager": "业务管理员",
+                "OperatorTypeRider": "骑手"
+            },
+            "x-enum-varnames": [
+                "OperatorTypeManager",
+                "OperatorTypeEmployee",
+                "OperatorTypeCabinet",
+                "OperatorTypeAgent",
+                "OperatorTypeMaintainer",
+                "OperatorTypeRider",
+                "OperatorTypeAssetManager"
+            ]
         },
         "model.Pagination": {
             "type": "object",

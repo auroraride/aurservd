@@ -15,12 +15,15 @@ import (
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/agreement"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
+	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 	"github.com/auroraride/aurservd/pkg/snag"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type warehouseBiz struct {
@@ -155,10 +158,8 @@ func (b *warehouseBiz) Delete(id uint64) (err error) {
 // Assets 仓库资产列表
 func (b *warehouseBiz) Assets(req *definition.WareHouseAssetListReq) (res *model.PaginationRes) {
 	// 查询分页的仓库数据
-	q := b.orm.QueryNotDeleted().WithCity()
-	if req.Name != nil {
-		q.Where(warehouse.NameContains(*req.Name))
-	}
+	q := b.orm.QueryNotDeleted().WithCity().Order(ent.Desc(agreement.FieldCreatedAt))
+	b.assetsFilter(q, req)
 	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Warehouse) (result *definition.WareHouseAssetDetail) {
 		result = &definition.WareHouseAssetDetail{
 			ID:    item.ID,
@@ -179,6 +180,76 @@ func (b *warehouseBiz) Assets(req *definition.WareHouseAssetListReq) (res *model
 	return res
 }
 
+// assetsFilter 条件筛选
+func (b *warehouseBiz) assetsFilter(q *ent.WarehouseQuery, req *definition.WareHouseAssetListReq) {
+	if req.Name != nil {
+		q.Where(warehouse.NameContainsFold(*req.Name))
+	}
+	if req.CityID != nil {
+		q.Where(warehouse.CityID(*req.CityID))
+	}
+	if req.ModelID != nil {
+		// 查询型号资产
+		ids := make([]uint64, 0)
+		list, _ := ent.Database.Asset.QueryNotDeleted().WithWarehouse().Where(
+			entasset.ModelID(*req.ModelID),
+			entasset.LocationsType(model.AssetLocationsTypeWarehouse.Value()),
+			entasset.Status(model.AssetStatusStock.Value()),
+		).All(b.ctx)
+		for _, v := range list {
+			if v.Edges.Warehouse != nil {
+				ids = append(ids, v.Edges.Warehouse.ID)
+			}
+		}
+
+		q.Where(
+			warehouse.IDIn(ids...),
+		)
+	}
+	if req.BrandId != nil {
+		// 查询品牌资产
+		ids := make([]uint64, 0)
+		list, _ := ent.Database.Asset.QueryNotDeleted().WithWarehouse().Where(
+			entasset.BrandID(*req.BrandId),
+			entasset.LocationsType(model.AssetLocationsTypeWarehouse.Value()),
+			entasset.Status(model.AssetStatusStock.Value()),
+		).All(b.ctx)
+		for _, v := range list {
+			if v.Edges.Warehouse != nil {
+				ids = append(ids, v.Edges.Warehouse.ID)
+			}
+		}
+
+		q.Where(
+			warehouse.IDIn(ids...),
+		)
+	}
+	if req.OtherName != nil {
+		// 查询其他物资资产
+		ids := make([]uint64, 0)
+		list, _ := ent.Database.Asset.QueryNotDeleted().WithWarehouse().Where(
+			entasset.LocationsType(model.AssetLocationsTypeWarehouse.Value()),
+			entasset.Status(model.AssetStatusStock.Value()),
+			entasset.HasMaterialWith(material.NameContainsFold(*req.OtherName)),
+		).All(b.ctx)
+		for _, v := range list {
+			if v.Edges.Warehouse != nil {
+				ids = append(ids, v.Edges.Warehouse.ID)
+			}
+		}
+
+		q.Where(
+			warehouse.IDIn(ids...),
+		)
+	}
+	if req.Start != nil && req.End != nil {
+		start := tools.NewTime().ParseDateStringX(*req.Start)
+		end := tools.NewTime().ParseNextDateStringX(*req.End)
+		q.Where(warehouse.CreatedAtGTE(start), warehouse.CreatedAtLTE(end))
+	}
+
+}
+
 // AssetTotal 仓库物资数据统计
 func (b *warehouseBiz) AssetTotal(req *definition.WareHouseAssetListReq, wId uint64) (res definition.CommonAssetTotal) {
 	// 查询仓库所属资产数据
@@ -188,9 +259,6 @@ func (b *warehouseBiz) AssetTotal(req *definition.WareHouseAssetListReq, wId uin
 			entasset.LocationsIDIn(wId),
 			entasset.Status(model.AssetStatusStock.Value()),
 		)
-	if req.CityID != nil {
-		q.Where(entasset.CityID(*req.CityID))
-	}
 	if req.ModelID != nil {
 		q.Where(
 			entasset.ModelID(*req.ModelID),
@@ -347,7 +415,7 @@ func (b *warehouseBiz) ListByManager(am *ent.AssetManager) (res []*model.Cascade
 	// 查询人员配置的仓库城市信息
 	eam, err := ent.Database.AssetManager.QueryNotDeleted().
 		Where(assetmanager.ID(am.ID)).
-		WithWarehouses(func(query *ent.WarehouseQuery) {
+		WithBelongWarehouses(func(query *ent.WarehouseQuery) {
 			query.Where(warehouse.DeletedAtIsNil()).WithCity()
 		}).First(b.ctx)
 	if err != nil || eam == nil {
@@ -355,7 +423,7 @@ func (b *warehouseBiz) ListByManager(am *ent.AssetManager) (res []*model.Cascade
 	}
 
 	// 数据组合
-	whList := eam.Edges.Warehouses
+	whList := eam.Edges.BelongWarehouses
 	cityIds := make([]uint64, 0)
 	cityIdMap := make(map[uint64]*ent.City)
 	cityIdListMap := make(map[uint64][]model.SelectOption)
@@ -394,7 +462,7 @@ func (b *warehouseBiz) QuerySn(sn string) *ent.Warehouse {
 	if strings.HasPrefix(sn, "WAREHOUSE:") {
 		sn = strings.ReplaceAll(sn, "WAREHOUSE:", "")
 	}
-	item, err := b.orm.QueryNotDeleted().WithAssetManager().Where(warehouse.Sn(sn)).First(b.ctx)
+	item, err := b.orm.QueryNotDeleted().Where(warehouse.Sn(sn)).First(b.ctx)
 	if err != nil {
 		snag.Panic("未找到有效仓库")
 	}

@@ -421,6 +421,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assetmanager.FieldMiniEnable:   {Type: field.TypeBool, Column: assetmanager.FieldMiniEnable},
 			assetmanager.FieldMiniLimit:    {Type: field.TypeUint, Column: assetmanager.FieldMiniLimit},
 			assetmanager.FieldLastSigninAt: {Type: field.TypeTime, Column: assetmanager.FieldLastSigninAt},
+			assetmanager.FieldWarehouseID:  {Type: field.TypeUint64, Column: assetmanager.FieldWarehouseID},
 		},
 	}
 	graph.Nodes[12] = &sqlgraph.Node{
@@ -1166,6 +1167,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			employee.FieldEnable:       {Type: field.TypeBool, Column: employee.FieldEnable},
 			employee.FieldPassword:     {Type: field.TypeString, Column: employee.FieldPassword},
 			employee.FieldLimit:        {Type: field.TypeUint, Column: employee.FieldLimit},
+			employee.FieldDutyStoreID:  {Type: field.TypeUint64, Column: employee.FieldDutyStoreID},
 		},
 	}
 	graph.Nodes[39] = &sqlgraph.Node{
@@ -2781,19 +2783,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Warehouse",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			warehouse.FieldCreatedAt:      {Type: field.TypeTime, Column: warehouse.FieldCreatedAt},
-			warehouse.FieldUpdatedAt:      {Type: field.TypeTime, Column: warehouse.FieldUpdatedAt},
-			warehouse.FieldDeletedAt:      {Type: field.TypeTime, Column: warehouse.FieldDeletedAt},
-			warehouse.FieldCreator:        {Type: field.TypeJSON, Column: warehouse.FieldCreator},
-			warehouse.FieldLastModifier:   {Type: field.TypeJSON, Column: warehouse.FieldLastModifier},
-			warehouse.FieldRemark:         {Type: field.TypeString, Column: warehouse.FieldRemark},
-			warehouse.FieldCityID:         {Type: field.TypeUint64, Column: warehouse.FieldCityID},
-			warehouse.FieldName:           {Type: field.TypeString, Column: warehouse.FieldName},
-			warehouse.FieldLng:            {Type: field.TypeFloat64, Column: warehouse.FieldLng},
-			warehouse.FieldLat:            {Type: field.TypeFloat64, Column: warehouse.FieldLat},
-			warehouse.FieldAddress:        {Type: field.TypeString, Column: warehouse.FieldAddress},
-			warehouse.FieldSn:             {Type: field.TypeString, Column: warehouse.FieldSn},
-			warehouse.FieldAssetManagerID: {Type: field.TypeUint64, Column: warehouse.FieldAssetManagerID},
+			warehouse.FieldCreatedAt:    {Type: field.TypeTime, Column: warehouse.FieldCreatedAt},
+			warehouse.FieldUpdatedAt:    {Type: field.TypeTime, Column: warehouse.FieldUpdatedAt},
+			warehouse.FieldDeletedAt:    {Type: field.TypeTime, Column: warehouse.FieldDeletedAt},
+			warehouse.FieldCreator:      {Type: field.TypeJSON, Column: warehouse.FieldCreator},
+			warehouse.FieldLastModifier: {Type: field.TypeJSON, Column: warehouse.FieldLastModifier},
+			warehouse.FieldRemark:       {Type: field.TypeString, Column: warehouse.FieldRemark},
+			warehouse.FieldCityID:       {Type: field.TypeUint64, Column: warehouse.FieldCityID},
+			warehouse.FieldName:         {Type: field.TypeString, Column: warehouse.FieldName},
+			warehouse.FieldLng:          {Type: field.TypeFloat64, Column: warehouse.FieldLng},
+			warehouse.FieldLat:          {Type: field.TypeFloat64, Column: warehouse.FieldLat},
+			warehouse.FieldAddress:      {Type: field.TypeString, Column: warehouse.FieldAddress},
+			warehouse.FieldSn:           {Type: field.TypeString, Column: warehouse.FieldSn},
 		},
 	}
 	graph.MustAddE(
@@ -3553,24 +3554,24 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"AssetRole",
 	)
 	graph.MustAddE(
-		"warehouses",
+		"belong_warehouses",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   assetmanager.WarehousesTable,
-			Columns: assetmanager.WarehousesPrimaryKey,
+			Table:   assetmanager.BelongWarehousesTable,
+			Columns: assetmanager.BelongWarehousesPrimaryKey,
 			Bidi:    false,
 		},
 		"AssetManager",
 		"Warehouse",
 	)
 	graph.MustAddE(
-		"warehouse",
+		"duty_warehouse",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   assetmanager.WarehouseTable,
-			Columns: []string{assetmanager.WarehouseColumn},
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   assetmanager.DutyWarehouseTable,
+			Columns: []string{assetmanager.DutyWarehouseColumn},
 			Bidi:    false,
 		},
 		"AssetManager",
@@ -5107,6 +5108,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Inverse: true,
 			Table:   employee.StoresTable,
 			Columns: employee.StoresPrimaryKey,
+			Bidi:    false,
+		},
+		"Employee",
+		"Store",
+	)
+	graph.MustAddE(
+		"duty_store",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   employee.DutyStoreTable,
+			Columns: []string{employee.DutyStoreColumn},
 			Bidi:    false,
 		},
 		"Employee",
@@ -7261,6 +7274,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Employee",
 	)
 	graph.MustAddE(
+		"duty_employees",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.DutyEmployeesTable,
+			Columns: []string{store.DutyEmployeesColumn},
+			Bidi:    false,
+		},
+		"Store",
+		"Employee",
+	)
+	graph.MustAddE(
 		"stocks",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -7789,24 +7814,24 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"City",
 	)
 	graph.MustAddE(
-		"asset_manager",
+		"belong_asset_managers",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   warehouse.AssetManagerTable,
-			Columns: []string{warehouse.AssetManagerColumn},
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   warehouse.BelongAssetManagersTable,
+			Columns: warehouse.BelongAssetManagersPrimaryKey,
 			Bidi:    false,
 		},
 		"Warehouse",
 		"AssetManager",
 	)
 	graph.MustAddE(
-		"asset_managers",
+		"duty_asset_managers",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   warehouse.AssetManagersTable,
-			Columns: warehouse.AssetManagersPrimaryKey,
+			Table:   warehouse.DutyAssetManagersTable,
+			Columns: []string{warehouse.DutyAssetManagersColumn},
 			Bidi:    false,
 		},
 		"Warehouse",
@@ -9946,6 +9971,11 @@ func (f *AssetManagerFilter) WhereLastSigninAt(p entql.TimeP) {
 	f.Where(p.Field(assetmanager.FieldLastSigninAt))
 }
 
+// WhereWarehouseID applies the entql uint64 predicate on the warehouse_id field.
+func (f *AssetManagerFilter) WhereWarehouseID(p entql.Uint64P) {
+	f.Where(p.Field(assetmanager.FieldWarehouseID))
+}
+
 // WhereHasRole applies a predicate to check if query has an edge role.
 func (f *AssetManagerFilter) WhereHasRole() {
 	f.Where(entql.HasEdge("role"))
@@ -9960,28 +9990,28 @@ func (f *AssetManagerFilter) WhereHasRoleWith(preds ...predicate.AssetRole) {
 	})))
 }
 
-// WhereHasWarehouses applies a predicate to check if query has an edge warehouses.
-func (f *AssetManagerFilter) WhereHasWarehouses() {
-	f.Where(entql.HasEdge("warehouses"))
+// WhereHasBelongWarehouses applies a predicate to check if query has an edge belong_warehouses.
+func (f *AssetManagerFilter) WhereHasBelongWarehouses() {
+	f.Where(entql.HasEdge("belong_warehouses"))
 }
 
-// WhereHasWarehousesWith applies a predicate to check if query has an edge warehouses with a given conditions (other predicates).
-func (f *AssetManagerFilter) WhereHasWarehousesWith(preds ...predicate.Warehouse) {
-	f.Where(entql.HasEdgeWith("warehouses", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasBelongWarehousesWith applies a predicate to check if query has an edge belong_warehouses with a given conditions (other predicates).
+func (f *AssetManagerFilter) WhereHasBelongWarehousesWith(preds ...predicate.Warehouse) {
+	f.Where(entql.HasEdgeWith("belong_warehouses", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasWarehouse applies a predicate to check if query has an edge warehouse.
-func (f *AssetManagerFilter) WhereHasWarehouse() {
-	f.Where(entql.HasEdge("warehouse"))
+// WhereHasDutyWarehouse applies a predicate to check if query has an edge duty_warehouse.
+func (f *AssetManagerFilter) WhereHasDutyWarehouse() {
+	f.Where(entql.HasEdge("duty_warehouse"))
 }
 
-// WhereHasWarehouseWith applies a predicate to check if query has an edge warehouse with a given conditions (other predicates).
-func (f *AssetManagerFilter) WhereHasWarehouseWith(preds ...predicate.Warehouse) {
-	f.Where(entql.HasEdgeWith("warehouse", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasDutyWarehouseWith applies a predicate to check if query has an edge duty_warehouse with a given conditions (other predicates).
+func (f *AssetManagerFilter) WhereHasDutyWarehouseWith(preds ...predicate.Warehouse) {
+	f.Where(entql.HasEdgeWith("duty_warehouse", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -14704,6 +14734,11 @@ func (f *EmployeeFilter) WhereLimit(p entql.UintP) {
 	f.Where(p.Field(employee.FieldLimit))
 }
 
+// WhereDutyStoreID applies the entql uint64 predicate on the duty_store_id field.
+func (f *EmployeeFilter) WhereDutyStoreID(p entql.Uint64P) {
+	f.Where(p.Field(employee.FieldDutyStoreID))
+}
+
 // WhereHasCity applies a predicate to check if query has an edge city.
 func (f *EmployeeFilter) WhereHasCity() {
 	f.Where(entql.HasEdge("city"))
@@ -14824,6 +14859,20 @@ func (f *EmployeeFilter) WhereHasStores() {
 // WhereHasStoresWith applies a predicate to check if query has an edge stores with a given conditions (other predicates).
 func (f *EmployeeFilter) WhereHasStoresWith(preds ...predicate.Store) {
 	f.Where(entql.HasEdgeWith("stores", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasDutyStore applies a predicate to check if query has an edge duty_store.
+func (f *EmployeeFilter) WhereHasDutyStore() {
+	f.Where(entql.HasEdge("duty_store"))
+}
+
+// WhereHasDutyStoreWith applies a predicate to check if query has an edge duty_store with a given conditions (other predicates).
+func (f *EmployeeFilter) WhereHasDutyStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("duty_store", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -22896,6 +22945,20 @@ func (f *StoreFilter) WhereHasEmployeesWith(preds ...predicate.Employee) {
 	})))
 }
 
+// WhereHasDutyEmployees applies a predicate to check if query has an edge duty_employees.
+func (f *StoreFilter) WhereHasDutyEmployees() {
+	f.Where(entql.HasEdge("duty_employees"))
+}
+
+// WhereHasDutyEmployeesWith applies a predicate to check if query has an edge duty_employees with a given conditions (other predicates).
+func (f *StoreFilter) WhereHasDutyEmployeesWith(preds ...predicate.Employee) {
+	f.Where(entql.HasEdgeWith("duty_employees", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // WhereHasStocks applies a predicate to check if query has an edge stocks.
 func (f *StoreFilter) WhereHasStocks() {
 	f.Where(entql.HasEdge("stocks"))
@@ -24548,11 +24611,6 @@ func (f *WarehouseFilter) WhereSn(p entql.StringP) {
 	f.Where(p.Field(warehouse.FieldSn))
 }
 
-// WhereAssetManagerID applies the entql uint64 predicate on the asset_manager_id field.
-func (f *WarehouseFilter) WhereAssetManagerID(p entql.Uint64P) {
-	f.Where(p.Field(warehouse.FieldAssetManagerID))
-}
-
 // WhereHasCity applies a predicate to check if query has an edge city.
 func (f *WarehouseFilter) WhereHasCity() {
 	f.Where(entql.HasEdge("city"))
@@ -24567,28 +24625,28 @@ func (f *WarehouseFilter) WhereHasCityWith(preds ...predicate.City) {
 	})))
 }
 
-// WhereHasAssetManager applies a predicate to check if query has an edge asset_manager.
-func (f *WarehouseFilter) WhereHasAssetManager() {
-	f.Where(entql.HasEdge("asset_manager"))
+// WhereHasBelongAssetManagers applies a predicate to check if query has an edge belong_asset_managers.
+func (f *WarehouseFilter) WhereHasBelongAssetManagers() {
+	f.Where(entql.HasEdge("belong_asset_managers"))
 }
 
-// WhereHasAssetManagerWith applies a predicate to check if query has an edge asset_manager with a given conditions (other predicates).
-func (f *WarehouseFilter) WhereHasAssetManagerWith(preds ...predicate.AssetManager) {
-	f.Where(entql.HasEdgeWith("asset_manager", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasBelongAssetManagersWith applies a predicate to check if query has an edge belong_asset_managers with a given conditions (other predicates).
+func (f *WarehouseFilter) WhereHasBelongAssetManagersWith(preds ...predicate.AssetManager) {
+	f.Where(entql.HasEdgeWith("belong_asset_managers", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasAssetManagers applies a predicate to check if query has an edge asset_managers.
-func (f *WarehouseFilter) WhereHasAssetManagers() {
-	f.Where(entql.HasEdge("asset_managers"))
+// WhereHasDutyAssetManagers applies a predicate to check if query has an edge duty_asset_managers.
+func (f *WarehouseFilter) WhereHasDutyAssetManagers() {
+	f.Where(entql.HasEdge("duty_asset_managers"))
 }
 
-// WhereHasAssetManagersWith applies a predicate to check if query has an edge asset_managers with a given conditions (other predicates).
-func (f *WarehouseFilter) WhereHasAssetManagersWith(preds ...predicate.AssetManager) {
-	f.Where(entql.HasEdgeWith("asset_managers", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasDutyAssetManagersWith applies a predicate to check if query has an edge duty_asset_managers with a given conditions (other predicates).
+func (f *WarehouseFilter) WhereHasDutyAssetManagersWith(preds ...predicate.AssetManager) {
+	f.Where(entql.HasEdgeWith("duty_asset_managers", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

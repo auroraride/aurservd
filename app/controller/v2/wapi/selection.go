@@ -155,3 +155,17 @@ func (*selection) CityStation(c echo.Context) (err error) {
 	ctx := app.ContextX[app.WarestoreContext](c)
 	return ctx.SendResponse(biz.NewSelection().CityStationList())
 }
+
+// City
+// @ID		SelectionCity
+// @Router	/warestore/v2/selection/city [GET]
+// @Summary	筛选启用的城市
+// @Tags	Selection - 筛选
+// @Accept	json
+// @Produce	json
+// @Param	X-Warestore-Token	header		string							true	"仓管校验token"
+// @Success	200					{object}	[]model.CascaderOptionLevel2	"请求成功"
+func (*selection) City(c echo.Context) (err error) {
+	ctx := app.ContextX[app.WarestoreContext](c)
+	return ctx.SendResponse(service.NewSelection().City())
+}

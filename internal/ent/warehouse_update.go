@@ -181,49 +181,39 @@ func (wu *WarehouseUpdate) ClearAddress() *WarehouseUpdate {
 	return wu
 }
 
-// SetAssetManagerID sets the "asset_manager_id" field.
-func (wu *WarehouseUpdate) SetAssetManagerID(u uint64) *WarehouseUpdate {
-	wu.mutation.SetAssetManagerID(u)
-	return wu
-}
-
-// SetNillableAssetManagerID sets the "asset_manager_id" field if the given value is not nil.
-func (wu *WarehouseUpdate) SetNillableAssetManagerID(u *uint64) *WarehouseUpdate {
-	if u != nil {
-		wu.SetAssetManagerID(*u)
-	}
-	return wu
-}
-
-// ClearAssetManagerID clears the value of the "asset_manager_id" field.
-func (wu *WarehouseUpdate) ClearAssetManagerID() *WarehouseUpdate {
-	wu.mutation.ClearAssetManagerID()
-	return wu
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (wu *WarehouseUpdate) SetCity(c *City) *WarehouseUpdate {
 	return wu.SetCityID(c.ID)
 }
 
-// SetAssetManager sets the "asset_manager" edge to the AssetManager entity.
-func (wu *WarehouseUpdate) SetAssetManager(a *AssetManager) *WarehouseUpdate {
-	return wu.SetAssetManagerID(a.ID)
-}
-
-// AddAssetManagerIDs adds the "asset_managers" edge to the AssetManager entity by IDs.
-func (wu *WarehouseUpdate) AddAssetManagerIDs(ids ...uint64) *WarehouseUpdate {
-	wu.mutation.AddAssetManagerIDs(ids...)
+// AddBelongAssetManagerIDs adds the "belong_asset_managers" edge to the AssetManager entity by IDs.
+func (wu *WarehouseUpdate) AddBelongAssetManagerIDs(ids ...uint64) *WarehouseUpdate {
+	wu.mutation.AddBelongAssetManagerIDs(ids...)
 	return wu
 }
 
-// AddAssetManagers adds the "asset_managers" edges to the AssetManager entity.
-func (wu *WarehouseUpdate) AddAssetManagers(a ...*AssetManager) *WarehouseUpdate {
+// AddBelongAssetManagers adds the "belong_asset_managers" edges to the AssetManager entity.
+func (wu *WarehouseUpdate) AddBelongAssetManagers(a ...*AssetManager) *WarehouseUpdate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return wu.AddAssetManagerIDs(ids...)
+	return wu.AddBelongAssetManagerIDs(ids...)
+}
+
+// AddDutyAssetManagerIDs adds the "duty_asset_managers" edge to the AssetManager entity by IDs.
+func (wu *WarehouseUpdate) AddDutyAssetManagerIDs(ids ...uint64) *WarehouseUpdate {
+	wu.mutation.AddDutyAssetManagerIDs(ids...)
+	return wu
+}
+
+// AddDutyAssetManagers adds the "duty_asset_managers" edges to the AssetManager entity.
+func (wu *WarehouseUpdate) AddDutyAssetManagers(a ...*AssetManager) *WarehouseUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return wu.AddDutyAssetManagerIDs(ids...)
 }
 
 // AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
@@ -252,31 +242,46 @@ func (wu *WarehouseUpdate) ClearCity() *WarehouseUpdate {
 	return wu
 }
 
-// ClearAssetManager clears the "asset_manager" edge to the AssetManager entity.
-func (wu *WarehouseUpdate) ClearAssetManager() *WarehouseUpdate {
-	wu.mutation.ClearAssetManager()
+// ClearBelongAssetManagers clears all "belong_asset_managers" edges to the AssetManager entity.
+func (wu *WarehouseUpdate) ClearBelongAssetManagers() *WarehouseUpdate {
+	wu.mutation.ClearBelongAssetManagers()
 	return wu
 }
 
-// ClearAssetManagers clears all "asset_managers" edges to the AssetManager entity.
-func (wu *WarehouseUpdate) ClearAssetManagers() *WarehouseUpdate {
-	wu.mutation.ClearAssetManagers()
+// RemoveBelongAssetManagerIDs removes the "belong_asset_managers" edge to AssetManager entities by IDs.
+func (wu *WarehouseUpdate) RemoveBelongAssetManagerIDs(ids ...uint64) *WarehouseUpdate {
+	wu.mutation.RemoveBelongAssetManagerIDs(ids...)
 	return wu
 }
 
-// RemoveAssetManagerIDs removes the "asset_managers" edge to AssetManager entities by IDs.
-func (wu *WarehouseUpdate) RemoveAssetManagerIDs(ids ...uint64) *WarehouseUpdate {
-	wu.mutation.RemoveAssetManagerIDs(ids...)
-	return wu
-}
-
-// RemoveAssetManagers removes "asset_managers" edges to AssetManager entities.
-func (wu *WarehouseUpdate) RemoveAssetManagers(a ...*AssetManager) *WarehouseUpdate {
+// RemoveBelongAssetManagers removes "belong_asset_managers" edges to AssetManager entities.
+func (wu *WarehouseUpdate) RemoveBelongAssetManagers(a ...*AssetManager) *WarehouseUpdate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return wu.RemoveAssetManagerIDs(ids...)
+	return wu.RemoveBelongAssetManagerIDs(ids...)
+}
+
+// ClearDutyAssetManagers clears all "duty_asset_managers" edges to the AssetManager entity.
+func (wu *WarehouseUpdate) ClearDutyAssetManagers() *WarehouseUpdate {
+	wu.mutation.ClearDutyAssetManagers()
+	return wu
+}
+
+// RemoveDutyAssetManagerIDs removes the "duty_asset_managers" edge to AssetManager entities by IDs.
+func (wu *WarehouseUpdate) RemoveDutyAssetManagerIDs(ids ...uint64) *WarehouseUpdate {
+	wu.mutation.RemoveDutyAssetManagerIDs(ids...)
+	return wu
+}
+
+// RemoveDutyAssetManagers removes "duty_asset_managers" edges to AssetManager entities.
+func (wu *WarehouseUpdate) RemoveDutyAssetManagers(a ...*AssetManager) *WarehouseUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return wu.RemoveDutyAssetManagerIDs(ids...)
 }
 
 // ClearAsset clears all "asset" edges to the Asset entity.
@@ -442,12 +447,12 @@ func (wu *WarehouseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if wu.mutation.AssetManagerCleared() {
+	if wu.mutation.BelongAssetManagersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   warehouse.AssetManagerTable,
-			Columns: []string{warehouse.AssetManagerColumn},
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   warehouse.BelongAssetManagersTable,
+			Columns: warehouse.BelongAssetManagersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -455,12 +460,28 @@ func (wu *WarehouseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := wu.mutation.AssetManagerIDs(); len(nodes) > 0 {
+	if nodes := wu.mutation.RemovedBelongAssetManagersIDs(); len(nodes) > 0 && !wu.mutation.BelongAssetManagersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   warehouse.AssetManagerTable,
-			Columns: []string{warehouse.AssetManagerColumn},
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   warehouse.BelongAssetManagersTable,
+			Columns: warehouse.BelongAssetManagersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.BelongAssetManagersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   warehouse.BelongAssetManagersTable,
+			Columns: warehouse.BelongAssetManagersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -471,12 +492,12 @@ func (wu *WarehouseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if wu.mutation.AssetManagersCleared() {
+	if wu.mutation.DutyAssetManagersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   warehouse.AssetManagersTable,
-			Columns: warehouse.AssetManagersPrimaryKey,
+			Table:   warehouse.DutyAssetManagersTable,
+			Columns: []string{warehouse.DutyAssetManagersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -484,12 +505,12 @@ func (wu *WarehouseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := wu.mutation.RemovedAssetManagersIDs(); len(nodes) > 0 && !wu.mutation.AssetManagersCleared() {
+	if nodes := wu.mutation.RemovedDutyAssetManagersIDs(); len(nodes) > 0 && !wu.mutation.DutyAssetManagersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   warehouse.AssetManagersTable,
-			Columns: warehouse.AssetManagersPrimaryKey,
+			Table:   warehouse.DutyAssetManagersTable,
+			Columns: []string{warehouse.DutyAssetManagersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -500,12 +521,12 @@ func (wu *WarehouseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := wu.mutation.AssetManagersIDs(); len(nodes) > 0 {
+	if nodes := wu.mutation.DutyAssetManagersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   warehouse.AssetManagersTable,
-			Columns: warehouse.AssetManagersPrimaryKey,
+			Table:   warehouse.DutyAssetManagersTable,
+			Columns: []string{warehouse.DutyAssetManagersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -731,49 +752,39 @@ func (wuo *WarehouseUpdateOne) ClearAddress() *WarehouseUpdateOne {
 	return wuo
 }
 
-// SetAssetManagerID sets the "asset_manager_id" field.
-func (wuo *WarehouseUpdateOne) SetAssetManagerID(u uint64) *WarehouseUpdateOne {
-	wuo.mutation.SetAssetManagerID(u)
-	return wuo
-}
-
-// SetNillableAssetManagerID sets the "asset_manager_id" field if the given value is not nil.
-func (wuo *WarehouseUpdateOne) SetNillableAssetManagerID(u *uint64) *WarehouseUpdateOne {
-	if u != nil {
-		wuo.SetAssetManagerID(*u)
-	}
-	return wuo
-}
-
-// ClearAssetManagerID clears the value of the "asset_manager_id" field.
-func (wuo *WarehouseUpdateOne) ClearAssetManagerID() *WarehouseUpdateOne {
-	wuo.mutation.ClearAssetManagerID()
-	return wuo
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (wuo *WarehouseUpdateOne) SetCity(c *City) *WarehouseUpdateOne {
 	return wuo.SetCityID(c.ID)
 }
 
-// SetAssetManager sets the "asset_manager" edge to the AssetManager entity.
-func (wuo *WarehouseUpdateOne) SetAssetManager(a *AssetManager) *WarehouseUpdateOne {
-	return wuo.SetAssetManagerID(a.ID)
-}
-
-// AddAssetManagerIDs adds the "asset_managers" edge to the AssetManager entity by IDs.
-func (wuo *WarehouseUpdateOne) AddAssetManagerIDs(ids ...uint64) *WarehouseUpdateOne {
-	wuo.mutation.AddAssetManagerIDs(ids...)
+// AddBelongAssetManagerIDs adds the "belong_asset_managers" edge to the AssetManager entity by IDs.
+func (wuo *WarehouseUpdateOne) AddBelongAssetManagerIDs(ids ...uint64) *WarehouseUpdateOne {
+	wuo.mutation.AddBelongAssetManagerIDs(ids...)
 	return wuo
 }
 
-// AddAssetManagers adds the "asset_managers" edges to the AssetManager entity.
-func (wuo *WarehouseUpdateOne) AddAssetManagers(a ...*AssetManager) *WarehouseUpdateOne {
+// AddBelongAssetManagers adds the "belong_asset_managers" edges to the AssetManager entity.
+func (wuo *WarehouseUpdateOne) AddBelongAssetManagers(a ...*AssetManager) *WarehouseUpdateOne {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return wuo.AddAssetManagerIDs(ids...)
+	return wuo.AddBelongAssetManagerIDs(ids...)
+}
+
+// AddDutyAssetManagerIDs adds the "duty_asset_managers" edge to the AssetManager entity by IDs.
+func (wuo *WarehouseUpdateOne) AddDutyAssetManagerIDs(ids ...uint64) *WarehouseUpdateOne {
+	wuo.mutation.AddDutyAssetManagerIDs(ids...)
+	return wuo
+}
+
+// AddDutyAssetManagers adds the "duty_asset_managers" edges to the AssetManager entity.
+func (wuo *WarehouseUpdateOne) AddDutyAssetManagers(a ...*AssetManager) *WarehouseUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return wuo.AddDutyAssetManagerIDs(ids...)
 }
 
 // AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
@@ -802,31 +813,46 @@ func (wuo *WarehouseUpdateOne) ClearCity() *WarehouseUpdateOne {
 	return wuo
 }
 
-// ClearAssetManager clears the "asset_manager" edge to the AssetManager entity.
-func (wuo *WarehouseUpdateOne) ClearAssetManager() *WarehouseUpdateOne {
-	wuo.mutation.ClearAssetManager()
+// ClearBelongAssetManagers clears all "belong_asset_managers" edges to the AssetManager entity.
+func (wuo *WarehouseUpdateOne) ClearBelongAssetManagers() *WarehouseUpdateOne {
+	wuo.mutation.ClearBelongAssetManagers()
 	return wuo
 }
 
-// ClearAssetManagers clears all "asset_managers" edges to the AssetManager entity.
-func (wuo *WarehouseUpdateOne) ClearAssetManagers() *WarehouseUpdateOne {
-	wuo.mutation.ClearAssetManagers()
+// RemoveBelongAssetManagerIDs removes the "belong_asset_managers" edge to AssetManager entities by IDs.
+func (wuo *WarehouseUpdateOne) RemoveBelongAssetManagerIDs(ids ...uint64) *WarehouseUpdateOne {
+	wuo.mutation.RemoveBelongAssetManagerIDs(ids...)
 	return wuo
 }
 
-// RemoveAssetManagerIDs removes the "asset_managers" edge to AssetManager entities by IDs.
-func (wuo *WarehouseUpdateOne) RemoveAssetManagerIDs(ids ...uint64) *WarehouseUpdateOne {
-	wuo.mutation.RemoveAssetManagerIDs(ids...)
-	return wuo
-}
-
-// RemoveAssetManagers removes "asset_managers" edges to AssetManager entities.
-func (wuo *WarehouseUpdateOne) RemoveAssetManagers(a ...*AssetManager) *WarehouseUpdateOne {
+// RemoveBelongAssetManagers removes "belong_asset_managers" edges to AssetManager entities.
+func (wuo *WarehouseUpdateOne) RemoveBelongAssetManagers(a ...*AssetManager) *WarehouseUpdateOne {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return wuo.RemoveAssetManagerIDs(ids...)
+	return wuo.RemoveBelongAssetManagerIDs(ids...)
+}
+
+// ClearDutyAssetManagers clears all "duty_asset_managers" edges to the AssetManager entity.
+func (wuo *WarehouseUpdateOne) ClearDutyAssetManagers() *WarehouseUpdateOne {
+	wuo.mutation.ClearDutyAssetManagers()
+	return wuo
+}
+
+// RemoveDutyAssetManagerIDs removes the "duty_asset_managers" edge to AssetManager entities by IDs.
+func (wuo *WarehouseUpdateOne) RemoveDutyAssetManagerIDs(ids ...uint64) *WarehouseUpdateOne {
+	wuo.mutation.RemoveDutyAssetManagerIDs(ids...)
+	return wuo
+}
+
+// RemoveDutyAssetManagers removes "duty_asset_managers" edges to AssetManager entities.
+func (wuo *WarehouseUpdateOne) RemoveDutyAssetManagers(a ...*AssetManager) *WarehouseUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return wuo.RemoveDutyAssetManagerIDs(ids...)
 }
 
 // ClearAsset clears all "asset" edges to the Asset entity.
@@ -1022,12 +1048,12 @@ func (wuo *WarehouseUpdateOne) sqlSave(ctx context.Context) (_node *Warehouse, e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if wuo.mutation.AssetManagerCleared() {
+	if wuo.mutation.BelongAssetManagersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   warehouse.AssetManagerTable,
-			Columns: []string{warehouse.AssetManagerColumn},
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   warehouse.BelongAssetManagersTable,
+			Columns: warehouse.BelongAssetManagersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -1035,12 +1061,28 @@ func (wuo *WarehouseUpdateOne) sqlSave(ctx context.Context) (_node *Warehouse, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := wuo.mutation.AssetManagerIDs(); len(nodes) > 0 {
+	if nodes := wuo.mutation.RemovedBelongAssetManagersIDs(); len(nodes) > 0 && !wuo.mutation.BelongAssetManagersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   warehouse.AssetManagerTable,
-			Columns: []string{warehouse.AssetManagerColumn},
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   warehouse.BelongAssetManagersTable,
+			Columns: warehouse.BelongAssetManagersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.BelongAssetManagersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   warehouse.BelongAssetManagersTable,
+			Columns: warehouse.BelongAssetManagersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -1051,12 +1093,12 @@ func (wuo *WarehouseUpdateOne) sqlSave(ctx context.Context) (_node *Warehouse, e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if wuo.mutation.AssetManagersCleared() {
+	if wuo.mutation.DutyAssetManagersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   warehouse.AssetManagersTable,
-			Columns: warehouse.AssetManagersPrimaryKey,
+			Table:   warehouse.DutyAssetManagersTable,
+			Columns: []string{warehouse.DutyAssetManagersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -1064,12 +1106,12 @@ func (wuo *WarehouseUpdateOne) sqlSave(ctx context.Context) (_node *Warehouse, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := wuo.mutation.RemovedAssetManagersIDs(); len(nodes) > 0 && !wuo.mutation.AssetManagersCleared() {
+	if nodes := wuo.mutation.RemovedDutyAssetManagersIDs(); len(nodes) > 0 && !wuo.mutation.DutyAssetManagersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   warehouse.AssetManagersTable,
-			Columns: warehouse.AssetManagersPrimaryKey,
+			Table:   warehouse.DutyAssetManagersTable,
+			Columns: []string{warehouse.DutyAssetManagersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -1080,12 +1122,12 @@ func (wuo *WarehouseUpdateOne) sqlSave(ctx context.Context) (_node *Warehouse, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := wuo.mutation.AssetManagersIDs(); len(nodes) > 0 {
+	if nodes := wuo.mutation.DutyAssetManagersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   warehouse.AssetManagersTable,
-			Columns: warehouse.AssetManagersPrimaryKey,
+			Table:   warehouse.DutyAssetManagersTable,
+			Columns: []string{warehouse.DutyAssetManagersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),

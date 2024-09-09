@@ -221,3 +221,18 @@ func (s *batteryModelService) QueryModels(m []string) ([]*ent.BatteryModel, erro
 		).
 		All(context.Background())
 }
+
+// ModelsByFilter 根据筛选列出电池型号
+func (s *batteryModelService) ModelsByFilter(t *uint8) []model.SelectOption {
+	q := s.orm.Query()
+
+	items, _ := q.All(s.ctx)
+	out := make([]model.SelectOption, len(items))
+	for i, item := range items {
+		out[i] = model.SelectOption{
+			Label: item.Model,
+			Value: item.ID,
+		}
+	}
+	return out
+}

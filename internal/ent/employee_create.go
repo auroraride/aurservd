@@ -188,6 +188,20 @@ func (ec *EmployeeCreate) SetNillableLimit(u *uint) *EmployeeCreate {
 	return ec
 }
 
+// SetDutyStoreID sets the "duty_store_id" field.
+func (ec *EmployeeCreate) SetDutyStoreID(u uint64) *EmployeeCreate {
+	ec.mutation.SetDutyStoreID(u)
+	return ec
+}
+
+// SetNillableDutyStoreID sets the "duty_store_id" field if the given value is not nil.
+func (ec *EmployeeCreate) SetNillableDutyStoreID(u *uint64) *EmployeeCreate {
+	if u != nil {
+		ec.SetDutyStoreID(*u)
+	}
+	return ec
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (ec *EmployeeCreate) SetCity(c *City) *EmployeeCreate {
 	return ec.SetCityID(c.ID)
@@ -305,6 +319,11 @@ func (ec *EmployeeCreate) AddStores(s ...*Store) *EmployeeCreate {
 		ids[i] = s[i].ID
 	}
 	return ec.AddStoreIDs(ids...)
+}
+
+// SetDutyStore sets the "duty_store" edge to the Store entity.
+func (ec *EmployeeCreate) SetDutyStore(s *Store) *EmployeeCreate {
+	return ec.SetDutyStoreID(s.ID)
 }
 
 // Mutation returns the EmployeeMutation object of the builder.
@@ -616,6 +635,23 @@ func (ec *EmployeeCreate) createSpec() (*Employee, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := ec.mutation.DutyStoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   employee.DutyStoreTable,
+			Columns: []string{employee.DutyStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.DutyStoreID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -851,6 +887,24 @@ func (u *EmployeeUpsert) UpdateLimit() *EmployeeUpsert {
 // AddLimit adds v to the "limit" field.
 func (u *EmployeeUpsert) AddLimit(v uint) *EmployeeUpsert {
 	u.Add(employee.FieldLimit, v)
+	return u
+}
+
+// SetDutyStoreID sets the "duty_store_id" field.
+func (u *EmployeeUpsert) SetDutyStoreID(v uint64) *EmployeeUpsert {
+	u.Set(employee.FieldDutyStoreID, v)
+	return u
+}
+
+// UpdateDutyStoreID sets the "duty_store_id" field to the value that was provided on create.
+func (u *EmployeeUpsert) UpdateDutyStoreID() *EmployeeUpsert {
+	u.SetExcluded(employee.FieldDutyStoreID)
+	return u
+}
+
+// ClearDutyStoreID clears the value of the "duty_store_id" field.
+func (u *EmployeeUpsert) ClearDutyStoreID() *EmployeeUpsert {
+	u.SetNull(employee.FieldDutyStoreID)
 	return u
 }
 
@@ -1116,6 +1170,27 @@ func (u *EmployeeUpsertOne) AddLimit(v uint) *EmployeeUpsertOne {
 func (u *EmployeeUpsertOne) UpdateLimit() *EmployeeUpsertOne {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.UpdateLimit()
+	})
+}
+
+// SetDutyStoreID sets the "duty_store_id" field.
+func (u *EmployeeUpsertOne) SetDutyStoreID(v uint64) *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetDutyStoreID(v)
+	})
+}
+
+// UpdateDutyStoreID sets the "duty_store_id" field to the value that was provided on create.
+func (u *EmployeeUpsertOne) UpdateDutyStoreID() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateDutyStoreID()
+	})
+}
+
+// ClearDutyStoreID clears the value of the "duty_store_id" field.
+func (u *EmployeeUpsertOne) ClearDutyStoreID() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.ClearDutyStoreID()
 	})
 }
 
@@ -1547,6 +1622,27 @@ func (u *EmployeeUpsertBulk) AddLimit(v uint) *EmployeeUpsertBulk {
 func (u *EmployeeUpsertBulk) UpdateLimit() *EmployeeUpsertBulk {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.UpdateLimit()
+	})
+}
+
+// SetDutyStoreID sets the "duty_store_id" field.
+func (u *EmployeeUpsertBulk) SetDutyStoreID(v uint64) *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetDutyStoreID(v)
+	})
+}
+
+// UpdateDutyStoreID sets the "duty_store_id" field to the value that was provided on create.
+func (u *EmployeeUpsertBulk) UpdateDutyStoreID() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateDutyStoreID()
+	})
+}
+
+// ClearDutyStoreID clears the value of the "duty_store_id" field.
+func (u *EmployeeUpsertBulk) ClearDutyStoreID() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.ClearDutyStoreID()
 	})
 }
 

@@ -23,9 +23,9 @@ var BatteryModel = new(batterymodel)
 // @Tags	电池型号 - BatteryModel
 // @Accept	json
 // @Produce	json
-// @Param	X-Asset-Manager-Token	header		string														true	"管理员校验token"
-// @Param	query					query		model.BatteryModelListReq									true	"desc"
-// @Success	200						{object}	model.PaginationRes{items=[]definition.BatteryModelDetail}	"请求成功"
+// @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
+// @Param	query					query		model.BatteryModelListReq								true	"desc"
+// @Success	200						{object}	model.PaginationRes{items=[]model.BatteryModelDetail}	"请求成功"
 func (*batterymodel) List(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.BatteryModelListReq](c)
 	return ctx.SendResponse(service.NewBatteryModel().List(req))

@@ -103,6 +103,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/maintainer/v1/assets": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assets - 资产管理"
+                ],
+                "summary": "资产数据",
+                "operationId": "AgentAssets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "运维校验token",
+                        "name": "X-Maintainer-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.WarestoreAssetDetail"
+                        }
+                    }
+                }
+            }
+        },
         "/maintainer/v1/assets/common": {
             "get": {
                 "consumes": [
@@ -119,7 +151,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "仓管校验token",
+                        "description": "运维校验token",
                         "name": "X-Maintainer-Token",
                         "in": "header",
                         "required": true
@@ -150,6 +182,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "运维ID",
+                        "name": "maintainerID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "电池型号ID",
                         "name": "model",
                         "in": "query"
@@ -158,6 +196,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationID",
                         "in": "query"
                     },
                     {
@@ -260,7 +304,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "仓管校验token",
+                        "description": "运维校验token",
                         "name": "X-Maintainer-Token",
                         "in": "header",
                         "required": true
@@ -271,6 +315,45 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/definition.AssetCountRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/maintainer/v1/assets/{sn}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assets - 资产管理"
+                ],
+                "summary": "通过sn查询资产数据（任意位置）",
+                "operationId": "AssetBySn",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Maintainer-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "sn",
+                        "name": "sn",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetCheckByAssetSnRes"
                         }
                     }
                 }
@@ -583,6 +666,12 @@ const docTemplate = `{
                         "name": "sn",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID（扫码时选择站点必填）",
+                        "name": "stationID",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -750,24 +839,6 @@ const docTemplate = `{
                         "name": "X-Maintainer-Token",
                         "in": "header",
                         "required": true
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "x-enum-comments": {
-                            "BatteryModelTypeNonSmart": "非智能电池",
-                            "BatteryModelTypeSmart": "智能电池"
-                        },
-                        "x-enum-varnames": [
-                            "BatteryModelTypeSmart",
-                            "BatteryModelTypeNonSmart"
-                        ],
-                        "description": "1智能电池 2非智能电池",
-                        "name": "type",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1052,7 +1123,7 @@ const docTemplate = `{
                             "AssetTransferStatusStock",
                             "AssetTransferStatusCancel"
                         ],
-                        "description": "调拨状态 1:配送中 2:待入库 3:已入库 4:已取消",
+                        "description": "调拨状态 1:配送中 2:已入库 3:已取消",
                         "name": "status",
                         "in": "query"
                     },
@@ -1868,6 +1939,94 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.WarestoreAssetDetail": {
+            "type": "object",
+            "properties": {
+                "cabinetAccessories": {
+                    "description": "电柜配件物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.WarestoreMaterial"
+                    }
+                },
+                "cabinetAccessoryTotal": {
+                    "description": "电柜配件总数",
+                    "type": "integer"
+                },
+                "ebikeAccessories": {
+                    "description": "电车配件物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.WarestoreMaterial"
+                    }
+                },
+                "ebikeAccessoryTotal": {
+                    "description": "电车配件总数",
+                    "type": "integer"
+                },
+                "ebikeTotal": {
+                    "description": "电车总数",
+                    "type": "integer"
+                },
+                "ebikes": {
+                    "description": "电车物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.WarestoreMaterial"
+                    }
+                },
+                "nonSmartBatteries": {
+                    "description": "非智能电池物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.WarestoreMaterial"
+                    }
+                },
+                "nonSmartBatteryTotal": {
+                    "description": "非智能电池总数",
+                    "type": "integer"
+                },
+                "otherAssetTotal": {
+                    "description": "其他物资总数",
+                    "type": "integer"
+                },
+                "otherAssets": {
+                    "description": "其他物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.WarestoreMaterial"
+                    }
+                },
+                "smartBatteries": {
+                    "description": "智能电池物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/definition.WarestoreMaterial"
+                    }
+                },
+                "smartBatteryTotal": {
+                    "description": "智能电池总数",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.WarestoreMaterial": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "电池类型ID、电车品牌ID、其他物资ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "物资名称",
+                    "type": "string"
+                },
+                "num": {
+                    "description": "物资数量",
+                    "type": "integer"
+                }
+            }
+        },
         "model.AssetAttribute": {
             "type": "object",
             "properties": {
@@ -1912,9 +2071,32 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "attribute": {
+                    "description": "属性",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/model.AssetAttribute"
+                    }
+                },
                 "brandName": {
                     "description": "品牌",
                     "type": "string"
+                },
+                "locationsId": {
+                    "description": "位置ID",
+                    "type": "integer"
+                },
+                "locationsName": {
+                    "description": "位置名称",
+                    "type": "string"
+                },
+                "locationsType": {
+                    "description": "位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
                 },
                 "model": {
                     "description": "型号",
@@ -2215,6 +2397,13 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.AssetType"
                         }
                     ]
+                },
+                "attribute": {
+                    "description": "属性",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/model.AssetAttribute"
+                    }
                 },
                 "in": {
                     "description": "入库数量",
@@ -2595,21 +2784,6 @@ const docTemplate = `{
                 "AssetTypeCabinetAccessory",
                 "AssetTypeEbikeAccessory",
                 "AssetTypeOtherAccessory"
-            ]
-        },
-        "model.BatteryModelType": {
-            "type": "integer",
-            "enum": [
-                1,
-                2
-            ],
-            "x-enum-comments": {
-                "BatteryModelTypeNonSmart": "非智能电池",
-                "BatteryModelTypeSmart": "智能电池"
-            },
-            "x-enum-varnames": [
-                "BatteryModelTypeSmart",
-                "BatteryModelTypeNonSmart"
             ]
         },
         "model.Branch": {
@@ -2999,6 +3173,14 @@ const docTemplate = `{
                 "stockNum": {
                     "description": "库存电池",
                     "type": "integer"
+                },
+                "storeId": {
+                    "description": "绑定门店ID",
+                    "type": "integer"
+                },
+                "storeName": {
+                    "description": "绑定门店名称",
+                    "type": "string"
                 },
                 "transferred": {
                     "description": "是否初始化过调拨",

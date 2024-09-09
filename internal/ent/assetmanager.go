@@ -47,6 +47,8 @@ type AssetManager struct {
 	MiniLimit uint `json:"mini_limit,omitempty"`
 	// 最后登录时间
 	LastSigninAt *time.Time `json:"last_signin_at,omitempty"`
+	// 上班仓库ID
+	WarehouseID *uint64 `json:"warehouse_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetManagerQuery when eager-loading is set.
 	Edges        AssetManagerEdges `json:"edges"`
@@ -57,10 +59,10 @@ type AssetManager struct {
 type AssetManagerEdges struct {
 	// Role holds the value of the role edge.
 	Role *AssetRole `json:"role,omitempty"`
-	// Warehouses holds the value of the warehouses edge.
-	Warehouses []*Warehouse `json:"warehouses,omitempty"`
-	// Warehouse holds the value of the warehouse edge.
-	Warehouse *Warehouse `json:"warehouse,omitempty"`
+	// BelongWarehouses holds the value of the belong_warehouses edge.
+	BelongWarehouses []*Warehouse `json:"belong_warehouses,omitempty"`
+	// DutyWarehouse holds the value of the duty_warehouse edge.
+	DutyWarehouse *Warehouse `json:"duty_warehouse,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [3]bool
@@ -77,24 +79,24 @@ func (e AssetManagerEdges) RoleOrErr() (*AssetRole, error) {
 	return nil, &NotLoadedError{edge: "role"}
 }
 
-// WarehousesOrErr returns the Warehouses value or an error if the edge
+// BelongWarehousesOrErr returns the BelongWarehouses value or an error if the edge
 // was not loaded in eager-loading.
-func (e AssetManagerEdges) WarehousesOrErr() ([]*Warehouse, error) {
+func (e AssetManagerEdges) BelongWarehousesOrErr() ([]*Warehouse, error) {
 	if e.loadedTypes[1] {
-		return e.Warehouses, nil
+		return e.BelongWarehouses, nil
 	}
-	return nil, &NotLoadedError{edge: "warehouses"}
+	return nil, &NotLoadedError{edge: "belong_warehouses"}
 }
 
-// WarehouseOrErr returns the Warehouse value or an error if the edge
+// DutyWarehouseOrErr returns the DutyWarehouse value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AssetManagerEdges) WarehouseOrErr() (*Warehouse, error) {
-	if e.Warehouse != nil {
-		return e.Warehouse, nil
+func (e AssetManagerEdges) DutyWarehouseOrErr() (*Warehouse, error) {
+	if e.DutyWarehouse != nil {
+		return e.DutyWarehouse, nil
 	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: warehouse.Label}
 	}
-	return nil, &NotLoadedError{edge: "warehouse"}
+	return nil, &NotLoadedError{edge: "duty_warehouse"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -106,7 +108,7 @@ func (*AssetManager) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case assetmanager.FieldMiniEnable:
 			values[i] = new(sql.NullBool)
-		case assetmanager.FieldID, assetmanager.FieldRoleID, assetmanager.FieldMiniLimit:
+		case assetmanager.FieldID, assetmanager.FieldRoleID, assetmanager.FieldMiniLimit, assetmanager.FieldWarehouseID:
 			values[i] = new(sql.NullInt64)
 		case assetmanager.FieldRemark, assetmanager.FieldName, assetmanager.FieldPhone, assetmanager.FieldPassword:
 			values[i] = new(sql.NullString)
@@ -218,6 +220,13 @@ func (am *AssetManager) assignValues(columns []string, values []any) error {
 				am.LastSigninAt = new(time.Time)
 				*am.LastSigninAt = value.Time
 			}
+		case assetmanager.FieldWarehouseID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field warehouse_id", values[i])
+			} else if value.Valid {
+				am.WarehouseID = new(uint64)
+				*am.WarehouseID = uint64(value.Int64)
+			}
 		default:
 			am.selectValues.Set(columns[i], values[i])
 		}
@@ -236,14 +245,14 @@ func (am *AssetManager) QueryRole() *AssetRoleQuery {
 	return NewAssetManagerClient(am.config).QueryRole(am)
 }
 
-// QueryWarehouses queries the "warehouses" edge of the AssetManager entity.
-func (am *AssetManager) QueryWarehouses() *WarehouseQuery {
-	return NewAssetManagerClient(am.config).QueryWarehouses(am)
+// QueryBelongWarehouses queries the "belong_warehouses" edge of the AssetManager entity.
+func (am *AssetManager) QueryBelongWarehouses() *WarehouseQuery {
+	return NewAssetManagerClient(am.config).QueryBelongWarehouses(am)
 }
 
-// QueryWarehouse queries the "warehouse" edge of the AssetManager entity.
-func (am *AssetManager) QueryWarehouse() *WarehouseQuery {
-	return NewAssetManagerClient(am.config).QueryWarehouse(am)
+// QueryDutyWarehouse queries the "duty_warehouse" edge of the AssetManager entity.
+func (am *AssetManager) QueryDutyWarehouse() *WarehouseQuery {
+	return NewAssetManagerClient(am.config).QueryDutyWarehouse(am)
 }
 
 // Update returns a builder for updating this AssetManager.
@@ -312,6 +321,11 @@ func (am *AssetManager) String() string {
 	if v := am.LastSigninAt; v != nil {
 		builder.WriteString("last_signin_at=")
 		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := am.WarehouseID; v != nil {
+		builder.WriteString("warehouse_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')
 	return builder.String()

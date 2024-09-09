@@ -80,7 +80,6 @@ func (*selection) Station(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Agent-Token	header		string					true	"仓管校验token"
-// @Param	query			query		model.SelectModelsReq	true	"查询参数"
 // @Success	200				{object}	[]model.SelectOption	"请求成功"
 func (*selection) Model(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AgentContext](c)

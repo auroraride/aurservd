@@ -116,7 +116,10 @@ func (*assetTransfer) TransferFlow(c echo.Context) (err error) {
 // @Success	200					{object}	model.AssetTransferListRes	"请求成功"
 func (*assetTransfer) TransferBySn(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[model.GetTransferBySNReq](c)
-	return ctx.SendResponse(biz.NewAssetTransfer().GetTransferBySn(req))
+	return ctx.SendResponse(biz.NewAssetTransfer().GetTransferBySn(definition.AssetSignInfo{
+		AssetManager: ctx.AssetManager,
+		Employee:     ctx.Employee,
+	}, req))
 }
 
 // TransferDetailsList

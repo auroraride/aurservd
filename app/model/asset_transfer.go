@@ -84,9 +84,9 @@ func (s AssetTransferMainPage) Value() uint8 {
 
 // AssetTransferCreateReq 资产调拨请求
 type AssetTransferCreateReq struct {
-	FromLocationType  *AssetLocationsType         `json:"fromLocationType"`                      // 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 (初始调拨此字段不填写)
+	FromLocationType  *AssetLocationsType         `json:"fromLocationType"`                      // 调拨前位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜 (初始调拨此字段不填写)
 	FromLocationID    *uint64                     `json:"fromLocationID"`                        // 调拨前位置ID (初始调拨此字段不填写)
-	ToLocationType    AssetLocationsType          `json:"toLocationType" validate:"required"`    // 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维
+	ToLocationType    AssetLocationsType          `json:"toLocationType" validate:"required"`    // 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维 5:电柜
 	ToLocationID      uint64                      `json:"toLocationID" validate:"required"`      // 调拨后位置ID
 	Details           []AssetTransferCreateDetail `json:"details"`                               // 资产调拨详情
 	Reason            string                      `json:"reason" validate:"required"`            // 调拨事由
@@ -117,7 +117,7 @@ type AssetTransferFilter struct {
 	FromLocationsID   *uint64                `json:"fromLocationsId" query:"fromLocationsId"`                         // 调出位置ID
 	ToLocationsType   *AssetLocationsType    `json:"toLocationsType" query:"toLocationsType" enums:"1,2,3,4,5,6"`     // 调入位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
 	ToLocationsID     *uint64                `json:"toLocationsId" query:"toLocationsId"`                             // 调入位置ID
-	Status            *AssetTransferStatus   `json:"status" query:"status" enums:"1,2,3,4"`                           // 调拨状态 1:配送中 2:待入库 3:已入库 4:已取消
+	Status            *AssetTransferStatus   `json:"status" query:"status" enums:"1,2,3,4"`                           // 调拨状态 1:配送中 2:已入库 3:已取消
 	OutStart          *string                `json:"outStart" query:"outStart"`                                       // 出库开始时间
 	OutEnd            *string                `json:"outEnd" query:"outEnd"`                                           // 出库结束时间
 	InStart           *string                `json:"inStart" query:"inStart"`                                         // 入库开始时间
@@ -167,15 +167,16 @@ type AssetTransferDetailReq struct {
 
 // AssetTransferDetail 资产调拨详情
 type AssetTransferDetail struct {
-	AssetType     AssetType `json:"assetType"`     // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-	SN            string    `json:"sn"`            // 资产编号
-	Name          string    `json:"name"`          // 资产名称
-	OutNum        int       `json:"out"`           // 出库数量
-	InNum         int       `json:"in"`            // 入库数量
-	InOperateName string    `json:"inOperateName"` // 入库人
-	InTimeAt      string    `json:"inTimeAt"`      // 入库时间
-	MaterialID    uint64    `json:"materialId"`    // 其他物资ID
-	ModelID       uint64    `json:"modelId"`       // 电池型号ID
+	AssetType     AssetType                 `json:"assetType"`     // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+	SN            string                    `json:"sn"`            // 资产编号
+	Name          string                    `json:"name"`          // 资产名称
+	OutNum        int                       `json:"out"`           // 出库数量
+	InNum         int                       `json:"in"`            // 入库数量
+	InOperateName string                    `json:"inOperateName"` // 入库人
+	InTimeAt      string                    `json:"inTimeAt"`      // 入库时间
+	MaterialID    uint64                    `json:"materialId"`    // 其他物资ID
+	ModelID       uint64                    `json:"modelId"`       // 电池型号ID
+	Attribute     map[uint64]AssetAttribute `json:"attribute"`     // 属性
 }
 
 // AssetTransferReceiveReq 接收资产调拨

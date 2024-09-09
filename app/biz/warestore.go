@@ -7,6 +7,7 @@ package biz
 import (
 	"context"
 	"errors"
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -155,12 +156,7 @@ func (b *warestoreBiz) Duty(assetSignInfo definition.AssetSignInfo, req *definit
 			return
 		}
 		// 上班更新
-		err = ent.Database.Warehouse.Update().ClearAssetManagerID().Where(warehouse.AssetManagerID(assetSignInfo.AssetManager.ID)).Exec(b.ctx)
-		if err != nil {
-			return err
-		}
-
-		return wh.Update().SetAssetManagerID(assetSignInfo.AssetManager.ID).Exec(b.ctx)
+		return ent.Database.AssetManager.Update().Where(assetmanager.ID(assetSignInfo.AssetManager.ID)).SetDutyWarehouseID(wh.ID).Exec(b.ctx)
 
 	case assetSignInfo.Employee != nil:
 		// 检查是否可上班
@@ -170,38 +166,38 @@ func (b *warestoreBiz) Duty(assetSignInfo definition.AssetSignInfo, req *definit
 			return
 		}
 		// 上班更新
-		err = ent.Database.Store.Update().ClearEmployeeID().Where(store.EmployeeID(assetSignInfo.Employee.ID)).Exec(b.ctx)
-		if err != nil {
-			return err
-		}
-		return st.Update().SetEmployeeID(assetSignInfo.Employee.ID).Exec(b.ctx)
+		return ent.Database.Employee.Update().Where(employee.ID(assetSignInfo.Employee.ID)).SetDutyStoreID(st.ID).Exec(b.ctx)
 	}
 	return
 }
 
 // checkWarehouseDuty 检查仓库上班信息
 func (b *warestoreBiz) checkWarehouseDuty(amId uint64, sn string, lat, lng float64) (wh *ent.Warehouse, err error) {
+	// 查询用户限制距离
+	am, _ := ent.Database.AssetManager.QueryNotDeleted().Where(assetmanager.ID(amId)).First(b.ctx)
+	if am == nil {
+		return nil, errors.New("仓管用户无效")
+	}
+	limit := float64(am.MiniLimit)
+
 	wh = NewWarehouse().QuerySn(sn)
 	// 判断距离
 	if wh == nil || wh.Lat == 0 || wh.Lng == 0 {
 		return wh, errors.New("未找到门店地理信息")
-	}
-	if wh.AssetManagerID != nil {
-		return wh, errors.New("当前已有员工上班")
 	}
 
 	// 检查当前账号与目标是否绑定关系
 	if ewh, _ := ent.Database.Warehouse.QueryNotDeleted().
 		Where(
 			warehouse.ID(wh.ID),
-			warehouse.HasAssetManagersWith(assetmanager.ID(amId)),
+			warehouse.HasBelongAssetManagersWith(assetmanager.ID(amId)),
 		).First(b.ctx); ewh == nil {
 		return wh, errors.New("当前用户未拥有该仓库权限")
 	}
 
 	distance := haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(wh.Lat, wh.Lng))
 	meters := distance.Kilometers() * 1000
-	if meters > 1000 {
+	if meters > limit {
 		return wh, errors.New("距离过远")
 	}
 	return wh, nil
@@ -209,15 +205,18 @@ func (b *warestoreBiz) checkWarehouseDuty(amId uint64, sn string, lat, lng float
 
 // checkStoreDuty 检查门店上班信息
 func (b *warestoreBiz) checkStoreDuty(epId uint64, sn string, lat, lng float64) (st *ent.Store, err error) {
+	// 查询用户限制距离
+	ep, _ := ent.Database.Employee.QueryNotDeleted().Where(employee.ID(epId)).First(b.ctx)
+	if ep == nil {
+		return nil, errors.New("仓管用户无效")
+	}
+	limit := float64(ep.Limit)
+
 	st = service.NewStore().QuerySn(sn)
 	if st == nil {
 		return st, errors.New("当前门店未找到")
 	}
 	bc := service.NewBranch().Query(st.BranchID)
-
-	if st.EmployeeID != nil {
-		return st, errors.New("当前已有员工上班")
-	}
 	// 判断距离
 	if bc == nil || bc.Lat == 0 || bc.Lng == 0 {
 		return st, errors.New("未找到门店地理信息")
@@ -233,7 +232,7 @@ func (b *warestoreBiz) checkStoreDuty(epId uint64, sn string, lat, lng float64) 
 
 	distance := haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(bc.Lat, bc.Lng))
 	meters := distance.Kilometers() * 1000
-	if meters > 1000 {
+	if meters > limit {
 		return st, errors.New("距离过远")
 	}
 	return st, nil
@@ -253,7 +252,7 @@ func (b *warestoreBiz) Profile(am *ent.AssetManager, ep *ent.Employee, platType 
 
 		v, _ := ent.Database.Warehouse.QueryNotDeleted().
 			Where(
-				warehouse.HasAssetManagerWith(assetmanager.ID(am.ID)),
+				warehouse.HasDutyAssetManagersWith(assetmanager.ID(am.ID)),
 			).First(b.ctx)
 		if v != nil {
 			res.Duty = true
@@ -299,6 +298,9 @@ func (b *warestoreBiz) AssetCount(assetSignInfo definition.AssetSignInfo) (res d
 	case assetSignInfo.Maintainer != nil:
 		// 确认为运维人员
 		return b.assetCountForMaintainer(assetSignInfo.Maintainer.ID)
+	case assetSignInfo.Agent != nil:
+		// 确认为运维人员
+		return b.assetCountForAgent(assetSignInfo.Agent.ID)
 	}
 	return
 }
@@ -309,8 +311,9 @@ func (b *warestoreBiz) assetCountForWarehouse(id uint64) (res definition.AssetCo
 	rList, _ := ent.Database.AssetTransfer.QueryNotDeleted().
 		WithTransferDetails(func(query *ent.AssetTransferDetailsQuery) { query.WithAsset() }).
 		Where(
+			assettransfer.Type(model.AssetTransferTypeTransfer.Value()),
 			assettransfer.ToLocationType(model.AssetLocationsTypeWarehouse.Value()),
-			assettransfer.HasToLocationWarehouseWith(warehouse.HasAssetManagersWith(assetmanager.ID(id))),
+			assettransfer.HasToLocationWarehouseWith(warehouse.HasBelongAssetManagersWith(assetmanager.ID(id))),
 			assettransfer.Status(model.AssetTransferStatusDelivering.Value()),
 		).All(b.ctx)
 
@@ -319,7 +322,7 @@ func (b *warestoreBiz) assetCountForWarehouse(id uint64) (res definition.AssetCo
 		for _, td := range v.Edges.TransferDetails {
 			if td.Edges.Asset != nil {
 				switch td.Edges.Asset.Type {
-				case model.AssetTypeEbikeAccessory.Value():
+				case model.AssetTypeEbike.Value():
 					res.EbikeAsset.DeliverCount += 1
 				case model.AssetTypeSmartBattery.Value():
 					res.SmartBatteryAsset.DeliverCount += 1
@@ -333,7 +336,7 @@ func (b *warestoreBiz) assetCountForWarehouse(id uint64) (res definition.AssetCo
 	// 配送中
 	dList, _ := ent.Database.AssetTransfer.QueryNotDeleted().Where(
 		assettransfer.FromLocationType(model.AssetLocationsTypeWarehouse.Value()),
-		assettransfer.HasFromLocationWarehouseWith(warehouse.HasAssetManagersWith(assetmanager.ID(id))),
+		assettransfer.HasFromLocationWarehouseWith(warehouse.HasBelongAssetManagersWith(assetmanager.ID(id))),
 		assettransfer.Status(model.AssetTransferStatusDelivering.Value()),
 	).All(b.ctx)
 
@@ -346,11 +349,11 @@ func (b *warestoreBiz) assetCountForWarehouse(id uint64) (res definition.AssetCo
 	aList, _ := ent.Database.Asset.QueryNotDeleted().Where(
 		asset.StatusIn(model.AssetStatusStock.Value(), model.AssetStatusFault.Value()),
 		asset.LocationsType(model.AssetLocationsTypeWarehouse.Value()),
-		asset.HasWarehouseWith(warehouse.HasAssetManagersWith(assetmanager.ID(id))),
+		asset.HasWarehouseWith(warehouse.HasBelongAssetManagersWith(assetmanager.ID(id))),
 	).All(b.ctx)
 	for _, v := range aList {
 		switch v.Type {
-		case model.AssetTypeEbikeAccessory.Value():
+		case model.AssetTypeEbike.Value():
 			switch v.Status {
 			case model.AssetStatusStock.Value():
 				res.EbikeAsset.StockCount += 1
@@ -388,6 +391,7 @@ func (b *warestoreBiz) assetCountForStore(id uint64) (res definition.AssetCountR
 	rList, _ := ent.Database.AssetTransfer.QueryNotDeleted().
 		WithTransferDetails(func(query *ent.AssetTransferDetailsQuery) { query.WithAsset() }).
 		Where(
+			assettransfer.Type(model.AssetTransferTypeTransfer.Value()),
 			assettransfer.ToLocationType(model.AssetLocationsTypeStore.Value()),
 			assettransfer.HasToLocationStoreWith(store.HasEmployeesWith(employee.ID(id))),
 			assettransfer.Status(model.AssetTransferStatusDelivering.Value()),
@@ -398,7 +402,7 @@ func (b *warestoreBiz) assetCountForStore(id uint64) (res definition.AssetCountR
 		for _, td := range v.Edges.TransferDetails {
 			if td.Edges.Asset != nil {
 				switch td.Edges.Asset.Type {
-				case model.AssetTypeEbikeAccessory.Value():
+				case model.AssetTypeEbike.Value():
 					res.EbikeAsset.DeliverCount += 1
 				case model.AssetTypeSmartBattery.Value():
 					res.SmartBatteryAsset.DeliverCount += 1
@@ -429,7 +433,7 @@ func (b *warestoreBiz) assetCountForStore(id uint64) (res definition.AssetCountR
 	).All(b.ctx)
 	for _, v := range aList {
 		switch v.Type {
-		case model.AssetTypeEbikeAccessory.Value():
+		case model.AssetTypeEbike.Value():
 			switch v.Status {
 			case model.AssetStatusStock.Value():
 				res.EbikeAsset.StockCount += 1
@@ -467,6 +471,7 @@ func (b *warestoreBiz) assetCountForMaintainer(id uint64) (res definition.AssetC
 	rList, _ := ent.Database.AssetTransfer.QueryNotDeleted().
 		WithTransferDetails(func(query *ent.AssetTransferDetailsQuery) { query.WithAsset() }).
 		Where(
+			assettransfer.Type(model.AssetTransferTypeTransfer.Value()),
 			assettransfer.ToLocationType(model.AssetLocationsTypeOperation.Value()),
 			assettransfer.HasToLocationOperatorWith(maintainer.ID(id)),
 			assettransfer.Status(model.AssetTransferStatusDelivering.Value()),
@@ -477,7 +482,7 @@ func (b *warestoreBiz) assetCountForMaintainer(id uint64) (res definition.AssetC
 		for _, td := range v.Edges.TransferDetails {
 			if td.Edges.Asset != nil {
 				switch td.Edges.Asset.Type {
-				case model.AssetTypeEbikeAccessory.Value():
+				case model.AssetTypeEbike.Value():
 					res.EbikeAsset.DeliverCount += 1
 				case model.AssetTypeSmartBattery.Value():
 					res.SmartBatteryAsset.DeliverCount += 1
@@ -508,7 +513,102 @@ func (b *warestoreBiz) assetCountForMaintainer(id uint64) (res definition.AssetC
 	).All(b.ctx)
 	for _, v := range aList {
 		switch v.Type {
-		case model.AssetTypeEbikeAccessory.Value():
+		case model.AssetTypeEbike.Value():
+			switch v.Status {
+			case model.AssetStatusStock.Value():
+				res.EbikeAsset.StockCount += 1
+			case model.AssetStatusFault.Value():
+				res.EbikeAsset.FaultCount += 1
+			}
+		case model.AssetTypeSmartBattery.Value():
+			switch v.Status {
+			case model.AssetStatusStock.Value():
+				res.SmartBatteryAsset.StockCount += 1
+			case model.AssetStatusFault.Value():
+				res.SmartBatteryAsset.FaultCount += 1
+			}
+		case model.AssetTypeNonSmartBattery.Value():
+			switch v.Status {
+			case model.AssetStatusStock.Value():
+				res.NonSmartBatteryAsset.StockCount += 1
+			case model.AssetStatusFault.Value():
+				res.NonSmartBatteryAsset.FaultCount += 1
+			}
+		}
+	}
+
+	// 各个类别合计
+	res.EbikeAsset.TotalCount = res.EbikeAsset.StockCount + res.EbikeAsset.DeliverCount + res.EbikeAsset.FaultCount
+	res.SmartBatteryAsset.TotalCount = res.SmartBatteryAsset.StockCount + res.SmartBatteryAsset.DeliverCount + res.SmartBatteryAsset.FaultCount
+	res.NonSmartBatteryAsset.TotalCount = res.NonSmartBatteryAsset.StockCount + res.NonSmartBatteryAsset.DeliverCount + res.NonSmartBatteryAsset.FaultCount
+
+	return
+}
+
+// assetCountForAgent 代理商资产统计
+func (b *warestoreBiz) assetCountForAgent(id uint64) (res definition.AssetCountRes) {
+	// 查询代理人员配置的代理站点
+	ids := make([]uint64, 0)
+	ag, _ := ent.Database.Agent.QueryNotDeleted().
+		WithEnterprise(func(query *ent.EnterpriseQuery) {
+			query.WithStations()
+		}).
+		Where(
+			agent.ID(id),
+		).First(context.Background())
+	if ag != nil && ag.Edges.Enterprise != nil {
+		for _, v := range ag.Edges.Enterprise.Edges.Stations {
+			ids = append(ids, v.ID)
+		}
+	}
+
+	// 待接收
+	rList, _ := ent.Database.AssetTransfer.QueryNotDeleted().
+		WithTransferDetails(func(query *ent.AssetTransferDetailsQuery) { query.WithAsset() }).
+		Where(
+			assettransfer.Type(model.AssetTransferTypeTransfer.Value()),
+			assettransfer.ToLocationType(model.AssetLocationsTypeStation.Value()),
+			assettransfer.HasToLocationStationWith(enterprisestation.IDIn(ids...)),
+			assettransfer.Status(model.AssetTransferStatusDelivering.Value()),
+		).All(b.ctx)
+
+	for _, v := range rList {
+		res.ReceivingCount += 1
+		for _, td := range v.Edges.TransferDetails {
+			if td.Edges.Asset != nil {
+				switch td.Edges.Asset.Type {
+				case model.AssetTypeEbike.Value():
+					res.EbikeAsset.DeliverCount += 1
+				case model.AssetTypeSmartBattery.Value():
+					res.SmartBatteryAsset.DeliverCount += 1
+				case model.AssetTypeNonSmartBattery.Value():
+					res.NonSmartBatteryAsset.DeliverCount += 1
+				}
+			}
+		}
+	}
+
+	// 配送中
+	dList, _ := ent.Database.AssetTransfer.QueryNotDeleted().Where(
+		assettransfer.FromLocationType(model.AssetLocationsTypeStation.Value()),
+		assettransfer.HasFromLocationStationWith(enterprisestation.IDIn(ids...)),
+		assettransfer.Status(model.AssetTransferStatusDelivering.Value()),
+	).All(b.ctx)
+
+	res.DeliveringCount = len(dList)
+
+	// 异常告警 暂时不做
+
+	// 从资产数据中查询当前账号所属仓库/门店各个类别统计数据
+
+	aList, _ := ent.Database.Asset.QueryNotDeleted().Where(
+		asset.StatusIn(model.AssetStatusStock.Value(), model.AssetStatusFault.Value()),
+		asset.LocationsType(model.AssetLocationsTypeStation.Value()),
+		asset.LocationsIDIn(ids...),
+	).All(b.ctx)
+	for _, v := range aList {
+		switch v.Type {
+		case model.AssetTypeEbike.Value():
 			switch v.Status {
 			case model.AssetStatusStock.Value():
 				res.EbikeAsset.StockCount += 1
@@ -585,9 +685,6 @@ func (b *warestoreBiz) Assets(assetSignInfo definition.AssetSignInfo, req *defin
 	case assetSignInfo.Agent != nil:
 		// 确认为代理员
 		return b.assetsForAgent(assetSignInfo.Agent.ID, req)
-	case assetSignInfo.Maintainer != nil:
-		// 确认为运维
-		return b.assetsForMaintainer(assetSignInfo.Maintainer.ID, req)
 	}
 
 	return nil
@@ -598,20 +695,24 @@ func (b *warestoreBiz) assetsForWarehouse(amId uint64, req *definition.Warestore
 	// 查询仓库数据
 	q := ent.Database.Warehouse.QueryNotDeleted().WithCity()
 
+	if req.CityID != nil {
+		q.Where(warehouse.CityID(*req.CityID))
+	}
+
 	if req.WarehouseID != nil {
 		q.Where(warehouse.ID(*req.WarehouseID))
 	}
 
 	// 查询仓管人员负责的仓库信息
-	am, _ := ent.Database.AssetManager.QueryNotDeleted().WithWarehouses().
+	am, _ := ent.Database.AssetManager.QueryNotDeleted().WithBelongWarehouses().
 		Where(
 			assetmanager.ID(amId),
 			assetmanager.MiniEnable(true),
-			assetmanager.HasWarehousesWith(warehouse.DeletedAtIsNil()),
+			assetmanager.HasBelongWarehousesWith(warehouse.DeletedAtIsNil()),
 		).First(b.ctx)
-	if am != nil && len(am.Edges.Warehouses) != 0 {
+	if am != nil && len(am.Edges.BelongWarehouses) != 0 {
 		wIds := make([]uint64, 0)
-		for _, wh := range am.Edges.Warehouses {
+		for _, wh := range am.Edges.BelongWarehouses {
 			wIds = append(wIds, wh.ID)
 		}
 		q.Where(warehouse.IDIn(wIds...))
@@ -641,6 +742,9 @@ func (b *warestoreBiz) assetsForStore(epId uint64, req *definition.WarestoreAsse
 	q := ent.Database.Store.QueryNotDeleted().WithCity()
 	if req.StoreID != nil {
 		q.Where(store.ID(*req.StoreID))
+	}
+	if req.CityID != nil {
+		q.Where(store.CityID(*req.CityID))
 	}
 
 	ep, _ := ent.Database.Employee.QueryNotDeleted().WithStores().WithGroup().
@@ -682,28 +786,33 @@ func (b *warestoreBiz) assetsForStore(epId uint64, req *definition.WarestoreAsse
 
 // assetsForAgent 代理物资数据
 func (b *warestoreBiz) assetsForAgent(agId uint64, req *definition.WarestoreAssetsReq) *model.PaginationRes {
-	// 门店数据
+	// 站点数据
 	q := ent.Database.EnterpriseStation.QueryNotDeleted().WithCity()
 	if req.StationID != nil {
-		q.Where(enterprisestation.ID(*req.StoreID))
-	}
-
-	ag, _ := ent.Database.Agent.QueryNotDeleted().WithStations().
-		Where(
-			agent.ID(agId),
-			agent.HasStationsWith(enterprisestation.DeletedAtIsNil()),
-		).First(b.ctx)
-	if ag != nil {
-		// 判断是配置的站点数据
-		sIds := make([]uint64, 0)
-		for _, st := range ag.Edges.Stations {
-			sIds = append(sIds, st.ID)
+		q.Where(enterprisestation.ID(*req.StationID))
+	} else {
+		// 查询代理人员配置的代理站点
+		ids := make([]uint64, 0)
+		ag, _ := ent.Database.Agent.QueryNotDeleted().
+			WithEnterprise(func(query *ent.EnterpriseQuery) {
+				query.WithStations()
+			}).
+			Where(
+				agent.ID(agId),
+			).First(context.Background())
+		if ag != nil && ag.Edges.Enterprise != nil {
+			for _, v := range ag.Edges.Enterprise.Edges.Stations {
+				ids = append(ids, v.ID)
+			}
 		}
-		q.Where(enterprisestation.IDIn(sIds...))
+		q.Where(enterprisestation.IDIn(ids...))
+	}
+	if req.CityID != nil {
+		q.Where(enterprisestation.CityID(*req.CityID))
 	}
 
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.EnterpriseStation) *definition.WarestoreAssetRes {
-		// 查询仓库资产详情
+		// 查询站点资产详情
 		res := &definition.WarestoreAssetRes{
 			ID:     item.ID,
 			Name:   item.Name,
@@ -720,20 +829,9 @@ func (b *warestoreBiz) assetsForAgent(agId uint64, req *definition.WarestoreAsse
 
 }
 
-// assetsForAgent 代理物资数据
-func (b *warestoreBiz) assetsForMaintainer(mtId uint64, req *definition.WarestoreAssetsReq) *model.PaginationRes {
-	// 数据
-	q := ent.Database.Maintainer.Query().Where(maintainer.ID(mtId))
-
-	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Maintainer) *definition.WarestoreAssetRes {
-		// 查询仓库资产详情
-		res := &definition.WarestoreAssetRes{
-			ID:     item.ID,
-			Name:   item.Name,
-			Detail: b.assetTotal(item.ID, model.AssetLocationsTypeOperation),
-		}
-		return res
-	})
+// AssetsForMaintainer 代理物资数据
+func (b *warestoreBiz) AssetsForMaintainer(mtId uint64) definition.WarestoreAssetDetail {
+	return b.assetTotal(mtId, model.AssetLocationsTypeOperation)
 
 }
 
@@ -905,7 +1003,7 @@ func (b *warestoreBiz) assetsCommonFilter(assetSignInfo definition.AssetSignInfo
 	case definition.CommonAssetTypeEbike:
 		q.Where(asset.Type(model.AssetTypeEbike.Value()))
 	case definition.CommonAssetTypeBattery:
-		q.Where(asset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value()))
+		q.Where(asset.TypeIn(model.AssetTypeSmartBattery.Value()))
 	}
 
 	if req.WarehouseID != nil {
@@ -916,7 +1014,24 @@ func (b *warestoreBiz) assetsCommonFilter(assetSignInfo definition.AssetSignInfo
 	}
 
 	if req.StoreID != nil {
-		q.Where(asset.Status(req.Status.Value()))
+		q.Where(
+			asset.LocationsType(model.AssetLocationsTypeStore.Value()),
+			asset.LocationsID(*req.StoreID),
+		)
+	}
+
+	if req.StationID != nil {
+		q.Where(
+			asset.LocationsType(model.AssetLocationsTypeStation.Value()),
+			asset.LocationsID(*req.StationID),
+		)
+	}
+
+	if req.MaintainerID != nil {
+		q.Where(
+			asset.LocationsType(model.AssetLocationsTypeOperation.Value()),
+			asset.LocationsID(*req.MaintainerID),
+		)
 	}
 
 	if req.Status != nil {
@@ -945,13 +1060,13 @@ func (b *warestoreBiz) assetsCommonFilter(assetSignInfo definition.AssetSignInfo
 
 		// 查询库管人员配置的仓库数据
 		wIds := make([]uint64, 0)
-		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithWarehouses().
+		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithBelongWarehouses().
 			Where(
 				assetmanager.ID(assetSignInfo.AssetManager.ID),
-				assetmanager.HasWarehousesWith(warehouse.DeletedAtIsNil()),
+				assetmanager.HasBelongWarehousesWith(warehouse.DeletedAtIsNil()),
 			).First(context.Background())
 		if am != nil {
-			for _, wh := range am.Edges.Warehouses {
+			for _, wh := range am.Edges.BelongWarehouses {
 				wIds = append(wIds, wh.ID)
 			}
 		}
@@ -981,13 +1096,15 @@ func (b *warestoreBiz) assetsCommonFilter(assetSignInfo definition.AssetSignInfo
 	case assetSignInfo.Agent != nil:
 		// 查询代理人员配置的代理站点
 		ids := make([]uint64, 0)
-		ag, _ := ent.Database.Agent.QueryNotDeleted().WithStations().
+		ag, _ := ent.Database.Agent.QueryNotDeleted().
+			WithEnterprise(func(query *ent.EnterpriseQuery) {
+				query.WithStations()
+			}).
 			Where(
 				agent.ID(assetSignInfo.Agent.ID),
-				agent.HasStationsWith(enterprisestation.DeletedAtIsNil()),
 			).First(context.Background())
-		if ag != nil {
-			for _, v := range ag.Edges.Stations {
+		if ag != nil && ag.Edges.Enterprise != nil {
+			for _, v := range ag.Edges.Enterprise.Edges.Stations {
 				ids = append(ids, v.ID)
 			}
 		}
@@ -1036,4 +1153,63 @@ func (b *warestoreBiz) Modify(assetSignInfo definition.AssetSignInfo, req *model
 		}
 	}
 	return service.NewAsset().Modify(b.ctx, req, &md)
+}
+
+// GetAssetBySN 通过sn查询资产
+func (b *warestoreBiz) GetAssetBySN(req *definition.AssetSnReq) (res *model.AssetCheckByAssetSnRes, err error) {
+	item, _ := ent.Database.Asset.QueryNotDeleted().Where(asset.Sn(req.SN)).WithModel().WithBrand().
+		WithWarehouse().WithStore().WithValues().
+		First(b.ctx)
+	if item == nil {
+		return nil, fmt.Errorf("未找到对应的资产")
+	}
+	res = &model.AssetCheckByAssetSnRes{
+		AssetID:       item.ID,
+		AssetSN:       item.Sn,
+		AssetType:     model.AssetType(item.Type),
+		LocationsType: model.AssetLocationsType(item.LocationsType),
+		LocationsID:   item.LocationsID,
+	}
+	if item.Edges.Model != nil {
+		res.Model = item.Edges.Model.Model
+	}
+	if item.Edges.Brand != nil {
+		res.BrandName = item.Edges.Brand.Name
+	}
+
+	switch item.Type {
+	case model.AssetLocationsTypeWarehouse.Value():
+		if item.Edges.Warehouse != nil {
+			res.LocationsName = item.Edges.Warehouse.Name
+		}
+	case model.AssetLocationsTypeStore.Value():
+		if item.Edges.Store != nil {
+			res.LocationsName = item.Edges.Store.Name
+		}
+	default:
+		return nil, errors.New("该物资不属于仓库/门店位置")
+
+	}
+
+	// 查询属性值
+	attributeValue, _ := item.QueryValues().WithAttribute().All(context.Background())
+	assetAttributeMap := make(map[uint64]model.AssetAttribute)
+	for _, v := range attributeValue {
+		var attributeName, attributeKey string
+		if v.Edges.Attribute != nil {
+			attributeName = v.Edges.Attribute.Name
+			attributeKey = v.Edges.Attribute.Key
+		}
+		assetAttributeMap[v.AttributeID] = model.AssetAttribute{
+			AttributeID:      v.AttributeID,
+			AttributeValue:   v.Value,
+			AttributeName:    attributeName,
+			AttributeKey:     attributeKey,
+			AttributeValueID: v.ID,
+		}
+	}
+
+	res.Attribute = assetAttributeMap
+
+	return
 }

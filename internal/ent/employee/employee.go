@@ -43,6 +43,8 @@ const (
 	FieldPassword = "password"
 	// FieldLimit holds the string denoting the limit field in the database.
 	FieldLimit = "limit"
+	// FieldDutyStoreID holds the string denoting the duty_store_id field in the database.
+	FieldDutyStoreID = "duty_store_id"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeGroup holds the string denoting the group edge name in mutations.
@@ -61,6 +63,8 @@ const (
 	EdgeAssistances = "assistances"
 	// EdgeStores holds the string denoting the stores edge name in mutations.
 	EdgeStores = "stores"
+	// EdgeDutyStore holds the string denoting the duty_store edge name in mutations.
+	EdgeDutyStore = "duty_store"
 	// Table holds the table name of the employee in the database.
 	Table = "employee"
 	// CityTable is the table that holds the city relation/edge.
@@ -124,6 +128,13 @@ const (
 	// StoresInverseTable is the table name for the Store entity.
 	// It exists in this package in order to avoid circular dependency with the "store" package.
 	StoresInverseTable = "store"
+	// DutyStoreTable is the table that holds the duty_store relation/edge.
+	DutyStoreTable = "employee"
+	// DutyStoreInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	DutyStoreInverseTable = "store"
+	// DutyStoreColumn is the table column denoting the duty_store relation/edge.
+	DutyStoreColumn = "duty_store_id"
 )
 
 // Columns holds all SQL columns for employee fields.
@@ -143,6 +154,7 @@ var Columns = []string{
 	FieldEnable,
 	FieldPassword,
 	FieldLimit,
+	FieldDutyStoreID,
 }
 
 var (
@@ -246,6 +258,11 @@ func ByPassword(opts ...sql.OrderTermOption) OrderOption {
 // ByLimit orders the results by the limit field.
 func ByLimit(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLimit, opts...).ToFunc()
+}
+
+// ByDutyStoreID orders the results by the duty_store_id field.
+func ByDutyStoreID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDutyStoreID, opts...).ToFunc()
 }
 
 // ByCityField orders the results by city field.
@@ -352,6 +369,13 @@ func ByStores(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newStoresStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByDutyStoreField orders the results by duty_store field.
+func ByDutyStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newDutyStoreStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -413,5 +437,12 @@ func newStoresStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(StoresInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, true, StoresTable, StoresPrimaryKey...),
+	)
+}
+func newDutyStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(DutyStoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, DutyStoreTable, DutyStoreColumn),
 	)
 }

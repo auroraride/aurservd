@@ -23,6 +23,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -499,9 +500,25 @@ func (s *assetService) Modify(ctx context.Context, req *model.AssetModifyReq, mo
 	// 修改属性
 	if len(req.Attribute) > 0 {
 		for _, v := range req.Attribute {
-			if err = ent.Database.AssetAttributeValues.Update().Where(assetattributevalues.AssetID(req.ID), assetattributevalues.AttributeID(v.AttributeID)).SetValue(v.AttributeValue).Exec(ctx); err != nil {
-				return fmt.Errorf("资产属性修改失败: %w", err)
+			av, _ := ent.Database.AssetAttributeValues.Query().Where(assetattributevalues.AssetID(req.ID), assetattributevalues.AttributeID(v.AttributeID)).First(ctx)
+			if av != nil {
+				// 存在更新
+				err = ent.Database.AssetAttributeValues.Update().Where(assetattributevalues.AssetID(req.ID), assetattributevalues.AttributeID(v.AttributeID)).SetValue(v.AttributeValue).Exec(ctx)
+				if err != nil {
+					return fmt.Errorf("资产属性修改失败: %w", err)
+				}
+			} else {
+				// 不存在新增
+				err = ent.Database.AssetAttributeValues.Create().
+					SetValue(v.AttributeValue).
+					SetAttributeID(v.AttributeID).
+					SetAssetID(req.ID).
+					Exec(ctx)
+				if err != nil {
+					return fmt.Errorf("资产属性修改失败: %w", err)
+				}
 			}
+
 		}
 	}
 	return nil
@@ -888,17 +905,21 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 	if req.OwnerType != nil {
 		// 平台
 		if *req.OwnerType == 1 {
-			q.Where(asset.LocationsTypeEQ(model.AssetLocationsTypeWarehouse.Value()))
+			q.Where(asset.LocationsTypeNEQ(model.AssetLocationsTypeStation.Value()))
 		}
 		// 代理商
-		if *req.OwnerType == 2 && req.StationID != nil {
+		if *req.OwnerType == 2 {
 			q.Where(
 				asset.LocationsTypeEQ(model.AssetLocationsTypeStation.Value()),
-				asset.HasStationWith(enterprisestation.ID(*req.StationID)),
 			)
+			if req.EnterpriseID != nil {
+				q.Where(
+					asset.HasStationWith(enterprisestation.HasEnterpriseWith(enterprise.ID(*req.EnterpriseID))),
+				)
+			}
 		}
 	}
-	if req.LocationsType != nil && req.LocationsKeyword != nil {
+	if req.LocationsType != nil {
 		q.Where(asset.LocationsType(req.LocationsType.Value()))
 		switch *req.LocationsType {
 		case model.AssetLocationsTypeWarehouse, model.AssetLocationsTypeStore, model.AssetLocationsTypeStation, model.AssetLocationsTypeOperation:
@@ -908,17 +929,23 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 				)
 			}
 		case model.AssetLocationsTypeCabinet:
-			q.Where(
-				asset.HasCabinetWith(
-					cabinet.NameContains(*req.LocationsKeyword),
-				),
-			)
+			if req.LocationsKeyword != nil {
+				q.Where(
+					asset.HasCabinetWith(
+						cabinet.NameContains(*req.LocationsKeyword),
+					),
+				)
+			}
+
 		case model.AssetLocationsTypeRider:
-			q.Where(
-				asset.HasRiderWith(
-					rider.NameContains(*req.LocationsKeyword),
-				),
-			)
+			if req.LocationsKeyword != nil {
+				q.Where(
+					asset.HasRiderWith(
+						rider.NameContains(*req.LocationsKeyword),
+					),
+				)
+			}
+
 		}
 	}
 	if req.Status != nil {
@@ -926,6 +953,12 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 	}
 	if req.Enable != nil {
 		q.Where(asset.Enable(*req.Enable))
+	}
+	if req.MaterialID != nil {
+		q.Where(asset.MaterialID(*req.MaterialID))
+	}
+	if req.ModelID != nil {
+		q.Where(asset.ModelID(*req.ModelID))
 	}
 
 	// 属性查询
@@ -943,17 +976,16 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 			q.Where(asset.HasValuesWith(assetattributevalues.AttributeID(attributeID), assetattributevalues.ValueContains(attributeValue)))
 		}
 	}
-
 	if req.AssetManagerID != 0 {
 		// 查询库管人员配置的仓库数据
 		wIds := make([]uint64, 0)
-		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithWarehouses().
+		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithBelongWarehouses().
 			Where(
 				assetmanager.ID(req.AssetManagerID),
-				assetmanager.HasWarehousesWith(warehouse.DeletedAtIsNil()),
+				assetmanager.HasBelongWarehousesWith(warehouse.DeletedAtIsNil()),
 			).First(context.Background())
 		if am != nil {
-			for _, wh := range am.Edges.Warehouses {
+			for _, wh := range am.Edges.BelongWarehouses {
 				wIds = append(wIds, wh.ID)
 			}
 		}
@@ -962,7 +994,6 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 			asset.LocationsIDIn(wIds...),
 		)
 	}
-
 	if req.EmployeeID != 0 {
 		// 查询门店人员配置的门店数据
 		sIds := make([]uint64, 0)
@@ -981,7 +1012,6 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 			asset.LocationsIDIn(sIds...),
 		)
 	}
-
 	if req.Battery != nil {
 		q.Where(
 			asset.TypeIn(
@@ -1020,11 +1050,12 @@ func (s *assetService) ebikeFilter(q *ent.AssetQuery, req *model.AssetFilter) *e
 }
 
 // Count 查询有效的资产数量
-func (s *assetService) Count(ctx context.Context, req *model.AssetFilter) *model.AssetNumRes {
+func (s *assetService) Count(ctx context.Context, req *model.AssetFilter) (res *model.AssetNumRes) {
 	q := s.orm.QueryNotDeleted().Where(asset.StatusNEQ(model.AssetStatusScrap.Value()), asset.CheckAtIsNil())
 	s.filter(q, req)
 	count, _ := q.Count(ctx)
-	return &model.AssetNumRes{Num: count}
+	res = &model.AssetNumRes{Num: count}
+	return
 }
 
 // QuerySn 通过SN查询被未盘点资产

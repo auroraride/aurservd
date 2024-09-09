@@ -3630,15 +3630,15 @@ func (c *AssetManagerClient) QueryRole(am *AssetManager) *AssetRoleQuery {
 	return query
 }
 
-// QueryWarehouses queries the warehouses edge of a AssetManager.
-func (c *AssetManagerClient) QueryWarehouses(am *AssetManager) *WarehouseQuery {
+// QueryBelongWarehouses queries the belong_warehouses edge of a AssetManager.
+func (c *AssetManagerClient) QueryBelongWarehouses(am *AssetManager) *WarehouseQuery {
 	query := (&WarehouseClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := am.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetmanager.Table, assetmanager.FieldID, id),
 			sqlgraph.To(warehouse.Table, warehouse.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, assetmanager.WarehousesTable, assetmanager.WarehousesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, assetmanager.BelongWarehousesTable, assetmanager.BelongWarehousesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(am.driver.Dialect(), step)
 		return fromV, nil
@@ -3646,15 +3646,15 @@ func (c *AssetManagerClient) QueryWarehouses(am *AssetManager) *WarehouseQuery {
 	return query
 }
 
-// QueryWarehouse queries the warehouse edge of a AssetManager.
-func (c *AssetManagerClient) QueryWarehouse(am *AssetManager) *WarehouseQuery {
+// QueryDutyWarehouse queries the duty_warehouse edge of a AssetManager.
+func (c *AssetManagerClient) QueryDutyWarehouse(am *AssetManager) *WarehouseQuery {
 	query := (&WarehouseClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := am.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetmanager.Table, assetmanager.FieldID, id),
 			sqlgraph.To(warehouse.Table, warehouse.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, assetmanager.WarehouseTable, assetmanager.WarehouseColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, assetmanager.DutyWarehouseTable, assetmanager.DutyWarehouseColumn),
 		)
 		fromV = sqlgraph.Neighbors(am.driver.Dialect(), step)
 		return fromV, nil
@@ -9316,6 +9316,22 @@ func (c *EmployeeClient) QueryStores(e *Employee) *StoreQuery {
 			sqlgraph.From(employee.Table, employee.FieldID, id),
 			sqlgraph.To(store.Table, store.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, employee.StoresTable, employee.StoresPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDutyStore queries the duty_store edge of a Employee.
+func (c *EmployeeClient) QueryDutyStore(e *Employee) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, employee.DutyStoreTable, employee.DutyStoreColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -19143,6 +19159,22 @@ func (c *StoreClient) QueryEmployees(s *Store) *EmployeeQuery {
 	return query
 }
 
+// QueryDutyEmployees queries the duty_employees edge of a Store.
+func (c *StoreClient) QueryDutyEmployees(s *Store) *EmployeeQuery {
+	query := (&EmployeeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, store.DutyEmployeesTable, store.DutyEmployeesColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryStocks queries the stocks edge of a Store.
 func (c *StoreClient) QueryStocks(s *Store) *StockQuery {
 	query := (&StockClient{config: c.config}).Query()
@@ -21051,15 +21083,15 @@ func (c *WarehouseClient) QueryCity(w *Warehouse) *CityQuery {
 	return query
 }
 
-// QueryAssetManager queries the asset_manager edge of a Warehouse.
-func (c *WarehouseClient) QueryAssetManager(w *Warehouse) *AssetManagerQuery {
+// QueryBelongAssetManagers queries the belong_asset_managers edge of a Warehouse.
+func (c *WarehouseClient) QueryBelongAssetManagers(w *Warehouse) *AssetManagerQuery {
 	query := (&AssetManagerClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := w.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(warehouse.Table, warehouse.FieldID, id),
 			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, warehouse.AssetManagerTable, warehouse.AssetManagerColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, warehouse.BelongAssetManagersTable, warehouse.BelongAssetManagersPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
 		return fromV, nil
@@ -21067,15 +21099,15 @@ func (c *WarehouseClient) QueryAssetManager(w *Warehouse) *AssetManagerQuery {
 	return query
 }
 
-// QueryAssetManagers queries the asset_managers edge of a Warehouse.
-func (c *WarehouseClient) QueryAssetManagers(w *Warehouse) *AssetManagerQuery {
+// QueryDutyAssetManagers queries the duty_asset_managers edge of a Warehouse.
+func (c *WarehouseClient) QueryDutyAssetManagers(w *Warehouse) *AssetManagerQuery {
 	query := (&AssetManagerClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := w.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(warehouse.Table, warehouse.FieldID, id),
 			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, warehouse.AssetManagersTable, warehouse.AssetManagersPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, warehouse.DutyAssetManagersTable, warehouse.DutyAssetManagersColumn),
 		)
 		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
 		return fromV, nil

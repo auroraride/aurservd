@@ -65,6 +65,7 @@ func (AssetManager) Fields() []ent.Field {
 		field.Bool("mini_enable").Default(false).Comment("仓管小程序人员是否启用"),
 		field.Uint("mini_limit").Default(0).Comment("仓管小程序人员限制范围(m)"),
 		field.Time("last_signin_at").Nillable().Optional().Comment("最后登录时间"),
+		field.Uint64("warehouse_id").Optional().Nillable().Comment("上班仓库ID"),
 	}
 }
 
@@ -72,8 +73,8 @@ func (AssetManager) Fields() []ent.Field {
 func (AssetManager) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("role", AssetRole.Type).Unique().Ref("asset_managers").Field("role_id"),
-		edge.From("warehouses", Warehouse.Type).Ref("asset_managers"),
-		edge.To("warehouse", Warehouse.Type).Unique(),
+		edge.From("belong_warehouses", Warehouse.Type).Ref("belong_asset_managers"),
+		edge.From("duty_warehouse", Warehouse.Type).Ref("duty_asset_managers").Field("warehouse_id").Unique(),
 	}
 }
 

@@ -142,7 +142,7 @@ func (b *assetTransferBiz) TransferReceive(assetSignInfo definition.AssetSignInf
 }
 
 // Transfer 创建资产调拨
-func (b *assetTransferBiz) Transfer(assetSignInfo definition.AssetSignInfo, req *definition.AssetTransferCreateReq) (failed []string, err error) {
+func (b *assetTransferBiz) Transfer(assetSignInfo definition.AssetSignInfo, req *definition.AssetTransferCreateReq) (err error) {
 
 	var md model.Modifier
 
@@ -158,7 +158,12 @@ func (b *assetTransferBiz) Transfer(assetSignInfo definition.AssetSignInfo, req 
 		wType := model.AssetLocationsTypeWarehouse
 		newReq.FromLocationType = &wType
 		if req.FromLocationID == nil {
-			req.FromLocationID = silk.UInt64(assetSignInfo.AssetManager.ID)
+			// 当前上班ID
+			loc, _ := ent.Database.AssetManager.QueryNotDeleted().Where(assetmanager.ID(assetSignInfo.AssetManager.ID)).First(b.ctx)
+			if loc == nil {
+				return errors.New("当前未上班")
+			}
+			req.FromLocationID = loc.WarehouseID
 		} else {
 			newReq.FromLocationID = req.FromLocationID
 		}
@@ -168,12 +173,20 @@ func (b *assetTransferBiz) Transfer(assetSignInfo definition.AssetSignInfo, req 
 			Name:  assetSignInfo.AssetManager.Name,
 			Phone: assetSignInfo.AssetManager.Phone,
 		}
+
+		newReq.OperatorType = model.OperatorTypeAssetManager
+		newReq.OperatorID = assetSignInfo.AssetManager.ID
 	}
 	if assetSignInfo.Employee != nil {
 		sType := model.AssetLocationsTypeStore
 		newReq.FromLocationType = &sType
 		if req.FromLocationID == nil {
-			req.FromLocationID = silk.UInt64(assetSignInfo.Employee.ID)
+			// 当前上班ID
+			loc, _ := ent.Database.Employee.QueryNotDeleted().Where(employee.ID(assetSignInfo.Employee.ID)).First(b.ctx)
+			if loc == nil {
+				return errors.New("当前未上班")
+			}
+			req.FromLocationID = loc.DutyStoreID
 		} else {
 			newReq.FromLocationID = req.FromLocationID
 		}
@@ -182,13 +195,14 @@ func (b *assetTransferBiz) Transfer(assetSignInfo definition.AssetSignInfo, req 
 			Name:  assetSignInfo.Employee.Name,
 			Phone: assetSignInfo.Employee.Phone,
 		}
+		newReq.OperatorType = model.OperatorTypeEmployee
+		newReq.OperatorID = assetSignInfo.Employee.ID
 	}
-
 	if assetSignInfo.Agent != nil {
 		sType := model.AssetLocationsTypeStation
 		newReq.FromLocationType = &sType
 		if req.FromLocationID == nil {
-			req.FromLocationID = silk.UInt64(assetSignInfo.Agent.ID)
+			return errors.New("未选择出库位置")
 		} else {
 			newReq.FromLocationID = req.FromLocationID
 		}
@@ -197,9 +211,16 @@ func (b *assetTransferBiz) Transfer(assetSignInfo definition.AssetSignInfo, req 
 			Name:  assetSignInfo.Agent.Name,
 			Phone: assetSignInfo.Agent.Phone,
 		}
+		newReq.OperatorType = model.OperatorTypeAgent
+		newReq.OperatorID = assetSignInfo.Agent.ID
 	}
-
 	if assetSignInfo.Maintainer != nil {
+		for _, v := range req.Details {
+			if v.AssetType != model.AssetTypeSmartBattery && v.AssetType != model.AssetTypeNonSmartBattery {
+				return errors.New("运维端当前只支持电池调拨")
+			}
+		}
+
 		sType := model.AssetLocationsTypeOperation
 		newReq.FromLocationType = &sType
 		if req.FromLocationID == nil {
@@ -212,8 +233,37 @@ func (b *assetTransferBiz) Transfer(assetSignInfo definition.AssetSignInfo, req 
 			Name:  assetSignInfo.Maintainer.Name,
 			Phone: assetSignInfo.Maintainer.Phone,
 		}
+		newReq.OperatorType = model.OperatorTypeMaintainer
+		newReq.OperatorID = assetSignInfo.Maintainer.ID
 	}
-	_, failed, err = service.NewAssetTransfer().Transfer(b.ctx, &newReq, &md)
+
+	// 扫码出库限制为同类型
+	if err = b.transferLimit(req); err != nil {
+		return err
+	}
+
+	_, failed, err := service.NewAssetTransfer().Transfer(b.ctx, &newReq, &md)
+	if err != nil {
+		return err
+	}
+	if len(failed) > 0 {
+		return errors.New(failed[0])
+	}
+
+	return
+}
+
+// Transfer 创建资产调拨
+func (b *assetTransferBiz) transferLimit(req *definition.AssetTransferCreateReq) (err error) {
+	var assetType model.AssetType
+	for k, v := range req.Details {
+		if k == 0 {
+			assetType = v.AssetType
+		}
+		if v.AssetType != assetType {
+			return errors.New("单次调拨只支持同种物资类型")
+		}
+	}
 	return
 }
 
@@ -223,8 +273,8 @@ func (b *assetTransferBiz) Flow(req *model.AssetTransferFlowReq) []*model.AssetT
 }
 
 // GetTransferBySn 扫码入库根据Sn获取调拨信息
-func (b *assetTransferBiz) GetTransferBySn(req *model.GetTransferBySNReq) (res *model.AssetTransferListRes, err error) {
-	return service.NewAssetTransfer().GetTransferBySN(b.ctx, req)
+func (b *assetTransferBiz) GetTransferBySn(assetSignInfo definition.AssetSignInfo, req *model.GetTransferBySNReq) (res *model.AssetTransferListRes, err error) {
+	return service.NewAssetTransfer().GetTransferBySN(assetSignInfo, b.ctx, req)
 }
 
 // TransferDetailsList 出入库明细列表
@@ -261,7 +311,7 @@ func (b *assetTransferBiz) checkPermission(assetSignInfo definition.AssetSignInf
 		// 检验是否有修改权限
 		if v, _ := b.orm.QueryNotDeleted().Where(
 			assettransfer.ID(atID),
-			assettransfer.HasFromLocationWarehouseWith(warehouse.HasAssetManagersWith(assetmanager.ID(assetSignInfo.AssetManager.ID))),
+			assettransfer.HasFromLocationWarehouseWith(warehouse.HasBelongAssetManagersWith(assetmanager.ID(assetSignInfo.AssetManager.ID))),
 		).First(b.ctx); v == nil {
 			return md, errors.New("当前调拨单无权限")
 		}

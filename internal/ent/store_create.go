@@ -383,6 +383,21 @@ func (sc *StoreCreate) AddEmployees(e ...*Employee) *StoreCreate {
 	return sc.AddEmployeeIDs(ids...)
 }
 
+// AddDutyEmployeeIDs adds the "duty_employees" edge to the Employee entity by IDs.
+func (sc *StoreCreate) AddDutyEmployeeIDs(ids ...uint64) *StoreCreate {
+	sc.mutation.AddDutyEmployeeIDs(ids...)
+	return sc
+}
+
+// AddDutyEmployees adds the "duty_employees" edges to the Employee entity.
+func (sc *StoreCreate) AddDutyEmployees(e ...*Employee) *StoreCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return sc.AddDutyEmployeeIDs(ids...)
+}
+
 // AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
 func (sc *StoreCreate) AddStockIDs(ids ...uint64) *StoreCreate {
 	sc.mutation.AddStockIDs(ids...)
@@ -786,6 +801,22 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 			Inverse: false,
 			Table:   store.EmployeesTable,
 			Columns: store.EmployeesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.DutyEmployeesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.DutyEmployeesTable,
+			Columns: []string{store.DutyEmployeesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
