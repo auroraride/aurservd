@@ -14,7 +14,7 @@ import (
 
 // Sgin 签约
 func Sgin(ctx context.Context, req *pb.ContractSignRequest, addr string) (string, error) {
-	gc, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	gc, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		zap.L().Error("rpc连接失败", zap.Error(err))
 		return "", errors.New("rpc连接失败")
@@ -36,7 +36,7 @@ func Sgin(ctx context.Context, req *pb.ContractSignRequest, addr string) (string
 
 // Create 创建合同
 func Create(ctx context.Context, values map[string]*pb.ContractFromField, req *definition.ContractCreateRPCReq) (request *pb.ContractCreateResponse, err error) {
-	gc, err := grpc.Dial(req.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	gc, err := grpc.NewClient(req.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		zap.L().Error("rpc连接失败", zap.Error(err))
 		return nil, errors.New("rpc连接失败")
