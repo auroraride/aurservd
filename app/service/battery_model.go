@@ -112,7 +112,7 @@ func (s *batteryModelService) List(req *model.BatteryModelListReq) (res *model.P
 func (s *batteryModelService) detail(item *ent.BatteryModel) (res *model.BatteryModelDetail) {
 	res = &model.BatteryModelDetail{
 		ID:       item.ID,
-		Model:    fmt.Sprintf("%dV%dAH", item.Voltage, item.Capacity),
+		Model:    item.Model,
 		Voltage:  item.Voltage,
 		Capacity: item.Capacity,
 	}
