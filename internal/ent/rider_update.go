@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/asset"
-	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
@@ -555,13 +554,13 @@ func (ru *RiderUpdate) AddFollowups(r ...*RiderFollowUp) *RiderUpdate {
 	return ru.AddFollowupIDs(ids...)
 }
 
-// SetBatteryID sets the "battery" edge to the Battery entity by ID.
+// SetBatteryID sets the "battery" edge to the Asset entity by ID.
 func (ru *RiderUpdate) SetBatteryID(id uint64) *RiderUpdate {
 	ru.mutation.SetBatteryID(id)
 	return ru
 }
 
-// SetNillableBatteryID sets the "battery" edge to the Battery entity by ID if the given value is not nil.
+// SetNillableBatteryID sets the "battery" edge to the Asset entity by ID if the given value is not nil.
 func (ru *RiderUpdate) SetNillableBatteryID(id *uint64) *RiderUpdate {
 	if id != nil {
 		ru = ru.SetBatteryID(*id)
@@ -569,9 +568,9 @@ func (ru *RiderUpdate) SetNillableBatteryID(id *uint64) *RiderUpdate {
 	return ru
 }
 
-// SetBattery sets the "battery" edge to the Battery entity.
-func (ru *RiderUpdate) SetBattery(b *Battery) *RiderUpdate {
-	return ru.SetBatteryID(b.ID)
+// SetBattery sets the "battery" edge to the Asset entity.
+func (ru *RiderUpdate) SetBattery(a *Asset) *RiderUpdate {
+	return ru.SetBatteryID(a.ID)
 }
 
 // AddBatteryFlowIDs adds the "battery_flows" edge to the BatteryFlow entity by IDs.
@@ -780,7 +779,7 @@ func (ru *RiderUpdate) RemoveFollowups(r ...*RiderFollowUp) *RiderUpdate {
 	return ru.RemoveFollowupIDs(ids...)
 }
 
-// ClearBattery clears the "battery" edge to the Battery entity.
+// ClearBattery clears the "battery" edge to the Asset entity.
 func (ru *RiderUpdate) ClearBattery() *RiderUpdate {
 	ru.mutation.ClearBattery()
 	return ru
@@ -1448,26 +1447,26 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if ru.mutation.BatteryCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: false,
 			Table:   rider.BatteryTable,
 			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ru.mutation.BatteryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: false,
 			Table:   rider.BatteryTable,
 			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2053,13 +2052,13 @@ func (ruo *RiderUpdateOne) AddFollowups(r ...*RiderFollowUp) *RiderUpdateOne {
 	return ruo.AddFollowupIDs(ids...)
 }
 
-// SetBatteryID sets the "battery" edge to the Battery entity by ID.
+// SetBatteryID sets the "battery" edge to the Asset entity by ID.
 func (ruo *RiderUpdateOne) SetBatteryID(id uint64) *RiderUpdateOne {
 	ruo.mutation.SetBatteryID(id)
 	return ruo
 }
 
-// SetNillableBatteryID sets the "battery" edge to the Battery entity by ID if the given value is not nil.
+// SetNillableBatteryID sets the "battery" edge to the Asset entity by ID if the given value is not nil.
 func (ruo *RiderUpdateOne) SetNillableBatteryID(id *uint64) *RiderUpdateOne {
 	if id != nil {
 		ruo = ruo.SetBatteryID(*id)
@@ -2067,9 +2066,9 @@ func (ruo *RiderUpdateOne) SetNillableBatteryID(id *uint64) *RiderUpdateOne {
 	return ruo
 }
 
-// SetBattery sets the "battery" edge to the Battery entity.
-func (ruo *RiderUpdateOne) SetBattery(b *Battery) *RiderUpdateOne {
-	return ruo.SetBatteryID(b.ID)
+// SetBattery sets the "battery" edge to the Asset entity.
+func (ruo *RiderUpdateOne) SetBattery(a *Asset) *RiderUpdateOne {
+	return ruo.SetBatteryID(a.ID)
 }
 
 // AddBatteryFlowIDs adds the "battery_flows" edge to the BatteryFlow entity by IDs.
@@ -2278,7 +2277,7 @@ func (ruo *RiderUpdateOne) RemoveFollowups(r ...*RiderFollowUp) *RiderUpdateOne 
 	return ruo.RemoveFollowupIDs(ids...)
 }
 
-// ClearBattery clears the "battery" edge to the Battery entity.
+// ClearBattery clears the "battery" edge to the Asset entity.
 func (ruo *RiderUpdateOne) ClearBattery() *RiderUpdateOne {
 	ruo.mutation.ClearBattery()
 	return ruo
@@ -2976,26 +2975,26 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 	}
 	if ruo.mutation.BatteryCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: false,
 			Table:   rider.BatteryTable,
 			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := ruo.mutation.BatteryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: false,
 			Table:   rider.BatteryTable,
 			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -14,7 +14,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/asset"
-	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
@@ -39,11 +38,11 @@ type AllocateQuery struct {
 	withCabinet   *CabinetQuery
 	withStore     *StoreQuery
 	withBrand     *EbikeBrandQuery
-	withBattery   *BatteryQuery
 	withStation   *EnterpriseStationQuery
 	withAgent     *AgentQuery
 	withContract  *ContractQuery
 	withEbike     *AssetQuery
+	withBattery   *AssetQuery
 	withFKs       bool
 	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -214,28 +213,6 @@ func (aq *AllocateQuery) QueryBrand() *EbikeBrandQuery {
 	return query
 }
 
-// QueryBattery chains the current query on the "battery" edge.
-func (aq *AllocateQuery) QueryBattery() *BatteryQuery {
-	query := (&BatteryClient{config: aq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(allocate.Table, allocate.FieldID, selector),
-			sqlgraph.To(battery.Table, battery.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, allocate.BatteryTable, allocate.BatteryColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // QueryStation chains the current query on the "station" edge.
 func (aq *AllocateQuery) QueryStation() *EnterpriseStationQuery {
 	query := (&EnterpriseStationClient{config: aq.config}).Query()
@@ -317,6 +294,28 @@ func (aq *AllocateQuery) QueryEbike() *AssetQuery {
 			sqlgraph.From(allocate.Table, allocate.FieldID, selector),
 			sqlgraph.To(asset.Table, asset.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, allocate.EbikeTable, allocate.EbikeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBattery chains the current query on the "battery" edge.
+func (aq *AllocateQuery) QueryBattery() *AssetQuery {
+	query := (&AssetClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(allocate.Table, allocate.FieldID, selector),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, allocate.BatteryTable, allocate.BatteryColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -522,11 +521,11 @@ func (aq *AllocateQuery) Clone() *AllocateQuery {
 		withCabinet:   aq.withCabinet.Clone(),
 		withStore:     aq.withStore.Clone(),
 		withBrand:     aq.withBrand.Clone(),
-		withBattery:   aq.withBattery.Clone(),
 		withStation:   aq.withStation.Clone(),
 		withAgent:     aq.withAgent.Clone(),
 		withContract:  aq.withContract.Clone(),
 		withEbike:     aq.withEbike.Clone(),
+		withBattery:   aq.withBattery.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -599,17 +598,6 @@ func (aq *AllocateQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *AllocateQuer
 	return aq
 }
 
-// WithBattery tells the query-builder to eager-load the nodes that are connected to
-// the "battery" edge. The optional arguments are used to configure the query builder of the edge.
-func (aq *AllocateQuery) WithBattery(opts ...func(*BatteryQuery)) *AllocateQuery {
-	query := (&BatteryClient{config: aq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	aq.withBattery = query
-	return aq
-}
-
 // WithStation tells the query-builder to eager-load the nodes that are connected to
 // the "station" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AllocateQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *AllocateQuery {
@@ -651,6 +639,17 @@ func (aq *AllocateQuery) WithEbike(opts ...func(*AssetQuery)) *AllocateQuery {
 		opt(query)
 	}
 	aq.withEbike = query
+	return aq
+}
+
+// WithBattery tells the query-builder to eager-load the nodes that are connected to
+// the "battery" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AllocateQuery) WithBattery(opts ...func(*AssetQuery)) *AllocateQuery {
+	query := (&AssetClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withBattery = query
 	return aq
 }
 
@@ -740,11 +739,11 @@ func (aq *AllocateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*All
 			aq.withCabinet != nil,
 			aq.withStore != nil,
 			aq.withBrand != nil,
-			aq.withBattery != nil,
 			aq.withStation != nil,
 			aq.withAgent != nil,
 			aq.withContract != nil,
 			aq.withEbike != nil,
+			aq.withBattery != nil,
 		}
 	)
 	if withFKs {
@@ -807,12 +806,6 @@ func (aq *AllocateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*All
 			return nil, err
 		}
 	}
-	if query := aq.withBattery; query != nil {
-		if err := aq.loadBattery(ctx, query, nodes, nil,
-			func(n *Allocate, e *Battery) { n.Edges.Battery = e }); err != nil {
-			return nil, err
-		}
-	}
 	if query := aq.withStation; query != nil {
 		if err := aq.loadStation(ctx, query, nodes, nil,
 			func(n *Allocate, e *EnterpriseStation) { n.Edges.Station = e }); err != nil {
@@ -834,6 +827,12 @@ func (aq *AllocateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*All
 	if query := aq.withEbike; query != nil {
 		if err := aq.loadEbike(ctx, query, nodes, nil,
 			func(n *Allocate, e *Asset) { n.Edges.Ebike = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withBattery; query != nil {
+		if err := aq.loadBattery(ctx, query, nodes, nil,
+			func(n *Allocate, e *Asset) { n.Edges.Battery = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1026,38 +1025,6 @@ func (aq *AllocateQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery, 
 	}
 	return nil
 }
-func (aq *AllocateQuery) loadBattery(ctx context.Context, query *BatteryQuery, nodes []*Allocate, init func(*Allocate), assign func(*Allocate, *Battery)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Allocate)
-	for i := range nodes {
-		if nodes[i].BatteryID == nil {
-			continue
-		}
-		fk := *nodes[i].BatteryID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(battery.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "battery_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
 func (aq *AllocateQuery) loadStation(ctx context.Context, query *EnterpriseStationQuery, nodes []*Allocate, init func(*Allocate), assign func(*Allocate, *EnterpriseStation)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Allocate)
@@ -1184,6 +1151,38 @@ func (aq *AllocateQuery) loadEbike(ctx context.Context, query *AssetQuery, nodes
 	}
 	return nil
 }
+func (aq *AllocateQuery) loadBattery(ctx context.Context, query *AssetQuery, nodes []*Allocate, init func(*Allocate), assign func(*Allocate, *Asset)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Allocate)
+	for i := range nodes {
+		if nodes[i].BatteryID == nil {
+			continue
+		}
+		fk := *nodes[i].BatteryID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(asset.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "battery_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (aq *AllocateQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
@@ -1231,9 +1230,6 @@ func (aq *AllocateQuery) querySpec() *sqlgraph.QuerySpec {
 		if aq.withBrand != nil {
 			_spec.Node.AddColumnOnce(allocate.FieldBrandID)
 		}
-		if aq.withBattery != nil {
-			_spec.Node.AddColumnOnce(allocate.FieldBatteryID)
-		}
 		if aq.withStation != nil {
 			_spec.Node.AddColumnOnce(allocate.FieldStationID)
 		}
@@ -1242,6 +1238,9 @@ func (aq *AllocateQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if aq.withEbike != nil {
 			_spec.Node.AddColumnOnce(allocate.FieldEbikeID)
+		}
+		if aq.withBattery != nil {
+			_spec.Node.AddColumnOnce(allocate.FieldBatteryID)
 		}
 	}
 	if ps := aq.predicates; len(ps) > 0 {
@@ -1317,11 +1316,11 @@ var (
 	AllocateQueryWithCabinet   AllocateQueryWith = "Cabinet"
 	AllocateQueryWithStore     AllocateQueryWith = "Store"
 	AllocateQueryWithBrand     AllocateQueryWith = "Brand"
-	AllocateQueryWithBattery   AllocateQueryWith = "Battery"
 	AllocateQueryWithStation   AllocateQueryWith = "Station"
 	AllocateQueryWithAgent     AllocateQueryWith = "Agent"
 	AllocateQueryWithContract  AllocateQueryWith = "Contract"
 	AllocateQueryWithEbike     AllocateQueryWith = "Ebike"
+	AllocateQueryWithBattery   AllocateQueryWith = "Battery"
 )
 
 func (aq *AllocateQuery) With(withEdges ...AllocateQueryWith) *AllocateQuery {
@@ -1339,8 +1338,6 @@ func (aq *AllocateQuery) With(withEdges ...AllocateQueryWith) *AllocateQuery {
 			aq.WithStore()
 		case AllocateQueryWithBrand:
 			aq.WithBrand()
-		case AllocateQueryWithBattery:
-			aq.WithBattery()
 		case AllocateQueryWithStation:
 			aq.WithStation()
 		case AllocateQueryWithAgent:
@@ -1349,6 +1346,8 @@ func (aq *AllocateQuery) With(withEdges ...AllocateQueryWith) *AllocateQuery {
 			aq.WithContract()
 		case AllocateQueryWithEbike:
 			aq.WithEbike()
+		case AllocateQueryWithBattery:
+			aq.WithBattery()
 		}
 	}
 	return aq

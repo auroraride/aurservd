@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/person"
@@ -71,8 +71,9 @@ type Rider struct {
 	JoinEnterpriseAt *time.Time `json:"join_enterprise_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RiderQuery when eager-loading is set.
-	Edges        RiderEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges         RiderEdges `json:"edges"`
+	rider_battery *uint64
+	selectValues  sql.SelectValues
 }
 
 // RiderEdges holds the relations/edges for other nodes in the graph.
@@ -100,7 +101,7 @@ type RiderEdges struct {
 	// Followups holds the value of the followups edge.
 	Followups []*RiderFollowUp `json:"followups,omitempty"`
 	// Battery holds the value of the battery edge.
-	Battery *Battery `json:"battery,omitempty"`
+	Battery *Asset `json:"battery,omitempty"`
 	// BatteryFlows holds the value of the battery_flows edge.
 	BatteryFlows []*BatteryFlow `json:"battery_flows,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -215,11 +216,11 @@ func (e RiderEdges) FollowupsOrErr() ([]*RiderFollowUp, error) {
 
 // BatteryOrErr returns the Battery value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e RiderEdges) BatteryOrErr() (*Battery, error) {
+func (e RiderEdges) BatteryOrErr() (*Asset, error) {
 	if e.Battery != nil {
 		return e.Battery, nil
 	} else if e.loadedTypes[11] {
-		return nil, &NotFoundError{label: battery.Label}
+		return nil, &NotFoundError{label: asset.Label}
 	}
 	return nil, &NotLoadedError{edge: "battery"}
 }
@@ -248,6 +249,8 @@ func (*Rider) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt, rider.FieldJoinEnterpriseAt:
 			values[i] = new(sql.NullTime)
+		case rider.ForeignKeys[0]: // rider_battery
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -423,6 +426,13 @@ func (r *Rider) assignValues(columns []string, values []any) error {
 				r.JoinEnterpriseAt = new(time.Time)
 				*r.JoinEnterpriseAt = value.Time
 			}
+		case rider.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field rider_battery", value)
+			} else if value.Valid {
+				r.rider_battery = new(uint64)
+				*r.rider_battery = uint64(value.Int64)
+			}
 		default:
 			r.selectValues.Set(columns[i], values[i])
 		}
@@ -492,7 +502,7 @@ func (r *Rider) QueryFollowups() *RiderFollowUpQuery {
 }
 
 // QueryBattery queries the "battery" edge of the Rider entity.
-func (r *Rider) QueryBattery() *BatteryQuery {
+func (r *Rider) QueryBattery() *AssetQuery {
 	return NewRiderClient(r.config).QueryBattery(r)
 }
 

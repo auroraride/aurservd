@@ -90,7 +90,7 @@ func (Enterprise) Edges() []ent.Edge {
 		edge.To("statements", EnterpriseStatement.Type),
 		edge.To("stations", EnterpriseStation.Type),
 		edge.To("bills", EnterpriseBill.Type),
-		edge.To("batteries", Battery.Type),
+		// edge.To("batteries", Battery.Type),
 		edge.To("agents", Agent.Type),
 		edge.To("cabinets", Cabinet.Type),
 		edge.To("stocks", Stock.Type),

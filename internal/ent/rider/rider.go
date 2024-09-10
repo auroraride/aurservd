@@ -167,12 +167,12 @@ const (
 	// FollowupsColumn is the table column denoting the followups relation/edge.
 	FollowupsColumn = "rider_id"
 	// BatteryTable is the table that holds the battery relation/edge.
-	BatteryTable = "battery"
-	// BatteryInverseTable is the table name for the Battery entity.
-	// It exists in this package in order to avoid circular dependency with the "battery" package.
-	BatteryInverseTable = "battery"
+	BatteryTable = "rider"
+	// BatteryInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	BatteryInverseTable = "asset"
 	// BatteryColumn is the table column denoting the battery relation/edge.
-	BatteryColumn = "rider_id"
+	BatteryColumn = "rider_battery"
 	// BatteryFlowsTable is the table that holds the battery_flows relation/edge.
 	BatteryFlowsTable = "battery_flow"
 	// BatteryFlowsInverseTable is the table name for the BatteryFlow entity.
@@ -210,10 +210,21 @@ var Columns = []string{
 	FieldJoinEnterpriseAt,
 }
 
+// ForeignKeys holds the SQL foreign-keys that are owned by the "rider"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"rider_battery",
+}
+
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -579,7 +590,7 @@ func newBatteryStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BatteryInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, false, BatteryTable, BatteryColumn),
+		sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
 	)
 }
 func newBatteryFlowsStep() *sqlgraph.Step {

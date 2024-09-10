@@ -153,10 +153,10 @@ var (
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "battery_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
 		{Name: "agent_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true, Comment: "电车ID"},
+		{Name: "battery_id", Type: field.TypeUint64, Nullable: true, Comment: "电池ID"},
 		{Name: "ebike_allocates", Type: field.TypeUint64, Nullable: true},
 	}
 	// AllocateTable holds the schema information for the "allocate" table.
@@ -202,25 +202,25 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "allocate_battery_battery",
-				Columns:    []*schema.Column{AllocateColumns[16]},
-				RefColumns: []*schema.Column{BatteryColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "allocate_enterprise_station_station",
-				Columns:    []*schema.Column{AllocateColumns[17]},
+				Columns:    []*schema.Column{AllocateColumns[16]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "allocate_agent_agent",
-				Columns:    []*schema.Column{AllocateColumns[18]},
+				Columns:    []*schema.Column{AllocateColumns[17]},
 				RefColumns: []*schema.Column{AgentColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "allocate_asset_allocates",
+				Symbol:     "allocate_asset_ebike_allocates",
+				Columns:    []*schema.Column{AllocateColumns[18]},
+				RefColumns: []*schema.Column{AssetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "allocate_asset_battery_allocates",
 				Columns:    []*schema.Column{AllocateColumns[19]},
 				RefColumns: []*schema.Column{AssetColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -264,19 +264,14 @@ var (
 				Columns: []*schema.Column{AllocateColumns[15]},
 			},
 			{
-				Name:    "allocate_battery_id",
+				Name:    "allocate_station_id",
 				Unique:  false,
 				Columns: []*schema.Column{AllocateColumns[16]},
 			},
 			{
-				Name:    "allocate_station_id",
-				Unique:  false,
-				Columns: []*schema.Column{AllocateColumns[17]},
-			},
-			{
 				Name:    "allocate_agent_id",
 				Unique:  false,
-				Columns: []*schema.Column{AllocateColumns[18]},
+				Columns: []*schema.Column{AllocateColumns[17]},
 			},
 			{
 				Name:    "allocate_time",
@@ -1442,17 +1437,17 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true, Comment: "订阅ID"},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "所属团签"},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "所属站点Id"},
 		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "电池编号"},
 		{Name: "brand", Type: field.TypeOther, Comment: "品牌", SchemaType: map[string]string{"postgres": "character varying"}},
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: true},
 		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
 		{Name: "ordinal", Type: field.TypeInt, Nullable: true, Comment: "所在智能柜仓位序号"},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
-		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
-		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "所属团签"},
-		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "所属站点Id"},
-		{Name: "rider_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "骑手ID"},
 	}
 	// BatteryTable holds the schema information for the "battery" table.
 	BatteryTable = &schema.Table{
@@ -1462,32 +1457,8 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "battery_city_city",
-				Columns:    []*schema.Column{BatteryColumns[13]},
-				RefColumns: []*schema.Column{CityColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "battery_cabinet_batteries",
-				Columns:    []*schema.Column{BatteryColumns[14]},
-				RefColumns: []*schema.Column{CabinetColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "battery_enterprise_batteries",
-				Columns:    []*schema.Column{BatteryColumns[15]},
-				RefColumns: []*schema.Column{EnterpriseColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "battery_enterprise_station_batteries",
-				Columns:    []*schema.Column{BatteryColumns[16]},
-				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "battery_rider_battery",
 				Columns:    []*schema.Column{BatteryColumns[17]},
-				RefColumns: []*schema.Column{RiderColumns[0]},
+				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -1505,32 +1476,32 @@ var (
 			{
 				Name:    "battery_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[13]},
+				Columns: []*schema.Column{BatteryColumns[17]},
 			},
 			{
 				Name:    "battery_cabinet_id_ordinal",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[14], BatteryColumns[12]},
+				Columns: []*schema.Column{BatteryColumns[8], BatteryColumns[16]},
 			},
 			{
 				Name:    "battery_enable",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[10]},
+				Columns: []*schema.Column{BatteryColumns[14]},
 			},
 			{
 				Name:    "battery_brand",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[9]},
+				Columns: []*schema.Column{BatteryColumns[13]},
 			},
 			{
 				Name:    "index_battery_model",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[11]},
+				Columns: []*schema.Column{BatteryColumns[15]},
 			},
 			{
 				Name:    "battery_sn",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[8]},
+				Columns: []*schema.Column{BatteryColumns[12]},
 				Annotation: &entsql.IndexAnnotation{
 					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
@@ -1790,9 +1761,9 @@ var (
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "企业ID"},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
-		{Name: "battery_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "agent_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rto_ebike_id", Type: field.TypeUint64, Nullable: true, Comment: "以租代购车辆ID，生成后禁止修改"},
+		{Name: "battery_id", Type: field.TypeUint64, Nullable: true, Comment: "电池ID"},
 	}
 	// BusinessTable holds the schema information for the "business" table.
 	BusinessTable = &schema.Table{
@@ -1855,19 +1826,19 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "business_battery_battery",
-				Columns:    []*schema.Column{BusinessColumns[19]},
-				RefColumns: []*schema.Column{BatteryColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "business_agent_agent",
-				Columns:    []*schema.Column{BusinessColumns[20]},
+				Columns:    []*schema.Column{BusinessColumns[19]},
 				RefColumns: []*schema.Column{AgentColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "business_asset_rto_ebike",
+				Columns:    []*schema.Column{BusinessColumns[20]},
+				RefColumns: []*schema.Column{AssetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "business_asset_battery",
 				Columns:    []*schema.Column{BusinessColumns[21]},
 				RefColumns: []*schema.Column{AssetColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -1930,14 +1901,9 @@ var (
 				Columns: []*schema.Column{BusinessColumns[18]},
 			},
 			{
-				Name:    "business_battery_id",
-				Unique:  false,
-				Columns: []*schema.Column{BusinessColumns[19]},
-			},
-			{
 				Name:    "business_agent_id",
 				Unique:  false,
-				Columns: []*schema.Column{BusinessColumns[20]},
+				Columns: []*schema.Column{BusinessColumns[19]},
 			},
 			{
 				Name:    "business_type",
@@ -1952,7 +1918,7 @@ var (
 			{
 				Name:    "business_rto_ebike_id",
 				Unique:  false,
-				Columns: []*schema.Column{BusinessColumns[21]},
+				Columns: []*schema.Column{BusinessColumns[20]},
 			},
 		},
 	}
@@ -5850,6 +5816,7 @@ var (
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "所属企业"},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true, Comment: "身份"},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
+		{Name: "rider_battery", Type: field.TypeUint64, Nullable: true},
 	}
 	// RiderTable holds the schema information for the "rider" table.
 	RiderTable = &schema.Table{
@@ -5873,6 +5840,12 @@ var (
 				Symbol:     "rider_enterprise_station_station",
 				Columns:    []*schema.Column{RiderColumns[23]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "rider_asset_battery",
+				Columns:    []*schema.Column{RiderColumns[24]},
+				RefColumns: []*schema.Column{AssetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -7543,9 +7516,9 @@ func init() {
 	AllocateTable.ForeignKeys[3].RefTable = CabinetTable
 	AllocateTable.ForeignKeys[4].RefTable = StoreTable
 	AllocateTable.ForeignKeys[5].RefTable = EbikeBrandTable
-	AllocateTable.ForeignKeys[6].RefTable = BatteryTable
-	AllocateTable.ForeignKeys[7].RefTable = EnterpriseStationTable
-	AllocateTable.ForeignKeys[8].RefTable = AgentTable
+	AllocateTable.ForeignKeys[6].RefTable = EnterpriseStationTable
+	AllocateTable.ForeignKeys[7].RefTable = AgentTable
+	AllocateTable.ForeignKeys[8].RefTable = AssetTable
 	AllocateTable.ForeignKeys[9].RefTable = AssetTable
 	AllocateTable.ForeignKeys[10].RefTable = EbikeTable
 	AllocateTable.Annotation = &entsql.Annotation{
@@ -7679,10 +7652,6 @@ func init() {
 		Table: "attendance",
 	}
 	BatteryTable.ForeignKeys[0].RefTable = CityTable
-	BatteryTable.ForeignKeys[1].RefTable = CabinetTable
-	BatteryTable.ForeignKeys[2].RefTable = EnterpriseTable
-	BatteryTable.ForeignKeys[3].RefTable = EnterpriseStationTable
-	BatteryTable.ForeignKeys[4].RefTable = RiderTable
 	BatteryTable.Annotation = &entsql.Annotation{
 		Table: "battery",
 	}
@@ -7713,8 +7682,8 @@ func init() {
 	BusinessTable.ForeignKeys[6].RefTable = EnterpriseTable
 	BusinessTable.ForeignKeys[7].RefTable = EnterpriseStationTable
 	BusinessTable.ForeignKeys[8].RefTable = CabinetTable
-	BusinessTable.ForeignKeys[9].RefTable = BatteryTable
-	BusinessTable.ForeignKeys[10].RefTable = AgentTable
+	BusinessTable.ForeignKeys[9].RefTable = AgentTable
+	BusinessTable.ForeignKeys[10].RefTable = AssetTable
 	BusinessTable.ForeignKeys[11].RefTable = AssetTable
 	BusinessTable.Annotation = &entsql.Annotation{
 		Table: "business",
@@ -8026,6 +7995,7 @@ func init() {
 	RiderTable.ForeignKeys[0].RefTable = EnterpriseTable
 	RiderTable.ForeignKeys[1].RefTable = PersonTable
 	RiderTable.ForeignKeys[2].RefTable = EnterpriseStationTable
+	RiderTable.ForeignKeys[3].RefTable = AssetTable
 	RiderTable.Annotation = &entsql.Annotation{
 		Table: "rider",
 	}

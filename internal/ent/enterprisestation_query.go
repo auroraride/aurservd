@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
-	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -36,7 +35,6 @@ type EnterpriseStationQuery struct {
 	withSwapPutinBatteries  *EnterpriseBatterySwapQuery
 	withSwapPutoutBatteries *EnterpriseBatterySwapQuery
 	withCabinets            *CabinetQuery
-	withBatteries           *BatteryQuery
 	withAsset               *AssetQuery
 	withStocks              *StockQuery
 	modifiers               []func(*sql.Selector)
@@ -201,28 +199,6 @@ func (esq *EnterpriseStationQuery) QueryCabinets() *CabinetQuery {
 			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, selector),
 			sqlgraph.To(cabinet.Table, cabinet.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.CabinetsTable, enterprisestation.CabinetsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(esq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryBatteries chains the current query on the "batteries" edge.
-func (esq *EnterpriseStationQuery) QueryBatteries() *BatteryQuery {
-	query := (&BatteryClient{config: esq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := esq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := esq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, selector),
-			sqlgraph.To(battery.Table, battery.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.BatteriesTable, enterprisestation.BatteriesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(esq.driver.Dialect(), step)
 		return fromU, nil
@@ -472,7 +448,6 @@ func (esq *EnterpriseStationQuery) Clone() *EnterpriseStationQuery {
 		withSwapPutinBatteries:  esq.withSwapPutinBatteries.Clone(),
 		withSwapPutoutBatteries: esq.withSwapPutoutBatteries.Clone(),
 		withCabinets:            esq.withCabinets.Clone(),
-		withBatteries:           esq.withBatteries.Clone(),
 		withAsset:               esq.withAsset.Clone(),
 		withStocks:              esq.withStocks.Clone(),
 		// clone intermediate query.
@@ -544,17 +519,6 @@ func (esq *EnterpriseStationQuery) WithCabinets(opts ...func(*CabinetQuery)) *En
 		opt(query)
 	}
 	esq.withCabinets = query
-	return esq
-}
-
-// WithBatteries tells the query-builder to eager-load the nodes that are connected to
-// the "batteries" edge. The optional arguments are used to configure the query builder of the edge.
-func (esq *EnterpriseStationQuery) WithBatteries(opts ...func(*BatteryQuery)) *EnterpriseStationQuery {
-	query := (&BatteryClient{config: esq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	esq.withBatteries = query
 	return esq
 }
 
@@ -658,14 +622,13 @@ func (esq *EnterpriseStationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	var (
 		nodes       = []*EnterpriseStation{}
 		_spec       = esq.querySpec()
-		loadedTypes = [9]bool{
+		loadedTypes = [8]bool{
 			esq.withCity != nil,
 			esq.withEnterprise != nil,
 			esq.withAgents != nil,
 			esq.withSwapPutinBatteries != nil,
 			esq.withSwapPutoutBatteries != nil,
 			esq.withCabinets != nil,
-			esq.withBatteries != nil,
 			esq.withAsset != nil,
 			esq.withStocks != nil,
 		}
@@ -732,13 +695,6 @@ func (esq *EnterpriseStationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 		if err := esq.loadCabinets(ctx, query, nodes,
 			func(n *EnterpriseStation) { n.Edges.Cabinets = []*Cabinet{} },
 			func(n *EnterpriseStation, e *Cabinet) { n.Edges.Cabinets = append(n.Edges.Cabinets, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := esq.withBatteries; query != nil {
-		if err := esq.loadBatteries(ctx, query, nodes,
-			func(n *EnterpriseStation) { n.Edges.Batteries = []*Battery{} },
-			func(n *EnterpriseStation, e *Battery) { n.Edges.Batteries = append(n.Edges.Batteries, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -980,39 +936,6 @@ func (esq *EnterpriseStationQuery) loadCabinets(ctx context.Context, query *Cabi
 	}
 	return nil
 }
-func (esq *EnterpriseStationQuery) loadBatteries(ctx context.Context, query *BatteryQuery, nodes []*EnterpriseStation, init func(*EnterpriseStation), assign func(*EnterpriseStation, *Battery)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*EnterpriseStation)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(battery.FieldStationID)
-	}
-	query.Where(predicate.Battery(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(enterprisestation.BatteriesColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.StationID
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "station_id" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "station_id" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
 func (esq *EnterpriseStationQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []*EnterpriseStation, init func(*EnterpriseStation), assign func(*EnterpriseStation, *Asset)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*EnterpriseStation)
@@ -1186,7 +1109,6 @@ var (
 	EnterpriseStationQueryWithSwapPutinBatteries  EnterpriseStationQueryWith = "SwapPutinBatteries"
 	EnterpriseStationQueryWithSwapPutoutBatteries EnterpriseStationQueryWith = "SwapPutoutBatteries"
 	EnterpriseStationQueryWithCabinets            EnterpriseStationQueryWith = "Cabinets"
-	EnterpriseStationQueryWithBatteries           EnterpriseStationQueryWith = "Batteries"
 	EnterpriseStationQueryWithAsset               EnterpriseStationQueryWith = "Asset"
 	EnterpriseStationQueryWithStocks              EnterpriseStationQueryWith = "Stocks"
 )
@@ -1206,8 +1128,6 @@ func (esq *EnterpriseStationQuery) With(withEdges ...EnterpriseStationQueryWith)
 			esq.WithSwapPutoutBatteries()
 		case EnterpriseStationQueryWithCabinets:
 			esq.WithCabinets()
-		case EnterpriseStationQueryWithBatteries:
-			esq.WithBatteries()
 		case EnterpriseStationQueryWithAsset:
 			esq.WithAsset()
 		case EnterpriseStationQueryWithStocks:

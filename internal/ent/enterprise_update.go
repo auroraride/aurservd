@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
-	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -552,21 +551,6 @@ func (eu *EnterpriseUpdate) AddBills(e ...*EnterpriseBill) *EnterpriseUpdate {
 	return eu.AddBillIDs(ids...)
 }
 
-// AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
-func (eu *EnterpriseUpdate) AddBatteryIDs(ids ...uint64) *EnterpriseUpdate {
-	eu.mutation.AddBatteryIDs(ids...)
-	return eu
-}
-
-// AddBatteries adds the "batteries" edges to the Battery entity.
-func (eu *EnterpriseUpdate) AddBatteries(b ...*Battery) *EnterpriseUpdate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return eu.AddBatteryIDs(ids...)
-}
-
 // AddAgentIDs adds the "agents" edge to the Agent entity by IDs.
 func (eu *EnterpriseUpdate) AddAgentIDs(ids ...uint64) *EnterpriseUpdate {
 	eu.mutation.AddAgentIDs(ids...)
@@ -798,27 +782,6 @@ func (eu *EnterpriseUpdate) RemoveBills(e ...*EnterpriseBill) *EnterpriseUpdate 
 		ids[i] = e[i].ID
 	}
 	return eu.RemoveBillIDs(ids...)
-}
-
-// ClearBatteries clears all "batteries" edges to the Battery entity.
-func (eu *EnterpriseUpdate) ClearBatteries() *EnterpriseUpdate {
-	eu.mutation.ClearBatteries()
-	return eu
-}
-
-// RemoveBatteryIDs removes the "batteries" edge to Battery entities by IDs.
-func (eu *EnterpriseUpdate) RemoveBatteryIDs(ids ...uint64) *EnterpriseUpdate {
-	eu.mutation.RemoveBatteryIDs(ids...)
-	return eu
-}
-
-// RemoveBatteries removes "batteries" edges to Battery entities.
-func (eu *EnterpriseUpdate) RemoveBatteries(b ...*Battery) *EnterpriseUpdate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return eu.RemoveBatteryIDs(ids...)
 }
 
 // ClearAgents clears all "agents" edges to the Agent entity.
@@ -1460,51 +1423,6 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisebill.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if eu.mutation.BatteriesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.BatteriesTable,
-			Columns: []string{enterprise.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := eu.mutation.RemovedBatteriesIDs(); len(nodes) > 0 && !eu.mutation.BatteriesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.BatteriesTable,
-			Columns: []string{enterprise.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := eu.mutation.BatteriesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.BatteriesTable,
-			Columns: []string{enterprise.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2267,21 +2185,6 @@ func (euo *EnterpriseUpdateOne) AddBills(e ...*EnterpriseBill) *EnterpriseUpdate
 	return euo.AddBillIDs(ids...)
 }
 
-// AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
-func (euo *EnterpriseUpdateOne) AddBatteryIDs(ids ...uint64) *EnterpriseUpdateOne {
-	euo.mutation.AddBatteryIDs(ids...)
-	return euo
-}
-
-// AddBatteries adds the "batteries" edges to the Battery entity.
-func (euo *EnterpriseUpdateOne) AddBatteries(b ...*Battery) *EnterpriseUpdateOne {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return euo.AddBatteryIDs(ids...)
-}
-
 // AddAgentIDs adds the "agents" edge to the Agent entity by IDs.
 func (euo *EnterpriseUpdateOne) AddAgentIDs(ids ...uint64) *EnterpriseUpdateOne {
 	euo.mutation.AddAgentIDs(ids...)
@@ -2513,27 +2416,6 @@ func (euo *EnterpriseUpdateOne) RemoveBills(e ...*EnterpriseBill) *EnterpriseUpd
 		ids[i] = e[i].ID
 	}
 	return euo.RemoveBillIDs(ids...)
-}
-
-// ClearBatteries clears all "batteries" edges to the Battery entity.
-func (euo *EnterpriseUpdateOne) ClearBatteries() *EnterpriseUpdateOne {
-	euo.mutation.ClearBatteries()
-	return euo
-}
-
-// RemoveBatteryIDs removes the "batteries" edge to Battery entities by IDs.
-func (euo *EnterpriseUpdateOne) RemoveBatteryIDs(ids ...uint64) *EnterpriseUpdateOne {
-	euo.mutation.RemoveBatteryIDs(ids...)
-	return euo
-}
-
-// RemoveBatteries removes "batteries" edges to Battery entities.
-func (euo *EnterpriseUpdateOne) RemoveBatteries(b ...*Battery) *EnterpriseUpdateOne {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return euo.RemoveBatteryIDs(ids...)
 }
 
 // ClearAgents clears all "agents" edges to the Agent entity.
@@ -3205,51 +3087,6 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisebill.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if euo.mutation.BatteriesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.BatteriesTable,
-			Columns: []string{enterprise.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := euo.mutation.RemovedBatteriesIDs(); len(nodes) > 0 && !euo.mutation.BatteriesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.BatteriesTable,
-			Columns: []string{enterprise.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := euo.mutation.BatteriesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.BatteriesTable,
-			Columns: []string{enterprise.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

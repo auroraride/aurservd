@@ -14,7 +14,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
-	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -193,21 +192,6 @@ func (esc *EnterpriseStationCreate) AddCabinets(c ...*Cabinet) *EnterpriseStatio
 		ids[i] = c[i].ID
 	}
 	return esc.AddCabinetIDs(ids...)
-}
-
-// AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
-func (esc *EnterpriseStationCreate) AddBatteryIDs(ids ...uint64) *EnterpriseStationCreate {
-	esc.mutation.AddBatteryIDs(ids...)
-	return esc
-}
-
-// AddBatteries adds the "batteries" edges to the Battery entity.
-func (esc *EnterpriseStationCreate) AddBatteries(b ...*Battery) *EnterpriseStationCreate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return esc.AddBatteryIDs(ids...)
 }
 
 // AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
@@ -457,22 +441,6 @@ func (esc *EnterpriseStationCreate) createSpec() (*EnterpriseStation, *sqlgraph.
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := esc.mutation.BatteriesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprisestation.BatteriesTable,
-			Columns: []string{enterprisestation.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

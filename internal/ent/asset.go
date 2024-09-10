@@ -114,13 +114,15 @@ type AssetEdges struct {
 	Rider *Rider `json:"rider,omitempty"`
 	// Operator holds the value of the operator edge.
 	Operator *Maintainer `json:"operator,omitempty"`
-	// Allocates holds the value of the allocates edge.
-	Allocates []*Allocate `json:"allocates,omitempty"`
+	// EbikeAllocates holds the value of the ebike_allocates edge.
+	EbikeAllocates []*Allocate `json:"ebike_allocates,omitempty"`
+	// BatteryAllocates holds the value of the battery_allocates edge.
+	BatteryAllocates []*Allocate `json:"battery_allocates,omitempty"`
 	// RtoRider holds the value of the rto_rider edge.
 	RtoRider *Rider `json:"rto_rider,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [18]bool
+	loadedTypes [19]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
@@ -289,13 +291,22 @@ func (e AssetEdges) OperatorOrErr() (*Maintainer, error) {
 	return nil, &NotLoadedError{edge: "operator"}
 }
 
-// AllocatesOrErr returns the Allocates value or an error if the edge
+// EbikeAllocatesOrErr returns the EbikeAllocates value or an error if the edge
 // was not loaded in eager-loading.
-func (e AssetEdges) AllocatesOrErr() ([]*Allocate, error) {
+func (e AssetEdges) EbikeAllocatesOrErr() ([]*Allocate, error) {
 	if e.loadedTypes[16] {
-		return e.Allocates, nil
+		return e.EbikeAllocates, nil
 	}
-	return nil, &NotLoadedError{edge: "allocates"}
+	return nil, &NotLoadedError{edge: "ebike_allocates"}
+}
+
+// BatteryAllocatesOrErr returns the BatteryAllocates value or an error if the edge
+// was not loaded in eager-loading.
+func (e AssetEdges) BatteryAllocatesOrErr() ([]*Allocate, error) {
+	if e.loadedTypes[17] {
+		return e.BatteryAllocates, nil
+	}
+	return nil, &NotLoadedError{edge: "battery_allocates"}
 }
 
 // RtoRiderOrErr returns the RtoRider value or an error if the edge
@@ -303,7 +314,7 @@ func (e AssetEdges) AllocatesOrErr() ([]*Allocate, error) {
 func (e AssetEdges) RtoRiderOrErr() (*Rider, error) {
 	if e.RtoRider != nil {
 		return e.RtoRider, nil
-	} else if e.loadedTypes[17] {
+	} else if e.loadedTypes[18] {
 		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rto_rider"}
@@ -583,9 +594,14 @@ func (a *Asset) QueryOperator() *MaintainerQuery {
 	return NewAssetClient(a.config).QueryOperator(a)
 }
 
-// QueryAllocates queries the "allocates" edge of the Asset entity.
-func (a *Asset) QueryAllocates() *AllocateQuery {
-	return NewAssetClient(a.config).QueryAllocates(a)
+// QueryEbikeAllocates queries the "ebike_allocates" edge of the Asset entity.
+func (a *Asset) QueryEbikeAllocates() *AllocateQuery {
+	return NewAssetClient(a.config).QueryEbikeAllocates(a)
+}
+
+// QueryBatteryAllocates queries the "battery_allocates" edge of the Asset entity.
+func (a *Asset) QueryBatteryAllocates() *AllocateQuery {
+	return NewAssetClient(a.config).QueryBatteryAllocates(a)
 }
 
 // QueryRtoRider queries the "rto_rider" edge of the Asset entity.

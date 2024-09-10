@@ -91,8 +91,10 @@ const (
 	EdgeRider = "rider"
 	// EdgeOperator holds the string denoting the operator edge name in mutations.
 	EdgeOperator = "operator"
-	// EdgeAllocates holds the string denoting the allocates edge name in mutations.
-	EdgeAllocates = "allocates"
+	// EdgeEbikeAllocates holds the string denoting the ebike_allocates edge name in mutations.
+	EdgeEbikeAllocates = "ebike_allocates"
+	// EdgeBatteryAllocates holds the string denoting the battery_allocates edge name in mutations.
+	EdgeBatteryAllocates = "battery_allocates"
 	// EdgeRtoRider holds the string denoting the rto_rider edge name in mutations.
 	EdgeRtoRider = "rto_rider"
 	// Table holds the table name of the asset in the database.
@@ -209,13 +211,20 @@ const (
 	OperatorInverseTable = "maintainer"
 	// OperatorColumn is the table column denoting the operator relation/edge.
 	OperatorColumn = "locations_id"
-	// AllocatesTable is the table that holds the allocates relation/edge.
-	AllocatesTable = "allocate"
-	// AllocatesInverseTable is the table name for the Allocate entity.
+	// EbikeAllocatesTable is the table that holds the ebike_allocates relation/edge.
+	EbikeAllocatesTable = "allocate"
+	// EbikeAllocatesInverseTable is the table name for the Allocate entity.
 	// It exists in this package in order to avoid circular dependency with the "allocate" package.
-	AllocatesInverseTable = "allocate"
-	// AllocatesColumn is the table column denoting the allocates relation/edge.
-	AllocatesColumn = "ebike_id"
+	EbikeAllocatesInverseTable = "allocate"
+	// EbikeAllocatesColumn is the table column denoting the ebike_allocates relation/edge.
+	EbikeAllocatesColumn = "ebike_id"
+	// BatteryAllocatesTable is the table that holds the battery_allocates relation/edge.
+	BatteryAllocatesTable = "allocate"
+	// BatteryAllocatesInverseTable is the table name for the Allocate entity.
+	// It exists in this package in order to avoid circular dependency with the "allocate" package.
+	BatteryAllocatesInverseTable = "allocate"
+	// BatteryAllocatesColumn is the table column denoting the battery_allocates relation/edge.
+	BatteryAllocatesColumn = "battery_id"
 	// RtoRiderTable is the table that holds the rto_rider relation/edge.
 	RtoRiderTable = "asset"
 	// RtoRiderInverseTable is the table name for the Rider entity.
@@ -536,17 +545,31 @@ func ByOperatorField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByAllocatesCount orders the results by allocates count.
-func ByAllocatesCount(opts ...sql.OrderTermOption) OrderOption {
+// ByEbikeAllocatesCount orders the results by ebike_allocates count.
+func ByEbikeAllocatesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newAllocatesStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newEbikeAllocatesStep(), opts...)
 	}
 }
 
-// ByAllocates orders the results by allocates terms.
-func ByAllocates(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByEbikeAllocates orders the results by ebike_allocates terms.
+func ByEbikeAllocates(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newAllocatesStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newEbikeAllocatesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByBatteryAllocatesCount orders the results by battery_allocates count.
+func ByBatteryAllocatesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newBatteryAllocatesStep(), opts...)
+	}
+}
+
+// ByBatteryAllocates orders the results by battery_allocates terms.
+func ByBatteryAllocates(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBatteryAllocatesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -668,11 +691,18 @@ func newOperatorStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, OperatorTable, OperatorColumn),
 	)
 }
-func newAllocatesStep() *sqlgraph.Step {
+func newEbikeAllocatesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(AllocatesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, AllocatesTable, AllocatesColumn),
+		sqlgraph.To(EbikeAllocatesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, EbikeAllocatesTable, EbikeAllocatesColumn),
+	)
+}
+func newBatteryAllocatesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BatteryAllocatesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, BatteryAllocatesTable, BatteryAllocatesColumn),
 	)
 }
 func newRtoRiderStep() *sqlgraph.Step {
