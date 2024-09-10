@@ -1510,6 +1510,23 @@ func (s *assetTransferService) GetTransferBySN(assetSignInfo definition.AssetSig
 			AssetType: model.AssetType(item.Edges.Asset.Type),
 			SN:        item.Edges.Asset.Sn,
 			Name:      item.Edges.Asset.Name,
+			Attribute: make(map[uint64]model.AssetAttribute),
+		}
+		// 查询属性值
+		attributeValue, _ := item.Edges.Asset.QueryValues().WithAttribute().All(context.Background())
+		for _, v := range attributeValue {
+			var attributeName, attributeKey string
+			if v.Edges.Attribute != nil {
+				attributeName = v.Edges.Attribute.Name
+				attributeKey = v.Edges.Attribute.Key
+			}
+			res.AssetDetail.Attribute[v.AttributeID] = model.AssetAttribute{
+				AttributeID:      v.AttributeID,
+				AttributeValue:   v.Value,
+				AttributeName:    attributeName,
+				AttributeKey:     attributeKey,
+				AttributeValueID: v.ID,
+			}
 		}
 	}
 
