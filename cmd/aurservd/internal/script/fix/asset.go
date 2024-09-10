@@ -405,7 +405,7 @@ func EbikeDo(ctx context.Context, modifier *model.Modifier) {
 			BrandID:       silk.UInt64(v.BrandID),
 		}, modifier)
 		if err != nil {
-			fmt.Printf("创建电车失败: %v\n", err)
+			// fmt.Printf("创建电车失败: %v\n", err)
 			continue
 		}
 	}

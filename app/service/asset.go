@@ -780,7 +780,7 @@ func (s *assetService) exportEbike(ctx context.Context, req *model.AssetListReq,
 
 // List 资产列表
 func (s *assetService) List(ctx context.Context, req *model.AssetListReq) *model.PaginationRes {
-	q := s.orm.QueryNotDeleted().WithCabinet().WithCity().WithStation().WithModel().WithOperator().WithValues().WithStore().WithWarehouse().WithBrand().WithValues()
+	q := s.orm.QueryNotDeleted().WithCabinet().WithCity().WithStation().WithModel().WithOperator().WithValues().WithStore().WithWarehouse().WithBrand().WithValues().WithRider()
 	s.filter(q, &req.AssetFilter)
 	if req.AssetType != nil {
 		switch *req.AssetType {
@@ -833,7 +833,7 @@ func (s *assetService) DetailForList(item *ent.Asset) *model.AssetListRes {
 	case model.AssetLocationsTypeRider.Value():
 		assetLocations = "[骑手]"
 		if item.Edges.Rider != nil {
-			assetLocations += item.Edges.Rider.Name
+			assetLocations += item.Edges.Rider.Name + "-" + item.Edges.Rider.Phone
 		}
 	case model.AssetLocationsTypeOperation.Value():
 		assetLocations = "[运维]"

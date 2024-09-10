@@ -47,7 +47,7 @@ func (b *cabinetAssetBiz) Assets(req *definition.CabinetAssetListReq) (res *mode
 	// 查询分页的门店数据
 	q := b.orm.QueryNotDeleted().WithCity().Order(ent.Desc(agreement.FieldCreatedAt))
 	b.assetsFilter(q, req)
-	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) (result *definition.CabinetAssetDetail) {
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) (result *definition.CabinetAssetDetail) {
 		result = &definition.CabinetAssetDetail{
 			ID:    item.ID,
 			Name:  item.Name,
@@ -62,8 +62,6 @@ func (b *cabinetAssetBiz) Assets(req *definition.CabinetAssetListReq) (res *mode
 		}
 		return result
 	})
-
-	return res
 }
 
 // assetsFilter 条件筛选
