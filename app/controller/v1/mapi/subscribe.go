@@ -62,7 +62,7 @@ func (*subscribe) Pause(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse		"请求成功"
 func (*subscribe) Continue(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
-	service.NewBusinessRider(nil).SetModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).Continue(req.ID)
+	service.NewBusinessRider(ctx.Operator).SetModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).Continue(req.ID)
 	return ctx.SendResponse()
 }
 
@@ -78,7 +78,7 @@ func (*subscribe) Continue(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse		"请求成功"
 func (*subscribe) Halt(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
-	service.NewBusinessRider(nil).
+	service.NewBusinessRider(ctx.Operator).
 		SetModifier(ctx.Modifier).
 		SetCabinetID(req.CabinetID).
 		SetEbikeStoreID(req.EbikeStoreID).
