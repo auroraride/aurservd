@@ -232,6 +232,10 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 			SetNillableDepositPay(req.DepositPay).
 			SetNillableAgreementID(req.AgreementID)
 
+		if req.Type == model.PlanTypeBattery && req.IntroductionImage != nil {
+			creator.SetIntroductionImage(*req.IntroductionImage)
+		}
+
 		for i, cl := range req.Complexes {
 			c := creator.Clone().
 				SetModel(strings.ToUpper(cl.Model)).

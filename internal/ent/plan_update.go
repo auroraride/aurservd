@@ -596,6 +596,26 @@ func (pu *PlanUpdate) SetNillableDaily(b *bool) *PlanUpdate {
 	return pu
 }
 
+// SetIntroductionImage sets the "introduction_image" field.
+func (pu *PlanUpdate) SetIntroductionImage(s string) *PlanUpdate {
+	pu.mutation.SetIntroductionImage(s)
+	return pu
+}
+
+// SetNillableIntroductionImage sets the "introduction_image" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableIntroductionImage(s *string) *PlanUpdate {
+	if s != nil {
+		pu.SetIntroductionImage(*s)
+	}
+	return pu
+}
+
+// ClearIntroductionImage clears the value of the "introduction_image" field.
+func (pu *PlanUpdate) ClearIntroductionImage() *PlanUpdate {
+	pu.mutation.ClearIntroductionImage()
+	return pu
+}
+
 // SetAgreement sets the "agreement" edge to the Agreement entity.
 func (pu *PlanUpdate) SetAgreement(a *Agreement) *PlanUpdate {
 	return pu.SetAgreementID(a.ID)
@@ -953,6 +973,12 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.Daily(); ok {
 		_spec.SetField(plan.FieldDaily, field.TypeBool, value)
+	}
+	if value, ok := pu.mutation.IntroductionImage(); ok {
+		_spec.SetField(plan.FieldIntroductionImage, field.TypeString, value)
+	}
+	if pu.mutation.IntroductionImageCleared() {
+		_spec.ClearField(plan.FieldIntroductionImage, field.TypeString)
 	}
 	if pu.mutation.AgreementCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1759,6 +1785,26 @@ func (puo *PlanUpdateOne) SetNillableDaily(b *bool) *PlanUpdateOne {
 	return puo
 }
 
+// SetIntroductionImage sets the "introduction_image" field.
+func (puo *PlanUpdateOne) SetIntroductionImage(s string) *PlanUpdateOne {
+	puo.mutation.SetIntroductionImage(s)
+	return puo
+}
+
+// SetNillableIntroductionImage sets the "introduction_image" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableIntroductionImage(s *string) *PlanUpdateOne {
+	if s != nil {
+		puo.SetIntroductionImage(*s)
+	}
+	return puo
+}
+
+// ClearIntroductionImage clears the value of the "introduction_image" field.
+func (puo *PlanUpdateOne) ClearIntroductionImage() *PlanUpdateOne {
+	puo.mutation.ClearIntroductionImage()
+	return puo
+}
+
 // SetAgreement sets the "agreement" edge to the Agreement entity.
 func (puo *PlanUpdateOne) SetAgreement(a *Agreement) *PlanUpdateOne {
 	return puo.SetAgreementID(a.ID)
@@ -2146,6 +2192,12 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 	}
 	if value, ok := puo.mutation.Daily(); ok {
 		_spec.SetField(plan.FieldDaily, field.TypeBool, value)
+	}
+	if value, ok := puo.mutation.IntroductionImage(); ok {
+		_spec.SetField(plan.FieldIntroductionImage, field.TypeString, value)
+	}
+	if puo.mutation.IntroductionImageCleared() {
+		_spec.ClearField(plan.FieldIntroductionImage, field.TypeString)
 	}
 	if puo.mutation.AgreementCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -1823,6 +1823,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldOverdueFee:              {Type: field.TypeFloat64, Column: plan.FieldOverdueFee},
 			plan.FieldBrandID:                 {Type: field.TypeUint64, Column: plan.FieldBrandID},
 			plan.FieldDaily:                   {Type: field.TypeBool, Column: plan.FieldDaily},
+			plan.FieldIntroductionImage:       {Type: field.TypeString, Column: plan.FieldIntroductionImage},
 		},
 	}
 	graph.Nodes[62] = &sqlgraph.Node{
@@ -18781,6 +18782,11 @@ func (f *PlanFilter) WhereBrandID(p entql.Uint64P) {
 // WhereDaily applies the entql bool predicate on the daily field.
 func (f *PlanFilter) WhereDaily(p entql.BoolP) {
 	f.Where(p.Field(plan.FieldDaily))
+}
+
+// WhereIntroductionImage applies the entql string predicate on the introduction_image field.
+func (f *PlanFilter) WhereIntroductionImage(p entql.StringP) {
+	f.Where(p.Field(plan.FieldIntroductionImage))
 }
 
 // WhereHasAgreement applies a predicate to check if query has an edge agreement.

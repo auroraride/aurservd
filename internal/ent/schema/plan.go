@@ -85,6 +85,7 @@ func (Plan) Fields() []ent.Field {
 		field.Float("overdue_fee").Default(model.DailyRentDefault).Comment("滞纳金单价"),
 		field.Uint64("brand_id").Optional().Nillable().Comment("品牌ID"),
 		field.Bool("daily").Default(false).Comment("是否日租"),
+		field.String("introduction_image").Optional().Comment("商品介绍图"),
 	}
 }
 
