@@ -51,7 +51,7 @@ func (b *cabinetAssetBiz) Assets(req *definition.CabinetAssetListReq) (res *mode
 		result = &definition.CabinetAssetDetail{
 			ID:    item.ID,
 			Name:  item.Name,
-			Sn:    item.Sn,
+			Sn:    item.Serial,
 			Total: b.AssetTotal(req, item.ID),
 		}
 		if item.Edges.City != nil {
