@@ -18,11 +18,12 @@ import (
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/agreement"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/setting"
-	"github.com/auroraride/aurservd/internal/ent/stock"
+	// "github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -64,13 +65,13 @@ func (b *planBiz) RiderListNewly(r *ent.Rider, req *model.PlanListRiderReq) *def
 		var brandIds []uint64
 		storeBrandExist := make(map[string]bool)
 		storeItem, _ := ent.Database.Store.QueryNotDeleted().
-			WithStocks().
+			WithAsset().
 			Where(store.ID(*req.StoreId)).
 			First(b.ctx)
-		if storeItem != nil && storeItem.Edges.Stocks != nil {
+		if storeItem != nil && storeItem.Edges.Asset != nil {
 			// 计算该门店电车品牌库存
-			brandStockMap := b.CalStoreEbikeStock(storeItem.Edges.Stocks)
-			for _, st := range storeItem.Edges.Stocks {
+			brandStockMap := b.CalStoreEbikeStock(storeItem.Edges.Asset)
+			for _, st := range storeItem.Edges.Asset {
 				if st.BrandID != nil {
 					existKey := fmt.Sprintf("%d-%d", storeItem.ID, *st.BrandID)
 					if !storeBrandExist[existKey] && brandStockMap[*st.BrandID] > 0 {
@@ -468,12 +469,12 @@ func (b *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 	stq := ent.Database.Store.QueryNotDeleted().
 		Where(
 			store.CityID(req.CityId),
-			store.HasStocksWith(stock.BrandIDNotNil()),
+			store.HasAssetWith(asset.BrandIDNotNil()),
 			store.StatusIn(model.StoreStatusOpen.Value(), model.StoreStatusClose.Value()),
 			store.EbikeObtain(true),
 		).
 		WithCity().
-		WithStocks().
+		WithAsset().
 		Modify(func(sel *sql.Selector) {
 			sel.
 				AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'))`, req.Lng, req.Lat)), "distance").
@@ -500,8 +501,8 @@ func (b *planBiz) ListByStore(req *definition.StorePlanReq) []*definition.StoreE
 	cityBrand2StoresMap := make(map[string][]uint64)
 	for _, st := range storelist {
 		// 计算该门店电车品牌库存
-		brandStockMap := b.CalStoreEbikeStock(st.Edges.Stocks)
-		for _, stc := range st.Edges.Stocks {
+		brandStockMap := b.CalStoreEbikeStock(st.Edges.Asset)
+		for _, stc := range st.Edges.Asset {
 			if stc.BrandID != nil {
 				existKey := fmt.Sprintf("%d-%d-%d", req.CityId, st.ID, *stc.BrandID)
 				if !cityStoreBrandExist[existKey] && brandStockMap[*stc.BrandID] > 0 {
@@ -658,15 +659,15 @@ func (b *planBiz) StorePlanDetail(r *ent.Rider, req *definition.StorePlanDetailR
 	// 查询门店库存电车所属brandId
 	var brandIds []uint64
 	storeItem, _ := ent.Database.Store.QueryNotDeleted().
-		WithStocks().
+		WithAsset().
 		Where(store.ID(req.StoreId)).
 		First(b.ctx)
 	if storeItem == nil {
 		return nil
 	}
 
-	if storeItem.Edges.Stocks != nil {
-		for _, st := range storeItem.Edges.Stocks {
+	if storeItem.Edges.Asset != nil {
+		for _, st := range storeItem.Edges.Asset {
 			if st.BrandID != nil {
 				brandIds = append(brandIds, *st.BrandID)
 			}
@@ -846,11 +847,11 @@ func (b *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 	stq := ent.Database.Store.QueryNotDeleted().
 		Where(
 			store.ID(storeId),
-			store.HasStocksWith(stock.BrandIDNotNil()),
+			store.HasAssetWith(asset.BrandIDNotNil()),
 		).
 		WithCity().
 		WithEmployee().
-		WithStocks()
+		WithAsset()
 
 	str, _ := stq.First(b.ctx)
 	if str == nil {
@@ -865,10 +866,10 @@ func (b *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 	// 门店电车品牌集合
 	cityStoreBrandExist := make(map[string]bool)
 	cityBrand2StoresMap := make(map[string][]uint64)
-	if str.Edges.Stocks != nil {
+	if str.Edges.Asset != nil {
 		// 计算该门店电车品牌库存
-		brandStockMap := b.CalStoreEbikeStock(str.Edges.Stocks)
-		for _, stc := range str.Edges.Stocks {
+		brandStockMap := b.CalStoreEbikeStock(str.Edges.Asset)
+		for _, stc := range str.Edges.Asset {
 			if stc.BrandID != nil {
 				existKey := fmt.Sprintf("%d-%d-%d", str.CityID, str.ID, *stc.BrandID)
 				if !cityStoreBrandExist[existKey] && brandStockMap[*stc.BrandID] > 0 {
@@ -977,11 +978,11 @@ func (b *planBiz) ListByStoreById(storeId uint64) []*definition.StoreEbikePlan {
 }
 
 // CalStoreEbikeStock 计算库存数
-func (b *planBiz) CalStoreEbikeStock(stocks []*ent.Stock) map[uint64]int {
+func (b *planBiz) CalStoreEbikeStock(stocks []*ent.Asset) map[uint64]int {
 	resMap := make(map[uint64]int)
 	for _, stc := range stocks {
-		if stc.BrandID != nil {
-			resMap[*stc.BrandID] += stc.Num
+		if stc.BrandID != nil && stc.Type == model.AssetTypeEbike.Value() {
+			resMap[*stc.BrandID] += 1
 		}
 	}
 	return resMap

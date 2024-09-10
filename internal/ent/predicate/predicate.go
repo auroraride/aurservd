@@ -18,6 +18,45 @@ type Agreement func(*sql.Selector)
 // Allocate is the predicate function for allocate builders.
 type Allocate func(*sql.Selector)
 
+// Asset is the predicate function for asset builders.
+type Asset func(*sql.Selector)
+
+// AssetAttributeValues is the predicate function for assetattributevalues builders.
+type AssetAttributeValues func(*sql.Selector)
+
+// AssetAttributes is the predicate function for assetattributes builders.
+type AssetAttributes func(*sql.Selector)
+
+// AssetCheck is the predicate function for assetcheck builders.
+type AssetCheck func(*sql.Selector)
+
+// AssetCheckDetails is the predicate function for assetcheckdetails builders.
+type AssetCheckDetails func(*sql.Selector)
+
+// AssetMaintenance is the predicate function for assetmaintenance builders.
+type AssetMaintenance func(*sql.Selector)
+
+// AssetMaintenanceDetails is the predicate function for assetmaintenancedetails builders.
+type AssetMaintenanceDetails func(*sql.Selector)
+
+// AssetManager is the predicate function for assetmanager builders.
+type AssetManager func(*sql.Selector)
+
+// AssetRole is the predicate function for assetrole builders.
+type AssetRole func(*sql.Selector)
+
+// AssetScrap is the predicate function for assetscrap builders.
+type AssetScrap func(*sql.Selector)
+
+// AssetScrapDetails is the predicate function for assetscrapdetails builders.
+type AssetScrapDetails func(*sql.Selector)
+
+// AssetTransfer is the predicate function for assettransfer builders.
+type AssetTransfer func(*sql.Selector)
+
+// AssetTransferDetails is the predicate function for assettransferdetails builders.
+type AssetTransferDetails func(*sql.Selector)
+
 // Assistance is the predicate function for assistance builders.
 type Assistance func(*sql.Selector)
 
@@ -138,6 +177,9 @@ type Maintainer func(*sql.Selector)
 // Manager is the predicate function for manager builders.
 type Manager func(*sql.Selector)
 
+// Material is the predicate function for material builders.
+type Material func(*sql.Selector)
+
 // Order is the predicate function for order builders.
 type Order func(*sql.Selector)
 
@@ -240,6 +282,9 @@ type Store func(*sql.Selector)
 // StoreGoods is the predicate function for storegoods builders.
 type StoreGoods func(*sql.Selector)
 
+// StoreGroup is the predicate function for storegroup builders.
+type StoreGroup func(*sql.Selector)
+
 // Subscribe is the predicate function for subscribe builders.
 type Subscribe func(*sql.Selector)
 
@@ -257,3 +302,6 @@ type SubscribeSuspend func(*sql.Selector)
 
 // Version is the predicate function for version builders.
 type Version func(*sql.Selector)
+
+// Warehouse is the predicate function for warehouse builders.
+type Warehouse func(*sql.Selector)

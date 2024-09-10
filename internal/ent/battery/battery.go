@@ -56,8 +56,6 @@ const (
 	EdgeRider = "rider"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
 	EdgeCabinet = "cabinet"
-	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
-	EdgeSubscribe = "subscribe"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
 	// EdgeFlows holds the string denoting the flows edge name in mutations.
@@ -87,13 +85,6 @@ const (
 	CabinetInverseTable = "cabinet"
 	// CabinetColumn is the table column denoting the cabinet relation/edge.
 	CabinetColumn = "cabinet_id"
-	// SubscribeTable is the table that holds the subscribe relation/edge.
-	SubscribeTable = "battery"
-	// SubscribeInverseTable is the table name for the Subscribe entity.
-	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
-	SubscribeInverseTable = "subscribe"
-	// SubscribeColumn is the table column denoting the subscribe relation/edge.
-	SubscribeColumn = "subscribe_id"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
 	EnterpriseTable = "battery"
 	// EnterpriseInverseTable is the table name for the Enterprise entity.
@@ -107,7 +98,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "batteryflow" package.
 	FlowsInverseTable = "battery_flow"
 	// FlowsColumn is the table column denoting the flows relation/edge.
-	FlowsColumn = "battery_id"
+	FlowsColumn = "battery_flows"
 	// StationTable is the table that holds the station relation/edge.
 	StationTable = "battery"
 	// StationInverseTable is the table name for the EnterpriseStation entity.
@@ -272,13 +263,6 @@ func ByCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// BySubscribeField orders the results by subscribe field.
-func BySubscribeField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newSubscribeStep(), sql.OrderByField(field, opts...))
-	}
-}
-
 // ByEnterpriseField orders the results by enterprise field.
 func ByEnterpriseField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -325,13 +309,6 @@ func newCabinetStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CabinetInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, CabinetTable, CabinetColumn),
-	)
-}
-func newSubscribeStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SubscribeInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, true, SubscribeTable, SubscribeColumn),
 	)
 }
 func newEnterpriseStep() *sqlgraph.Step {

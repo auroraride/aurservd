@@ -34,7 +34,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/hook"
-	"github.com/auroraride/aurservd/internal/ent/stock"
+	// "github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -112,7 +112,10 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
 	res = new(model.CabinetItem)
 
 	// 查询设置电池型号
-	models := NewBatteryModel().QueryModelsX(req.Models)
+	models, err := NewBatteryModel().QueryModels(req.Models)
+	if err != nil {
+		snag.Panic(err)
+	}
 	for _, bm := range models {
 		res.Models = append(res.Models, bm.Model)
 	}
@@ -127,7 +130,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
 
 // List 查询电柜
 func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.PaginationRes) {
-	q := s.orm.QueryNotDeleted().WithCity().WithModels().WithStation().WithEnterprise()
+	q := s.orm.QueryNotDeleted().WithCity().WithModels().WithStation().WithEnterprise().WithStore()
 
 	if s.modifier != nil && s.modifier.Phone == "15537112255" {
 		req.CityID = silk.UInt64(410100)
@@ -208,6 +211,10 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
 			res.EnterpriseName = item.Edges.Enterprise.Name
 			res.EnterpriseID = &item.Edges.Enterprise.ID
 		}
+		if item.Edges.Store != nil {
+			res.StoreName = item.Edges.Store.Name
+			res.StoreID = &item.Edges.Store.ID
+		}
 		return res
 	}, s.SyncCabinets)
 }
@@ -235,9 +242,13 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
 			})
 
 			if slices.Compare(rms, models) != 0 {
+				m, err := NewBatteryModel().QueryModels(*req.Models)
+				if err != nil {
+					return err
+				}
 				q.ClearModels()
 				// 查询设置电池型号
-				q.AddModels(NewBatteryModel().QueryModelsX(*req.Models)...)
+				q.AddModels(m...)
 			}
 		}
 		if req.BranchID != nil {
@@ -376,7 +387,7 @@ func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
 	}
 	res.Reserves = make([]model.ReserveCabinetItem, 0)
 
-	res.StockNum = NewStock().CurrentBattery(item.ID, stock.FieldCabinetID)
+	res.StockNum = NewAsset().CurrentBattery(item.ID, model.AssetLocationsTypeCabinet)
 
 	// 获取生效中的预约
 	revs := NewReserve().CabinetUnfinished(item.ID)
@@ -608,7 +619,7 @@ func (s *cabinetService) dataItems(res *model.PaginationRes) *model.PaginationRe
 	for i, item := range items {
 		ids[i] = item.ID
 	}
-	m := NewStock().CurrentBatteryNum(ids, stock.FieldCabinetID)
+	m := NewAsset().CurrentBatteryNum(ids, model.AssetLocationsTypeCabinet)
 	for i, item := range items {
 		items[i].StockNum = m[item.ID]
 	}
@@ -671,14 +682,15 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
 	if !s.ModelInclude(cab, req.Model) {
 		snag.Panic("电池型号错误")
 	}
-	NewStockWithModifier(s.modifier).Transfer(&model.StockTransferReq{
-		Model:         req.Model,
-		Num:           req.Num,
-		InboundID:     cab.ID,
-		InboundTarget: model.StockTargetCabinet,
-		Force:         true,
-		Remark:        "电柜初始化",
-	})
+	// NewStockWithModifier(s.modifier).Transfer(&model.StockTransferReq{
+	// 	Model:         req.Model,
+	// 	Num:           req.Num,
+	// 	InboundID:     cab.ID,
+	// 	InboundTarget: model.StockTargetCabinet,
+	// 	Force:         true,
+	// 	Remark:        "电柜初始化",
+	// })
+
 	_, _ = cab.Update().SetTransferred(true).Save(s.ctx)
 }
 
@@ -948,17 +960,20 @@ func (s *cabinetService) Interrupt(operator *logging.Operator, req *model.Cabine
 
 // BindCabinet 团签绑定电柜
 func (s *cabinetService) BindCabinet(req *model.EnterpriseBindCabinetReq) {
+	if req.EnterpriseID == 0 && req.StationID == 0 && req.StoreID == 0 {
+		snag.Panic("绑定参数有误")
+	}
 	// 判断电柜是否被绑定
 	cab := s.QueryOne(req.ID)
 	if cab.Status == uint8(model.CabinetStatusNormal) {
 		snag.Panic("运营中的电柜不能绑定")
 	}
 
-	if cab.EnterpriseID != nil || cab.StationID != nil {
+	if cab.EnterpriseID != nil || cab.StationID != nil || cab.StoreID != nil {
 		snag.Panic("电柜已被绑定")
 	}
 	// 电柜绑定
-	s.orm.UpdateOneID(req.ID).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SaveX(s.ctx)
+	s.orm.UpdateOneID(req.ID).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SetStoreID(req.StoreID).SaveX(s.ctx)
 }
 
 // UnbindCabinet 解绑电柜
@@ -971,5 +986,5 @@ func (s *cabinetService) UnbindCabinet(req *model.IDParamReq) {
 		snag.Panic("运营中的电柜不能解绑")
 	}
 	// 电柜解绑
-	s.orm.UpdateOneID(req.ID).ClearStationID().ClearEnterpriseID().SaveX(s.ctx)
+	s.orm.UpdateOneID(req.ID).ClearStationID().ClearEnterpriseID().ClearStoreID().SaveX(s.ctx)
 }

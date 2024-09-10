@@ -13,6 +13,7 @@ import (
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/assetattributes"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -164,9 +165,23 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 				bike := sub.Edges.Ebike
 				res.Ebike.ID = bike.ID
 				res.Ebike.SN = bike.Sn
-				res.Ebike.ExFactory = bike.ExFactory
-				res.Ebike.Plate = bike.Plate
-				res.Ebike.Color = bike.Color
+				// 查询属性
+				ab, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.AssetType(model.AssetTypeEbike.Value())).All(s.ctx)
+				values, _ := bike.QueryValues().All(s.ctx)
+				for _, v := range ab {
+					for _, av := range values {
+						if v.ID == av.AttributeID {
+							switch v.Key {
+							case "plate":
+								res.Ebike.Plate = silk.String(av.Value)
+							case "color":
+								res.Ebike.Color = av.Value
+							case "exFactory":
+								res.Ebike.ExFactory = av.Value
+							}
+						}
+					}
+				}
 			}
 		}
 	} else {

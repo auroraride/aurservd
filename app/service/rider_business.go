@@ -39,18 +39,21 @@ type riderBusinessService struct {
 
 	bt model.BusinessType
 
-	battery *ent.Battery
+	battery *ent.Asset
 
 	response model.BusinessCabinetStatus
+
+	*BaseService
 }
 
-func NewRiderBusiness(rider *ent.Rider) *riderBusinessService {
+func NewRiderBusiness(params ...any) *riderBusinessService {
 	s := &riderBusinessService{
-		ctx:     context.Background(),
-		maxTime: 180 * time.Second,
+		ctx:         context.Background(),
+		maxTime:     180 * time.Second,
+		BaseService: newService(params...),
 	}
-	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, rider)
-	s.rider = rider
+	// s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, rider)
+	// s.rider = rider
 	return s
 }
 
@@ -329,7 +332,7 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
 
 	go func() {
 		err := snag.WithPanic(func() {
-			NewBusinessRider(s.rider).
+			NewBusinessRider(s.rider, s.operator).
 				SetCabinetTask(func() (*model.BinInfo, *model.Battery, error) {
 					return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessPause, s.subscribe, s.battery, s.cabinet)
 				}).

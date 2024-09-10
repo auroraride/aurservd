@@ -130,6 +130,7 @@ func (s *stockSummaryService) BatteryGroup(ac *app.AgentContext) []*model.Batter
 }
 
 // EbikeGroup 分组统计电动车物资
+
 func (s *stockSummaryService) EbikeGroup(ac *app.AgentContext) []*model.EbikeStockGroup {
 	var v []*model.EbikeStockGroup
 	s.orm.Query().
@@ -148,7 +149,6 @@ func (s *stockSummaryService) EbikeGroup(ac *app.AgentContext) []*model.EbikeSto
 	}
 	return v
 }
-
 func (s *stockSummaryService) NonIntelligentBatteryNum(ac *app.AgentContext) (batteryNum int, modelsCounts map[string]int) {
 	isIntelligentValue := false
 	// 查询所有非智能电池柜

@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/labstack/echo/v4"
 
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 )
 
@@ -11,6 +12,7 @@ type MaintainerContext struct {
 
 	Maintainer *ent.Maintainer
 	Cities     ent.Cities
+	Operator   *model.OperatorInfo
 }
 
 func NewMaintainerContext(c echo.Context, m *ent.Maintainer) *MaintainerContext {
@@ -20,6 +22,12 @@ func NewMaintainerContext(c echo.Context, m *ent.Maintainer) *MaintainerContext 
 	}
 	if m != nil {
 		ctx.Cities = m.Edges.Cities
+		ctx.Operator = &model.OperatorInfo{
+			Type:  model.OperatorTypeMaintainer,
+			ID:    m.ID,
+			Phone: m.Phone,
+			Name:  m.Name,
+		}
 	}
 	return ctx
 }

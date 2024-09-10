@@ -7,6 +7,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"mime/multipart"
 	"strings"
@@ -41,6 +42,8 @@ type BaseService struct {
 	enterprise *ent.Enterprise
 
 	maintainer *ent.Maintainer
+
+	operator *model.OperatorInfo
 }
 
 func newService(params ...any) (bs *BaseService) {
@@ -58,9 +61,21 @@ func newService(params ...any) (bs *BaseService) {
 				Phone: p.Phone,
 				Name:  p.Name,
 			}
+			bs.operator = &model.OperatorInfo{
+				ID:    p.ID,
+				Phone: p.Phone,
+				Name:  p.Name,
+				Type:  model.OperatorTypeRider,
+			}
 			ctx = context.WithValue(ctx, model.CtxRiderKey{}, bs.rider)
 		case *model.Rider:
 			bs.rider = p
+			bs.operator = &model.OperatorInfo{
+				ID:    p.ID,
+				Phone: p.Phone,
+				Name:  p.Name,
+				Type:  model.OperatorTypeRider,
+			}
 			ctx = context.WithValue(ctx, model.CtxRiderKey{}, bs.rider)
 		case *ent.Manager:
 			bs.modifier = &model.Modifier{
@@ -68,9 +83,21 @@ func newService(params ...any) (bs *BaseService) {
 				Phone: p.Phone,
 				Name:  p.Name,
 			}
+			bs.operator = &model.OperatorInfo{
+				ID:    p.ID,
+				Phone: p.Phone,
+				Name:  p.Name,
+				Type:  model.OperatorTypeManager,
+			}
 			ctx = context.WithValue(ctx, model.CtxModifierKey{}, bs.modifier)
 		case *model.Modifier:
 			bs.modifier = p
+			bs.operator = &model.OperatorInfo{
+				ID:    p.ID,
+				Phone: p.Phone,
+				Name:  p.Name,
+				Type:  model.OperatorTypeManager,
+			}
 			ctx = context.WithValue(ctx, model.CtxModifierKey{}, bs.modifier)
 		case *ent.Employee:
 			bs.entEmployee = p
@@ -83,12 +110,34 @@ func newService(params ...any) (bs *BaseService) {
 			ctx = context.WithValue(ctx, model.CtxEmployeeKey{}, bs.employee)
 		case *ent.Store:
 			bs.entStore = p
+			bs.operator = &model.OperatorInfo{
+				ID:    p.ID,
+				Phone: p.Phone,
+				Name:  p.Name,
+				Type:  model.OperatorTypeEmployee,
+			}
 		case *ent.Agent:
 			bs.agent = p
+			bs.operator = &model.OperatorInfo{
+				ID:    p.ID,
+				Phone: p.Phone,
+				Name:  p.Name,
+				Type:  model.OperatorTypeAgent,
+			}
 		case *ent.Enterprise:
 			bs.enterprise = p
 		case *ent.Maintainer:
 			bs.maintainer = p
+			bs.operator = &model.OperatorInfo{
+				ID:    p.ID,
+				Phone: p.Phone,
+				Name:  p.Name,
+				Type:  model.OperatorTypeMaintainer,
+			}
+		case *model.OperatorInfo:
+			bs.operator = p
+		default:
+			snag.Panic(fmt.Errorf("unknown param type: %T", param))
 		}
 	}
 
@@ -101,18 +150,17 @@ func newService(params ...any) (bs *BaseService) {
 // start 从第几行开始为数据
 // columnsNumber 每行数据数量
 // pkIndex 主键下标(以此排重)
-func (s *BaseService) GetXlsxRows(c echo.Context, start, columnsNumber int, pkIndex int) (rows [][]string, pks, failed []string) {
+func (s *BaseService) GetXlsxRows(c echo.Context, start, columnsNumber int, pkIndex int) (rows [][]string, pks, failed []string, err error) {
 	failed = make([]string, 0)
 	source, err := c.FormFile("file")
 	if err != nil {
-		snag.Panic("未获取到上传的文件: " + err.Error())
-		return
+		return nil, nil, nil, errors.New("未获取到上传的文件" + err.Error())
 	}
 
 	var f multipart.File
 	f, err = source.Open()
 	if err != nil {
-		snag.Panic(err)
+		return nil, nil, nil, errors.New("文件打开失败" + err.Error())
 	}
 	defer func(f multipart.File) {
 		_ = f.Close()
@@ -121,17 +169,17 @@ func (s *BaseService) GetXlsxRows(c echo.Context, start, columnsNumber int, pkIn
 	var kind types.Type
 	kind, err = filetype.MatchReader(f)
 	if err != nil {
-		snag.Panic(err)
+		return nil, nil, nil, errors.New("文件格式错误" + err.Error())
 	}
 	if kind != matchers.TypeXlsx {
-		snag.Panic(fmt.Sprintf("文件格式错误，必须为标准xlsx格式，当前为：%s", kind.Extension))
+		return nil, nil, nil, errors.New("文件格式错误，必须为标准xlsx格式,当前为：" + kind.Extension)
 	}
 	_, _ = f.Seek(0, 0)
 
 	var r *excelize.File
 	r, err = excelize.OpenReader(f)
 	if err != nil {
-		snag.Panic(err)
+		return nil, nil, nil, errors.New("文件打开失败" + err.Error())
 	}
 	defer func(r *excelize.File) {
 		_ = r.Close()
@@ -143,7 +191,7 @@ func (s *BaseService) GetXlsxRows(c echo.Context, start, columnsNumber int, pkIn
 	rawRows, err = r.GetRows(sheet)
 
 	if err != nil {
-		snag.Panic(err)
+		return nil, nil, nil, errors.New("读取文件失败" + err.Error())
 	}
 
 	// 主键 => 行数(i+1)
@@ -177,7 +225,7 @@ func (s *BaseService) GetXlsxRows(c echo.Context, start, columnsNumber int, pkIn
 	}
 
 	if len(rows) < start {
-		snag.Panic("至少有一条有效信息")
+		return nil, nil, nil, errors.New("未获取到数据")
 	}
 
 	return

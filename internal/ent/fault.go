@@ -11,10 +11,9 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -40,10 +39,6 @@ type Fault struct {
 	CityID uint64 `json:"city_id,omitempty"`
 	// 电柜ID
 	CabinetID *uint64 `json:"cabinet_id,omitempty"`
-	// BatteryID holds the value of the "battery_id" field.
-	BatteryID *uint64 `json:"battery_id,omitempty"`
-	// EbikeID holds the value of the "ebike_id" field.
-	EbikeID *uint64 `json:"ebike_id,omitempty"`
 	// 骑手ID
 	RiderID *uint64 `json:"rider_id,omitempty"`
 	// 故障状态 0未处理 1已处理
@@ -56,6 +51,10 @@ type Fault struct {
 	Type uint8 `json:"type,omitempty"`
 	// 故障内容
 	Fault []string `json:"fault,omitempty"`
+	// 电车ID
+	EbikeID *uint64 `json:"ebike_id,omitempty"`
+	// 电池ID
+	BatteryID *uint64 `json:"battery_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the FaultQuery when eager-loading is set.
 	Edges        FaultEdges `json:"edges"`
@@ -68,12 +67,12 @@ type FaultEdges struct {
 	City *City `json:"city,omitempty"`
 	// Cabinet holds the value of the cabinet edge.
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
-	// Battery holds the value of the battery edge.
-	Battery *Battery `json:"battery,omitempty"`
-	// Ebike holds the value of the ebike edge.
-	Ebike *Ebike `json:"ebike,omitempty"`
 	// 骑手
 	Rider *Rider `json:"rider,omitempty"`
+	// Ebike holds the value of the ebike edge.
+	Ebike *Asset `json:"ebike,omitempty"`
+	// Battery holds the value of the battery edge.
+	Battery *Asset `json:"battery,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [5]bool
@@ -101,37 +100,37 @@ func (e FaultEdges) CabinetOrErr() (*Cabinet, error) {
 	return nil, &NotLoadedError{edge: "cabinet"}
 }
 
-// BatteryOrErr returns the Battery value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e FaultEdges) BatteryOrErr() (*Battery, error) {
-	if e.Battery != nil {
-		return e.Battery, nil
-	} else if e.loadedTypes[2] {
-		return nil, &NotFoundError{label: battery.Label}
-	}
-	return nil, &NotLoadedError{edge: "battery"}
-}
-
-// EbikeOrErr returns the Ebike value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e FaultEdges) EbikeOrErr() (*Ebike, error) {
-	if e.Ebike != nil {
-		return e.Ebike, nil
-	} else if e.loadedTypes[3] {
-		return nil, &NotFoundError{label: ebike.Label}
-	}
-	return nil, &NotLoadedError{edge: "ebike"}
-}
-
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e FaultEdges) RiderOrErr() (*Rider, error) {
 	if e.Rider != nil {
 		return e.Rider, nil
-	} else if e.loadedTypes[4] {
+	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
+}
+
+// EbikeOrErr returns the Ebike value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e FaultEdges) EbikeOrErr() (*Asset, error) {
+	if e.Ebike != nil {
+		return e.Ebike, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: asset.Label}
+	}
+	return nil, &NotLoadedError{edge: "ebike"}
+}
+
+// BatteryOrErr returns the Battery value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e FaultEdges) BatteryOrErr() (*Asset, error) {
+	if e.Battery != nil {
+		return e.Battery, nil
+	} else if e.loadedTypes[4] {
+		return nil, &NotFoundError{label: asset.Label}
+	}
+	return nil, &NotLoadedError{edge: "battery"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -141,7 +140,7 @@ func (*Fault) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case fault.FieldCreator, fault.FieldLastModifier, fault.FieldAttachments, fault.FieldFault:
 			values[i] = new([]byte)
-		case fault.FieldID, fault.FieldCityID, fault.FieldCabinetID, fault.FieldBatteryID, fault.FieldEbikeID, fault.FieldRiderID, fault.FieldStatus, fault.FieldType:
+		case fault.FieldID, fault.FieldCityID, fault.FieldCabinetID, fault.FieldRiderID, fault.FieldStatus, fault.FieldType, fault.FieldEbikeID, fault.FieldBatteryID:
 			values[i] = new(sql.NullInt64)
 		case fault.FieldRemark, fault.FieldDescription:
 			values[i] = new(sql.NullString)
@@ -222,20 +221,6 @@ func (f *Fault) assignValues(columns []string, values []any) error {
 				f.CabinetID = new(uint64)
 				*f.CabinetID = uint64(value.Int64)
 			}
-		case fault.FieldBatteryID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field battery_id", values[i])
-			} else if value.Valid {
-				f.BatteryID = new(uint64)
-				*f.BatteryID = uint64(value.Int64)
-			}
-		case fault.FieldEbikeID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field ebike_id", values[i])
-			} else if value.Valid {
-				f.EbikeID = new(uint64)
-				*f.EbikeID = uint64(value.Int64)
-			}
 		case fault.FieldRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
@@ -277,6 +262,20 @@ func (f *Fault) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field fault: %w", err)
 				}
 			}
+		case fault.FieldEbikeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field ebike_id", values[i])
+			} else if value.Valid {
+				f.EbikeID = new(uint64)
+				*f.EbikeID = uint64(value.Int64)
+			}
+		case fault.FieldBatteryID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field battery_id", values[i])
+			} else if value.Valid {
+				f.BatteryID = new(uint64)
+				*f.BatteryID = uint64(value.Int64)
+			}
 		default:
 			f.selectValues.Set(columns[i], values[i])
 		}
@@ -300,19 +299,19 @@ func (f *Fault) QueryCabinet() *CabinetQuery {
 	return NewFaultClient(f.config).QueryCabinet(f)
 }
 
-// QueryBattery queries the "battery" edge of the Fault entity.
-func (f *Fault) QueryBattery() *BatteryQuery {
-	return NewFaultClient(f.config).QueryBattery(f)
-}
-
-// QueryEbike queries the "ebike" edge of the Fault entity.
-func (f *Fault) QueryEbike() *EbikeQuery {
-	return NewFaultClient(f.config).QueryEbike(f)
-}
-
 // QueryRider queries the "rider" edge of the Fault entity.
 func (f *Fault) QueryRider() *RiderQuery {
 	return NewFaultClient(f.config).QueryRider(f)
+}
+
+// QueryEbike queries the "ebike" edge of the Fault entity.
+func (f *Fault) QueryEbike() *AssetQuery {
+	return NewFaultClient(f.config).QueryEbike(f)
+}
+
+// QueryBattery queries the "battery" edge of the Fault entity.
+func (f *Fault) QueryBattery() *AssetQuery {
+	return NewFaultClient(f.config).QueryBattery(f)
 }
 
 // Update returns a builder for updating this Fault.
@@ -366,16 +365,6 @@ func (f *Fault) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := f.BatteryID; v != nil {
-		builder.WriteString("battery_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := f.EbikeID; v != nil {
-		builder.WriteString("ebike_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
 	if v := f.RiderID; v != nil {
 		builder.WriteString("rider_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -395,6 +384,16 @@ func (f *Fault) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("fault=")
 	builder.WriteString(fmt.Sprintf("%v", f.Fault))
+	builder.WriteString(", ")
+	if v := f.EbikeID; v != nil {
+		builder.WriteString("ebike_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := f.BatteryID; v != nil {
+		builder.WriteString("battery_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

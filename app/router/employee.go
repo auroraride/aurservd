@@ -19,8 +19,8 @@ func loadEmployeeRoutes() {
 	g.Use(middleware.EmployeeMiddleware())
 
 	// 打卡考勤
-	g.POST("/attendance/precheck", eapi.Attendance.Precheck)
-	g.POST("/attendance", eapi.Attendance.Create)
+	// g.POST("/attendance/precheck", eapi.Attendance.Precheck)
+	// g.POST("/attendance", eapi.Attendance.Create)
 
 	g.POST("/signin", eapi.Employee.Signin)
 	g.GET("/qrcode", eapi.Employee.Qrcode)
@@ -35,8 +35,8 @@ func loadEmployeeRoutes() {
 	g.POST("/business/unsubscribe", eapi.Business.UnSubscribe, middleware.EmployeeDutyMiddleware())
 	g.GET("/business", eapi.Business.List)
 	g.GET("/exchange", eapi.Exchange.List)
-	g.GET("/stock/overview", eapi.Stock.Overview, middleware.EmployeeDutyMiddleware())
-	g.GET("/stock", eapi.Stock.List, middleware.EmployeeDutyMiddleware())
+	// g.GET("/stock/overview", eapi.Stock.Overview, middleware.EmployeeDutyMiddleware())
+	// g.GET("/stock", eapi.Stock.List, middleware.EmployeeDutyMiddleware())
 
 	// 物资
 	g.GET("/exception/setting", eapi.Exception.Setting, middleware.EmployeeDutyMiddleware())
@@ -56,7 +56,7 @@ func loadEmployeeRoutes() {
 
 	// 分配
 	g.GET("/allocate/ebike", eapi.Allocate.UnallocatedEbike)
-	g.POST("/allocate", eapi.Allocate.Allocate)
-	g.GET("/allocate/info/:id", eapi.Allocate.Info)
-	g.GET("/allocate", eapi.Allocate.List)
+	// g.POST("/allocate", eapi.Allocate.Allocate)
+	// g.GET("/allocate/info/:id", eapi.Allocate.Info)
+	// g.GET("/allocate", eapi.Allocate.List)
 }

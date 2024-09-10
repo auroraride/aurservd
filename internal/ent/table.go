@@ -54,6 +54,152 @@ func (a *Allocate) GetID() uint64 {
 	return a.ID
 }
 
+// GetTableName returns table name for Asset.
+func (a *Asset) GetTableName() string {
+	return "asset"
+}
+
+// GetID returns id for Asset.
+func (a *Asset) GetID() uint64 {
+	return a.ID
+}
+
+func (a *Asset) GetName() string {
+	return a.Name
+}
+
+// GetTableName returns table name for AssetAttributeValues.
+func (aav *AssetAttributeValues) GetTableName() string {
+	return "asset_attribute_values"
+}
+
+// GetID returns id for AssetAttributeValues.
+func (aav *AssetAttributeValues) GetID() uint64 {
+	return aav.ID
+}
+
+// GetTableName returns table name for AssetAttributes.
+func (aa *AssetAttributes) GetTableName() string {
+	return "asset_attributes"
+}
+
+// GetID returns id for AssetAttributes.
+func (aa *AssetAttributes) GetID() uint64 {
+	return aa.ID
+}
+
+func (aa *AssetAttributes) GetName() string {
+	return aa.Name
+}
+
+// GetTableName returns table name for AssetCheck.
+func (ac *AssetCheck) GetTableName() string {
+	return "asset_check"
+}
+
+// GetID returns id for AssetCheck.
+func (ac *AssetCheck) GetID() uint64 {
+	return ac.ID
+}
+
+// GetTableName returns table name for AssetCheckDetails.
+func (acd *AssetCheckDetails) GetTableName() string {
+	return "asset_check_details"
+}
+
+// GetID returns id for AssetCheckDetails.
+func (acd *AssetCheckDetails) GetID() uint64 {
+	return acd.ID
+}
+
+// GetTableName returns table name for AssetMaintenance.
+func (am *AssetMaintenance) GetTableName() string {
+	return "asset_maintenance"
+}
+
+// GetID returns id for AssetMaintenance.
+func (am *AssetMaintenance) GetID() uint64 {
+	return am.ID
+}
+
+// GetTableName returns table name for AssetMaintenanceDetails.
+func (amd *AssetMaintenanceDetails) GetTableName() string {
+	return "asset_maintenance_details"
+}
+
+// GetID returns id for AssetMaintenanceDetails.
+func (amd *AssetMaintenanceDetails) GetID() uint64 {
+	return amd.ID
+}
+
+// GetTableName returns table name for AssetManager.
+func (am *AssetManager) GetTableName() string {
+	return "asset_manager"
+}
+
+// GetID returns id for AssetManager.
+func (am *AssetManager) GetID() uint64 {
+	return am.ID
+}
+
+func (am *AssetManager) GetName() string {
+	return am.Name
+}
+
+// GetTableName returns table name for AssetRole.
+func (ar *AssetRole) GetTableName() string {
+	return "asset_role"
+}
+
+// GetID returns id for AssetRole.
+func (ar *AssetRole) GetID() uint64 {
+	return ar.ID
+}
+
+func (ar *AssetRole) GetName() string {
+	return ar.Name
+}
+
+// GetTableName returns table name for AssetScrap.
+func (as *AssetScrap) GetTableName() string {
+	return "asset_scrap"
+}
+
+// GetID returns id for AssetScrap.
+func (as *AssetScrap) GetID() uint64 {
+	return as.ID
+}
+
+// GetTableName returns table name for AssetScrapDetails.
+func (asd *AssetScrapDetails) GetTableName() string {
+	return "asset_scrap_details"
+}
+
+// GetID returns id for AssetScrapDetails.
+func (asd *AssetScrapDetails) GetID() uint64 {
+	return asd.ID
+}
+
+// GetTableName returns table name for AssetTransfer.
+func (at *AssetTransfer) GetTableName() string {
+	return "asset_transfer"
+}
+
+// GetID returns id for AssetTransfer.
+func (at *AssetTransfer) GetID() uint64 {
+	return at.ID
+}
+
+// GetTableName returns table name for AssetTransferDetails.
+func (atd *AssetTransferDetails) GetTableName() string {
+	return "asset_transfer_details"
+}
+
+// GetID returns id for AssetTransferDetails.
+func (atd *AssetTransferDetails) GetID() uint64 {
+	return atd.ID
+}
+
 // GetTableName returns table name for Assistance.
 func (a *Assistance) GetTableName() string {
 	return "assistance"
@@ -526,6 +672,20 @@ func (m *Manager) GetName() string {
 	return m.Name
 }
 
+// GetTableName returns table name for Material.
+func (m *Material) GetTableName() string {
+	return "material"
+}
+
+// GetID returns id for Material.
+func (m *Material) GetID() uint64 {
+	return m.ID
+}
+
+func (m *Material) GetName() string {
+	return m.Name
+}
+
 // GetTableName returns table name for Order.
 func (o *Order) GetTableName() string {
 	return "order"
@@ -926,6 +1086,20 @@ func (sg *StoreGoods) GetID() uint64 {
 	return sg.ID
 }
 
+// GetTableName returns table name for StoreGroup.
+func (sg *StoreGroup) GetTableName() string {
+	return "store_group"
+}
+
+// GetID returns id for StoreGroup.
+func (sg *StoreGroup) GetID() uint64 {
+	return sg.ID
+}
+
+func (sg *StoreGroup) GetName() string {
+	return sg.Name
+}
+
 // GetTableName returns table name for Subscribe.
 func (s *Subscribe) GetTableName() string {
 	return "subscribe"
@@ -988,4 +1162,18 @@ func (v *Version) GetTableName() string {
 // GetID returns id for Version.
 func (v *Version) GetID() uint64 {
 	return v.ID
+}
+
+// GetTableName returns table name for Warehouse.
+func (w *Warehouse) GetTableName() string {
+	return "warehouse"
+}
+
+// GetID returns id for Warehouse.
+func (w *Warehouse) GetID() uint64 {
+	return w.ID
+}
+
+func (w *Warehouse) GetName() string {
+	return w.Name
 }

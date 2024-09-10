@@ -86,8 +86,7 @@ func (Cabinet) Fields() []ent.Field {
 		field.String("serial").Comment("原始编号"),
 		field.String("name").Comment("名称"),
 		field.Int("doors").Comment("柜门数量"),
-		field.Uint8("status").Comment("投放状态"),
-
+		field.Uint8("status").Comment("投放状态 0:未投放 1:运营中 2:维护中"),
 		field.Float("lng").Optional().Comment("经度"),
 		field.Float("lat").Optional().Comment("纬度"),
 		field.Other("geom", &model.Geometry{}).Optional().SchemaType(map[string]string{
@@ -121,6 +120,7 @@ func (Cabinet) Edges() []ent.Edge {
 		edge.To("models", BatteryModel.Type),
 		edge.To("faults", CabinetFault.Type),
 		edge.To("exchanges", Exchange.Type),
+		edge.To("asset", Asset.Type),
 		edge.To("stocks", Stock.Type),
 		edge.To("batteries", Battery.Type),
 		edge.To("battery_flows", BatteryFlow.Type),
@@ -136,6 +136,7 @@ func (Cabinet) Mixin() []ent.Mixin {
 		internal.Modifier{},
 
 		CityMixin{Optional: true},
+		StoreMixin{Optional: true},
 	}
 }
 

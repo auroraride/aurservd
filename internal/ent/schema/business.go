@@ -72,7 +72,7 @@ func (Business) Fields() []ent.Field {
 // Edges of the Business.
 func (Business) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("rto_ebike", Ebike.Type).Unique().Field("rto_ebike_id"),
+		edge.To("rto_ebike", Asset.Type).Unique().Field("rto_ebike_id"),
 	}
 }
 

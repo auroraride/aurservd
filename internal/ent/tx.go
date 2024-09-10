@@ -22,6 +22,32 @@ type Tx struct {
 	Agreement *AgreementClient
 	// Allocate is the client for interacting with the Allocate builders.
 	Allocate *AllocateClient
+	// Asset is the client for interacting with the Asset builders.
+	Asset *AssetClient
+	// AssetAttributeValues is the client for interacting with the AssetAttributeValues builders.
+	AssetAttributeValues *AssetAttributeValuesClient
+	// AssetAttributes is the client for interacting with the AssetAttributes builders.
+	AssetAttributes *AssetAttributesClient
+	// AssetCheck is the client for interacting with the AssetCheck builders.
+	AssetCheck *AssetCheckClient
+	// AssetCheckDetails is the client for interacting with the AssetCheckDetails builders.
+	AssetCheckDetails *AssetCheckDetailsClient
+	// AssetMaintenance is the client for interacting with the AssetMaintenance builders.
+	AssetMaintenance *AssetMaintenanceClient
+	// AssetMaintenanceDetails is the client for interacting with the AssetMaintenanceDetails builders.
+	AssetMaintenanceDetails *AssetMaintenanceDetailsClient
+	// AssetManager is the client for interacting with the AssetManager builders.
+	AssetManager *AssetManagerClient
+	// AssetRole is the client for interacting with the AssetRole builders.
+	AssetRole *AssetRoleClient
+	// AssetScrap is the client for interacting with the AssetScrap builders.
+	AssetScrap *AssetScrapClient
+	// AssetScrapDetails is the client for interacting with the AssetScrapDetails builders.
+	AssetScrapDetails *AssetScrapDetailsClient
+	// AssetTransfer is the client for interacting with the AssetTransfer builders.
+	AssetTransfer *AssetTransferClient
+	// AssetTransferDetails is the client for interacting with the AssetTransferDetails builders.
+	AssetTransferDetails *AssetTransferDetailsClient
 	// Assistance is the client for interacting with the Assistance builders.
 	Assistance *AssistanceClient
 	// Attendance is the client for interacting with the Attendance builders.
@@ -102,6 +128,8 @@ type Tx struct {
 	Maintainer *MaintainerClient
 	// Manager is the client for interacting with the Manager builders.
 	Manager *ManagerClient
+	// Material is the client for interacting with the Material builders.
+	Material *MaterialClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
 	// OrderRefund is the client for interacting with the OrderRefund builders.
@@ -170,6 +198,8 @@ type Tx struct {
 	Store *StoreClient
 	// StoreGoods is the client for interacting with the StoreGoods builders.
 	StoreGoods *StoreGoodsClient
+	// StoreGroup is the client for interacting with the StoreGroup builders.
+	StoreGroup *StoreGroupClient
 	// Subscribe is the client for interacting with the Subscribe builders.
 	Subscribe *SubscribeClient
 	// SubscribeAlter is the client for interacting with the SubscribeAlter builders.
@@ -182,6 +212,8 @@ type Tx struct {
 	SubscribeSuspend *SubscribeSuspendClient
 	// Version is the client for interacting with the Version builders.
 	Version *VersionClient
+	// Warehouse is the client for interacting with the Warehouse builders.
+	Warehouse *WarehouseClient
 
 	// lazily loaded.
 	client     *Client
@@ -317,6 +349,19 @@ func (tx *Tx) init() {
 	tx.Agent = NewAgentClient(tx.config)
 	tx.Agreement = NewAgreementClient(tx.config)
 	tx.Allocate = NewAllocateClient(tx.config)
+	tx.Asset = NewAssetClient(tx.config)
+	tx.AssetAttributeValues = NewAssetAttributeValuesClient(tx.config)
+	tx.AssetAttributes = NewAssetAttributesClient(tx.config)
+	tx.AssetCheck = NewAssetCheckClient(tx.config)
+	tx.AssetCheckDetails = NewAssetCheckDetailsClient(tx.config)
+	tx.AssetMaintenance = NewAssetMaintenanceClient(tx.config)
+	tx.AssetMaintenanceDetails = NewAssetMaintenanceDetailsClient(tx.config)
+	tx.AssetManager = NewAssetManagerClient(tx.config)
+	tx.AssetRole = NewAssetRoleClient(tx.config)
+	tx.AssetScrap = NewAssetScrapClient(tx.config)
+	tx.AssetScrapDetails = NewAssetScrapDetailsClient(tx.config)
+	tx.AssetTransfer = NewAssetTransferClient(tx.config)
+	tx.AssetTransferDetails = NewAssetTransferDetailsClient(tx.config)
 	tx.Assistance = NewAssistanceClient(tx.config)
 	tx.Attendance = NewAttendanceClient(tx.config)
 	tx.Battery = NewBatteryClient(tx.config)
@@ -357,6 +402,7 @@ func (tx *Tx) init() {
 	tx.Inventory = NewInventoryClient(tx.config)
 	tx.Maintainer = NewMaintainerClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)
+	tx.Material = NewMaterialClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
 	tx.OrderRefund = NewOrderRefundClient(tx.config)
 	tx.Person = NewPersonClient(tx.config)
@@ -391,12 +437,14 @@ func (tx *Tx) init() {
 	tx.StockSummary = NewStockSummaryClient(tx.config)
 	tx.Store = NewStoreClient(tx.config)
 	tx.StoreGoods = NewStoreGoodsClient(tx.config)
+	tx.StoreGroup = NewStoreGroupClient(tx.config)
 	tx.Subscribe = NewSubscribeClient(tx.config)
 	tx.SubscribeAlter = NewSubscribeAlterClient(tx.config)
 	tx.SubscribePause = NewSubscribePauseClient(tx.config)
 	tx.SubscribeReminder = NewSubscribeReminderClient(tx.config)
 	tx.SubscribeSuspend = NewSubscribeSuspendClient(tx.config)
 	tx.Version = NewVersionClient(tx.config)
+	tx.Warehouse = NewWarehouseClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

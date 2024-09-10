@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
+	"github.com/auroraride/aurservd/internal/ent/assetattributes"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -76,7 +77,8 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (res *
 	}
 
 	// 判定非智能套餐门店库存
-	if allo.StoreID != nil && allo.BatteryID == nil && !service.NewStock().CheckStore(*allo.StoreID, sub.Model, 1) {
+	checkAsset, _ := service.NewAsset().CheckAsset(model.AssetLocationsTypeStore, *allo.StoreID, sub.Model)
+	if allo.StoreID != nil && allo.BatteryID == nil && checkAsset == nil {
 		return nil, errors.New("库存不足")
 	}
 
@@ -290,18 +292,32 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 
 			brand := bike.Edges.Brand
 
+			// 查询电车属性
+			attributes, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.KeyIn("color", "plate")).All(s.ctx)
+			values, _ := bike.QueryValues().All(s.ctx)
+			for _, v := range attributes {
+				for _, av := range values {
+					if v.ID == av.AttributeID {
+						switch v.Key {
+						case "plate":
+							// 车牌号
+							m["ebikePlate"] = av.Value
+						case "color":
+							// 车辆颜色
+							m["ebikeColor"] = av.Value
+						}
+					}
+				}
+			}
+
 			// 车加电方案
 			m["schemaEbike"] = true
 			// 车加电方案一
 			m["ebikeScheme1"] = true
 			// 车辆品牌
 			m["ebikeBrand"] = brand.Name
-			// 车辆颜色
-			m["ebikeColor"] = bike.Color
 			// 车架号
 			m["ebikeSN"] = bike.Sn
-			// 车牌号
-			m["ebikePlate"] = bike.Plate
 			// 电池类型
 			m["ebikeBattery"] = "时光驹电池"
 			// 电池规格

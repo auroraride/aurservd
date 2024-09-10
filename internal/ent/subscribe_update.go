@@ -12,10 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -236,26 +235,6 @@ func (su *SubscribeUpdate) SetNillableBrandID(u *uint64) *SubscribeUpdate {
 // ClearBrandID clears the value of the "brand_id" field.
 func (su *SubscribeUpdate) ClearBrandID() *SubscribeUpdate {
 	su.mutation.ClearBrandID()
-	return su
-}
-
-// SetEbikeID sets the "ebike_id" field.
-func (su *SubscribeUpdate) SetEbikeID(u uint64) *SubscribeUpdate {
-	su.mutation.SetEbikeID(u)
-	return su
-}
-
-// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
-func (su *SubscribeUpdate) SetNillableEbikeID(u *uint64) *SubscribeUpdate {
-	if u != nil {
-		su.SetEbikeID(*u)
-	}
-	return su
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (su *SubscribeUpdate) ClearEbikeID() *SubscribeUpdate {
-	su.mutation.ClearEbikeID()
 	return su
 }
 
@@ -790,6 +769,26 @@ func (su *SubscribeUpdate) ClearDepositType() *SubscribeUpdate {
 	return su
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (su *SubscribeUpdate) SetEbikeID(u uint64) *SubscribeUpdate {
+	su.mutation.SetEbikeID(u)
+	return su
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableEbikeID(u *uint64) *SubscribeUpdate {
+	if u != nil {
+		su.SetEbikeID(*u)
+	}
+	return su
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (su *SubscribeUpdate) ClearEbikeID() *SubscribeUpdate {
+	su.mutation.ClearEbikeID()
+	return su
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (su *SubscribeUpdate) SetPlan(p *Plan) *SubscribeUpdate {
 	return su.SetPlanID(p.ID)
@@ -823,11 +822,6 @@ func (su *SubscribeUpdate) SetCabinet(c *Cabinet) *SubscribeUpdate {
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (su *SubscribeUpdate) SetBrand(e *EbikeBrand) *SubscribeUpdate {
 	return su.SetBrandID(e.ID)
-}
-
-// SetEbike sets the "ebike" edge to the Ebike entity.
-func (su *SubscribeUpdate) SetEbike(e *Ebike) *SubscribeUpdate {
-	return su.SetEbikeID(e.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -920,13 +914,18 @@ func (su *SubscribeUpdate) AddBills(e ...*EnterpriseBill) *SubscribeUpdate {
 	return su.AddBillIDs(ids...)
 }
 
-// SetBatteryID sets the "battery" edge to the Battery entity by ID.
+// SetEbike sets the "ebike" edge to the Asset entity.
+func (su *SubscribeUpdate) SetEbike(a *Asset) *SubscribeUpdate {
+	return su.SetEbikeID(a.ID)
+}
+
+// SetBatteryID sets the "battery" edge to the Asset entity by ID.
 func (su *SubscribeUpdate) SetBatteryID(id uint64) *SubscribeUpdate {
 	su.mutation.SetBatteryID(id)
 	return su
 }
 
-// SetNillableBatteryID sets the "battery" edge to the Battery entity by ID if the given value is not nil.
+// SetNillableBatteryID sets the "battery" edge to the Asset entity by ID if the given value is not nil.
 func (su *SubscribeUpdate) SetNillableBatteryID(id *uint64) *SubscribeUpdate {
 	if id != nil {
 		su = su.SetBatteryID(*id)
@@ -934,9 +933,9 @@ func (su *SubscribeUpdate) SetNillableBatteryID(id *uint64) *SubscribeUpdate {
 	return su
 }
 
-// SetBattery sets the "battery" edge to the Battery entity.
-func (su *SubscribeUpdate) SetBattery(b *Battery) *SubscribeUpdate {
-	return su.SetBatteryID(b.ID)
+// SetBattery sets the "battery" edge to the Asset entity.
+func (su *SubscribeUpdate) SetBattery(a *Asset) *SubscribeUpdate {
+	return su.SetBatteryID(a.ID)
 }
 
 // SetEnterprisePrice sets the "enterprise_price" edge to the EnterprisePrice entity.
@@ -988,12 +987,6 @@ func (su *SubscribeUpdate) ClearCabinet() *SubscribeUpdate {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (su *SubscribeUpdate) ClearBrand() *SubscribeUpdate {
 	su.mutation.ClearBrand()
-	return su
-}
-
-// ClearEbike clears the "ebike" edge to the Ebike entity.
-func (su *SubscribeUpdate) ClearEbike() *SubscribeUpdate {
-	su.mutation.ClearEbike()
 	return su
 }
 
@@ -1120,7 +1113,13 @@ func (su *SubscribeUpdate) RemoveBills(e ...*EnterpriseBill) *SubscribeUpdate {
 	return su.RemoveBillIDs(ids...)
 }
 
-// ClearBattery clears the "battery" edge to the Battery entity.
+// ClearEbike clears the "ebike" edge to the Asset entity.
+func (su *SubscribeUpdate) ClearEbike() *SubscribeUpdate {
+	su.mutation.ClearEbike()
+	return su
+}
+
+// ClearBattery clears the "battery" edge to the Asset entity.
 func (su *SubscribeUpdate) ClearBattery() *SubscribeUpdate {
 	su.mutation.ClearBattery()
 	return su
@@ -1562,35 +1561,6 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if su.mutation.EbikeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   subscribe.EbikeTable,
-			Columns: []string{subscribe.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := su.mutation.EbikeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   subscribe.EbikeTable,
-			Columns: []string{subscribe.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if su.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1903,6 +1873,35 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.EbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EbikeTable,
+			Columns: []string{subscribe.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EbikeTable,
+			Columns: []string{subscribe.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if su.mutation.BatteryCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -1911,7 +1910,7 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{subscribe.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1924,7 +1923,7 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{subscribe.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2172,26 +2171,6 @@ func (suo *SubscribeUpdateOne) SetNillableBrandID(u *uint64) *SubscribeUpdateOne
 // ClearBrandID clears the value of the "brand_id" field.
 func (suo *SubscribeUpdateOne) ClearBrandID() *SubscribeUpdateOne {
 	suo.mutation.ClearBrandID()
-	return suo
-}
-
-// SetEbikeID sets the "ebike_id" field.
-func (suo *SubscribeUpdateOne) SetEbikeID(u uint64) *SubscribeUpdateOne {
-	suo.mutation.SetEbikeID(u)
-	return suo
-}
-
-// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
-func (suo *SubscribeUpdateOne) SetNillableEbikeID(u *uint64) *SubscribeUpdateOne {
-	if u != nil {
-		suo.SetEbikeID(*u)
-	}
-	return suo
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (suo *SubscribeUpdateOne) ClearEbikeID() *SubscribeUpdateOne {
-	suo.mutation.ClearEbikeID()
 	return suo
 }
 
@@ -2726,6 +2705,26 @@ func (suo *SubscribeUpdateOne) ClearDepositType() *SubscribeUpdateOne {
 	return suo
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (suo *SubscribeUpdateOne) SetEbikeID(u uint64) *SubscribeUpdateOne {
+	suo.mutation.SetEbikeID(u)
+	return suo
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableEbikeID(u *uint64) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetEbikeID(*u)
+	}
+	return suo
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (suo *SubscribeUpdateOne) ClearEbikeID() *SubscribeUpdateOne {
+	suo.mutation.ClearEbikeID()
+	return suo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (suo *SubscribeUpdateOne) SetPlan(p *Plan) *SubscribeUpdateOne {
 	return suo.SetPlanID(p.ID)
@@ -2759,11 +2758,6 @@ func (suo *SubscribeUpdateOne) SetCabinet(c *Cabinet) *SubscribeUpdateOne {
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (suo *SubscribeUpdateOne) SetBrand(e *EbikeBrand) *SubscribeUpdateOne {
 	return suo.SetBrandID(e.ID)
-}
-
-// SetEbike sets the "ebike" edge to the Ebike entity.
-func (suo *SubscribeUpdateOne) SetEbike(e *Ebike) *SubscribeUpdateOne {
-	return suo.SetEbikeID(e.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -2856,13 +2850,18 @@ func (suo *SubscribeUpdateOne) AddBills(e ...*EnterpriseBill) *SubscribeUpdateOn
 	return suo.AddBillIDs(ids...)
 }
 
-// SetBatteryID sets the "battery" edge to the Battery entity by ID.
+// SetEbike sets the "ebike" edge to the Asset entity.
+func (suo *SubscribeUpdateOne) SetEbike(a *Asset) *SubscribeUpdateOne {
+	return suo.SetEbikeID(a.ID)
+}
+
+// SetBatteryID sets the "battery" edge to the Asset entity by ID.
 func (suo *SubscribeUpdateOne) SetBatteryID(id uint64) *SubscribeUpdateOne {
 	suo.mutation.SetBatteryID(id)
 	return suo
 }
 
-// SetNillableBatteryID sets the "battery" edge to the Battery entity by ID if the given value is not nil.
+// SetNillableBatteryID sets the "battery" edge to the Asset entity by ID if the given value is not nil.
 func (suo *SubscribeUpdateOne) SetNillableBatteryID(id *uint64) *SubscribeUpdateOne {
 	if id != nil {
 		suo = suo.SetBatteryID(*id)
@@ -2870,9 +2869,9 @@ func (suo *SubscribeUpdateOne) SetNillableBatteryID(id *uint64) *SubscribeUpdate
 	return suo
 }
 
-// SetBattery sets the "battery" edge to the Battery entity.
-func (suo *SubscribeUpdateOne) SetBattery(b *Battery) *SubscribeUpdateOne {
-	return suo.SetBatteryID(b.ID)
+// SetBattery sets the "battery" edge to the Asset entity.
+func (suo *SubscribeUpdateOne) SetBattery(a *Asset) *SubscribeUpdateOne {
+	return suo.SetBatteryID(a.ID)
 }
 
 // SetEnterprisePrice sets the "enterprise_price" edge to the EnterprisePrice entity.
@@ -2924,12 +2923,6 @@ func (suo *SubscribeUpdateOne) ClearCabinet() *SubscribeUpdateOne {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (suo *SubscribeUpdateOne) ClearBrand() *SubscribeUpdateOne {
 	suo.mutation.ClearBrand()
-	return suo
-}
-
-// ClearEbike clears the "ebike" edge to the Ebike entity.
-func (suo *SubscribeUpdateOne) ClearEbike() *SubscribeUpdateOne {
-	suo.mutation.ClearEbike()
 	return suo
 }
 
@@ -3056,7 +3049,13 @@ func (suo *SubscribeUpdateOne) RemoveBills(e ...*EnterpriseBill) *SubscribeUpdat
 	return suo.RemoveBillIDs(ids...)
 }
 
-// ClearBattery clears the "battery" edge to the Battery entity.
+// ClearEbike clears the "ebike" edge to the Asset entity.
+func (suo *SubscribeUpdateOne) ClearEbike() *SubscribeUpdateOne {
+	suo.mutation.ClearEbike()
+	return suo
+}
+
+// ClearBattery clears the "battery" edge to the Asset entity.
 func (suo *SubscribeUpdateOne) ClearBattery() *SubscribeUpdateOne {
 	suo.mutation.ClearBattery()
 	return suo
@@ -3528,35 +3527,6 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if suo.mutation.EbikeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   subscribe.EbikeTable,
-			Columns: []string{subscribe.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := suo.mutation.EbikeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   subscribe.EbikeTable,
-			Columns: []string{subscribe.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if suo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -3869,6 +3839,35 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if suo.mutation.EbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EbikeTable,
+			Columns: []string{subscribe.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.EbikeTable,
+			Columns: []string{subscribe.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if suo.mutation.BatteryCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -3877,7 +3876,7 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 			Columns: []string{subscribe.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -3890,7 +3889,7 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 			Columns: []string{subscribe.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

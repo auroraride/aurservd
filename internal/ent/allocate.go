@@ -13,10 +13,10 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -70,8 +70,9 @@ type Allocate struct {
 	EbikeID *uint64 `json:"ebike_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AllocateQuery when eager-loading is set.
-	Edges        AllocateEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges           AllocateEdges `json:"edges"`
+	ebike_allocates *uint64
+	selectValues    sql.SelectValues
 }
 
 // AllocateEdges holds the relations/edges for other nodes in the graph.
@@ -97,7 +98,7 @@ type AllocateEdges struct {
 	// Contract holds the value of the contract edge.
 	Contract *Contract `json:"contract,omitempty"`
 	// Ebike holds the value of the ebike edge.
-	Ebike *Ebike `json:"ebike,omitempty"`
+	Ebike *Asset `json:"ebike,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [11]bool
@@ -215,11 +216,11 @@ func (e AllocateEdges) ContractOrErr() (*Contract, error) {
 
 // EbikeOrErr returns the Ebike value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AllocateEdges) EbikeOrErr() (*Ebike, error) {
+func (e AllocateEdges) EbikeOrErr() (*Asset, error) {
 	if e.Ebike != nil {
 		return e.Ebike, nil
 	} else if e.loadedTypes[10] {
-		return nil, &NotFoundError{label: ebike.Label}
+		return nil, &NotFoundError{label: asset.Label}
 	}
 	return nil, &NotLoadedError{edge: "ebike"}
 }
@@ -237,6 +238,8 @@ func (*Allocate) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case allocate.FieldCreatedAt, allocate.FieldUpdatedAt, allocate.FieldTime:
 			values[i] = new(sql.NullTime)
+		case allocate.ForeignKeys[0]: // ebike_allocates
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -386,6 +389,13 @@ func (a *Allocate) assignValues(columns []string, values []any) error {
 				a.EbikeID = new(uint64)
 				*a.EbikeID = uint64(value.Int64)
 			}
+		case allocate.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field ebike_allocates", value)
+			} else if value.Valid {
+				a.ebike_allocates = new(uint64)
+				*a.ebike_allocates = uint64(value.Int64)
+			}
 		default:
 			a.selectValues.Set(columns[i], values[i])
 		}
@@ -450,7 +460,7 @@ func (a *Allocate) QueryContract() *ContractQuery {
 }
 
 // QueryEbike queries the "ebike" edge of the Allocate entity.
-func (a *Allocate) QueryEbike() *EbikeQuery {
+func (a *Allocate) QueryEbike() *AssetQuery {
 	return NewAllocateClient(a.config).QueryEbike(a)
 }
 

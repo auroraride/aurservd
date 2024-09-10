@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/auroraride/aurservd/app/biz/definition"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/activity"
 )
 
@@ -40,7 +40,7 @@ type Activity struct {
 	// 活动入口:首页icon
 	Home bool `json:"home,omitempty"`
 	// 图片
-	Image definition.ActivityImage `json:"image,omitempty"`
+	Image model.ActivityImage `json:"image,omitempty"`
 	// 备注
 	Remark       string `json:"remark,omitempty"`
 	selectValues sql.SelectValues

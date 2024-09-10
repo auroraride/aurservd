@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 )
@@ -59,6 +60,21 @@ func (mc *MaintainerCreate) AddCities(c ...*City) *MaintainerCreate {
 		ids[i] = c[i].ID
 	}
 	return mc.AddCityIDs(ids...)
+}
+
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (mc *MaintainerCreate) AddAssetIDs(ids ...uint64) *MaintainerCreate {
+	mc.mutation.AddAssetIDs(ids...)
+	return mc
+}
+
+// AddAsset adds the "asset" edges to the Asset entity.
+func (mc *MaintainerCreate) AddAsset(a ...*Asset) *MaintainerCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return mc.AddAssetIDs(ids...)
 }
 
 // Mutation returns the MaintainerMutation object of the builder.
@@ -159,6 +175,22 @@ func (mc *MaintainerCreate) createSpec() (*Maintainer, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.AssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   maintainer.AssetTable,
+			Columns: []string{maintainer.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

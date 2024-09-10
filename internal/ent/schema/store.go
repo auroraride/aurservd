@@ -96,10 +96,15 @@ func (Store) Edges() []ent.Edge {
 		edge.From("branch", Branch.Type).Ref("stores").Required().Unique().Field("branch_id"),
 		edge.From("employee", Employee.Type).Ref("store").Unique().Field("employee_id"),
 
-		edge.To("stocks", Stock.Type),
+		edge.To("asset", Asset.Type),
 		edge.To("attendances", Attendance.Type),
 		edge.To("exceptions", Exception.Type),
 		edge.To("goods", StoreGoods.Type),
+
+		edge.To("employees", Employee.Type),
+		edge.To("duty_employees", Employee.Type),
+
+		edge.To("stocks", Stock.Type),
 	}
 }
 
@@ -110,6 +115,7 @@ func (Store) Mixin() []ent.Mixin {
 		internal.Modifier{},
 
 		CityMixin{},
+		StoreGroupMixin{Optional: true},
 	}
 }
 

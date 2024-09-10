@@ -26,6 +26,7 @@ import (
 	"github.com/auroraride/aurservd/app/rpc"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -84,7 +85,7 @@ func (s *intelligentCabinetService) exchangeCacheKey(uid string) string {
 }
 
 // Exchange 请求换电
-func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *ent.Subscribe, old *ent.Battery, cab *ent.Cabinet) {
+func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *ent.Subscribe, old *ent.Asset, cab *ent.Cabinet) {
 	if cab.Intelligent && old == nil {
 		snag.Panic("请求参数错误")
 	}
@@ -195,7 +196,11 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 					}
 
 					// 清除旧电池分配信息
-					_ = NewBattery().Unallocate(old.Update())
+					// _ = NewBattery().Unallocate(old.Update(), model.AssetLocationsTypeCabinet, cab.ID)
+					err = NewBattery().Unallocate(old, model.AssetLocationsTypeCabinet, cab.ID, model.AssetTransferTypeExchange)
+					if err != nil {
+						return
+					}
 
 					go bs.RiderBusiness(true, putin, s.rider, cab, int(after.Ordinal))
 				}
@@ -211,7 +216,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 					bat, _ := bs.LoadOrCreate(putout)
 					if bat != nil {
 						_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-							return NewBattery().Allocate(tx, bat, sub, true)
+							return NewBattery().Allocate(bat, sub, model.AssetTransferTypeExchange)
 						})
 					}
 				}
@@ -272,7 +277,7 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
 }
 
 // BusinessCensorX 校验用户是否可以使用智能柜办理业务
-func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *ent.Subscribe, cab *ent.Cabinet) (bat *ent.Battery) {
+func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *ent.Subscribe, cab *ent.Cabinet) (bat *ent.Asset) {
 	if !cab.Intelligent {
 		return
 	}
@@ -288,18 +293,20 @@ func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *e
 	}
 
 	// 获取电池
-	bat, _ = sub.QueryBattery().First(s.ctx)
+	bat, _ = sub.QueryBattery().WithModel().Where(asset.Type(model.AssetTypeSmartBattery.Value())).First(s.ctx)
 
 	// 业务如果需要电池, 查找电池信息
 	if bus.BatteryNeed() {
 		// 未找到当前绑定的电池信息
 		if bat == nil {
 			snag.Panic(adapter.ErrorBatteryNotFound)
+			return
 		}
-
-		// 检查电池型号与电柜型号兼容
-		if !NewCabinet().ModelInclude(cab, bat.Model) {
-			snag.Panic("电池型号不匹配，请更换电柜重试")
+		if bat.Edges.Model != nil {
+			// 检查电池型号与电柜型号兼容
+			if !NewCabinet().ModelInclude(cab, bat.Edges.Model.Model) {
+				snag.Panic("电池型号不匹配，请更换电柜重试")
+			}
 		}
 	}
 
@@ -327,7 +334,7 @@ func (s *intelligentCabinetService) BusinessUsable(cab *ent.Cabinet, bus adapter
 }
 
 // DoBusiness 请求办理业务
-func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Business, sub *ent.Subscribe, riderBat *ent.Battery, cab *ent.Cabinet) (info *model.BinInfo, batinfo *model.Battery, err error) {
+func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Business, sub *ent.Subscribe, riderBat *ent.Asset, cab *ent.Cabinet) (info *model.BinInfo, batinfo *model.Battery, err error) {
 	defer func() {
 		// 缓存任务返回
 		data := &model.BusinessCabinetStatusRes{
@@ -395,17 +402,21 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 	// 若智能电柜, 需记录电池信息
 	if cab.Intelligent {
 		// 获取电池
-		var bat *ent.Battery
+		var bat *ent.Asset
 		bat, err = NewBattery().LoadOrCreate(sn)
-		if err != nil {
+		if err != nil && bat == nil {
 			zap.L().Error("业务记录失败", zap.Error(err))
 			return
+		}
+		var m string
+		if bat.Edges.Model != nil {
+			m = bat.Edges.Model.Model
 		}
 
 		batinfo = &model.Battery{
 			ID:    bat.ID,
 			SN:    sn,
-			Model: bat.Model,
+			Model: m,
 		}
 
 		// 放入电池
@@ -414,10 +425,23 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 		//     _, _ = bs.Unallocate(bat)
 		// }
 
+		// 业务类型对应调拨类型
+		var at model.AssetTransferType
+		switch bus {
+		case adapter.BusinessActive:
+			at = model.AssetTransferTypeActive
+		case adapter.BusinessPause:
+			at = model.AssetTransferTypePause
+		case adapter.BusinessContinue:
+			at = model.AssetTransferTypeContinue
+		case adapter.BusinessUnsubscribe:
+			at = model.AssetTransferTypeUnSubscribe
+		}
+
 		// 取走电池
 		if !putin {
 			_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-				return NewBattery().Allocate(tx, bat, sub, true)
+				return NewBattery().Allocate(bat, sub, at)
 			})
 		}
 	}
@@ -505,7 +529,7 @@ func (s *intelligentCabinetService) Deactivate(operator *logging.Operator, cab *
 
 // OpenBind 开电池仓并绑定骑手
 func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
-	bs := NewBattery(s.modifier)
+	bs := NewAsset(s.modifier)
 	// 查找骑手
 	rd := NewRider().QueryPhoneX(req.Phone)
 	// 查找订阅
@@ -522,16 +546,20 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
 	info, _ := s.Bininfo(cab, *req.Index+1)
 	if info == nil {
 		snag.Panic("获取最新仓位信息失败")
+		return
 	}
 	if info.BatterySN != req.BatterySN {
 		snag.Panic("电池编码有变动, 请刷新后重试")
 	}
 	// 判定
-	if exists, _ := sub.QueryBattery().Where().Exist(s.ctx); exists {
+	if exists, _ := sub.QueryBattery().Where(asset.LocationsType(model.AssetLocationsTypeRider.Value())).Exist(s.ctx); exists {
 		snag.Panic("该骑手当前有绑定的电池")
 	}
 	// 查找电池
-	bat := bs.QuerySnX(req.BatterySN)
+	bat, err := bs.QuerySn(req.BatterySN)
+	if err != nil {
+		snag.Panic("未找到电池信息")
+	}
 	// 开门
 	success := s.Operate(logging.GetOperatorX(s.modifier), cab, cabdef.OperateDoorOpen, &model.CabinetDoorOperateReq{
 		ID:        req.ID,
@@ -543,7 +571,10 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
 		snag.Panic("仓门开启失败")
 	}
 	// 绑定
-	bs.Bind(bat, sub, rd)
+	err = NewBattery().Bind(bat, sub, rd)
+	if err != nil {
+		snag.Panic(err)
+	}
 }
 
 func (s *intelligentCabinetService) Bininfo(cab *ent.Cabinet, ordinal int) (*cabdef.BinInfo, error) {

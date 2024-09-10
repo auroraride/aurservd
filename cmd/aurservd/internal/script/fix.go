@@ -6,8 +6,9 @@
 package script
 
 import (
-	"github.com/auroraride/aurservd/cmd/aurservd/internal/script/fix"
 	"github.com/spf13/cobra"
+
+	"github.com/auroraride/aurservd/cmd/aurservd/internal/script/fix"
 )
 
 func fixCommand() *cobra.Command {
@@ -22,6 +23,7 @@ func fixCommand() *cobra.Command {
 		fix.Assistance(),
 		fix.Contract(),
 		fix.Sql(),
+		fix.Asset(),
 	)
 
 	return cmd

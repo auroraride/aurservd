@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -100,6 +101,21 @@ func (mu *MaintainerUpdate) AddCities(c ...*City) *MaintainerUpdate {
 	return mu.AddCityIDs(ids...)
 }
 
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (mu *MaintainerUpdate) AddAssetIDs(ids ...uint64) *MaintainerUpdate {
+	mu.mutation.AddAssetIDs(ids...)
+	return mu
+}
+
+// AddAsset adds the "asset" edges to the Asset entity.
+func (mu *MaintainerUpdate) AddAsset(a ...*Asset) *MaintainerUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return mu.AddAssetIDs(ids...)
+}
+
 // Mutation returns the MaintainerMutation object of the builder.
 func (mu *MaintainerUpdate) Mutation() *MaintainerMutation {
 	return mu.mutation
@@ -124,6 +140,27 @@ func (mu *MaintainerUpdate) RemoveCities(c ...*City) *MaintainerUpdate {
 		ids[i] = c[i].ID
 	}
 	return mu.RemoveCityIDs(ids...)
+}
+
+// ClearAsset clears all "asset" edges to the Asset entity.
+func (mu *MaintainerUpdate) ClearAsset() *MaintainerUpdate {
+	mu.mutation.ClearAsset()
+	return mu
+}
+
+// RemoveAssetIDs removes the "asset" edge to Asset entities by IDs.
+func (mu *MaintainerUpdate) RemoveAssetIDs(ids ...uint64) *MaintainerUpdate {
+	mu.mutation.RemoveAssetIDs(ids...)
+	return mu
+}
+
+// RemoveAsset removes "asset" edges to Asset entities.
+func (mu *MaintainerUpdate) RemoveAsset(a ...*Asset) *MaintainerUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return mu.RemoveAssetIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -225,6 +262,51 @@ func (mu *MaintainerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if mu.mutation.AssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   maintainer.AssetTable,
+			Columns: []string{maintainer.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedAssetIDs(); len(nodes) > 0 && !mu.mutation.AssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   maintainer.AssetTable,
+			Columns: []string{maintainer.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.AssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   maintainer.AssetTable,
+			Columns: []string{maintainer.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(mu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -318,6 +400,21 @@ func (muo *MaintainerUpdateOne) AddCities(c ...*City) *MaintainerUpdateOne {
 	return muo.AddCityIDs(ids...)
 }
 
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (muo *MaintainerUpdateOne) AddAssetIDs(ids ...uint64) *MaintainerUpdateOne {
+	muo.mutation.AddAssetIDs(ids...)
+	return muo
+}
+
+// AddAsset adds the "asset" edges to the Asset entity.
+func (muo *MaintainerUpdateOne) AddAsset(a ...*Asset) *MaintainerUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return muo.AddAssetIDs(ids...)
+}
+
 // Mutation returns the MaintainerMutation object of the builder.
 func (muo *MaintainerUpdateOne) Mutation() *MaintainerMutation {
 	return muo.mutation
@@ -342,6 +439,27 @@ func (muo *MaintainerUpdateOne) RemoveCities(c ...*City) *MaintainerUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return muo.RemoveCityIDs(ids...)
+}
+
+// ClearAsset clears all "asset" edges to the Asset entity.
+func (muo *MaintainerUpdateOne) ClearAsset() *MaintainerUpdateOne {
+	muo.mutation.ClearAsset()
+	return muo
+}
+
+// RemoveAssetIDs removes the "asset" edge to Asset entities by IDs.
+func (muo *MaintainerUpdateOne) RemoveAssetIDs(ids ...uint64) *MaintainerUpdateOne {
+	muo.mutation.RemoveAssetIDs(ids...)
+	return muo
+}
+
+// RemoveAsset removes "asset" edges to Asset entities.
+func (muo *MaintainerUpdateOne) RemoveAsset(a ...*Asset) *MaintainerUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return muo.RemoveAssetIDs(ids...)
 }
 
 // Where appends a list predicates to the MaintainerUpdate builder.
@@ -466,6 +584,51 @@ func (muo *MaintainerUpdateOne) sqlSave(ctx context.Context) (_node *Maintainer,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.AssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   maintainer.AssetTable,
+			Columns: []string{maintainer.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedAssetIDs(); len(nodes) > 0 && !muo.mutation.AssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   maintainer.AssetTable,
+			Columns: []string{maintainer.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.AssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   maintainer.AssetTable,
+			Columns: []string{maintainer.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

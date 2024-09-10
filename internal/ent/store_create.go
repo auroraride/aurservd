@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -20,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
+	"github.com/auroraride/aurservd/internal/ent/storegroup"
 )
 
 // StoreCreate is the builder for creating a Store entity.
@@ -101,6 +103,20 @@ func (sc *StoreCreate) SetNillableRemark(s *string) *StoreCreate {
 // SetCityID sets the "city_id" field.
 func (sc *StoreCreate) SetCityID(u uint64) *StoreCreate {
 	sc.mutation.SetCityID(u)
+	return sc
+}
+
+// SetGroupID sets the "group_id" field.
+func (sc *StoreCreate) SetGroupID(u uint64) *StoreCreate {
+	sc.mutation.SetGroupID(u)
+	return sc
+}
+
+// SetNillableGroupID sets the "group_id" field if the given value is not nil.
+func (sc *StoreCreate) SetNillableGroupID(u *uint64) *StoreCreate {
+	if u != nil {
+		sc.SetGroupID(*u)
+	}
 	return sc
 }
 
@@ -277,6 +293,11 @@ func (sc *StoreCreate) SetCity(c *City) *StoreCreate {
 	return sc.SetCityID(c.ID)
 }
 
+// SetGroup sets the "group" edge to the StoreGroup entity.
+func (sc *StoreCreate) SetGroup(s *StoreGroup) *StoreCreate {
+	return sc.SetGroupID(s.ID)
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (sc *StoreCreate) SetBranch(b *Branch) *StoreCreate {
 	return sc.SetBranchID(b.ID)
@@ -287,19 +308,19 @@ func (sc *StoreCreate) SetEmployee(e *Employee) *StoreCreate {
 	return sc.SetEmployeeID(e.ID)
 }
 
-// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
-func (sc *StoreCreate) AddStockIDs(ids ...uint64) *StoreCreate {
-	sc.mutation.AddStockIDs(ids...)
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (sc *StoreCreate) AddAssetIDs(ids ...uint64) *StoreCreate {
+	sc.mutation.AddAssetIDs(ids...)
 	return sc
 }
 
-// AddStocks adds the "stocks" edges to the Stock entity.
-func (sc *StoreCreate) AddStocks(s ...*Stock) *StoreCreate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// AddAsset adds the "asset" edges to the Asset entity.
+func (sc *StoreCreate) AddAsset(a ...*Asset) *StoreCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return sc.AddStockIDs(ids...)
+	return sc.AddAssetIDs(ids...)
 }
 
 // AddAttendanceIDs adds the "attendances" edge to the Attendance entity by IDs.
@@ -345,6 +366,51 @@ func (sc *StoreCreate) AddGoods(s ...*StoreGoods) *StoreCreate {
 		ids[i] = s[i].ID
 	}
 	return sc.AddGoodIDs(ids...)
+}
+
+// AddEmployeeIDs adds the "employees" edge to the Employee entity by IDs.
+func (sc *StoreCreate) AddEmployeeIDs(ids ...uint64) *StoreCreate {
+	sc.mutation.AddEmployeeIDs(ids...)
+	return sc
+}
+
+// AddEmployees adds the "employees" edges to the Employee entity.
+func (sc *StoreCreate) AddEmployees(e ...*Employee) *StoreCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return sc.AddEmployeeIDs(ids...)
+}
+
+// AddDutyEmployeeIDs adds the "duty_employees" edge to the Employee entity by IDs.
+func (sc *StoreCreate) AddDutyEmployeeIDs(ids ...uint64) *StoreCreate {
+	sc.mutation.AddDutyEmployeeIDs(ids...)
+	return sc
+}
+
+// AddDutyEmployees adds the "duty_employees" edges to the Employee entity.
+func (sc *StoreCreate) AddDutyEmployees(e ...*Employee) *StoreCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return sc.AddDutyEmployeeIDs(ids...)
+}
+
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (sc *StoreCreate) AddStockIDs(ids ...uint64) *StoreCreate {
+	sc.mutation.AddStockIDs(ids...)
+	return sc
+}
+
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (sc *StoreCreate) AddStocks(s ...*Stock) *StoreCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return sc.AddStockIDs(ids...)
 }
 
 // Mutation returns the StoreMutation object of the builder.
@@ -614,6 +680,23 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := sc.mutation.GroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.GroupTable,
+			Columns: []string{store.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(storegroup.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.GroupID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := sc.mutation.BranchIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -648,15 +731,15 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 		_node.EmployeeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := sc.mutation.StocksIDs(); len(nodes) > 0 {
+	if nodes := sc.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   store.StocksTable,
-			Columns: []string{store.StocksColumn},
+			Table:   store.AssetTable,
+			Columns: []string{store.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -705,6 +788,54 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(storegoods.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.EmployeesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   store.EmployeesTable,
+			Columns: store.EmployeesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.DutyEmployeesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.DutyEmployeesTable,
+			Columns: []string{store.DutyEmployeesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.StocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.StocksTable,
+			Columns: []string{store.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -839,6 +970,24 @@ func (u *StoreUpsert) SetCityID(v uint64) *StoreUpsert {
 // UpdateCityID sets the "city_id" field to the value that was provided on create.
 func (u *StoreUpsert) UpdateCityID() *StoreUpsert {
 	u.SetExcluded(store.FieldCityID)
+	return u
+}
+
+// SetGroupID sets the "group_id" field.
+func (u *StoreUpsert) SetGroupID(v uint64) *StoreUpsert {
+	u.Set(store.FieldGroupID, v)
+	return u
+}
+
+// UpdateGroupID sets the "group_id" field to the value that was provided on create.
+func (u *StoreUpsert) UpdateGroupID() *StoreUpsert {
+	u.SetExcluded(store.FieldGroupID)
+	return u
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (u *StoreUpsert) ClearGroupID() *StoreUpsert {
+	u.SetNull(store.FieldGroupID)
 	return u
 }
 
@@ -1197,6 +1346,27 @@ func (u *StoreUpsertOne) SetCityID(v uint64) *StoreUpsertOne {
 func (u *StoreUpsertOne) UpdateCityID() *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// SetGroupID sets the "group_id" field.
+func (u *StoreUpsertOne) SetGroupID(v uint64) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetGroupID(v)
+	})
+}
+
+// UpdateGroupID sets the "group_id" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdateGroupID() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateGroupID()
+	})
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (u *StoreUpsertOne) ClearGroupID() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearGroupID()
 	})
 }
 
@@ -1757,6 +1927,27 @@ func (u *StoreUpsertBulk) SetCityID(v uint64) *StoreUpsertBulk {
 func (u *StoreUpsertBulk) UpdateCityID() *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// SetGroupID sets the "group_id" field.
+func (u *StoreUpsertBulk) SetGroupID(v uint64) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetGroupID(v)
+	})
+}
+
+// UpdateGroupID sets the "group_id" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdateGroupID() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateGroupID()
+	})
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (u *StoreUpsertBulk) ClearGroupID() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearGroupID()
 	})
 }
 

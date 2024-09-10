@@ -72,15 +72,19 @@ type MaintainerCabinetDetailReq struct {
 
 type MaintainerCabinetDetailRes struct {
 	*CabinetDetailRes
-	Branch Branch `json:"branch"` // 所属网点
+	Branch      Branch              `json:"branch"`      // 所属网点
+	Maintenance AssetMaintenanceRes `json:"maintenance"` // 电柜维保信息
 }
 
 type MaintainerCabinetOperateReq struct {
-	Serial  string                   `json:"serial" param:"serial" validate:"required" trans:"电柜编号"`
-	Operate MaintainerCabinetOperate `json:"operate" validate:"required" trans:"操作"` // 除`maintenance`之外所有操作均需要提前设电柜为维护状态。 open:开仓, open-all:全部开仓（暂时不做）, maintenance:电柜维护, maintenance-cancel:取消维护, interrupt:中断业务, reboot:重启（暂时不做）
-	Lng     float64                  `json:"lng" validate:"required" trans:"经度"`
-	Lat     float64                  `json:"lat" validate:"required" trans:"纬度"`
-	Reason  string                   `json:"reason" validate:"required" trans:"操作原因"`
+	Serial  string                         `json:"serial" param:"serial" validate:"required" trans:"电柜编号"`
+	Operate MaintainerCabinetOperate       `json:"operate" validate:"required" trans:"操作"` // 除`maintenance`之外所有操作均需要提前设电柜为维护状态。 open:开仓, open-all:全部开仓（暂时不做）, maintenance:电柜维护, maintenance-cancel:取消维护, interrupt:中断业务, reboot:重启（暂时不做）
+	Lng     float64                        `json:"lng" validate:"required" trans:"经度"`
+	Lat     float64                        `json:"lat" validate:"required" trans:"纬度"`
+	Reason  string                         `json:"reason"`  // 操作原因（中断业务、维保失败 必填）
+	Content string                         `json:"content"` // 维保内容（取消维护 必填）
+	Details []AssetMaintenanceCreateDetail `json:"details"` // 维保使用配件
+	Status  AssetMaintenanceStatus         `json:"status"`  // 维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
 }
 
 type MaintainerBinOperateReq struct {
@@ -90,4 +94,18 @@ type MaintainerBinOperateReq struct {
 	Lng     float64              `json:"lng" validate:"required" trans:"经度"`
 	Lat     float64              `json:"lat" validate:"required" trans:"纬度"`
 	Reason  string               `json:"reason" validate:"required" trans:"操作原因"`
+}
+
+type MaintainerCabinetPauseReq struct {
+	Serial string                 `json:"serial" param:"serial" validate:"required" trans:"电柜编号"`
+	Status AssetMaintenanceStatus `json:"status" validate:"required" trans:"维修状态"` // 维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
+	Lng    float64                `json:"lng" validate:"required" trans:"经度"`
+	Lat    float64                `json:"lat" validate:"required" trans:"纬度"`
+}
+
+type MaintainerCabinetListReq struct {
+	PaginationReq
+	Status  *CabinetStatus `json:"status" query:"status"`   // 电柜状态 0未投放 1运营中 2维护中
+	ModelID *uint64        `json:"modelID" query:"modelID"` // 电池型号ID
+	Keyword *string        `json:"keyword" query:"keyword"` // 关键词
 }

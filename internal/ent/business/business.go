@@ -162,9 +162,9 @@ const (
 	AgentColumn = "agent_id"
 	// RtoEbikeTable is the table that holds the rto_ebike relation/edge.
 	RtoEbikeTable = "business"
-	// RtoEbikeInverseTable is the table name for the Ebike entity.
-	// It exists in this package in order to avoid circular dependency with the "ebike" package.
-	RtoEbikeInverseTable = "ebike"
+	// RtoEbikeInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	RtoEbikeInverseTable = "asset"
 	// RtoEbikeColumn is the table column denoting the rto_ebike relation/edge.
 	RtoEbikeColumn = "rto_ebike_id"
 )

@@ -72,10 +72,10 @@ func (*ebike) BrandModify(c echo.Context) (err error) {
 // @Param	X-Manager-Token	header		string											true	"管理员校验token"
 // @Param	query			query		model.EbikeListReq								false	"筛选条件"
 // @Success	200				{object}	model.PaginationRes{item=[]model.EbikeListRes}	"请求成功"
-func (*ebike) List(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.EbikeListReq](c)
-	return ctx.SendResponse(service.NewEbike(ctx.Modifier).List(req))
-}
+// func (*ebike) List(c echo.Context) (err error) {
+// 	ctx, req := app.ManagerContextAndBinding[model.EbikeListReq](c)
+// 	return ctx.SendResponse(service.NewEbike(ctx.Modifier).List(req))
+// }
 
 // Create
 // @ID		ManagerEbikeCreate
@@ -87,11 +87,11 @@ func (*ebike) List(c echo.Context) (err error) {
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
 // @Param	body			body		model.EbikeCreateReq	true	"电车信息"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
-func (*ebike) Create(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.EbikeCreateReq](c)
-	service.NewEbike(ctx.Modifier).Create(req)
-	return ctx.SendResponse()
-}
+// func (*ebike) Create(c echo.Context) (err error) {
+// 	ctx, req := app.ManagerContextAndBinding[model.EbikeCreateReq](c)
+// 	service.NewEbike(ctx.Modifier).Create(req)
+// 	return ctx.SendResponse()
+// }
 
 // Modify
 // @ID		ManagerEbikeModify
@@ -103,11 +103,11 @@ func (*ebike) Create(c echo.Context) (err error) {
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
 // @Param	body			body		model.EbikeModifyReq	true	"电车信息"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
-func (*ebike) Modify(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.EbikeModifyReq](c)
-	service.NewEbike(ctx.Modifier).Modify(req)
-	return ctx.SendResponse()
-}
+// func (*ebike) Modify(c echo.Context) (err error) {
+// 	ctx, req := app.ManagerContextAndBinding[model.EbikeModifyReq](c)
+// 	service.NewEbike(ctx.Modifier).Modify(req)
+// 	return ctx.SendResponse()
+// }
 
 // BatchCreate
 // @ID		ManagerEbikeBatchCreate
@@ -119,7 +119,7 @@ func (*ebike) Modify(c echo.Context) (err error) {
 // @Param	X-Manager-Token	header		string		true	"管理员校验token"
 // @Param	file			formData	file		true	"电车信息"
 // @Success	200				{object}	[]string	"请求成功"
-func (*ebike) BatchCreate(c echo.Context) (err error) {
-	ctx := app.ContextX[app.ManagerContext](c)
-	return ctx.SendResponse(service.NewEbike(ctx.Modifier).BatchCreate(ctx.Context))
-}
+// func (*ebike) BatchCreate(c echo.Context) (err error) {
+// 	ctx := app.ContextX[app.ManagerContext](c)
+// 	return ctx.SendResponse(service.NewEbike(ctx.Modifier).BatchCreate(ctx.Context))
+// }

@@ -1249,6 +1249,29 @@ func HasSubscribesWith(preds ...predicate.Subscribe) predicate.Rider {
 	})
 }
 
+// HasAsset applies the HasEdge predicate on the "asset" edge.
+func HasAsset() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AssetTable, AssetColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAssetWith applies the HasEdge predicate on the "asset" edge with a given conditions (other predicates).
+func HasAssetWith(preds ...predicate.Asset) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := newAssetStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasStocks applies the HasEdge predicate on the "stocks" edge.
 func HasStocks() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {

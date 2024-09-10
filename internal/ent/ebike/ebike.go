@@ -111,7 +111,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "allocate" package.
 	AllocatesInverseTable = "allocate"
 	// AllocatesColumn is the table column denoting the allocates relation/edge.
-	AllocatesColumn = "ebike_id"
+	AllocatesColumn = "ebike_allocates"
 	// RtoRiderTable is the table that holds the rto_rider relation/edge.
 	RtoRiderTable = "ebike"
 	// RtoRiderInverseTable is the table name for the Rider entity.

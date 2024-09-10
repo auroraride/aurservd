@@ -85,16 +85,6 @@ func CabinetID(v uint64) predicate.Fault {
 	return predicate.Fault(sql.FieldEQ(FieldCabinetID, v))
 }
 
-// BatteryID applies equality check predicate on the "battery_id" field. It's identical to BatteryIDEQ.
-func BatteryID(v uint64) predicate.Fault {
-	return predicate.Fault(sql.FieldEQ(FieldBatteryID, v))
-}
-
-// EbikeID applies equality check predicate on the "ebike_id" field. It's identical to EbikeIDEQ.
-func EbikeID(v uint64) predicate.Fault {
-	return predicate.Fault(sql.FieldEQ(FieldEbikeID, v))
-}
-
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.Fault {
 	return predicate.Fault(sql.FieldEQ(FieldRiderID, v))
@@ -113,6 +103,16 @@ func Description(v string) predicate.Fault {
 // Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
 func Type(v uint8) predicate.Fault {
 	return predicate.Fault(sql.FieldEQ(FieldType, v))
+}
+
+// EbikeID applies equality check predicate on the "ebike_id" field. It's identical to EbikeIDEQ.
+func EbikeID(v uint64) predicate.Fault {
+	return predicate.Fault(sql.FieldEQ(FieldEbikeID, v))
+}
+
+// BatteryID applies equality check predicate on the "battery_id" field. It's identical to BatteryIDEQ.
+func BatteryID(v uint64) predicate.Fault {
+	return predicate.Fault(sql.FieldEQ(FieldBatteryID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -390,66 +390,6 @@ func CabinetIDNotNil() predicate.Fault {
 	return predicate.Fault(sql.FieldNotNull(FieldCabinetID))
 }
 
-// BatteryIDEQ applies the EQ predicate on the "battery_id" field.
-func BatteryIDEQ(v uint64) predicate.Fault {
-	return predicate.Fault(sql.FieldEQ(FieldBatteryID, v))
-}
-
-// BatteryIDNEQ applies the NEQ predicate on the "battery_id" field.
-func BatteryIDNEQ(v uint64) predicate.Fault {
-	return predicate.Fault(sql.FieldNEQ(FieldBatteryID, v))
-}
-
-// BatteryIDIn applies the In predicate on the "battery_id" field.
-func BatteryIDIn(vs ...uint64) predicate.Fault {
-	return predicate.Fault(sql.FieldIn(FieldBatteryID, vs...))
-}
-
-// BatteryIDNotIn applies the NotIn predicate on the "battery_id" field.
-func BatteryIDNotIn(vs ...uint64) predicate.Fault {
-	return predicate.Fault(sql.FieldNotIn(FieldBatteryID, vs...))
-}
-
-// BatteryIDIsNil applies the IsNil predicate on the "battery_id" field.
-func BatteryIDIsNil() predicate.Fault {
-	return predicate.Fault(sql.FieldIsNull(FieldBatteryID))
-}
-
-// BatteryIDNotNil applies the NotNil predicate on the "battery_id" field.
-func BatteryIDNotNil() predicate.Fault {
-	return predicate.Fault(sql.FieldNotNull(FieldBatteryID))
-}
-
-// EbikeIDEQ applies the EQ predicate on the "ebike_id" field.
-func EbikeIDEQ(v uint64) predicate.Fault {
-	return predicate.Fault(sql.FieldEQ(FieldEbikeID, v))
-}
-
-// EbikeIDNEQ applies the NEQ predicate on the "ebike_id" field.
-func EbikeIDNEQ(v uint64) predicate.Fault {
-	return predicate.Fault(sql.FieldNEQ(FieldEbikeID, v))
-}
-
-// EbikeIDIn applies the In predicate on the "ebike_id" field.
-func EbikeIDIn(vs ...uint64) predicate.Fault {
-	return predicate.Fault(sql.FieldIn(FieldEbikeID, vs...))
-}
-
-// EbikeIDNotIn applies the NotIn predicate on the "ebike_id" field.
-func EbikeIDNotIn(vs ...uint64) predicate.Fault {
-	return predicate.Fault(sql.FieldNotIn(FieldEbikeID, vs...))
-}
-
-// EbikeIDIsNil applies the IsNil predicate on the "ebike_id" field.
-func EbikeIDIsNil() predicate.Fault {
-	return predicate.Fault(sql.FieldIsNull(FieldEbikeID))
-}
-
-// EbikeIDNotNil applies the NotNil predicate on the "ebike_id" field.
-func EbikeIDNotNil() predicate.Fault {
-	return predicate.Fault(sql.FieldNotNull(FieldEbikeID))
-}
-
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.Fault {
 	return predicate.Fault(sql.FieldEQ(FieldRiderID, v))
@@ -655,6 +595,66 @@ func FaultNotNil() predicate.Fault {
 	return predicate.Fault(sql.FieldNotNull(FieldFault))
 }
 
+// EbikeIDEQ applies the EQ predicate on the "ebike_id" field.
+func EbikeIDEQ(v uint64) predicate.Fault {
+	return predicate.Fault(sql.FieldEQ(FieldEbikeID, v))
+}
+
+// EbikeIDNEQ applies the NEQ predicate on the "ebike_id" field.
+func EbikeIDNEQ(v uint64) predicate.Fault {
+	return predicate.Fault(sql.FieldNEQ(FieldEbikeID, v))
+}
+
+// EbikeIDIn applies the In predicate on the "ebike_id" field.
+func EbikeIDIn(vs ...uint64) predicate.Fault {
+	return predicate.Fault(sql.FieldIn(FieldEbikeID, vs...))
+}
+
+// EbikeIDNotIn applies the NotIn predicate on the "ebike_id" field.
+func EbikeIDNotIn(vs ...uint64) predicate.Fault {
+	return predicate.Fault(sql.FieldNotIn(FieldEbikeID, vs...))
+}
+
+// EbikeIDIsNil applies the IsNil predicate on the "ebike_id" field.
+func EbikeIDIsNil() predicate.Fault {
+	return predicate.Fault(sql.FieldIsNull(FieldEbikeID))
+}
+
+// EbikeIDNotNil applies the NotNil predicate on the "ebike_id" field.
+func EbikeIDNotNil() predicate.Fault {
+	return predicate.Fault(sql.FieldNotNull(FieldEbikeID))
+}
+
+// BatteryIDEQ applies the EQ predicate on the "battery_id" field.
+func BatteryIDEQ(v uint64) predicate.Fault {
+	return predicate.Fault(sql.FieldEQ(FieldBatteryID, v))
+}
+
+// BatteryIDNEQ applies the NEQ predicate on the "battery_id" field.
+func BatteryIDNEQ(v uint64) predicate.Fault {
+	return predicate.Fault(sql.FieldNEQ(FieldBatteryID, v))
+}
+
+// BatteryIDIn applies the In predicate on the "battery_id" field.
+func BatteryIDIn(vs ...uint64) predicate.Fault {
+	return predicate.Fault(sql.FieldIn(FieldBatteryID, vs...))
+}
+
+// BatteryIDNotIn applies the NotIn predicate on the "battery_id" field.
+func BatteryIDNotIn(vs ...uint64) predicate.Fault {
+	return predicate.Fault(sql.FieldNotIn(FieldBatteryID, vs...))
+}
+
+// BatteryIDIsNil applies the IsNil predicate on the "battery_id" field.
+func BatteryIDIsNil() predicate.Fault {
+	return predicate.Fault(sql.FieldIsNull(FieldBatteryID))
+}
+
+// BatteryIDNotNil applies the NotNil predicate on the "battery_id" field.
+func BatteryIDNotNil() predicate.Fault {
+	return predicate.Fault(sql.FieldNotNull(FieldBatteryID))
+}
+
 // HasCity applies the HasEdge predicate on the "city" edge.
 func HasCity() predicate.Fault {
 	return predicate.Fault(func(s *sql.Selector) {
@@ -701,21 +701,21 @@ func HasCabinetWith(preds ...predicate.Cabinet) predicate.Fault {
 	})
 }
 
-// HasBattery applies the HasEdge predicate on the "battery" edge.
-func HasBattery() predicate.Fault {
+// HasRider applies the HasEdge predicate on the "rider" edge.
+func HasRider() predicate.Fault {
 	return predicate.Fault(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
-func HasBatteryWith(preds ...predicate.Battery) predicate.Fault {
+// HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
+func HasRiderWith(preds ...predicate.Rider) predicate.Fault {
 	return predicate.Fault(func(s *sql.Selector) {
-		step := newBatteryStep()
+		step := newRiderStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -736,7 +736,7 @@ func HasEbike() predicate.Fault {
 }
 
 // HasEbikeWith applies the HasEdge predicate on the "ebike" edge with a given conditions (other predicates).
-func HasEbikeWith(preds ...predicate.Ebike) predicate.Fault {
+func HasEbikeWith(preds ...predicate.Asset) predicate.Fault {
 	return predicate.Fault(func(s *sql.Selector) {
 		step := newEbikeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
@@ -747,21 +747,21 @@ func HasEbikeWith(preds ...predicate.Ebike) predicate.Fault {
 	})
 }
 
-// HasRider applies the HasEdge predicate on the "rider" edge.
-func HasRider() predicate.Fault {
+// HasBattery applies the HasEdge predicate on the "battery" edge.
+func HasBattery() predicate.Fault {
 	return predicate.Fault(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
-func HasRiderWith(preds ...predicate.Rider) predicate.Fault {
+// HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
+func HasBatteryWith(preds ...predicate.Asset) predicate.Fault {
 	return predicate.Fault(func(s *sql.Selector) {
-		step := newRiderStep()
+		step := newBatteryStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

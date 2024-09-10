@@ -6,8 +6,6 @@
 package eapi
 
 import (
-	"errors"
-
 	"github.com/labstack/echo/v4"
 
 	"github.com/auroraride/aurservd/app"
@@ -45,10 +43,10 @@ func (*allocate) UnallocatedEbike(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Employee-Token	header	string	true	"店员校验token"
-func (*allocate) Allocate(c echo.Context) (err error) {
-	return errors.New("接口已废弃")
-	// return ctx.SendResponse(service.NewAllocate(ctx.Employee).AllocateEbike(req))
-}
+// func (*allocate) Allocate(c echo.Context) (err error) {
+// 	return errors.New("接口已废弃")
+// 	// return ctx.SendResponse(service.NewAllocate(ctx.Employee).AllocateEbike(req))
+// }
 
 // Info
 // @ID			EmployeeAllocateInfo
@@ -61,10 +59,10 @@ func (*allocate) Allocate(c echo.Context) (err error) {
 // @Param		X-Employee-Token	header		string					true	"店员校验token"
 // @Param		id					path		uint64					true	"分配ID"
 // @Success		200					{object}	model.AllocateDetail	"请求成功"
-func (*allocate) Info(c echo.Context) (err error) {
-	ctx, req := app.EmployeeContextAndBinding[model.IDParamReq](c)
-	return ctx.SendResponse(service.NewAllocate(ctx.Employee).Info(req))
-}
+// func (*allocate) Info(c echo.Context) (err error) {
+// 	ctx, req := app.EmployeeContextAndBinding[model.IDParamReq](c)
+// 	return ctx.SendResponse(service.NewAllocate(ctx.Employee).Info(req))
+// }
 
 // List
 // @ID		EmployeeAllocateList
@@ -76,7 +74,7 @@ func (*allocate) Info(c echo.Context) (err error) {
 // @Param	X-Employee-Token	header		string												true	"店员校验token"
 // @Param	query				query		model.AllocateEmployeeListReq						false	"筛选选项"
 // @Success	200					{object}	model.PaginationRes{items=[]model.AllocateDetail}	"请求成功"
-func (*allocate) List(c echo.Context) (err error) {
-	ctx, req := app.EmployeeContextAndBinding[model.AllocateEmployeeListReq](c)
-	return ctx.SendResponse(service.NewAllocate(ctx.Employee).EmployeeList(req))
-}
+// func (*allocate) List(c echo.Context) (err error) {
+// 	ctx, req := app.EmployeeContextAndBinding[model.AllocateEmployeeListReq](c)
+// 	return ctx.SendResponse(service.NewAllocate(ctx.Employee).EmployeeList(req))
+// }

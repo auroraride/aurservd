@@ -34,9 +34,11 @@ type Maintainer struct {
 type MaintainerEdges struct {
 	// Cities holds the value of the cities edge.
 	Cities []*City `json:"cities,omitempty"`
+	// Asset holds the value of the asset edge.
+	Asset []*Asset `json:"asset,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // CitiesOrErr returns the Cities value or an error if the edge
@@ -46,6 +48,15 @@ func (e MaintainerEdges) CitiesOrErr() ([]*City, error) {
 		return e.Cities, nil
 	}
 	return nil, &NotLoadedError{edge: "cities"}
+}
+
+// AssetOrErr returns the Asset value or an error if the edge
+// was not loaded in eager-loading.
+func (e MaintainerEdges) AssetOrErr() ([]*Asset, error) {
+	if e.loadedTypes[1] {
+		return e.Asset, nil
+	}
+	return nil, &NotLoadedError{edge: "asset"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -120,6 +131,11 @@ func (m *Maintainer) Value(name string) (ent.Value, error) {
 // QueryCities queries the "cities" edge of the Maintainer entity.
 func (m *Maintainer) QueryCities() *CityQuery {
 	return NewMaintainerClient(m.config).QueryCities(m)
+}
+
+// QueryAsset queries the "asset" edge of the Maintainer entity.
+func (m *Maintainer) QueryAsset() *AssetQuery {
+	return NewMaintainerClient(m.config).QueryAsset(m)
 }
 
 // Update returns a builder for updating this Maintainer.

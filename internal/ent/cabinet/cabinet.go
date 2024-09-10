@@ -30,6 +30,8 @@ const (
 	FieldRemark = "remark"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
+	// FieldStoreID holds the string denoting the store_id field in the database.
+	FieldStoreID = "store_id"
 	// FieldBranchID holds the string denoting the branch_id field in the database.
 	FieldBranchID = "branch_id"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
@@ -80,6 +82,8 @@ const (
 	FieldLockedBinNum = "locked_bin_num"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
+	// EdgeStore holds the string denoting the store edge name in mutations.
+	EdgeStore = "store"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
 	EdgeBranch = "branch"
 	// EdgeModels holds the string denoting the models edge name in mutations.
@@ -88,6 +92,8 @@ const (
 	EdgeFaults = "faults"
 	// EdgeExchanges holds the string denoting the exchanges edge name in mutations.
 	EdgeExchanges = "exchanges"
+	// EdgeAsset holds the string denoting the asset edge name in mutations.
+	EdgeAsset = "asset"
 	// EdgeStocks holds the string denoting the stocks edge name in mutations.
 	EdgeStocks = "stocks"
 	// EdgeBatteries holds the string denoting the batteries edge name in mutations.
@@ -107,6 +113,13 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
+	// StoreTable is the table that holds the store relation/edge.
+	StoreTable = "cabinet"
+	// StoreInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	StoreInverseTable = "store"
+	// StoreColumn is the table column denoting the store relation/edge.
+	StoreColumn = "store_id"
 	// BranchTable is the table that holds the branch relation/edge.
 	BranchTable = "cabinet"
 	// BranchInverseTable is the table name for the Branch entity.
@@ -133,6 +146,13 @@ const (
 	ExchangesInverseTable = "exchange"
 	// ExchangesColumn is the table column denoting the exchanges relation/edge.
 	ExchangesColumn = "cabinet_id"
+	// AssetTable is the table that holds the asset relation/edge.
+	AssetTable = "asset"
+	// AssetInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	AssetInverseTable = "asset"
+	// AssetColumn is the table column denoting the asset relation/edge.
+	AssetColumn = "locations_id"
 	// StocksTable is the table that holds the stocks relation/edge.
 	StocksTable = "stock"
 	// StocksInverseTable is the table name for the Stock entity.
@@ -180,6 +200,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldCityID,
+	FieldStoreID,
 	FieldBranchID,
 	FieldEnterpriseID,
 	FieldStationID,
@@ -286,6 +307,11 @@ func ByRemark(opts ...sql.OrderTermOption) OrderOption {
 // ByCityID orders the results by the city_id field.
 func ByCityID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCityID, opts...).ToFunc()
+}
+
+// ByStoreID orders the results by the store_id field.
+func ByStoreID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStoreID, opts...).ToFunc()
 }
 
 // ByBranchID orders the results by the branch_id field.
@@ -410,6 +436,13 @@ func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByStoreField orders the results by store field.
+func ByStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStoreStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByBranchField orders the results by branch field.
 func ByBranchField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -456,6 +489,20 @@ func ByExchangesCount(opts ...sql.OrderTermOption) OrderOption {
 func ByExchanges(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newExchangesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByAssetCount orders the results by asset count.
+func ByAssetCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAssetStep(), opts...)
+	}
+}
+
+// ByAsset orders the results by asset terms.
+func ByAsset(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAssetStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -521,6 +568,13 @@ func newCityStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
 	)
 }
+func newStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
+	)
+}
 func newBranchStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -547,6 +601,13 @@ func newExchangesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ExchangesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ExchangesTable, ExchangesColumn),
+	)
+}
+func newAssetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AssetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AssetTable, AssetColumn),
 	)
 }
 func newStocksStep() *sqlgraph.Step {

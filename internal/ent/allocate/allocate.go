@@ -150,9 +150,9 @@ const (
 	ContractColumn = "allocate_id"
 	// EbikeTable is the table that holds the ebike relation/edge.
 	EbikeTable = "allocate"
-	// EbikeInverseTable is the table name for the Ebike entity.
-	// It exists in this package in order to avoid circular dependency with the "ebike" package.
-	EbikeInverseTable = "ebike"
+	// EbikeInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	EbikeInverseTable = "asset"
 	// EbikeColumn is the table column denoting the ebike relation/edge.
 	EbikeColumn = "ebike_id"
 )
@@ -181,10 +181,21 @@ var Columns = []string{
 	FieldEbikeID,
 }
 
+// ForeignKeys holds the SQL foreign-keys that are owned by the "allocate"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"ebike_allocates",
+}
+
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}

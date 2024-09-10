@@ -40,8 +40,6 @@ const (
 	FieldRemark = "remark"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
-	// EdgeBattery holds the string denoting the battery edge name in mutations.
-	EdgeBattery = "battery"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
 	EdgeCabinet = "cabinet"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
@@ -55,13 +53,6 @@ const (
 	SubscribeInverseTable = "subscribe"
 	// SubscribeColumn is the table column denoting the subscribe relation/edge.
 	SubscribeColumn = "subscribe_id"
-	// BatteryTable is the table that holds the battery relation/edge.
-	BatteryTable = "battery_flow"
-	// BatteryInverseTable is the table name for the Battery entity.
-	// It exists in this package in order to avoid circular dependency with the "battery" package.
-	BatteryInverseTable = "battery"
-	// BatteryColumn is the table column denoting the battery relation/edge.
-	BatteryColumn = "battery_id"
 	// CabinetTable is the table that holds the cabinet relation/edge.
 	CabinetTable = "battery_flow"
 	// CabinetInverseTable is the table name for the Cabinet entity.
@@ -95,10 +86,21 @@ var Columns = []string{
 	FieldRemark,
 }
 
+// ForeignKeys holds the SQL foreign-keys that are owned by the "battery_flow"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"battery_flows",
+}
+
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -191,13 +193,6 @@ func BySubscribeField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByBatteryField orders the results by battery field.
-func ByBatteryField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newBatteryStep(), sql.OrderByField(field, opts...))
-	}
-}
-
 // ByCabinetField orders the results by cabinet field.
 func ByCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -216,13 +211,6 @@ func newSubscribeStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(SubscribeInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
-	)
-}
-func newBatteryStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(BatteryInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, BatteryTable, BatteryColumn),
 	)
 }
 func newCabinetStep() *sqlgraph.Step {

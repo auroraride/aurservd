@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/LucaTheHacker/go-haversine"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/sortorder"
@@ -18,18 +19,24 @@ import (
 	"github.com/shopspring/decimal"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
+	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/es"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
+	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
@@ -580,4 +587,199 @@ func (b *cabinetBiz) ECExport(modifier *model.Modifier, req *definition.CabinetE
 		}
 		tools.NewExcel(path).AddValues(rows).Done()
 	})
+}
+
+// Detail 获取电柜详情
+func (b *cabinetBiz) Detail(assetSignInfo definition.AssetSignInfo, serial string) (res model.MaintainerCabinetDetailRes, err error) {
+	// 检验小程序调用方
+	switch {
+	case assetSignInfo.Employee != nil:
+		var eCab *ent.Cabinet
+		eCab, _ = b.orm.QueryNotDeleted().Where(
+			cabinet.HasStoreWith(
+				store.HasEmployeesWith(
+					employee.ID(assetSignInfo.Employee.ID),
+				),
+			),
+		).First(b.ctx)
+		if eCab == nil {
+			return res, errors.New("门店电柜信息未找到")
+		}
+
+		if eCab.Serial != serial {
+			return res, errors.New("当前门店未拥有该电柜操作权限")
+		}
+
+	case assetSignInfo.Agent != nil:
+		var eCab *ent.Cabinet
+		eCab, _ = b.orm.QueryNotDeleted().Where(
+			cabinet.HasEnterpriseWith(
+				enterprise.HasAgentsWith(
+					agent.ID(assetSignInfo.Agent.ID),
+				),
+			),
+		).First(b.ctx)
+		if eCab == nil {
+			return res, errors.New("代理电柜信息未找到")
+		}
+
+		if eCab.Serial != serial {
+			return res, errors.New("当前代理未拥有该电柜操作权限")
+		}
+
+	}
+
+	cab := service.NewCabinet().DetailFromSerial(serial)
+	res.CabinetDetailRes = cab
+	// 查找所属网点
+	if cab.BranchID == nil {
+		snag.Panic("电柜网点未找到")
+	}
+	bc := service.NewBranch().Query(*cab.BranchID)
+	res.Branch = model.Branch{
+		ID:   bc.ID,
+		Name: bc.Name,
+	}
+	return
+}
+
+// Operate 电柜操作
+func (b *cabinetBiz) Operate(assetSignInfo definition.AssetSignInfo, req *model.MaintainerCabinetOperateReq) error {
+	// 校验权限并获取操作人
+	cab, operator, err := b.operatable(assetSignInfo, req.Serial, req.Lng, req.Lat, req.Operate.NeedMaintenance())
+	if err != nil {
+		return err
+	}
+
+	var md model.Modifier
+	switch {
+	case assetSignInfo.Employee != nil:
+		md.ID = assetSignInfo.Employee.ID
+		md.Name = assetSignInfo.Employee.Name
+		md.Phone = assetSignInfo.Employee.Phone
+	case assetSignInfo.Agent != nil:
+		md.ID = assetSignInfo.Agent.ID
+		md.Name = assetSignInfo.Agent.Name
+		md.Phone = assetSignInfo.Agent.Phone
+	default:
+		return errors.New("无效操作人员")
+	}
+
+	switch req.Operate {
+	case model.MaintainerCabinetOperateInterrupt:
+		service.NewCabinet().Interrupt(operator, &model.CabinetInterruptRequest{
+			Serial:  req.Serial,
+			Message: "运维中断业务:" + req.Reason,
+		})
+	case model.MaintainerCabinetOperateMaintenance:
+		service.NewCabinetMgr().Maintain(operator, &model.CabinetMaintainReq{
+			ID:       cab.ID,
+			Maintain: silk.Bool(true),
+		})
+		// 创建维护记录
+		err = service.NewAssetMaintenance().Create(b.ctx, &model.AssetMaintenanceCreateReq{
+			CabinetID:       cab.ID,
+			OperatorID:      md.ID,
+			OperateRoleType: model.OperatorTypeMaintainer.Value(),
+		}, &md)
+		if err != nil {
+			return err
+		}
+	case model.MaintainerCabinetOperateMaintenanceCancel:
+		service.NewCabinetMgr().Maintain(operator, &model.CabinetMaintainReq{
+			ID:       cab.ID,
+			Maintain: silk.Bool(false),
+		})
+	}
+
+	return nil
+}
+
+// BinOperate 仓位操作
+func (b *cabinetBiz) BinOperate(assetSignInfo definition.AssetSignInfo, req *model.MaintainerBinOperateReq) error {
+	// 校验权限并获取操作人
+	cab, operator, err := b.operatable(assetSignInfo, req.Serial, req.Lng, req.Lat, true)
+	if err != nil {
+		return err
+	}
+
+	var op any
+	switch req.Operate {
+	default:
+		return errors.New("无效操作类型")
+	case model.MaintainerBinOperateOpen:
+		op = &model.CabinetDoorOperateReq{
+			ID:        cab.ID,
+			Index:     silk.Int(req.Ordinal - 1),
+			Remark:    req.Reason,
+			Operation: silk.Pointer(model.CabinetDoorOperateOpen),
+		}
+	case model.MaintainerBinOperateLock:
+		op = &model.CabinetDoorOperateReq{
+			ID:        cab.ID,
+			Index:     silk.Int(req.Ordinal - 1),
+			Remark:    req.Reason,
+			Operation: silk.Pointer(model.CabinetDoorOperateLock),
+		}
+	case model.MaintainerBinOperateUnlock:
+		op = &model.CabinetDoorOperateReq{
+			ID:        cab.ID,
+			Index:     silk.Int(req.Ordinal - 1),
+			Remark:    req.Reason,
+			Operation: silk.Pointer(model.CabinetDoorOperateUnlock),
+		}
+	case model.MaintainerBinOperateDisable:
+		op = &model.CabinetBinDeactivateReq{
+			ID:        cab.ID,
+			Index:     silk.Int(req.Ordinal - 1),
+			Remark:    req.Reason,
+			Operation: model.CabinetBinDeactiveOperationDisable,
+		}
+	case model.MaintainerBinOperateEnable:
+		op = &model.CabinetBinDeactivateReq{
+			ID:        cab.ID,
+			Index:     silk.Int(req.Ordinal - 1),
+			Remark:    req.Reason,
+			Operation: model.CabinetBinDeactiveOperationEnable,
+		}
+	}
+
+	if !service.NewCabinetMgr().BinOperate(operator, cab.ID, op) {
+		return errors.New("操作失败")
+	}
+
+	return nil
+}
+
+// 校验权限并获取操作人
+func (b *cabinetBiz) operatable(assetSignInfo definition.AssetSignInfo, serial string, lng, lat float64, maintenance bool) (*ent.Cabinet, *logging.Operator, error) {
+	// 查找维护中的电柜
+	cab, _ := b.orm.QueryNotDeleted().Where(
+		cabinet.Serial(serial),
+		// cabinet.CityIDIn(cities...),
+	).First(b.ctx)
+	if cab == nil {
+		return nil, nil, errors.New("未找到电柜")
+	}
+
+	// 判定距离
+	distance := haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(cab.Lat, cab.Lng)).Kilometers() * 1000.0
+	if distance > 100 {
+		return nil, nil, errors.New("距离过远")
+	}
+
+	// 判定维护
+	if maintenance && cab.Status != model.CabinetStatusMaintenance.Value() {
+		return nil, nil, errors.New("电柜必须维护")
+	}
+
+	switch {
+	case assetSignInfo.Employee != nil:
+		return cab, logging.GetOperatorX(assetSignInfo.Employee), nil
+	case assetSignInfo.Agent != nil:
+		return cab, logging.GetOperatorX(assetSignInfo.Agent), nil
+	default:
+		return nil, nil, errors.New("无效操作人员")
+	}
+
 }

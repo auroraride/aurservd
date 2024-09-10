@@ -12,11 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -104,7 +104,7 @@ type BusinessEdges struct {
 	// Agent holds the value of the agent edge.
 	Agent *Agent `json:"agent,omitempty"`
 	// RtoEbike holds the value of the rto_ebike edge.
-	RtoEbike *Ebike `json:"rto_ebike,omitempty"`
+	RtoEbike *Asset `json:"rto_ebike,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [12]bool
@@ -233,11 +233,11 @@ func (e BusinessEdges) AgentOrErr() (*Agent, error) {
 
 // RtoEbikeOrErr returns the RtoEbike value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e BusinessEdges) RtoEbikeOrErr() (*Ebike, error) {
+func (e BusinessEdges) RtoEbikeOrErr() (*Asset, error) {
 	if e.RtoEbike != nil {
 		return e.RtoEbike, nil
 	} else if e.loadedTypes[11] {
-		return nil, &NotFoundError{label: ebike.Label}
+		return nil, &NotFoundError{label: asset.Label}
 	}
 	return nil, &NotLoadedError{edge: "rto_ebike"}
 }
@@ -489,7 +489,7 @@ func (b *Business) QueryAgent() *AgentQuery {
 }
 
 // QueryRtoEbike queries the "rto_ebike" edge of the Business entity.
-func (b *Business) QueryRtoEbike() *EbikeQuery {
+func (b *Business) QueryRtoEbike() *AssetQuery {
 	return NewBusinessClient(b.config).QueryRtoEbike(b)
 }
 

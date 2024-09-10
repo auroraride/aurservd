@@ -28,7 +28,7 @@ var Battery = new(battery)
 // @Success	200				{object}	model.ItemListRes{items=[]model.BatteryModel}	"请求成功"
 func (*battery) ListModels(c echo.Context) (err error) {
 	ctx := app.ContextX[app.ManagerContext](c)
-	return ctx.SendResponse(service.NewBatteryModel().List())
+	return ctx.SendResponse(service.NewBatteryModel().ListModel())
 }
 
 // CreateModel
@@ -41,10 +41,10 @@ func (*battery) ListModels(c echo.Context) (err error) {
 // @Param	X-Manager-Token	header		string									true	"管理员校验token"
 // @Param	body			body		model.BatteryModelReq					true	"电池型号数据"
 // @Success	200				{object}	model.ItemRes{item=model.BatteryModel}	"请求成功"
-func (*battery) CreateModel(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.BatteryModelReq](c)
-	return ctx.SendResponse(model.ItemRes{Item: service.NewBatteryModelWithModifier(ctx.Modifier).CreateModel(req)})
-}
+// func (*battery) CreateModel(c echo.Context) (err error) {
+// 	ctx, req := app.ManagerContextAndBinding[model.BatteryModelReq](c)
+// 	return ctx.SendResponse(model.ItemRes{Item: service.NewBatteryModelWithModifier(ctx.Modifier).CreateModel(req)})
+// }
 
 // DeleteModel
 // @ID		ManagerBatteryDeleteModel
@@ -56,11 +56,11 @@ func (*battery) CreateModel(c echo.Context) (err error) {
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
 // @Param	body			body		model.BatteryModelReq	true	"电池型号数据"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
-func (*battery) DeleteModel(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.BatteryModelReq](c)
-	service.NewBatteryModelWithModifier(ctx.Modifier).Delete(req)
-	return ctx.SendResponse()
-}
+// func (*battery) DeleteModel(c echo.Context) (err error) {
+// 	ctx, req := app.ManagerContextAndBinding[model.BatteryModelReq](c)
+// 	service.NewBatteryModelWithModifier(ctx.Modifier).Delete(req)
+// 	return ctx.SendResponse()
+// }
 
 // List
 // @ID		ManagerBatteryList
@@ -72,10 +72,10 @@ func (*battery) DeleteModel(c echo.Context) (err error) {
 // @Param	X-Manager-Token	header		string												true	"管理员校验token"
 // @Param	qery			query		model.BatteryListReq								false	"筛选条件"
 // @Success	200				{object}	model.PaginationRes{items=[]model.BatteryListRes}	"请求成功"
-func (*battery) List(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.BatteryListReq](c)
-	return ctx.SendResponse(service.NewBattery(ctx.Modifier).List(req))
-}
+// func (*battery) List(c echo.Context) (err error) {
+// 	ctx, req := app.ManagerContextAndBinding[model.BatteryListReq](c)
+// 	return ctx.SendResponse(service.NewBattery(ctx.Modifier).List(req))
+// }
 
 // Create
 // @ID		ManagerBatteryCreate
@@ -87,11 +87,11 @@ func (*battery) List(c echo.Context) (err error) {
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
 // @Param	body			body		model.BatteryCreateReq	true	"电池信息"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
-func (*battery) Create(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.BatteryCreateReq](c)
-	service.NewBattery(ctx.Modifier).Create(req)
-	return ctx.SendResponse()
-}
+// func (*battery) Create(c echo.Context) (err error) {
+// 	ctx, req := app.ManagerContextAndBinding[model.BatteryCreateReq](c)
+// 	service.NewBattery(ctx.Modifier).Create(req)
+// 	return ctx.SendResponse()
+// }
 
 // BatchCreate
 // @ID			ManagerBatteryBatchCreate
@@ -104,10 +104,10 @@ func (*battery) Create(c echo.Context) (err error) {
 // @Param		X-Manager-Token	header		string					true	"管理员校验token"
 // @Param		file			formData	file					true	"电池信息"
 // @Success		200				{object}	model.StatusResponse	"请求成功"
-func (*battery) BatchCreate(c echo.Context) (err error) {
-	ctx := app.ContextX[app.ManagerContext](c)
-	return ctx.SendResponse(service.NewBattery(ctx.Modifier).BatchCreate(ctx.Context))
-}
+// func (*battery) BatchCreate(c echo.Context) (err error) {
+// 	ctx := app.ContextX[app.ManagerContext](c)
+// 	return ctx.SendResponse(service.NewBattery(ctx.Modifier).BatchCreate(ctx.Context))
+// }
 
 // Modify
 // @ID		ManagerBatteryModify
@@ -120,11 +120,11 @@ func (*battery) BatchCreate(c echo.Context) (err error) {
 // @Param	id				path		uint64					true	"电池ID"
 // @Param	body			body		model.BatteryModifyReq	true	"修改信息"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
-func (*battery) Modify(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.BatteryModifyReq](c)
-	service.NewBattery(ctx.Modifier).Modify(req)
-	return ctx.SendResponse()
-}
+// func (*battery) Modify(c echo.Context) (err error) {
+// 	ctx, req := app.ManagerContextAndBinding[model.BatteryModifyReq](c)
+// 	service.NewBattery(ctx.Modifier).Modify(req)
+// 	return ctx.SendResponse()
+// }
 
 // Bind
 // @ID		ManagerBatteryBind
@@ -138,8 +138,7 @@ func (*battery) Modify(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*battery) Bind(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatteryBind](c)
-	service.NewBattery(ctx.Modifier).BindRequest(req)
-	return ctx.SendResponse()
+	return ctx.SendResponse(service.NewBattery(ctx.Modifier, ctx.Operator).BindRequest(req))
 }
 
 // Unbind
@@ -154,8 +153,7 @@ func (*battery) Bind(c echo.Context) (err error) {
 // @Success	200				{object}	model.StatusResponse		"请求成功"
 func (*battery) Unbind(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatteryUnbindRequest](c)
-	service.NewBattery(ctx.Modifier).Unbind(req)
-	return ctx.SendResponse()
+	return ctx.SendResponse(service.NewBattery(ctx.Modifier, ctx.Operator).Unbind(req))
 }
 
 // Detail

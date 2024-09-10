@@ -6,11 +6,14 @@
 package service
 
 import (
+	"context"
+
 	"github.com/LucaTheHacker/go-haversine"
 
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -29,9 +32,27 @@ func NewMaintainerCabinet(params ...any) *maintainerCabinetService {
 }
 
 // List 运维归属电柜列表
-func (s *maintainerCabinetService) List(cityIDs []uint64, pg *model.PaginationReq) *model.PaginationRes {
+func (s *maintainerCabinetService) List(cityIDs []uint64, req *model.MaintainerCabinetListReq) *model.PaginationRes {
 	q := s.orm.QueryNotDeleted().Where(cabinet.CityIDIn(cityIDs...))
-	return model.ParsePaginationResponse(q, *pg, func(cab *ent.Cabinet) model.CabinetListByDistanceRes {
+
+	if req.Status != nil {
+		q.Where(cabinet.Status(req.Status.Value()))
+	}
+
+	if req.ModelID != nil {
+		q.Where(cabinet.HasModelsWith(batterymodel.ID(*req.ModelID)))
+	}
+
+	if req.Keyword != nil {
+		q.Where(
+			cabinet.Or(
+				cabinet.NameContainsFold(*req.Keyword),
+				cabinet.SnContainsFold(*req.Keyword),
+			),
+		)
+	}
+
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(cab *ent.Cabinet) model.CabinetListByDistanceRes {
 		return model.CabinetListByDistanceRes{
 			CabinetBasicInfo: model.CabinetBasicInfo{
 				ID:     cab.ID,
@@ -58,6 +79,9 @@ func (s *maintainerCabinetService) Detail(req *model.MaintainerCabinetDetailReq)
 		ID:   b.ID,
 		Name: b.Name,
 	}
+	// 查找当前维护信息
+	res.Maintenance = NewAssetMaintenance().QueryByID(cab.ID)
+
 	return
 }
 
@@ -92,16 +116,68 @@ func (s *maintainerCabinetService) Operate(m *ent.Maintainer, cities []uint64, r
 
 	switch req.Operate {
 	case model.MaintainerCabinetOperateInterrupt:
+		if req.Reason == "" {
+			snag.Panic("中断原因必填")
+		}
 		NewCabinet().Interrupt(operator, &model.CabinetInterruptRequest{
 			Serial:  req.Serial,
 			Message: "运维中断业务:" + req.Reason,
 		})
 	case model.MaintainerCabinetOperateMaintenance:
+		// 创建维护记录
+		err := NewAssetMaintenance().Create(s.ctx, &model.AssetMaintenanceCreateReq{
+			CabinetID:       cab.ID,
+			OperatorID:      m.ID,
+			OperateRoleType: model.OperatorTypeMaintainer.Value(),
+		}, &model.Modifier{
+			ID:    m.ID,
+			Name:  m.Name,
+			Phone: m.Phone,
+		})
+		if err != nil {
+			return
+		}
+
 		NewCabinetMgr().Maintain(operator, &model.CabinetMaintainReq{
 			ID:       cab.ID,
 			Maintain: silk.Bool(true),
 		})
 	case model.MaintainerCabinetOperateMaintenanceCancel:
+		if req.Content == "" {
+			snag.Panic("维保内容必填")
+		}
+		switch req.Status {
+		case model.AssetMaintenanceStatusSuccess:
+		case model.AssetMaintenanceStatusFail:
+			if req.Reason == "" {
+				snag.Panic("维保失败原因必填")
+			}
+		default:
+			snag.Panic("无效维保状态")
+		}
+
+		// 查询维保单
+		mt := NewAssetMaintenance().QueryMaintenanceByCabinetID(cab.ID)
+		if mt == nil {
+			snag.Panic("维保数据不存在")
+			return
+		}
+		// 填写维保结果
+		err := NewAssetMaintenance().Modify(s.ctx, &model.AssetMaintenanceModifyReq{
+			ID:      mt.ID,
+			Reason:  req.Reason,
+			Content: req.Content,
+			Status:  req.Status,
+			Details: req.Details,
+		}, &model.Modifier{
+			ID:    m.ID,
+			Name:  m.Name,
+			Phone: m.Phone,
+		})
+		if err != nil {
+			return
+		}
+
 		NewCabinetMgr().Maintain(operator, &model.CabinetMaintainReq{
 			ID:       cab.ID,
 			Maintain: silk.Bool(false),
@@ -156,4 +232,43 @@ func (s *maintainerCabinetService) BinOperate(m *ent.Maintainer, cities []uint64
 	}
 
 	return NewCabinetMgr().BinOperate(operator, cab.ID, op)
+}
+
+// Pause 暂停维护
+func (s *maintainerCabinetService) Pause(m *ent.Maintainer, cities []uint64, req *model.MaintainerCabinetPauseReq) {
+	// 校验权限并获取操作人
+	cab, operator := s.operatable(m, cities, req.Serial, req.Lng, req.Lat, true)
+
+	// 查询维保单
+	mt := NewAssetMaintenance().QueryMaintenanceByCabinetID(cab.ID)
+	if mt == nil {
+		snag.Panic("维保数据不存在")
+		return
+	}
+	switch req.Status {
+	case model.AssetMaintenanceStatusPause:
+		// 暂停维护
+		NewCabinetMgr().Maintain(operator, &model.CabinetMaintainReq{
+			ID:       cab.ID,
+			Maintain: silk.Bool(false),
+		})
+		// 更新维保数据
+		err := mt.Update().SetStatus(model.AssetMaintenanceStatusPause.Value()).Exec(context.Background())
+		if err != nil {
+			snag.Panic(err)
+		}
+
+	case model.AssetMaintenanceStatusUnder:
+		// 继续维护
+		NewCabinetMgr().Maintain(operator, &model.CabinetMaintainReq{
+			ID:       cab.ID,
+			Maintain: silk.Bool(true),
+		})
+		// 更新维保数据
+		err := mt.Update().SetStatus(model.AssetMaintenanceStatusUnder.Value()).Exec(context.Background())
+		if err != nil {
+			snag.Panic(err)
+		}
+
+	}
 }

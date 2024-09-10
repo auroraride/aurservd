@@ -96,24 +96,8 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
 		SetPhotos(req.Photos).
 		SetPhone(req.Phone).
 		SetHeadPic(req.HeadPic).
+		SetNillableGroupID(req.GroupID).
 		SaveX(s.ctx)
-
-	if len(req.Materials) > 0 {
-		for _, m := range req.Materials {
-			tf := &model.StockTransferReq{
-				OutboundID:    0,
-				InboundID:     item.ID,
-				Num:           m.Num,
-				InboundTarget: model.StockTargetStore,
-			}
-			if m.Model != "" {
-				tf.Model = m.Model
-			} else {
-				tf.Name = m.Name
-			}
-			NewStockWithModifier(s.modifier).Transfer(tf)
-		}
-	}
 
 	return s.Detail(item.ID)
 }
@@ -125,7 +109,8 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
 		SetNillableEbikeObtain(req.EbikeObtain).
 		SetNillableEbikeRepair(req.EbikeRepair).
 		SetNillableEbikeSale(req.EbikeSale).
-		SetNillableRest(req.Rest)
+		SetNillableRest(req.Rest).
+		SetNillableGroupID(req.GroupID)
 	if req.Status != nil {
 		q.SetStatus(req.Status.Value())
 	}
@@ -204,7 +189,7 @@ func (s *storeService) Delete(req *model.IDParamReq) {
 
 // List 列举门店
 func (s *storeService) List(req *model.StoreListReq) *model.PaginationRes {
-	q := s.orm.QueryNotDeleted().WithCity()
+	q := s.orm.QueryNotDeleted().WithCity().WithGroup()
 	if req.CityID != nil {
 		q.Where(store.CityID(*req.CityID))
 	}
@@ -239,6 +224,12 @@ func (s *storeService) List(req *model.StoreListReq) *model.PaginationRes {
 			Name: city.Name,
 		}
 		res.QRCode = fmt.Sprintf("STORE:%s", item.Sn)
+		if item.Edges.Group != nil {
+			res.Group = &model.StoreGroup{
+				ID:   item.Edges.Group.ID,
+				Name: item.Edges.Group.Name,
+			}
+		}
 		return
 	})
 }

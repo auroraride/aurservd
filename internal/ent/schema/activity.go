@@ -9,7 +9,7 @@ import (
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 
-	"github.com/auroraride/aurservd/app/biz/definition"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -67,7 +67,7 @@ func (Activity) Fields() []ent.Field {
 		field.String("introduction").Comment("简介"),
 		field.Bool("popup").Default(false).Comment("活动入口:弹窗"),
 		field.Bool("home").Default(false).Comment("活动入口:首页icon"),
-		field.JSON("image", definition.ActivityImage{}).Comment("图片"),
+		field.JSON("image", model.ActivityImage{}).Comment("图片"),
 		field.String("remark").Optional().Comment("备注"),
 	}
 }

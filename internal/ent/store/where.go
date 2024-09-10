@@ -80,6 +80,11 @@ func CityID(v uint64) predicate.Store {
 	return predicate.Store(sql.FieldEQ(FieldCityID, v))
 }
 
+// GroupID applies equality check predicate on the "group_id" field. It's identical to GroupIDEQ.
+func GroupID(v uint64) predicate.Store {
+	return predicate.Store(sql.FieldEQ(FieldGroupID, v))
+}
+
 // EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
 func EmployeeID(v uint64) predicate.Store {
 	return predicate.Store(sql.FieldEQ(FieldEmployeeID, v))
@@ -398,6 +403,36 @@ func CityIDIn(vs ...uint64) predicate.Store {
 // CityIDNotIn applies the NotIn predicate on the "city_id" field.
 func CityIDNotIn(vs ...uint64) predicate.Store {
 	return predicate.Store(sql.FieldNotIn(FieldCityID, vs...))
+}
+
+// GroupIDEQ applies the EQ predicate on the "group_id" field.
+func GroupIDEQ(v uint64) predicate.Store {
+	return predicate.Store(sql.FieldEQ(FieldGroupID, v))
+}
+
+// GroupIDNEQ applies the NEQ predicate on the "group_id" field.
+func GroupIDNEQ(v uint64) predicate.Store {
+	return predicate.Store(sql.FieldNEQ(FieldGroupID, v))
+}
+
+// GroupIDIn applies the In predicate on the "group_id" field.
+func GroupIDIn(vs ...uint64) predicate.Store {
+	return predicate.Store(sql.FieldIn(FieldGroupID, vs...))
+}
+
+// GroupIDNotIn applies the NotIn predicate on the "group_id" field.
+func GroupIDNotIn(vs ...uint64) predicate.Store {
+	return predicate.Store(sql.FieldNotIn(FieldGroupID, vs...))
+}
+
+// GroupIDIsNil applies the IsNil predicate on the "group_id" field.
+func GroupIDIsNil() predicate.Store {
+	return predicate.Store(sql.FieldIsNull(FieldGroupID))
+}
+
+// GroupIDNotNil applies the NotNil predicate on the "group_id" field.
+func GroupIDNotNil() predicate.Store {
+	return predicate.Store(sql.FieldNotNull(FieldGroupID))
 }
 
 // EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
@@ -1043,6 +1078,29 @@ func HasCityWith(preds ...predicate.City) predicate.Store {
 	})
 }
 
+// HasGroup applies the HasEdge predicate on the "group" edge.
+func HasGroup() predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, GroupTable, GroupColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasGroupWith applies the HasEdge predicate on the "group" edge with a given conditions (other predicates).
+func HasGroupWith(preds ...predicate.StoreGroup) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := newGroupStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasBranch applies the HasEdge predicate on the "branch" edge.
 func HasBranch() predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
@@ -1089,21 +1147,21 @@ func HasEmployeeWith(preds ...predicate.Employee) predicate.Store {
 	})
 }
 
-// HasStocks applies the HasEdge predicate on the "stocks" edge.
-func HasStocks() predicate.Store {
+// HasAsset applies the HasEdge predicate on the "asset" edge.
+func HasAsset() predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, AssetTable, AssetColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasStocksWith applies the HasEdge predicate on the "stocks" edge with a given conditions (other predicates).
-func HasStocksWith(preds ...predicate.Stock) predicate.Store {
+// HasAssetWith applies the HasEdge predicate on the "asset" edge with a given conditions (other predicates).
+func HasAssetWith(preds ...predicate.Asset) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
-		step := newStocksStep()
+		step := newAssetStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1173,6 +1231,75 @@ func HasGoods() predicate.Store {
 func HasGoodsWith(preds ...predicate.StoreGoods) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		step := newGoodsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEmployees applies the HasEdge predicate on the "employees" edge.
+func HasEmployees() predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, EmployeesTable, EmployeesPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEmployeesWith applies the HasEdge predicate on the "employees" edge with a given conditions (other predicates).
+func HasEmployeesWith(preds ...predicate.Employee) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := newEmployeesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasDutyEmployees applies the HasEdge predicate on the "duty_employees" edge.
+func HasDutyEmployees() predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DutyEmployeesTable, DutyEmployeesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDutyEmployeesWith applies the HasEdge predicate on the "duty_employees" edge with a given conditions (other predicates).
+func HasDutyEmployeesWith(preds ...predicate.Employee) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := newDutyEmployeesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStocks applies the HasEdge predicate on the "stocks" edge.
+func HasStocks() predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStocksWith applies the HasEdge predicate on the "stocks" edge with a given conditions (other predicates).
+func HasStocksWith(preds ...predicate.Stock) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := newStocksStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

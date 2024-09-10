@@ -43,6 +43,60 @@ func (bmu *BatteryModelUpdate) SetNillableModel(s *string) *BatteryModelUpdate {
 	return bmu
 }
 
+// SetVoltage sets the "voltage" field.
+func (bmu *BatteryModelUpdate) SetVoltage(u uint) *BatteryModelUpdate {
+	bmu.mutation.ResetVoltage()
+	bmu.mutation.SetVoltage(u)
+	return bmu
+}
+
+// SetNillableVoltage sets the "voltage" field if the given value is not nil.
+func (bmu *BatteryModelUpdate) SetNillableVoltage(u *uint) *BatteryModelUpdate {
+	if u != nil {
+		bmu.SetVoltage(*u)
+	}
+	return bmu
+}
+
+// AddVoltage adds u to the "voltage" field.
+func (bmu *BatteryModelUpdate) AddVoltage(u int) *BatteryModelUpdate {
+	bmu.mutation.AddVoltage(u)
+	return bmu
+}
+
+// ClearVoltage clears the value of the "voltage" field.
+func (bmu *BatteryModelUpdate) ClearVoltage() *BatteryModelUpdate {
+	bmu.mutation.ClearVoltage()
+	return bmu
+}
+
+// SetCapacity sets the "capacity" field.
+func (bmu *BatteryModelUpdate) SetCapacity(u uint) *BatteryModelUpdate {
+	bmu.mutation.ResetCapacity()
+	bmu.mutation.SetCapacity(u)
+	return bmu
+}
+
+// SetNillableCapacity sets the "capacity" field if the given value is not nil.
+func (bmu *BatteryModelUpdate) SetNillableCapacity(u *uint) *BatteryModelUpdate {
+	if u != nil {
+		bmu.SetCapacity(*u)
+	}
+	return bmu
+}
+
+// AddCapacity adds u to the "capacity" field.
+func (bmu *BatteryModelUpdate) AddCapacity(u int) *BatteryModelUpdate {
+	bmu.mutation.AddCapacity(u)
+	return bmu
+}
+
+// ClearCapacity clears the value of the "capacity" field.
+func (bmu *BatteryModelUpdate) ClearCapacity() *BatteryModelUpdate {
+	bmu.mutation.ClearCapacity()
+	return bmu
+}
+
 // AddCabinetIDs adds the "cabinets" edge to the Cabinet entity by IDs.
 func (bmu *BatteryModelUpdate) AddCabinetIDs(ids ...uint64) *BatteryModelUpdate {
 	bmu.mutation.AddCabinetIDs(ids...)
@@ -129,6 +183,24 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := bmu.mutation.Model(); ok {
 		_spec.SetField(batterymodel.FieldModel, field.TypeString, value)
 	}
+	if value, ok := bmu.mutation.Voltage(); ok {
+		_spec.SetField(batterymodel.FieldVoltage, field.TypeUint, value)
+	}
+	if value, ok := bmu.mutation.AddedVoltage(); ok {
+		_spec.AddField(batterymodel.FieldVoltage, field.TypeUint, value)
+	}
+	if bmu.mutation.VoltageCleared() {
+		_spec.ClearField(batterymodel.FieldVoltage, field.TypeUint)
+	}
+	if value, ok := bmu.mutation.Capacity(); ok {
+		_spec.SetField(batterymodel.FieldCapacity, field.TypeUint, value)
+	}
+	if value, ok := bmu.mutation.AddedCapacity(); ok {
+		_spec.AddField(batterymodel.FieldCapacity, field.TypeUint, value)
+	}
+	if bmu.mutation.CapacityCleared() {
+		_spec.ClearField(batterymodel.FieldCapacity, field.TypeUint)
+	}
 	if bmu.mutation.CabinetsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -207,6 +279,60 @@ func (bmuo *BatteryModelUpdateOne) SetNillableModel(s *string) *BatteryModelUpda
 	if s != nil {
 		bmuo.SetModel(*s)
 	}
+	return bmuo
+}
+
+// SetVoltage sets the "voltage" field.
+func (bmuo *BatteryModelUpdateOne) SetVoltage(u uint) *BatteryModelUpdateOne {
+	bmuo.mutation.ResetVoltage()
+	bmuo.mutation.SetVoltage(u)
+	return bmuo
+}
+
+// SetNillableVoltage sets the "voltage" field if the given value is not nil.
+func (bmuo *BatteryModelUpdateOne) SetNillableVoltage(u *uint) *BatteryModelUpdateOne {
+	if u != nil {
+		bmuo.SetVoltage(*u)
+	}
+	return bmuo
+}
+
+// AddVoltage adds u to the "voltage" field.
+func (bmuo *BatteryModelUpdateOne) AddVoltage(u int) *BatteryModelUpdateOne {
+	bmuo.mutation.AddVoltage(u)
+	return bmuo
+}
+
+// ClearVoltage clears the value of the "voltage" field.
+func (bmuo *BatteryModelUpdateOne) ClearVoltage() *BatteryModelUpdateOne {
+	bmuo.mutation.ClearVoltage()
+	return bmuo
+}
+
+// SetCapacity sets the "capacity" field.
+func (bmuo *BatteryModelUpdateOne) SetCapacity(u uint) *BatteryModelUpdateOne {
+	bmuo.mutation.ResetCapacity()
+	bmuo.mutation.SetCapacity(u)
+	return bmuo
+}
+
+// SetNillableCapacity sets the "capacity" field if the given value is not nil.
+func (bmuo *BatteryModelUpdateOne) SetNillableCapacity(u *uint) *BatteryModelUpdateOne {
+	if u != nil {
+		bmuo.SetCapacity(*u)
+	}
+	return bmuo
+}
+
+// AddCapacity adds u to the "capacity" field.
+func (bmuo *BatteryModelUpdateOne) AddCapacity(u int) *BatteryModelUpdateOne {
+	bmuo.mutation.AddCapacity(u)
+	return bmuo
+}
+
+// ClearCapacity clears the value of the "capacity" field.
+func (bmuo *BatteryModelUpdateOne) ClearCapacity() *BatteryModelUpdateOne {
+	bmuo.mutation.ClearCapacity()
 	return bmuo
 }
 
@@ -325,6 +451,24 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 	}
 	if value, ok := bmuo.mutation.Model(); ok {
 		_spec.SetField(batterymodel.FieldModel, field.TypeString, value)
+	}
+	if value, ok := bmuo.mutation.Voltage(); ok {
+		_spec.SetField(batterymodel.FieldVoltage, field.TypeUint, value)
+	}
+	if value, ok := bmuo.mutation.AddedVoltage(); ok {
+		_spec.AddField(batterymodel.FieldVoltage, field.TypeUint, value)
+	}
+	if bmuo.mutation.VoltageCleared() {
+		_spec.ClearField(batterymodel.FieldVoltage, field.TypeUint)
+	}
+	if value, ok := bmuo.mutation.Capacity(); ok {
+		_spec.SetField(batterymodel.FieldCapacity, field.TypeUint, value)
+	}
+	if value, ok := bmuo.mutation.AddedCapacity(); ok {
+		_spec.AddField(batterymodel.FieldCapacity, field.TypeUint, value)
+	}
+	if bmuo.mutation.CapacityCleared() {
+		_spec.ClearField(batterymodel.FieldCapacity, field.TypeUint)
 	}
 	if bmuo.mutation.CabinetsCleared() {
 		edge := &sqlgraph.EdgeSpec{

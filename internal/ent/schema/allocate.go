@@ -73,7 +73,7 @@ func (Allocate) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("contract", Contract.Type).Unique(),
 
-		edge.From("ebike", Ebike.Type).Ref("allocates").Unique().Field("ebike_id"),
+		edge.From("ebike", Asset.Type).Ref("allocates").Unique().Field("ebike_id"),
 	}
 }
 

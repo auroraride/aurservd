@@ -90,6 +90,13 @@ func GetOperator(data any) (*Operator, error) {
 			Phone: v.Phone,
 			Name:  v.Name,
 		}, nil
+	case *ent.AssetManager:
+		return &Operator{
+			Type:  model.OperatorTypeAssetManager,
+			ID:    v.ID,
+			Phone: v.Phone,
+			Name:  v.Name,
+		}, nil
 	}
 }
 

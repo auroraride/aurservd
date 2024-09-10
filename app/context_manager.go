@@ -6,9 +6,10 @@
 package app
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/labstack/echo/v4"
 )
 
 // ManagerContext 管理员上下文
@@ -17,15 +18,25 @@ type ManagerContext struct {
 
 	Manager  *ent.Manager
 	Modifier *model.Modifier
+	Operator *model.OperatorInfo
 }
 
 // NewManagerContext 新建管理员上下文
 func NewManagerContext(c echo.Context, mgr *ent.Manager, m *model.Modifier) *ManagerContext {
-	return &ManagerContext{
+	ctx := &ManagerContext{
 		BaseContext: Context(c),
 		Manager:     mgr,
 		Modifier:    m,
 	}
+	if mgr != nil {
+		ctx.Operator = &model.OperatorInfo{
+			Type:  model.OperatorTypeManager,
+			ID:    mgr.ID,
+			Phone: mgr.Phone,
+			Name:  mgr.Name,
+		}
+	}
+	return ctx
 }
 
 // GetManagerContext 获取管理端上下文

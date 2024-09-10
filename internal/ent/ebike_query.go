@@ -830,9 +830,7 @@ func (eq *EbikeQuery) loadAllocates(ctx context.Context, query *AllocateQuery, n
 			init(nodes[i])
 		}
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(allocate.FieldEbikeID)
-	}
+	query.withFKs = true
 	query.Where(predicate.Allocate(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(ebike.AllocatesColumn), fks...))
 	}))
@@ -841,13 +839,13 @@ func (eq *EbikeQuery) loadAllocates(ctx context.Context, query *AllocateQuery, n
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.EbikeID
+		fk := n.ebike_allocates
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "ebike_id" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "ebike_allocates" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "ebike_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "ebike_allocates" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

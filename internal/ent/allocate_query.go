@@ -13,10 +13,10 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -43,7 +43,8 @@ type AllocateQuery struct {
 	withStation   *EnterpriseStationQuery
 	withAgent     *AgentQuery
 	withContract  *ContractQuery
-	withEbike     *EbikeQuery
+	withEbike     *AssetQuery
+	withFKs       bool
 	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -302,8 +303,8 @@ func (aq *AllocateQuery) QueryContract() *ContractQuery {
 }
 
 // QueryEbike chains the current query on the "ebike" edge.
-func (aq *AllocateQuery) QueryEbike() *EbikeQuery {
-	query := (&EbikeClient{config: aq.config}).Query()
+func (aq *AllocateQuery) QueryEbike() *AssetQuery {
+	query := (&AssetClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -314,7 +315,7 @@ func (aq *AllocateQuery) QueryEbike() *EbikeQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(allocate.Table, allocate.FieldID, selector),
-			sqlgraph.To(ebike.Table, ebike.FieldID),
+			sqlgraph.To(asset.Table, asset.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, allocate.EbikeTable, allocate.EbikeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
@@ -644,8 +645,8 @@ func (aq *AllocateQuery) WithContract(opts ...func(*ContractQuery)) *AllocateQue
 
 // WithEbike tells the query-builder to eager-load the nodes that are connected to
 // the "ebike" edge. The optional arguments are used to configure the query builder of the edge.
-func (aq *AllocateQuery) WithEbike(opts ...func(*EbikeQuery)) *AllocateQuery {
-	query := (&EbikeClient{config: aq.config}).Query()
+func (aq *AllocateQuery) WithEbike(opts ...func(*AssetQuery)) *AllocateQuery {
+	query := (&AssetClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -730,6 +731,7 @@ func (aq *AllocateQuery) prepareQuery(ctx context.Context) error {
 func (aq *AllocateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Allocate, error) {
 	var (
 		nodes       = []*Allocate{}
+		withFKs     = aq.withFKs
 		_spec       = aq.querySpec()
 		loadedTypes = [11]bool{
 			aq.withRider != nil,
@@ -745,6 +747,9 @@ func (aq *AllocateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*All
 			aq.withEbike != nil,
 		}
 	)
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, allocate.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Allocate).scanValues(nil, columns)
 	}
@@ -828,7 +833,7 @@ func (aq *AllocateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*All
 	}
 	if query := aq.withEbike; query != nil {
 		if err := aq.loadEbike(ctx, query, nodes, nil,
-			func(n *Allocate, e *Ebike) { n.Edges.Ebike = e }); err != nil {
+			func(n *Allocate, e *Asset) { n.Edges.Ebike = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1147,7 +1152,7 @@ func (aq *AllocateQuery) loadContract(ctx context.Context, query *ContractQuery,
 	}
 	return nil
 }
-func (aq *AllocateQuery) loadEbike(ctx context.Context, query *EbikeQuery, nodes []*Allocate, init func(*Allocate), assign func(*Allocate, *Ebike)) error {
+func (aq *AllocateQuery) loadEbike(ctx context.Context, query *AssetQuery, nodes []*Allocate, init func(*Allocate), assign func(*Allocate, *Asset)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Allocate)
 	for i := range nodes {
@@ -1163,7 +1168,7 @@ func (aq *AllocateQuery) loadEbike(ctx context.Context, query *EbikeQuery, nodes
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(ebike.IDIn(ids...))
+	query.Where(asset.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err

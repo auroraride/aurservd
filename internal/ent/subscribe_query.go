@@ -11,10 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -46,7 +45,6 @@ type SubscribeQuery struct {
 	withStore           *StoreQuery
 	withCabinet         *CabinetQuery
 	withBrand           *EbikeBrandQuery
-	withEbike           *EbikeQuery
 	withRider           *RiderQuery
 	withEnterprise      *EnterpriseQuery
 	withPauses          *SubscribePauseQuery
@@ -55,7 +53,8 @@ type SubscribeQuery struct {
 	withOrders          *OrderQuery
 	withInitialOrder    *OrderQuery
 	withBills           *EnterpriseBillQuery
-	withBattery         *BatteryQuery
+	withEbike           *AssetQuery
+	withBattery         *AssetQuery
 	withEnterprisePrice *EnterprisePriceQuery
 	modifiers           []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -248,28 +247,6 @@ func (sq *SubscribeQuery) QueryBrand() *EbikeBrandQuery {
 	return query
 }
 
-// QueryEbike chains the current query on the "ebike" edge.
-func (sq *SubscribeQuery) QueryEbike() *EbikeQuery {
-	query := (&EbikeClient{config: sq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := sq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := sq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
-			sqlgraph.To(ebike.Table, ebike.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.EbikeTable, subscribe.EbikeColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // QueryRider chains the current query on the "rider" edge.
 func (sq *SubscribeQuery) QueryRider() *RiderQuery {
 	query := (&RiderClient{config: sq.config}).Query()
@@ -446,9 +423,9 @@ func (sq *SubscribeQuery) QueryBills() *EnterpriseBillQuery {
 	return query
 }
 
-// QueryBattery chains the current query on the "battery" edge.
-func (sq *SubscribeQuery) QueryBattery() *BatteryQuery {
-	query := (&BatteryClient{config: sq.config}).Query()
+// QueryEbike chains the current query on the "ebike" edge.
+func (sq *SubscribeQuery) QueryEbike() *AssetQuery {
+	query := (&AssetClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -459,7 +436,29 @@ func (sq *SubscribeQuery) QueryBattery() *BatteryQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
-			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.EbikeTable, subscribe.EbikeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBattery chains the current query on the "battery" edge.
+func (sq *SubscribeQuery) QueryBattery() *AssetQuery {
+	query := (&AssetClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
+			sqlgraph.To(asset.Table, asset.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, subscribe.BatteryTable, subscribe.BatteryColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
@@ -689,7 +688,6 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 		withStore:           sq.withStore.Clone(),
 		withCabinet:         sq.withCabinet.Clone(),
 		withBrand:           sq.withBrand.Clone(),
-		withEbike:           sq.withEbike.Clone(),
 		withRider:           sq.withRider.Clone(),
 		withEnterprise:      sq.withEnterprise.Clone(),
 		withPauses:          sq.withPauses.Clone(),
@@ -698,6 +696,7 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 		withOrders:          sq.withOrders.Clone(),
 		withInitialOrder:    sq.withInitialOrder.Clone(),
 		withBills:           sq.withBills.Clone(),
+		withEbike:           sq.withEbike.Clone(),
 		withBattery:         sq.withBattery.Clone(),
 		withEnterprisePrice: sq.withEnterprisePrice.Clone(),
 		// clone intermediate query.
@@ -780,17 +779,6 @@ func (sq *SubscribeQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *SubscribeQu
 		opt(query)
 	}
 	sq.withBrand = query
-	return sq
-}
-
-// WithEbike tells the query-builder to eager-load the nodes that are connected to
-// the "ebike" edge. The optional arguments are used to configure the query builder of the edge.
-func (sq *SubscribeQuery) WithEbike(opts ...func(*EbikeQuery)) *SubscribeQuery {
-	query := (&EbikeClient{config: sq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	sq.withEbike = query
 	return sq
 }
 
@@ -882,10 +870,21 @@ func (sq *SubscribeQuery) WithBills(opts ...func(*EnterpriseBillQuery)) *Subscri
 	return sq
 }
 
+// WithEbike tells the query-builder to eager-load the nodes that are connected to
+// the "ebike" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SubscribeQuery) WithEbike(opts ...func(*AssetQuery)) *SubscribeQuery {
+	query := (&AssetClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withEbike = query
+	return sq
+}
+
 // WithBattery tells the query-builder to eager-load the nodes that are connected to
 // the "battery" edge. The optional arguments are used to configure the query builder of the edge.
-func (sq *SubscribeQuery) WithBattery(opts ...func(*BatteryQuery)) *SubscribeQuery {
-	query := (&BatteryClient{config: sq.config}).Query()
+func (sq *SubscribeQuery) WithBattery(opts ...func(*AssetQuery)) *SubscribeQuery {
+	query := (&AssetClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -990,7 +989,6 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			sq.withStore != nil,
 			sq.withCabinet != nil,
 			sq.withBrand != nil,
-			sq.withEbike != nil,
 			sq.withRider != nil,
 			sq.withEnterprise != nil,
 			sq.withPauses != nil,
@@ -999,6 +997,7 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			sq.withOrders != nil,
 			sq.withInitialOrder != nil,
 			sq.withBills != nil,
+			sq.withEbike != nil,
 			sq.withBattery != nil,
 			sq.withEnterprisePrice != nil,
 		}
@@ -1066,12 +1065,6 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			return nil, err
 		}
 	}
-	if query := sq.withEbike; query != nil {
-		if err := sq.loadEbike(ctx, query, nodes, nil,
-			func(n *Subscribe, e *Ebike) { n.Edges.Ebike = e }); err != nil {
-			return nil, err
-		}
-	}
 	if query := sq.withRider; query != nil {
 		if err := sq.loadRider(ctx, query, nodes, nil,
 			func(n *Subscribe, e *Rider) { n.Edges.Rider = e }); err != nil {
@@ -1125,9 +1118,15 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			return nil, err
 		}
 	}
+	if query := sq.withEbike; query != nil {
+		if err := sq.loadEbike(ctx, query, nodes, nil,
+			func(n *Subscribe, e *Asset) { n.Edges.Ebike = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := sq.withBattery; query != nil {
 		if err := sq.loadBattery(ctx, query, nodes, nil,
-			func(n *Subscribe, e *Battery) { n.Edges.Battery = e }); err != nil {
+			func(n *Subscribe, e *Asset) { n.Edges.Battery = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1354,38 +1353,6 @@ func (sq *SubscribeQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery,
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "brand_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (sq *SubscribeQuery) loadEbike(ctx context.Context, query *EbikeQuery, nodes []*Subscribe, init func(*Subscribe), assign func(*Subscribe, *Ebike)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Subscribe)
-	for i := range nodes {
-		if nodes[i].EbikeID == nil {
-			continue
-		}
-		fk := *nodes[i].EbikeID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(ebike.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "ebike_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -1633,7 +1600,39 @@ func (sq *SubscribeQuery) loadBills(ctx context.Context, query *EnterpriseBillQu
 	}
 	return nil
 }
-func (sq *SubscribeQuery) loadBattery(ctx context.Context, query *BatteryQuery, nodes []*Subscribe, init func(*Subscribe), assign func(*Subscribe, *Battery)) error {
+func (sq *SubscribeQuery) loadEbike(ctx context.Context, query *AssetQuery, nodes []*Subscribe, init func(*Subscribe), assign func(*Subscribe, *Asset)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Subscribe)
+	for i := range nodes {
+		if nodes[i].EbikeID == nil {
+			continue
+		}
+		fk := *nodes[i].EbikeID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(asset.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "ebike_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (sq *SubscribeQuery) loadBattery(ctx context.Context, query *AssetQuery, nodes []*Subscribe, init func(*Subscribe), assign func(*Subscribe, *Asset)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*Subscribe)
 	for i := range nodes {
@@ -1641,9 +1640,9 @@ func (sq *SubscribeQuery) loadBattery(ctx context.Context, query *BatteryQuery, 
 		nodeids[nodes[i].ID] = nodes[i]
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(battery.FieldSubscribeID)
+		query.ctx.AppendFieldOnce(asset.FieldSubscribeID)
 	}
-	query.Where(predicate.Battery(func(s *sql.Selector) {
+	query.Where(predicate.Asset(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(subscribe.BatteryColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
@@ -1742,9 +1741,6 @@ func (sq *SubscribeQuery) querySpec() *sqlgraph.QuerySpec {
 		if sq.withBrand != nil {
 			_spec.Node.AddColumnOnce(subscribe.FieldBrandID)
 		}
-		if sq.withEbike != nil {
-			_spec.Node.AddColumnOnce(subscribe.FieldEbikeID)
-		}
 		if sq.withRider != nil {
 			_spec.Node.AddColumnOnce(subscribe.FieldRiderID)
 		}
@@ -1753,6 +1749,9 @@ func (sq *SubscribeQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if sq.withInitialOrder != nil {
 			_spec.Node.AddColumnOnce(subscribe.FieldInitialOrderID)
+		}
+		if sq.withEbike != nil {
+			_spec.Node.AddColumnOnce(subscribe.FieldEbikeID)
 		}
 		if sq.withEnterprisePrice != nil {
 			_spec.Node.AddColumnOnce(subscribe.FieldEnterprisePriceID)
@@ -1832,7 +1831,6 @@ var (
 	SubscribeQueryWithStore           SubscribeQueryWith = "Store"
 	SubscribeQueryWithCabinet         SubscribeQueryWith = "Cabinet"
 	SubscribeQueryWithBrand           SubscribeQueryWith = "Brand"
-	SubscribeQueryWithEbike           SubscribeQueryWith = "Ebike"
 	SubscribeQueryWithRider           SubscribeQueryWith = "Rider"
 	SubscribeQueryWithEnterprise      SubscribeQueryWith = "Enterprise"
 	SubscribeQueryWithPauses          SubscribeQueryWith = "Pauses"
@@ -1841,6 +1839,7 @@ var (
 	SubscribeQueryWithOrders          SubscribeQueryWith = "Orders"
 	SubscribeQueryWithInitialOrder    SubscribeQueryWith = "InitialOrder"
 	SubscribeQueryWithBills           SubscribeQueryWith = "Bills"
+	SubscribeQueryWithEbike           SubscribeQueryWith = "Ebike"
 	SubscribeQueryWithBattery         SubscribeQueryWith = "Battery"
 	SubscribeQueryWithEnterprisePrice SubscribeQueryWith = "EnterprisePrice"
 )
@@ -1862,8 +1861,6 @@ func (sq *SubscribeQuery) With(withEdges ...SubscribeQueryWith) *SubscribeQuery 
 			sq.WithCabinet()
 		case SubscribeQueryWithBrand:
 			sq.WithBrand()
-		case SubscribeQueryWithEbike:
-			sq.WithEbike()
 		case SubscribeQueryWithRider:
 			sq.WithRider()
 		case SubscribeQueryWithEnterprise:
@@ -1880,6 +1877,8 @@ func (sq *SubscribeQuery) With(withEdges ...SubscribeQueryWith) *SubscribeQuery 
 			sq.WithInitialOrder()
 		case SubscribeQueryWithBills:
 			sq.WithBills()
+		case SubscribeQueryWithEbike:
+			sq.WithEbike()
 		case SubscribeQueryWithBattery:
 			sq.WithBattery()
 		case SubscribeQueryWithEnterprisePrice:

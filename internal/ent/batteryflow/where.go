@@ -246,6 +246,26 @@ func BatteryIDNotIn(vs ...uint64) predicate.BatteryFlow {
 	return predicate.BatteryFlow(sql.FieldNotIn(FieldBatteryID, vs...))
 }
 
+// BatteryIDGT applies the GT predicate on the "battery_id" field.
+func BatteryIDGT(v uint64) predicate.BatteryFlow {
+	return predicate.BatteryFlow(sql.FieldGT(FieldBatteryID, v))
+}
+
+// BatteryIDGTE applies the GTE predicate on the "battery_id" field.
+func BatteryIDGTE(v uint64) predicate.BatteryFlow {
+	return predicate.BatteryFlow(sql.FieldGTE(FieldBatteryID, v))
+}
+
+// BatteryIDLT applies the LT predicate on the "battery_id" field.
+func BatteryIDLT(v uint64) predicate.BatteryFlow {
+	return predicate.BatteryFlow(sql.FieldLT(FieldBatteryID, v))
+}
+
+// BatteryIDLTE applies the LTE predicate on the "battery_id" field.
+func BatteryIDLTE(v uint64) predicate.BatteryFlow {
+	return predicate.BatteryFlow(sql.FieldLTE(FieldBatteryID, v))
+}
+
 // SnEQ applies the EQ predicate on the "sn" field.
 func SnEQ(v string) predicate.BatteryFlow {
 	return predicate.BatteryFlow(sql.FieldEQ(FieldSn, v))
@@ -676,29 +696,6 @@ func HasSubscribe() predicate.BatteryFlow {
 func HasSubscribeWith(preds ...predicate.Subscribe) predicate.BatteryFlow {
 	return predicate.BatteryFlow(func(s *sql.Selector) {
 		step := newSubscribeStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasBattery applies the HasEdge predicate on the "battery" edge.
-func HasBattery() predicate.BatteryFlow {
-	return predicate.BatteryFlow(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, BatteryTable, BatteryColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
-func HasBatteryWith(preds ...predicate.Battery) predicate.BatteryFlow {
-	return predicate.BatteryFlow(func(s *sql.Selector) {
-		step := newBatteryStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

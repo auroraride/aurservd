@@ -18,6 +18,10 @@ const (
 	FieldModel = "model"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// FieldVoltage holds the string denoting the voltage field in the database.
+	FieldVoltage = "voltage"
+	// FieldCapacity holds the string denoting the capacity field in the database.
+	FieldCapacity = "capacity"
 	// EdgeCabinets holds the string denoting the cabinets edge name in mutations.
 	EdgeCabinets = "cabinets"
 	// Table holds the table name of the batterymodel in the database.
@@ -34,6 +38,8 @@ var Columns = []string{
 	FieldID,
 	FieldModel,
 	FieldCreatedAt,
+	FieldVoltage,
+	FieldCapacity,
 }
 
 var (
@@ -73,6 +79,16 @@ func ByModel(opts ...sql.OrderTermOption) OrderOption {
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByVoltage orders the results by the voltage field.
+func ByVoltage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldVoltage, opts...).ToFunc()
+}
+
+// ByCapacity orders the results by the capacity field.
+func ByCapacity(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCapacity, opts...).ToFunc()
 }
 
 // ByCabinetsCount orders the results by cabinets count.

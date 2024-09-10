@@ -97,6 +97,9 @@ func (s *subscribeService) QueryEdges(id uint64) (*ent.Subscribe, error) {
 			})
 		}).
 		WithEnterprise().
+		WithEbike(func(query *ent.AssetQuery) {
+			query.WithValues()
+		}).
 		First(s.ctx)
 }
 

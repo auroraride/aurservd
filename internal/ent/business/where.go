@@ -1091,7 +1091,7 @@ func HasRtoEbike() predicate.Business {
 }
 
 // HasRtoEbikeWith applies the HasEdge predicate on the "rto_ebike" edge with a given conditions (other predicates).
-func HasRtoEbikeWith(preds ...predicate.Ebike) predicate.Business {
+func HasRtoEbikeWith(preds ...predicate.Asset) predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
 		step := newRtoEbikeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
