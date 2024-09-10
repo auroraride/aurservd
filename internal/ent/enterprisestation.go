@@ -59,15 +59,13 @@ type EnterpriseStationEdges struct {
 	SwapPutoutBatteries []*EnterpriseBatterySwap `json:"swap_putout_batteries,omitempty"`
 	// Cabinets holds the value of the cabinets edge.
 	Cabinets []*Cabinet `json:"cabinets,omitempty"`
-	// Batteries holds the value of the batteries edge.
-	Batteries []*Battery `json:"batteries,omitempty"`
 	// Asset holds the value of the asset edge.
 	Asset []*Asset `json:"asset,omitempty"`
 	// Stocks holds the value of the stocks edge.
 	Stocks []*Stock `json:"stocks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [8]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -128,19 +126,10 @@ func (e EnterpriseStationEdges) CabinetsOrErr() ([]*Cabinet, error) {
 	return nil, &NotLoadedError{edge: "cabinets"}
 }
 
-// BatteriesOrErr returns the Batteries value or an error if the edge
-// was not loaded in eager-loading.
-func (e EnterpriseStationEdges) BatteriesOrErr() ([]*Battery, error) {
-	if e.loadedTypes[6] {
-		return e.Batteries, nil
-	}
-	return nil, &NotLoadedError{edge: "batteries"}
-}
-
 // AssetOrErr returns the Asset value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseStationEdges) AssetOrErr() ([]*Asset, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[6] {
 		return e.Asset, nil
 	}
 	return nil, &NotLoadedError{edge: "asset"}
@@ -149,7 +138,7 @@ func (e EnterpriseStationEdges) AssetOrErr() ([]*Asset, error) {
 // StocksOrErr returns the Stocks value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseStationEdges) StocksOrErr() ([]*Stock, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[7] {
 		return e.Stocks, nil
 	}
 	return nil, &NotLoadedError{edge: "stocks"}
@@ -290,11 +279,6 @@ func (es *EnterpriseStation) QuerySwapPutoutBatteries() *EnterpriseBatterySwapQu
 // QueryCabinets queries the "cabinets" edge of the EnterpriseStation entity.
 func (es *EnterpriseStation) QueryCabinets() *CabinetQuery {
 	return NewEnterpriseStationClient(es.config).QueryCabinets(es)
-}
-
-// QueryBatteries queries the "batteries" edge of the EnterpriseStation entity.
-func (es *EnterpriseStation) QueryBatteries() *BatteryQuery {
-	return NewEnterpriseStationClient(es.config).QueryBatteries(es)
 }
 
 // QueryAsset queries the "asset" edge of the EnterpriseStation entity.

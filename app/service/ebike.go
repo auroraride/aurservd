@@ -381,7 +381,7 @@ func (s *ebikeService) UnallocatedX(params *model.EbikeUnallocatedParams) *model
 
 // SearchUnallocated 获取未分配车辆信息
 func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (res []*model.Ebike) {
-	q := s.AllocatableBaseFilter().WithAllocates(func(query *ent.AllocateQuery) {
+	q := s.AllocatableBaseFilter().WithEbikeAllocates(func(query *ent.AllocateQuery) {
 		query.Where(
 			allocate.Status(model.AllocateStatusPending.Value()),
 			allocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).StdTime()),
@@ -430,7 +430,7 @@ func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (
 
 	res = make([]*model.Ebike, len(bikes))
 	for i, bike := range bikes {
-		if len(bike.Edges.Allocates) > 0 {
+		if len(bike.Edges.EbikeAllocates) > 0 {
 			continue
 		}
 		brand := bike.Edges.Brand

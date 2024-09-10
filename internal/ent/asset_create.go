@@ -536,19 +536,34 @@ func (ac *AssetCreate) SetOperator(m *Maintainer) *AssetCreate {
 	return ac.SetOperatorID(m.ID)
 }
 
-// AddAllocateIDs adds the "allocates" edge to the Allocate entity by IDs.
-func (ac *AssetCreate) AddAllocateIDs(ids ...uint64) *AssetCreate {
-	ac.mutation.AddAllocateIDs(ids...)
+// AddEbikeAllocateIDs adds the "ebike_allocates" edge to the Allocate entity by IDs.
+func (ac *AssetCreate) AddEbikeAllocateIDs(ids ...uint64) *AssetCreate {
+	ac.mutation.AddEbikeAllocateIDs(ids...)
 	return ac
 }
 
-// AddAllocates adds the "allocates" edges to the Allocate entity.
-func (ac *AssetCreate) AddAllocates(a ...*Allocate) *AssetCreate {
+// AddEbikeAllocates adds the "ebike_allocates" edges to the Allocate entity.
+func (ac *AssetCreate) AddEbikeAllocates(a ...*Allocate) *AssetCreate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return ac.AddAllocateIDs(ids...)
+	return ac.AddEbikeAllocateIDs(ids...)
+}
+
+// AddBatteryAllocateIDs adds the "battery_allocates" edge to the Allocate entity by IDs.
+func (ac *AssetCreate) AddBatteryAllocateIDs(ids ...uint64) *AssetCreate {
+	ac.mutation.AddBatteryAllocateIDs(ids...)
+	return ac
+}
+
+// AddBatteryAllocates adds the "battery_allocates" edges to the Allocate entity.
+func (ac *AssetCreate) AddBatteryAllocates(a ...*Allocate) *AssetCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ac.AddBatteryAllocateIDs(ids...)
 }
 
 // SetRtoRider sets the "rto_rider" edge to the Rider entity.
@@ -998,12 +1013,28 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		_node.LocationsID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.AllocatesIDs(); len(nodes) > 0 {
+	if nodes := ac.mutation.EbikeAllocatesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.AllocatesTable,
-			Columns: []string{asset.AllocatesColumn},
+			Table:   asset.EbikeAllocatesTable,
+			Columns: []string{asset.EbikeAllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.BatteryAllocatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.BatteryAllocatesTable,
+			Columns: []string{asset.BatteryAllocatesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),

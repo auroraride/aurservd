@@ -45,8 +45,6 @@ const (
 	EdgeSwapPutoutBatteries = "swap_putout_batteries"
 	// EdgeCabinets holds the string denoting the cabinets edge name in mutations.
 	EdgeCabinets = "cabinets"
-	// EdgeBatteries holds the string denoting the batteries edge name in mutations.
-	EdgeBatteries = "batteries"
 	// EdgeAsset holds the string denoting the asset edge name in mutations.
 	EdgeAsset = "asset"
 	// EdgeStocks holds the string denoting the stocks edge name in mutations.
@@ -93,13 +91,6 @@ const (
 	CabinetsInverseTable = "cabinet"
 	// CabinetsColumn is the table column denoting the cabinets relation/edge.
 	CabinetsColumn = "station_id"
-	// BatteriesTable is the table that holds the batteries relation/edge.
-	BatteriesTable = "battery"
-	// BatteriesInverseTable is the table name for the Battery entity.
-	// It exists in this package in order to avoid circular dependency with the "battery" package.
-	BatteriesInverseTable = "battery"
-	// BatteriesColumn is the table column denoting the batteries relation/edge.
-	BatteriesColumn = "station_id"
 	// AssetTable is the table that holds the asset relation/edge.
 	AssetTable = "asset"
 	// AssetInverseTable is the table name for the Asset entity.
@@ -274,20 +265,6 @@ func ByCabinets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
-// ByBatteriesCount orders the results by batteries count.
-func ByBatteriesCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newBatteriesStep(), opts...)
-	}
-}
-
-// ByBatteries orders the results by batteries terms.
-func ByBatteries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newBatteriesStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
 // ByAssetCount orders the results by asset count.
 func ByAssetCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -355,13 +332,6 @@ func newCabinetsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CabinetsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
-	)
-}
-func newBatteriesStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(BatteriesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, BatteriesTable, BatteriesColumn),
 	)
 }
 func newAssetStep() *sqlgraph.Step {

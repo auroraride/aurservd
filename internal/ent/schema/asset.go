@@ -100,7 +100,8 @@ func (Asset) Edges() []ent.Edge {
 		edge.From("rider", Rider.Type).Unique().Ref("asset").Field("locations_id"),               // 关联骑手
 		edge.From("operator", Maintainer.Type).Unique().Ref("asset").Field("locations_id"),       // 关联运维
 
-		edge.To("allocates", Allocate.Type),
+		edge.To("ebike_allocates", Allocate.Type),
+		edge.To("battery_allocates", Allocate.Type),
 		edge.To("rto_rider", Rider.Type).Unique().Field("rto_rider_id"),
 	}
 }
