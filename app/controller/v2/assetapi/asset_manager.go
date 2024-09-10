@@ -82,8 +82,7 @@ func (*assetManager) List(c echo.Context) (err error) {
 // @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*assetManager) Delete(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
-	biz.NewAssetManagerWithModifier(ctx.Modifier).Delete(req)
-	return ctx.SendResponse()
+	return ctx.SendResponse(biz.NewAssetManagerWithModifier(ctx.Modifier).Delete(req))
 }
 
 // Modify

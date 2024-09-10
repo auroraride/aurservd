@@ -97,9 +97,9 @@ func AssetDo() {
 	// 电池
 	BatteryDo(ctx, modifier)
 	// 车
-	// EbikeDo(ctx, modifier)
+	EbikeDo(ctx, modifier)
 	// 骑手身上的非智能电池
-	// RiderBatteryDo(ctx, modifier)
+	RiderBatteryDo(ctx, modifier)
 }
 
 func BatteryDo(ctx context.Context, modifier *model.Modifier) {
