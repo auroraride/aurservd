@@ -231,11 +231,19 @@ func (s *assetCheckService) getAssetByOperateRole(ctx context.Context, req model
 
 	switch req.OperatorType {
 	case model.OperatorTypeAgent:
-		item, _ := ent.Database.Agent.QueryNotDeleted().Where(agent.ID(req.OperatorID)).WithStations().First(ctx)
+		item, _ := ent.Database.Agent.QueryNotDeleted().Where(agent.ID(req.OperatorID)).
+			WithEnterprise(func(query *ent.EnterpriseQuery) {
+				query.WithStations()
+			}).First(ctx)
 		if item == nil {
 			return b, nil, fmt.Errorf("未找到对应的代理商")
 		}
-		if len(item.Edges.Stations) == 0 {
+
+		if item.Edges.Enterprise == nil {
+			return b, nil, fmt.Errorf("未找到对应的团签企业")
+		}
+
+		if len(item.Edges.Enterprise.Edges.Stations) == 0 {
 			return b, nil, fmt.Errorf("代理商未绑定站点")
 		}
 		for _, v := range item.Edges.Stations {
