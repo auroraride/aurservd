@@ -246,7 +246,7 @@ func (s *assetCheckService) getAssetByOperateRole(ctx context.Context, req model
 		if len(item.Edges.Enterprise.Edges.Stations) == 0 {
 			return b, nil, fmt.Errorf("代理商未绑定站点")
 		}
-		for _, v := range item.Edges.Stations {
+		for _, v := range item.Edges.Enterprise.Edges.Stations {
 			if v.ID == req.LocationsID {
 				b = true
 			}
