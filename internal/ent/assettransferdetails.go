@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
@@ -61,8 +62,8 @@ type AssetTransferDetails struct {
 type AssetTransferDetailsEdges struct {
 	// Transfer holds the value of the transfer edge.
 	Transfer *AssetTransfer `json:"transfer,omitempty"`
-	// InOperateManager holds the value of the in_operate_manager edge.
-	InOperateManager *AssetManager `json:"in_operate_manager,omitempty"`
+	// InOperateAssetManager holds the value of the in_operate_asset_manager edge.
+	InOperateAssetManager *AssetManager `json:"in_operate_asset_manager,omitempty"`
 	// InOperateStore holds the value of the in_operate_store edge.
 	InOperateStore *Store `json:"in_operate_store,omitempty"`
 	// InOperateAgent holds the value of the in_operate_agent edge.
@@ -73,11 +74,13 @@ type AssetTransferDetailsEdges struct {
 	InOperateCabinet *Cabinet `json:"in_operate_cabinet,omitempty"`
 	// InOperateRider holds the value of the in_operate_rider edge.
 	InOperateRider *Rider `json:"in_operate_rider,omitempty"`
+	// InOperateManager holds the value of the in_operate_manager edge.
+	InOperateManager *Manager `json:"in_operate_manager,omitempty"`
 	// Asset holds the value of the asset edge.
 	Asset *Asset `json:"asset,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [9]bool
 }
 
 // TransferOrErr returns the Transfer value or an error if the edge
@@ -91,15 +94,15 @@ func (e AssetTransferDetailsEdges) TransferOrErr() (*AssetTransfer, error) {
 	return nil, &NotLoadedError{edge: "transfer"}
 }
 
-// InOperateManagerOrErr returns the InOperateManager value or an error if the edge
+// InOperateAssetManagerOrErr returns the InOperateAssetManager value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AssetTransferDetailsEdges) InOperateManagerOrErr() (*AssetManager, error) {
-	if e.InOperateManager != nil {
-		return e.InOperateManager, nil
+func (e AssetTransferDetailsEdges) InOperateAssetManagerOrErr() (*AssetManager, error) {
+	if e.InOperateAssetManager != nil {
+		return e.InOperateAssetManager, nil
 	} else if e.loadedTypes[1] {
 		return nil, &NotFoundError{label: assetmanager.Label}
 	}
-	return nil, &NotLoadedError{edge: "in_operate_manager"}
+	return nil, &NotLoadedError{edge: "in_operate_asset_manager"}
 }
 
 // InOperateStoreOrErr returns the InOperateStore value or an error if the edge
@@ -157,12 +160,23 @@ func (e AssetTransferDetailsEdges) InOperateRiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "in_operate_rider"}
 }
 
+// InOperateManagerOrErr returns the InOperateManager value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferDetailsEdges) InOperateManagerOrErr() (*Manager, error) {
+	if e.InOperateManager != nil {
+		return e.InOperateManager, nil
+	} else if e.loadedTypes[7] {
+		return nil, &NotFoundError{label: manager.Label}
+	}
+	return nil, &NotLoadedError{edge: "in_operate_manager"}
+}
+
 // AssetOrErr returns the Asset value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AssetTransferDetailsEdges) AssetOrErr() (*Asset, error) {
 	if e.Asset != nil {
 		return e.Asset, nil
-	} else if e.loadedTypes[7] {
+	} else if e.loadedTypes[8] {
 		return nil, &NotFoundError{label: asset.Label}
 	}
 	return nil, &NotLoadedError{edge: "asset"}
@@ -300,9 +314,9 @@ func (atd *AssetTransferDetails) QueryTransfer() *AssetTransferQuery {
 	return NewAssetTransferDetailsClient(atd.config).QueryTransfer(atd)
 }
 
-// QueryInOperateManager queries the "in_operate_manager" edge of the AssetTransferDetails entity.
-func (atd *AssetTransferDetails) QueryInOperateManager() *AssetManagerQuery {
-	return NewAssetTransferDetailsClient(atd.config).QueryInOperateManager(atd)
+// QueryInOperateAssetManager queries the "in_operate_asset_manager" edge of the AssetTransferDetails entity.
+func (atd *AssetTransferDetails) QueryInOperateAssetManager() *AssetManagerQuery {
+	return NewAssetTransferDetailsClient(atd.config).QueryInOperateAssetManager(atd)
 }
 
 // QueryInOperateStore queries the "in_operate_store" edge of the AssetTransferDetails entity.
@@ -328,6 +342,11 @@ func (atd *AssetTransferDetails) QueryInOperateCabinet() *CabinetQuery {
 // QueryInOperateRider queries the "in_operate_rider" edge of the AssetTransferDetails entity.
 func (atd *AssetTransferDetails) QueryInOperateRider() *RiderQuery {
 	return NewAssetTransferDetailsClient(atd.config).QueryInOperateRider(atd)
+}
+
+// QueryInOperateManager queries the "in_operate_manager" edge of the AssetTransferDetails entity.
+func (atd *AssetTransferDetails) QueryInOperateManager() *ManagerQuery {
+	return NewAssetTransferDetailsClient(atd.config).QueryInOperateManager(atd)
 }
 
 // QueryAsset queries the "asset" edge of the AssetTransferDetails entity.

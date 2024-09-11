@@ -1097,7 +1097,7 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_asset_manager_out_operate_manager",
+				Symbol:     "asset_transfer_asset_manager_out_operate_asset_manager",
 				Columns:    []*schema.Column{AssetTransferColumns[19]},
 				RefColumns: []*schema.Column{AssetManagerColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -1130,6 +1130,12 @@ var (
 				Symbol:     "asset_transfer_rider_out_operate_rider",
 				Columns:    []*schema.Column{AssetTransferColumns[19]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_transfer_manager_out_operate_manager",
+				Columns:    []*schema.Column{AssetTransferColumns[19]},
+				RefColumns: []*schema.Column{ManagerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -1181,7 +1187,7 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_details_asset_manager_in_operate_manager",
+				Symbol:     "asset_transfer_details_asset_manager_in_operate_asset_manager",
 				Columns:    []*schema.Column{AssetTransferDetailsColumns[12]},
 				RefColumns: []*schema.Column{AssetManagerColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -1214,6 +1220,12 @@ var (
 				Symbol:     "asset_transfer_details_rider_in_operate_rider",
 				Columns:    []*schema.Column{AssetTransferDetailsColumns[12]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_transfer_details_manager_in_operate_manager",
+				Columns:    []*schema.Column{AssetTransferDetailsColumns[12]},
+				RefColumns: []*schema.Column{ManagerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -7623,6 +7635,7 @@ func init() {
 	AssetTransferTable.ForeignKeys[15].RefTable = MaintainerTable
 	AssetTransferTable.ForeignKeys[16].RefTable = CabinetTable
 	AssetTransferTable.ForeignKeys[17].RefTable = RiderTable
+	AssetTransferTable.ForeignKeys[18].RefTable = ManagerTable
 	AssetTransferTable.Annotation = &entsql.Annotation{
 		Table: "asset_transfer",
 	}
@@ -7634,6 +7647,7 @@ func init() {
 	AssetTransferDetailsTable.ForeignKeys[5].RefTable = MaintainerTable
 	AssetTransferDetailsTable.ForeignKeys[6].RefTable = CabinetTable
 	AssetTransferDetailsTable.ForeignKeys[7].RefTable = RiderTable
+	AssetTransferDetailsTable.ForeignKeys[8].RefTable = ManagerTable
 	AssetTransferDetailsTable.Annotation = &entsql.Annotation{
 		Table: "asset_transfer_details",
 	}

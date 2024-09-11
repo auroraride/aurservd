@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -222,23 +223,23 @@ func (atdu *AssetTransferDetailsUpdate) SetTransfer(a *AssetTransfer) *AssetTran
 	return atdu.SetTransferID(a.ID)
 }
 
-// SetInOperateManagerID sets the "in_operate_manager" edge to the AssetManager entity by ID.
-func (atdu *AssetTransferDetailsUpdate) SetInOperateManagerID(id uint64) *AssetTransferDetailsUpdate {
-	atdu.mutation.SetInOperateManagerID(id)
+// SetInOperateAssetManagerID sets the "in_operate_asset_manager" edge to the AssetManager entity by ID.
+func (atdu *AssetTransferDetailsUpdate) SetInOperateAssetManagerID(id uint64) *AssetTransferDetailsUpdate {
+	atdu.mutation.SetInOperateAssetManagerID(id)
 	return atdu
 }
 
-// SetNillableInOperateManagerID sets the "in_operate_manager" edge to the AssetManager entity by ID if the given value is not nil.
-func (atdu *AssetTransferDetailsUpdate) SetNillableInOperateManagerID(id *uint64) *AssetTransferDetailsUpdate {
+// SetNillableInOperateAssetManagerID sets the "in_operate_asset_manager" edge to the AssetManager entity by ID if the given value is not nil.
+func (atdu *AssetTransferDetailsUpdate) SetNillableInOperateAssetManagerID(id *uint64) *AssetTransferDetailsUpdate {
 	if id != nil {
-		atdu = atdu.SetInOperateManagerID(*id)
+		atdu = atdu.SetInOperateAssetManagerID(*id)
 	}
 	return atdu
 }
 
-// SetInOperateManager sets the "in_operate_manager" edge to the AssetManager entity.
-func (atdu *AssetTransferDetailsUpdate) SetInOperateManager(a *AssetManager) *AssetTransferDetailsUpdate {
-	return atdu.SetInOperateManagerID(a.ID)
+// SetInOperateAssetManager sets the "in_operate_asset_manager" edge to the AssetManager entity.
+func (atdu *AssetTransferDetailsUpdate) SetInOperateAssetManager(a *AssetManager) *AssetTransferDetailsUpdate {
+	return atdu.SetInOperateAssetManagerID(a.ID)
 }
 
 // SetInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID.
@@ -336,6 +337,25 @@ func (atdu *AssetTransferDetailsUpdate) SetInOperateRider(r *Rider) *AssetTransf
 	return atdu.SetInOperateRiderID(r.ID)
 }
 
+// SetInOperateManagerID sets the "in_operate_manager" edge to the Manager entity by ID.
+func (atdu *AssetTransferDetailsUpdate) SetInOperateManagerID(id uint64) *AssetTransferDetailsUpdate {
+	atdu.mutation.SetInOperateManagerID(id)
+	return atdu
+}
+
+// SetNillableInOperateManagerID sets the "in_operate_manager" edge to the Manager entity by ID if the given value is not nil.
+func (atdu *AssetTransferDetailsUpdate) SetNillableInOperateManagerID(id *uint64) *AssetTransferDetailsUpdate {
+	if id != nil {
+		atdu = atdu.SetInOperateManagerID(*id)
+	}
+	return atdu
+}
+
+// SetInOperateManager sets the "in_operate_manager" edge to the Manager entity.
+func (atdu *AssetTransferDetailsUpdate) SetInOperateManager(m *Manager) *AssetTransferDetailsUpdate {
+	return atdu.SetInOperateManagerID(m.ID)
+}
+
 // SetAsset sets the "asset" edge to the Asset entity.
 func (atdu *AssetTransferDetailsUpdate) SetAsset(a *Asset) *AssetTransferDetailsUpdate {
 	return atdu.SetAssetID(a.ID)
@@ -352,9 +372,9 @@ func (atdu *AssetTransferDetailsUpdate) ClearTransfer() *AssetTransferDetailsUpd
 	return atdu
 }
 
-// ClearInOperateManager clears the "in_operate_manager" edge to the AssetManager entity.
-func (atdu *AssetTransferDetailsUpdate) ClearInOperateManager() *AssetTransferDetailsUpdate {
-	atdu.mutation.ClearInOperateManager()
+// ClearInOperateAssetManager clears the "in_operate_asset_manager" edge to the AssetManager entity.
+func (atdu *AssetTransferDetailsUpdate) ClearInOperateAssetManager() *AssetTransferDetailsUpdate {
+	atdu.mutation.ClearInOperateAssetManager()
 	return atdu
 }
 
@@ -385,6 +405,12 @@ func (atdu *AssetTransferDetailsUpdate) ClearInOperateCabinet() *AssetTransferDe
 // ClearInOperateRider clears the "in_operate_rider" edge to the Rider entity.
 func (atdu *AssetTransferDetailsUpdate) ClearInOperateRider() *AssetTransferDetailsUpdate {
 	atdu.mutation.ClearInOperateRider()
+	return atdu
+}
+
+// ClearInOperateManager clears the "in_operate_manager" edge to the Manager entity.
+func (atdu *AssetTransferDetailsUpdate) ClearInOperateManager() *AssetTransferDetailsUpdate {
+	atdu.mutation.ClearInOperateManager()
 	return atdu
 }
 
@@ -522,12 +548,12 @@ func (atdu *AssetTransferDetailsUpdate) sqlSave(ctx context.Context) (n int, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atdu.mutation.InOperateManagerCleared() {
+	if atdu.mutation.InOperateAssetManagerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransferdetails.InOperateManagerTable,
-			Columns: []string{assettransferdetails.InOperateManagerColumn},
+			Table:   assettransferdetails.InOperateAssetManagerTable,
+			Columns: []string{assettransferdetails.InOperateAssetManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -535,12 +561,12 @@ func (atdu *AssetTransferDetailsUpdate) sqlSave(ctx context.Context) (n int, err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atdu.mutation.InOperateManagerIDs(); len(nodes) > 0 {
+	if nodes := atdu.mutation.InOperateAssetManagerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransferdetails.InOperateManagerTable,
-			Columns: []string{assettransferdetails.InOperateManagerColumn},
+			Table:   assettransferdetails.InOperateAssetManagerTable,
+			Columns: []string{assettransferdetails.InOperateAssetManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -689,6 +715,35 @@ func (atdu *AssetTransferDetailsUpdate) sqlSave(ctx context.Context) (n int, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if atdu.mutation.InOperateManagerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateManagerTable,
+			Columns: []string{assettransferdetails.InOperateManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atdu.mutation.InOperateManagerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateManagerTable,
+			Columns: []string{assettransferdetails.InOperateManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -931,23 +986,23 @@ func (atduo *AssetTransferDetailsUpdateOne) SetTransfer(a *AssetTransfer) *Asset
 	return atduo.SetTransferID(a.ID)
 }
 
-// SetInOperateManagerID sets the "in_operate_manager" edge to the AssetManager entity by ID.
-func (atduo *AssetTransferDetailsUpdateOne) SetInOperateManagerID(id uint64) *AssetTransferDetailsUpdateOne {
-	atduo.mutation.SetInOperateManagerID(id)
+// SetInOperateAssetManagerID sets the "in_operate_asset_manager" edge to the AssetManager entity by ID.
+func (atduo *AssetTransferDetailsUpdateOne) SetInOperateAssetManagerID(id uint64) *AssetTransferDetailsUpdateOne {
+	atduo.mutation.SetInOperateAssetManagerID(id)
 	return atduo
 }
 
-// SetNillableInOperateManagerID sets the "in_operate_manager" edge to the AssetManager entity by ID if the given value is not nil.
-func (atduo *AssetTransferDetailsUpdateOne) SetNillableInOperateManagerID(id *uint64) *AssetTransferDetailsUpdateOne {
+// SetNillableInOperateAssetManagerID sets the "in_operate_asset_manager" edge to the AssetManager entity by ID if the given value is not nil.
+func (atduo *AssetTransferDetailsUpdateOne) SetNillableInOperateAssetManagerID(id *uint64) *AssetTransferDetailsUpdateOne {
 	if id != nil {
-		atduo = atduo.SetInOperateManagerID(*id)
+		atduo = atduo.SetInOperateAssetManagerID(*id)
 	}
 	return atduo
 }
 
-// SetInOperateManager sets the "in_operate_manager" edge to the AssetManager entity.
-func (atduo *AssetTransferDetailsUpdateOne) SetInOperateManager(a *AssetManager) *AssetTransferDetailsUpdateOne {
-	return atduo.SetInOperateManagerID(a.ID)
+// SetInOperateAssetManager sets the "in_operate_asset_manager" edge to the AssetManager entity.
+func (atduo *AssetTransferDetailsUpdateOne) SetInOperateAssetManager(a *AssetManager) *AssetTransferDetailsUpdateOne {
+	return atduo.SetInOperateAssetManagerID(a.ID)
 }
 
 // SetInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID.
@@ -1045,6 +1100,25 @@ func (atduo *AssetTransferDetailsUpdateOne) SetInOperateRider(r *Rider) *AssetTr
 	return atduo.SetInOperateRiderID(r.ID)
 }
 
+// SetInOperateManagerID sets the "in_operate_manager" edge to the Manager entity by ID.
+func (atduo *AssetTransferDetailsUpdateOne) SetInOperateManagerID(id uint64) *AssetTransferDetailsUpdateOne {
+	atduo.mutation.SetInOperateManagerID(id)
+	return atduo
+}
+
+// SetNillableInOperateManagerID sets the "in_operate_manager" edge to the Manager entity by ID if the given value is not nil.
+func (atduo *AssetTransferDetailsUpdateOne) SetNillableInOperateManagerID(id *uint64) *AssetTransferDetailsUpdateOne {
+	if id != nil {
+		atduo = atduo.SetInOperateManagerID(*id)
+	}
+	return atduo
+}
+
+// SetInOperateManager sets the "in_operate_manager" edge to the Manager entity.
+func (atduo *AssetTransferDetailsUpdateOne) SetInOperateManager(m *Manager) *AssetTransferDetailsUpdateOne {
+	return atduo.SetInOperateManagerID(m.ID)
+}
+
 // SetAsset sets the "asset" edge to the Asset entity.
 func (atduo *AssetTransferDetailsUpdateOne) SetAsset(a *Asset) *AssetTransferDetailsUpdateOne {
 	return atduo.SetAssetID(a.ID)
@@ -1061,9 +1135,9 @@ func (atduo *AssetTransferDetailsUpdateOne) ClearTransfer() *AssetTransferDetail
 	return atduo
 }
 
-// ClearInOperateManager clears the "in_operate_manager" edge to the AssetManager entity.
-func (atduo *AssetTransferDetailsUpdateOne) ClearInOperateManager() *AssetTransferDetailsUpdateOne {
-	atduo.mutation.ClearInOperateManager()
+// ClearInOperateAssetManager clears the "in_operate_asset_manager" edge to the AssetManager entity.
+func (atduo *AssetTransferDetailsUpdateOne) ClearInOperateAssetManager() *AssetTransferDetailsUpdateOne {
+	atduo.mutation.ClearInOperateAssetManager()
 	return atduo
 }
 
@@ -1094,6 +1168,12 @@ func (atduo *AssetTransferDetailsUpdateOne) ClearInOperateCabinet() *AssetTransf
 // ClearInOperateRider clears the "in_operate_rider" edge to the Rider entity.
 func (atduo *AssetTransferDetailsUpdateOne) ClearInOperateRider() *AssetTransferDetailsUpdateOne {
 	atduo.mutation.ClearInOperateRider()
+	return atduo
+}
+
+// ClearInOperateManager clears the "in_operate_manager" edge to the Manager entity.
+func (atduo *AssetTransferDetailsUpdateOne) ClearInOperateManager() *AssetTransferDetailsUpdateOne {
+	atduo.mutation.ClearInOperateManager()
 	return atduo
 }
 
@@ -1261,12 +1341,12 @@ func (atduo *AssetTransferDetailsUpdateOne) sqlSave(ctx context.Context) (_node 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atduo.mutation.InOperateManagerCleared() {
+	if atduo.mutation.InOperateAssetManagerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransferdetails.InOperateManagerTable,
-			Columns: []string{assettransferdetails.InOperateManagerColumn},
+			Table:   assettransferdetails.InOperateAssetManagerTable,
+			Columns: []string{assettransferdetails.InOperateAssetManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -1274,12 +1354,12 @@ func (atduo *AssetTransferDetailsUpdateOne) sqlSave(ctx context.Context) (_node 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atduo.mutation.InOperateManagerIDs(); len(nodes) > 0 {
+	if nodes := atduo.mutation.InOperateAssetManagerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransferdetails.InOperateManagerTable,
-			Columns: []string{assettransferdetails.InOperateManagerColumn},
+			Table:   assettransferdetails.InOperateAssetManagerTable,
+			Columns: []string{assettransferdetails.InOperateAssetManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -1428,6 +1508,35 @@ func (atduo *AssetTransferDetailsUpdateOne) sqlSave(ctx context.Context) (_node 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if atduo.mutation.InOperateManagerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateManagerTable,
+			Columns: []string{assettransferdetails.InOperateManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atduo.mutation.InOperateManagerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assettransferdetails.InOperateManagerTable,
+			Columns: []string{assettransferdetails.InOperateManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

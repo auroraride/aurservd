@@ -529,6 +529,12 @@ func (s *batteryService) Allocate(bat *ent.Asset, sub *ent.Subscribe, transferTy
 	toLocationType := model.AssetLocationsTypeRider
 	toLocationID := sub.RiderID
 
+	// 判定是否自动入库
+	var autoIn bool
+	if transferType == model.AssetTransferTypeExchange {
+		autoIn = true
+	}
+
 	// 解绑电池并产生调拨流转
 	_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
 		FromLocationType:  &fromLocationType,
@@ -540,7 +546,8 @@ func (s *batteryService) Allocate(bat *ent.Asset, sub *ent.Subscribe, transferTy
 		AssetTransferType: transferType,
 		OperatorID:        s.operator.ID,
 		OperatorType:      s.operator.Type,
-		AutoIn:            true, // 自动入库
+		AutoIn:            autoIn,
+		SkipLimit:         true,
 	}, s.modifier)
 	if err != nil {
 		return err
@@ -588,6 +595,7 @@ func (s *batteryService) Unallocate(bat *ent.Asset, toLocationType model.AssetLo
 		OperatorID:        s.operator.ID,
 		OperatorType:      s.operator.Type,
 		AutoIn:            true, // 自动入库
+		SkipLimit:         true,
 	}, s.modifier)
 	if err != nil {
 		return err
