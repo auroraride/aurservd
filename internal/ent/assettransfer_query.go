@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -27,30 +28,31 @@ import (
 // AssetTransferQuery is the builder for querying AssetTransfer entities.
 type AssetTransferQuery struct {
 	config
-	ctx                       *QueryContext
-	order                     []assettransfer.OrderOption
-	inters                    []Interceptor
-	predicates                []predicate.AssetTransfer
-	withTransferDetails       *AssetTransferDetailsQuery
-	withFromLocationStore     *StoreQuery
-	withFromLocationCabinet   *CabinetQuery
-	withFromLocationStation   *EnterpriseStationQuery
-	withFromLocationRider     *RiderQuery
-	withFromLocationOperator  *MaintainerQuery
-	withFromLocationWarehouse *WarehouseQuery
-	withToLocationStore       *StoreQuery
-	withToLocationCabinet     *CabinetQuery
-	withToLocationStation     *EnterpriseStationQuery
-	withToLocationRider       *RiderQuery
-	withToLocationOperator    *MaintainerQuery
-	withToLocationWarehouse   *WarehouseQuery
-	withOutOperateManager     *AssetManagerQuery
-	withOutOperateStore       *StoreQuery
-	withOutOperateAgent       *AgentQuery
-	withOutOperateMaintainer  *MaintainerQuery
-	withOutOperateCabinet     *CabinetQuery
-	withOutOperateRider       *RiderQuery
-	modifiers                 []func(*sql.Selector)
+	ctx                        *QueryContext
+	order                      []assettransfer.OrderOption
+	inters                     []Interceptor
+	predicates                 []predicate.AssetTransfer
+	withTransferDetails        *AssetTransferDetailsQuery
+	withFromLocationStore      *StoreQuery
+	withFromLocationCabinet    *CabinetQuery
+	withFromLocationStation    *EnterpriseStationQuery
+	withFromLocationRider      *RiderQuery
+	withFromLocationOperator   *MaintainerQuery
+	withFromLocationWarehouse  *WarehouseQuery
+	withToLocationStore        *StoreQuery
+	withToLocationCabinet      *CabinetQuery
+	withToLocationStation      *EnterpriseStationQuery
+	withToLocationRider        *RiderQuery
+	withToLocationOperator     *MaintainerQuery
+	withToLocationWarehouse    *WarehouseQuery
+	withOutOperateAssetManager *AssetManagerQuery
+	withOutOperateStore        *StoreQuery
+	withOutOperateAgent        *AgentQuery
+	withOutOperateMaintainer   *MaintainerQuery
+	withOutOperateCabinet      *CabinetQuery
+	withOutOperateRider        *RiderQuery
+	withOutOperateManager      *ManagerQuery
+	modifiers                  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -373,8 +375,8 @@ func (atq *AssetTransferQuery) QueryToLocationWarehouse() *WarehouseQuery {
 	return query
 }
 
-// QueryOutOperateManager chains the current query on the "out_operate_manager" edge.
-func (atq *AssetTransferQuery) QueryOutOperateManager() *AssetManagerQuery {
+// QueryOutOperateAssetManager chains the current query on the "out_operate_asset_manager" edge.
+func (atq *AssetTransferQuery) QueryOutOperateAssetManager() *AssetManagerQuery {
 	query := (&AssetManagerClient{config: atq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := atq.prepareQuery(ctx); err != nil {
@@ -387,7 +389,7 @@ func (atq *AssetTransferQuery) QueryOutOperateManager() *AssetManagerQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, selector),
 			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateManagerTable, assettransfer.OutOperateManagerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateAssetManagerTable, assettransfer.OutOperateAssetManagerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
 		return fromU, nil
@@ -498,6 +500,28 @@ func (atq *AssetTransferQuery) QueryOutOperateRider() *RiderQuery {
 			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateRiderTable, assettransfer.OutOperateRiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryOutOperateManager chains the current query on the "out_operate_manager" edge.
+func (atq *AssetTransferQuery) QueryOutOperateManager() *ManagerQuery {
+	query := (&ManagerClient{config: atq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := atq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := atq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, selector),
+			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateManagerTable, assettransfer.OutOperateManagerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
 		return fromU, nil
@@ -692,30 +716,31 @@ func (atq *AssetTransferQuery) Clone() *AssetTransferQuery {
 		return nil
 	}
 	return &AssetTransferQuery{
-		config:                    atq.config,
-		ctx:                       atq.ctx.Clone(),
-		order:                     append([]assettransfer.OrderOption{}, atq.order...),
-		inters:                    append([]Interceptor{}, atq.inters...),
-		predicates:                append([]predicate.AssetTransfer{}, atq.predicates...),
-		withTransferDetails:       atq.withTransferDetails.Clone(),
-		withFromLocationStore:     atq.withFromLocationStore.Clone(),
-		withFromLocationCabinet:   atq.withFromLocationCabinet.Clone(),
-		withFromLocationStation:   atq.withFromLocationStation.Clone(),
-		withFromLocationRider:     atq.withFromLocationRider.Clone(),
-		withFromLocationOperator:  atq.withFromLocationOperator.Clone(),
-		withFromLocationWarehouse: atq.withFromLocationWarehouse.Clone(),
-		withToLocationStore:       atq.withToLocationStore.Clone(),
-		withToLocationCabinet:     atq.withToLocationCabinet.Clone(),
-		withToLocationStation:     atq.withToLocationStation.Clone(),
-		withToLocationRider:       atq.withToLocationRider.Clone(),
-		withToLocationOperator:    atq.withToLocationOperator.Clone(),
-		withToLocationWarehouse:   atq.withToLocationWarehouse.Clone(),
-		withOutOperateManager:     atq.withOutOperateManager.Clone(),
-		withOutOperateStore:       atq.withOutOperateStore.Clone(),
-		withOutOperateAgent:       atq.withOutOperateAgent.Clone(),
-		withOutOperateMaintainer:  atq.withOutOperateMaintainer.Clone(),
-		withOutOperateCabinet:     atq.withOutOperateCabinet.Clone(),
-		withOutOperateRider:       atq.withOutOperateRider.Clone(),
+		config:                     atq.config,
+		ctx:                        atq.ctx.Clone(),
+		order:                      append([]assettransfer.OrderOption{}, atq.order...),
+		inters:                     append([]Interceptor{}, atq.inters...),
+		predicates:                 append([]predicate.AssetTransfer{}, atq.predicates...),
+		withTransferDetails:        atq.withTransferDetails.Clone(),
+		withFromLocationStore:      atq.withFromLocationStore.Clone(),
+		withFromLocationCabinet:    atq.withFromLocationCabinet.Clone(),
+		withFromLocationStation:    atq.withFromLocationStation.Clone(),
+		withFromLocationRider:      atq.withFromLocationRider.Clone(),
+		withFromLocationOperator:   atq.withFromLocationOperator.Clone(),
+		withFromLocationWarehouse:  atq.withFromLocationWarehouse.Clone(),
+		withToLocationStore:        atq.withToLocationStore.Clone(),
+		withToLocationCabinet:      atq.withToLocationCabinet.Clone(),
+		withToLocationStation:      atq.withToLocationStation.Clone(),
+		withToLocationRider:        atq.withToLocationRider.Clone(),
+		withToLocationOperator:     atq.withToLocationOperator.Clone(),
+		withToLocationWarehouse:    atq.withToLocationWarehouse.Clone(),
+		withOutOperateAssetManager: atq.withOutOperateAssetManager.Clone(),
+		withOutOperateStore:        atq.withOutOperateStore.Clone(),
+		withOutOperateAgent:        atq.withOutOperateAgent.Clone(),
+		withOutOperateMaintainer:   atq.withOutOperateMaintainer.Clone(),
+		withOutOperateCabinet:      atq.withOutOperateCabinet.Clone(),
+		withOutOperateRider:        atq.withOutOperateRider.Clone(),
+		withOutOperateManager:      atq.withOutOperateManager.Clone(),
 		// clone intermediate query.
 		sql:  atq.sql.Clone(),
 		path: atq.path,
@@ -865,14 +890,14 @@ func (atq *AssetTransferQuery) WithToLocationWarehouse(opts ...func(*WarehouseQu
 	return atq
 }
 
-// WithOutOperateManager tells the query-builder to eager-load the nodes that are connected to
-// the "out_operate_manager" edge. The optional arguments are used to configure the query builder of the edge.
-func (atq *AssetTransferQuery) WithOutOperateManager(opts ...func(*AssetManagerQuery)) *AssetTransferQuery {
+// WithOutOperateAssetManager tells the query-builder to eager-load the nodes that are connected to
+// the "out_operate_asset_manager" edge. The optional arguments are used to configure the query builder of the edge.
+func (atq *AssetTransferQuery) WithOutOperateAssetManager(opts ...func(*AssetManagerQuery)) *AssetTransferQuery {
 	query := (&AssetManagerClient{config: atq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	atq.withOutOperateManager = query
+	atq.withOutOperateAssetManager = query
 	return atq
 }
 
@@ -928,6 +953,17 @@ func (atq *AssetTransferQuery) WithOutOperateRider(opts ...func(*RiderQuery)) *A
 		opt(query)
 	}
 	atq.withOutOperateRider = query
+	return atq
+}
+
+// WithOutOperateManager tells the query-builder to eager-load the nodes that are connected to
+// the "out_operate_manager" edge. The optional arguments are used to configure the query builder of the edge.
+func (atq *AssetTransferQuery) WithOutOperateManager(opts ...func(*ManagerQuery)) *AssetTransferQuery {
+	query := (&ManagerClient{config: atq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	atq.withOutOperateManager = query
 	return atq
 }
 
@@ -1009,7 +1045,7 @@ func (atq *AssetTransferQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	var (
 		nodes       = []*AssetTransfer{}
 		_spec       = atq.querySpec()
-		loadedTypes = [19]bool{
+		loadedTypes = [20]bool{
 			atq.withTransferDetails != nil,
 			atq.withFromLocationStore != nil,
 			atq.withFromLocationCabinet != nil,
@@ -1023,12 +1059,13 @@ func (atq *AssetTransferQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			atq.withToLocationRider != nil,
 			atq.withToLocationOperator != nil,
 			atq.withToLocationWarehouse != nil,
-			atq.withOutOperateManager != nil,
+			atq.withOutOperateAssetManager != nil,
 			atq.withOutOperateStore != nil,
 			atq.withOutOperateAgent != nil,
 			atq.withOutOperateMaintainer != nil,
 			atq.withOutOperateCabinet != nil,
 			atq.withOutOperateRider != nil,
+			atq.withOutOperateManager != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -1133,9 +1170,9 @@ func (atq *AssetTransferQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			return nil, err
 		}
 	}
-	if query := atq.withOutOperateManager; query != nil {
-		if err := atq.loadOutOperateManager(ctx, query, nodes, nil,
-			func(n *AssetTransfer, e *AssetManager) { n.Edges.OutOperateManager = e }); err != nil {
+	if query := atq.withOutOperateAssetManager; query != nil {
+		if err := atq.loadOutOperateAssetManager(ctx, query, nodes, nil,
+			func(n *AssetTransfer, e *AssetManager) { n.Edges.OutOperateAssetManager = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1166,6 +1203,12 @@ func (atq *AssetTransferQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	if query := atq.withOutOperateRider; query != nil {
 		if err := atq.loadOutOperateRider(ctx, query, nodes, nil,
 			func(n *AssetTransfer, e *Rider) { n.Edges.OutOperateRider = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := atq.withOutOperateManager; query != nil {
+		if err := atq.loadOutOperateManager(ctx, query, nodes, nil,
+			func(n *AssetTransfer, e *Manager) { n.Edges.OutOperateManager = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1568,7 +1611,7 @@ func (atq *AssetTransferQuery) loadToLocationWarehouse(ctx context.Context, quer
 	}
 	return nil
 }
-func (atq *AssetTransferQuery) loadOutOperateManager(ctx context.Context, query *AssetManagerQuery, nodes []*AssetTransfer, init func(*AssetTransfer), assign func(*AssetTransfer, *AssetManager)) error {
+func (atq *AssetTransferQuery) loadOutOperateAssetManager(ctx context.Context, query *AssetManagerQuery, nodes []*AssetTransfer, init func(*AssetTransfer), assign func(*AssetTransfer, *AssetManager)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetTransfer)
 	for i := range nodes {
@@ -1760,6 +1803,38 @@ func (atq *AssetTransferQuery) loadOutOperateRider(ctx context.Context, query *R
 	}
 	return nil
 }
+func (atq *AssetTransferQuery) loadOutOperateManager(ctx context.Context, query *ManagerQuery, nodes []*AssetTransfer, init func(*AssetTransfer), assign func(*AssetTransfer, *Manager)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetTransfer)
+	for i := range nodes {
+		if nodes[i].OutOperateID == nil {
+			continue
+		}
+		fk := *nodes[i].OutOperateID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(manager.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "out_operate_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (atq *AssetTransferQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := atq.querySpec()
@@ -1825,7 +1900,7 @@ func (atq *AssetTransferQuery) querySpec() *sqlgraph.QuerySpec {
 		if atq.withToLocationWarehouse != nil {
 			_spec.Node.AddColumnOnce(assettransfer.FieldToLocationID)
 		}
-		if atq.withOutOperateManager != nil {
+		if atq.withOutOperateAssetManager != nil {
 			_spec.Node.AddColumnOnce(assettransfer.FieldOutOperateID)
 		}
 		if atq.withOutOperateStore != nil {
@@ -1841,6 +1916,9 @@ func (atq *AssetTransferQuery) querySpec() *sqlgraph.QuerySpec {
 			_spec.Node.AddColumnOnce(assettransfer.FieldOutOperateID)
 		}
 		if atq.withOutOperateRider != nil {
+			_spec.Node.AddColumnOnce(assettransfer.FieldOutOperateID)
+		}
+		if atq.withOutOperateManager != nil {
 			_spec.Node.AddColumnOnce(assettransfer.FieldOutOperateID)
 		}
 	}
@@ -1911,25 +1989,26 @@ func (atq *AssetTransferQuery) Modify(modifiers ...func(s *sql.Selector)) *Asset
 type AssetTransferQueryWith string
 
 var (
-	AssetTransferQueryWithTransferDetails       AssetTransferQueryWith = "TransferDetails"
-	AssetTransferQueryWithFromLocationStore     AssetTransferQueryWith = "FromLocationStore"
-	AssetTransferQueryWithFromLocationCabinet   AssetTransferQueryWith = "FromLocationCabinet"
-	AssetTransferQueryWithFromLocationStation   AssetTransferQueryWith = "FromLocationStation"
-	AssetTransferQueryWithFromLocationRider     AssetTransferQueryWith = "FromLocationRider"
-	AssetTransferQueryWithFromLocationOperator  AssetTransferQueryWith = "FromLocationOperator"
-	AssetTransferQueryWithFromLocationWarehouse AssetTransferQueryWith = "FromLocationWarehouse"
-	AssetTransferQueryWithToLocationStore       AssetTransferQueryWith = "ToLocationStore"
-	AssetTransferQueryWithToLocationCabinet     AssetTransferQueryWith = "ToLocationCabinet"
-	AssetTransferQueryWithToLocationStation     AssetTransferQueryWith = "ToLocationStation"
-	AssetTransferQueryWithToLocationRider       AssetTransferQueryWith = "ToLocationRider"
-	AssetTransferQueryWithToLocationOperator    AssetTransferQueryWith = "ToLocationOperator"
-	AssetTransferQueryWithToLocationWarehouse   AssetTransferQueryWith = "ToLocationWarehouse"
-	AssetTransferQueryWithOutOperateManager     AssetTransferQueryWith = "OutOperateManager"
-	AssetTransferQueryWithOutOperateStore       AssetTransferQueryWith = "OutOperateStore"
-	AssetTransferQueryWithOutOperateAgent       AssetTransferQueryWith = "OutOperateAgent"
-	AssetTransferQueryWithOutOperateMaintainer  AssetTransferQueryWith = "OutOperateMaintainer"
-	AssetTransferQueryWithOutOperateCabinet     AssetTransferQueryWith = "OutOperateCabinet"
-	AssetTransferQueryWithOutOperateRider       AssetTransferQueryWith = "OutOperateRider"
+	AssetTransferQueryWithTransferDetails        AssetTransferQueryWith = "TransferDetails"
+	AssetTransferQueryWithFromLocationStore      AssetTransferQueryWith = "FromLocationStore"
+	AssetTransferQueryWithFromLocationCabinet    AssetTransferQueryWith = "FromLocationCabinet"
+	AssetTransferQueryWithFromLocationStation    AssetTransferQueryWith = "FromLocationStation"
+	AssetTransferQueryWithFromLocationRider      AssetTransferQueryWith = "FromLocationRider"
+	AssetTransferQueryWithFromLocationOperator   AssetTransferQueryWith = "FromLocationOperator"
+	AssetTransferQueryWithFromLocationWarehouse  AssetTransferQueryWith = "FromLocationWarehouse"
+	AssetTransferQueryWithToLocationStore        AssetTransferQueryWith = "ToLocationStore"
+	AssetTransferQueryWithToLocationCabinet      AssetTransferQueryWith = "ToLocationCabinet"
+	AssetTransferQueryWithToLocationStation      AssetTransferQueryWith = "ToLocationStation"
+	AssetTransferQueryWithToLocationRider        AssetTransferQueryWith = "ToLocationRider"
+	AssetTransferQueryWithToLocationOperator     AssetTransferQueryWith = "ToLocationOperator"
+	AssetTransferQueryWithToLocationWarehouse    AssetTransferQueryWith = "ToLocationWarehouse"
+	AssetTransferQueryWithOutOperateAssetManager AssetTransferQueryWith = "OutOperateAssetManager"
+	AssetTransferQueryWithOutOperateStore        AssetTransferQueryWith = "OutOperateStore"
+	AssetTransferQueryWithOutOperateAgent        AssetTransferQueryWith = "OutOperateAgent"
+	AssetTransferQueryWithOutOperateMaintainer   AssetTransferQueryWith = "OutOperateMaintainer"
+	AssetTransferQueryWithOutOperateCabinet      AssetTransferQueryWith = "OutOperateCabinet"
+	AssetTransferQueryWithOutOperateRider        AssetTransferQueryWith = "OutOperateRider"
+	AssetTransferQueryWithOutOperateManager      AssetTransferQueryWith = "OutOperateManager"
 )
 
 func (atq *AssetTransferQuery) With(withEdges ...AssetTransferQueryWith) *AssetTransferQuery {
@@ -1961,8 +2040,8 @@ func (atq *AssetTransferQuery) With(withEdges ...AssetTransferQueryWith) *AssetT
 			atq.WithToLocationOperator()
 		case AssetTransferQueryWithToLocationWarehouse:
 			atq.WithToLocationWarehouse()
-		case AssetTransferQueryWithOutOperateManager:
-			atq.WithOutOperateManager()
+		case AssetTransferQueryWithOutOperateAssetManager:
+			atq.WithOutOperateAssetManager()
 		case AssetTransferQueryWithOutOperateStore:
 			atq.WithOutOperateStore()
 		case AssetTransferQueryWithOutOperateAgent:
@@ -1973,6 +2052,8 @@ func (atq *AssetTransferQuery) With(withEdges ...AssetTransferQueryWith) *AssetT
 			atq.WithOutOperateCabinet()
 		case AssetTransferQueryWithOutOperateRider:
 			atq.WithOutOperateRider()
+		case AssetTransferQueryWithOutOperateManager:
+			atq.WithOutOperateManager()
 		}
 	}
 	return atq

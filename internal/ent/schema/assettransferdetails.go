@@ -74,12 +74,13 @@ func (AssetTransferDetails) Edges() []ent.Edge {
 		edge.From("transfer", AssetTransfer.Type).Ref("transfer_details").Unique().Field("transfer_id"),
 
 		// 入库关联操作人员
-		edge.To("in_operate_manager", AssetManager.Type).Unique().Field("in_operate_id"),  // 资产后台
-		edge.To("in_operate_store", Store.Type).Unique().Field("in_operate_id"),           // 门店
-		edge.To("in_operate_agent", Agent.Type).Unique().Field("in_operate_id"),           // 代理
-		edge.To("in_operate_maintainer", Maintainer.Type).Unique().Field("in_operate_id"), // 运维
-		edge.To("in_operate_cabinet", Cabinet.Type).Unique().Field("in_operate_id"),       // 电柜
-		edge.To("in_operate_rider", Rider.Type).Unique().Field("in_operate_id"),           // 骑手
+		edge.To("in_operate_asset_manager", AssetManager.Type).Unique().Field("in_operate_id"), // 资产后台
+		edge.To("in_operate_store", Store.Type).Unique().Field("in_operate_id"),                // 门店
+		edge.To("in_operate_agent", Agent.Type).Unique().Field("in_operate_id"),                // 代理
+		edge.To("in_operate_maintainer", Maintainer.Type).Unique().Field("in_operate_id"),      // 运维
+		edge.To("in_operate_cabinet", Cabinet.Type).Unique().Field("in_operate_id"),            // 电柜
+		edge.To("in_operate_rider", Rider.Type).Unique().Field("in_operate_id"),                // 骑手
+		edge.To("in_operate_manager", Manager.Type).Unique().Field("in_operate_id"),            // 业务后台
 
 		// 关联资产
 		edge.From("asset", Asset.Type).Ref("transfer_details").Unique().Field("asset_id"),

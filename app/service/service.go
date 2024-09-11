@@ -136,8 +136,6 @@ func newService(params ...any) (bs *BaseService) {
 			}
 		case *model.OperatorInfo:
 			bs.operator = p
-		default:
-			snag.Panic(fmt.Errorf("unknown param type: %T", param))
 		}
 	}
 

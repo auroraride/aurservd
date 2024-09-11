@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -25,19 +26,20 @@ import (
 // AssetTransferDetailsQuery is the builder for querying AssetTransferDetails entities.
 type AssetTransferDetailsQuery struct {
 	config
-	ctx                     *QueryContext
-	order                   []assettransferdetails.OrderOption
-	inters                  []Interceptor
-	predicates              []predicate.AssetTransferDetails
-	withTransfer            *AssetTransferQuery
-	withInOperateManager    *AssetManagerQuery
-	withInOperateStore      *StoreQuery
-	withInOperateAgent      *AgentQuery
-	withInOperateMaintainer *MaintainerQuery
-	withInOperateCabinet    *CabinetQuery
-	withInOperateRider      *RiderQuery
-	withAsset               *AssetQuery
-	modifiers               []func(*sql.Selector)
+	ctx                       *QueryContext
+	order                     []assettransferdetails.OrderOption
+	inters                    []Interceptor
+	predicates                []predicate.AssetTransferDetails
+	withTransfer              *AssetTransferQuery
+	withInOperateAssetManager *AssetManagerQuery
+	withInOperateStore        *StoreQuery
+	withInOperateAgent        *AgentQuery
+	withInOperateMaintainer   *MaintainerQuery
+	withInOperateCabinet      *CabinetQuery
+	withInOperateRider        *RiderQuery
+	withInOperateManager      *ManagerQuery
+	withAsset                 *AssetQuery
+	modifiers                 []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -96,8 +98,8 @@ func (atdq *AssetTransferDetailsQuery) QueryTransfer() *AssetTransferQuery {
 	return query
 }
 
-// QueryInOperateManager chains the current query on the "in_operate_manager" edge.
-func (atdq *AssetTransferDetailsQuery) QueryInOperateManager() *AssetManagerQuery {
+// QueryInOperateAssetManager chains the current query on the "in_operate_asset_manager" edge.
+func (atdq *AssetTransferDetailsQuery) QueryInOperateAssetManager() *AssetManagerQuery {
 	query := (&AssetManagerClient{config: atdq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := atdq.prepareQuery(ctx); err != nil {
@@ -110,7 +112,7 @@ func (atdq *AssetTransferDetailsQuery) QueryInOperateManager() *AssetManagerQuer
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assettransferdetails.Table, assettransferdetails.FieldID, selector),
 			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assettransferdetails.InOperateManagerTable, assettransferdetails.InOperateManagerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransferdetails.InOperateAssetManagerTable, assettransferdetails.InOperateAssetManagerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(atdq.driver.Dialect(), step)
 		return fromU, nil
@@ -221,6 +223,28 @@ func (atdq *AssetTransferDetailsQuery) QueryInOperateRider() *RiderQuery {
 			sqlgraph.From(assettransferdetails.Table, assettransferdetails.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assettransferdetails.InOperateRiderTable, assettransferdetails.InOperateRiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(atdq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryInOperateManager chains the current query on the "in_operate_manager" edge.
+func (atdq *AssetTransferDetailsQuery) QueryInOperateManager() *ManagerQuery {
+	query := (&ManagerClient{config: atdq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := atdq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := atdq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransferdetails.Table, assettransferdetails.FieldID, selector),
+			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransferdetails.InOperateManagerTable, assettransferdetails.InOperateManagerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(atdq.driver.Dialect(), step)
 		return fromU, nil
@@ -437,19 +461,20 @@ func (atdq *AssetTransferDetailsQuery) Clone() *AssetTransferDetailsQuery {
 		return nil
 	}
 	return &AssetTransferDetailsQuery{
-		config:                  atdq.config,
-		ctx:                     atdq.ctx.Clone(),
-		order:                   append([]assettransferdetails.OrderOption{}, atdq.order...),
-		inters:                  append([]Interceptor{}, atdq.inters...),
-		predicates:              append([]predicate.AssetTransferDetails{}, atdq.predicates...),
-		withTransfer:            atdq.withTransfer.Clone(),
-		withInOperateManager:    atdq.withInOperateManager.Clone(),
-		withInOperateStore:      atdq.withInOperateStore.Clone(),
-		withInOperateAgent:      atdq.withInOperateAgent.Clone(),
-		withInOperateMaintainer: atdq.withInOperateMaintainer.Clone(),
-		withInOperateCabinet:    atdq.withInOperateCabinet.Clone(),
-		withInOperateRider:      atdq.withInOperateRider.Clone(),
-		withAsset:               atdq.withAsset.Clone(),
+		config:                    atdq.config,
+		ctx:                       atdq.ctx.Clone(),
+		order:                     append([]assettransferdetails.OrderOption{}, atdq.order...),
+		inters:                    append([]Interceptor{}, atdq.inters...),
+		predicates:                append([]predicate.AssetTransferDetails{}, atdq.predicates...),
+		withTransfer:              atdq.withTransfer.Clone(),
+		withInOperateAssetManager: atdq.withInOperateAssetManager.Clone(),
+		withInOperateStore:        atdq.withInOperateStore.Clone(),
+		withInOperateAgent:        atdq.withInOperateAgent.Clone(),
+		withInOperateMaintainer:   atdq.withInOperateMaintainer.Clone(),
+		withInOperateCabinet:      atdq.withInOperateCabinet.Clone(),
+		withInOperateRider:        atdq.withInOperateRider.Clone(),
+		withInOperateManager:      atdq.withInOperateManager.Clone(),
+		withAsset:                 atdq.withAsset.Clone(),
 		// clone intermediate query.
 		sql:  atdq.sql.Clone(),
 		path: atdq.path,
@@ -467,14 +492,14 @@ func (atdq *AssetTransferDetailsQuery) WithTransfer(opts ...func(*AssetTransferQ
 	return atdq
 }
 
-// WithInOperateManager tells the query-builder to eager-load the nodes that are connected to
-// the "in_operate_manager" edge. The optional arguments are used to configure the query builder of the edge.
-func (atdq *AssetTransferDetailsQuery) WithInOperateManager(opts ...func(*AssetManagerQuery)) *AssetTransferDetailsQuery {
+// WithInOperateAssetManager tells the query-builder to eager-load the nodes that are connected to
+// the "in_operate_asset_manager" edge. The optional arguments are used to configure the query builder of the edge.
+func (atdq *AssetTransferDetailsQuery) WithInOperateAssetManager(opts ...func(*AssetManagerQuery)) *AssetTransferDetailsQuery {
 	query := (&AssetManagerClient{config: atdq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	atdq.withInOperateManager = query
+	atdq.withInOperateAssetManager = query
 	return atdq
 }
 
@@ -530,6 +555,17 @@ func (atdq *AssetTransferDetailsQuery) WithInOperateRider(opts ...func(*RiderQue
 		opt(query)
 	}
 	atdq.withInOperateRider = query
+	return atdq
+}
+
+// WithInOperateManager tells the query-builder to eager-load the nodes that are connected to
+// the "in_operate_manager" edge. The optional arguments are used to configure the query builder of the edge.
+func (atdq *AssetTransferDetailsQuery) WithInOperateManager(opts ...func(*ManagerQuery)) *AssetTransferDetailsQuery {
+	query := (&ManagerClient{config: atdq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	atdq.withInOperateManager = query
 	return atdq
 }
 
@@ -622,14 +658,15 @@ func (atdq *AssetTransferDetailsQuery) sqlAll(ctx context.Context, hooks ...quer
 	var (
 		nodes       = []*AssetTransferDetails{}
 		_spec       = atdq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [9]bool{
 			atdq.withTransfer != nil,
-			atdq.withInOperateManager != nil,
+			atdq.withInOperateAssetManager != nil,
 			atdq.withInOperateStore != nil,
 			atdq.withInOperateAgent != nil,
 			atdq.withInOperateMaintainer != nil,
 			atdq.withInOperateCabinet != nil,
 			atdq.withInOperateRider != nil,
+			atdq.withInOperateManager != nil,
 			atdq.withAsset != nil,
 		}
 	)
@@ -660,9 +697,9 @@ func (atdq *AssetTransferDetailsQuery) sqlAll(ctx context.Context, hooks ...quer
 			return nil, err
 		}
 	}
-	if query := atdq.withInOperateManager; query != nil {
-		if err := atdq.loadInOperateManager(ctx, query, nodes, nil,
-			func(n *AssetTransferDetails, e *AssetManager) { n.Edges.InOperateManager = e }); err != nil {
+	if query := atdq.withInOperateAssetManager; query != nil {
+		if err := atdq.loadInOperateAssetManager(ctx, query, nodes, nil,
+			func(n *AssetTransferDetails, e *AssetManager) { n.Edges.InOperateAssetManager = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -693,6 +730,12 @@ func (atdq *AssetTransferDetailsQuery) sqlAll(ctx context.Context, hooks ...quer
 	if query := atdq.withInOperateRider; query != nil {
 		if err := atdq.loadInOperateRider(ctx, query, nodes, nil,
 			func(n *AssetTransferDetails, e *Rider) { n.Edges.InOperateRider = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := atdq.withInOperateManager; query != nil {
+		if err := atdq.loadInOperateManager(ctx, query, nodes, nil,
+			func(n *AssetTransferDetails, e *Manager) { n.Edges.InOperateManager = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -734,7 +777,7 @@ func (atdq *AssetTransferDetailsQuery) loadTransfer(ctx context.Context, query *
 	}
 	return nil
 }
-func (atdq *AssetTransferDetailsQuery) loadInOperateManager(ctx context.Context, query *AssetManagerQuery, nodes []*AssetTransferDetails, init func(*AssetTransferDetails), assign func(*AssetTransferDetails, *AssetManager)) error {
+func (atdq *AssetTransferDetailsQuery) loadInOperateAssetManager(ctx context.Context, query *AssetManagerQuery, nodes []*AssetTransferDetails, init func(*AssetTransferDetails), assign func(*AssetTransferDetails, *AssetManager)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetTransferDetails)
 	for i := range nodes {
@@ -908,6 +951,35 @@ func (atdq *AssetTransferDetailsQuery) loadInOperateRider(ctx context.Context, q
 	}
 	return nil
 }
+func (atdq *AssetTransferDetailsQuery) loadInOperateManager(ctx context.Context, query *ManagerQuery, nodes []*AssetTransferDetails, init func(*AssetTransferDetails), assign func(*AssetTransferDetails, *Manager)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*AssetTransferDetails)
+	for i := range nodes {
+		fk := nodes[i].InOperateID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(manager.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "in_operate_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (atdq *AssetTransferDetailsQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []*AssetTransferDetails, init func(*AssetTransferDetails), assign func(*AssetTransferDetails, *Asset)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetTransferDetails)
@@ -969,7 +1041,7 @@ func (atdq *AssetTransferDetailsQuery) querySpec() *sqlgraph.QuerySpec {
 		if atdq.withTransfer != nil {
 			_spec.Node.AddColumnOnce(assettransferdetails.FieldTransferID)
 		}
-		if atdq.withInOperateManager != nil {
+		if atdq.withInOperateAssetManager != nil {
 			_spec.Node.AddColumnOnce(assettransferdetails.FieldInOperateID)
 		}
 		if atdq.withInOperateStore != nil {
@@ -985,6 +1057,9 @@ func (atdq *AssetTransferDetailsQuery) querySpec() *sqlgraph.QuerySpec {
 			_spec.Node.AddColumnOnce(assettransferdetails.FieldInOperateID)
 		}
 		if atdq.withInOperateRider != nil {
+			_spec.Node.AddColumnOnce(assettransferdetails.FieldInOperateID)
+		}
+		if atdq.withInOperateManager != nil {
 			_spec.Node.AddColumnOnce(assettransferdetails.FieldInOperateID)
 		}
 		if atdq.withAsset != nil {
@@ -1058,14 +1133,15 @@ func (atdq *AssetTransferDetailsQuery) Modify(modifiers ...func(s *sql.Selector)
 type AssetTransferDetailsQueryWith string
 
 var (
-	AssetTransferDetailsQueryWithTransfer            AssetTransferDetailsQueryWith = "Transfer"
-	AssetTransferDetailsQueryWithInOperateManager    AssetTransferDetailsQueryWith = "InOperateManager"
-	AssetTransferDetailsQueryWithInOperateStore      AssetTransferDetailsQueryWith = "InOperateStore"
-	AssetTransferDetailsQueryWithInOperateAgent      AssetTransferDetailsQueryWith = "InOperateAgent"
-	AssetTransferDetailsQueryWithInOperateMaintainer AssetTransferDetailsQueryWith = "InOperateMaintainer"
-	AssetTransferDetailsQueryWithInOperateCabinet    AssetTransferDetailsQueryWith = "InOperateCabinet"
-	AssetTransferDetailsQueryWithInOperateRider      AssetTransferDetailsQueryWith = "InOperateRider"
-	AssetTransferDetailsQueryWithAsset               AssetTransferDetailsQueryWith = "Asset"
+	AssetTransferDetailsQueryWithTransfer              AssetTransferDetailsQueryWith = "Transfer"
+	AssetTransferDetailsQueryWithInOperateAssetManager AssetTransferDetailsQueryWith = "InOperateAssetManager"
+	AssetTransferDetailsQueryWithInOperateStore        AssetTransferDetailsQueryWith = "InOperateStore"
+	AssetTransferDetailsQueryWithInOperateAgent        AssetTransferDetailsQueryWith = "InOperateAgent"
+	AssetTransferDetailsQueryWithInOperateMaintainer   AssetTransferDetailsQueryWith = "InOperateMaintainer"
+	AssetTransferDetailsQueryWithInOperateCabinet      AssetTransferDetailsQueryWith = "InOperateCabinet"
+	AssetTransferDetailsQueryWithInOperateRider        AssetTransferDetailsQueryWith = "InOperateRider"
+	AssetTransferDetailsQueryWithInOperateManager      AssetTransferDetailsQueryWith = "InOperateManager"
+	AssetTransferDetailsQueryWithAsset                 AssetTransferDetailsQueryWith = "Asset"
 )
 
 func (atdq *AssetTransferDetailsQuery) With(withEdges ...AssetTransferDetailsQueryWith) *AssetTransferDetailsQuery {
@@ -1073,8 +1149,8 @@ func (atdq *AssetTransferDetailsQuery) With(withEdges ...AssetTransferDetailsQue
 		switch v {
 		case AssetTransferDetailsQueryWithTransfer:
 			atdq.WithTransfer()
-		case AssetTransferDetailsQueryWithInOperateManager:
-			atdq.WithInOperateManager()
+		case AssetTransferDetailsQueryWithInOperateAssetManager:
+			atdq.WithInOperateAssetManager()
 		case AssetTransferDetailsQueryWithInOperateStore:
 			atdq.WithInOperateStore()
 		case AssetTransferDetailsQueryWithInOperateAgent:
@@ -1085,6 +1161,8 @@ func (atdq *AssetTransferDetailsQuery) With(withEdges ...AssetTransferDetailsQue
 			atdq.WithInOperateCabinet()
 		case AssetTransferDetailsQueryWithInOperateRider:
 			atdq.WithInOperateRider()
+		case AssetTransferDetailsQueryWithInOperateManager:
+			atdq.WithInOperateManager()
 		case AssetTransferDetailsQueryWithAsset:
 			atdq.WithAsset()
 		}

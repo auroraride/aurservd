@@ -1284,21 +1284,21 @@ func HasToLocationWarehouseWith(preds ...predicate.Warehouse) predicate.AssetTra
 	})
 }
 
-// HasOutOperateManager applies the HasEdge predicate on the "out_operate_manager" edge.
-func HasOutOperateManager() predicate.AssetTransfer {
+// HasOutOperateAssetManager applies the HasEdge predicate on the "out_operate_asset_manager" edge.
+func HasOutOperateAssetManager() predicate.AssetTransfer {
 	return predicate.AssetTransfer(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, OutOperateManagerTable, OutOperateManagerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, OutOperateAssetManagerTable, OutOperateAssetManagerColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasOutOperateManagerWith applies the HasEdge predicate on the "out_operate_manager" edge with a given conditions (other predicates).
-func HasOutOperateManagerWith(preds ...predicate.AssetManager) predicate.AssetTransfer {
+// HasOutOperateAssetManagerWith applies the HasEdge predicate on the "out_operate_asset_manager" edge with a given conditions (other predicates).
+func HasOutOperateAssetManagerWith(preds ...predicate.AssetManager) predicate.AssetTransfer {
 	return predicate.AssetTransfer(func(s *sql.Selector) {
-		step := newOutOperateManagerStep()
+		step := newOutOperateAssetManagerStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1414,6 +1414,29 @@ func HasOutOperateRider() predicate.AssetTransfer {
 func HasOutOperateRiderWith(preds ...predicate.Rider) predicate.AssetTransfer {
 	return predicate.AssetTransfer(func(s *sql.Selector) {
 		step := newOutOperateRiderStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasOutOperateManager applies the HasEdge predicate on the "out_operate_manager" edge.
+func HasOutOperateManager() predicate.AssetTransfer {
+	return predicate.AssetTransfer(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, OutOperateManagerTable, OutOperateManagerColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasOutOperateManagerWith applies the HasEdge predicate on the "out_operate_manager" edge with a given conditions (other predicates).
+func HasOutOperateManagerWith(preds ...predicate.Manager) predicate.AssetTransfer {
+	return predicate.AssetTransfer(func(s *sql.Selector) {
+		step := newOutOperateManagerStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

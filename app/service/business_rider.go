@@ -193,7 +193,8 @@ func (s *businessRiderService) SetCabinetTask(task func() (*model.BinInfo, *mode
 // NewBusinessRiderWithParams 设置参数并初始化
 func NewBusinessRiderWithParams(params ...any) *businessRiderService {
 	s := &businessRiderService{
-		ctx: context.Background(),
+		ctx:         context.Background(),
+		BaseService: newService(params...),
 	}
 	for _, param := range params {
 		switch v := param.(type) {
@@ -723,43 +724,48 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 
 		// 更新电车
 		if s.ebikeInfo != nil {
-			// 更新电车所属
-			eb, _ := NewAsset().QuerySn(s.ebikeInfo.Sn)
-			if eb != nil {
-				snag.Panic(err)
-			}
-			fromLocationType := model.AssetLocationsType(eb.LocationsType)
-			_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
-				FromLocationType: &fromLocationType,
-				FromLocationID:   &eb.LocationsID,
-				ToLocationType:   model.AssetLocationsTypeRider,
-				ToLocationID:     sub.RiderID,
-				Details: []model.AssetTransferCreateDetail{
-					{
-						AssetType: model.AssetTypeEbike,
-						SN:        silk.String(eb.Sn),
-					},
-				},
-				Reason:            "订阅激活",
-				AssetTransferType: model.AssetTransferTypeActive,
-				OperatorID:        s.operator.ID,
-				OperatorType:      s.operator.Type,
-				AutoIn:            false,
-			}, s.modifier)
-			if err != nil {
-				return
-			}
-			if failed != nil {
-				snag.Panic(failed[0])
-			}
+			// // 更新电车所属
+			// eb, _ := NewAsset().QuerySn(s.ebikeInfo.Sn)
+			// if eb != nil {
+			// 	snag.Panic(err)
+			// }
+			// fromLocationType := model.AssetLocationsType(eb.LocationsType)
+			// _, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
+			// 	FromLocationType: &fromLocationType,
+			// 	FromLocationID:   &eb.LocationsID,
+			// 	ToLocationType:   model.AssetLocationsTypeRider,
+			// 	ToLocationID:     sub.RiderID,
+			// 	Details: []model.AssetTransferCreateDetail{
+			// 		{
+			// 			AssetType: model.AssetTypeEbike,
+			// 			SN:        silk.String(eb.Sn),
+			// 		},
+			// 	},
+			// 	Reason:            "订阅激活",
+			// 	AssetTransferType: model.AssetTransferTypeActive,
+			// 	OperatorID:        s.operator.ID,
+			// 	OperatorType:      s.operator.Type,
+			// 	AutoIn:            false,
+			// }, s.modifier)
+			// if err != nil {
+			// 	return
+			// }
+			// if failed != nil {
+			// 	snag.Panic(failed[0])
+			// }
 
 			// tx.Ebike.UpdateOneID(s.ebikeInfo.ID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
 		}
 		// 后台操作设置电池编码
 		if s.battery != nil && s.cabinet == nil {
-			snag.PanicIfError(
-				NewBattery(s.modifier).Allocate(s.battery, s.subscribe, model.AssetTransferTypeActive),
-			)
+			// snag.PanicIfError(
+			// 	NewBattery(s.modifier).Allocate(s.battery, s.subscribe, model.AssetTransferTypeActive),
+			// )
+			//
+			err = s.battery.Update().SetSubscribeID(s.subscribe.ID).Exec(s.ctx)
+			if err != nil {
+				snag.Panic(err)
+			}
 		}
 
 		if sub.EnterpriseID == nil && sub.InitialOrderID != 0 {
@@ -940,7 +946,12 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 
 		// 删除电池
 		if s.battery != nil {
-			snag.PanicIfError(NewBattery().Unallocate(s.battery, toLocationType, toLocationID, model.AssetTransferTypeUnSubscribe))
+			// 这里调拨单已经完成位置调整 只需要清除订阅信息即可
+			err = s.battery.Update().ClearSubscribeID().Exec(s.ctx)
+			if err != nil {
+				snag.Panic(err)
+			}
+			// snag.PanicIfError(NewBattery(s.operator, s.modifier).Unallocate(s.battery, toLocationType, toLocationID, model.AssetTransferTypeUnSubscribe))
 		}
 	})
 

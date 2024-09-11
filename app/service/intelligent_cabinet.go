@@ -197,7 +197,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
 					// 清除旧电池分配信息
 					// _ = NewBattery().Unallocate(old.Update(), model.AssetLocationsTypeCabinet, cab.ID)
-					err = NewBattery().Unallocate(old, model.AssetLocationsTypeCabinet, cab.ID, model.AssetTransferTypeExchange)
+					err = NewBattery(s.operator, s.modifier).Unallocate(old, model.AssetLocationsTypeCabinet, cab.ID, model.AssetTransferTypeExchange)
 					if err != nil {
 						return
 					}
@@ -438,7 +438,7 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 			at = model.AssetTransferTypeUnSubscribe
 		}
 
-		// 取走电池
+		// 取走电池 激活,取消寄存会走这里
 		if !putin {
 			_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
 				return NewBattery().Allocate(bat, sub, at)
