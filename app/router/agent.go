@@ -112,10 +112,10 @@ func loadAgentRoutes() {
 	auth.GET("/assets/count", aapi.Asset.AssetCount)    // 资产统计
 
 	// 盘点
-	auth.GET("/check/sn/:sn", aapi.AssetCheck.GetAssetBySN)      // 通过SN查询资产
-	auth.GET("/check", aapi.AssetCheck.List)                     // 盘点记录
-	auth.POST("/check", aapi.AssetCheck.Create)                  // 创建资产盘点
-	auth.GET("/check/:id", aapi.AssetCheck.Detail)               // 盘点详情
-	auth.GET("/check/asset:id", aapi.AssetCheck.AssetDetailList) // 盘点资产明细
+	auth.GET("/check/sn/:sn", aapi.AssetCheck.GetAssetBySN)       // 通过SN查询资产
+	auth.GET("/check", aapi.AssetCheck.List)                      // 盘点记录
+	auth.POST("/check", aapi.AssetCheck.Create)                   // 创建资产盘点
+	auth.GET("/check/:id", aapi.AssetCheck.Detail)                // 盘点详情
+	auth.GET("/check/asset/:id", aapi.AssetCheck.AssetDetailList) // 盘点资产明细
 
 }
