@@ -96,6 +96,10 @@ definitions:
       fromLocationID:
         description: 调出仓库/门店ID
         type: integer
+      fromLocationType:
+        allOf:
+        - $ref: '#/definitions/model.AssetLocationsType'
+        description: 调出位置类型  1:仓库 2:门店
       reason:
         description: 调拨事由
         type: string
@@ -107,7 +111,8 @@ definitions:
         - $ref: '#/definitions/model.AssetLocationsType'
         description: 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维
     required:
-    - reason
+    - fromLocationID
+    - fromLocationType
     - toLocationID
     - toLocationType
     type: object

@@ -3902,7 +3902,8 @@ const docTemplate = `{
         "definition.AssetTransferCreateReq": {
             "type": "object",
             "required": [
-                "reason",
+                "fromLocationID",
+                "fromLocationType",
                 "toLocationID",
                 "toLocationType"
             ],
@@ -3917,6 +3918,14 @@ const docTemplate = `{
                 "fromLocationID": {
                     "description": "调出仓库/门店ID",
                     "type": "integer"
+                },
+                "fromLocationType": {
+                    "description": "调出位置类型  1:仓库 2:门店",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
                 },
                 "reason": {
                     "description": "调拨事由",

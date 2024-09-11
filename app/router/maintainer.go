@@ -30,6 +30,7 @@ func loadMaintainerRoutes() {
 
 	// 资产调拨
 	auth.POST("/transfer", oapi.AssetTransfer.Transfer)                   // 创建调拨
+	auth.POST("/transfer_user", oapi.AssetTransfer.TransferForUse)        // 确认领用
 	auth.GET("/transfer", oapi.AssetTransfer.TransferList)                // 调拨列表
 	auth.GET("/transfer/:id", oapi.AssetTransfer.TransferDetail)          // 调拨详情
 	auth.POST("/transfer/receive", oapi.AssetTransfer.TransferReceive)    // 调拨批量入库
@@ -48,6 +49,6 @@ func loadMaintainerRoutes() {
 	auth.GET("/check/sn/:sn", oapi.AssetCheck.GetAssetBySN) // 通过SN查询资产
 
 	// 资产维修
-	auth.GET("/maintenance", oapi.AssetMaintenance.List) // 资产维修列表
+	auth.GET("/asset/maintenance", oapi.AssetMaintenance.List) // 资产维修列表
 
 }

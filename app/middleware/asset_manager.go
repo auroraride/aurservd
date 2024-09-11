@@ -7,9 +7,9 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/auroraride/aurservd/app"
+	assetpermission "github.com/auroraride/aurservd/app/assetpermission"
 	"github.com/auroraride/aurservd/app/biz"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/app/permission"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -51,7 +51,7 @@ func AssetManagerMiddleware() echo.MiddlewareFunc {
 			s.ExtendTokenTime(m.ID, token)
 
 			perms, _ := s.GetAssetPermissions(m)
-			if !permission.Contains(strings.ToUpper(c.Request().Method), p, perms) {
+			if !assetpermission.Contains(strings.ToUpper(c.Request().Method), p, perms) {
 				snag.Panic(snag.StatusForbidden)
 			}
 

@@ -102,7 +102,7 @@ func upload(addr string) {
 		_ = client.Close()
 	}(client)
 
-	err = client.CopyFileToRemote(assetpermission.PermFile, "/var/www/aurservd/config/permission.yaml", &scp.FileTransferOption{})
+	err = client.CopyFileToRemote(assetpermission.PermFile, "/var/www/aurservd/config/asset_permission.yaml", &scp.FileTransferOption{})
 	if err != nil {
 		fmt.Println("[api] Error while copying file ", err)
 		return

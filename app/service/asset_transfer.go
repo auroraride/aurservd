@@ -823,6 +823,7 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 		)
 	}
 	if req.AssetManagerID != 0 {
+		q.Where(assettransfer.Type(model.AssetTransferTypeTransfer.Value()))
 		wq := warehouse.HasBelongAssetManagersWith(assetmanager.ID(req.AssetManagerID))
 		// 判断是否首页跳转查询
 		if req.MainPage == nil {
@@ -890,6 +891,7 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 
 	}
 	if req.EmployeeID != 0 {
+		q.Where(assettransfer.Type(model.AssetTransferTypeTransfer.Value()))
 		wq := store.HasEmployeesWith(employee.ID(req.EmployeeID))
 
 		// 判断是否首页跳转查询
@@ -948,6 +950,7 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 		}
 	}
 	if req.AgentID != 0 {
+		q.Where(assettransfer.Type(model.AssetTransferTypeTransfer.Value()))
 		// 查询代理人员配置的代理站点
 		ids := make([]uint64, 0)
 		ag, _ := ent.Database.Agent.QueryNotDeleted().
@@ -971,6 +974,7 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 
 	}
 	if req.MaintainerID != 0 {
+		q.Where(assettransfer.Type(model.AssetTransferTypeTransfer.Value()))
 		q.Where(
 			assettransfer.Or(
 				assettransfer.HasFromLocationOperatorWith(maintainer.ID(req.MaintainerID)),
@@ -1005,12 +1009,32 @@ func (s *assetTransferService) TransferDetail(ctx context.Context, req *model.As
 		return nil, err
 	}
 
+	var commonInOpName, commonInTimeAt string
+	for _, atd := range atds {
+		ast := atd.Edges.Asset
+		// 非智能电池、其他物资为同一入库人信息
+		if ast.Type != model.AssetTypeEbike.Value() && ast.Type != model.AssetTypeSmartBattery.Value() {
+			commonInOpName = s.GetOperaterInfo(atd)
+			if atd.InTimeAt != nil {
+				commonInTimeAt = atd.InTimeAt.Format("2006-01-02 15:04:05")
+			}
+			if commonInOpName != "" {
+				break
+			}
+		}
+	}
+
 	// 分类统计调拨详情资产数据
 	for _, atd := range atds {
 		var inOpName, inTimeAt string
 		inOpName = s.GetOperaterInfo(atd)
 		if atd.InTimeAt != nil {
 			inTimeAt = atd.InTimeAt.Format("2006-01-02 15:04:05")
+		}
+
+		if inOpName == "" {
+			inOpName = commonInOpName
+			inTimeAt = commonInTimeAt
 		}
 
 		ast := atd.Edges.Asset
@@ -1451,6 +1475,30 @@ func (s *assetTransferService) GetTransferBySN(assetSignInfo definition.AssetSig
 				employee.DutyStoreID(item.Edges.Transfer.ToLocationID),
 			).First(ctx); am == nil {
 				return nil, errors.New("该入库单不属于当前上班位置")
+			}
+		case assetSignInfo.Agent != nil:
+			// 查询代理人员配置的代理站点
+			var locFlag bool
+			ag, _ := ent.Database.Agent.QueryNotDeleted().
+				WithEnterprise(func(query *ent.EnterpriseQuery) {
+					query.WithStations()
+				}).
+				Where(
+					agent.ID(assetSignInfo.Agent.ID),
+				).First(context.Background())
+			if ag != nil && ag.Edges.Enterprise != nil {
+				for _, v := range ag.Edges.Enterprise.Edges.Stations {
+					if item.Edges.Transfer.ToLocationID == v.ID {
+						locFlag = true
+					}
+				}
+			}
+			if !locFlag {
+				return nil, errors.New("该入库单不属于当前站点")
+			}
+		case assetSignInfo.Maintainer != nil:
+			if item.Edges.Transfer.ToLocationID != assetSignInfo.Maintainer.ID {
+				return nil, errors.New("该入库单不属于当前运维")
 			}
 		}
 	}
