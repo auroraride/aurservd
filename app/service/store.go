@@ -109,8 +109,10 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
 		SetNillableEbikeObtain(req.EbikeObtain).
 		SetNillableEbikeRepair(req.EbikeRepair).
 		SetNillableEbikeSale(req.EbikeSale).
-		SetNillableRest(req.Rest).
-		SetNillableGroupID(req.GroupID)
+		SetNillableRest(req.Rest)
+	if req.GroupID == nil {
+		q.ClearGroupID()
+	}
 	if req.Status != nil {
 		q.SetStatus(req.Status.Value())
 	}
