@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
@@ -99,8 +100,8 @@ type AssetTransferEdges struct {
 	ToLocationOperator *Maintainer `json:"to_location_operator,omitempty"`
 	// ToLocationWarehouse holds the value of the to_location_warehouse edge.
 	ToLocationWarehouse *Warehouse `json:"to_location_warehouse,omitempty"`
-	// OutOperateManager holds the value of the out_operate_manager edge.
-	OutOperateManager *AssetManager `json:"out_operate_manager,omitempty"`
+	// OutOperateAssetManager holds the value of the out_operate_asset_manager edge.
+	OutOperateAssetManager *AssetManager `json:"out_operate_asset_manager,omitempty"`
 	// OutOperateStore holds the value of the out_operate_store edge.
 	OutOperateStore *Store `json:"out_operate_store,omitempty"`
 	// OutOperateAgent holds the value of the out_operate_agent edge.
@@ -111,9 +112,11 @@ type AssetTransferEdges struct {
 	OutOperateCabinet *Cabinet `json:"out_operate_cabinet,omitempty"`
 	// OutOperateRider holds the value of the out_operate_rider edge.
 	OutOperateRider *Rider `json:"out_operate_rider,omitempty"`
+	// OutOperateManager holds the value of the out_operate_manager edge.
+	OutOperateManager *Manager `json:"out_operate_manager,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [19]bool
+	loadedTypes [20]bool
 }
 
 // TransferDetailsOrErr returns the TransferDetails value or an error if the edge
@@ -257,15 +260,15 @@ func (e AssetTransferEdges) ToLocationWarehouseOrErr() (*Warehouse, error) {
 	return nil, &NotLoadedError{edge: "to_location_warehouse"}
 }
 
-// OutOperateManagerOrErr returns the OutOperateManager value or an error if the edge
+// OutOperateAssetManagerOrErr returns the OutOperateAssetManager value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AssetTransferEdges) OutOperateManagerOrErr() (*AssetManager, error) {
-	if e.OutOperateManager != nil {
-		return e.OutOperateManager, nil
+func (e AssetTransferEdges) OutOperateAssetManagerOrErr() (*AssetManager, error) {
+	if e.OutOperateAssetManager != nil {
+		return e.OutOperateAssetManager, nil
 	} else if e.loadedTypes[13] {
 		return nil, &NotFoundError{label: assetmanager.Label}
 	}
-	return nil, &NotLoadedError{edge: "out_operate_manager"}
+	return nil, &NotLoadedError{edge: "out_operate_asset_manager"}
 }
 
 // OutOperateStoreOrErr returns the OutOperateStore value or an error if the edge
@@ -321,6 +324,17 @@ func (e AssetTransferEdges) OutOperateRiderOrErr() (*Rider, error) {
 		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "out_operate_rider"}
+}
+
+// OutOperateManagerOrErr returns the OutOperateManager value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetTransferEdges) OutOperateManagerOrErr() (*Manager, error) {
+	if e.OutOperateManager != nil {
+		return e.OutOperateManager, nil
+	} else if e.loadedTypes[19] {
+		return nil, &NotFoundError{label: manager.Label}
+	}
+	return nil, &NotLoadedError{edge: "out_operate_manager"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -559,9 +573,9 @@ func (at *AssetTransfer) QueryToLocationWarehouse() *WarehouseQuery {
 	return NewAssetTransferClient(at.config).QueryToLocationWarehouse(at)
 }
 
-// QueryOutOperateManager queries the "out_operate_manager" edge of the AssetTransfer entity.
-func (at *AssetTransfer) QueryOutOperateManager() *AssetManagerQuery {
-	return NewAssetTransferClient(at.config).QueryOutOperateManager(at)
+// QueryOutOperateAssetManager queries the "out_operate_asset_manager" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryOutOperateAssetManager() *AssetManagerQuery {
+	return NewAssetTransferClient(at.config).QueryOutOperateAssetManager(at)
 }
 
 // QueryOutOperateStore queries the "out_operate_store" edge of the AssetTransfer entity.
@@ -587,6 +601,11 @@ func (at *AssetTransfer) QueryOutOperateCabinet() *CabinetQuery {
 // QueryOutOperateRider queries the "out_operate_rider" edge of the AssetTransfer entity.
 func (at *AssetTransfer) QueryOutOperateRider() *RiderQuery {
 	return NewAssetTransferClient(at.config).QueryOutOperateRider(at)
+}
+
+// QueryOutOperateManager queries the "out_operate_manager" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryOutOperateManager() *ManagerQuery {
+	return NewAssetTransferClient(at.config).QueryOutOperateManager(at)
 }
 
 // Update returns a builder for updating this AssetTransfer.

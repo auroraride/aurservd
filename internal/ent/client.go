@@ -4548,15 +4548,15 @@ func (c *AssetTransferClient) QueryToLocationWarehouse(at *AssetTransfer) *Wareh
 	return query
 }
 
-// QueryOutOperateManager queries the out_operate_manager edge of a AssetTransfer.
-func (c *AssetTransferClient) QueryOutOperateManager(at *AssetTransfer) *AssetManagerQuery {
+// QueryOutOperateAssetManager queries the out_operate_asset_manager edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryOutOperateAssetManager(at *AssetTransfer) *AssetManagerQuery {
 	query := (&AssetManagerClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := at.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
 			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateManagerTable, assettransfer.OutOperateManagerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateAssetManagerTable, assettransfer.OutOperateAssetManagerColumn),
 		)
 		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
 		return fromV, nil
@@ -4637,6 +4637,22 @@ func (c *AssetTransferClient) QueryOutOperateRider(at *AssetTransfer) *RiderQuer
 			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateRiderTable, assettransfer.OutOperateRiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOutOperateManager queries the out_operate_manager edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryOutOperateManager(at *AssetTransfer) *ManagerQuery {
+	query := (&ManagerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
+			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateManagerTable, assettransfer.OutOperateManagerColumn),
 		)
 		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
 		return fromV, nil
@@ -4794,15 +4810,15 @@ func (c *AssetTransferDetailsClient) QueryTransfer(atd *AssetTransferDetails) *A
 	return query
 }
 
-// QueryInOperateManager queries the in_operate_manager edge of a AssetTransferDetails.
-func (c *AssetTransferDetailsClient) QueryInOperateManager(atd *AssetTransferDetails) *AssetManagerQuery {
+// QueryInOperateAssetManager queries the in_operate_asset_manager edge of a AssetTransferDetails.
+func (c *AssetTransferDetailsClient) QueryInOperateAssetManager(atd *AssetTransferDetails) *AssetManagerQuery {
 	query := (&AssetManagerClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := atd.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assettransferdetails.Table, assettransferdetails.FieldID, id),
 			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assettransferdetails.InOperateManagerTable, assettransferdetails.InOperateManagerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransferdetails.InOperateAssetManagerTable, assettransferdetails.InOperateAssetManagerColumn),
 		)
 		fromV = sqlgraph.Neighbors(atd.driver.Dialect(), step)
 		return fromV, nil
@@ -4883,6 +4899,22 @@ func (c *AssetTransferDetailsClient) QueryInOperateRider(atd *AssetTransferDetai
 			sqlgraph.From(assettransferdetails.Table, assettransferdetails.FieldID, id),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assettransferdetails.InOperateRiderTable, assettransferdetails.InOperateRiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(atd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInOperateManager queries the in_operate_manager edge of a AssetTransferDetails.
+func (c *AssetTransferDetailsClient) QueryInOperateManager(atd *AssetTransferDetails) *ManagerQuery {
+	query := (&ManagerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := atd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assettransferdetails.Table, assettransferdetails.FieldID, id),
+			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransferdetails.InOperateManagerTable, assettransferdetails.InOperateManagerColumn),
 		)
 		fromV = sqlgraph.Neighbors(atd.driver.Dialect(), step)
 		return fromV, nil
