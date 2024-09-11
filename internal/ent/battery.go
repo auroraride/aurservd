@@ -13,11 +13,7 @@ import (
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/battery"
-	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/enterprise"
-	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
-	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
 // Battery is the model entity for the Battery schema.
@@ -69,19 +65,11 @@ type Battery struct {
 type BatteryEdges struct {
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
-	// 所属骑手
-	Rider *Rider `json:"rider,omitempty"`
-	// 所属电柜
-	Cabinet *Cabinet `json:"cabinet,omitempty"`
-	// 所属企业
-	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// 流转记录
 	Flows []*BatteryFlow `json:"flows,omitempty"`
-	// 所属站点
-	Station *EnterpriseStation `json:"station,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [2]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -95,57 +83,13 @@ func (e BatteryEdges) CityOrErr() (*City, error) {
 	return nil, &NotLoadedError{edge: "city"}
 }
 
-// RiderOrErr returns the Rider value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e BatteryEdges) RiderOrErr() (*Rider, error) {
-	if e.Rider != nil {
-		return e.Rider, nil
-	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: rider.Label}
-	}
-	return nil, &NotLoadedError{edge: "rider"}
-}
-
-// CabinetOrErr returns the Cabinet value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e BatteryEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.Cabinet != nil {
-		return e.Cabinet, nil
-	} else if e.loadedTypes[2] {
-		return nil, &NotFoundError{label: cabinet.Label}
-	}
-	return nil, &NotLoadedError{edge: "cabinet"}
-}
-
-// EnterpriseOrErr returns the Enterprise value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e BatteryEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.Enterprise != nil {
-		return e.Enterprise, nil
-	} else if e.loadedTypes[3] {
-		return nil, &NotFoundError{label: enterprise.Label}
-	}
-	return nil, &NotLoadedError{edge: "enterprise"}
-}
-
 // FlowsOrErr returns the Flows value or an error if the edge
 // was not loaded in eager-loading.
 func (e BatteryEdges) FlowsOrErr() ([]*BatteryFlow, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[1] {
 		return e.Flows, nil
 	}
 	return nil, &NotLoadedError{edge: "flows"}
-}
-
-// StationOrErr returns the Station value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e BatteryEdges) StationOrErr() (*EnterpriseStation, error) {
-	if e.Station != nil {
-		return e.Station, nil
-	} else if e.loadedTypes[5] {
-		return nil, &NotFoundError{label: enterprisestation.Label}
-	}
-	return nil, &NotLoadedError{edge: "station"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -318,29 +262,9 @@ func (b *Battery) QueryCity() *CityQuery {
 	return NewBatteryClient(b.config).QueryCity(b)
 }
 
-// QueryRider queries the "rider" edge of the Battery entity.
-func (b *Battery) QueryRider() *RiderQuery {
-	return NewBatteryClient(b.config).QueryRider(b)
-}
-
-// QueryCabinet queries the "cabinet" edge of the Battery entity.
-func (b *Battery) QueryCabinet() *CabinetQuery {
-	return NewBatteryClient(b.config).QueryCabinet(b)
-}
-
-// QueryEnterprise queries the "enterprise" edge of the Battery entity.
-func (b *Battery) QueryEnterprise() *EnterpriseQuery {
-	return NewBatteryClient(b.config).QueryEnterprise(b)
-}
-
 // QueryFlows queries the "flows" edge of the Battery entity.
 func (b *Battery) QueryFlows() *BatteryFlowQuery {
 	return NewBatteryClient(b.config).QueryFlows(b)
-}
-
-// QueryStation queries the "station" edge of the Battery entity.
-func (b *Battery) QueryStation() *EnterpriseStationQuery {
-	return NewBatteryClient(b.config).QueryStation(b)
 }
 
 // Update returns a builder for updating this Battery.

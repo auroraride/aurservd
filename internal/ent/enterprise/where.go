@@ -1355,29 +1355,6 @@ func HasBillsWith(preds ...predicate.EnterpriseBill) predicate.Enterprise {
 	})
 }
 
-// HasBatteries applies the HasEdge predicate on the "batteries" edge.
-func HasBatteries() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, BatteriesTable, BatteriesColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasBatteriesWith applies the HasEdge predicate on the "batteries" edge with a given conditions (other predicates).
-func HasBatteriesWith(preds ...predicate.Battery) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		step := newBatteriesStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasAgents applies the HasEdge predicate on the "agents" edge.
 func HasAgents() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {

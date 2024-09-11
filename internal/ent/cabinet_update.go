@@ -15,7 +15,6 @@ import (
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/asset"
-	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
@@ -688,21 +687,6 @@ func (cu *CabinetUpdate) AddStocks(s ...*Stock) *CabinetUpdate {
 	return cu.AddStockIDs(ids...)
 }
 
-// AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
-func (cu *CabinetUpdate) AddBatteryIDs(ids ...uint64) *CabinetUpdate {
-	cu.mutation.AddBatteryIDs(ids...)
-	return cu
-}
-
-// AddBatteries adds the "batteries" edges to the Battery entity.
-func (cu *CabinetUpdate) AddBatteries(b ...*Battery) *CabinetUpdate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return cu.AddBatteryIDs(ids...)
-}
-
 // AddBatteryFlowIDs adds the "battery_flows" edge to the BatteryFlow entity by IDs.
 func (cu *CabinetUpdate) AddBatteryFlowIDs(ids ...uint64) *CabinetUpdate {
 	cu.mutation.AddBatteryFlowIDs(ids...)
@@ -854,27 +838,6 @@ func (cu *CabinetUpdate) RemoveStocks(s ...*Stock) *CabinetUpdate {
 		ids[i] = s[i].ID
 	}
 	return cu.RemoveStockIDs(ids...)
-}
-
-// ClearBatteries clears all "batteries" edges to the Battery entity.
-func (cu *CabinetUpdate) ClearBatteries() *CabinetUpdate {
-	cu.mutation.ClearBatteries()
-	return cu
-}
-
-// RemoveBatteryIDs removes the "batteries" edge to Battery entities by IDs.
-func (cu *CabinetUpdate) RemoveBatteryIDs(ids ...uint64) *CabinetUpdate {
-	cu.mutation.RemoveBatteryIDs(ids...)
-	return cu
-}
-
-// RemoveBatteries removes "batteries" edges to Battery entities.
-func (cu *CabinetUpdate) RemoveBatteries(b ...*Battery) *CabinetUpdate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return cu.RemoveBatteryIDs(ids...)
 }
 
 // ClearBatteryFlows clears all "battery_flows" edges to the BatteryFlow entity.
@@ -1415,51 +1378,6 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cu.mutation.BatteriesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   cabinet.BatteriesTable,
-			Columns: []string{cabinet.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.RemovedBatteriesIDs(); len(nodes) > 0 && !cu.mutation.BatteriesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   cabinet.BatteriesTable,
-			Columns: []string{cabinet.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.BatteriesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   cabinet.BatteriesTable,
-			Columns: []string{cabinet.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2236,21 +2154,6 @@ func (cuo *CabinetUpdateOne) AddStocks(s ...*Stock) *CabinetUpdateOne {
 	return cuo.AddStockIDs(ids...)
 }
 
-// AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
-func (cuo *CabinetUpdateOne) AddBatteryIDs(ids ...uint64) *CabinetUpdateOne {
-	cuo.mutation.AddBatteryIDs(ids...)
-	return cuo
-}
-
-// AddBatteries adds the "batteries" edges to the Battery entity.
-func (cuo *CabinetUpdateOne) AddBatteries(b ...*Battery) *CabinetUpdateOne {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return cuo.AddBatteryIDs(ids...)
-}
-
 // AddBatteryFlowIDs adds the "battery_flows" edge to the BatteryFlow entity by IDs.
 func (cuo *CabinetUpdateOne) AddBatteryFlowIDs(ids ...uint64) *CabinetUpdateOne {
 	cuo.mutation.AddBatteryFlowIDs(ids...)
@@ -2402,27 +2305,6 @@ func (cuo *CabinetUpdateOne) RemoveStocks(s ...*Stock) *CabinetUpdateOne {
 		ids[i] = s[i].ID
 	}
 	return cuo.RemoveStockIDs(ids...)
-}
-
-// ClearBatteries clears all "batteries" edges to the Battery entity.
-func (cuo *CabinetUpdateOne) ClearBatteries() *CabinetUpdateOne {
-	cuo.mutation.ClearBatteries()
-	return cuo
-}
-
-// RemoveBatteryIDs removes the "batteries" edge to Battery entities by IDs.
-func (cuo *CabinetUpdateOne) RemoveBatteryIDs(ids ...uint64) *CabinetUpdateOne {
-	cuo.mutation.RemoveBatteryIDs(ids...)
-	return cuo
-}
-
-// RemoveBatteries removes "batteries" edges to Battery entities.
-func (cuo *CabinetUpdateOne) RemoveBatteries(b ...*Battery) *CabinetUpdateOne {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return cuo.RemoveBatteryIDs(ids...)
 }
 
 // ClearBatteryFlows clears all "battery_flows" edges to the BatteryFlow entity.
@@ -2993,51 +2875,6 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cuo.mutation.BatteriesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   cabinet.BatteriesTable,
-			Columns: []string{cabinet.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.RemovedBatteriesIDs(); len(nodes) > 0 && !cuo.mutation.BatteriesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   cabinet.BatteriesTable,
-			Columns: []string{cabinet.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.BatteriesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   cabinet.BatteriesTable,
-			Columns: []string{cabinet.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

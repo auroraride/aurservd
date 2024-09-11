@@ -97,9 +97,9 @@ func AssetDo() {
 	// 电池
 	BatteryDo(ctx, modifier)
 	// 车
-	// EbikeDo(ctx, modifier)
+	EbikeDo(ctx, modifier)
 	// 骑手身上的非智能电池
-	// RiderBatteryDo(ctx, modifier)
+	RiderBatteryDo(ctx, modifier)
 }
 
 func BatteryDo(ctx context.Context, modifier *model.Modifier) {
@@ -405,7 +405,7 @@ func EbikeDo(ctx context.Context, modifier *model.Modifier) {
 			BrandID:       silk.UInt64(v.BrandID),
 		}, modifier)
 		if err != nil {
-			fmt.Printf("创建电车失败: %v\n", err)
+			// fmt.Printf("创建电车失败: %v\n", err)
 			continue
 		}
 	}

@@ -1413,21 +1413,44 @@ func HasOperatorWith(preds ...predicate.Maintainer) predicate.Asset {
 	})
 }
 
-// HasAllocates applies the HasEdge predicate on the "allocates" edge.
-func HasAllocates() predicate.Asset {
+// HasEbikeAllocates applies the HasEdge predicate on the "ebike_allocates" edge.
+func HasEbikeAllocates() predicate.Asset {
 	return predicate.Asset(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AllocatesTable, AllocatesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, EbikeAllocatesTable, EbikeAllocatesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasAllocatesWith applies the HasEdge predicate on the "allocates" edge with a given conditions (other predicates).
-func HasAllocatesWith(preds ...predicate.Allocate) predicate.Asset {
+// HasEbikeAllocatesWith applies the HasEdge predicate on the "ebike_allocates" edge with a given conditions (other predicates).
+func HasEbikeAllocatesWith(preds ...predicate.Allocate) predicate.Asset {
 	return predicate.Asset(func(s *sql.Selector) {
-		step := newAllocatesStep()
+		step := newEbikeAllocatesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBatteryAllocates applies the HasEdge predicate on the "battery_allocates" edge.
+func HasBatteryAllocates() predicate.Asset {
+	return predicate.Asset(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, BatteryAllocatesTable, BatteryAllocatesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBatteryAllocatesWith applies the HasEdge predicate on the "battery_allocates" edge with a given conditions (other predicates).
+func HasBatteryAllocatesWith(preds ...predicate.Allocate) predicate.Asset {
+	return predicate.Asset(func(s *sql.Selector) {
+		step := newBatteryAllocatesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

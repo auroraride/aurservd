@@ -45,8 +45,6 @@ const (
 	FieldStationID = "station_id"
 	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
 	FieldCabinetID = "cabinet_id"
-	// FieldBatteryID holds the string denoting the battery_id field in the database.
-	FieldBatteryID = "battery_id"
 	// FieldAgentID holds the string denoting the agent_id field in the database.
 	FieldAgentID = "agent_id"
 	// FieldType holds the string denoting the type field in the database.
@@ -57,6 +55,8 @@ const (
 	FieldStockSn = "stock_sn"
 	// FieldRtoEbikeID holds the string denoting the rto_ebike_id field in the database.
 	FieldRtoEbikeID = "rto_ebike_id"
+	// FieldBatteryID holds the string denoting the battery_id field in the database.
+	FieldBatteryID = "battery_id"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -75,12 +75,12 @@ const (
 	EdgeStation = "station"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
 	EdgeCabinet = "cabinet"
-	// EdgeBattery holds the string denoting the battery edge name in mutations.
-	EdgeBattery = "battery"
 	// EdgeAgent holds the string denoting the agent edge name in mutations.
 	EdgeAgent = "agent"
 	// EdgeRtoEbike holds the string denoting the rto_ebike edge name in mutations.
 	EdgeRtoEbike = "rto_ebike"
+	// EdgeBattery holds the string denoting the battery edge name in mutations.
+	EdgeBattery = "battery"
 	// Table holds the table name of the business in the database.
 	Table = "business"
 	// RiderTable is the table that holds the rider relation/edge.
@@ -146,13 +146,6 @@ const (
 	CabinetInverseTable = "cabinet"
 	// CabinetColumn is the table column denoting the cabinet relation/edge.
 	CabinetColumn = "cabinet_id"
-	// BatteryTable is the table that holds the battery relation/edge.
-	BatteryTable = "business"
-	// BatteryInverseTable is the table name for the Battery entity.
-	// It exists in this package in order to avoid circular dependency with the "battery" package.
-	BatteryInverseTable = "battery"
-	// BatteryColumn is the table column denoting the battery relation/edge.
-	BatteryColumn = "battery_id"
 	// AgentTable is the table that holds the agent relation/edge.
 	AgentTable = "business"
 	// AgentInverseTable is the table name for the Agent entity.
@@ -167,6 +160,13 @@ const (
 	RtoEbikeInverseTable = "asset"
 	// RtoEbikeColumn is the table column denoting the rto_ebike relation/edge.
 	RtoEbikeColumn = "rto_ebike_id"
+	// BatteryTable is the table that holds the battery relation/edge.
+	BatteryTable = "business"
+	// BatteryInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	BatteryInverseTable = "asset"
+	// BatteryColumn is the table column denoting the battery relation/edge.
+	BatteryColumn = "battery_id"
 )
 
 // Columns holds all SQL columns for business fields.
@@ -187,12 +187,12 @@ var Columns = []string{
 	FieldEnterpriseID,
 	FieldStationID,
 	FieldCabinetID,
-	FieldBatteryID,
 	FieldAgentID,
 	FieldType,
 	FieldBinInfo,
 	FieldStockSn,
 	FieldRtoEbikeID,
+	FieldBatteryID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -293,11 +293,6 @@ func ByCabinetID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCabinetID, opts...).ToFunc()
 }
 
-// ByBatteryID orders the results by the battery_id field.
-func ByBatteryID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBatteryID, opts...).ToFunc()
-}
-
 // ByAgentID orders the results by the agent_id field.
 func ByAgentID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAgentID, opts...).ToFunc()
@@ -316,6 +311,11 @@ func ByStockSn(opts ...sql.OrderTermOption) OrderOption {
 // ByRtoEbikeID orders the results by the rto_ebike_id field.
 func ByRtoEbikeID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRtoEbikeID, opts...).ToFunc()
+}
+
+// ByBatteryID orders the results by the battery_id field.
+func ByBatteryID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBatteryID, opts...).ToFunc()
 }
 
 // ByRiderField orders the results by rider field.
@@ -381,13 +381,6 @@ func ByCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByBatteryField orders the results by battery field.
-func ByBatteryField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newBatteryStep(), sql.OrderByField(field, opts...))
-	}
-}
-
 // ByAgentField orders the results by agent field.
 func ByAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -399,6 +392,13 @@ func ByAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
 func ByRtoEbikeField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newRtoEbikeStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByBatteryField orders the results by battery field.
+func ByBatteryField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBatteryStep(), sql.OrderByField(field, opts...))
 	}
 }
 func newRiderStep() *sqlgraph.Step {
@@ -464,13 +464,6 @@ func newCabinetStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
 	)
 }
-func newBatteryStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(BatteryInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
-	)
-}
 func newAgentStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -483,5 +476,12 @@ func newRtoEbikeStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RtoEbikeInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, RtoEbikeTable, RtoEbikeColumn),
+	)
+}
+func newBatteryStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BatteryInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
 	)
 }

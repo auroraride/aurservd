@@ -66,6 +66,7 @@ func (Business) Fields() []ent.Field {
 		field.JSON("bin_info", &model.BinInfo{}).Optional().Comment("仓位信息"),
 		field.String("stock_sn").Optional().Comment("出入库编码"),
 		field.Uint64("rto_ebike_id").Optional().Nillable().Comment("以租代购车辆ID，生成后禁止修改"),
+		field.Uint64("battery_id").Optional().Nillable().Comment("电池ID"),
 	}
 }
 
@@ -73,6 +74,7 @@ func (Business) Fields() []ent.Field {
 func (Business) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("rto_ebike", Asset.Type).Unique().Field("rto_ebike_id"),
+		edge.To("battery", Asset.Type).Unique().Field("battery_id"),
 	}
 }
 
@@ -92,7 +94,6 @@ func (Business) Mixin() []ent.Mixin {
 		EnterpriseMixin{Optional: true},
 		StationMixin{Optional: true},
 		CabinetMixin{Optional: true},
-		BatteryMixin{Optional: true},
 		AgentMixin{Optional: true},
 	}
 }

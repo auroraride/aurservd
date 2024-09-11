@@ -406,6 +406,26 @@ func RiderIDNotIn(vs ...uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
+// RiderIDGT applies the GT predicate on the "rider_id" field.
+func RiderIDGT(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldGT(FieldRiderID, v))
+}
+
+// RiderIDGTE applies the GTE predicate on the "rider_id" field.
+func RiderIDGTE(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldGTE(FieldRiderID, v))
+}
+
+// RiderIDLT applies the LT predicate on the "rider_id" field.
+func RiderIDLT(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldLT(FieldRiderID, v))
+}
+
+// RiderIDLTE applies the LTE predicate on the "rider_id" field.
+func RiderIDLTE(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldLTE(FieldRiderID, v))
+}
+
 // RiderIDIsNil applies the IsNil predicate on the "rider_id" field.
 func RiderIDIsNil() predicate.Battery {
 	return predicate.Battery(sql.FieldIsNull(FieldRiderID))
@@ -434,6 +454,26 @@ func CabinetIDIn(vs ...uint64) predicate.Battery {
 // CabinetIDNotIn applies the NotIn predicate on the "cabinet_id" field.
 func CabinetIDNotIn(vs ...uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldNotIn(FieldCabinetID, vs...))
+}
+
+// CabinetIDGT applies the GT predicate on the "cabinet_id" field.
+func CabinetIDGT(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldGT(FieldCabinetID, v))
+}
+
+// CabinetIDGTE applies the GTE predicate on the "cabinet_id" field.
+func CabinetIDGTE(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldGTE(FieldCabinetID, v))
+}
+
+// CabinetIDLT applies the LT predicate on the "cabinet_id" field.
+func CabinetIDLT(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldLT(FieldCabinetID, v))
+}
+
+// CabinetIDLTE applies the LTE predicate on the "cabinet_id" field.
+func CabinetIDLTE(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldLTE(FieldCabinetID, v))
 }
 
 // CabinetIDIsNil applies the IsNil predicate on the "cabinet_id" field.
@@ -516,6 +556,26 @@ func EnterpriseIDNotIn(vs ...uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldNotIn(FieldEnterpriseID, vs...))
 }
 
+// EnterpriseIDGT applies the GT predicate on the "enterprise_id" field.
+func EnterpriseIDGT(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldGT(FieldEnterpriseID, v))
+}
+
+// EnterpriseIDGTE applies the GTE predicate on the "enterprise_id" field.
+func EnterpriseIDGTE(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldGTE(FieldEnterpriseID, v))
+}
+
+// EnterpriseIDLT applies the LT predicate on the "enterprise_id" field.
+func EnterpriseIDLT(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldLT(FieldEnterpriseID, v))
+}
+
+// EnterpriseIDLTE applies the LTE predicate on the "enterprise_id" field.
+func EnterpriseIDLTE(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldLTE(FieldEnterpriseID, v))
+}
+
 // EnterpriseIDIsNil applies the IsNil predicate on the "enterprise_id" field.
 func EnterpriseIDIsNil() predicate.Battery {
 	return predicate.Battery(sql.FieldIsNull(FieldEnterpriseID))
@@ -544,6 +604,26 @@ func StationIDIn(vs ...uint64) predicate.Battery {
 // StationIDNotIn applies the NotIn predicate on the "station_id" field.
 func StationIDNotIn(vs ...uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldNotIn(FieldStationID, vs...))
+}
+
+// StationIDGT applies the GT predicate on the "station_id" field.
+func StationIDGT(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldGT(FieldStationID, v))
+}
+
+// StationIDGTE applies the GTE predicate on the "station_id" field.
+func StationIDGTE(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldGTE(FieldStationID, v))
+}
+
+// StationIDLT applies the LT predicate on the "station_id" field.
+func StationIDLT(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldLT(FieldStationID, v))
+}
+
+// StationIDLTE applies the LTE predicate on the "station_id" field.
+func StationIDLTE(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldLTE(FieldStationID, v))
 }
 
 // StationIDIsNil applies the IsNil predicate on the "station_id" field.
@@ -809,75 +889,6 @@ func HasCityWith(preds ...predicate.City) predicate.Battery {
 	})
 }
 
-// HasRider applies the HasEdge predicate on the "rider" edge.
-func HasRider() predicate.Battery {
-	return predicate.Battery(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, RiderTable, RiderColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
-func HasRiderWith(preds ...predicate.Rider) predicate.Battery {
-	return predicate.Battery(func(s *sql.Selector) {
-		step := newRiderStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasCabinet applies the HasEdge predicate on the "cabinet" edge.
-func HasCabinet() predicate.Battery {
-	return predicate.Battery(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CabinetTable, CabinetColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasCabinetWith applies the HasEdge predicate on the "cabinet" edge with a given conditions (other predicates).
-func HasCabinetWith(preds ...predicate.Cabinet) predicate.Battery {
-	return predicate.Battery(func(s *sql.Selector) {
-		step := newCabinetStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasEnterprise applies the HasEdge predicate on the "enterprise" edge.
-func HasEnterprise() predicate.Battery {
-	return predicate.Battery(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasEnterpriseWith applies the HasEdge predicate on the "enterprise" edge with a given conditions (other predicates).
-func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.Battery {
-	return predicate.Battery(func(s *sql.Selector) {
-		step := newEnterpriseStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasFlows applies the HasEdge predicate on the "flows" edge.
 func HasFlows() predicate.Battery {
 	return predicate.Battery(func(s *sql.Selector) {
@@ -893,29 +904,6 @@ func HasFlows() predicate.Battery {
 func HasFlowsWith(preds ...predicate.BatteryFlow) predicate.Battery {
 	return predicate.Battery(func(s *sql.Selector) {
 		step := newFlowsStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasStation applies the HasEdge predicate on the "station" edge.
-func HasStation() predicate.Battery {
-	return predicate.Battery(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, StationTable, StationColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasStationWith applies the HasEdge predicate on the "station" edge with a given conditions (other predicates).
-func HasStationWith(preds ...predicate.EnterpriseStation) predicate.Battery {
-	return predicate.Battery(func(s *sql.Selector) {
-		step := newStationStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

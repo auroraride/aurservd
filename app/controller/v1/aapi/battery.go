@@ -33,6 +33,7 @@ func (*battery) Selection(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewSelection().BatterySerialSearch(&model.BatterySearchReq{
 		Serial:       req.Serial,
 		EnterpriseID: &ctx.Enterprise.ID,
+		StationID:    req.StationID,
 	}))
 }
 

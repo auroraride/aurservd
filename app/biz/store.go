@@ -177,7 +177,7 @@ func (b *storeBiz) QueryStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, battery
 	for _, st := range item.Edges.Asset {
 		switch model.AssetType(st.Type) {
 		case model.AssetTypeEbike:
-			if st.Status == model.AssetStatusStock.Value() && st.BrandID != nil && st.BrandID == pl.BrandID {
+			if st.Status == model.AssetStatusStock.Value() && st.BrandID != nil && *st.BrandID == *pl.BrandID {
 				ebikeNum += 1
 			}
 		case model.AssetTypeSmartBattery, model.AssetTypeNonSmartBattery:

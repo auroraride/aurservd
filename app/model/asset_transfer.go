@@ -94,6 +94,7 @@ type AssetTransferCreateReq struct {
 	OperatorID        uint64                      `json:"operatorId"`                            // 操作人ID
 	OperatorType      OperatorType                `json:"OperatorType"`                          // 操作人类型 2:门店 3:代理 6:资产后台(仓库)
 	AutoIn            bool                        `json:"autoIn"`                                // 是否自动入库 true:自动入库 false:手动入库
+	SkipLimit         bool                        `json:"skipLimit"`                             // 是否跳过限制 true:跳过 false:不跳过
 }
 
 // AssetTransferCreateDetail 资产调拨详情
@@ -280,4 +281,11 @@ type AssetTransferModifyReq struct {
 type InitialTransferStatusRes struct {
 	AssetTransferStatus AssetTransferStatus `json:"assetTransferStatus"` // 调拨状态 1:配送中 2:已入库 3:已取消
 	IsIn                bool                `json:"isIn"`                // 是否入库 true:已入库 false:未入库
+}
+
+type CheckTransferTypeTypeRes struct {
+	FromLocationType uint8  `json:"fromLocationType"` // 调出目标类型
+	FromLocationID   uint64 `json:"fromLocationID"`   // 调出目标ID
+	ToLocationType   uint8  `json:"toLocationType"`   // 调入目标类型
+	ToLocationID     uint64 `json:"toLocationID"`     // 调入目标ID
 }

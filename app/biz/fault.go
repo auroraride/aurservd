@@ -11,7 +11,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
-	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/fault"
@@ -122,7 +121,7 @@ func (s *faultBiz) Create(r *ent.Rider, req *definition.FaultCreateReq) error {
 	// 查找设备
 	switch req.Type {
 	case definition.FaultTypeBattery:
-		d, err := ent.Database.Battery.QueryNotDeleted().Where(battery.SnEQ(req.DeviceNo)).First(s.ctx)
+		d, err := ent.Database.Asset.QueryNotDeleted().Where(asset.SnEQ(req.DeviceNo)).First(s.ctx)
 		if err != nil {
 			return errors.New("电池不存在")
 		}

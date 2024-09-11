@@ -65,6 +65,7 @@ func (Allocate) Fields() []ent.Field {
 		field.Time("time").Comment("分配时间"),
 		field.String("model").Comment("电池型号"),
 		field.Uint64("ebike_id").Optional().Nillable().Comment("电车ID"),
+		field.Uint64("battery_id").Optional().Nillable().Comment("电池ID"),
 	}
 }
 
@@ -73,7 +74,8 @@ func (Allocate) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("contract", Contract.Type).Unique(),
 
-		edge.From("ebike", Asset.Type).Ref("allocates").Unique().Field("ebike_id"),
+		edge.From("ebike", Asset.Type).Ref("ebike_allocates").Unique().Field("ebike_id"),
+		edge.From("battery", Asset.Type).Ref("battery_allocates").Unique().Field("battery_id"),
 	}
 }
 
@@ -92,7 +94,7 @@ func (Allocate) Mixin() []ent.Mixin {
 
 		EbikeBrandMixin{Optional: true},
 
-		BatteryMixin{Optional: true},
+		// BatteryMixin{Optional: true},
 		StationMixin{Optional: true},
 
 		AgentMixin{Optional: true},

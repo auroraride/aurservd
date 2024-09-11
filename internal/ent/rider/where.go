@@ -1323,14 +1323,14 @@ func HasBattery() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, BatteryTable, BatteryColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
 // HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
-func HasBatteryWith(preds ...predicate.Battery) predicate.Rider {
+func HasBatteryWith(preds ...predicate.Asset) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := newBatteryStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {

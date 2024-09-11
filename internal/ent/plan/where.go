@@ -200,6 +200,11 @@ func Daily(v bool) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldDaily, v))
 }
 
+// IntroductionImage applies equality check predicate on the "introduction_image" field. It's identical to IntroductionImageEQ.
+func IntroductionImage(v string) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldIntroductionImage, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldCreatedAt, v))
@@ -1328,6 +1333,81 @@ func DailyEQ(v bool) predicate.Plan {
 // DailyNEQ applies the NEQ predicate on the "daily" field.
 func DailyNEQ(v bool) predicate.Plan {
 	return predicate.Plan(sql.FieldNEQ(FieldDaily, v))
+}
+
+// IntroductionImageEQ applies the EQ predicate on the "introduction_image" field.
+func IntroductionImageEQ(v string) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldIntroductionImage, v))
+}
+
+// IntroductionImageNEQ applies the NEQ predicate on the "introduction_image" field.
+func IntroductionImageNEQ(v string) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldIntroductionImage, v))
+}
+
+// IntroductionImageIn applies the In predicate on the "introduction_image" field.
+func IntroductionImageIn(vs ...string) predicate.Plan {
+	return predicate.Plan(sql.FieldIn(FieldIntroductionImage, vs...))
+}
+
+// IntroductionImageNotIn applies the NotIn predicate on the "introduction_image" field.
+func IntroductionImageNotIn(vs ...string) predicate.Plan {
+	return predicate.Plan(sql.FieldNotIn(FieldIntroductionImage, vs...))
+}
+
+// IntroductionImageGT applies the GT predicate on the "introduction_image" field.
+func IntroductionImageGT(v string) predicate.Plan {
+	return predicate.Plan(sql.FieldGT(FieldIntroductionImage, v))
+}
+
+// IntroductionImageGTE applies the GTE predicate on the "introduction_image" field.
+func IntroductionImageGTE(v string) predicate.Plan {
+	return predicate.Plan(sql.FieldGTE(FieldIntroductionImage, v))
+}
+
+// IntroductionImageLT applies the LT predicate on the "introduction_image" field.
+func IntroductionImageLT(v string) predicate.Plan {
+	return predicate.Plan(sql.FieldLT(FieldIntroductionImage, v))
+}
+
+// IntroductionImageLTE applies the LTE predicate on the "introduction_image" field.
+func IntroductionImageLTE(v string) predicate.Plan {
+	return predicate.Plan(sql.FieldLTE(FieldIntroductionImage, v))
+}
+
+// IntroductionImageContains applies the Contains predicate on the "introduction_image" field.
+func IntroductionImageContains(v string) predicate.Plan {
+	return predicate.Plan(sql.FieldContains(FieldIntroductionImage, v))
+}
+
+// IntroductionImageHasPrefix applies the HasPrefix predicate on the "introduction_image" field.
+func IntroductionImageHasPrefix(v string) predicate.Plan {
+	return predicate.Plan(sql.FieldHasPrefix(FieldIntroductionImage, v))
+}
+
+// IntroductionImageHasSuffix applies the HasSuffix predicate on the "introduction_image" field.
+func IntroductionImageHasSuffix(v string) predicate.Plan {
+	return predicate.Plan(sql.FieldHasSuffix(FieldIntroductionImage, v))
+}
+
+// IntroductionImageIsNil applies the IsNil predicate on the "introduction_image" field.
+func IntroductionImageIsNil() predicate.Plan {
+	return predicate.Plan(sql.FieldIsNull(FieldIntroductionImage))
+}
+
+// IntroductionImageNotNil applies the NotNil predicate on the "introduction_image" field.
+func IntroductionImageNotNil() predicate.Plan {
+	return predicate.Plan(sql.FieldNotNull(FieldIntroductionImage))
+}
+
+// IntroductionImageEqualFold applies the EqualFold predicate on the "introduction_image" field.
+func IntroductionImageEqualFold(v string) predicate.Plan {
+	return predicate.Plan(sql.FieldEqualFold(FieldIntroductionImage, v))
+}
+
+// IntroductionImageContainsFold applies the ContainsFold predicate on the "introduction_image" field.
+func IntroductionImageContainsFold(v string) predicate.Plan {
+	return predicate.Plan(sql.FieldContainsFold(FieldIntroductionImage, v))
 }
 
 // HasAgreement applies the HasEdge predicate on the "agreement" edge.

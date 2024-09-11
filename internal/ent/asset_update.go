@@ -643,19 +643,34 @@ func (au *AssetUpdate) SetOperator(m *Maintainer) *AssetUpdate {
 	return au.SetOperatorID(m.ID)
 }
 
-// AddAllocateIDs adds the "allocates" edge to the Allocate entity by IDs.
-func (au *AssetUpdate) AddAllocateIDs(ids ...uint64) *AssetUpdate {
-	au.mutation.AddAllocateIDs(ids...)
+// AddEbikeAllocateIDs adds the "ebike_allocates" edge to the Allocate entity by IDs.
+func (au *AssetUpdate) AddEbikeAllocateIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.AddEbikeAllocateIDs(ids...)
 	return au
 }
 
-// AddAllocates adds the "allocates" edges to the Allocate entity.
-func (au *AssetUpdate) AddAllocates(a ...*Allocate) *AssetUpdate {
+// AddEbikeAllocates adds the "ebike_allocates" edges to the Allocate entity.
+func (au *AssetUpdate) AddEbikeAllocates(a ...*Allocate) *AssetUpdate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return au.AddAllocateIDs(ids...)
+	return au.AddEbikeAllocateIDs(ids...)
+}
+
+// AddBatteryAllocateIDs adds the "battery_allocates" edge to the Allocate entity by IDs.
+func (au *AssetUpdate) AddBatteryAllocateIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.AddBatteryAllocateIDs(ids...)
+	return au
+}
+
+// AddBatteryAllocates adds the "battery_allocates" edges to the Allocate entity.
+func (au *AssetUpdate) AddBatteryAllocates(a ...*Allocate) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.AddBatteryAllocateIDs(ids...)
 }
 
 // SetRtoRider sets the "rto_rider" edge to the Rider entity.
@@ -839,25 +854,46 @@ func (au *AssetUpdate) ClearOperator() *AssetUpdate {
 	return au
 }
 
-// ClearAllocates clears all "allocates" edges to the Allocate entity.
-func (au *AssetUpdate) ClearAllocates() *AssetUpdate {
-	au.mutation.ClearAllocates()
+// ClearEbikeAllocates clears all "ebike_allocates" edges to the Allocate entity.
+func (au *AssetUpdate) ClearEbikeAllocates() *AssetUpdate {
+	au.mutation.ClearEbikeAllocates()
 	return au
 }
 
-// RemoveAllocateIDs removes the "allocates" edge to Allocate entities by IDs.
-func (au *AssetUpdate) RemoveAllocateIDs(ids ...uint64) *AssetUpdate {
-	au.mutation.RemoveAllocateIDs(ids...)
+// RemoveEbikeAllocateIDs removes the "ebike_allocates" edge to Allocate entities by IDs.
+func (au *AssetUpdate) RemoveEbikeAllocateIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.RemoveEbikeAllocateIDs(ids...)
 	return au
 }
 
-// RemoveAllocates removes "allocates" edges to Allocate entities.
-func (au *AssetUpdate) RemoveAllocates(a ...*Allocate) *AssetUpdate {
+// RemoveEbikeAllocates removes "ebike_allocates" edges to Allocate entities.
+func (au *AssetUpdate) RemoveEbikeAllocates(a ...*Allocate) *AssetUpdate {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return au.RemoveAllocateIDs(ids...)
+	return au.RemoveEbikeAllocateIDs(ids...)
+}
+
+// ClearBatteryAllocates clears all "battery_allocates" edges to the Allocate entity.
+func (au *AssetUpdate) ClearBatteryAllocates() *AssetUpdate {
+	au.mutation.ClearBatteryAllocates()
+	return au
+}
+
+// RemoveBatteryAllocateIDs removes the "battery_allocates" edge to Allocate entities by IDs.
+func (au *AssetUpdate) RemoveBatteryAllocateIDs(ids ...uint64) *AssetUpdate {
+	au.mutation.RemoveBatteryAllocateIDs(ids...)
+	return au
+}
+
+// RemoveBatteryAllocates removes "battery_allocates" edges to Allocate entities.
+func (au *AssetUpdate) RemoveBatteryAllocates(a ...*Allocate) *AssetUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.RemoveBatteryAllocateIDs(ids...)
 }
 
 // ClearRtoRider clears the "rto_rider" edge to the Rider entity.
@@ -1545,12 +1581,12 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.AllocatesCleared() {
+	if au.mutation.EbikeAllocatesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.AllocatesTable,
-			Columns: []string{asset.AllocatesColumn},
+			Table:   asset.EbikeAllocatesTable,
+			Columns: []string{asset.EbikeAllocatesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
@@ -1558,12 +1594,12 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RemovedAllocatesIDs(); len(nodes) > 0 && !au.mutation.AllocatesCleared() {
+	if nodes := au.mutation.RemovedEbikeAllocatesIDs(); len(nodes) > 0 && !au.mutation.EbikeAllocatesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.AllocatesTable,
-			Columns: []string{asset.AllocatesColumn},
+			Table:   asset.EbikeAllocatesTable,
+			Columns: []string{asset.EbikeAllocatesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
@@ -1574,12 +1610,57 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.AllocatesIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.EbikeAllocatesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.AllocatesTable,
-			Columns: []string{asset.AllocatesColumn},
+			Table:   asset.EbikeAllocatesTable,
+			Columns: []string{asset.EbikeAllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.BatteryAllocatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.BatteryAllocatesTable,
+			Columns: []string{asset.BatteryAllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedBatteryAllocatesIDs(); len(nodes) > 0 && !au.mutation.BatteryAllocatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.BatteryAllocatesTable,
+			Columns: []string{asset.BatteryAllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.BatteryAllocatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.BatteryAllocatesTable,
+			Columns: []string{asset.BatteryAllocatesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
@@ -2237,19 +2318,34 @@ func (auo *AssetUpdateOne) SetOperator(m *Maintainer) *AssetUpdateOne {
 	return auo.SetOperatorID(m.ID)
 }
 
-// AddAllocateIDs adds the "allocates" edge to the Allocate entity by IDs.
-func (auo *AssetUpdateOne) AddAllocateIDs(ids ...uint64) *AssetUpdateOne {
-	auo.mutation.AddAllocateIDs(ids...)
+// AddEbikeAllocateIDs adds the "ebike_allocates" edge to the Allocate entity by IDs.
+func (auo *AssetUpdateOne) AddEbikeAllocateIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.AddEbikeAllocateIDs(ids...)
 	return auo
 }
 
-// AddAllocates adds the "allocates" edges to the Allocate entity.
-func (auo *AssetUpdateOne) AddAllocates(a ...*Allocate) *AssetUpdateOne {
+// AddEbikeAllocates adds the "ebike_allocates" edges to the Allocate entity.
+func (auo *AssetUpdateOne) AddEbikeAllocates(a ...*Allocate) *AssetUpdateOne {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return auo.AddAllocateIDs(ids...)
+	return auo.AddEbikeAllocateIDs(ids...)
+}
+
+// AddBatteryAllocateIDs adds the "battery_allocates" edge to the Allocate entity by IDs.
+func (auo *AssetUpdateOne) AddBatteryAllocateIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.AddBatteryAllocateIDs(ids...)
+	return auo
+}
+
+// AddBatteryAllocates adds the "battery_allocates" edges to the Allocate entity.
+func (auo *AssetUpdateOne) AddBatteryAllocates(a ...*Allocate) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.AddBatteryAllocateIDs(ids...)
 }
 
 // SetRtoRider sets the "rto_rider" edge to the Rider entity.
@@ -2433,25 +2529,46 @@ func (auo *AssetUpdateOne) ClearOperator() *AssetUpdateOne {
 	return auo
 }
 
-// ClearAllocates clears all "allocates" edges to the Allocate entity.
-func (auo *AssetUpdateOne) ClearAllocates() *AssetUpdateOne {
-	auo.mutation.ClearAllocates()
+// ClearEbikeAllocates clears all "ebike_allocates" edges to the Allocate entity.
+func (auo *AssetUpdateOne) ClearEbikeAllocates() *AssetUpdateOne {
+	auo.mutation.ClearEbikeAllocates()
 	return auo
 }
 
-// RemoveAllocateIDs removes the "allocates" edge to Allocate entities by IDs.
-func (auo *AssetUpdateOne) RemoveAllocateIDs(ids ...uint64) *AssetUpdateOne {
-	auo.mutation.RemoveAllocateIDs(ids...)
+// RemoveEbikeAllocateIDs removes the "ebike_allocates" edge to Allocate entities by IDs.
+func (auo *AssetUpdateOne) RemoveEbikeAllocateIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.RemoveEbikeAllocateIDs(ids...)
 	return auo
 }
 
-// RemoveAllocates removes "allocates" edges to Allocate entities.
-func (auo *AssetUpdateOne) RemoveAllocates(a ...*Allocate) *AssetUpdateOne {
+// RemoveEbikeAllocates removes "ebike_allocates" edges to Allocate entities.
+func (auo *AssetUpdateOne) RemoveEbikeAllocates(a ...*Allocate) *AssetUpdateOne {
 	ids := make([]uint64, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
-	return auo.RemoveAllocateIDs(ids...)
+	return auo.RemoveEbikeAllocateIDs(ids...)
+}
+
+// ClearBatteryAllocates clears all "battery_allocates" edges to the Allocate entity.
+func (auo *AssetUpdateOne) ClearBatteryAllocates() *AssetUpdateOne {
+	auo.mutation.ClearBatteryAllocates()
+	return auo
+}
+
+// RemoveBatteryAllocateIDs removes the "battery_allocates" edge to Allocate entities by IDs.
+func (auo *AssetUpdateOne) RemoveBatteryAllocateIDs(ids ...uint64) *AssetUpdateOne {
+	auo.mutation.RemoveBatteryAllocateIDs(ids...)
+	return auo
+}
+
+// RemoveBatteryAllocates removes "battery_allocates" edges to Allocate entities.
+func (auo *AssetUpdateOne) RemoveBatteryAllocates(a ...*Allocate) *AssetUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.RemoveBatteryAllocateIDs(ids...)
 }
 
 // ClearRtoRider clears the "rto_rider" edge to the Rider entity.
@@ -3169,12 +3286,12 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.AllocatesCleared() {
+	if auo.mutation.EbikeAllocatesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.AllocatesTable,
-			Columns: []string{asset.AllocatesColumn},
+			Table:   asset.EbikeAllocatesTable,
+			Columns: []string{asset.EbikeAllocatesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
@@ -3182,12 +3299,12 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RemovedAllocatesIDs(); len(nodes) > 0 && !auo.mutation.AllocatesCleared() {
+	if nodes := auo.mutation.RemovedEbikeAllocatesIDs(); len(nodes) > 0 && !auo.mutation.EbikeAllocatesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.AllocatesTable,
-			Columns: []string{asset.AllocatesColumn},
+			Table:   asset.EbikeAllocatesTable,
+			Columns: []string{asset.EbikeAllocatesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
@@ -3198,12 +3315,57 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.AllocatesIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.EbikeAllocatesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.AllocatesTable,
-			Columns: []string{asset.AllocatesColumn},
+			Table:   asset.EbikeAllocatesTable,
+			Columns: []string{asset.EbikeAllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.BatteryAllocatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.BatteryAllocatesTable,
+			Columns: []string{asset.BatteryAllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedBatteryAllocatesIDs(); len(nodes) > 0 && !auo.mutation.BatteryAllocatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.BatteryAllocatesTable,
+			Columns: []string{asset.BatteryAllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.BatteryAllocatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   asset.BatteryAllocatesTable,
+			Columns: []string{asset.BatteryAllocatesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
