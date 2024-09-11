@@ -1060,12 +1060,12 @@ func (s *assetService) Count(ctx context.Context, req *model.AssetFilter) (res *
 
 // QuerySn 通过SN查询被未盘点资产
 func (s *assetService) QuerySn(sn string) (bat *ent.Asset, err error) {
-	return s.orm.Query().WithModel().Where(asset.Sn(sn), asset.Type(model.AssetTypeSmartBattery.Value()), asset.CheckAtIsNil()).First(s.ctx)
+	return s.orm.Query().WithModel().Where(asset.Sn(sn), asset.CheckAtIsNil()).First(s.ctx)
 }
 
 // QueryID 通过ID查询资产
 func (s *assetService) QueryID(id uint64) (*ent.Asset, error) {
-	return s.orm.Query().WithModel().Where(asset.ID(id), asset.Type(model.AssetTypeSmartBattery.Value()), asset.CheckAtIsNil()).First(s.ctx)
+	return s.orm.Query().WithModel().Where(asset.ID(id), asset.CheckAtIsNil()).First(s.ctx)
 }
 
 // QueryRiderID 通过骑手ID查询资产

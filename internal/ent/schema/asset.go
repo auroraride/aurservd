@@ -79,12 +79,6 @@ func (Asset) Fields() []ent.Field {
 func (Asset) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("values", AssetAttributeValues.Type), // 关联资产属性
-		// edge.To("warehouse", Warehouse.Type).Unique().Field("locations_id"),       // 关联仓库
-		// edge.To("store", Store.Type).Unique().Field("locations_id"),               // 关联门店
-		// edge.To("cabinet", Cabinet.Type).Unique().Field("locations_id"),           // 关联电柜
-		// edge.To("station", EnterpriseStation.Type).Unique().Field("locations_id"), // 关联站点
-		// edge.To("rider", Rider.Type).Unique().Field("locations_id"),               // 关联骑手
-		// edge.To("operator", Maintainer.Type).Unique().Field("locations_id"),       // 关联运维
 
 		edge.To("scrap_details", AssetScrapDetails.Type),             // 关联报废详情
 		edge.To("transfer_details", AssetTransferDetails.Type),       // 关联调拨详情
