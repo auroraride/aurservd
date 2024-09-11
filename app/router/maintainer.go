@@ -30,7 +30,7 @@ func loadMaintainerRoutes() {
 
 	// 资产调拨
 	auth.POST("/transfer", oapi.AssetTransfer.Transfer)                   // 创建调拨
-	auth.POST("/transfer_user", oapi.AssetTransfer.TransferForUse)        // 确认领用
+	auth.POST("/transfer_use", oapi.AssetTransfer.TransferForUse)         // 确认领用
 	auth.GET("/transfer", oapi.AssetTransfer.TransferList)                // 调拨列表
 	auth.GET("/transfer/:id", oapi.AssetTransfer.TransferDetail)          // 调拨详情
 	auth.POST("/transfer/receive", oapi.AssetTransfer.TransferReceive)    // 调拨批量入库
