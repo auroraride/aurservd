@@ -113,5 +113,11 @@ func (AssetTransfer) Mixin() []ent.Mixin {
 }
 
 func (AssetTransfer) Indexes() []ent.Index {
-	return []ent.Index{}
+	return []ent.Index{
+		index.Fields("sn"),
+		index.Fields("out_operate_id"),
+		index.Fields("from_location_id"),
+		index.Fields("to_location_id"),
+		index.Fields("from_location_id", "to_location_id"),
+	}
 }

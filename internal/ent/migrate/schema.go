@@ -297,6 +297,7 @@ var (
 		{Name: "locations_type", Type: field.TypeUint8, Nullable: true, Comment: "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"},
 		{Name: "check_at", Type: field.TypeTime, Nullable: true, Comment: "盘点时间"},
 		{Name: "brand_name", Type: field.TypeString, Nullable: true, Comment: "品牌名称"},
+		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true, Comment: "订阅ID"},
 		{Name: "ordinal", Type: field.TypeInt, Nullable: true, Comment: "仓位号"},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "model_id", Type: field.TypeUint64, Nullable: true},
@@ -304,7 +305,6 @@ var (
 		{Name: "material_id", Type: field.TypeUint64, Nullable: true, Comment: "物资ID"},
 		{Name: "rto_rider_id", Type: field.TypeUint64, Nullable: true, Comment: "以租代购骑手ID，生成后禁止修改"},
 		{Name: "locations_id", Type: field.TypeUint64, Nullable: true, Comment: "资产位置ID"},
-		{Name: "subscribe_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "订阅ID"},
 	}
 	// AssetTable holds the schema information for the "asset" table.
 	AssetTable = &schema.Table{
@@ -314,73 +314,73 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "asset_ebike_brand_brand",
-				Columns:    []*schema.Column{AssetColumns[16]},
+				Columns:    []*schema.Column{AssetColumns[17]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_battery_model_model",
-				Columns:    []*schema.Column{AssetColumns[17]},
+				Columns:    []*schema.Column{AssetColumns[18]},
 				RefColumns: []*schema.Column{BatteryModelColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_city_city",
-				Columns:    []*schema.Column{AssetColumns[18]},
+				Columns:    []*schema.Column{AssetColumns[19]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_material_material",
-				Columns:    []*schema.Column{AssetColumns[19]},
+				Columns:    []*schema.Column{AssetColumns[20]},
 				RefColumns: []*schema.Column{MaterialColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_rider_rto_rider",
-				Columns:    []*schema.Column{AssetColumns[20]},
+				Columns:    []*schema.Column{AssetColumns[21]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_cabinet_asset",
-				Columns:    []*schema.Column{AssetColumns[21]},
+				Columns:    []*schema.Column{AssetColumns[22]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_enterprise_station_asset",
-				Columns:    []*schema.Column{AssetColumns[21]},
+				Columns:    []*schema.Column{AssetColumns[22]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_maintainer_asset",
-				Columns:    []*schema.Column{AssetColumns[21]},
+				Columns:    []*schema.Column{AssetColumns[22]},
 				RefColumns: []*schema.Column{MaintainerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_rider_asset",
-				Columns:    []*schema.Column{AssetColumns[21]},
+				Columns:    []*schema.Column{AssetColumns[22]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_rider_battery",
+				Columns:    []*schema.Column{AssetColumns[22]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_store_asset",
-				Columns:    []*schema.Column{AssetColumns[21]},
+				Columns:    []*schema.Column{AssetColumns[22]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_subscribe_battery",
-				Columns:    []*schema.Column{AssetColumns[22]},
-				RefColumns: []*schema.Column{SubscribeColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "asset_warehouse_asset",
-				Columns:    []*schema.Column{AssetColumns[21]},
+				Columns:    []*schema.Column{AssetColumns[22]},
 				RefColumns: []*schema.Column{WarehouseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -399,22 +399,52 @@ var (
 			{
 				Name:    "asset_brand_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetColumns[16]},
+				Columns: []*schema.Column{AssetColumns[17]},
 			},
 			{
 				Name:    "asset_model_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetColumns[17]},
+				Columns: []*schema.Column{AssetColumns[18]},
 			},
 			{
 				Name:    "asset_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetColumns[18]},
+				Columns: []*schema.Column{AssetColumns[19]},
 			},
 			{
 				Name:    "asset_material_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetColumns[19]},
+				Columns: []*schema.Column{AssetColumns[20]},
+			},
+			{
+				Name:    "asset_type",
+				Unique:  false,
+				Columns: []*schema.Column{AssetColumns[7]},
+			},
+			{
+				Name:    "asset_sn",
+				Unique:  false,
+				Columns: []*schema.Column{AssetColumns[9]},
+			},
+			{
+				Name:    "asset_sn_type",
+				Unique:  false,
+				Columns: []*schema.Column{AssetColumns[9], AssetColumns[7]},
+			},
+			{
+				Name:    "asset_locations_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetColumns[22]},
+			},
+			{
+				Name:    "asset_locations_type",
+				Unique:  false,
+				Columns: []*schema.Column{AssetColumns[12]},
+			},
+			{
+				Name:    "asset_locations_type_locations_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetColumns[12], AssetColumns[22]},
 			},
 		},
 	}
@@ -1150,6 +1180,31 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{AssetTransferColumns[3]},
 			},
+			{
+				Name:    "assettransfer_sn",
+				Unique:  false,
+				Columns: []*schema.Column{AssetTransferColumns[8]},
+			},
+			{
+				Name:    "assettransfer_out_operate_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetTransferColumns[19]},
+			},
+			{
+				Name:    "assettransfer_from_location_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetTransferColumns[17]},
+			},
+			{
+				Name:    "assettransfer_to_location_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetTransferColumns[18]},
+			},
+			{
+				Name:    "assettransfer_from_location_id_to_location_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetTransferColumns[17], AssetTransferColumns[18]},
+			},
 		},
 	}
 	// AssetTransferDetailsColumns holds the columns for the "asset_transfer_details" table.
@@ -1239,6 +1294,26 @@ var (
 				Name:    "assettransferdetails_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{AssetTransferDetailsColumns[3]},
+			},
+			{
+				Name:    "assettransferdetails_asset_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetTransferDetailsColumns[10]},
+			},
+			{
+				Name:    "assettransferdetails_in_operate_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetTransferDetailsColumns[12]},
+			},
+			{
+				Name:    "assettransferdetails_in_operate_type",
+				Unique:  false,
+				Columns: []*schema.Column{AssetTransferDetailsColumns[8]},
+			},
+			{
+				Name:    "assettransferdetails_transfer_id_asset_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetTransferDetailsColumns[11], AssetTransferDetailsColumns[10]},
 			},
 		},
 	}
@@ -5828,7 +5903,6 @@ var (
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "所属企业"},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true, Comment: "身份"},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
-		{Name: "rider_battery", Type: field.TypeUint64, Nullable: true},
 	}
 	// RiderTable holds the schema information for the "rider" table.
 	RiderTable = &schema.Table{
@@ -5852,12 +5926,6 @@ var (
 				Symbol:     "rider_enterprise_station_station",
 				Columns:    []*schema.Column{RiderColumns[23]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "rider_asset_battery",
-				Columns:    []*schema.Column{RiderColumns[24]},
-				RefColumns: []*schema.Column{AssetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -6589,6 +6657,7 @@ var (
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "initial_order_id", Type: field.TypeUint64, Nullable: true, Comment: "初始订单ID(开通订阅的初始订单), 团签用户无此字段"},
 		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true, Comment: "电车ID"},
+		{Name: "subscribe_battery", Type: field.TypeUint64, Nullable: true},
 		{Name: "enterprise_price_id", Type: field.TypeUint64, Nullable: true, Comment: "团签价格ID"},
 	}
 	// SubscribeTable holds the schema information for the "subscribe" table.
@@ -6664,8 +6733,14 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "subscribe_enterprise_price_enterprise_price",
+				Symbol:     "subscribe_asset_battery",
 				Columns:    []*schema.Column{SubscribeColumns[42]},
+				RefColumns: []*schema.Column{AssetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscribe_enterprise_price_enterprise_price",
+				Columns:    []*schema.Column{SubscribeColumns[43]},
 				RefColumns: []*schema.Column{EnterprisePriceColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -7545,8 +7620,8 @@ func init() {
 	AssetTable.ForeignKeys[6].RefTable = EnterpriseStationTable
 	AssetTable.ForeignKeys[7].RefTable = MaintainerTable
 	AssetTable.ForeignKeys[8].RefTable = RiderTable
-	AssetTable.ForeignKeys[9].RefTable = StoreTable
-	AssetTable.ForeignKeys[10].RefTable = SubscribeTable
+	AssetTable.ForeignKeys[9].RefTable = RiderTable
+	AssetTable.ForeignKeys[10].RefTable = StoreTable
 	AssetTable.ForeignKeys[11].RefTable = WarehouseTable
 	AssetTable.Annotation = &entsql.Annotation{
 		Table: "asset",
@@ -8009,7 +8084,6 @@ func init() {
 	RiderTable.ForeignKeys[0].RefTable = EnterpriseTable
 	RiderTable.ForeignKeys[1].RefTable = PersonTable
 	RiderTable.ForeignKeys[2].RefTable = EnterpriseStationTable
-	RiderTable.ForeignKeys[3].RefTable = AssetTable
 	RiderTable.Annotation = &entsql.Annotation{
 		Table: "rider",
 	}
@@ -8078,7 +8152,8 @@ func init() {
 	SubscribeTable.ForeignKeys[8].RefTable = EbikeBrandTable
 	SubscribeTable.ForeignKeys[9].RefTable = OrderTable
 	SubscribeTable.ForeignKeys[10].RefTable = AssetTable
-	SubscribeTable.ForeignKeys[11].RefTable = EnterprisePriceTable
+	SubscribeTable.ForeignKeys[11].RefTable = AssetTable
+	SubscribeTable.ForeignKeys[12].RefTable = EnterprisePriceTable
 	SubscribeTable.Annotation = &entsql.Annotation{
 		Table: "subscribe",
 	}

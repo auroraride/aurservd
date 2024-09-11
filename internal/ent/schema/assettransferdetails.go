@@ -96,5 +96,10 @@ func (AssetTransferDetails) Mixin() []ent.Mixin {
 }
 
 func (AssetTransferDetails) Indexes() []ent.Index {
-	return []ent.Index{}
+	return []ent.Index{
+		index.Fields("asset_id"),
+		index.Fields("in_operate_id"),
+		index.Fields("in_operate_type"),
+		index.Fields("transfer_id", "asset_id"),
+	}
 }
