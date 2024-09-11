@@ -4170,7 +4170,7 @@ paths:
             items:
               $ref: '#/definitions/model.SelectOption'
             type: array
-      summary: 报废理由Select
+      summary: 报废理由
       tags:
       - 资产
   /manager/v2/asset/selection/cabinet:

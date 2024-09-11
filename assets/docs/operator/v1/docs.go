@@ -1655,6 +1655,47 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/maintainer/v1/transfer_use": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetTransfer - 资产调拨"
+                ],
+                "summary": "确认领用",
+                "operationId": "AssetTransferForUse",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Maintainer-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "调拨参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.AssetTransferCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1751,7 +1792,8 @@ const docTemplate = `{
         "definition.AssetTransferCreateReq": {
             "type": "object",
             "required": [
-                "reason",
+                "fromLocationID",
+                "fromLocationType",
                 "toLocationID",
                 "toLocationType"
             ],
@@ -1766,6 +1808,14 @@ const docTemplate = `{
                 "fromLocationID": {
                     "description": "调出仓库/门店ID",
                     "type": "integer"
+                },
+                "fromLocationType": {
+                    "description": "调出位置类型  1:仓库 2:门店",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
                 },
                 "reason": {
                     "description": "调拨事由",

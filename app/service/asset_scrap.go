@@ -376,6 +376,11 @@ func (s *assetScrapService) scrapAssetWithSN(ctx context.Context, req *model.Ass
 // 无编号资产报废
 func (s *assetScrapService) scrapAssetWithoutSN(ctx context.Context, asd *model.AssetScrapDetails, req *model.AssetScrapReq) ([]uint64, error) {
 	ids := make([]uint64, 0)
+
+	if req.LocationType != nil && *req.LocationType == model.AssetLocationsTypeRider {
+		return nil, errors.New("骑手物资不支持报废")
+	}
+
 	if asd.AssetType == model.AssetTypeNonSmartBattery {
 		// 非智能电池调拨
 		if asd.ModelID == nil || *asd.ModelID == 0 {
@@ -410,12 +415,13 @@ func (s *assetScrapService) scrapAssetWithoutSN(ctx context.Context, asd *model.
 			model.AssetStatusStock.Value(),
 			model.AssetStatusFault.Value(),
 		),
-		// 资产库存位置在骑手或运维不可报废
-		asset.LocationsTypeNotIn(
-			model.AssetLocationsTypeRider.Value(),
-			model.AssetLocationsTypeOperation.Value(),
-		),
 	)
+
+	// // 资产库存位置在骑手或运维不可报废
+	// asset.LocationsTypeNotIn(
+	// 	model.AssetLocationsTypeRider.Value(),
+	// 	model.AssetLocationsTypeOperation.Value(),
+	// ),
 
 	switch *req.LocationType {
 	case model.AssetLocationsTypeWarehouse:
@@ -438,7 +444,7 @@ func (s *assetScrapService) scrapAssetWithoutSN(ctx context.Context, asd *model.
 	}
 	all, _ := q.Where(asset.Type(asd.AssetType.Value())).Limit(int(*asd.Num)).Order(ent.Asc(asset.FieldCreatedAt)).All(ctx)
 	if len(all) < int(*asd.Num) {
-		return nil, fmt.Errorf(strconv.FormatUint(*asd.MaterialID, 10) + "物资数量不足")
+		return nil, fmt.Errorf("物资数量不足")
 	}
 	for _, vl := range all {
 		ids = append(ids, vl.ID)

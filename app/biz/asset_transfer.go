@@ -253,6 +253,53 @@ func (b *assetTransferBiz) Transfer(assetSignInfo definition.AssetSignInfo, req 
 	return
 }
 
+// TransferForUse 运维确认领用创建调拨单
+func (b *assetTransferBiz) TransferForUse(assetSignInfo definition.AssetSignInfo, req *definition.AssetTransferCreateReq) (err error) {
+	if assetSignInfo.Maintainer == nil {
+		return errors.New("运维人员信息有误")
+	}
+	var md model.Modifier
+
+	newReq := model.AssetTransferCreateReq{
+		FromLocationType:  req.FromLocationType,
+		FromLocationID:    req.FromLocationID,
+		ToLocationType:    req.ToLocationType,
+		ToLocationID:      req.ToLocationID,
+		Details:           req.Details,
+		Reason:            req.Reason,
+		AssetTransferType: model.AssetTransferTypeTransfer,
+		OperatorType:      model.OperatorTypeMaintainer,
+		OperatorID:        assetSignInfo.Maintainer.ID,
+	}
+
+	for _, v := range req.Details {
+		if v.AssetType != model.AssetTypeSmartBattery && v.AssetType != model.AssetTypeNonSmartBattery {
+			return errors.New("运维端当前只支持电池调拨")
+		}
+	}
+
+	md = model.Modifier{
+		ID:    assetSignInfo.Maintainer.ID,
+		Name:  assetSignInfo.Maintainer.Name,
+		Phone: assetSignInfo.Maintainer.Phone,
+	}
+
+	// 扫码出库限制为同类型
+	if err = b.transferLimit(req); err != nil {
+		return err
+	}
+
+	_, failed, err := service.NewAssetTransfer().Transfer(b.ctx, &newReq, &md)
+	if err != nil {
+		return err
+	}
+	if len(failed) > 0 {
+		return errors.New(failed[0])
+	}
+
+	return
+}
+
 // Transfer 创建资产调拨
 func (b *assetTransferBiz) transferLimit(req *definition.AssetTransferCreateReq) (err error) {
 	var assetType model.AssetType

@@ -2939,7 +2939,7 @@ const docTemplate = `{
                 "tags": [
                     "资产"
                 ],
-                "summary": "报废理由Select",
+                "summary": "报废理由",
                 "operationId": "AssetScrapReasonSelect",
                 "parameters": [
                     {

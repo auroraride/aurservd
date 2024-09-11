@@ -152,3 +152,18 @@ func (*assetTransfer) TransferCancel(c echo.Context) (err error) {
 	ctx, req := app.MaintainerContextAndBinding[model.AssetTransferDetailReq](c)
 	return ctx.SendResponse(biz.NewAssetTransfer().TransferCancel(definition.AssetSignInfo{Maintainer: ctx.Maintainer}, req))
 }
+
+// TransferForUse
+// @ID		AssetTransferForUse
+// @Router	/maintainer/v1/transfer_use [POST]
+// @Summary	确认领用
+// @Tags	AssetTransfer - 资产调拨
+// @Accept	json
+// @Produce	json
+// @Param	X-Maintainer-Token	header		string								true	"仓管校验token"
+// @Param	body				body		definition.AssetTransferCreateReq	true	"调拨参数"
+// @Success	200					{object}	model.StatusResponse				"请求成功"
+func (*assetTransfer) TransferForUse(c echo.Context) (err error) {
+	ctx, req := app.MaintainerContextAndBinding[definition.AssetTransferCreateReq](c)
+	return ctx.SendResponse(biz.NewAssetTransfer().TransferForUse(definition.AssetSignInfo{Maintainer: ctx.Maintainer}, req))
+}

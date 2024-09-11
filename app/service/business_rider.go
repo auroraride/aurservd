@@ -548,7 +548,7 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 
 			// 需要进行业务出入库
 			if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil || s.ebikeStoreID != nil || s.batStoreID != nil {
-				_, _, err = NewStock(s.modifier).RiderBusiness(
+				_, _, err = NewStock(s.modifier, s.operator).RiderBusiness(
 					&model.StockBusinessReq{
 						RiderID:           s.subscribe.RiderID,
 						Model:             s.subscribe.Model,

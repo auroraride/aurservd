@@ -60,7 +60,7 @@ func (*assetScrap) ScrapBatchRestore(c echo.Context) (err error) {
 // ScrapReasonSelect
 // @ID		AssetScrapReasonSelect
 // @Router	/manager/v2/asset/scrap/reason [GET]
-// @Summary	报废理由Select
+// @Summary	报废理由
 // @Tags	资产
 // @Accept	json
 // @Produce	json
