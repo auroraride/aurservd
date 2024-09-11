@@ -270,6 +270,7 @@ func (b *assetTransferBiz) TransferForUse(assetSignInfo definition.AssetSignInfo
 		AssetTransferType: model.AssetTransferTypeTransfer,
 		OperatorType:      model.OperatorTypeMaintainer,
 		OperatorID:        assetSignInfo.Maintainer.ID,
+		AutoIn:            true,
 	}
 
 	for _, v := range req.Details {
