@@ -404,7 +404,7 @@ func (s *assetCheckService) List(ctx context.Context, req *model.AssetCheckListR
 	q := ent.Database.AssetCheck.QueryNotDeleted().WithStore().WithStation().WithWarehouse().
 		WithOperateStore().WithOperateManager().WithOperateAgent().WithCheckDetails(func(query *ent.AssetCheckDetailsQuery) {
 		query.WithAsset()
-	})
+	}).Order(ent.Desc(assetcheck.FieldID))
 
 	s.listFilter(q, req)
 
