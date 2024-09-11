@@ -62,7 +62,7 @@ func (s *ebikeService) AllocatableBaseFilter() *ent.AssetQuery {
 	q := s.orm.Query().Where(
 		asset.Enable(true),
 		asset.Status(model.AssetStatusStock.Value()),
-		asset.LocationsType(model.AssetTypeEbike.Value()),
+		asset.Type(model.AssetTypeEbike.Value()),
 	).WithValues()
 	return q
 }
@@ -402,17 +402,17 @@ func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (
 			asset.Or(
 				asset.SnContainsFold(*params.Keyword),
 			))
-		attributes, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.Key("plate")).First(s.ctx)
-		if attributes != nil {
-			q.Where(
-				asset.Or(
-					asset.HasValuesWith(
-						assetattributevalues.AttributeID(attributes.ID),
-						assetattributevalues.ValueContainsFold(*params.Keyword),
-					),
-				),
-			)
-		}
+		// attributes, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.Key("plate")).First(s.ctx)
+		// if attributes != nil {
+		// 	q.Where(
+		// 		asset.Or(
+		// 			asset.HasValuesWith(
+		// 				assetattributevalues.AttributeID(attributes.ID),
+		// 				assetattributevalues.ValueContainsFold(*params.Keyword),
+		// 			),
+		// 		),
+		// 	)
+		// }
 	}
 
 	// 站点

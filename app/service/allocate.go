@@ -337,11 +337,11 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 		// 无须签约, 直接激活
 		NewBusinessRiderWithParams(
 			s.modifier,
-			r,
 			entStore,
 			entStation,
 			bikeInfo,
 			bat,
+			s.operator,
 		).
 			SetEmployeeID(allo.EmployeeID).
 			SetAgentID(params.AgentID).

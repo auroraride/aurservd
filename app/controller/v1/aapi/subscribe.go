@@ -29,7 +29,7 @@ var Subscribe = new(subscribe)
 // @Success	200				{object}	model.AllocateCreateRes			"请求成功"
 func (*subscribe) Active(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AgentSubscribeActiveReq](c)
-	return ctx.SendResponse(service.NewAllocate().Create(&model.AllocateCreateParams{
+	return ctx.SendResponse(service.NewAllocate(ctx.Operator).Create(&model.AllocateCreateParams{
 		SubscribeID: req.ID,
 		BatteryID:   req.BatteryID,
 		EbikeParam:  model.AllocateCreateEbikeParam{ID: req.EbikeID},
@@ -87,7 +87,7 @@ func (*subscribe) AlterReivew(c echo.Context) (err error) {
 // @Success	200				{object}	string						"请求成功"
 func (*subscribe) Halt(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.BusinessSubscribeReq](c)
-	service.NewBusinessRider(nil).UnSubscribe(&model.BusinessSubscribeReq{
+	service.NewBusinessRider(ctx.Operator).UnSubscribe(&model.BusinessSubscribeReq{
 		ID:      req.ID,
 		AgentID: &ctx.Agent.ID,
 	})
