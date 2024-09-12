@@ -565,7 +565,9 @@ func (s *assetCheckService) ListAbnormal(ctx context.Context, req *model.AssetCh
 			assetcheckdetails.ResultNEQ(model.AssetCheckResultNormal.Value()),
 			assetcheckdetails.CheckID(req.ID),
 		).WithAsset(func(query *ent.AssetQuery) {
-		query.WithModel().WithBrand().WithMaterial()
+		query.WithModel().WithBrand().WithMaterial().Where(
+			asset.StatusNotIn(model.AssetStatusScrap.Value(), model.AssetStatusDelivering.Value()),
+		)
 	}).WithWarehouse().WithStore().WithStation().WithRider().WithCabinet().WithOperator().
 		WithRealWarehouse().WithRealStation().WithRealStore().WithRealCabinet().WithRealRider().WithRealOperator().
 		All(context.Background())
