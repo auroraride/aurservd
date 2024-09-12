@@ -209,6 +209,7 @@ type GetTransferBySNReq struct {
 
 // AssetTransferFlowReq 资产流转明细请求
 type AssetTransferFlowReq struct {
+	PaginationReq
 	SN        string     `json:"sn" validate:"required" query:"sn"`               // 资产编号
 	Start     *string    `json:"start" query:"start"`                             // 开始时间
 	End       *string    `json:"end" query:"end"`                                 // 结束时间

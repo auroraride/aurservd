@@ -96,9 +96,9 @@ func (*assetTransfer) TransferReceive(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
-// @Param	query					query		model.AssetTransferFlowReq	true	"查询参数"
-// @Success	200						{object}	[]model.AssetTransferFlow	"请求成功"
+// @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
+// @Param	query					query		model.AssetTransferFlowReq								true	"查询参数"
+// @Success	200						{object}	model.PaginationRes{items=[]model.AssetTransferFlow}	"请求成功"
 func (*assetTransfer) TransferFlow(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.AssetTransferFlowReq](c)
 	return ctx.SendResponse(service.NewAssetTransfer().Flow(ctx.Request().Context(), req))
