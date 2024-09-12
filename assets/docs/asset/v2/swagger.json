@@ -114,6 +114,12 @@
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "电车关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "资产位置ID",
                         "name": "locationsId",
@@ -1316,6 +1322,12 @@
                         "type": "integer",
                         "description": "团签企业ID",
                         "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电车关键字",
+                        "name": "keyword",
                         "in": "query"
                     },
                     {
@@ -6607,6 +6619,10 @@
                 "enterpriseId": {
                     "description": "团签企业ID",
                     "type": "integer"
+                },
+                "keyword": {
+                    "description": "电车关键字",
+                    "type": "string"
                 },
                 "locationsId": {
                     "description": "资产位置ID",

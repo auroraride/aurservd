@@ -2557,6 +2557,10 @@ paths:
         in: query
         name: enterpriseId
         type: integer
+      - description: 电车关键字
+        in: query
+        name: keyword
+        type: string
       - description: 资产位置ID
         in: query
         name: locationsId

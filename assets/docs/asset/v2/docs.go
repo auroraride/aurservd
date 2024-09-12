@@ -121,6 +121,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "电车关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "资产位置ID",
                         "name": "locationsId",
@@ -1323,6 +1329,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "团签企业ID",
                         "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电车关键字",
+                        "name": "keyword",
                         "in": "query"
                     },
                     {
@@ -6614,6 +6626,10 @@ const docTemplate = `{
                 "enterpriseId": {
                     "description": "团签企业ID",
                     "type": "integer"
+                },
+                "keyword": {
+                    "description": "电车关键字",
+                    "type": "string"
                 },
                 "locationsId": {
                     "description": "资产位置ID",
