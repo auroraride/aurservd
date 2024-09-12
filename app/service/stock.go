@@ -385,7 +385,7 @@ func NewStockWithEmployee(e *ent.Employee) *stockService {
 
 // RiderBusiness 骑手业务 电池 / 电车 出入库
 // 此方法操作库存
-func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (batSk, ebikeSk *ent.Stock, err error) {
+func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 	if req.StoreID == nil && req.EbikeStoreID == nil && req.BatStoreID == nil && req.CabinetID == nil && req.EnterpriseID == nil && req.StationID == nil {
 		err = errors.New("参数校验错误")
 		return

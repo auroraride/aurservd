@@ -2190,3 +2190,14 @@ func (s *assetTransferService) Modify(ctx context.Context, req *model.AssetTrans
 	}
 	return nil
 }
+
+// QueryTransferByAssetID 通过资产id获取调拨信息
+func (s *assetTransferService) QueryTransferByAssetID(ctx context.Context, id uint64) (res *ent.AssetTransfer, err error) {
+	item, _ := s.orm.QueryNotDeleted().
+		Where(assettransfer.HasTransferDetailsWith(assettransferdetails.AssetID(id)), assettransfer.Status(model.AssetTransferStatusDelivering.Value())).
+		First(ctx)
+	if item == nil {
+		return nil, errors.New("调拨单不存在或已入库")
+	}
+	return item, nil
+}
