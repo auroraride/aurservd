@@ -13,7 +13,6 @@ import (
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
-	"github.com/auroraride/aurservd/pkg/snag"
 )
 
 type SubscribeMixin struct {
@@ -169,7 +168,7 @@ func (Subscribe) Hooks() []ent.Hook {
 					if sub, ok := m.(intr); ok {
 						if status, ok := sub.Status(); ok && status == model.SubscribeStatusUnSubscribed {
 							if reason, _ := sub.UnsubscribeReason(); reason == "" {
-								snag.Panic("退租理由必填")
+								// snag.Panic("退租理由必填")
 							}
 						}
 					}
