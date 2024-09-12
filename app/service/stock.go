@@ -416,7 +416,11 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (batSk, ebikeS
 	}
 
 	if req.Battery != nil {
-		batteryInfo, _ = NewAsset().QuerySn(req.Battery.SN)
+		if req.Battery.SN == "" {
+			batteryInfo, _ = NewAsset().QueryID(req.Battery.ID)
+		} else {
+			batteryInfo, _ = NewAsset().QuerySn(req.Battery.SN)
+		}
 		if batteryInfo == nil {
 			err = errors.New("电池不存在")
 			return
