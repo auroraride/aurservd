@@ -197,7 +197,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
 					// 清除旧电池分配信息
 					// _ = NewBattery().Unallocate(old.Update(), model.AssetLocationsTypeCabinet, cab.ID)
-					err = NewBattery(s.operator, s.modifier).Unallocate(old, model.AssetLocationsTypeCabinet, cab.ID, model.AssetTransferTypeExchange)
+					err = NewBattery(s.operator).Unallocate(old, model.AssetLocationsTypeCabinet, cab.ID, model.AssetTransferTypeExchange)
 					if err != nil {
 						return
 					}
@@ -216,7 +216,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 					bat, _ := bs.LoadOrCreate(putout)
 					if bat != nil {
 						_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-							return NewBattery().Allocate(bat, sub, model.AssetTransferTypeExchange)
+							return NewBattery(s.operator).Allocate(bat, sub, model.AssetTransferTypeExchange)
 						})
 					}
 				}
