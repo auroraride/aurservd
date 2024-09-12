@@ -179,6 +179,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, version str
 				SetTime(time.Now()).
 				SetModel(s.subscribe.Model).
 				SetCabinetID(s.cabinet.ID).
+				SetBatteryID(s.battery.ID).
 				SetRemark("无需签约,自动生成").
 				Exec(s.ctx)
 			if err != nil {
