@@ -590,7 +590,7 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 			}
 			b, _ := NewAsset().QueryID(bat.ID)
 			if b != nil {
-				zap.L().Error("电池查询失败")
+				zap.L().Error(fmt.Sprintf("业务：电池查询失败  sn:%s, id:%d", bat.SN, bat.ID))
 				return
 			}
 			// 查询调拨单
@@ -769,32 +769,6 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 			if eb == nil {
 				snag.Panic("未找到电车信息")
 			}
-			// fromLocationType := model.AssetLocationsType(eb.LocationsType)
-			// _, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
-			// 	FromLocationType: &fromLocationType,
-			// 	FromLocationID:   &eb.LocationsID,
-			// 	ToLocationType:   model.AssetLocationsTypeRider,
-			// 	ToLocationID:     sub.RiderID,
-			// 	Details: []model.AssetTransferCreateDetail{
-			// 		{
-			// 			AssetType: model.AssetTypeEbike,
-			// 			SN:        silk.String(eb.Sn),
-			// 		},
-			// 	},
-			// 	Reason:            "订阅激活",
-			// 	AssetTransferType: model.AssetTransferTypeActive,
-			// 	OperatorID:        s.operator.ID,
-			// 	OperatorType:      s.operator.Type,
-			// 	AutoIn:            false,
-			// }, s.modifier)
-			// if err != nil {
-			// 	return
-			// }
-			// if failed != nil {
-			// 	snag.Panic(failed[0])
-			// }
-
-			// tx.Ebike.UpdateOneID(s.ebikeInfo.ID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
 			err = eb.Update().SetSubscribeID(s.subscribe.ID).Exec(s.ctx)
 			if err != nil {
 				return
