@@ -77,8 +77,6 @@ const (
 	EdgeMaintenanceDetails = "maintenance_details"
 	// EdgeCheckDetails holds the string denoting the check_details edge name in mutations.
 	EdgeCheckDetails = "check_details"
-	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
-	EdgeSubscribe = "subscribe"
 	// EdgeWarehouse holds the string denoting the warehouse edge name in mutations.
 	EdgeWarehouse = "warehouse"
 	// EdgeStore holds the string denoting the store edge name in mutations.
@@ -97,6 +95,8 @@ const (
 	EdgeBatteryAllocates = "battery_allocates"
 	// EdgeRtoRider holds the string denoting the rto_rider edge name in mutations.
 	EdgeRtoRider = "rto_rider"
+	// EdgeBatteryRider holds the string denoting the battery_rider edge name in mutations.
+	EdgeBatteryRider = "battery_rider"
 	// Table holds the table name of the asset in the database.
 	Table = "asset"
 	// BrandTable is the table that holds the brand relation/edge.
@@ -162,13 +162,6 @@ const (
 	CheckDetailsInverseTable = "asset_check_details"
 	// CheckDetailsColumn is the table column denoting the check_details relation/edge.
 	CheckDetailsColumn = "asset_id"
-	// SubscribeTable is the table that holds the subscribe relation/edge.
-	SubscribeTable = "asset"
-	// SubscribeInverseTable is the table name for the Subscribe entity.
-	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
-	SubscribeInverseTable = "subscribe"
-	// SubscribeColumn is the table column denoting the subscribe relation/edge.
-	SubscribeColumn = "subscribe_id"
 	// WarehouseTable is the table that holds the warehouse relation/edge.
 	WarehouseTable = "asset"
 	// WarehouseInverseTable is the table name for the Warehouse entity.
@@ -232,6 +225,13 @@ const (
 	RtoRiderInverseTable = "rider"
 	// RtoRiderColumn is the table column denoting the rto_rider relation/edge.
 	RtoRiderColumn = "rto_rider_id"
+	// BatteryRiderTable is the table that holds the battery_rider relation/edge.
+	BatteryRiderTable = "asset"
+	// BatteryRiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	BatteryRiderInverseTable = "rider"
+	// BatteryRiderColumn is the table column denoting the battery_rider relation/edge.
+	BatteryRiderColumn = "locations_id"
 )
 
 // Columns holds all SQL columns for asset fields.
@@ -496,13 +496,6 @@ func ByCheckDetails(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
-// BySubscribeField orders the results by subscribe field.
-func BySubscribeField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newSubscribeStep(), sql.OrderByField(field, opts...))
-	}
-}
-
 // ByWarehouseField orders the results by warehouse field.
 func ByWarehouseField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -579,6 +572,13 @@ func ByRtoRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newRtoRiderStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByBatteryRiderField orders the results by battery_rider field.
+func ByBatteryRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBatteryRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newBrandStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -642,13 +642,6 @@ func newCheckDetailsStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2M, false, CheckDetailsTable, CheckDetailsColumn),
 	)
 }
-func newSubscribeStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SubscribeInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, true, SubscribeTable, SubscribeColumn),
-	)
-}
 func newWarehouseStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -710,5 +703,12 @@ func newRtoRiderStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RtoRiderInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, RtoRiderTable, RtoRiderColumn),
+	)
+}
+func newBatteryRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BatteryRiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, true, BatteryRiderTable, BatteryRiderColumn),
 	)
 }

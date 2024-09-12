@@ -47,7 +47,6 @@ type RiderQuery struct {
 	withFollowups    *RiderFollowUpQuery
 	withBattery      *AssetQuery
 	withBatteryFlows *BatteryFlowQuery
-	withFKs          bool
 	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -341,7 +340,7 @@ func (rq *RiderQuery) QueryBattery() *AssetQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, selector),
 			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, rider.BatteryTable, rider.BatteryColumn),
+			sqlgraph.Edge(sqlgraph.O2O, false, rider.BatteryTable, rider.BatteryColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -802,7 +801,6 @@ func (rq *RiderQuery) prepareQuery(ctx context.Context) error {
 func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider, error) {
 	var (
 		nodes       = []*Rider{}
-		withFKs     = rq.withFKs
 		_spec       = rq.querySpec()
 		loadedTypes = [13]bool{
 			rq.withStation != nil,
@@ -820,12 +818,6 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 			rq.withBatteryFlows != nil,
 		}
 	)
-	if rq.withBattery != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, rider.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Rider).scanValues(nil, columns)
 	}
@@ -1163,6 +1155,7 @@ func (rq *RiderQuery) loadSubscribes(ctx context.Context, query *SubscribeQuery,
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(subscribe.FieldRiderID)
 	}
@@ -1278,34 +1271,29 @@ func (rq *RiderQuery) loadFollowups(ctx context.Context, query *RiderFollowUpQue
 	return nil
 }
 func (rq *RiderQuery) loadBattery(ctx context.Context, query *AssetQuery, nodes []*Rider, init func(*Rider), assign func(*Rider, *Asset)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Rider)
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Rider)
 	for i := range nodes {
-		if nodes[i].rider_battery == nil {
-			continue
-		}
-		fk := *nodes[i].rider_battery
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
 	}
-	if len(ids) == 0 {
-		return nil
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(asset.FieldLocationsID)
 	}
-	query.Where(asset.IDIn(ids...))
+	query.Where(predicate.Asset(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(rider.BatteryColumn), fks...))
+	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
+		fk := n.LocationsID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "rider_battery" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "locations_id" returned %v for node %v`, fk, n.ID)
 		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
+		assign(node, n)
 	}
 	return nil
 }

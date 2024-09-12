@@ -3063,18 +3063,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"AssetCheckDetails",
 	)
 	graph.MustAddE(
-		"subscribe",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   asset.SubscribeTable,
-			Columns: []string{asset.SubscribeColumn},
-			Bidi:    false,
-		},
-		"Asset",
-		"Subscribe",
-	)
-	graph.MustAddE(
 		"warehouse",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -3177,6 +3165,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Inverse: false,
 			Table:   asset.RtoRiderTable,
 			Columns: []string{asset.RtoRiderColumn},
+			Bidi:    false,
+		},
+		"Asset",
+		"Rider",
+	)
+	graph.MustAddE(
+		"battery_rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   asset.BatteryRiderTable,
+			Columns: []string{asset.BatteryRiderColumn},
 			Bidi:    false,
 		},
 		"Asset",
@@ -6821,7 +6821,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 	graph.MustAddE(
 		"battery",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2O,
 			Inverse: false,
 			Table:   rider.BatteryTable,
 			Columns: []string{rider.BatteryColumn},
@@ -7469,7 +7469,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 	graph.MustAddE(
 		"battery",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: false,
 			Table:   subscribe.BatteryTable,
 			Columns: []string{subscribe.BatteryColumn},
@@ -8699,20 +8699,6 @@ func (f *AssetFilter) WhereHasCheckDetailsWith(preds ...predicate.AssetCheckDeta
 	})))
 }
 
-// WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
-func (f *AssetFilter) WhereHasSubscribe() {
-	f.Where(entql.HasEdge("subscribe"))
-}
-
-// WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
-func (f *AssetFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
-	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
 // WhereHasWarehouse applies a predicate to check if query has an edge warehouse.
 func (f *AssetFilter) WhereHasWarehouse() {
 	f.Where(entql.HasEdge("warehouse"))
@@ -8833,6 +8819,20 @@ func (f *AssetFilter) WhereHasRtoRider() {
 // WhereHasRtoRiderWith applies a predicate to check if query has an edge rto_rider with a given conditions (other predicates).
 func (f *AssetFilter) WhereHasRtoRiderWith(preds ...predicate.Rider) {
 	f.Where(entql.HasEdgeWith("rto_rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasBatteryRider applies a predicate to check if query has an edge battery_rider.
+func (f *AssetFilter) WhereHasBatteryRider() {
+	f.Where(entql.HasEdge("battery_rider"))
+}
+
+// WhereHasBatteryRiderWith applies a predicate to check if query has an edge battery_rider with a given conditions (other predicates).
+func (f *AssetFilter) WhereHasBatteryRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("battery_rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

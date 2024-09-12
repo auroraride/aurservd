@@ -725,10 +725,10 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 		// 更新电车
 		if s.ebikeInfo != nil {
 			// // 更新电车所属
-			// eb, _ := NewAsset().QuerySn(s.ebikeInfo.Sn)
-			// if eb != nil {
-			// 	snag.Panic(err)
-			// }
+			eb, _ := NewAsset().QuerySn(s.ebikeInfo.Sn)
+			if eb == nil {
+				snag.Panic("未找到电车信息")
+			}
 			// fromLocationType := model.AssetLocationsType(eb.LocationsType)
 			// _, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
 			// 	FromLocationType: &fromLocationType,
@@ -755,6 +755,10 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 			// }
 
 			// tx.Ebike.UpdateOneID(s.ebikeInfo.ID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
+			err = eb.Update().SetSubscribeID(s.subscribe.ID).Exec(s.ctx)
+			if err != nil {
+				return
+			}
 		}
 		// 后台操作设置电池编码
 		if s.battery != nil && s.cabinet == nil {
@@ -878,69 +882,20 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 		_, err = tx.Contract.Update().Where(contract.RiderID(sub.RiderID)).SetEffective(false).Save(s.ctx)
 		snag.PanicIfError(err)
 
-		// 判定退租到哪里
-		var toLocationType model.AssetLocationsType
-		var toLocationID uint64
-		if s.cabinet != nil {
-			toLocationType = model.AssetLocationsTypeCabinet
-			toLocationID = s.cabinet.ID
-		}
-		if s.ebikeStoreID != nil {
-			toLocationType = model.AssetLocationsTypeStore
-			toLocationID = *s.ebikeStoreID
-		}
-		if s.batStoreID != nil {
-			toLocationType = model.AssetLocationsTypeStore
-			toLocationID = *s.batStoreID
-		}
-
 		// 更新电车
 		if sub.EbikeID != nil {
-			eb, err := NewAsset().QueryID(*sub.EbikeID)
-			if err != nil {
-				return
+			eb, _ := NewAsset().QueryID(*sub.EbikeID)
+			if eb == nil {
+				snag.Panic("未找到电车信息")
 			}
-			fromLocationType := model.AssetLocationsType(eb.LocationsType)
-			_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
-				FromLocationType: &fromLocationType,
-				FromLocationID:   &eb.LocationsID,
-				ToLocationType:   toLocationType,
-				ToLocationID:     toLocationID,
-				Details: []model.AssetTransferCreateDetail{
-					{
-						AssetType: model.AssetTypeEbike,
-						SN:        silk.String(eb.Sn),
-					},
-				},
-				Reason:            "订阅退租",
-				AssetTransferType: model.AssetTransferTypeUnSubscribe,
-				OperatorID:        s.operator.ID,
-				OperatorType:      s.operator.Type,
-				AutoIn:            true,
-			}, s.modifier)
-			if err != nil {
-				return
-			}
-			if failed != nil {
-				snag.Panic(failed[0])
-			}
-
 			if doReq.Rto {
 				// 当前属于以租代购
-				ebu := tx.Asset.UpdateOneID(*sub.EbikeID).
-					SetRtoRiderID(sub.RiderID)
-				err = ebu.Exec(s.ctx)
+				err = eb.Update().SetRtoRiderID(sub.RiderID).Exec(s.ctx)
 				snag.PanicIfError(err)
-			} else {
-				// 删除电车所属
-				ebu := tx.Asset.UpdateOneID(*sub.EbikeID).
-					SetStatus(model.AssetStatusStock.Value()).
-					SetNillableStoreID(s.storeID)
-				if s.ebikeStoreID != nil {
-					ebu.SetNillableStoreID(s.ebikeStoreID)
-				}
-				err = ebu.Exec(s.ctx)
-				snag.PanicIfError(err)
+			}
+			err = eb.Update().ClearSubscribeID().Exec(s.ctx)
+			if err != nil {
+				snag.Panic(err)
 			}
 		}
 

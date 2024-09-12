@@ -85,7 +85,7 @@ func (Asset) Edges() []ent.Edge {
 		edge.To("maintenance_details", AssetMaintenanceDetails.Type), // 关联维护详情
 		edge.To("check_details", AssetCheckDetails.Type),             // 关联盘点详情
 
-		edge.From("subscribe", Subscribe.Type).Unique().Ref("battery").Field("subscribe_id"), // 关联订阅
+		// edge.From("subscribe", Subscribe.Type).Unique().Ref("battery").Field("subscribe_id"), // 关联订阅
 
 		edge.From("warehouse", Warehouse.Type).Unique().Ref("asset").Field("locations_id"),       // 关联仓库
 		edge.From("store", Store.Type).Unique().Ref("asset").Field("locations_id"),               // 关联门店
@@ -97,6 +97,8 @@ func (Asset) Edges() []ent.Edge {
 		edge.To("ebike_allocates", Allocate.Type),
 		edge.To("battery_allocates", Allocate.Type),
 		edge.To("rto_rider", Rider.Type).Unique().Field("rto_rider_id"),
+
+		edge.From("battery_rider", Rider.Type).Ref("battery").Unique().Field("locations_id").Comment("所属骑手"),
 	}
 }
 
@@ -113,5 +115,12 @@ func (Asset) Mixin() []ent.Mixin {
 }
 
 func (Asset) Indexes() []ent.Index {
-	return []ent.Index{}
+	return []ent.Index{
+		index.Fields("type"),
+		index.Fields("sn"),
+		index.Fields("sn", "type"),
+		index.Fields("locations_id"),
+		index.Fields("locations_type"),
+		index.Fields("locations_type", "locations_id"),
+	}
 }
