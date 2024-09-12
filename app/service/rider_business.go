@@ -31,7 +31,6 @@ import (
 
 type riderBusinessService struct {
 	ctx     context.Context
-	rider   *ent.Rider
 	maxTime time.Duration // 单步骤最大处理时长
 
 	cabinet   *ent.Cabinet
@@ -149,7 +148,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, version str
 		err := ent.Database.Allocate.Create().
 			SetType(allocate.TypeBattery).
 			SetSubscribe(s.subscribe).
-			SetRider(s.rider).
+			SetRider(s.entRider).
 			SetStatus(model.AllocateStatusPending.Value()).
 			SetTime(time.Now()).
 			SetModel(s.subscribe.Model).
@@ -161,7 +160,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, version str
 		}
 
 		// 返回签约URL
-		snag.Panic(snag.StatusRequireSign, NewContractWithRider(s.rider).Sign(&model.ContractSignReq{
+		snag.Panic(snag.StatusRequireSign, NewContractWithRider(s.entRider).Sign(&model.ContractSignReq{
 			SubscribeID: s.subscribe.ID,
 		}))
 	}
@@ -175,7 +174,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq, version str
 			err := ent.Database.Allocate.Create().
 				SetType(allocate.TypeBattery).
 				SetSubscribe(s.subscribe).
-				SetRider(s.rider).
+				SetRider(s.entRider).
 				SetStatus(model.AllocateStatusPending.Value()).
 				SetTime(time.Now()).
 				SetModel(s.subscribe.Model).
