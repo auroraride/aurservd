@@ -443,7 +443,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 		WithEnterprise().
 		WithStation().
 		WithBattery(func(query *ent.AssetQuery) {
-			query.Where(asset.Type(model.AssetTypeSmartBattery.Value())).WithModel()
+			query.Where(asset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value())).WithModel()
 		}).
 		Order(ent.Desc(rider.FieldCreatedAt))
 	if req.Keyword != nil {
