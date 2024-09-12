@@ -1123,7 +1123,7 @@ func (s *assetService) CurrentBatteryNum(ids []uint64, locationsType model.Asset
 			sel.Where(sql.In(sel.C(asset.FieldLocationsID), v...)).
 				Select(
 					sql.As(sel.C(asset.FieldLocationsID), "target_id"),
-					sql.As(sql.Sum(asset.FieldID), "sum"),
+					sql.As(sql.Count(asset.FieldID), "sum"),
 				).
 				GroupBy(asset.FieldLocationsID)
 		}).
@@ -1154,7 +1154,7 @@ func (s *assetService) StoreCurrent(id uint64) []model.InventoryNum {
 			sel.GroupBy(asset.FieldName, t.C(batterymodel.FieldModel)).
 				Select(asset.FieldName, t.C(batterymodel.FieldModel)).
 				AppendSelectExprAs(sql.Raw(fmt.Sprintf("%s IS NOT NULL", asset.FieldModelID)), "battery").
-				AppendSelectExprAs(sql.Raw(fmt.Sprintf("SUM(%s)", asset.FieldID)), "num")
+				AppendSelectExprAs(sql.Raw(fmt.Sprintf("Count(%s)", asset.FieldID)), "num")
 		}).
 		Scan(s.ctx, &ins)
 
