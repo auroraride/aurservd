@@ -438,6 +438,8 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 			at = model.AssetTransferTypeUnSubscribe
 		}
 
+		// 电柜任务->
+
 		// 取走电池 激活,取消寄存会走这里
 		if !putin {
 			_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {

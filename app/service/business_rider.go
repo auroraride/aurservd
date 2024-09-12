@@ -819,7 +819,10 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 	s.agentID = req.AgentID
 
 	// 查找电池
-	s.battery, _ = ent.Database.Asset.Query().Where(asset.SubscribeID(sub.ID)).First(s.ctx)
+	s.battery, _ = ent.Database.Asset.Query().Where(
+		asset.SubscribeID(sub.ID),
+		asset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value()),
+	).First(s.ctx)
 
 	err := NewSubscribe().UpdateStatus(sub, false)
 	if err != nil {
