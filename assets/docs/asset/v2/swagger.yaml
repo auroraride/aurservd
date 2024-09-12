@@ -977,6 +977,9 @@ definitions:
       enterpriseId:
         description: 团签企业ID
         type: integer
+      keyword:
+        description: 电车关键字
+        type: string
       locationsId:
         description: 资产位置ID
         type: integer
@@ -2210,6 +2213,10 @@ paths:
         in: query
         name: enterpriseId
         type: integer
+      - description: 电车关键字
+        in: query
+        name: keyword
+        type: string
       - description: 资产位置ID
         in: query
         name: locationsId
@@ -3084,6 +3091,10 @@ paths:
         in: query
         name: enterpriseId
         type: integer
+      - description: 电车关键字
+        in: query
+        name: keyword
+        type: string
       - description: 资产位置ID
         in: query
         name: locationsId

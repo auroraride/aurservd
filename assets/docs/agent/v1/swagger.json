@@ -382,6 +382,12 @@
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "电车关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "资产位置ID",
                         "name": "locationsId",

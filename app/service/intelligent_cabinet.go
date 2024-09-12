@@ -489,7 +489,6 @@ func (s *intelligentCabinetService) Operate(operator *logging.Operator, cab *ent
 	zap.L().Info("电柜操作", zap.Bool("success", success), log.Payload(data), zap.Error(err))
 
 	success = err == nil
-
 	return
 }
 

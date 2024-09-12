@@ -1046,6 +1046,15 @@ func (s *assetService) ebikeFilter(q *ent.AssetQuery, req *model.AssetFilter) *e
 		// 电车未赠送
 		q.Where(asset.RtoRiderIDIsNil())
 	}
+	if req.Keyword != nil {
+		attributes, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.Key("plate")).First(s.ctx)
+		q.Where(
+			asset.Or(
+				asset.SnContainsFold(*req.Keyword),
+				asset.HasValuesWith(assetattributevalues.AttributeID(attributes.ID), assetattributevalues.ValueContainsFold(*req.Keyword)),
+			),
+		)
+	}
 	return q
 }
 

@@ -391,11 +391,6 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 		return
 	}
 
-	// 如果是骑手自己操作 激活和取消寄存拿走电池 会有电柜任务已经执行调拨
-	if s.operator.Type == model.OperatorTypeRider && req.CabinetID != nil && (req.AssetTransferType == model.AssetTransferTypeActive || req.AssetTransferType == model.AssetTransferTypeContinue) {
-		return
-	}
-
 	// 查询资产
 	var ebikeInfo *ent.Asset
 	var batteryInfo *ent.Asset
@@ -449,6 +444,11 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 		if req.CabinetID != nil {
 			batteryInfo, _ = s.CheckBusinessBattery(req, model.AssetLocationsTypeStation, *req.CabinetID)
 		}
+	}
+
+	// 如果是骑手自己操作 激活和取消寄存拿走电池 会有电柜任务已经执行调拨
+	if s.operator.Type == model.OperatorTypeRider && req.CabinetID != nil && (req.AssetTransferType == model.AssetTransferTypeActive || req.AssetTransferType == model.AssetTransferTypeContinue) {
+		return
 	}
 
 	switch req.AssetTransferType {
@@ -505,11 +505,11 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 		}
 	}
 
-	autoIn := true
-	if s.operator.Type == model.OperatorTypeRider {
-		// 骑手操作不自动入库
-		autoIn = false
-	}
+	// autoIn := true
+	// if s.operator.Type == model.OperatorTypeRider {
+	// 	// 骑手操作不自动入库
+	// 	autoIn = false
+	// }
 
 	if len(details) != 0 {
 		// 创建调拨单
@@ -523,7 +523,7 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 			AssetTransferType: req.AssetTransferType,
 			OperatorID:        s.operator.ID,
 			OperatorType:      s.operator.Type,
-			AutoIn:            autoIn,
+			AutoIn:            true,
 			SkipLimit:         true,
 		}, &model.Modifier{
 			ID:    s.operator.ID,
@@ -550,7 +550,7 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 			AssetTransferType: req.AssetTransferType,
 			OperatorID:        s.operator.ID,
 			OperatorType:      s.operator.Type,
-			AutoIn:            autoIn,
+			AutoIn:            true,
 			SkipLimit:         true,
 		}, &model.Modifier{
 			ID:    s.operator.ID,

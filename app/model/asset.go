@@ -46,6 +46,7 @@ type AssetFilter struct {
 	EmployeeID       uint64              `json:"employeeId" query:"employeeId"`                           // 门店店员ID
 	Battery          *bool               `json:"battery" query:"battery"`                                 // 电池是否统一查询
 	MaterialID       *uint64             `json:"materialId" query:"materialId"`                           // 其他物资ID
+	Keyword          *string             `json:"keyword" query:"keyword"`                                 // 电车关键字
 }
 
 // AssetListReq 资产列表请求

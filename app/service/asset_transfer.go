@@ -1609,7 +1609,8 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 		query.
 			WithFromLocationOperator().WithFromLocationStation().WithFromLocationStore().WithFromLocationWarehouse().WithFromLocationCabinet().WithFromLocationRider().
 			WithToLocationOperator().WithToLocationStation().WithToLocationStore().WithToLocationWarehouse().WithToLocationCabinet().WithToLocationRider()
-	}).WithInOperateAgent().WithInOperateManager().WithInOperateStore().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider()
+	}).WithInOperateAgent().WithInOperateManager().WithInOperateStore().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().
+		Order(ent.Desc(assettransferdetails.FieldID))
 	if req.Start != nil && req.End != nil {
 		start := tools.NewTime().ParseDateStringX(*req.Start)
 		end := tools.NewTime().ParseNextDateStringX(*req.End)
@@ -2195,6 +2196,7 @@ func (s *assetTransferService) Modify(ctx context.Context, req *model.AssetTrans
 func (s *assetTransferService) QueryTransferByAssetID(ctx context.Context, id uint64) (res *ent.AssetTransfer, err error) {
 	item, _ := s.orm.QueryNotDeleted().
 		Where(assettransfer.HasTransferDetailsWith(assettransferdetails.AssetID(id)), assettransfer.Status(model.AssetTransferStatusDelivering.Value())).
+		Order(ent.Desc(assettransfer.FieldCreatedAt)).
 		First(ctx)
 	if item == nil {
 		return nil, errors.New("调拨单不存在或已入库")
