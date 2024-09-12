@@ -29,6 +29,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
@@ -383,7 +384,6 @@ func (au *AssetUpdate) ClearBrandName() *AssetUpdate {
 
 // SetSubscribeID sets the "subscribe_id" field.
 func (au *AssetUpdate) SetSubscribeID(u uint64) *AssetUpdate {
-	au.mutation.ResetSubscribeID()
 	au.mutation.SetSubscribeID(u)
 	return au
 }
@@ -393,12 +393,6 @@ func (au *AssetUpdate) SetNillableSubscribeID(u *uint64) *AssetUpdate {
 	if u != nil {
 		au.SetSubscribeID(*u)
 	}
-	return au
-}
-
-// AddSubscribeID adds u to the "subscribe_id" field.
-func (au *AssetUpdate) AddSubscribeID(u int64) *AssetUpdate {
-	au.mutation.AddSubscribeID(u)
 	return au
 }
 
@@ -528,6 +522,11 @@ func (au *AssetUpdate) AddCheckDetails(a ...*AssetCheckDetails) *AssetUpdate {
 		ids[i] = a[i].ID
 	}
 	return au.AddCheckDetailIDs(ids...)
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (au *AssetUpdate) SetSubscribe(s *Subscribe) *AssetUpdate {
+	return au.SetSubscribeID(s.ID)
 }
 
 // SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
@@ -832,6 +831,12 @@ func (au *AssetUpdate) RemoveCheckDetails(a ...*AssetCheckDetails) *AssetUpdate 
 	return au.RemoveCheckDetailIDs(ids...)
 }
 
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (au *AssetUpdate) ClearSubscribe() *AssetUpdate {
+	au.mutation.ClearSubscribe()
+	return au
+}
+
 // ClearWarehouse clears the "warehouse" edge to the Warehouse entity.
 func (au *AssetUpdate) ClearWarehouse() *AssetUpdate {
 	au.mutation.ClearWarehouse()
@@ -1047,15 +1052,6 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if au.mutation.BrandNameCleared() {
 		_spec.ClearField(asset.FieldBrandName, field.TypeString)
-	}
-	if value, ok := au.mutation.SubscribeID(); ok {
-		_spec.SetField(asset.FieldSubscribeID, field.TypeUint64, value)
-	}
-	if value, ok := au.mutation.AddedSubscribeID(); ok {
-		_spec.AddField(asset.FieldSubscribeID, field.TypeUint64, value)
-	}
-	if au.mutation.SubscribeIDCleared() {
-		_spec.ClearField(asset.FieldSubscribeID, field.TypeUint64)
 	}
 	if value, ok := au.mutation.Ordinal(); ok {
 		_spec.SetField(asset.FieldOrdinal, field.TypeInt, value)
@@ -1400,6 +1396,35 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetcheckdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.SubscribeTable,
+			Columns: []string{asset.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.SubscribeTable,
+			Columns: []string{asset.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2088,7 +2113,6 @@ func (auo *AssetUpdateOne) ClearBrandName() *AssetUpdateOne {
 
 // SetSubscribeID sets the "subscribe_id" field.
 func (auo *AssetUpdateOne) SetSubscribeID(u uint64) *AssetUpdateOne {
-	auo.mutation.ResetSubscribeID()
 	auo.mutation.SetSubscribeID(u)
 	return auo
 }
@@ -2098,12 +2122,6 @@ func (auo *AssetUpdateOne) SetNillableSubscribeID(u *uint64) *AssetUpdateOne {
 	if u != nil {
 		auo.SetSubscribeID(*u)
 	}
-	return auo
-}
-
-// AddSubscribeID adds u to the "subscribe_id" field.
-func (auo *AssetUpdateOne) AddSubscribeID(u int64) *AssetUpdateOne {
-	auo.mutation.AddSubscribeID(u)
 	return auo
 }
 
@@ -2233,6 +2251,11 @@ func (auo *AssetUpdateOne) AddCheckDetails(a ...*AssetCheckDetails) *AssetUpdate
 		ids[i] = a[i].ID
 	}
 	return auo.AddCheckDetailIDs(ids...)
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (auo *AssetUpdateOne) SetSubscribe(s *Subscribe) *AssetUpdateOne {
+	return auo.SetSubscribeID(s.ID)
 }
 
 // SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
@@ -2537,6 +2560,12 @@ func (auo *AssetUpdateOne) RemoveCheckDetails(a ...*AssetCheckDetails) *AssetUpd
 	return auo.RemoveCheckDetailIDs(ids...)
 }
 
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (auo *AssetUpdateOne) ClearSubscribe() *AssetUpdateOne {
+	auo.mutation.ClearSubscribe()
+	return auo
+}
+
 // ClearWarehouse clears the "warehouse" edge to the Warehouse entity.
 func (auo *AssetUpdateOne) ClearWarehouse() *AssetUpdateOne {
 	auo.mutation.ClearWarehouse()
@@ -2782,15 +2811,6 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	}
 	if auo.mutation.BrandNameCleared() {
 		_spec.ClearField(asset.FieldBrandName, field.TypeString)
-	}
-	if value, ok := auo.mutation.SubscribeID(); ok {
-		_spec.SetField(asset.FieldSubscribeID, field.TypeUint64, value)
-	}
-	if value, ok := auo.mutation.AddedSubscribeID(); ok {
-		_spec.AddField(asset.FieldSubscribeID, field.TypeUint64, value)
-	}
-	if auo.mutation.SubscribeIDCleared() {
-		_spec.ClearField(asset.FieldSubscribeID, field.TypeUint64)
 	}
 	if value, ok := auo.mutation.Ordinal(); ok {
 		_spec.SetField(asset.FieldOrdinal, field.TypeInt, value)
@@ -3135,6 +3155,35 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetcheckdetails.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.SubscribeTable,
+			Columns: []string{asset.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.SubscribeTable,
+			Columns: []string{asset.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -717,23 +717,19 @@ func (sc *SubscribeCreate) SetEbike(a *Asset) *SubscribeCreate {
 	return sc.SetEbikeID(a.ID)
 }
 
-// SetBatteryID sets the "battery" edge to the Asset entity by ID.
-func (sc *SubscribeCreate) SetBatteryID(id uint64) *SubscribeCreate {
-	sc.mutation.SetBatteryID(id)
+// AddBatteryIDs adds the "battery" edge to the Asset entity by IDs.
+func (sc *SubscribeCreate) AddBatteryIDs(ids ...uint64) *SubscribeCreate {
+	sc.mutation.AddBatteryIDs(ids...)
 	return sc
 }
 
-// SetNillableBatteryID sets the "battery" edge to the Asset entity by ID if the given value is not nil.
-func (sc *SubscribeCreate) SetNillableBatteryID(id *uint64) *SubscribeCreate {
-	if id != nil {
-		sc = sc.SetBatteryID(*id)
+// AddBattery adds the "battery" edges to the Asset entity.
+func (sc *SubscribeCreate) AddBattery(a ...*Asset) *SubscribeCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return sc
-}
-
-// SetBattery sets the "battery" edge to the Asset entity.
-func (sc *SubscribeCreate) SetBattery(a *Asset) *SubscribeCreate {
-	return sc.SetBatteryID(a.ID)
+	return sc.AddBatteryIDs(ids...)
 }
 
 // SetEnterprisePrice sets the "enterprise_price" edge to the EnterprisePrice entity.
@@ -1311,7 +1307,7 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 	}
 	if nodes := sc.mutation.BatteryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   subscribe.BatteryTable,
 			Columns: []string{subscribe.BatteryColumn},
@@ -1323,7 +1319,6 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.subscribe_battery = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sc.mutation.EnterprisePriceIDs(); len(nodes) > 0 {

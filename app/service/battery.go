@@ -421,7 +421,7 @@ func (s *batteryService) RiderDetail(riderID uint64) (res model.BatteryDetail) {
 // BindRequest 绑定骑手
 func (s *batteryService) BindRequest(req *model.BatteryBind) error {
 	// 查找订阅
-	sub := NewSubscribe().QueryEffectiveIntelligentX(req.RiderID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider)
+	sub := NewSubscribe().QueryEffectiveIntelligentX(req.RiderID, ent.SubscribeQueryWithRider)
 
 	// 查找电池
 	bat, _ := NewAsset().QueryID(req.BatteryID)
@@ -462,23 +462,26 @@ func (s *batteryService) Bind(bat *ent.Asset, sub *ent.Subscribe, rd *ent.Rider)
 // Unbind 解绑电池
 func (s *batteryService) Unbind(req *model.BatteryUnbindRequest) error {
 	// 查找订阅
-	sub := NewSubscribe().QueryEffectiveIntelligentX(req.RiderID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider, ent.SubscribeQueryWithBattery)
+	sub := NewSubscribe().QueryEffectiveIntelligentX(req.RiderID, ent.SubscribeQueryWithRider)
 
-	bat := sub.Edges.Battery
-	if bat == nil {
-		return errors.New("未找到绑定的电池")
+	if sub != nil && len(sub.Edges.Battery) > 0 {
+		bat := sub.Edges.Battery[0]
+		if bat == nil {
+			return errors.New("未找到绑定的电池")
+		}
+
+		err := s.Unallocate(bat, req.ToLocationType, req.ToLocationID, model.AssetTransferTypeTransfer)
+		if err != nil {
+			return errors.New("解绑失败" + err.Error())
+		}
+		go logging.NewOperateLog().
+			SetOperate(model.OperateUnbindBattery).
+			SetDiff("旧电池: "+bat.Sn, "无电池").
+			SetModifier(s.modifier).
+			SetRef(sub.Edges.Rider).
+			Send()
 	}
 
-	err := s.Unallocate(bat, req.ToLocationType, req.ToLocationID, model.AssetTransferTypeTransfer)
-	if err != nil {
-		return errors.New("解绑失败" + err.Error())
-	}
-	go logging.NewOperateLog().
-		SetOperate(model.OperateUnbindBattery).
-		SetDiff("旧电池: "+bat.Sn, "无电池").
-		SetModifier(s.modifier).
-		SetRef(sub.Edges.Rider).
-		Send()
 	return nil
 }
 

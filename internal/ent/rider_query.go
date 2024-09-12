@@ -1155,7 +1155,6 @@ func (rq *RiderQuery) loadSubscribes(ctx context.Context, query *SubscribeQuery,
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(subscribe.FieldRiderID)
 	}

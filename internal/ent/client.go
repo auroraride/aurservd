@@ -2038,6 +2038,22 @@ func (c *AssetClient) QueryCheckDetails(a *Asset) *AssetCheckDetailsQuery {
 	return query
 }
 
+// QuerySubscribe queries the subscribe edge of a Asset.
+func (c *AssetClient) QuerySubscribe(a *Asset) *SubscribeQuery {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, asset.SubscribeTable, asset.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryWarehouse queries the warehouse edge of a Asset.
 func (c *AssetClient) QueryWarehouse(a *Asset) *WarehouseQuery {
 	query := (&WarehouseClient{config: c.config}).Query()
@@ -19824,7 +19840,7 @@ func (c *SubscribeClient) QueryBattery(s *Subscribe) *AssetQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
 			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.BatteryTable, subscribe.BatteryColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, subscribe.BatteryTable, subscribe.BatteryColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

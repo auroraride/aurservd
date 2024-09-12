@@ -2283,7 +2283,7 @@ func HasBattery() predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, BatteryTable, BatteryColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

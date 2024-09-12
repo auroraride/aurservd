@@ -28,6 +28,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
@@ -47,6 +48,7 @@ type AssetQuery struct {
 	withTransferDetails    *AssetTransferDetailsQuery
 	withMaintenanceDetails *AssetMaintenanceDetailsQuery
 	withCheckDetails       *AssetCheckDetailsQuery
+	withSubscribe          *SubscribeQuery
 	withWarehouse          *WarehouseQuery
 	withStore              *StoreQuery
 	withCabinet            *CabinetQuery
@@ -285,6 +287,28 @@ func (aq *AssetQuery) QueryCheckDetails() *AssetCheckDetailsQuery {
 			sqlgraph.From(asset.Table, asset.FieldID, selector),
 			sqlgraph.To(assetcheckdetails.Table, assetcheckdetails.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, asset.CheckDetailsTable, asset.CheckDetailsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySubscribe chains the current query on the "subscribe" edge.
+func (aq *AssetQuery) QuerySubscribe() *SubscribeQuery {
+	query := (&SubscribeClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, asset.SubscribeTable, asset.SubscribeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -713,6 +737,7 @@ func (aq *AssetQuery) Clone() *AssetQuery {
 		withTransferDetails:    aq.withTransferDetails.Clone(),
 		withMaintenanceDetails: aq.withMaintenanceDetails.Clone(),
 		withCheckDetails:       aq.withCheckDetails.Clone(),
+		withSubscribe:          aq.withSubscribe.Clone(),
 		withWarehouse:          aq.withWarehouse.Clone(),
 		withStore:              aq.withStore.Clone(),
 		withCabinet:            aq.withCabinet.Clone(),
@@ -825,6 +850,17 @@ func (aq *AssetQuery) WithCheckDetails(opts ...func(*AssetCheckDetailsQuery)) *A
 		opt(query)
 	}
 	aq.withCheckDetails = query
+	return aq
+}
+
+// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
+// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *AssetQuery {
+	query := (&SubscribeClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withSubscribe = query
 	return aq
 }
 
@@ -1016,7 +1052,7 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 	var (
 		nodes       = []*Asset{}
 		_spec       = aq.querySpec()
-		loadedTypes = [19]bool{
+		loadedTypes = [20]bool{
 			aq.withBrand != nil,
 			aq.withModel != nil,
 			aq.withCity != nil,
@@ -1026,6 +1062,7 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 			aq.withTransferDetails != nil,
 			aq.withMaintenanceDetails != nil,
 			aq.withCheckDetails != nil,
+			aq.withSubscribe != nil,
 			aq.withWarehouse != nil,
 			aq.withStore != nil,
 			aq.withCabinet != nil,
@@ -1117,6 +1154,12 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 		if err := aq.loadCheckDetails(ctx, query, nodes,
 			func(n *Asset) { n.Edges.CheckDetails = []*AssetCheckDetails{} },
 			func(n *Asset, e *AssetCheckDetails) { n.Edges.CheckDetails = append(n.Edges.CheckDetails, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withSubscribe; query != nil {
+		if err := aq.loadSubscribe(ctx, query, nodes, nil,
+			func(n *Asset, e *Subscribe) { n.Edges.Subscribe = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1460,6 +1503,38 @@ func (aq *AssetQuery) loadCheckDetails(ctx context.Context, query *AssetCheckDet
 			return fmt.Errorf(`unexpected referenced foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (aq *AssetQuery) loadSubscribe(ctx context.Context, query *SubscribeQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *Subscribe)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Asset)
+	for i := range nodes {
+		if nodes[i].SubscribeID == nil {
+			continue
+		}
+		fk := *nodes[i].SubscribeID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(subscribe.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
 	}
 	return nil
 }
@@ -1807,6 +1882,9 @@ func (aq *AssetQuery) querySpec() *sqlgraph.QuerySpec {
 		if aq.withMaterial != nil {
 			_spec.Node.AddColumnOnce(asset.FieldMaterialID)
 		}
+		if aq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(asset.FieldSubscribeID)
+		}
 		if aq.withWarehouse != nil {
 			_spec.Node.AddColumnOnce(asset.FieldLocationsID)
 		}
@@ -1908,6 +1986,7 @@ var (
 	AssetQueryWithTransferDetails    AssetQueryWith = "TransferDetails"
 	AssetQueryWithMaintenanceDetails AssetQueryWith = "MaintenanceDetails"
 	AssetQueryWithCheckDetails       AssetQueryWith = "CheckDetails"
+	AssetQueryWithSubscribe          AssetQueryWith = "Subscribe"
 	AssetQueryWithWarehouse          AssetQueryWith = "Warehouse"
 	AssetQueryWithStore              AssetQueryWith = "Store"
 	AssetQueryWithCabinet            AssetQueryWith = "Cabinet"
@@ -1941,6 +2020,8 @@ func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
 			aq.WithMaintenanceDetails()
 		case AssetQueryWithCheckDetails:
 			aq.WithCheckDetails()
+		case AssetQueryWithSubscribe:
+			aq.WithSubscribe()
 		case AssetQueryWithWarehouse:
 			aq.WithWarehouse()
 		case AssetQueryWithStore:
