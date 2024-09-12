@@ -15120,6 +15120,10 @@ paths:
         in: query
         name: current
         type: integer
+      - description: 门店集合ID
+        in: query
+        name: groupID
+        type: integer
       - description: 门店名称
         in: query
         name: name
