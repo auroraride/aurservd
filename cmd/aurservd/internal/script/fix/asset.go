@@ -113,7 +113,7 @@ func BatteryDo(ctx context.Context, modifier *model.Modifier) {
 	// 查询 在电柜中非智能电池
 	cab, _ := ent.Database.Cabinet.QueryNotDeleted().WithModels().Where(cabinet.Intelligent(false)).All(ctx)
 	// 同步电柜信息
-	// service.NewCabinet().SyncCabinets(cab)
+	service.NewCabinet().SyncCabinets(cab)
 	// 判定电柜中有多少电池
 	// 电柜中电池数量
 	var cabBat = make(map[uint64]*CabBatInfo)
