@@ -250,12 +250,12 @@ const (
 	// EbikeColumn is the table column denoting the ebike relation/edge.
 	EbikeColumn = "ebike_id"
 	// BatteryTable is the table that holds the battery relation/edge.
-	BatteryTable = "asset"
+	BatteryTable = "subscribe"
 	// BatteryInverseTable is the table name for the Asset entity.
 	// It exists in this package in order to avoid circular dependency with the "asset" package.
 	BatteryInverseTable = "asset"
 	// BatteryColumn is the table column denoting the battery relation/edge.
-	BatteryColumn = "subscribe_id"
+	BatteryColumn = "subscribe_battery"
 	// EnterprisePriceTable is the table that holds the enterprise_price relation/edge.
 	EnterprisePriceTable = "subscribe"
 	// EnterprisePriceInverseTable is the table name for the EnterprisePrice entity.
@@ -312,10 +312,21 @@ var Columns = []string{
 	FieldEbikeID,
 }
 
+// ForeignKeys holds the SQL foreign-keys that are owned by the "subscribe"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"subscribe_battery",
+}
+
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -843,7 +854,7 @@ func newBatteryStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BatteryInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, false, BatteryTable, BatteryColumn),
+		sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
 	)
 }
 func newEnterprisePriceStep() *sqlgraph.Step {

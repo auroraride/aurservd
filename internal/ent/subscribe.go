@@ -117,8 +117,9 @@ type Subscribe struct {
 	EbikeID *uint64 `json:"ebike_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeQuery when eager-loading is set.
-	Edges        SubscribeEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges             SubscribeEdges `json:"edges"`
+	subscribe_battery *uint64
+	selectValues      sql.SelectValues
 }
 
 // SubscribeEdges holds the relations/edges for other nodes in the graph.
@@ -367,6 +368,8 @@ func (*Subscribe) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldSuspendAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt, subscribe.FieldLastBillDate, subscribe.FieldAgentEndAt:
 			values[i] = new(sql.NullTime)
+		case subscribe.ForeignKeys[0]: // subscribe_battery
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -660,6 +663,13 @@ func (s *Subscribe) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.EbikeID = new(uint64)
 				*s.EbikeID = uint64(value.Int64)
+			}
+		case subscribe.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field subscribe_battery", value)
+			} else if value.Valid {
+				s.subscribe_battery = new(uint64)
+				*s.subscribe_battery = uint64(value.Int64)
 			}
 		default:
 			s.selectValues.Set(columns[i], values[i])

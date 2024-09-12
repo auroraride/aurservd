@@ -71,9 +71,8 @@ type Rider struct {
 	JoinEnterpriseAt *time.Time `json:"join_enterprise_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RiderQuery when eager-loading is set.
-	Edges         RiderEdges `json:"edges"`
-	rider_battery *uint64
-	selectValues  sql.SelectValues
+	Edges        RiderEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // RiderEdges holds the relations/edges for other nodes in the graph.
@@ -249,8 +248,6 @@ func (*Rider) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt, rider.FieldJoinEnterpriseAt:
 			values[i] = new(sql.NullTime)
-		case rider.ForeignKeys[0]: // rider_battery
-			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -425,13 +422,6 @@ func (r *Rider) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				r.JoinEnterpriseAt = new(time.Time)
 				*r.JoinEnterpriseAt = value.Time
-			}
-		case rider.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field rider_battery", value)
-			} else if value.Valid {
-				r.rider_battery = new(uint64)
-				*r.rider_battery = uint64(value.Int64)
 			}
 		default:
 			r.selectValues.Set(columns[i], values[i])

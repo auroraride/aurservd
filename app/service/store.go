@@ -112,6 +112,8 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
 		SetNillableRest(req.Rest)
 	if req.GroupID == nil {
 		q.ClearGroupID()
+	} else {
+		q.SetGroupID(*req.GroupID)
 	}
 	if req.Status != nil {
 		q.SetStatus(req.Status.Value())

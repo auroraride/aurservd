@@ -985,6 +985,26 @@ func SubscribeIDNotIn(vs ...uint64) predicate.Asset {
 	return predicate.Asset(sql.FieldNotIn(FieldSubscribeID, vs...))
 }
 
+// SubscribeIDGT applies the GT predicate on the "subscribe_id" field.
+func SubscribeIDGT(v uint64) predicate.Asset {
+	return predicate.Asset(sql.FieldGT(FieldSubscribeID, v))
+}
+
+// SubscribeIDGTE applies the GTE predicate on the "subscribe_id" field.
+func SubscribeIDGTE(v uint64) predicate.Asset {
+	return predicate.Asset(sql.FieldGTE(FieldSubscribeID, v))
+}
+
+// SubscribeIDLT applies the LT predicate on the "subscribe_id" field.
+func SubscribeIDLT(v uint64) predicate.Asset {
+	return predicate.Asset(sql.FieldLT(FieldSubscribeID, v))
+}
+
+// SubscribeIDLTE applies the LTE predicate on the "subscribe_id" field.
+func SubscribeIDLTE(v uint64) predicate.Asset {
+	return predicate.Asset(sql.FieldLTE(FieldSubscribeID, v))
+}
+
 // SubscribeIDIsNil applies the IsNil predicate on the "subscribe_id" field.
 func SubscribeIDIsNil() predicate.Asset {
 	return predicate.Asset(sql.FieldIsNull(FieldSubscribeID))
@@ -1252,29 +1272,6 @@ func HasCheckDetailsWith(preds ...predicate.AssetCheckDetails) predicate.Asset {
 	})
 }
 
-// HasSubscribe applies the HasEdge predicate on the "subscribe" edge.
-func HasSubscribe() predicate.Asset {
-	return predicate.Asset(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, SubscribeTable, SubscribeColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
-func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Asset {
-	return predicate.Asset(func(s *sql.Selector) {
-		step := newSubscribeStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasWarehouse applies the HasEdge predicate on the "warehouse" edge.
 func HasWarehouse() predicate.Asset {
 	return predicate.Asset(func(s *sql.Selector) {
@@ -1474,6 +1471,29 @@ func HasRtoRider() predicate.Asset {
 func HasRtoRiderWith(preds ...predicate.Rider) predicate.Asset {
 	return predicate.Asset(func(s *sql.Selector) {
 		step := newRtoRiderStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBatteryRider applies the HasEdge predicate on the "battery_rider" edge.
+func HasBatteryRider() predicate.Asset {
+	return predicate.Asset(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, BatteryRiderTable, BatteryRiderColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBatteryRiderWith applies the HasEdge predicate on the "battery_rider" edge with a given conditions (other predicates).
+func HasBatteryRiderWith(preds ...predicate.Rider) predicate.Asset {
+	return predicate.Asset(func(s *sql.Selector) {
+		step := newBatteryRiderStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

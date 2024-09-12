@@ -975,7 +975,6 @@ func (eq *EnterpriseQuery) loadRiders(ctx context.Context, query *RiderQuery, no
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(rider.FieldEnterpriseID)
 	}
@@ -1069,6 +1068,7 @@ func (eq *EnterpriseQuery) loadSubscribes(ctx context.Context, query *SubscribeQ
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(subscribe.FieldEnterpriseID)
 	}

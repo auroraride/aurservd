@@ -29,7 +29,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
-	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
@@ -384,6 +383,7 @@ func (au *AssetUpdate) ClearBrandName() *AssetUpdate {
 
 // SetSubscribeID sets the "subscribe_id" field.
 func (au *AssetUpdate) SetSubscribeID(u uint64) *AssetUpdate {
+	au.mutation.ResetSubscribeID()
 	au.mutation.SetSubscribeID(u)
 	return au
 }
@@ -393,6 +393,12 @@ func (au *AssetUpdate) SetNillableSubscribeID(u *uint64) *AssetUpdate {
 	if u != nil {
 		au.SetSubscribeID(*u)
 	}
+	return au
+}
+
+// AddSubscribeID adds u to the "subscribe_id" field.
+func (au *AssetUpdate) AddSubscribeID(u int64) *AssetUpdate {
+	au.mutation.AddSubscribeID(u)
 	return au
 }
 
@@ -522,11 +528,6 @@ func (au *AssetUpdate) AddCheckDetails(a ...*AssetCheckDetails) *AssetUpdate {
 		ids[i] = a[i].ID
 	}
 	return au.AddCheckDetailIDs(ids...)
-}
-
-// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
-func (au *AssetUpdate) SetSubscribe(s *Subscribe) *AssetUpdate {
-	return au.SetSubscribeID(s.ID)
 }
 
 // SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
@@ -678,6 +679,25 @@ func (au *AssetUpdate) SetRtoRider(r *Rider) *AssetUpdate {
 	return au.SetRtoRiderID(r.ID)
 }
 
+// SetBatteryRiderID sets the "battery_rider" edge to the Rider entity by ID.
+func (au *AssetUpdate) SetBatteryRiderID(id uint64) *AssetUpdate {
+	au.mutation.SetBatteryRiderID(id)
+	return au
+}
+
+// SetNillableBatteryRiderID sets the "battery_rider" edge to the Rider entity by ID if the given value is not nil.
+func (au *AssetUpdate) SetNillableBatteryRiderID(id *uint64) *AssetUpdate {
+	if id != nil {
+		au = au.SetBatteryRiderID(*id)
+	}
+	return au
+}
+
+// SetBatteryRider sets the "battery_rider" edge to the Rider entity.
+func (au *AssetUpdate) SetBatteryRider(r *Rider) *AssetUpdate {
+	return au.SetBatteryRiderID(r.ID)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (au *AssetUpdate) Mutation() *AssetMutation {
 	return au.mutation
@@ -812,12 +832,6 @@ func (au *AssetUpdate) RemoveCheckDetails(a ...*AssetCheckDetails) *AssetUpdate 
 	return au.RemoveCheckDetailIDs(ids...)
 }
 
-// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
-func (au *AssetUpdate) ClearSubscribe() *AssetUpdate {
-	au.mutation.ClearSubscribe()
-	return au
-}
-
 // ClearWarehouse clears the "warehouse" edge to the Warehouse entity.
 func (au *AssetUpdate) ClearWarehouse() *AssetUpdate {
 	au.mutation.ClearWarehouse()
@@ -899,6 +913,12 @@ func (au *AssetUpdate) RemoveBatteryAllocates(a ...*Allocate) *AssetUpdate {
 // ClearRtoRider clears the "rto_rider" edge to the Rider entity.
 func (au *AssetUpdate) ClearRtoRider() *AssetUpdate {
 	au.mutation.ClearRtoRider()
+	return au
+}
+
+// ClearBatteryRider clears the "battery_rider" edge to the Rider entity.
+func (au *AssetUpdate) ClearBatteryRider() *AssetUpdate {
+	au.mutation.ClearBatteryRider()
 	return au
 }
 
@@ -1027,6 +1047,15 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if au.mutation.BrandNameCleared() {
 		_spec.ClearField(asset.FieldBrandName, field.TypeString)
+	}
+	if value, ok := au.mutation.SubscribeID(); ok {
+		_spec.SetField(asset.FieldSubscribeID, field.TypeUint64, value)
+	}
+	if value, ok := au.mutation.AddedSubscribeID(); ok {
+		_spec.AddField(asset.FieldSubscribeID, field.TypeUint64, value)
+	}
+	if au.mutation.SubscribeIDCleared() {
+		_spec.ClearField(asset.FieldSubscribeID, field.TypeUint64)
 	}
 	if value, ok := au.mutation.Ordinal(); ok {
 		_spec.SetField(asset.FieldOrdinal, field.TypeInt, value)
@@ -1378,35 +1407,6 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.SubscribeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   asset.SubscribeTable,
-			Columns: []string{asset.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.SubscribeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   asset.SubscribeTable,
-			Columns: []string{asset.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if au.mutation.WarehouseCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1690,6 +1690,35 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Inverse: false,
 			Table:   asset.RtoRiderTable,
 			Columns: []string{asset.RtoRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.BatteryRiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   asset.BatteryRiderTable,
+			Columns: []string{asset.BatteryRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.BatteryRiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   asset.BatteryRiderTable,
+			Columns: []string{asset.BatteryRiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
@@ -2059,6 +2088,7 @@ func (auo *AssetUpdateOne) ClearBrandName() *AssetUpdateOne {
 
 // SetSubscribeID sets the "subscribe_id" field.
 func (auo *AssetUpdateOne) SetSubscribeID(u uint64) *AssetUpdateOne {
+	auo.mutation.ResetSubscribeID()
 	auo.mutation.SetSubscribeID(u)
 	return auo
 }
@@ -2068,6 +2098,12 @@ func (auo *AssetUpdateOne) SetNillableSubscribeID(u *uint64) *AssetUpdateOne {
 	if u != nil {
 		auo.SetSubscribeID(*u)
 	}
+	return auo
+}
+
+// AddSubscribeID adds u to the "subscribe_id" field.
+func (auo *AssetUpdateOne) AddSubscribeID(u int64) *AssetUpdateOne {
+	auo.mutation.AddSubscribeID(u)
 	return auo
 }
 
@@ -2197,11 +2233,6 @@ func (auo *AssetUpdateOne) AddCheckDetails(a ...*AssetCheckDetails) *AssetUpdate
 		ids[i] = a[i].ID
 	}
 	return auo.AddCheckDetailIDs(ids...)
-}
-
-// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
-func (auo *AssetUpdateOne) SetSubscribe(s *Subscribe) *AssetUpdateOne {
-	return auo.SetSubscribeID(s.ID)
 }
 
 // SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
@@ -2353,6 +2384,25 @@ func (auo *AssetUpdateOne) SetRtoRider(r *Rider) *AssetUpdateOne {
 	return auo.SetRtoRiderID(r.ID)
 }
 
+// SetBatteryRiderID sets the "battery_rider" edge to the Rider entity by ID.
+func (auo *AssetUpdateOne) SetBatteryRiderID(id uint64) *AssetUpdateOne {
+	auo.mutation.SetBatteryRiderID(id)
+	return auo
+}
+
+// SetNillableBatteryRiderID sets the "battery_rider" edge to the Rider entity by ID if the given value is not nil.
+func (auo *AssetUpdateOne) SetNillableBatteryRiderID(id *uint64) *AssetUpdateOne {
+	if id != nil {
+		auo = auo.SetBatteryRiderID(*id)
+	}
+	return auo
+}
+
+// SetBatteryRider sets the "battery_rider" edge to the Rider entity.
+func (auo *AssetUpdateOne) SetBatteryRider(r *Rider) *AssetUpdateOne {
+	return auo.SetBatteryRiderID(r.ID)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (auo *AssetUpdateOne) Mutation() *AssetMutation {
 	return auo.mutation
@@ -2487,12 +2537,6 @@ func (auo *AssetUpdateOne) RemoveCheckDetails(a ...*AssetCheckDetails) *AssetUpd
 	return auo.RemoveCheckDetailIDs(ids...)
 }
 
-// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
-func (auo *AssetUpdateOne) ClearSubscribe() *AssetUpdateOne {
-	auo.mutation.ClearSubscribe()
-	return auo
-}
-
 // ClearWarehouse clears the "warehouse" edge to the Warehouse entity.
 func (auo *AssetUpdateOne) ClearWarehouse() *AssetUpdateOne {
 	auo.mutation.ClearWarehouse()
@@ -2574,6 +2618,12 @@ func (auo *AssetUpdateOne) RemoveBatteryAllocates(a ...*Allocate) *AssetUpdateOn
 // ClearRtoRider clears the "rto_rider" edge to the Rider entity.
 func (auo *AssetUpdateOne) ClearRtoRider() *AssetUpdateOne {
 	auo.mutation.ClearRtoRider()
+	return auo
+}
+
+// ClearBatteryRider clears the "battery_rider" edge to the Rider entity.
+func (auo *AssetUpdateOne) ClearBatteryRider() *AssetUpdateOne {
+	auo.mutation.ClearBatteryRider()
 	return auo
 }
 
@@ -2732,6 +2782,15 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	}
 	if auo.mutation.BrandNameCleared() {
 		_spec.ClearField(asset.FieldBrandName, field.TypeString)
+	}
+	if value, ok := auo.mutation.SubscribeID(); ok {
+		_spec.SetField(asset.FieldSubscribeID, field.TypeUint64, value)
+	}
+	if value, ok := auo.mutation.AddedSubscribeID(); ok {
+		_spec.AddField(asset.FieldSubscribeID, field.TypeUint64, value)
+	}
+	if auo.mutation.SubscribeIDCleared() {
+		_spec.ClearField(asset.FieldSubscribeID, field.TypeUint64)
 	}
 	if value, ok := auo.mutation.Ordinal(); ok {
 		_spec.SetField(asset.FieldOrdinal, field.TypeInt, value)
@@ -3083,35 +3142,6 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.SubscribeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   asset.SubscribeTable,
-			Columns: []string{asset.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.SubscribeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   asset.SubscribeTable,
-			Columns: []string{asset.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if auo.mutation.WarehouseCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -3395,6 +3425,35 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 			Inverse: false,
 			Table:   asset.RtoRiderTable,
 			Columns: []string{asset.RtoRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.BatteryRiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   asset.BatteryRiderTable,
+			Columns: []string{asset.BatteryRiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.BatteryRiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   asset.BatteryRiderTable,
+			Columns: []string{asset.BatteryRiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),

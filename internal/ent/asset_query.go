@@ -28,7 +28,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
-	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
@@ -48,7 +47,6 @@ type AssetQuery struct {
 	withTransferDetails    *AssetTransferDetailsQuery
 	withMaintenanceDetails *AssetMaintenanceDetailsQuery
 	withCheckDetails       *AssetCheckDetailsQuery
-	withSubscribe          *SubscribeQuery
 	withWarehouse          *WarehouseQuery
 	withStore              *StoreQuery
 	withCabinet            *CabinetQuery
@@ -58,6 +56,7 @@ type AssetQuery struct {
 	withEbikeAllocates     *AllocateQuery
 	withBatteryAllocates   *AllocateQuery
 	withRtoRider           *RiderQuery
+	withBatteryRider       *RiderQuery
 	modifiers              []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -293,28 +292,6 @@ func (aq *AssetQuery) QueryCheckDetails() *AssetCheckDetailsQuery {
 	return query
 }
 
-// QuerySubscribe chains the current query on the "subscribe" edge.
-func (aq *AssetQuery) QuerySubscribe() *SubscribeQuery {
-	query := (&SubscribeClient{config: aq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(asset.Table, asset.FieldID, selector),
-			sqlgraph.To(subscribe.Table, subscribe.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, asset.SubscribeTable, asset.SubscribeColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // QueryWarehouse chains the current query on the "warehouse" edge.
 func (aq *AssetQuery) QueryWarehouse() *WarehouseQuery {
 	query := (&WarehouseClient{config: aq.config}).Query()
@@ -506,6 +483,28 @@ func (aq *AssetQuery) QueryRtoRider() *RiderQuery {
 			sqlgraph.From(asset.Table, asset.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, asset.RtoRiderTable, asset.RtoRiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBatteryRider chains the current query on the "battery_rider" edge.
+func (aq *AssetQuery) QueryBatteryRider() *RiderQuery {
+	query := (&RiderClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, asset.BatteryRiderTable, asset.BatteryRiderColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -714,7 +713,6 @@ func (aq *AssetQuery) Clone() *AssetQuery {
 		withTransferDetails:    aq.withTransferDetails.Clone(),
 		withMaintenanceDetails: aq.withMaintenanceDetails.Clone(),
 		withCheckDetails:       aq.withCheckDetails.Clone(),
-		withSubscribe:          aq.withSubscribe.Clone(),
 		withWarehouse:          aq.withWarehouse.Clone(),
 		withStore:              aq.withStore.Clone(),
 		withCabinet:            aq.withCabinet.Clone(),
@@ -724,6 +722,7 @@ func (aq *AssetQuery) Clone() *AssetQuery {
 		withEbikeAllocates:     aq.withEbikeAllocates.Clone(),
 		withBatteryAllocates:   aq.withBatteryAllocates.Clone(),
 		withRtoRider:           aq.withRtoRider.Clone(),
+		withBatteryRider:       aq.withBatteryRider.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -829,17 +828,6 @@ func (aq *AssetQuery) WithCheckDetails(opts ...func(*AssetCheckDetailsQuery)) *A
 	return aq
 }
 
-// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
-// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
-func (aq *AssetQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *AssetQuery {
-	query := (&SubscribeClient{config: aq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	aq.withSubscribe = query
-	return aq
-}
-
 // WithWarehouse tells the query-builder to eager-load the nodes that are connected to
 // the "warehouse" edge. The optional arguments are used to configure the query builder of the edge.
 func (aq *AssetQuery) WithWarehouse(opts ...func(*WarehouseQuery)) *AssetQuery {
@@ -939,6 +927,17 @@ func (aq *AssetQuery) WithRtoRider(opts ...func(*RiderQuery)) *AssetQuery {
 	return aq
 }
 
+// WithBatteryRider tells the query-builder to eager-load the nodes that are connected to
+// the "battery_rider" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithBatteryRider(opts ...func(*RiderQuery)) *AssetQuery {
+	query := (&RiderClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withBatteryRider = query
+	return aq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -1027,7 +1026,6 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 			aq.withTransferDetails != nil,
 			aq.withMaintenanceDetails != nil,
 			aq.withCheckDetails != nil,
-			aq.withSubscribe != nil,
 			aq.withWarehouse != nil,
 			aq.withStore != nil,
 			aq.withCabinet != nil,
@@ -1037,6 +1035,7 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 			aq.withEbikeAllocates != nil,
 			aq.withBatteryAllocates != nil,
 			aq.withRtoRider != nil,
+			aq.withBatteryRider != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -1121,12 +1120,6 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 			return nil, err
 		}
 	}
-	if query := aq.withSubscribe; query != nil {
-		if err := aq.loadSubscribe(ctx, query, nodes, nil,
-			func(n *Asset, e *Subscribe) { n.Edges.Subscribe = e }); err != nil {
-			return nil, err
-		}
-	}
 	if query := aq.withWarehouse; query != nil {
 		if err := aq.loadWarehouse(ctx, query, nodes, nil,
 			func(n *Asset, e *Warehouse) { n.Edges.Warehouse = e }); err != nil {
@@ -1180,6 +1173,12 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 	if query := aq.withRtoRider; query != nil {
 		if err := aq.loadRtoRider(ctx, query, nodes, nil,
 			func(n *Asset, e *Rider) { n.Edges.RtoRider = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withBatteryRider; query != nil {
+		if err := aq.loadBatteryRider(ctx, query, nodes, nil,
+			func(n *Asset, e *Rider) { n.Edges.BatteryRider = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1464,38 +1463,6 @@ func (aq *AssetQuery) loadCheckDetails(ctx context.Context, query *AssetCheckDet
 	}
 	return nil
 }
-func (aq *AssetQuery) loadSubscribe(ctx context.Context, query *SubscribeQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *Subscribe)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Asset)
-	for i := range nodes {
-		if nodes[i].SubscribeID == nil {
-			continue
-		}
-		fk := *nodes[i].SubscribeID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(subscribe.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
 func (aq *AssetQuery) loadWarehouse(ctx context.Context, query *WarehouseQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *Warehouse)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Asset)
@@ -1770,6 +1737,35 @@ func (aq *AssetQuery) loadRtoRider(ctx context.Context, query *RiderQuery, nodes
 	}
 	return nil
 }
+func (aq *AssetQuery) loadBatteryRider(ctx context.Context, query *RiderQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *Rider)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Asset)
+	for i := range nodes {
+		fk := nodes[i].LocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(rider.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (aq *AssetQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
@@ -1811,9 +1807,6 @@ func (aq *AssetQuery) querySpec() *sqlgraph.QuerySpec {
 		if aq.withMaterial != nil {
 			_spec.Node.AddColumnOnce(asset.FieldMaterialID)
 		}
-		if aq.withSubscribe != nil {
-			_spec.Node.AddColumnOnce(asset.FieldSubscribeID)
-		}
 		if aq.withWarehouse != nil {
 			_spec.Node.AddColumnOnce(asset.FieldLocationsID)
 		}
@@ -1834,6 +1827,9 @@ func (aq *AssetQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if aq.withRtoRider != nil {
 			_spec.Node.AddColumnOnce(asset.FieldRtoRiderID)
+		}
+		if aq.withBatteryRider != nil {
+			_spec.Node.AddColumnOnce(asset.FieldLocationsID)
 		}
 	}
 	if ps := aq.predicates; len(ps) > 0 {
@@ -1912,7 +1908,6 @@ var (
 	AssetQueryWithTransferDetails    AssetQueryWith = "TransferDetails"
 	AssetQueryWithMaintenanceDetails AssetQueryWith = "MaintenanceDetails"
 	AssetQueryWithCheckDetails       AssetQueryWith = "CheckDetails"
-	AssetQueryWithSubscribe          AssetQueryWith = "Subscribe"
 	AssetQueryWithWarehouse          AssetQueryWith = "Warehouse"
 	AssetQueryWithStore              AssetQueryWith = "Store"
 	AssetQueryWithCabinet            AssetQueryWith = "Cabinet"
@@ -1922,6 +1917,7 @@ var (
 	AssetQueryWithEbikeAllocates     AssetQueryWith = "EbikeAllocates"
 	AssetQueryWithBatteryAllocates   AssetQueryWith = "BatteryAllocates"
 	AssetQueryWithRtoRider           AssetQueryWith = "RtoRider"
+	AssetQueryWithBatteryRider       AssetQueryWith = "BatteryRider"
 )
 
 func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
@@ -1945,8 +1941,6 @@ func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
 			aq.WithMaintenanceDetails()
 		case AssetQueryWithCheckDetails:
 			aq.WithCheckDetails()
-		case AssetQueryWithSubscribe:
-			aq.WithSubscribe()
 		case AssetQueryWithWarehouse:
 			aq.WithWarehouse()
 		case AssetQueryWithStore:
@@ -1965,6 +1959,8 @@ func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
 			aq.WithBatteryAllocates()
 		case AssetQueryWithRtoRider:
 			aq.WithRtoRider()
+		case AssetQueryWithBatteryRider:
+			aq.WithBatteryRider()
 		}
 	}
 	return aq
