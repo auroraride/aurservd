@@ -54,11 +54,11 @@ func loadWarestoreRoutes() {
 	auth.PUT("/transfer/cancel/:id", wapi.AssetTransfer.TransferCancel)   // 取消资产调拨
 
 	// 盘点
-	auth.GET("/check/sn/:sn", wapi.AssetCheck.GetAssetBySN)      // 通过SN查询资产
-	auth.GET("/check", wapi.AssetCheck.List)                     // 盘点记录
-	auth.POST("/check", wapi.AssetCheck.Create)                  // 创建资产盘点
-	auth.GET("/check/:id", wapi.AssetCheck.Detail)               // 盘点详情
-	auth.GET("/check/asset:id", wapi.AssetCheck.AssetDetailList) // 盘点资产明细
+	auth.GET("/check/sn/:sn", wapi.AssetCheck.GetAssetBySN)       // 通过SN查询资产
+	auth.GET("/check", wapi.AssetCheck.List)                      // 盘点记录
+	auth.POST("/check", wapi.AssetCheck.Create)                   // 创建资产盘点
+	auth.GET("/check/:id", wapi.AssetCheck.Detail)                // 盘点详情
+	auth.GET("/check/asset/:id", wapi.AssetCheck.AssetDetailList) // 盘点资产明细
 
 	// 电柜操作
 	auth.GET("/cabinet/:serial", wapi.Cabinet.Detail)
