@@ -44,7 +44,7 @@ func NewStoreAssetWithModifier(m *model.Modifier) *storeAssetBiz {
 // Assets 资产列表
 func (b *storeAssetBiz) Assets(req *definition.StoreAssetListReq) (res *model.PaginationRes) {
 	// 查询分页的门店数据
-	q := b.orm.QueryNotDeleted().WithCity().Order(ent.Desc(agreement.FieldCreatedAt))
+	q := b.orm.QueryNotDeleted().WithCity().WithGroup().Order(ent.Desc(agreement.FieldCreatedAt))
 	b.assetsFilter(q, req)
 	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Store) (result *definition.StoreAssetDetail) {
 		result = &definition.StoreAssetDetail{
@@ -59,6 +59,9 @@ func (b *storeAssetBiz) Assets(req *definition.StoreAssetListReq) (res *model.Pa
 				ID:   item.Edges.City.ID,
 				Name: item.Edges.City.Name,
 			}
+		}
+		if item.Edges.Group != nil {
+			result.GroupName = item.Edges.Group.Name
 		}
 		return result
 	})

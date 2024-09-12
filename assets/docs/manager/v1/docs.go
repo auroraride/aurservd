@@ -19564,6 +19564,10 @@ const docTemplate = `{
                     "description": "是否智能柜套餐",
                     "type": "boolean"
                 },
+                "introductionImage": {
+                    "description": "商品介绍图",
+                    "type": "string"
+                },
                 "name": {
                     "description": "骑士卡名称",
                     "type": "string"

@@ -316,7 +316,7 @@ func (b *assetTransferBiz) transferLimit(req *definition.AssetTransferCreateReq)
 }
 
 // Flow 资产流转明细
-func (b *assetTransferBiz) Flow(req *model.AssetTransferFlowReq) []*model.AssetTransferFlow {
+func (b *assetTransferBiz) Flow(req *model.AssetTransferFlowReq) *model.PaginationRes {
 	return service.NewAssetTransfer().Flow(b.ctx, req)
 }
 
