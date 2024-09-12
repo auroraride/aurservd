@@ -11859,6 +11859,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "门店集合ID",
+                        "name": "groupID",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "门店名称",
                         "name": "name",
