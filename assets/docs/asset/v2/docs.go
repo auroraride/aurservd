@@ -4284,9 +4284,21 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "结束时间",
                         "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
                         "in": "query"
                     },
                     {
@@ -4307,10 +4319,22 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.AssetTransferFlow"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AssetTransferFlow"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -7204,6 +7228,10 @@ const docTemplate = `{
                 "reason": {
                     "description": "调拨事由",
                     "type": "string"
+                },
+                "skipLimit": {
+                    "description": "是否跳过限制 true:跳过 false:不跳过",
+                    "type": "boolean"
                 },
                 "toLocationID": {
                     "description": "调拨后位置ID",

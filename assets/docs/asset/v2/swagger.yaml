@@ -1410,6 +1410,9 @@ definitions:
       reason:
         description: 调拨事由
         type: string
+      skipLimit:
+        description: 是否跳过限制 true:跳过 false:不跳过
+        type: boolean
       toLocationID:
         description: 调拨后位置ID
         type: integer
@@ -5139,10 +5142,18 @@ paths:
         - AssetTypeCabinetAccessory
         - AssetTypeEbikeAccessory
         - AssetTypeOtherAccessory
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
       - description: 结束时间
         in: query
         name: end
         type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
       - description: 资产编号
         in: query
         name: sn
@@ -5158,9 +5169,14 @@ paths:
         "200":
           description: 请求成功
           schema:
-            items:
-              $ref: '#/definitions/model.AssetTransferFlow'
-            type: array
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.AssetTransferFlow'
+                  type: array
+              type: object
       summary: 资产流转明细
       tags:
       - 资产

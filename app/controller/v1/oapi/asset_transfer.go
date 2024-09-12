@@ -99,9 +99,9 @@ func (*assetTransfer) TransferBySn(c echo.Context) (err error) {
 // @Tags	AssetTransfer - 资产调拨
 // @Accept	json
 // @Produce	json
-// @Param	X-Maintainer-Token	header		string						true	"仓管校验token"
-// @Param	query				query		model.AssetTransferFlowReq	true	"查询参数"
-// @Success	200					{object}	[]model.AssetTransferFlow	"请求成功"
+// @Param	X-Maintainer-Token	header		string													true	"仓管校验token"
+// @Param	query				query		model.AssetTransferFlowReq								true	"查询参数"
+// @Success	200					{object}	model.PaginationRes{items=[]model.AssetTransferFlow}	"请求成功"
 func (*assetTransfer) TransferFlow(c echo.Context) (err error) {
 	ctx, req := app.MaintainerContextAndBinding[model.AssetTransferFlowReq](c)
 	return ctx.SendResponse(biz.NewAssetTransfer().Flow(req))
