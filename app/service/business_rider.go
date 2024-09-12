@@ -587,6 +587,7 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 			bin, bat, err = s.doTask()
 			if err != nil {
 				zap.L().Error("骑手业务取出电池后任务执行失败: "+doReq.Type.String(), zap.Error(err))
+				return
 			}
 			b, _ := NewAsset().QueryID(bat.ID)
 			if b == nil {
@@ -780,7 +781,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 			// 	NewBattery(s.modifier).Allocate(s.battery, s.subscribe, model.AssetTransferTypeActive),
 			// )
 			//
-			err = s.battery.Update().SetSubscribeID(s.subscribe.ID).Exec(s.ctx)
+			err = s.battery.Update().SetSubscribeID(s.subscribe.ID).SetNillableOrdinal(nil).Exec(s.ctx)
 			if err != nil {
 				snag.Panic(err)
 			}

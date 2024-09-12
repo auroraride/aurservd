@@ -77,11 +77,12 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (res *
 	}
 
 	// 判定非智能套餐门店库存
-	checkAsset, _ := service.NewAsset().CheckAsset(model.AssetLocationsTypeStore, *allo.StoreID, sub.Model)
-	if allo.StoreID != nil && allo.BatteryID == nil && checkAsset == nil {
-		return nil, errors.New("库存不足")
+	if allo.StoreID != nil {
+		checkAsset, _ := service.NewAsset().CheckAsset(model.AssetLocationsTypeStore, *allo.StoreID, sub.Model)
+		if allo.StoreID != nil && allo.BatteryID == nil && checkAsset == nil {
+			return nil, errors.New("库存不足")
+		}
 	}
-
 	person, _ := r.QueryPerson().First(s.ctx)
 	if person == nil {
 		return nil, errors.New("未找到骑手信息")
