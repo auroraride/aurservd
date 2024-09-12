@@ -114,6 +114,7 @@ type StoreListReq struct {
 	Status *StoreStatus `json:"status" query:"status"` // 门店状态
 
 	BusinessType *StoreBusinessType `json:"businessType" query:"businessType"` // 业务类型 1:领取车辆(租车) 2:维修车辆 3:买车 4:驿站
+	GroupID      *uint64            `json:"groupID" query:"groupID"`           // 门店集合ID
 }
 
 type StoreSwtichStatusReq struct {

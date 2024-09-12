@@ -116,7 +116,7 @@ func (b *employeeBiz) detail(item *ent.Employee) definition.EmployeeListRes {
 		stis := make([]*definition.StoreInfo, 0)
 		all, _ := ent.Database.Store.QueryNotDeleted().Where(store.GroupID(gp.ID)).All(b.ctx)
 		for _, s := range all {
-			ests = append(ests, &definition.StoreInfo{
+			stis = append(stis, &definition.StoreInfo{
 				ID:   s.ID,
 				Name: s.Name,
 			})

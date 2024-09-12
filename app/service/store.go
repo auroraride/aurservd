@@ -203,6 +203,9 @@ func (s *storeService) List(req *model.StoreListReq) *model.PaginationRes {
 	if req.Status != nil {
 		q.Where(store.Status(req.Status.Value()))
 	}
+	if req.GroupID != nil {
+		q.Where(store.GroupID(*req.GroupID))
+	}
 
 	if req.BusinessType != nil {
 		switch *req.BusinessType {
