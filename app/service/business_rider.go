@@ -548,7 +548,7 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 
 			// 需要进行业务出入库
 			if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil || s.ebikeStoreID != nil || s.batStoreID != nil {
-				_, _, err = NewStock(s.modifier, s.operator).RiderBusiness(
+				err = NewStock(s.modifier, s.operator).RiderBusiness(
 					&model.StockBusinessReq{
 						RiderID:           s.subscribe.RiderID,
 						Model:             s.subscribe.Model,
@@ -588,9 +588,49 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 			if err != nil {
 				zap.L().Error("骑手业务取出电池后任务执行失败: "+doReq.Type.String(), zap.Error(err))
 			}
-			// if bat != nil && s.cabinet.Intelligent {
-			// _ = batSk.Update().SetBatteryID(bat.ID).Exec(s.ctx)
-			// }
+			b, _ := NewAsset().QueryID(bat.ID)
+			if b != nil {
+				zap.L().Error("电池查询失败")
+				return
+			}
+			// 查询调拨单
+			t, _ := NewAssetTransfer().QueryTransferByAssetID(s.ctx, bat.ID)
+			if t != nil {
+				zap.L().Error("调拨单查询失败")
+				return
+			}
+			detail := make([]model.AssetTransferReceiveDetail, 0)
+			if b.Type == model.AssetTypeSmartBattery.Value() {
+				detail = append(detail, model.AssetTransferReceiveDetail{
+					AssetType: model.AssetType(b.Type),
+					SN:        silk.String(b.Sn),
+				})
+			}
+			if b.Type == model.AssetTypeNonSmartBattery.Value() {
+				detail = append(detail, model.AssetTransferReceiveDetail{
+					AssetType: model.AssetType(b.Type),
+					Num:       silk.UInt(1),
+					ModelID:   b.ModelID,
+				})
+			}
+
+			err = NewAssetTransfer(s.operator).TransferReceive(s.ctx, &model.AssetTransferReceiveBatchReq{
+				OperateType: s.operator.Type,
+				AssetTransferReceive: []model.AssetTransferReceiveReq{
+					{
+						ID:     t.ID,
+						Detail: detail,
+						Remark: silk.String("骑手业务" + doReq.Type.String() + "电池接收"),
+					},
+				},
+			}, &model.Modifier{
+				ID:    s.operator.ID,
+				Name:  s.operator.Name,
+				Phone: s.operator.Phone,
+			})
+			if err != nil {
+				return
+			}
 		}
 
 		// 保存业务日志
