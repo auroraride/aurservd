@@ -62,7 +62,7 @@ func (b *assetCheckBiz) GetAssetBySN(assetSignInfo definition.AssetSignInfo, req
 		newReq.OperatorType = sType
 		newReq.OperatorID = assetSignInfo.Employee.ID
 		// 上班确定门店位置
-		ep, _ := ent.Database.Employee.QueryNotDeleted().WithStore().
+		ep, _ := ent.Database.Employee.QueryNotDeleted().WithDutyStore().
 			Where(
 				employee.ID(assetSignInfo.Employee.ID),
 			).First(b.ctx)
@@ -70,7 +70,7 @@ func (b *assetCheckBiz) GetAssetBySN(assetSignInfo definition.AssetSignInfo, req
 			return nil, errors.New("无效店员")
 		}
 
-		if ep.Edges.Store == nil {
+		if ep.Edges.DutyStore == nil {
 			return nil, errors.New("未找到店员上班信息")
 		}
 
@@ -136,7 +136,7 @@ func (b *assetCheckBiz) Create(assetSignInfo definition.AssetSignInfo, req *defi
 	if assetSignInfo.Employee != nil {
 		sType := model.AssetLocationsTypeStore
 		newReq.LocationsType = sType
-		ep, _ := ent.Database.Employee.QueryNotDeleted().WithStore().
+		ep, _ := ent.Database.Employee.QueryNotDeleted().WithDutyStore().
 			Where(
 				employee.ID(assetSignInfo.Employee.ID),
 			).First(b.ctx)
@@ -144,7 +144,7 @@ func (b *assetCheckBiz) Create(assetSignInfo definition.AssetSignInfo, req *defi
 			return nil, errors.New("无效店员")
 		}
 
-		if ep.Edges.Store == nil {
+		if ep.Edges.DutyStore == nil {
 			return nil, errors.New("未找到店员上班信息")
 		}
 
@@ -214,7 +214,7 @@ func (b *assetCheckBiz) List(assetSignInfo definition.AssetSignInfo, req *defini
 		sType := model.AssetLocationsTypeStore
 		newReq.LocationsType = &sType
 
-		ep, _ := ent.Database.Employee.QueryNotDeleted().WithStore().
+		ep, _ := ent.Database.Employee.QueryNotDeleted().WithDutyStore().
 			Where(
 				employee.ID(assetSignInfo.Employee.ID),
 			).First(b.ctx)
@@ -222,7 +222,7 @@ func (b *assetCheckBiz) List(assetSignInfo definition.AssetSignInfo, req *defini
 			return nil, errors.New("无效店员")
 		}
 
-		if ep.Edges.Store == nil {
+		if ep.Edges.DutyStore == nil {
 			return nil, errors.New("未找到店员上班信息")
 		}
 

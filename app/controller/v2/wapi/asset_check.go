@@ -100,6 +100,6 @@ func (*assetCheck) List(c echo.Context) (err error) {
 // @Param	query				query		model.AssetCheckDetailListReq						true	"查询参数"
 // @Success	200					{object}	model.PaginationRes{items=[]model.AssetCheckDetail}	"请求成功"
 func (*assetCheck) AssetDetailList(c echo.Context) (err error) {
-	ctx, req := app.AssetManagerContextAndBinding[model.AssetCheckDetailListReq](c)
+	ctx, req := app.WarestoreContextAndBinding[model.AssetCheckDetailListReq](c)
 	return ctx.SendResponse(service.NewAssetCheck().AssetDetailList(ctx.Request().Context(), req))
 }
