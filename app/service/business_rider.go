@@ -589,13 +589,13 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 				zap.L().Error("骑手业务取出电池后任务执行失败: "+doReq.Type.String(), zap.Error(err))
 			}
 			b, _ := NewAsset().QueryID(bat.ID)
-			if b != nil {
+			if b == nil {
 				zap.L().Error(fmt.Sprintf("业务：电池查询失败  sn:%s, id:%d", bat.SN, bat.ID))
 				return
 			}
 			// 查询调拨单
 			t, _ := NewAssetTransfer().QueryTransferByAssetID(s.ctx, bat.ID)
-			if t != nil {
+			if t == nil {
 				zap.L().Error("调拨单查询失败")
 				return
 			}
