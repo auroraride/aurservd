@@ -551,7 +551,11 @@ func (s *batteryService) Allocate(bat *ent.Asset, sub *ent.Subscribe, transferTy
 		OperatorType:      s.operator.Type,
 		AutoIn:            autoIn,
 		SkipLimit:         true,
-	}, s.modifier)
+	}, &model.Modifier{
+		ID:    s.operator.ID,
+		Name:  s.operator.Name,
+		Phone: s.operator.Phone,
+	})
 	if err != nil {
 		return err
 	}
@@ -599,7 +603,11 @@ func (s *batteryService) Unallocate(bat *ent.Asset, toLocationType model.AssetLo
 		OperatorType:      s.operator.Type,
 		AutoIn:            true, // 自动入库
 		SkipLimit:         true,
-	}, s.modifier)
+	}, &model.Modifier{
+		ID:    s.operator.ID,
+		Name:  s.operator.Name,
+		Phone: s.operator.Phone,
+	})
 	if err != nil {
 		return err
 	}
