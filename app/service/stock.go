@@ -481,7 +481,7 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 			toLocationID = *req.StationID
 		}
 	default:
-		return nil, nil, errors.New("业务类型错误")
+		return errors.New("业务类型错误")
 	}
 
 	if ebikeInfo != nil {
@@ -531,10 +531,10 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 			Phone: s.operator.Phone,
 		})
 		if err != nil {
-			return nil, nil, err
+			return err
 		}
 		if len(failed) > 0 {
-			return nil, nil, errors.New(failed[0])
+			return errors.New(failed[0])
 		}
 	}
 
@@ -558,10 +558,10 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 			Phone: s.operator.Phone,
 		})
 		if err != nil {
-			return nil, nil, err
+			return err
 		}
 		if len(failed) > 0 {
-			return nil, nil, errors.New(failed[0])
+			return errors.New(failed[0])
 		}
 	}
 	return
