@@ -77,6 +77,8 @@ const (
 	EdgeMaintenanceDetails = "maintenance_details"
 	// EdgeCheckDetails holds the string denoting the check_details edge name in mutations.
 	EdgeCheckDetails = "check_details"
+	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
+	EdgeSubscribe = "subscribe"
 	// EdgeWarehouse holds the string denoting the warehouse edge name in mutations.
 	EdgeWarehouse = "warehouse"
 	// EdgeStore holds the string denoting the store edge name in mutations.
@@ -162,6 +164,13 @@ const (
 	CheckDetailsInverseTable = "asset_check_details"
 	// CheckDetailsColumn is the table column denoting the check_details relation/edge.
 	CheckDetailsColumn = "asset_id"
+	// SubscribeTable is the table that holds the subscribe relation/edge.
+	SubscribeTable = "asset"
+	// SubscribeInverseTable is the table name for the Subscribe entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
+	SubscribeInverseTable = "subscribe"
+	// SubscribeColumn is the table column denoting the subscribe relation/edge.
+	SubscribeColumn = "subscribe_id"
 	// WarehouseTable is the table that holds the warehouse relation/edge.
 	WarehouseTable = "asset"
 	// WarehouseInverseTable is the table name for the Warehouse entity.
@@ -496,6 +505,13 @@ func ByCheckDetails(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// BySubscribeField orders the results by subscribe field.
+func BySubscribeField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSubscribeStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByWarehouseField orders the results by warehouse field.
 func ByWarehouseField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -640,6 +656,13 @@ func newCheckDetailsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CheckDetailsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CheckDetailsTable, CheckDetailsColumn),
+	)
+}
+func newSubscribeStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SubscribeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, SubscribeTable, SubscribeColumn),
 	)
 }
 func newWarehouseStep() *sqlgraph.Step {

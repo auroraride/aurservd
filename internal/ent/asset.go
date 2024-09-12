@@ -21,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
@@ -99,6 +100,8 @@ type AssetEdges struct {
 	MaintenanceDetails []*AssetMaintenanceDetails `json:"maintenance_details,omitempty"`
 	// CheckDetails holds the value of the check_details edge.
 	CheckDetails []*AssetCheckDetails `json:"check_details,omitempty"`
+	// Subscribe holds the value of the subscribe edge.
+	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// Warehouse holds the value of the warehouse edge.
 	Warehouse *Warehouse `json:"warehouse,omitempty"`
 	// Store holds the value of the store edge.
@@ -121,7 +124,7 @@ type AssetEdges struct {
 	BatteryRider *Rider `json:"battery_rider,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [19]bool
+	loadedTypes [20]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
@@ -213,12 +216,23 @@ func (e AssetEdges) CheckDetailsOrErr() ([]*AssetCheckDetails, error) {
 	return nil, &NotLoadedError{edge: "check_details"}
 }
 
+// SubscribeOrErr returns the Subscribe value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetEdges) SubscribeOrErr() (*Subscribe, error) {
+	if e.Subscribe != nil {
+		return e.Subscribe, nil
+	} else if e.loadedTypes[9] {
+		return nil, &NotFoundError{label: subscribe.Label}
+	}
+	return nil, &NotLoadedError{edge: "subscribe"}
+}
+
 // WarehouseOrErr returns the Warehouse value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AssetEdges) WarehouseOrErr() (*Warehouse, error) {
 	if e.Warehouse != nil {
 		return e.Warehouse, nil
-	} else if e.loadedTypes[9] {
+	} else if e.loadedTypes[10] {
 		return nil, &NotFoundError{label: warehouse.Label}
 	}
 	return nil, &NotLoadedError{edge: "warehouse"}
@@ -229,7 +243,7 @@ func (e AssetEdges) WarehouseOrErr() (*Warehouse, error) {
 func (e AssetEdges) StoreOrErr() (*Store, error) {
 	if e.Store != nil {
 		return e.Store, nil
-	} else if e.loadedTypes[10] {
+	} else if e.loadedTypes[11] {
 		return nil, &NotFoundError{label: store.Label}
 	}
 	return nil, &NotLoadedError{edge: "store"}
@@ -240,7 +254,7 @@ func (e AssetEdges) StoreOrErr() (*Store, error) {
 func (e AssetEdges) CabinetOrErr() (*Cabinet, error) {
 	if e.Cabinet != nil {
 		return e.Cabinet, nil
-	} else if e.loadedTypes[11] {
+	} else if e.loadedTypes[12] {
 		return nil, &NotFoundError{label: cabinet.Label}
 	}
 	return nil, &NotLoadedError{edge: "cabinet"}
@@ -251,7 +265,7 @@ func (e AssetEdges) CabinetOrErr() (*Cabinet, error) {
 func (e AssetEdges) StationOrErr() (*EnterpriseStation, error) {
 	if e.Station != nil {
 		return e.Station, nil
-	} else if e.loadedTypes[12] {
+	} else if e.loadedTypes[13] {
 		return nil, &NotFoundError{label: enterprisestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "station"}
@@ -262,7 +276,7 @@ func (e AssetEdges) StationOrErr() (*EnterpriseStation, error) {
 func (e AssetEdges) RiderOrErr() (*Rider, error) {
 	if e.Rider != nil {
 		return e.Rider, nil
-	} else if e.loadedTypes[13] {
+	} else if e.loadedTypes[14] {
 		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
@@ -273,7 +287,7 @@ func (e AssetEdges) RiderOrErr() (*Rider, error) {
 func (e AssetEdges) OperatorOrErr() (*Maintainer, error) {
 	if e.Operator != nil {
 		return e.Operator, nil
-	} else if e.loadedTypes[14] {
+	} else if e.loadedTypes[15] {
 		return nil, &NotFoundError{label: maintainer.Label}
 	}
 	return nil, &NotLoadedError{edge: "operator"}
@@ -282,7 +296,7 @@ func (e AssetEdges) OperatorOrErr() (*Maintainer, error) {
 // EbikeAllocatesOrErr returns the EbikeAllocates value or an error if the edge
 // was not loaded in eager-loading.
 func (e AssetEdges) EbikeAllocatesOrErr() ([]*Allocate, error) {
-	if e.loadedTypes[15] {
+	if e.loadedTypes[16] {
 		return e.EbikeAllocates, nil
 	}
 	return nil, &NotLoadedError{edge: "ebike_allocates"}
@@ -291,7 +305,7 @@ func (e AssetEdges) EbikeAllocatesOrErr() ([]*Allocate, error) {
 // BatteryAllocatesOrErr returns the BatteryAllocates value or an error if the edge
 // was not loaded in eager-loading.
 func (e AssetEdges) BatteryAllocatesOrErr() ([]*Allocate, error) {
-	if e.loadedTypes[16] {
+	if e.loadedTypes[17] {
 		return e.BatteryAllocates, nil
 	}
 	return nil, &NotLoadedError{edge: "battery_allocates"}
@@ -302,7 +316,7 @@ func (e AssetEdges) BatteryAllocatesOrErr() ([]*Allocate, error) {
 func (e AssetEdges) RtoRiderOrErr() (*Rider, error) {
 	if e.RtoRider != nil {
 		return e.RtoRider, nil
-	} else if e.loadedTypes[17] {
+	} else if e.loadedTypes[18] {
 		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rto_rider"}
@@ -313,7 +327,7 @@ func (e AssetEdges) RtoRiderOrErr() (*Rider, error) {
 func (e AssetEdges) BatteryRiderOrErr() (*Rider, error) {
 	if e.BatteryRider != nil {
 		return e.BatteryRider, nil
-	} else if e.loadedTypes[18] {
+	} else if e.loadedTypes[19] {
 		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "battery_rider"}
@@ -556,6 +570,11 @@ func (a *Asset) QueryMaintenanceDetails() *AssetMaintenanceDetailsQuery {
 // QueryCheckDetails queries the "check_details" edge of the Asset entity.
 func (a *Asset) QueryCheckDetails() *AssetCheckDetailsQuery {
 	return NewAssetClient(a.config).QueryCheckDetails(a)
+}
+
+// QuerySubscribe queries the "subscribe" edge of the Asset entity.
+func (a *Asset) QuerySubscribe() *SubscribeQuery {
+	return NewAssetClient(a.config).QuerySubscribe(a)
 }
 
 // QueryWarehouse queries the "warehouse" edge of the Asset entity.

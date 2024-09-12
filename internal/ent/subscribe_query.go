@@ -56,7 +56,6 @@ type SubscribeQuery struct {
 	withEbike           *AssetQuery
 	withBattery         *AssetQuery
 	withEnterprisePrice *EnterprisePriceQuery
-	withFKs             bool
 	modifiers           []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -460,7 +459,7 @@ func (sq *SubscribeQuery) QueryBattery() *AssetQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
 			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.BatteryTable, subscribe.BatteryColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, subscribe.BatteryTable, subscribe.BatteryColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -981,7 +980,6 @@ func (sq *SubscribeQuery) prepareQuery(ctx context.Context) error {
 func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Subscribe, error) {
 	var (
 		nodes       = []*Subscribe{}
-		withFKs     = sq.withFKs
 		_spec       = sq.querySpec()
 		loadedTypes = [18]bool{
 			sq.withPlan != nil,
@@ -1004,12 +1002,6 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			sq.withEnterprisePrice != nil,
 		}
 	)
-	if sq.withBattery != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, subscribe.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Subscribe).scanValues(nil, columns)
 	}
@@ -1133,8 +1125,9 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 		}
 	}
 	if query := sq.withBattery; query != nil {
-		if err := sq.loadBattery(ctx, query, nodes, nil,
-			func(n *Subscribe, e *Asset) { n.Edges.Battery = e }); err != nil {
+		if err := sq.loadBattery(ctx, query, nodes,
+			func(n *Subscribe) { n.Edges.Battery = []*Asset{} },
+			func(n *Subscribe, e *Asset) { n.Edges.Battery = append(n.Edges.Battery, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1641,34 +1634,35 @@ func (sq *SubscribeQuery) loadEbike(ctx context.Context, query *AssetQuery, node
 	return nil
 }
 func (sq *SubscribeQuery) loadBattery(ctx context.Context, query *AssetQuery, nodes []*Subscribe, init func(*Subscribe), assign func(*Subscribe, *Asset)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Subscribe)
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Subscribe)
 	for i := range nodes {
-		if nodes[i].subscribe_battery == nil {
-			continue
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
 		}
-		fk := *nodes[i].subscribe_battery
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
-	if len(ids) == 0 {
-		return nil
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(asset.FieldSubscribeID)
 	}
-	query.Where(asset.IDIn(ids...))
+	query.Where(predicate.Asset(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(subscribe.BatteryColumn), fks...))
+	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
+		fk := n.SubscribeID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "subscribe_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "subscribe_battery" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "subscribe_id" returned %v for node %v`, *fk, n.ID)
 		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
+		assign(node, n)
 	}
 	return nil
 }

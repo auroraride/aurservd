@@ -28,6 +28,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
@@ -416,6 +417,11 @@ func (ac *AssetCreate) AddCheckDetails(a ...*AssetCheckDetails) *AssetCreate {
 	return ac.AddCheckDetailIDs(ids...)
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (ac *AssetCreate) SetSubscribe(s *Subscribe) *AssetCreate {
+	return ac.SetSubscribeID(s.ID)
+}
+
 // SetWarehouseID sets the "warehouse" edge to the Warehouse entity by ID.
 func (ac *AssetCreate) SetWarehouseID(id uint64) *AssetCreate {
 	ac.mutation.SetWarehouseID(id)
@@ -755,10 +761,6 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		_spec.SetField(asset.FieldBrandName, field.TypeString, value)
 		_node.BrandName = value
 	}
-	if value, ok := ac.mutation.SubscribeID(); ok {
-		_spec.SetField(asset.FieldSubscribeID, field.TypeUint64, value)
-		_node.SubscribeID = &value
-	}
 	if value, ok := ac.mutation.Ordinal(); ok {
 		_spec.SetField(asset.FieldOrdinal, field.TypeInt, value)
 		_node.Ordinal = &value
@@ -909,6 +911,23 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.SubscribeTable,
+			Columns: []string{asset.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.SubscribeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ac.mutation.WarehouseIDs(); len(nodes) > 0 {
@@ -1455,12 +1474,6 @@ func (u *AssetUpsert) UpdateSubscribeID() *AssetUpsert {
 	return u
 }
 
-// AddSubscribeID adds v to the "subscribe_id" field.
-func (u *AssetUpsert) AddSubscribeID(v uint64) *AssetUpsert {
-	u.Add(asset.FieldSubscribeID, v)
-	return u
-}
-
 // ClearSubscribeID clears the value of the "subscribe_id" field.
 func (u *AssetUpsert) ClearSubscribeID() *AssetUpsert {
 	u.SetNull(asset.FieldSubscribeID)
@@ -1913,13 +1926,6 @@ func (u *AssetUpsertOne) ClearBrandName() *AssetUpsertOne {
 func (u *AssetUpsertOne) SetSubscribeID(v uint64) *AssetUpsertOne {
 	return u.Update(func(s *AssetUpsert) {
 		s.SetSubscribeID(v)
-	})
-}
-
-// AddSubscribeID adds v to the "subscribe_id" field.
-func (u *AssetUpsertOne) AddSubscribeID(v uint64) *AssetUpsertOne {
-	return u.Update(func(s *AssetUpsert) {
-		s.AddSubscribeID(v)
 	})
 }
 
@@ -2553,13 +2559,6 @@ func (u *AssetUpsertBulk) ClearBrandName() *AssetUpsertBulk {
 func (u *AssetUpsertBulk) SetSubscribeID(v uint64) *AssetUpsertBulk {
 	return u.Update(func(s *AssetUpsert) {
 		s.SetSubscribeID(v)
-	})
-}
-
-// AddSubscribeID adds v to the "subscribe_id" field.
-func (u *AssetUpsertBulk) AddSubscribeID(v uint64) *AssetUpsertBulk {
-	return u.Update(func(s *AssetUpsert) {
-		s.AddSubscribeID(v)
 	})
 }
 

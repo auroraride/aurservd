@@ -3063,6 +3063,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"AssetCheckDetails",
 	)
 	graph.MustAddE(
+		"subscribe",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.SubscribeTable,
+			Columns: []string{asset.SubscribeColumn},
+			Bidi:    false,
+		},
+		"Asset",
+		"Subscribe",
+	)
+	graph.MustAddE(
 		"warehouse",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -7469,7 +7481,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 	graph.MustAddE(
 		"battery",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   subscribe.BatteryTable,
 			Columns: []string{subscribe.BatteryColumn},
@@ -8693,6 +8705,20 @@ func (f *AssetFilter) WhereHasCheckDetails() {
 // WhereHasCheckDetailsWith applies a predicate to check if query has an edge check_details with a given conditions (other predicates).
 func (f *AssetFilter) WhereHasCheckDetailsWith(preds ...predicate.AssetCheckDetails) {
 	f.Where(entql.HasEdgeWith("check_details", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
+func (f *AssetFilter) WhereHasSubscribe() {
+	f.Where(entql.HasEdge("subscribe"))
+}
+
+// WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
+func (f *AssetFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
+	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

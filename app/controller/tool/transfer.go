@@ -18,7 +18,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	"github.com/auroraride/aurservd/pkg/silk"
 )
 
 type transfer struct{}
@@ -55,7 +54,7 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
 
 		var (
 			bat *ent.Asset
-			bid *uint64
+			// bid *uint64
 
 			bm = sub.Model
 		)
@@ -77,13 +76,13 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
 
 			// 设置电池信息
 			bm = ab.Model
-			bid = silk.UInt64(bat.ID)
+			// bid = silk.UInt64(bat.ID)
 		}
 
 		err = ent.WithTx(ctx, func(tx *ent.Tx) (err error) {
 			err = tx.Subscribe.UpdateOneID(sub.ID).
 				SetIntelligent(intelligent).
-				SetNillableBatteryID(bid).
+				// SetNillableBatteryID(bid).
 				SetModel(bm).
 				Exec(ctx)
 			if err != nil {

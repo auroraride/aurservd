@@ -511,56 +511,59 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (batSk, ebikeS
 		autoIn = false
 	}
 
-	// 创建调拨单
-	_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
-		FromLocationType:  &fromLocationType,
-		FromLocationID:    &fromLocationID,
-		ToLocationType:    toLocationType,
-		ToLocationID:      toLocationID,
-		Details:           details,
-		Reason:            req.AssetTransferType.String() + "骑手业务",
-		AssetTransferType: req.AssetTransferType,
-		OperatorID:        s.operator.ID,
-		OperatorType:      s.operator.Type,
-		AutoIn:            autoIn,
-		SkipLimit:         true,
-	}, &model.Modifier{
-		ID:    s.operator.ID,
-		Name:  s.operator.Name,
-		Phone: s.operator.Phone,
-	})
-	if err != nil {
-		return nil, nil, err
-	}
-	if len(failed) > 0 {
-		return nil, nil, errors.New(failed[0])
-	}
-
-	// 电车创建调拨单
-	_, failed, err = NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
-		FromLocationType:  &fromLocationType,
-		FromLocationID:    &fromLocationID,
-		ToLocationType:    toLocationType,
-		ToLocationID:      toLocationID,
-		Details:           ebikeDetails,
-		Reason:            req.AssetTransferType.String() + "骑手业务",
-		AssetTransferType: req.AssetTransferType,
-		OperatorID:        s.operator.ID,
-		OperatorType:      s.operator.Type,
-		AutoIn:            autoIn,
-		SkipLimit:         true,
-	}, &model.Modifier{
-		ID:    s.operator.ID,
-		Name:  s.operator.Name,
-		Phone: s.operator.Phone,
-	})
-	if err != nil {
-		return nil, nil, err
-	}
-	if len(failed) > 0 {
-		return nil, nil, errors.New(failed[0])
+	if len(details) != 0 {
+		// 创建调拨单
+		_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
+			FromLocationType:  &fromLocationType,
+			FromLocationID:    &fromLocationID,
+			ToLocationType:    toLocationType,
+			ToLocationID:      toLocationID,
+			Details:           details,
+			Reason:            req.AssetTransferType.String() + "骑手业务",
+			AssetTransferType: req.AssetTransferType,
+			OperatorID:        s.operator.ID,
+			OperatorType:      s.operator.Type,
+			AutoIn:            autoIn,
+			SkipLimit:         true,
+		}, &model.Modifier{
+			ID:    s.operator.ID,
+			Name:  s.operator.Name,
+			Phone: s.operator.Phone,
+		})
+		if err != nil {
+			return nil, nil, err
+		}
+		if len(failed) > 0 {
+			return nil, nil, errors.New(failed[0])
+		}
 	}
 
+	if len(ebikeDetails) != 0 {
+		// 电车创建调拨单
+		_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
+			FromLocationType:  &fromLocationType,
+			FromLocationID:    &fromLocationID,
+			ToLocationType:    toLocationType,
+			ToLocationID:      toLocationID,
+			Details:           ebikeDetails,
+			Reason:            req.AssetTransferType.String() + "骑手业务",
+			AssetTransferType: req.AssetTransferType,
+			OperatorID:        s.operator.ID,
+			OperatorType:      s.operator.Type,
+			AutoIn:            autoIn,
+			SkipLimit:         true,
+		}, &model.Modifier{
+			ID:    s.operator.ID,
+			Name:  s.operator.Name,
+			Phone: s.operator.Phone,
+		})
+		if err != nil {
+			return nil, nil, err
+		}
+		if len(failed) > 0 {
+			return nil, nil, errors.New(failed[0])
+		}
+	}
 	return
 }
 

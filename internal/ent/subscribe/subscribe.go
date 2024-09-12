@@ -250,12 +250,12 @@ const (
 	// EbikeColumn is the table column denoting the ebike relation/edge.
 	EbikeColumn = "ebike_id"
 	// BatteryTable is the table that holds the battery relation/edge.
-	BatteryTable = "subscribe"
+	BatteryTable = "asset"
 	// BatteryInverseTable is the table name for the Asset entity.
 	// It exists in this package in order to avoid circular dependency with the "asset" package.
 	BatteryInverseTable = "asset"
 	// BatteryColumn is the table column denoting the battery relation/edge.
-	BatteryColumn = "subscribe_battery"
+	BatteryColumn = "subscribe_id"
 	// EnterprisePriceTable is the table that holds the enterprise_price relation/edge.
 	EnterprisePriceTable = "subscribe"
 	// EnterprisePriceInverseTable is the table name for the EnterprisePrice entity.
@@ -312,21 +312,10 @@ var Columns = []string{
 	FieldEbikeID,
 }
 
-// ForeignKeys holds the SQL foreign-keys that are owned by the "subscribe"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"subscribe_battery",
-}
-
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -725,10 +714,17 @@ func ByEbikeField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByBatteryField orders the results by battery field.
-func ByBatteryField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByBatteryCount orders the results by battery count.
+func ByBatteryCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newBatteryStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborsCount(s, newBatteryStep(), opts...)
+	}
+}
+
+// ByBattery orders the results by battery terms.
+func ByBattery(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBatteryStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -854,7 +850,7 @@ func newBatteryStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BatteryInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
+		sqlgraph.Edge(sqlgraph.O2M, false, BatteryTable, BatteryColumn),
 	)
 }
 func newEnterprisePriceStep() *sqlgraph.Step {

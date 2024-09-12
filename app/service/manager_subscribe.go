@@ -174,7 +174,7 @@ func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeE
 		snag.Panic(failed[0])
 	}
 	// 更新订阅
-	err = ent.Database.Subscribe.UpdateOneID(sub.ID).SetEbikeID(newBike.ID).SetNillableBatteryID(newBike.BrandID).Exec(s.ctx)
+	err = ent.Database.Subscribe.UpdateOneID(sub.ID).SetEbikeID(newBike.ID).SetNillableBrandID(newBike.BrandID).Exec(s.ctx)
 	if err != nil {
 		snag.Panic(err)
 	}

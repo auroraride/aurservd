@@ -122,7 +122,7 @@ func (Subscribe) Edges() []ent.Edge {
 
 		edge.To("ebike", Asset.Type).Unique().Field("ebike_id"),
 
-		edge.To("battery", Asset.Type).Unique(),
+		edge.To("battery", Asset.Type),
 
 		edge.To("enterprise_price", EnterprisePrice.Type).Unique().Field("enterprise_price_id"),
 	}

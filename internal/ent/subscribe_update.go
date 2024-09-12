@@ -919,23 +919,19 @@ func (su *SubscribeUpdate) SetEbike(a *Asset) *SubscribeUpdate {
 	return su.SetEbikeID(a.ID)
 }
 
-// SetBatteryID sets the "battery" edge to the Asset entity by ID.
-func (su *SubscribeUpdate) SetBatteryID(id uint64) *SubscribeUpdate {
-	su.mutation.SetBatteryID(id)
+// AddBatteryIDs adds the "battery" edge to the Asset entity by IDs.
+func (su *SubscribeUpdate) AddBatteryIDs(ids ...uint64) *SubscribeUpdate {
+	su.mutation.AddBatteryIDs(ids...)
 	return su
 }
 
-// SetNillableBatteryID sets the "battery" edge to the Asset entity by ID if the given value is not nil.
-func (su *SubscribeUpdate) SetNillableBatteryID(id *uint64) *SubscribeUpdate {
-	if id != nil {
-		su = su.SetBatteryID(*id)
+// AddBattery adds the "battery" edges to the Asset entity.
+func (su *SubscribeUpdate) AddBattery(a ...*Asset) *SubscribeUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return su
-}
-
-// SetBattery sets the "battery" edge to the Asset entity.
-func (su *SubscribeUpdate) SetBattery(a *Asset) *SubscribeUpdate {
-	return su.SetBatteryID(a.ID)
+	return su.AddBatteryIDs(ids...)
 }
 
 // SetEnterprisePrice sets the "enterprise_price" edge to the EnterprisePrice entity.
@@ -1119,10 +1115,25 @@ func (su *SubscribeUpdate) ClearEbike() *SubscribeUpdate {
 	return su
 }
 
-// ClearBattery clears the "battery" edge to the Asset entity.
+// ClearBattery clears all "battery" edges to the Asset entity.
 func (su *SubscribeUpdate) ClearBattery() *SubscribeUpdate {
 	su.mutation.ClearBattery()
 	return su
+}
+
+// RemoveBatteryIDs removes the "battery" edge to Asset entities by IDs.
+func (su *SubscribeUpdate) RemoveBatteryIDs(ids ...uint64) *SubscribeUpdate {
+	su.mutation.RemoveBatteryIDs(ids...)
+	return su
+}
+
+// RemoveBattery removes "battery" edges to Asset entities.
+func (su *SubscribeUpdate) RemoveBattery(a ...*Asset) *SubscribeUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return su.RemoveBatteryIDs(ids...)
 }
 
 // ClearEnterprisePrice clears the "enterprise_price" edge to the EnterprisePrice entity.
@@ -1904,7 +1915,7 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if su.mutation.BatteryCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   subscribe.BatteryTable,
 			Columns: []string{subscribe.BatteryColumn},
@@ -1915,9 +1926,25 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
+	if nodes := su.mutation.RemovedBatteryIDs(); len(nodes) > 0 && !su.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.BatteryTable,
+			Columns: []string{subscribe.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
 	if nodes := su.mutation.BatteryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   subscribe.BatteryTable,
 			Columns: []string{subscribe.BatteryColumn},
@@ -2855,23 +2882,19 @@ func (suo *SubscribeUpdateOne) SetEbike(a *Asset) *SubscribeUpdateOne {
 	return suo.SetEbikeID(a.ID)
 }
 
-// SetBatteryID sets the "battery" edge to the Asset entity by ID.
-func (suo *SubscribeUpdateOne) SetBatteryID(id uint64) *SubscribeUpdateOne {
-	suo.mutation.SetBatteryID(id)
+// AddBatteryIDs adds the "battery" edge to the Asset entity by IDs.
+func (suo *SubscribeUpdateOne) AddBatteryIDs(ids ...uint64) *SubscribeUpdateOne {
+	suo.mutation.AddBatteryIDs(ids...)
 	return suo
 }
 
-// SetNillableBatteryID sets the "battery" edge to the Asset entity by ID if the given value is not nil.
-func (suo *SubscribeUpdateOne) SetNillableBatteryID(id *uint64) *SubscribeUpdateOne {
-	if id != nil {
-		suo = suo.SetBatteryID(*id)
+// AddBattery adds the "battery" edges to the Asset entity.
+func (suo *SubscribeUpdateOne) AddBattery(a ...*Asset) *SubscribeUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return suo
-}
-
-// SetBattery sets the "battery" edge to the Asset entity.
-func (suo *SubscribeUpdateOne) SetBattery(a *Asset) *SubscribeUpdateOne {
-	return suo.SetBatteryID(a.ID)
+	return suo.AddBatteryIDs(ids...)
 }
 
 // SetEnterprisePrice sets the "enterprise_price" edge to the EnterprisePrice entity.
@@ -3055,10 +3078,25 @@ func (suo *SubscribeUpdateOne) ClearEbike() *SubscribeUpdateOne {
 	return suo
 }
 
-// ClearBattery clears the "battery" edge to the Asset entity.
+// ClearBattery clears all "battery" edges to the Asset entity.
 func (suo *SubscribeUpdateOne) ClearBattery() *SubscribeUpdateOne {
 	suo.mutation.ClearBattery()
 	return suo
+}
+
+// RemoveBatteryIDs removes the "battery" edge to Asset entities by IDs.
+func (suo *SubscribeUpdateOne) RemoveBatteryIDs(ids ...uint64) *SubscribeUpdateOne {
+	suo.mutation.RemoveBatteryIDs(ids...)
+	return suo
+}
+
+// RemoveBattery removes "battery" edges to Asset entities.
+func (suo *SubscribeUpdateOne) RemoveBattery(a ...*Asset) *SubscribeUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return suo.RemoveBatteryIDs(ids...)
 }
 
 // ClearEnterprisePrice clears the "enterprise_price" edge to the EnterprisePrice entity.
@@ -3870,7 +3908,7 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 	}
 	if suo.mutation.BatteryCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   subscribe.BatteryTable,
 			Columns: []string{subscribe.BatteryColumn},
@@ -3881,9 +3919,25 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
+	if nodes := suo.mutation.RemovedBatteryIDs(); len(nodes) > 0 && !suo.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.BatteryTable,
+			Columns: []string{subscribe.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
 	if nodes := suo.mutation.BatteryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   subscribe.BatteryTable,
 			Columns: []string{subscribe.BatteryColumn},
