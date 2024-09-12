@@ -551,7 +551,11 @@ func (s *batteryService) Allocate(bat *ent.Asset, sub *ent.Subscribe, transferTy
 		OperatorType:      s.operator.Type,
 		AutoIn:            autoIn,
 		SkipLimit:         true,
-	}, s.modifier)
+	}, &model.Modifier{
+		ID:    s.operator.ID,
+		Name:  s.operator.Name,
+		Phone: s.operator.Phone,
+	})
 	if err != nil {
 		return err
 	}
