@@ -6,7 +6,6 @@
 package service
 
 import (
-	"context"
 	"math"
 	"strconv"
 	"time"
@@ -26,7 +25,6 @@ import (
 	"github.com/auroraride/aurservd/internal/baidu"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
-	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -77,7 +75,7 @@ func (s *batteryBmsService) SyncPutout(cab *ent.Cabinet, ordinal int) {
 		return
 	}
 	// 查询调拨
-	ent.Database.AssetTransferDetails.QueryNotDeleted().Where(assettransferdetails.AssetID(bat.ID))
+	// ent.Database.AssetTransferDetails.QueryNotDeleted().Where(assettransferdetails.AssetID(bat.ID))
 
 	// _ = s.orm.Update().Where(battery.CabinetID(cab.ID), battery.Ordinal(ordinal)).ClearCabinetID().ClearOrdinal().Exec(s.ctx)
 }
@@ -95,11 +93,11 @@ func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) 
 	}
 
 	// 查询电池有无调拨单 如果无调拨单 则更新电池信息
-	at, _ := NewAssetTransfer().QueryTransferByAssetID(context.Background(), bat.ID)
-	if at == nil {
-		zap.L().Error("电池调拨查询失败", zap.Error(err))
-		return
-	}
+	// at, _ := NewAssetTransfer().QueryTransferByAssetID(context.Background(), bat.ID)
+	// if at == nil {
+	// 	zap.L().Error("电池调拨查询失败", zap.Error(err))
+	// 	return
+	// }
 
 	// if time.Since(bat.UpdatedAt).Seconds() < 20 {
 	// 	rid := ""
@@ -110,9 +108,6 @@ func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) 
 	// 	return
 	// }
 
-	// 移除该仓位其他电池
-	// s.SyncPutout(cab, ordinal)
-	//
 	err = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
 		// 	updater := bat.Update().
 		// 		SetCabinetID(cab.ID).

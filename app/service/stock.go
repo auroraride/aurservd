@@ -431,7 +431,7 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 
 	// 激活和取消寄存 需要判定非智能库存
 	if req.Battery == nil && (req.AssetTransferType == model.AssetTransferTypeActive || req.AssetTransferType == model.AssetTransferTypeContinue) {
-		assetType = model.AssetTypeNonSmartBattery
+
 		if req.StoreID != nil || req.BatStoreID != nil {
 			batteryInfo, _ = s.CheckBusinessBattery(req, model.AssetLocationsTypeStore, storeID)
 		}
@@ -442,8 +442,15 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 
 		// 电柜业务
 		if req.CabinetID != nil {
-			batteryInfo, _ = s.CheckBusinessBattery(req, model.AssetLocationsTypeStation, *req.CabinetID)
+			batteryInfo, _ = s.CheckBusinessBattery(req, model.AssetLocationsTypeCabinet, *req.CabinetID)
 		}
+		if batteryInfo == nil {
+			err = errors.New("电池库存不足")
+			return
+		}
+	}
+	if batteryInfo != nil && batteryInfo.Type == model.AssetTypeNonSmartBattery.Value() {
+		assetType = model.AssetTypeNonSmartBattery
 	}
 
 	// 如果是骑手自己操作 激活和取消寄存拿走电池 会有电柜任务已经执行调拨
@@ -504,12 +511,6 @@ func (s *stockService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 			})
 		}
 	}
-
-	// autoIn := true
-	// if s.operator.Type == model.OperatorTypeRider {
-	// 	// 骑手操作不自动入库
-	// 	autoIn = false
-	// }
 
 	if len(details) != 0 {
 		// 创建调拨单

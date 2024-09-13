@@ -138,6 +138,7 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 				SN:         v.SN,
 				Num:        v.Num,
 				MaterialID: v.MaterialID,
+				ModelID:    v.ModelID,
 			})
 		}
 		err = s.TransferReceive(ctx, &model.AssetTransferReceiveBatchReq{

@@ -7,6 +7,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -27,6 +28,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -196,7 +198,6 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 					}
 
 					// 清除旧电池分配信息
-					// _ = NewBattery().Unallocate(old.Update(), model.AssetLocationsTypeCabinet, cab.ID)
 					err = NewBattery(s.operator).Unallocate(old, model.AssetLocationsTypeCabinet, cab.ID, model.AssetTransferTypeExchange)
 					if err != nil {
 						return
@@ -219,6 +220,39 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 							return NewBattery(s.operator).Allocate(bat, sub, model.AssetTransferTypeExchange)
 						})
 					}
+				}
+			} else {
+				if result.Step == model.ExchangeStepPutInto.Uint32() {
+					at, _ := ent.Database.Asset.QueryNotDeleted().Where(
+						asset.Type(model.AssetTypeNonSmartBattery.Value()),
+						asset.LocationsType(model.AssetLocationsTypeRider.Value()),
+						asset.LocationsID(s.rider.ID),
+					).WithModel().First(s.ctx)
+					if at == nil {
+						zap.L().Error(fmt.Sprintf("换电-放电 非智能柜未找到电池信息 %s", cab.Serial))
+						return
+					}
+					// 清除旧电池分配信息
+					err = NewBattery(s.operator).Unallocate(at, model.AssetLocationsTypeCabinet, cab.ID, model.AssetTransferTypeExchange)
+					if err != nil {
+						zap.L().Error("换电-放电 非智能柜清除电池分配信息失败", zap.Error(err))
+						return
+					}
+				}
+
+				if result.Step == model.ExchangeStepOpenFull.Uint32() {
+					locationsType := model.AssetLocationsTypeCabinet
+					newBattery, _ := NewAsset().QueryNonSmartBattery(&model.QueryAssetReq{
+						LocationsType: &locationsType,
+						LocationsID:   silk.UInt64(cab.ID),
+					})
+					if newBattery == nil {
+						zap.L().Error(fmt.Sprintf("换电-取电 非智能柜未找到电池信息 %s", cab.Serial))
+						return
+					}
+					_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+						return NewBattery(s.operator).Allocate(newBattery, sub, model.AssetTransferTypeExchange)
+					})
 				}
 			}
 
@@ -399,51 +433,62 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 		Voltage:     b.Voltage,
 	}
 
+	// 业务类型对应调拨类型
+	var at model.AssetTransferType
+	switch bus {
+	case adapter.BusinessActive:
+		at = model.AssetTransferTypeActive
+	case adapter.BusinessPause:
+		at = model.AssetTransferTypePause
+	case adapter.BusinessContinue:
+		at = model.AssetTransferTypeContinue
+	case adapter.BusinessUnsubscribe:
+		at = model.AssetTransferTypeUnSubscribe
+	}
+
+	var bat *ent.Asset
+	var m string
 	// 若智能电柜, 需记录电池信息
 	if cab.Intelligent {
 		// 获取电池
-		var bat *ent.Asset
 		bat, err = NewBattery().LoadOrCreate(sn)
 		if err != nil && bat == nil {
 			zap.L().Error("业务记录失败", zap.Error(err))
 			return
 		}
-		var m string
+
 		if bat.Edges.Model != nil {
 			m = bat.Edges.Model.Model
 		}
 
-		batinfo = &model.Battery{
-			ID:    bat.ID,
-			SN:    sn,
-			Model: m,
+	} else {
+		// 获取非智能电池
+		bat, _ = ent.Database.Asset.QueryNotDeleted().Where(
+			asset.LocationsType(model.AssetLocationsTypeCabinet.Value()),
+			asset.HasCabinetWith(cabinet.Serial(cab.Serial)),
+			// asset.Ordinal(b.Ordinal),
+		).WithModel().First(s.ctx)
+		if bat == nil {
+			zap.L().Error("未找到电池信息")
+			return
 		}
-
-		// 放入电池
-		// TODO 是否有必要?
-		// if putin {
-		//     _, _ = bs.Unallocate(bat)
-		// }
-
-		// 业务类型对应调拨类型
-		var at model.AssetTransferType
-		switch bus {
-		case adapter.BusinessActive:
-			at = model.AssetTransferTypeActive
-		case adapter.BusinessPause:
-			at = model.AssetTransferTypePause
-		case adapter.BusinessContinue:
-			at = model.AssetTransferTypeContinue
-		case adapter.BusinessUnsubscribe:
-			at = model.AssetTransferTypeUnSubscribe
+		if bat.Edges.Model != nil {
+			m = bat.Edges.Model.Model
 		}
+		// 非智能电柜, 没有电池编码
+		sn = ""
+	}
+	batinfo = &model.Battery{
+		ID:    bat.ID,
+		SN:    sn,
+		Model: m,
+	}
 
-		// 取走电池 激活,取消寄存会走这里
-		if !putin {
-			_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-				return NewBattery(s.operator).Allocate(bat, sub, at)
-			})
-		}
+	// 取走电池 激活,取消寄存会走这里
+	if !putin {
+		_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+			return NewBattery(s.operator).Allocate(bat, sub, at)
+		})
 	}
 
 	return
