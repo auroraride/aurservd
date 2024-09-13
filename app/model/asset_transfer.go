@@ -290,3 +290,11 @@ type CheckTransferTypeTypeRes struct {
 	ToLocationType   uint8  `json:"toLocationType"`   // 调入目标类型
 	ToLocationID     uint64 `json:"toLocationID"`     // 调入目标ID
 }
+
+type BatteryTransferReq struct {
+	FromLocationType AssetLocationsType
+	FromLocationID   uint64
+	ToLocationType   AssetLocationsType
+	ToLocationID     uint64
+	Details          []AssetTransferCreateDetail
+}
